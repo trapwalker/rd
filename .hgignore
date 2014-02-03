@@ -23,3 +23,4 @@ build/*
 *.doc
 settings_local.py
 *.psd
+*.egg
