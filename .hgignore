@@ -1,0 +1,25 @@
+syntax: glob
+*.pyc
+*.db
+*.zip
+*.bmp
+*.bak
+temp/*
+-/*
+*.jpg
+*.old.json
+*.sqlite3
+*/build/*
+*.7z
+*.dll
+*.exe
+*.sqlite3-journal
+*/dist/*
+*.orig
+.idea/*
+*.pyd
+*.pak
+build/*
+*.doc
+settings_local.py
+*.psd
