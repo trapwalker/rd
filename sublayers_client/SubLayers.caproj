@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2project>
+    <name>SubLayers</name>
+    <description></description>
+    <version>0.0.1</version>
+    <author></author>
+    <author-email></author-email>
+    <author-website>http://</author-website>
+    <app-id>com.megabyteam.sublayers</app-id>
+    <unique-id>zb5j66cwz7t8</unique-id>
+    <saved-with-version>15600</saved-with-version>
+    <used-plugins>
+        <plugin author="Scirra" id="Browser" version="1">Browser</plugin>
+        <plugin author="Scirra" id="Button" version="1">Button</plugin>
+        <plugin author="Scirra" id="Geolocation" version="1">Geolocation</plugin>
+        <plugin author="Scirra" id="Text" version="1">Text</plugin>
+        <plugin author="Gregory Georges" id="googleMap" version="1.019999981">Google Map</plugin>
+    </used-plugins>
+    <used-behaviors />
+    <used-effects />
+    <configurations>
+        <configuration exporter-descname="HTML5" exporter-id="html5" name="HTML5" />
+    </configurations>
+    <window-size>
+        <width>800</width>
+        <height>480</height>
+    </window-size>
+    <pixel-rounding>0</pixel-rounding>
+    <use-loader-layout>0</use-loader-layout>
+    <configuration-settings>
+        <prop name="Clear background">Yes</prop>
+        <prop name="Enable WebGL">On</prop>
+        <prop name="Fullscreen in browser">Letterbox scale</prop>
+        <prop name="Hide address bar">No</prop>
+        <prop name="Loader style">Progress bar &amp; logo</prop>
+        <prop name="Pause on unfocus">No</prop>
+        <prop name="Preview browser">(default)</prop>
+        <prop name="Sampling">Linear</prop>
+        <prop name="Use iOS retina display">All devices</prop>
+    </configuration-settings>
+    <object-folder expanded="1">
+        <object-type name="GeolocationStatus" sid="4274808173112309">
+            <plugin id="Text" />
+        </object-type>
+        <object-type name="Geolocation" sid="9217271754527044">
+            <plugin id="Geolocation" />
+        </object-type>
+        <object-type name="GetPositionButton" sid="5481100661681827">
+            <plugin id="Button" />
+        </object-type>
+        <object-type name="WatchPositionButton" sid="3386597451675523">
+            <plugin id="Button" />
+        </object-type>
+        <object-type name="StopWatchingButton" sid="2451695555797633">
+            <plugin id="Button" />
+        </object-type>
+        <object-type name="GeolocationEvent" sid="2920215641786063">
+            <plugin id="Text" />
+        </object-type>
+        <object-type name="ShowGoogleMaps" sid="5211174280364258">
+            <plugin id="Button" />
+        </object-type>
+        <object-type name="Browser" sid="7277984830927272">
+            <plugin id="Browser" />
+        </object-type>
+        <object-type name="GoogleMap" sid="895507574796436">
+            <plugin id="googleMap" />
+        </object-type>
+        <object-type name="Title" sid="1866497955721538">
+            <plugin id="Text" />
+        </object-type>
+    </object-folder>
+    <families />
+    <layout-folder expanded="1">
+        <layout>Layout 1.xml</layout>
+    </layout-folder>
+    <event-folder expanded="1">
+        <event-sheet>Event sheet 1.xml</event-sheet>
+    </event-folder>
+    <global-instances>
+        <global-instance type="Geolocation" uid="1" />
+        <global-instance type="Browser" uid="7" />
+    </global-instances>
+    <sounds-folder expanded="1" />
+    <music-folder expanded="1" />
+    <files-folder expanded="1">
+        <file-folder expanded="0" name="Icons">
+            <file name="icon-16.png" />
+            <file name="icon-32.png" />
+            <file name="icon-114.png" />
+            <file name="icon-128.png" />
+            <file name="icon-256.png" />
+            <file name="loading-logo.png" />
+        </file-folder>
+    </files-folder>
+</c2project>
