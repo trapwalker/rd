@@ -6,11 +6,6 @@ from uuid import uuid1 as get_uid
 Point = namedtuple('Point', 'x y')
 
 
-class Event(object):
-    def __init__(self, eType, position=None):
-        self.position = position
-
-
 # todo: class Task
 # todo: class Collision
 # todo: GEO-index
