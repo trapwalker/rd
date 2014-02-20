@@ -11,25 +11,6 @@ Point = namedtuple('Point', 'x y')
 # todo: GEO-index
 # todo: fix side effect on edge of tile
 
-class Server(object):
-
-    def __init__(self, uid=None):
-        self.uid = uid or get_uid()
-        self.units = {}
-        self.stations = {}
-        self.robots = {}
-
-
-class LocalServer(Server):
-    pass
-
-
-class RemoteServer(Server):
-
-    def __init__(self, uid, uri):
-        super(RemoteServer, self).__init__(self, uid)
-        self.uri = uri
-
 
 class WitnessMixin(object):
     u'''Mixin class for injection of witness functionality'''
