@@ -38,6 +38,11 @@ class WitnessMixin(object):
         return self.r
 
 
+class PointObject(object):
+    def __init__(self):
+        pass
+
+
 class Unit(object):
     u'''Abstract class for any GEO-entities'''
 
@@ -48,7 +53,7 @@ class Unit(object):
         self.events = []
         self._position = position
         if isinstance(self, WitnessMixin):
-            self.witness_init()
+            self.witness_init()`
 
     @property
     def position(self):
