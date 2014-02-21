@@ -3,6 +3,9 @@
 from collections import namedtuple
 from uuid import uuid1 as get_uid
 
+import logging
+logging.basicConfig(level='DEBUG')
+
 Point = namedtuple('Point', 'x y')
 
 
@@ -11,13 +14,22 @@ Point = namedtuple('Point', 'x y')
 # todo: GEO-index
 # todo: fix side effect on edge of tile
 
+class BALANCE(object):
+    u'''Gameplay balancing settings'''
+    @classmethod
+    def get_ObserverRange(cls, unit):
+        return 100 * (5 if isinstance(unit, Stationary) else 1)
 
-class WitnessMixin(object):
-    u'''Mixin class for injection of witness functionality'''
 
-    def witness_init(self):
-        self.subscribers = set()
-        self.r = 100 * 5 if isinstance(self, Stationary) else 1
+class Observer(object):
+    u'''Mixin class for injection of observer functionality'''
+
+    def __init__(self, server, r=None, subscribers=None, **kw):
+        super(Observer, self).__init__()
+        self._r = r or BALANCE.get_ObserverRange(self)
+        self.subscribers = set(subscribers or [])
+
+        server.register_observer(self)
 
     def subscribe(self, s):
         if isinstance(s, (list, tuple)):
@@ -34,8 +46,8 @@ class WitnessMixin(object):
         self.subscribers -= s
 
     @property
-    def range_of_view(self):
-        return self.r
+    def r(self):
+        return self._r
 
 
 class PointObject(object):
@@ -53,7 +65,7 @@ class Unit(object):
         self.events = []
         self._position = position
         if isinstance(self, WitnessMixin):
-            self.witness_init()`
+            self.witness_init()
 
     @property
     def position(self):
