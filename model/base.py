@@ -14,14 +14,12 @@ logging.basicConfig(level='DEBUG')
 
 
 class Observer(object):
-    u'''Mixin class for injection of observer functionality'''
+    u'''todo: make docstring'''
 
-    def __init__(self, server, r=None, subscribers=None, **kw):
+    def __init__(self, owner, r=None):
         super(Observer, self).__init__()
-        self._r = r or BALANCE.get_ObserverRange(self)
-        self.subscribers = set(subscribers or [])
-
-        server.register_observer(self)
+        self._r = r or BALANCE.get_ObserverRange(owner)
+        self.subscribers = set()
 
     def subscribe(self, s):
         if isinstance(s, (list, tuple)):
@@ -43,24 +41,31 @@ class Observer(object):
 
 
 class PointObject(object):
+
     def __init__(self):
-        pass
+        super(PointObject, self).__init__()
+
+    def get_position(self):
+        return None
+
+    position = property(fget=get_position)
 
 
-class Unit(object):
-    u'''Abstract class for any GEO-entities'''
+class VisibleObject(PointObject):
 
-    def __init__(self, server, position, owner=None):
+    def __init__(self, server, position):
         self.server = server
         self.uid = get_uid()
-        self.owner = owner
-        self.events = []
-        self._position = position
-        super(Unit, self).__init__()
+        self._init_point = position
+        super(VisibleObject, self).__init__()
 
-    @property
-    def position(self):
-        return self._position
+
+class Unit(VisibleObject):
+    u'''Abstract class for any GEO-entities'''
+
+    def __init__(self, server, position):
+        self.observer = Observer(self)
+        super(Unit, self).__init__(server, position)
 
     def register(self, server):
         # todo: make registeration into the server

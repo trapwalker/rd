@@ -10,6 +10,9 @@ class Server(object):
         self.stations = {}
         self.robots = {}
 
+    def register_object(self, obj):
+        pass
+
     def register_unit(self, unit):
         pass
 
