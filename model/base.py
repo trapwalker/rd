@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from utils import get_uid
+from balance import BALANCE
 
 import logging
 logging.basicConfig(level='DEBUG')
@@ -10,12 +11,6 @@ logging.basicConfig(level='DEBUG')
 # todo: class Collision
 # todo: GEO-index
 # todo: fix side effect on edge of tile
-
-class BALANCE(object):
-    u'''Gameplay balancing settings'''
-    @classmethod
-    def get_ObserverRange(cls, unit):
-        return 100 * (5 if isinstance(unit, Stationary) else 1)
 
 
 class Observer(object):
