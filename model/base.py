@@ -2,6 +2,7 @@
 
 from utils import get_uid
 from balance import BALANCE
+from inventory import Inventory
 
 import logging
 logging.basicConfig(level='DEBUG')
@@ -59,21 +60,24 @@ class VisibleObject(PointObject):
         self._init_point = position
         super(VisibleObject, self).__init__()
 
+    def register(self, server):
+        #super(VisibleObject, self).register(server)
+        logging.debug('Register: %s', self.__class__.__name__)
+
 
 class Unit(VisibleObject):
     u'''Abstract class for any GEO-entities'''
 
-    def __init__(self, server, position):
+    def __init__(self, **kw):
         self.observer = Observer(self)
-        super(Unit, self).__init__(server, position)
+        super(Unit, self).__init__(**kw)
 
     def register(self, server):
-        # todo: make registeration into the server
-        # todo: logging
-        print 'Register: {} {}'.format(
-            self.__class__.__name__,
-            self.range_of_view if isinstance(self, WitnessMixin) else '',
-        )
+        super(Unit, self).register(server)
+        if self.observer:
+            server.register_observer(self.observer)
+
+    # todo: tasks
 
 
 class Stationary(Unit):
@@ -82,23 +86,26 @@ class Stationary(Unit):
     def __init__(self, **kw):
         super(Stationary, self).__init__(**kw)
 
+    def get_position(self):
+        return self._init_point
+
 
 class Heap(Stationary):
     u'''Heap objects thrown on the map'''
-
+    # todo: rearrange class tree
     def __init__(self, items, **kw):
         super(Heap, self).__init__(**kw)
-        self.items = items
+        self.inventory = Inventory()
 
 
-class Station(Stationary, WitnessMixin):
+class Station(Stationary):
     u'''Class of buildings'''
 
     def __init__(self, **kw):
         super(Station, self).__init__(**kw)
 
 
-class Bot(Unit, WitnessMixin):
+class Bot(Unit):
     u'''Class of mobile units'''
 
     def __init__(self, **kw):
