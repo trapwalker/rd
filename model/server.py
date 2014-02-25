@@ -16,19 +16,18 @@ class Server(object):
     def register_unit(self, unit):
         pass
 
-    def register_observer(self, ubserver):
+    def register_observer(self, observer):
         pass
-
 
 
 class LocalServer(Server):
 
-    def __init__(self, uid):
-        super(LocalServer, self).__init__(uid=uid)
+    def __init__(self, **kw):
+        super(LocalServer, self).__init__(**kw)
 
 
 class RemoteServer(Server):
 
-    def __init__(self, uid, uri):
-        super(RemoteServer, self).__init__(uid)
+    def __init__(self, uri, **kw):
+        super(RemoteServer, self).__init__(**kw)
         self.uri = uri
