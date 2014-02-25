@@ -10,6 +10,13 @@ class Server(object):
         self.stations = {}
         self.robots = {}
 
+    def register_unit(self, unit):
+        pass
+
+    def register_observer(self, ubserver):
+        pass
+
+
 
 class LocalServer(Server):
 

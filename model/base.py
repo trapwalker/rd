@@ -56,8 +56,7 @@ class Unit(object):
         self.owner = owner
         self.events = []
         self._position = position
-        if isinstance(self, WitnessMixin):
-            self.witness_init()
+        super(Unit, self).__init__()
 
     @property
     def position(self):
