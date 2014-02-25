@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from utils import get_uid
+
 class Server(object):
 
     def __init__(self, uid=None):
@@ -11,12 +13,12 @@ class Server(object):
 
 class LocalServer(Server):
 
-    def __init__(self, uid, uri):
-        super(RemoteServer, self).__init__(self, uid=uid)
+    def __init__(self, uid):
+        super(LocalServer, self).__init__(uid=uid)
 
 
 class RemoteServer(Server):
 
     def __init__(self, uid, uri):
-        super(RemoteServer, self).__init__(self, uid)
+        super(RemoteServer, self).__init__(uid)
         self.uri = uri

@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from collections import namedtuple
-from uuid import uuid1 as get_uid
+from utils import get_uid
 
 import logging
 logging.basicConfig(level='DEBUG')
-
-Point = namedtuple('Point', 'x y')
 
 
 # todo: class Task
