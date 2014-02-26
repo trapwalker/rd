@@ -10,4 +10,7 @@ class BALANCE(object):
     def get_ObserverRange(cls, unit):
         return 100 * (5 if isinstance(unit, Stationary) else 1)
 
+    @classmethod
+    def get_MaxVelocity(cls, unit):
+        return 3 # m/s
 
