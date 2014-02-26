@@ -60,7 +60,7 @@ class Point(complex):
         return Point(complex.__rmul__(self, y))
 
     def __rpow__(self, x, z=None):
-        return Point(complex.__rpow__(self, y, z))
+        return Point(complex.__rpow__(self, x, z))
 
     def __rsub__(self, y):
         return Point(complex.__rsub__(self, y))
