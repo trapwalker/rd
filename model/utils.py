@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-__ALL__ = ['get_uid', 'Point']
+__ALL__ = ['get_uid', 'get_time', 'Point']
 
 from operator import attrgetter
 
 from uuid import uuid1 as get_uid
+from time import time as get_time  # todo: integer vs float time
+
 
 
 class Point(complex):

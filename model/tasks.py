@@ -2,8 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 
-from time import time
-# todo: integer vs float time
+from utils import get_time
 
 
 class Task(object):
@@ -13,7 +12,7 @@ class Task(object):
     def __init__(self, owner, start_time=None, **kw):
         super(Task, self).__init__(**kw)
         self.owner = owner
-        self.start_time = start_time or time()
+        self.start_time = start_time or get_time()
 
 
 class Moving(Task):
