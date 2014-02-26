@@ -5,6 +5,10 @@ from abc import ABCMeta, abstractmethod
 from utils import get_time
 
 
+DEFAULT_STANDING_DURATION = 60 * 60 # 1 hour
+# todo: need review
+
+
 class Task(object):
 
     __metaclass__ = ABCMeta
@@ -22,11 +26,30 @@ class Task(object):
     def get_duration(self):
         pass
 
+    position = property(get_position)
     duration = property(get_duration)
 
     @property
     def finish_time(self):
         return self.start_time + self.duration
+
+    def default_next_task(self):
+        return Stand(self.position, DEFAULT_STANDING_DURATION)
+
+
+class Stand(Task):
+
+    def __init__(self, position, duration, **kw):
+        # todo: declare arg types
+        super(Stand, self).__init__(**kw)
+        self._position = position
+        self._duration = duration
+
+    def get_duration(self):
+        return self._duration
+
+    def get_position(self, to_time=None):
+        return self._position
 
 
 class Goto(Task):
@@ -49,4 +72,6 @@ class Goto(Task):
         return self._vector.normalize() * self.owner.max_velocity * (to_time - self.start_time)
 
 
-
+# todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
+# todo: Make "Goto" task modifiers (aggresive, sneaking, ...)
+# todo: Make "Standing" task modifiers (aggresive, sneaking, defending, ...)
