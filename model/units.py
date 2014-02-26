@@ -37,5 +37,5 @@ class Bot(Unit):
         return False
 
     @property
-    def v(self): # m/s
+    def max_velocity(self): # m/s
         return 3
