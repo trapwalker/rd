@@ -60,7 +60,6 @@ class Goto(Task):
         super(Goto, self).__init__(**kw)
         self.start_point = start_point
         self.target_point = target_point
-
         self._vector = self.target_point - self.start_point
 
     def get_duration(self):
@@ -73,5 +72,6 @@ class Goto(Task):
 
 
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
+# todo: Make "Scouting" task +modifiers (aggresive, sneaking, defending, ...)
 # todo: Make "Goto" task modifiers (aggresive, sneaking, ...)
 # todo: Make "Standing" task modifiers (aggresive, sneaking, defending, ...)
