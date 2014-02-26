@@ -43,6 +43,9 @@ class VisibleObject(PointObject):
 class Stationary(PointObject):
     u'''Mixin for stationary objects'''
 
+    def is_static(self):
+        return True
+
     def get_position(self):
         return self._init_point
 

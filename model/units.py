@@ -4,7 +4,7 @@ from base import VisibleObject, Stationary, Observer
 
 
 class Unit(VisibleObject):
-    u'''Abstract class for any GEO-entities'''
+    u'''Abstract class for any controlled GEO-entities'''
 
     def __init__(self, **kw):
         self.observer = Observer(self)
@@ -27,6 +27,9 @@ class Station(Unit, Stationary):
 
 class Bot(Unit):
     u'''Class of mobile units'''
+
+    def is_static(self):
+        return False
 
     def __init__(self, **kw):
         print kw
