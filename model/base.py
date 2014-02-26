@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from utils import get_uid
-from balance import BALANCE
 from inventory import Inventory
 
 import logging
@@ -14,38 +13,14 @@ logging.basicConfig(level='DEBUG')
 # todo: fix side effect on edge of tile
 
 
-class Observer(object):
-    u'''todo: make docstring'''
-
-    def __init__(self, owner, r=None):
-        super(Observer, self).__init__()
-        self._r = r or BALANCE.get_ObserverRange(owner)
-        self.subscribers = set()
-
-    def subscribe(self, s):
-        if isinstance(s, (list, tuple)):
-            s = set(s)
-        elif not isinstance(s, set):
-            s = {s}
-        self.subscribers += s
-
-    def unsubscribe(self, s):
-        if isinstance(s, (list, tuple)):
-            s = set(s)
-        elif not isinstance(s, set):
-            s = {s}
-        self.subscribers -= s
-
-    @property
-    def r(self):
-        return self._r
-
-
 class PointObject(object):
 
     def __init__(self, position=None):
         super(PointObject, self).__init__()
         self._init_point = position
+
+    def is_static(self):
+        return None
 
     def get_position(self):
         return None
