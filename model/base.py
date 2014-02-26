@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from abc import ABCMeta, abstractmethod
+
 from utils import get_uid
 from inventory import Inventory
 
@@ -15,12 +17,15 @@ logging.basicConfig(level='DEBUG')
 
 class PointObject(object):
 
+    __metaclass__ = ABCMeta
+
     def __init__(self, position=None):
         super(PointObject, self).__init__()
         self._init_point = position
 
+    @abstractmethod
     def is_static(self):
-        return None
+        pass
 
     def get_position(self):
         return None
