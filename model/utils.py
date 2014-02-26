@@ -19,11 +19,13 @@ class Point(complex):
     def distance(self, p):
         return abs(self - p)
 
+    def normalize(self):
+        return self / abs(self)
+
     # todo: turn vector
-    # todo: normalize
     # todo: vector multiply
 
-    ## Syntactic sugar
+    ## Syntactic sugar ##
 
     def __repr__(self):
         return 'Point(x=%r, y=%r)' % (self.x, self.y)
