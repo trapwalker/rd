@@ -2,7 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 
-from utils import get_time
+from utils import get_time, Point
 
 
 class Task(object):
