@@ -7,6 +7,7 @@ from utils import get_time
 
 DEFAULT_STANDING_DURATION = 60 * 60 # 1 hour
 # todo: need review
+# todo: server task list registration
 
 
 class Task(object):
@@ -34,12 +35,12 @@ class Task(object):
         return self.start_time + self.duration
 
     def default_next_task(self):
-        return Stand(self.position, DEFAULT_STANDING_DURATION)
+        return Stand(owner=self.owner, position=self.position)
 
 
 class Stand(Task):
 
-    def __init__(self, position, duration, **kw):
+    def __init__(self, position, duration=DEFAULT_STANDING_DURATION, **kw):
         # todo: declare arg types
         super(Stand, self).__init__(**kw)
         self._position = position

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from balance import BALANCE
 from base import VisibleObject, Stationary
 from observe import Observer
-
+import tasks
 
 class Unit(VisibleObject):
     u'''Abstract class for any controlled GEO-entities'''
@@ -30,12 +31,29 @@ class Bot(Unit):
     u'''Class of mobile units'''
 
     def __init__(self, **kw):
-        print kw
         super(Bot, self).__init__(**kw)
+        self.set_task(self.get_default_task())
+
+    def stop(self, done=False, next_task=None):
+        self.apply_position()
+        self.set_task(next_task or self.task.default_next_task())
+        # todo: need to review
+
+    def apply_position(self):
+        self._position = self.position
+
+    def set_task(self, task):
+        self.task = task
+
+    def get_default_task(self):
+        return tasks.Stand(owner=self, position=self._position)
 
     def is_static(self):
-        return False
+        return isinstance(self.task, tasks.Stand)
+
+    def get_position(self):
+        return self.task.position
 
     @property
     def max_velocity(self): # m/s
-        return 3
+        return BALANCE.get_MaxVelocity(self)

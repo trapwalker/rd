@@ -18,9 +18,9 @@ class PointObject(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, position=None):
+    def __init__(self, position):
         super(PointObject, self).__init__()
-        self._init_point = position
+        self._position = position
 
     @abstractmethod
     def is_static(self):
@@ -51,7 +51,7 @@ class Stationary(PointObject):
         return True
 
     def get_position(self):
-        return self._init_point
+        return self._position
 
 
 class Heap(VisibleObject, Stationary):
