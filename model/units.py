@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from base import VisibleObject, Stationary, Observer
+from base import VisibleObject, Stationary
+from observe import Observer
 
 
 class Unit(VisibleObject):
