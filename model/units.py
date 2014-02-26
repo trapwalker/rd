@@ -29,9 +29,13 @@ class Station(Unit, Stationary):
 class Bot(Unit):
     u'''Class of mobile units'''
 
-    def is_static(self):
-        return False
-
     def __init__(self, **kw):
         print kw
         super(Bot, self).__init__(**kw)
+
+    def is_static(self):
+        return False
+
+    @property
+    def v(self): # m/s
+        return 3
