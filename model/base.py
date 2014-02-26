@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from abc import ABCMeta, abstractmethod
+import logging
 
+from abc import ABCMeta, abstractmethod
 from utils import get_uid
 from inventory import Inventory
-
-import logging
 logging.basicConfig(level='DEBUG')
 
 
