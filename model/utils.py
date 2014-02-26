@@ -2,46 +2,76 @@
 
 __ALL__ = ['get_uid', 'Point']
 
-from operator import itemgetter
-from collections import OrderedDict
-from math import sqrt, pow
+from operator import attrgetter
 
 from uuid import uuid1 as get_uid
 
-class Point(tuple):
-    u'''Point(x, y)'''
 
-    def __new__(cls, x, y):
-        return tuple.__new__(cls, (x, y))
-
-    def __repr__(self):
-        return 'Point(x=%r, y=%r)' % self
-
-    def __getnewargs__(self):
-        'Return self as a plain tuple.  Used by copy and pickle.'
-        return tuple(self)
-
-    def _asdict(self):
-        'Return a new OrderedDict which maps field names to their values'
-        return OrderedDict(zip(('x', 'y'), self))
-
-    def __getstate__(self):
-        'Exclude the OrderedDict from pickling'
-        pass
+class Point(complex):
 
     __slots__ = ()
 
-    __dict__ = property(_asdict)
+    x = property(attrgetter('real'))
+    y = property(attrgetter('imag'))
 
-    x = property(itemgetter(0), doc='Alias for field number 0')
-
-    y = property(itemgetter(1), doc='Alias for field number 1')
-
-    # Vector algebra
-    
     def distance(self, p):
-        return sqrt((self.x - p.x) ** 2 + (self.y - p.y) ** 2)
+        return abs(self - p)
 
-    def distance2(self, p):
-        return (self.x - p.x) ** 2 + (self.y - p.y) ** 2
+    # todo: turn vector
+    # todo: normalize
+    # todo: vector multiply
+
+    ## Syntactic sugar
+
+    def __repr__(self):
+        return 'Point(x=%r, y=%r)' % (self.x, self.y)
+
+    def __add__(self, y):
+        return Point(complex.__add__(self, y))
+
+    def __div__(self, y):
+        return Point(complex.__div__(self, y))
+
+    def __mod__(self, y):
+        return Point(complex.__mod__(self, y))
+
+    def __mul__(self, y):
+        return Point(complex.__mul__(self, y))
+
+    def __neg__(self):
+        return Point(complex.__neg__(self))
+
+    def __pow__(self, y, z=None):
+        return Point(complex.__pow__(self, y, z))
+
+    def __radd__(self, y):
+        return Point(complex.__radd__(self, y))
+
+    def __rdivmod__(self, y):
+        return Point(complex.__rdivmod__(self, y))
+
+    def __rdiv__(self, y):
+        return Point(complex.__rdiv__(self, y))
+    
+    def __rmod__(self, y):
+        return Point(complex.__rmod__(self, y))
+
+    def __rmul__(self, y):
+        return Point(complex.__rmul__(self, y))
+
+    def __rpow__(self, x, z=None):
+        return Point(complex.__rpow__(self, y, z))
+
+    def __rsub__(self, y):
+        return Point(complex.__rsub__(self, y))
+
+    def __rtruediv__(self, y):
+        return Point(complex.__rtruediv__(self, y))
+        
+    def __sub__(self, y):
+        return Point(complex.__sub__(self, y))
+
+    def __truediv__(self, y):
+        return Point(complex.__truediv__(self, y))
+        
 
