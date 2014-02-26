@@ -15,6 +15,10 @@ class Task(object):
         self.start_time = start_time or get_time()
 
     @abstractmethod
+    def get_position(self):
+        pass
+
+    @abstractmethod
     def get_duration(self):
         pass
 
@@ -23,16 +27,6 @@ class Task(object):
     @property
     def finish_time(self):
         return self.start_time + self.duration
-
-
-class Moving(Task):
-
-    def __init__(self, **kw):
-        super(Moving, self).__init__(**kw)
-
-    @abstractmethod
-    def get_position(self):
-        pass
 
 
 class Goto(Task):
