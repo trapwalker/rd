@@ -5,7 +5,14 @@ from operator import itemgetter
 
 
 class Contact(tuple):
-    u"""Contact(time, subject, obj)"""
+    u"""
+    Predicted event associated with the task robot:
+        - hit an object in the observed scope of the subject;
+        - object escaped from of tile range;
+        - task of object is completed.
+
+    Contact(time, subject, obj)
+    """
     __slots__ = ()
     _fields = ('time', 'subject', 'obj')
 
