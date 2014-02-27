@@ -5,8 +5,9 @@ from base import VisibleObject, Stationary
 from observe import Observer
 import tasks
 
+
 class Unit(VisibleObject):
-    u'''Abstract class for any controlled GEO-entities'''
+    u"""Abstract class for any controlled GEO-entities"""
 
     def __init__(self, **kw):
         self.observer = Observer(self)
@@ -21,14 +22,14 @@ class Unit(VisibleObject):
 
 
 class Station(Unit, Stationary):
-    u'''Class of buildings'''
+    u"""Class of buildings"""
 
     def __init__(self, **kw):
         super(Station, self).__init__(**kw)
 
 
 class Bot(Unit):
-    u'''Class of mobile units'''
+    u"""Class of mobile units"""
 
     def __init__(self, **kw):
         super(Bot, self).__init__(**kw)
@@ -38,6 +39,7 @@ class Bot(Unit):
         self.fix_position()
         self.set_task(next_task or self.default_task())
         # todo: need to review
+        # todo: implement a strategy of behavior
 
     def default_task(self):
         return tasks.Stand(owner=self, position=self._position)
@@ -56,5 +58,5 @@ class Bot(Unit):
         return self.task.position
 
     @property
-    def max_velocity(self): # m/s
+    def max_velocity(self):  # m/s
         return BALANCE.get_MaxVelocity(self)
