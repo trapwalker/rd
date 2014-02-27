@@ -32,21 +32,22 @@ class Bot(Unit):
 
     def __init__(self, **kw):
         super(Bot, self).__init__(**kw)
-        self.set_task(self.get_default_task())
+        self.set_task(self.default_task())
 
     def stop(self, done=False, next_task=None):
-        self.apply_position()
-        self.set_task(next_task or self.task.default_next_task())
+        self.fix_position()
+        self.set_task(next_task or self.default_task())
         # todo: need to review
 
-    def apply_position(self):
+    def default_task(self):
+        return tasks.Stand(owner=self, position=self._position)
+
+    def fix_position(self):
         self._position = self.position
 
     def set_task(self, task):
         self.task = task
-
-    def get_default_task(self):
-        return tasks.Stand(owner=self, position=self._position)
+        # todo: remove task from server list
 
     def is_static(self):
         return isinstance(self.task, tasks.Stand)

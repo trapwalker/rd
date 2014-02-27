@@ -34,9 +34,6 @@ class Task(object):
     def finish_time(self):
         return self.start_time + self.duration
 
-    def default_next_task(self):
-        return Stand(owner=self.owner, position=self.position)
-
 
 class Stand(Task):
 
