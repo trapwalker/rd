@@ -15,7 +15,6 @@ logging.basicConfig(level='DEBUG')
 
 
 class PointObject(object):
-
     __metaclass__ = ABCMeta
 
     def __init__(self, position):
@@ -45,7 +44,7 @@ class VisibleObject(PointObject):
 
 
 class Stationary(PointObject):
-    u'''Mixin for stationary objects'''
+    u"""Mixin for stationary objects"""
 
     def is_static(self):
         return True
@@ -55,7 +54,7 @@ class Stationary(PointObject):
 
 
 class Heap(VisibleObject, Stationary):
-    u'''Heap objects thrown on the map'''
+    u"""Heap objects thrown on the map"""
     # todo: rearrange class tree
     def __init__(self, items, **kw):
         super(Heap, self).__init__(**kw)
