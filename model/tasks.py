@@ -7,17 +7,18 @@ from Queue import PriorityQueue
 from utils import get_time
 
 
-DEFAULT_STANDING_DURATION = 60 * 60 # 1 hour
+DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
 # todo: server task list registration
+
 
 @total_ordering
 class Task(object):
     __metaclass__ = ABCMeta
     __slots__ = ['__weakref__', 'owner', 'start_time', 'events', 'event_time', '_position', '_duration']
 
-    def __init__(self, owner, start_time=None, **kw):
-        super(Task, self).__init__(**kw)
+    def __init__(self, owner, start_time=None):
+        super(Task, self).__init__()
         self.owner = owner
         self.start_time = start_time or get_time()
         self.events = PriorityQueue()
@@ -66,7 +67,7 @@ class Goto(Task):
 
     def __init__(self, start_point, target_point, **kw):
         # todo: declare arg types
-        assert start_point != target_point # todo: epsilon test to eq
+        assert start_point != target_point  # todo: epsilon test to eq
         super(Goto, self).__init__(**kw)
         self.start_point = start_point
         self.target_point = target_point
