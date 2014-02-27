@@ -15,7 +15,7 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 @total_ordering
 class Task(object):
     __metaclass__ = ABCMeta
-    __slots__ = ['__weakref__', 'owner', 'start_time', 'events', 'event_time', '_position', '_duration']
+    __slots__ = ['__weakref__', 'owner', 'start_time', 'events', '_position', '_duration']
 
     def __init__(self, owner, start_time=None):
         super(Task, self).__init__()
@@ -38,12 +38,6 @@ class Task(object):
     @property
     def finish_time(self):
         return self.start_time + self.duration
-
-    def __lt__(self, other):
-        return self.event_time < other.event_time
-
-    def __eq__(self, other):
-        return self.event_time == other.event_time
 
 
 class Stand(Task):
