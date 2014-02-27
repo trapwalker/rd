@@ -58,7 +58,7 @@ class Heap(VisibleObject, Stationary):
     # todo: rearrange class tree
     def __init__(self, items, **kw):
         super(Heap, self).__init__(**kw)
-        self.inventory = Inventory()
+        self.inventory = Inventory(things=items)
 
 
 if __name__ == '__main__':
