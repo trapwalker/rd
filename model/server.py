@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from utils import get_uid
-from Queue import PriorityQueue
+from utils import get_uid, TimelineQueue
 
 
 class Server(object):
@@ -11,7 +10,7 @@ class Server(object):
         self.units = {}
         self.stations = {}
         self.robots = {}
-        self.tasklist = PriorityQueue()
+        self.timeline = TimelineQueue()
 
     def register_task(self, task):
         pass

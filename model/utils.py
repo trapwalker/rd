@@ -1,81 +1,47 @@
 # -*- coding: utf-8 -*-
 
-__ALL__ = ['get_uid', 'get_time', 'Point']
-
-from operator import attrgetter
+from Queue import PriorityQueue
+import heapq
 
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
 
 
+class TimelineQueue(PriorityQueue):
+    #__slots__ = ['EMPTY'] # todo: future python versions optimization
 
-class Point(complex):
+    class EMPTY(object):
+        __slots__ = []
 
-    __slots__ = ()
+    @property
+    def head(self):
+        if self._head is self.EMPTY:
+            raise IndexError('Queue is empty')
+        return self._head
 
-    x = property(attrgetter('real'))
-    y = property(attrgetter('imag'))
+    def _init(self, maxsize):
+        self.queue = []
+        self._head = None
 
-    def distance(self, p):
-        return abs(self - p)
+    def _qsize(self, len=len):
+        return len(self.queue) + (0 if self._head is self.EMPTY else 1)
 
-    def normalize(self):
-        return self / abs(self)
+    def _put(self, item, heappush=heapq.heappush):
+        if self._head is self.EMPTY:
+            self._head = item
+        elif item < self._head:
+            heappush(self.queue, self._head)
+            self._head = item
+        else:
+            heappush(self.queue, item)
 
-    # todo: turn vector
-    # todo: vector multiply
+    def _get(self, heappop=heapq.heappop):
+        if self._head is self.EMPTY:
+            raise IndexError('Queue is empty')
 
-    ## Syntactic sugar ##
+        result = self._head
+        self._head = heappop(self.queue) if len(self.queue) > 0 else self.EMPTY
+        return result
 
-    def __repr__(self):
-        return 'Point(x=%r, y=%r)' % (self.x, self.y)
 
-    def __add__(self, y):
-        return Point(complex.__add__(self, y))
-
-    def __div__(self, y):
-        return Point(complex.__div__(self, y))
-
-    def __mod__(self, y):
-        return Point(complex.__mod__(self, y))
-
-    def __mul__(self, y):
-        return Point(complex.__mul__(self, y))
-
-    def __neg__(self):
-        return Point(complex.__neg__(self))
-
-    def __pow__(self, y, z=None):
-        return Point(complex.__pow__(self, y, z))
-
-    def __radd__(self, y):
-        return Point(complex.__radd__(self, y))
-
-    def __rdivmod__(self, y):
-        return Point(complex.__rdivmod__(self, y))
-
-    def __rdiv__(self, y):
-        return Point(complex.__rdiv__(self, y))
-    
-    def __rmod__(self, y):
-        return Point(complex.__rmod__(self, y))
-
-    def __rmul__(self, y):
-        return Point(complex.__rmul__(self, y))
-
-    def __rpow__(self, x, z=None):
-        return Point(complex.__rpow__(self, x, z))
-
-    def __rsub__(self, y):
-        return Point(complex.__rsub__(self, y))
-
-    def __rtruediv__(self, y):
-        return Point(complex.__rtruediv__(self, y))
-        
-    def __sub__(self, y):
-        return Point(complex.__sub__(self, y))
-
-    def __truediv__(self, y):
-        return Point(complex.__truediv__(self, y))
-        
-
+__ALL__ = [get_uid, get_time, TimelineQueue]
