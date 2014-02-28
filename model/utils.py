@@ -14,6 +14,16 @@ class TimelineQueue(PriorityQueue):
     class EMPTY(object):
         __slots__ = []
 
+    def remove(self, item, heapify=heapq.heapify):
+        # todo: candidate for optimization
+        self.not_full.acquire()
+        try:
+            self.heap.remove(item)
+            heapify(self.heap)
+            self.not_empty.notify()
+        finally:
+            self.not_full.release()
+
     @property
     def head(self):
         if self._head is self.EMPTY:
@@ -86,4 +96,4 @@ class TimelineQueue(PriorityQueue):
         return is_put_to_head
 
 
-__ALL__ = [get_uid, get_time, TimelineQueue]
+__all__ = [get_uid, get_time, TimelineQueue]
