@@ -3,7 +3,7 @@
 import logging
 
 from abc import ABCMeta, abstractmethod
-from utils import get_uid
+from utils import get_uid, TimelineQueue
 from inventory import Inventory
 logging.basicConfig(level='DEBUG')
 
@@ -36,11 +36,25 @@ class VisibleObject(PointObject):
     def __init__(self, server, **kw):
         self.server = server
         self.uid = get_uid()
+        self.contacts = TimelineQueue()
         super(VisibleObject, self).__init__(**kw)
 
     def register(self, server):
         #super(VisibleObject, self).register(server)
         logging.debug('Register: %s', self.__class__.__name__)
+
+    def on_change(self):
+        self.contacts_refresh()
+
+    def contacts_refresh(self):
+        self.contacts_clear()
+        self.contacts_search()
+
+    def contacts_clear(self):
+        while self.contacts
+
+    def contacts_search(self):
+        pass
 
 
 class Stationary(PointObject):
