@@ -25,8 +25,7 @@ class TimelineQueue(PriorityQueue):
         """
         # todo: candidate for optimization
         is_remove_from_head = False
-        self.not_full.acquire()
-        try:
+        with self.not_full:
             if self._head == item:
                 self._head = heappop(self.queue) if len(self.queue) else self.EMPTY
                 is_remove_from_head = True
@@ -35,8 +34,6 @@ class TimelineQueue(PriorityQueue):
                 heapify(self.queue)
 
             self.not_empty.notify()
-        finally:
-            self.not_full.release()
 
         return is_remove_from_head
 
