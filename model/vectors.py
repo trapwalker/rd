@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from operator import attrgetter
+__all__ = ['Point']
 
-__ALL__ = ['Point']
+from operator import attrgetter
 
 class Point(complex):
 
