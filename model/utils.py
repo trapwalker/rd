@@ -18,8 +18,8 @@ class TimelineQueue(PriorityQueue):
         # todo: candidate for optimization
         self.not_full.acquire()
         try:
-            self.heap.remove(item)
-            heapify(self.heap)
+            self.queue.remove(item)
+            heapify(self.queue)
             self.not_empty.notify()
         finally:
             self.not_full.release()
