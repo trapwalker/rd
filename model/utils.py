@@ -2,6 +2,7 @@
 
 from Queue import PriorityQueue, Full
 from time import time as _time
+from itertools import chain, imap
 import heapq
 
 from uuid import uuid1 as get_uid
@@ -14,15 +15,61 @@ class TimelineQueue(PriorityQueue):
     class EMPTY(object):
         __slots__ = []
 
-    def remove(self, item, heapify=heapq.heapify):
+    def remove(self, item, heapify=heapq.heapify, heappop=heapq.heappop):
+        """Remove item from queue.
+        :param item:
+        :param heapify:
+        :param heappop:
+        :rtype : bool
+        :return: True if item was in head
+        """
         # todo: candidate for optimization
+        is_remove_from_head = False
         self.not_full.acquire()
         try:
-            self.queue.remove(item)
-            heapify(self.queue)
+            if self._head == item:
+                self._head = heappop(self.queue) if len(self.queue) else self.EMPTY
+                is_remove_from_head = True
+            else:
+                self.queue.remove(item)
+                heapify(self.queue)
+
             self.not_empty.notify()
         finally:
             self.not_full.release()
+
+        return is_remove_from_head
+
+    def __init__(self, iterable=()):
+        PriorityQueue.__init__(self)
+        self.queue.extend(iterable)
+        heapq.heapify(self.queue)
+
+    def __repr__(self):
+        return '{}([{}])'.format(
+            self.__class__.__name__,
+            ', '.join(imap(repr, chain(
+                [self._head] if not self._head == self.EMPTY else [],
+                self.queue
+            )))
+        )
+
+    __len__ = PriorityQueue.qsize
+
+    def __eq__(self, other):
+        if self is other:
+            return True
+
+        if not isinstance(other, self.__class__):
+            return False
+
+        with self.mutex:
+            with other.mutex:
+                return (
+                    len(self) == len(other) and
+                    self._head == other._head and
+                    self.queue == other.queue
+                )
 
     @property
     def head(self):
@@ -32,7 +79,7 @@ class TimelineQueue(PriorityQueue):
 
     def _init(self, maxsize):
         self.queue = []
-        self._head = None
+        self._head = self.EMPTY
 
     def _qsize(self, len=len):
         return len(self.queue) + (0 if self._head is self.EMPTY else 1)
