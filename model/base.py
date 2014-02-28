@@ -51,9 +51,17 @@ class VisibleObject(PointObject):
         self.contacts_search()
 
     def contacts_clear(self):
-        while self.contacts
+        contacts = self.contacts
+        while contacts:
+            contact = contacts.get()
+            if contact.subject != self:
+                contact.subject.contacts.remove(contact)
+            elif contact.object != self:
+                contact.object.contacts.remove(contact)
+            del(contact)
 
     def contacts_search(self):
+        # toto: make
         pass
 
 
