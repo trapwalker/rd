@@ -45,6 +45,11 @@ class TimelineQueue(PriorityQueue):
         self.queue.extend(iterable)
         heapq.heapify(self.queue)
 
+    def clear(self):
+        # todo: review
+        with self.not_full:
+            self._init(0)
+
     def __repr__(self):
         return '{}([{}])'.format(
             self.__class__.__name__,
