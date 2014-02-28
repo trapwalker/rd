@@ -56,21 +56,6 @@ class TimelineQueue(PriorityQueue):
 
     __len__ = PriorityQueue.qsize
 
-    def __eq__(self, other):
-        if self is other:
-            return True
-
-        if not isinstance(other, self.__class__):
-            return False
-
-        with self.mutex:
-            with other.mutex:
-                return (
-                    len(self) == len(other) and
-                    self._head == other._head and
-                    self.queue == other.queue
-                )
-
     @property
     def head(self):
         if self._head is self.EMPTY:
