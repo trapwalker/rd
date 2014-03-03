@@ -12,7 +12,6 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: server task list registration
 
 
-@total_ordering
 class Task(object):
     __metaclass__ = ABCMeta
     __slots__ = ['__weakref__', 'owner', 'start_time', 'events', '_position', '_duration']
@@ -23,6 +22,18 @@ class Task(object):
         self.start_time = start_time or get_time()
         self.events = PriorityQueue()
         # todo: calculate early event time
+
+    def register(self):
+        self.owner.server.register_task(self)
+
+    def unregister(self):
+        self.owner.server.unregister_task(self)
+
+    def cancel(self):
+        self.unregister()
+
+    def done(self):
+        self.unregister()
 
     @abstractmethod
     def get_position(self):

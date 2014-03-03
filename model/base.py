@@ -17,31 +17,41 @@ logging.basicConfig(level='DEBUG')
 class PointObject(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, position):
+    def __init__(self, server, position):
         super(PointObject, self).__init__()
+        self.server = server
+        self.uid = get_uid()
         self._position = position
 
     @abstractmethod
     def is_static(self):
+        """Stationary/mobile status of object.
+        :rtype : bool
+        :returns: True if object is stationary in this time
+        """
         pass
 
     def get_position(self):
-        return None
+        """
+        :rtype : :class:`vectors.Point`
+        """
+        return self._position
 
     position = property(fget=get_position)
+
+    def register(self):
+        logging.debug('Register: %s', self.__class__.__name__)
+        self.server.objects[self.uid] = self
+
+    def unregister(self):
+        del(self.server.objects[self.uid])
 
 
 class VisibleObject(PointObject):
 
-    def __init__(self, server, **kw):
-        self.server = server
-        self.uid = get_uid()
+    def __init__(self, **kw):
         self.contacts = TimelineQueue()
         super(VisibleObject, self).__init__(**kw)
-
-    def register(self, server):
-        #super(VisibleObject, self).register(server)
-        logging.debug('Register: %s', self.__class__.__name__)
 
     def on_change(self):
         self.contacts_refresh()
@@ -60,9 +70,11 @@ class VisibleObject(PointObject):
                 contact.object.contacts.remove(contact)
             del(contact)
 
-    def contacts_search(self):
-        # toto: make
+    def stationary_contacts_search(self):
         pass
+
+    def contacts_search(self):
+        self.stationary_contacts_search()
 
 
 class Stationary(PointObject):
@@ -73,6 +85,14 @@ class Stationary(PointObject):
 
     def get_position(self):
         return self._position
+
+    def register(self):
+        super(Stationary, self).register()
+        self.server.statics.append(self)
+
+    def unregister(self):
+        super(Stationary, self).unregister()
+        self.server.statics.remove(self)
 
 
 class Heap(VisibleObject, Stationary):
