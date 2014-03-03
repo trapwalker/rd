@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from balance import BALANCE
-from base import VisibleObject, Stationary
+from base import VisibleObject
 from observe import Observer
 import tasks
 
@@ -10,13 +10,31 @@ class Unit(VisibleObject):
     u"""Abstract class for any controlled GEO-entities"""
 
     def __init__(self, **kw):
-        self.observer = Observer(self)
         super(Unit, self).__init__(**kw)
+        self._observer = None
+        self.task = self.default_task()
 
-    # todo: tasks
+    def default_task(self):
+        return None
+
+    def get_task(self):
+        return self._task
+
+    def set_task(self, task):
+        del(self.task)
+        self._task = task
+        if task:
+            task.register()
+
+    def del_task(self):
+        if hasattr(self, '_task') and self._task:
+            self._task.unregister()
+        self._task = None
+
+    task = property(fget=get_task, fset=set_task, fdel=del_task)
 
 
-class Station(Unit, Stationary):
+class Station(Unit):
     u"""Class of buildings"""
 
     def __init__(self, **kw):
@@ -38,8 +56,7 @@ class Bot(Unit):
 
     def __init__(self, **kw):
         super(Bot, self).__init__(**kw)
-        self.task = None
-        self.set_task(self.default_task())
+        self.motion = None
 
     def stop(self, done=False, next_task=None):
         self.set_task(next_task or self.default_task())
@@ -49,39 +66,8 @@ class Bot(Unit):
     def goto(self, position):
         self.set_task(tasks.Goto(self.position, position))
 
-    def default_task(self):
-        return tasks.Stand(owner=self, position=self._position)
-
-    def fix_position(self):
-        self._position = self.position
-
-    def set_task(self, task):
-        self.fix_position()
-        old_status = self.is_static()
-        if self.task:
-            self.task.unregister()
-        self.task = task
-        task.register()
-        if old_status != self.is_static():
-            if old_status:
-                self.server.statics.remove(self)
-                self.server.mobiles.append(self)
-                if self.observer:
-                    self.server.static_observers.remove(self)
-            else:
-                self.server.mobiles.remove(self)
-                self.server.statics.append(self)
-                if self.observer:
-                    self.server.static_observers.append(self)
-
-
-        # todo: remove task from server list
-
-    def is_static(self):
-        return not isinstance(self.task, tasks.Goto)
-
     def get_position(self):
-        return self.task.position if self.task else self._position
+        return self.motion.position if self.motion else self._position
 
     @property
     def max_velocity(self):  # m/s

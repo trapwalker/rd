@@ -23,14 +23,6 @@ class PointObject(object):
         self.uid = get_uid()
         self._position = position
 
-    @abstractmethod
-    def is_static(self):
-        """Stationary/mobile status of object.
-        :rtype : bool
-        :returns: True if object is stationary in this time
-        """
-        pass
-
     def get_position(self):
         """
         :rtype : :class:`vectors.Point`
@@ -77,25 +69,7 @@ class VisibleObject(PointObject):
         self.stationary_contacts_search()
 
 
-class Stationary(PointObject):
-    u"""Mixin for stationary objects"""
-
-    def is_static(self):
-        return True
-
-    def get_position(self):
-        return self._position
-
-    def register(self):
-        super(Stationary, self).register()
-        self.server.statics.append(self)
-
-    def unregister(self):
-        super(Stationary, self).unregister()
-        self.server.statics.remove(self)
-
-
-class Heap(VisibleObject, Stationary):
+class Heap(VisibleObject):
     u"""Heap objects thrown on the map"""
     # todo: rearrange class tree
     def __init__(self, items, **kw):
