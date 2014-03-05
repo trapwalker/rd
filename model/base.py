@@ -22,6 +22,7 @@ class PointObject(object):
         self.server = server
         self.uid = get_uid()
         self._position = position
+        self.server.objects[self.uid] = self
 
     def get_position(self):
         """
@@ -78,6 +79,7 @@ class Heap(VisibleObject):
     def __init__(self, items, **kw):
         super(Heap, self).__init__(**kw)
         self.inventory = Inventory(things=items)
+        self.server.statics.append(self)
 
 
 if __name__ == '__main__':

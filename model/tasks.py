@@ -70,13 +70,14 @@ class Stand(Task):
 class Goto(Task):
     __slots__ = ['start_point', 'target_point', 'vector']
 
-    def __init__(self, start_point, target_point, **kw):
+    def __init__(self, target_point, **kw):
         # todo: declare arg types
+        start_point = self.owner.position
         assert start_point != target_point  # todo: epsilon test to eq
         super(Goto, self).__init__(**kw)
         self.start_point = start_point
         self.target_point = target_point
-        self.vector = self.target_point - self.start_point
+        self.vector = target_point - start_point
 
     def get_position(self, to_time=None):
         to_time = to_time or get_time()

@@ -11,8 +11,8 @@ class Unit(VisibleObject):
 
     def __init__(self, **kw):
         super(Unit, self).__init__(**kw)
-        self._observer = None
-        self.task = self.default_task()
+        self.observer = None
+        self.set_task(self.default_task())
 
     def default_task(self):
         return None
@@ -21,15 +21,12 @@ class Unit(VisibleObject):
         return self._task
 
     def set_task(self, task):
-        del(self.task)
+        old_task = self._task
         self._task = task
-        if task:
-            task.register()
+        # todo: remove old timeline events, add new
 
     def del_task(self):
-        if hasattr(self, '_task') and self._task:
-            self._task.unregister()
-        self._task = None
+        self.set_task(None)
 
     task = property(fget=get_task, fset=set_task, fdel=del_task)
 
@@ -39,16 +36,7 @@ class Station(Unit):
 
     def __init__(self, **kw):
         super(Station, self).__init__(**kw)
-
-    def register(self):
-        super(Station, self).register()
-        if self.observer:
-            self.server.static_observers.append(self)
-
-    def unregister(self):
-        super(Station, self).unregister()
-        if self.observer:
-            self.server.static_observers.remove(self)
+        self.server.statics.append(self)
 
 
 class Bot(Unit):
@@ -59,35 +47,28 @@ class Bot(Unit):
         self.motion = None
 
     def stop(self, done=False, next_task=None):
-        self.set_task(next_task or self.default_task())
-        # todo: need to review
-        # todo: implement a strategy of behavior
+        del(self.task)
 
     def goto(self, position):
-        self.set_task(tasks.Goto(self.position, position))
+        self.task = tasks.Goto(position)
 
     def get_position(self):
-        return self.motion.position if self.motion else self._position
+        return self.motion.position if self.motion else self.position
 
     @property
     def max_velocity(self):  # m/s
         return BALANCE.get_MaxVelocity(self)
 
-    def register(self):
-        super(Bot, self).register()
-        if self.is_static():
-            self.server.statics.append(self)
-            if self.observer:
-                self.server.static_observers.append(self)
-        else:
-            self.server.mobiles.append(self)
+    def set_task(self, task):
+        old_motion = self.motion
+        if old_motion:
+            self.position = old_motion.position
+            self.server.motions.remove(old_motion)
+        super(Bot, self).set_task(task)
+        new_motion = task if isinstance(task, tasks.Goto) else None
+        self.motion = new_motion
+        if new_motion:
+            self.server.motions.append(new_motion)
 
-    def unregister(self):
-        super(Bot, self).unregister()
-        if self.is_static():
-            self.server.statics.remove(self)
-            if self.observer:
-                self.server.static_observers.remove(self)
-        else:
-            self.server.mobiles.remove(self)
+
 
