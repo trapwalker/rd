@@ -10,9 +10,9 @@ class Server(object):
         self.uid = uid or get_uid()
         # todo: GEO-indexing collections
         self.objects = {}  # Total GEO-objects in game by uid
-        self.statics = []  # Stationary objects (stations, heaps, standing robots)
-        self.motions = []  # Active motion tasks
-        self.static_observers = []
+        self.statics = []  # Stationary objects (stations, heaps, standing robots)  # todo: GEO-index
+        self.motions = []  # Active motion tasks  # todo: GEO-index
+        self.static_observers = []  # todo: GEO-index
         self.timeline = TimelineQueue()
 
     def filter_motions(self, quadrant):
