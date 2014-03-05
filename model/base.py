@@ -29,7 +29,10 @@ class PointObject(object):
         """
         return self._position
 
-    position = property(fget=get_position)
+    def set_position(self, position):
+        self._position = position
+
+    position = property(fget=get_position, fset=set_position)
 
     def register(self):
         logging.debug('Register: %s', self.__class__.__name__)
