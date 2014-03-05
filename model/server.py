@@ -16,7 +16,7 @@ class Server(object):
         self.timeline = TimelineQueue()
 
     def filter_motions(self, quadrant):
-        return self.tasks  # todo: filter collection by quadrant
+        return self.motions  # todo: filter collection by quadrant
 
 
 class LocalServer(Server):
