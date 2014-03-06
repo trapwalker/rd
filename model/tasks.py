@@ -47,6 +47,12 @@ class Goto(Task):
         self.target_point = target_point
         self.vector = target_point - start_point
 
+    def contacts_with_static(self, static):
+        return []  # todo: realize
+
+    def contacts_with_dynamic(self, motion):
+        return []  # todo: realize
+
     def get_duration(self):
         assert self.owner.max_velocity != 0
         return self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
