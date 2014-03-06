@@ -72,3 +72,6 @@ class Point(complex):
 
     def __truediv__(self, y):
         return Point(complex.__truediv__(self, y))
+
+if __name__ == '__main__':
+    P = Point
