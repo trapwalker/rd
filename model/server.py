@@ -17,6 +17,12 @@ class Server(object):
     def filter_motions(self, quadrant):
         return self.motions  # todo: filter collection by quadrant
 
+    def filter_statics(self, quadrant):
+        return self.statics  # todo: filter collection by quadrant
+
+    def filter_static_observers(self, quadrant):
+        return self.static_observers  # todo: filter collection by quadrant
+
 
 class LocalServer(Server):
 
