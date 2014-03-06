@@ -26,3 +26,4 @@ settings_local.py
 *.egg
 env/
 resources.bin/*
+*.png
