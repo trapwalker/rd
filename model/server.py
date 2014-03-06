@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from utils import get_uid, TimelineQueue
-from units import Unit, Bot
 
 
 class Server(object):

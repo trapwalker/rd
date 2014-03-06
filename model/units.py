@@ -18,8 +18,8 @@ class Unit(VisibleObject):
             self.set_task(defaut_task)
 
     def delete(self):
-        del(self.task)
         del(self.observer)
+        del(self.task)
         super(Unit, self).delete()
 
     def change_observer_state(self, new_state):
