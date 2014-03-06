@@ -95,6 +95,21 @@ class Bot(Unit):
         if self.motion is None:
             super(Bot, self).change_observer_state(new_state)
 
+    def special_contacts_search(self):
+        if not self.motion:
+            return super(Bot, self).special_contacts_search()
+
+        contacts = self.contacts
+        self_motion = self.motion
+
+        contacts_with_static = self_motion.contacts_with_static
+        for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
+            contacts.extend(contacts_with_static(obj))
+
+        contacts_with_dynamic = self_motion.contacts_with_dynamic
+        for motion in self.server.filter_motions():
+            contacts.extend(contacts_with_dynamic(self_motion))
+
     def set_task(self, task):
         self.change_observer_state(False)
         old_motion = self.motion

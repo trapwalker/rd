@@ -46,6 +46,7 @@ class VisibleObject(PointObject):
         super(VisibleObject, self).__init__(**kw)
 
     def on_change(self):
+        # todo: Notify nearest observers
         self.contacts_refresh()
 
     def contacts_refresh(self):
@@ -62,11 +63,15 @@ class VisibleObject(PointObject):
                 contact.object.contacts.remove(contact)
             del(contact)
 
-    def stationary_contacts_search(self):
-        pass
+    def special_contacts_search(self):
+        contacts = self.contacts
+        for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
+            contacts.extend(motion.contacts_with_static(self))
 
     def contacts_search(self):
-        self.stationary_contacts_search()
+        self.special_contacts_search()
+        if self.contacts:
+            self.server.timeline.put(self.contacts.head)
 
     def delete(self):
         self.contacts_clear()
