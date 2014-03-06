@@ -35,11 +35,7 @@ class PointObject(object):
 
     position = property(fget=get_position, fset=set_position)
 
-    def register(self):
-        logging.debug('Register: %s', self.__class__.__name__)
-        self.server.objects[self.uid] = self
-
-    def unregister(self):
+    def delete(self):
         del(self.server.objects[self.uid])
 
 
@@ -72,6 +68,9 @@ class VisibleObject(PointObject):
     def contacts_search(self):
         self.stationary_contacts_search()
 
+    def delete(self):
+        self.contacts_clear()
+        super(VisibleObject, self).delete()
 
 class Heap(VisibleObject):
     u"""Heap objects thrown on the map"""
@@ -80,6 +79,10 @@ class Heap(VisibleObject):
         super(Heap, self).__init__(**kw)
         self.inventory = Inventory(things=items)
         self.server.statics.append(self)
+
+    def delete(self):
+        self.server.statics.remove(self)
+        super(Heap, self).delete()
 
 
 if __name__ == '__main__':
