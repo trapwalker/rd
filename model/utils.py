@@ -57,6 +57,8 @@ class TimelineQueue(PriorityQueue):
         )
 
     __len__ = PriorityQueue.qsize
+    def __nonzero__(self):
+        return self._head is not self.EMPTY
 
     @property
     def head(self):
@@ -69,7 +71,7 @@ class TimelineQueue(PriorityQueue):
         self._head = self.EMPTY
 
     def _qsize(self, len=len):
-        return len(self.queue) + (0 if self._head is self.EMPTY else 1)
+        return 0 if self._head is self.EMPTY else (len(self.queue) + 1)
 
     def _put(self, item, heappush=heapq.heappush):
         if self._head is self.EMPTY:
