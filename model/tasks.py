@@ -39,6 +39,7 @@ class Goto(Task):
     def __init__(self, target_point, **kw):
         # todo: declare arg types
         # todo: cut task with local quad square, store rest part of task
+        # todo: GEO-index
         start_point = self.owner.position
         assert start_point != target_point  # todo: epsilon test to eq
         super(Goto, self).__init__(**kw)
