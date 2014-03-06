@@ -131,5 +131,9 @@ class TimelineQueue(PriorityQueue):
 
         return is_put_to_head
 
+    def extend(self, iterator):
+        for item in iterator:
+            self.put(item)
+
 
 __all__ = [get_uid, get_time, TimelineQueue]
