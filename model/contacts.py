@@ -11,24 +11,24 @@ class Contact(tuple):
         - object escaped from of tile range;
         - task of object is completed.
 
-    Contact(time, subject, obj)
+    Contact(time, subj, obj)
     """
     __slots__ = ()
-    _fields = ('time', 'subject', 'obj')
+    _fields = ('time', 'subj', 'obj')
 
     time = property(itemgetter(0), doc='Time of contact')
-    subject = property(itemgetter(2), doc='Subject-contacter')
+    subj = property(itemgetter(2), doc='Subject-contacter')
     obj = property(itemgetter(3), doc='Object-contacter')
 
-    def __new__(cls, time, subject, obj):
+    def __new__(cls, time, subj, obj):
         u"""Create new instance of Contact(time, subj, obj)"""
-        obj = tuple.__new__(cls, (time, subject, obj))
+        obj = tuple.__new__(cls, (time, subj, obj))
         # todo: may be need "valid" property
         return obj
 
     def __repr__(self):
         u"""Return a nicely formatted representation string"""
-        return 'Contact(time=%r, subject=%r, obj=%r)' % self
+        return 'Contact(time=%r, subj=%r, obj=%r)' % self
 
     def __getnewargs__(self):
         u"""Return self as a plain tuple.  Used by copy and pickle."""
