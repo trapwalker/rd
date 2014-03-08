@@ -107,7 +107,7 @@ class Bot(Unit):
             contacts.extend(contacts_with_static(obj))
 
         contacts_with_dynamic = self_motion.contacts_with_dynamic
-        for motion in self.server.filter_motions():
+        for motion in self.server.filter_motions():  # todo: GEO-index clipping
             contacts.extend(contacts_with_dynamic(self_motion))
 
     def set_task(self, task):

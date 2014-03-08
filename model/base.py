@@ -57,6 +57,7 @@ class VisibleObject(PointObject):
         contacts = self.contacts
         while contacts:
             contact = contacts.get()
+            self.server.timeline.remove(contact)  # todo: optimize
             if contact.subject != self:
                 contact.subject.contacts.remove(contact)
             elif contact.object != self:
@@ -87,6 +88,7 @@ class Heap(VisibleObject):
 
     def delete(self):
         self.server.statics.remove(self)
+        del(self.inventory)
         super(Heap, self).delete()
 
 
