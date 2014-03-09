@@ -2,10 +2,15 @@
 
 from balance import BALANCE
 
+
 class Observer(object):
-    u'''todo: make docstring'''
+    """todo: make docstring"""
 
     def __init__(self, owner, r=None):
+        """
+        @param owner: units.Unit
+        @param r: float | None
+        """
         super(Observer, self).__init__()
         self._r = r or BALANCE.get_ObserverRange(owner)
         self.subscribers = set()

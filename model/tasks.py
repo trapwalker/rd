@@ -16,6 +16,10 @@ class Task(object):
     __slots__ = ['__weakref__', 'owner', 'start_time', 'events', '_duration']
 
     def __init__(self, owner, start_time=None):
+        """
+        @param owner: units.Unit
+        @param start_time: utils.Time | None
+        """
         super(Task, self).__init__()
         self.owner = owner
         self.start_time = start_time or get_time()
@@ -37,6 +41,9 @@ class Goto(Task):
     __slots__ = ['start_point', 'target_point', 'vector']
 
     def __init__(self, target_point, **kw):
+        """
+        @param target_point: vetors.Point
+        """
         # todo: declare arg types
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
@@ -58,6 +65,9 @@ class Goto(Task):
         return self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
 
     def get_position(self, to_time=None):
+        """
+        @param to_time: utils.Time } None
+        """
         to_time = to_time or get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time)
 
