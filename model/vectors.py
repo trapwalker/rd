@@ -2,19 +2,25 @@
 
 __all__ = ['Point']
 
-from operator import attrgetter
 
 class Point(complex):
 
     __slots__ = ()
 
-    x = property(attrgetter('real'))
-    y = property(attrgetter('imag'))
+    x = complex.real
+    y = complex.imag
 
     def distance(self, p):
+        """
+        @param p: Point
+        @rtype: float
+        """
         return abs(self - p)
 
     def normalize(self):
+        """
+        @rtype: Point
+        """
         return self / abs(self)
 
     # todo: turn vector
@@ -25,53 +31,112 @@ class Point(complex):
     def __repr__(self):
         return 'Point(x=%r, y=%r)' % (self.x, self.y)
 
-    def __add__(self, y):
-        return Point(complex.__add__(self, y))
+    def __add__(self, p):
+        """
+        @param p: Point
+        @rtype: Point
+        """
+        return Point(complex.__add__(self, p))
 
-    def __div__(self, y):
-        return Point(complex.__div__(self, y))
+    def __div__(self, p):
+        """
+        @param p: Point | float
+        @rtype: Point
+        """
+        return Point(complex.__div__(self, p))
 
-    def __mod__(self, y):
-        return Point(complex.__mod__(self, y))
+    def __mod__(self, p):
+        """
+        @param p: Point | float
+        @rtype: Point
+        """
+        return Point(complex.__mod__(self, p))
 
-    def __mul__(self, y):
-        return Point(complex.__mul__(self, y))
+    def __mul__(self, p):
+        """
+        @param p: Point | float
+        @rtype: Point
+        """
+        return Point(complex.__mul__(self, p))
 
     def __neg__(self):
+        """
+        @rtype: Point
+        """
         return Point(complex.__neg__(self))
 
-    def __pow__(self, y, z=None):  # todo: need parameter "z" research
-        return Point(complex.__pow__(self, y, z))
+    def __pow__(self, v):  # todo: need parameter "z" research
+        """
+        @param v: Point
+        @rtype: Point
+        """
+        return Point(complex.__pow__(self, v))
 
-    def __radd__(self, y):
-        return Point(complex.__radd__(self, y))
+    def __radd__(self, p):
+        """
+        @param p: Point
+        @rtype: Point
+        """
+        return Point(complex.__radd__(self, p))
 
     def __rdivmod__(self, y):
         return Point(complex.__rdivmod__(self, y))
 
-    def __rdiv__(self, y):
-        return Point(complex.__rdiv__(self, y))
+    def __rdiv__(self, v):
+        """
+        @param v: Point } floar
+        @rtype: Point
+        """
+        return Point(complex.__rdiv__(self, v))
 
-    def __rmod__(self, y):
-        return Point(complex.__rmod__(self, y))
+    def __rmod__(self, v):
+        """
+        @param v: Point } floar
+        @rtype: Point
+        """
+        return Point(complex.__rmod__(self, v))
 
-    def __rmul__(self, y):
-        return Point(complex.__rmul__(self, y))
+    def __rmul__(self, v):
+        """
+        @param v: Point } floar
+        @rtype: Point
+        """
+        return Point(complex.__rmul__(self, v))
 
-    def __rpow__(self, x, z=None):
-        return Point(complex.__rpow__(self, x, z))
+    def __rpow__(self, v):
+        """
+        @param v: Point } floar
+        @rtype: Point
+        """
+        return Point(complex.__rpow__(self, v))
 
-    def __rsub__(self, y):
-        return Point(complex.__rsub__(self, y))
+    def __rsub__(self, p):
+        """
+        @param p: Point
+        @rtype: Point
+        """
+        return Point(complex.__rsub__(self, p))
 
-    def __rtruediv__(self, y):
-        return Point(complex.__rtruediv__(self, y))
+    def __rtruediv__(self, p):
+        """
+        @param p: Point
+        @rtype: Point
+        """
+        return Point(complex.__rtruediv__(self, p))
 
-    def __sub__(self, y):
-        return Point(complex.__sub__(self, y))
+    def __sub__(self, p):
+        """
+        @param p: Point
+        @rtype: Point
+        """
+        return Point(complex.__sub__(self, p))
 
-    def __truediv__(self, y):
-        return Point(complex.__truediv__(self, y))
+    def __truediv__(self, p):
+        """
+        @param p: Point | float
+        @rtype: Point
+        """
+        return Point(complex.__truediv__(self, p))
 
 if __name__ == '__main__':
     P = Point
