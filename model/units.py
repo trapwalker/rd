@@ -2,7 +2,7 @@
 
 from balance import BALANCE
 from base import VisibleObject
-from observe import Observer
+# from observe import Observer
 import tasks
 
 
@@ -13,13 +13,10 @@ class Unit(VisibleObject):
         super(Unit, self).__init__(**kw)
         self._task = None
         self._observer = None
-        defaut_task = self.default_task()
-        if defaut_task:
-            self.set_task(defaut_task)
 
     def delete(self):
-        del(self.observer)
-        del(self.task)
+        del self.observer
+        del self.task
         super(Unit, self).delete()
 
     def change_observer_state(self, new_state):
@@ -41,14 +38,11 @@ class Unit(VisibleObject):
     def del_observer(self):
         self.set_observer(None)
 
-    def default_task(self):
-        return None
-
     def get_task(self):
         return self._task
 
     def set_task(self, task):
-        old_task = self._task
+        # old_task = self._task
         self._task = task
         # todo: remove old timeline events, add new
 
@@ -78,8 +72,8 @@ class Bot(Unit):
         super(Bot, self).__init__(**kw)
         self.motion = None
 
-    def stop(self, done=False, next_task=None):
-        del(self.task)
+    def stop(self):
+        del self.task
 
     def goto(self, position):
         self.task = tasks.Goto(position)
@@ -108,7 +102,7 @@ class Bot(Unit):
 
         contacts_with_dynamic = self_motion.contacts_with_dynamic
         for motion in self.server.filter_motions():  # todo: GEO-index clipping
-            contacts.extend(contacts_with_dynamic(self_motion))
+            contacts.extend(contacts_with_dynamic(motion))
 
     def set_task(self, task):
         self.change_observer_state(False)
@@ -128,4 +122,3 @@ class Bot(Unit):
         if motion:
             self.server.motions.remove(motion)
         super(Bot, self).delete()
-
