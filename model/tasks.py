@@ -28,12 +28,18 @@ class Task(object):
 
     @abstractmethod
     def get_duration(self):
+        """
+        @rtype: float
+        """
         return None
 
     duration = property(get_duration)
 
     @property
     def finish_time(self):
+        """
+        @rtype: utils.Time
+        """
         return self.start_time + self.duration
 
 
@@ -55,12 +61,21 @@ class Goto(Task):
         self.vector = target_point - start_point
 
     def contacts_with_static(self, static):
+        """
+        @param static: base.VisibleObject
+        """
         return []  # todo: realize
 
     def contacts_with_dynamic(self, motion):
+        """
+        @param motion: Goto
+        """
         return []  # todo: realize
 
     def get_duration(self):
+        """
+        @rtype: float
+        """
         assert self.owner.max_velocity != 0
         return self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
 
