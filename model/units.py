@@ -12,9 +12,9 @@ class Unit(VisibleObject):
     def __init__(self, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
-        """@type: tasks.Task"""
+        """@type: tasks.Task | None"""
         self._observer = None
-        """@type: observe.Observer"""
+        """@type: observe.Observer | None"""
 
     def delete(self):
         del self.observer
@@ -88,6 +88,7 @@ class Bot(Unit):
     def __init__(self, **kw):
         super(Bot, self).__init__(**kw)
         self.motion = None
+        """@type: tasks.Goto | None"""
 
     def stop(self):
         del self.task
