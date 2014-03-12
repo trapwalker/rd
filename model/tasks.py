@@ -47,7 +47,7 @@ class Task(object):
 
 
 class Goto(Task):
-    __slots__ = ['start_point', 'target_point', 'vector']
+    __slots__ = ['start_point', 'target_point', 'vector', 'v']
 
     def __init__(self, target_point, **kw):
         """
@@ -83,7 +83,6 @@ class Goto(Task):
 
         a = u.x ** 2 + u.y ** 2
         k = u.x * start.x + u.y * start.y
-
 
         c = start.x ** 2 + start.y ** 2 - r_motion
         d4 = k ** 2 - a * c
