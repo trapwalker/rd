@@ -12,6 +12,10 @@ class Contact(tuple):
         - task of object is completed.
 
     Contact(time, subj, obj)
+
+        @param time: utils.Time
+        @param subj: units.Unit
+        @param obj: base.VisibleObject
     """
     __slots__ = ()
     _fields = ('time', 'subj', 'obj')

@@ -1,10 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
 
+from math import sqrt
+
 from abc import ABCMeta, abstractmethod
 from Queue import PriorityQueue
-
+from vectors import Point
 from utils import get_time
-
+from units import Unit
+from contacts import Contact
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -59,12 +62,52 @@ class Goto(Task):
         self.start_point = start_point
         self.target_point = target_point
         self.vector = target_point - start_point
+        self.v = self.vector.normalize() * self.owner.max_velocity
 
     def contacts_with_static(self, static):
         """
         @param static: base.VisibleObject
         """
-        return []  # todo: realize
+        contacts = []
+
+        r_motion = self.owner.observer and self.owner.observer.r
+        r_static = isinstance(static, Unit) and static.observer and static.observer.r
+
+        start = self.start_point
+        vector = self.vector
+        v = self.v
+        t0 = self.start_time
+
+        u = Point(v.x * vector.x,
+                  v.y * vector.y)
+
+        a = u.x ** 2 + u.y ** 2
+        k = u.x * start.x + u.y * start.y
+
+
+        c = start.x ** 2 + start.y ** 2 - r_motion
+        d4 = k ** 2 - a * c
+        if d4 > 0:  # todo: epsilon
+            d4 = sqrt(d4)
+            t1 = (-k - d4) / a
+            t2 = (-k + d4) / a
+            if t1 >= 0:  # todo: epsilon
+                contacts.append(Contact(t0 + t1, self.owner, static))  # todo: see/unsee flag
+            if t2 >= 0:  # todo: epsilon
+                contacts.append(Contact(t0 + t2, self.owner, static))  # todo: see/unsee flag
+
+        c = start.x ** 2 + start.y ** 2 - r_static
+        d4 = k ** 2 - a * c
+        if d4 > 0:  # todo: epsilon
+            d4 = sqrt(d4)
+            t1 = (-k - d4) / a
+            t2 = (-k + d4) / a
+            if t1 >= 0:  # todo: epsilon
+                contacts.append(Contact(t0 + t1, static, self.owner))  # todo: see/unsee flag
+            if t2 >= 0:  # todo: epsilon
+                contacts.append(Contact(t0 + t2, static, self.owner))  # todo: see/unsee flag
+
+        return contacts
 
     def contacts_with_dynamic(self, motion):
         """
