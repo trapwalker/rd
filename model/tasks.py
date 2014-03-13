@@ -77,16 +77,15 @@ class Goto(Task):
         c_wo_r2 = start.x ** 2 + start.y ** 2  # -r**2
         contacts = []
         if self.owner.observer:
-            self._contacts_with_static_roots(self.owner, static, start, a, k, c_wo_r2, contacts)
+            self._contacts_with_static_roots(self.owner, static, a, k, c_wo_r2, contacts)
         if isinstance(static, Unit) and static.observer:
-            self._contacts_with_static_roots(static, self.owner, start, a, k, c_wo_r2, contacts)
+            self._contacts_with_static_roots(static, self.owner, a, k, c_wo_r2, contacts)
         return contacts
 
-    def _contacts_with_static_roots(self, subj, obj, start, a, k, c_wo_r2, contacts):
+    def _contacts_with_static_roots(self, subj, obj, a, k, c_wo_r2, contacts):
         """
         @param subj: base.VisibleObject
         @param obj: base.VisibleObject
-        @param start: vectors.Point
         @param a: float
         @param k: float
         @param contacts: list
@@ -127,7 +126,8 @@ class Goto(Task):
             self._contacts_with_dynamic_roots(motion.owner, self.owner, a, k, c_wo_r2, contacts)
         return contacts
 
-    def _contacts_with_dynamic_roots(self, subj, obj, a, k, c_wo_r2, contacts):
+    @staticmethod
+    def _contacts_with_dynamic_roots(subj, obj, a, k, c_wo_r2, contacts):
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r)
         if d4 > 0:
             d4 = sqrt(d4)
