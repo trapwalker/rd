@@ -62,7 +62,7 @@ class Goto(Task):
         self.start_point = start_point
         self.target_point = target_point
         self.vector = target_point - start_point
-        self.v = self.vector.normalize() * self.owner.max_velocity
+        self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
 
     def contacts_with_static(self, static):
         """
@@ -71,39 +71,72 @@ class Goto(Task):
         start = self.start_point
         vector = self.vector
         v = self.v
-
-        u = Point(v.x * vector.x,
-                  v.y * vector.y)
-
+        u = Point(v.x * vector.x, v.y * vector.y)
         a = u.x ** 2 + u.y ** 2
         k = u.x * start.x + u.y * start.y
-
+        c_wo_r2 = start.x ** 2 + start.y ** 2  # -r**2
         contacts = []
-
         if self.owner.observer:
-            self._contacts_with_static_roots(self.owner, static, start, a, k, contacts)
+            self._contacts_with_static_roots(self.owner, static, start, a, k, c_wo_r2, contacts)
         if isinstance(static, Unit) and static.observer:
-            self._contacts_with_static_roots(static, self.owner, start, a, k, contacts)
+            self._contacts_with_static_roots(static, self.owner, start, a, k, c_wo_r2, contacts)
         return contacts
 
-    def _contacts_with_static_roots(self, subj, obj, start, a, k, contacts):
+    def _contacts_with_static_roots(self, subj, obj, start, a, k, c_wo_r2, contacts):
+        """
+        @param subj: base.VisibleObject
+        @param obj: base.VisibleObject
+        @param start: vectors.Point
+        @param a: float
+        @param k: float
+        @param contacts: list
+        """
         t0 = self.start_time
-        c = start.x ** 2 + start.y ** 2 - subj.observer.r
-        d4 = k ** 2 - a * c
-        if d4 > 0:  # todo: epsilon
+        d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
+        if d4 > 0:
             d4 = sqrt(d4)
             t1 = (-k - d4) / a
             t2 = (-k + d4) / a
-            if t1 >= 0:  # todo: epsilon
+            if t1 >= 0:
                 contacts.append(Contact(t0 + t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
-            if t2 >= 0:  # todo: epsilon
+            if t2 >= 0:
                 contacts.append(Contact(t0 + t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
 
     def contacts_with_dynamic(self, motion):
         """
         @param motion: Goto
         """
-        return []  # todo: realize
+        a0 = self.start_point
+        va = self.v
+        ta = self.start_time
+
+        b0 = motion.start_point
+        vb = motion.v
+        tb = motion.start_time
+        # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
+        s = vb*tb - va*ta + a0 - b0
+        v = va - vb  # | t*v + s | = r
+
+        a = v.x ** 2 + v.y ** 2
+        k = v.x * s.x + v.y * s.y
+        c_wo_r2 = s.x ** 2 + s.y ** 2  # -r**2
+        contacts = []
+        if self.owner.observer:
+            self._contacts_with_dynamic_roots(self.owner, motion.owner, a, k, c_wo_r2, contacts)
+        if motion.owner.observer:
+            self._contacts_with_dynamic_roots(motion.owner, self.owner, a, k, c_wo_r2, contacts)
+        return contacts
+
+    def _contacts_with_dynamic_roots(self, subj, obj, a, k, c_wo_r2, contacts):
+        d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r)
+        if d4 > 0:
+            d4 = sqrt(d4)
+            t1 = (-k - d4) / a
+            t2 = (-k + d4) / a
+            if t1 >= 0:  # todo: fix absolute t checking
+                contacts.append(Contact(t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
+            if t2 >= 0:
+                contacts.append(Contact(t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
 
     def get_duration(self):
         """
