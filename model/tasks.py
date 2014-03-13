@@ -7,7 +7,7 @@ from Queue import PriorityQueue
 from vectors import Point
 from utils import get_time
 from units import Unit
-from contacts import Contact
+from contacts import Contact, KC_See, KC_Unsee
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -68,15 +68,9 @@ class Goto(Task):
         """
         @param static: base.VisibleObject
         """
-        contacts = []
-
-        r_motion = self.owner.observer and self.owner.observer.r
-        r_static = isinstance(static, Unit) and static.observer and static.observer.r
-
         start = self.start_point
         vector = self.vector
         v = self.v
-        t0 = self.start_time
 
         u = Point(v.x * vector.x,
                   v.y * vector.y)
@@ -84,29 +78,26 @@ class Goto(Task):
         a = u.x ** 2 + u.y ** 2
         k = u.x * start.x + u.y * start.y
 
-        c = start.x ** 2 + start.y ** 2 - r_motion
-        d4 = k ** 2 - a * c
-        if d4 > 0:  # todo: epsilon
-            d4 = sqrt(d4)
-            t1 = (-k - d4) / a
-            t2 = (-k + d4) / a
-            if t1 >= 0:  # todo: epsilon
-                contacts.append(Contact(t0 + t1, self.owner, static))  # todo: see/unsee flag
-            if t2 >= 0:  # todo: epsilon
-                contacts.append(Contact(t0 + t2, self.owner, static))  # todo: see/unsee flag
+        contacts = []
 
-        c = start.x ** 2 + start.y ** 2 - r_static
-        d4 = k ** 2 - a * c
-        if d4 > 0:  # todo: epsilon
-            d4 = sqrt(d4)
-            t1 = (-k - d4) / a
-            t2 = (-k + d4) / a
-            if t1 >= 0:  # todo: epsilon
-                contacts.append(Contact(t0 + t1, static, self.owner))  # todo: see/unsee flag
-            if t2 >= 0:  # todo: epsilon
-                contacts.append(Contact(t0 + t2, static, self.owner))  # todo: see/unsee flag
-
+        if self.owner.observer:
+            self._contacts_with_static_roots(self.owner, static, start, a, k, contacts)
+        if isinstance(static, Unit) and static.observer:
+            self._contacts_with_static_roots(static, self.owner, start, a, k, contacts)
         return contacts
+
+    def _contacts_with_static_roots(self, subj, obj, start, a, k, contacts):
+        t0 = self.start_time
+        c = start.x ** 2 + start.y ** 2 - subj.observer.r
+        d4 = k ** 2 - a * c
+        if d4 > 0:  # todo: epsilon
+            d4 = sqrt(d4)
+            t1 = (-k - d4) / a
+            t2 = (-k + d4) / a
+            if t1 >= 0:  # todo: epsilon
+                contacts.append(Contact(t0 + t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
+            if t2 >= 0:  # todo: epsilon
+                contacts.append(Contact(t0 + t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
 
     def contacts_with_dynamic(self, motion):
         """
