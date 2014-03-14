@@ -19,11 +19,8 @@ class TimelineQueue(PriorityQueue):
 
     def remove(self, item, heapify=heapq.heapify, heappop=heapq.heappop):
         """Remove item from queue.
-        :param item:
-        :param heapify:
-        :param heappop:
-        :rtype : bool
-        :return: True if item was in head
+        @rtype: bool
+        @return: True if item was in head
         """
         # todo: candidate for optimization
         is_remove_from_head = False

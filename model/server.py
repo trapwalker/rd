@@ -6,6 +6,9 @@ from utils import get_uid, TimelineQueue
 class Server(object):
 
     def __init__(self, uid=None):
+        """
+        @param uuid.UUID uid: Unique id of server
+        """
         self.uid = uid or get_uid()
         # todo: GEO-indexing collections
         self.objects = {}  # Total GEO-objects in game by uid
@@ -15,6 +18,7 @@ class Server(object):
         self.timeline = TimelineQueue()
 
     def filter_motions(self, quadrant):
+        # todo: typehinting of quadrant
         return self.motions  # todo: filter collection by quadrant
 
     def filter_statics(self, quadrant):

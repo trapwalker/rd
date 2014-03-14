@@ -18,8 +18,8 @@ class Task(object):
 
     def __init__(self, owner, start_time=None):
         """
-        @param owner: units.Unit
-        @param start_time: utils.Time | None
+        @type owner: units.Unit
+        @type start_time: utils.Time | None
         """
         super(Task, self).__init__()
         self.owner = owner
@@ -47,7 +47,7 @@ class Goto(Task):
 
     def __init__(self, target_point, **kw):
         """
-        @param target_point: vetors.Point
+        @type target_point: vetors.Point
         """
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
@@ -62,14 +62,14 @@ class Goto(Task):
     @staticmethod
     def _append_contacts(subj, obj, t0, tmax, a, k, c_wo_r2, contacts):
         """
-        @param subj: base.VisibleObject
-        @param obj: base.VisibleObject
-        @param t0: utils.Time
-        @param tmax: utils.Time
-        @param a: float
-        @param k: float
-        @c_wo_r2: float
-        @param contacts: list
+        @type subj: units.Unit
+        @type obj: base.VisibleObject
+        @type t0: utils.Time
+        @type tmax: utils.Time
+        @type a: float
+        @type k: float
+        @type c_wo_r2: float
+        @type contacts: list
         """
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
         if d4 > 0:
@@ -83,7 +83,7 @@ class Goto(Task):
 
     def contacts_with_static(self, static):
         """
-        @param static: base.VisibleObject
+        @type static: base.VisibleObject
         """
         # P(t)=V(t-t0)+P0
         # |P(t)-Q|=R
@@ -108,7 +108,7 @@ class Goto(Task):
 
     def contacts_with_dynamic(self, motion):
         """
-        @param motion: tasks.Goto
+        @type motion: tasks.Goto
         """
         a0 = self.start_point
         va = self.v
@@ -143,7 +143,7 @@ class Goto(Task):
 
     def get_position(self, to_time=None):
         """
-        @param to_time: utils.Time } None
+        @type to_time: utils.Time | None
         """
         to_time = to_time or get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time)

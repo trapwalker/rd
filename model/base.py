@@ -17,8 +17,8 @@ class PointObject(object):
 
     def __init__(self, server, position):
         """
-        @param server: server.Server
-        @param position: vectors.Point
+        @type server: server.Server
+        @type position: vectors.Point
         """
         super(PointObject, self).__init__()
         self.server = server
@@ -36,7 +36,7 @@ class PointObject(object):
 
     def set_position(self, position):
         """
-        @param position: vectors.Point
+        @type position: vectors.Point
         """
         self._position = position
 
@@ -88,9 +88,12 @@ class VisibleObject(PointObject):
 
 
 class Heap(VisibleObject):
-    u"""Heap objects thrown on the map"""
+    """Heap objects thrown on the map"""
     # todo: rearrange class tree
     def __init__(self, items, **kw):
+        """
+        @type items: list[inventory.Thing]
+        """
         super(Heap, self).__init__(**kw)
         self.inventory = Inventory(things=items)
         """@type: Inventory"""
