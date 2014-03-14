@@ -4,8 +4,9 @@ from math import sqrt
 
 from abc import ABCMeta, abstractmethod
 from utils import get_time
-from units import Unit
+from units import Unit, Bot
 from contacts import Contact, KC_See, KC_Unsee
+
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -18,8 +19,8 @@ class Task(object):
 
     def __init__(self, owner, start_time=None):
         """
-        @type owner: units.Unit
-        @type start_time: utils.Time | None
+        @param Unit owner: Owner of task
+        @param float | None start_time: Time of task starting
         """
         super(Task, self).__init__()
         self.owner = owner
@@ -45,31 +46,35 @@ class Task(object):
 class Goto(Task):
     __slots__ = ['start_point', 'target_point', 'vector', 'v']
 
-    def __init__(self, target_point, **kw):
+    def __init__(self, owner, target_point, **kw):
         """
-        @type target_point: vetors.Point
+        @param Bot owner: Owner of task
+        @param vetors.Point target_point: Target point of motion
         """
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
         start_point = self.owner.position
         assert start_point != target_point  # todo: epsilon test to eq
-        super(Goto, self).__init__(**kw)
+        super(Goto, self).__init__(owner=owner, **kw)
+        assert isinstance(owner, Bot)
+        self.owner = owner  # todo: spike review
         self.start_point = start_point
         self.target_point = target_point
         self.vector = target_point - start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
+        """@type: vectors.Point"""
 
     @staticmethod
     def _append_contacts(subj, obj, t0, tmax, a, k, c_wo_r2, contacts):
         """
-        @type subj: units.Unit
-        @type obj: base.VisibleObject
-        @type t0: utils.Time
-        @type tmax: utils.Time
-        @type a: float
-        @type k: float
-        @type c_wo_r2: float
-        @type contacts: list
+        @param units.Unit subj: Subject of potential contacts
+        @param base.VisibleObject obj: Object of potential contacts
+        @param float t0: Minimal possible time of potential contact
+        @param float tmax: Maximal possible time of potential contact
+        @param float a: First coefficient of polynome a*t^2+2*k*t+c=0
+        @param float k:
+        @param float c_wo_r2:
+        @param list contacts: Contact list
         """
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
         if d4 > 0:
@@ -83,7 +88,7 @@ class Goto(Task):
 
     def contacts_with_static(self, static):
         """
-        @type static: base.VisibleObject
+        @param base.VisibleObject static: Static object
         """
         # P(t)=V(t-t0)+P0
         # |P(t)-Q|=R
@@ -108,7 +113,7 @@ class Goto(Task):
 
     def contacts_with_dynamic(self, motion):
         """
-        @type motion: tasks.Goto
+        @param tasks.Goto motion: Motion task of mobile unit
         """
         a0 = self.start_point
         va = self.v
@@ -143,7 +148,8 @@ class Goto(Task):
 
     def get_position(self, to_time=None):
         """
-        @type to_time: utils.Time | None
+        @param float | None to_time: Time for getting position
+        @rtype: vectors.Point
         """
         to_time = to_time or get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time)
