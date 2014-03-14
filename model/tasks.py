@@ -4,7 +4,6 @@ from math import sqrt
 
 from abc import ABCMeta, abstractmethod
 from Queue import PriorityQueue
-from vectors import Point
 from utils import get_time
 from units import Unit
 from contacts import Contact, KC_See, KC_Unsee
@@ -64,42 +63,50 @@ class Goto(Task):
         self.vector = target_point - start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
 
-    def contacts_with_static(self, static):
-        """
-        @param static: base.VisibleObject
-        """
-        start = self.start_point
-        vector = self.vector
-        v = self.v
-        u = Point(v.x * vector.x, v.y * vector.y)
-        a = u.x ** 2 + u.y ** 2
-        k = u.x * start.x + u.y * start.y
-        c_wo_r2 = start.x ** 2 + start.y ** 2  # -r**2
-        contacts = []
-        if self.owner.observer:
-            self._contacts_with_static_roots(self.owner, static, a, k, c_wo_r2, contacts)
-        if isinstance(static, Unit) and static.observer:
-            self._contacts_with_static_roots(static, self.owner, a, k, c_wo_r2, contacts)
-        return contacts
-
-    def _contacts_with_static_roots(self, subj, obj, a, k, c_wo_r2, contacts):
+    @staticmethod
+    def _append_contacts(subj, obj, t0, a, k, c_wo_r2, contacts):
         """
         @param subj: base.VisibleObject
         @param obj: base.VisibleObject
+        @param t0: utils.Time
         @param a: float
         @param k: float
+        @c_wo_r2: float
         @param contacts: list
         """
-        t0 = self.start_time
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
         if d4 > 0:
             d4 = sqrt(d4)
             t1 = (-k - d4) / a
             t2 = (-k + d4) / a
-            if t1 >= 0:
-                contacts.append(Contact(t0 + t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
-            if t2 >= 0:
-                contacts.append(Contact(t0 + t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
+            if t1 >= t0:
+                contacts.append(Contact(t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
+            if t2 >= t0:
+                contacts.append(Contact(t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
+
+    def contacts_with_static(self, static):
+        """
+        @param static: base.VisibleObject
+        """
+        # P(t)=V(t-t0)+P0
+        # |P(t)-Q|=R
+        p0 = self.start_point
+        t0 = self.start_time
+        v = self.v
+        q = static.position
+        # |V*t-V*t0+P0-Q|=R
+        s = -v * t0 + p0 - q  # S=-V*t0+P0-Q; |V*t+S|=R
+        # a*t^2+2*k*t+c=0; c=c_wo_r2-r^2
+        a = v.x ** 2 + v.y ** 2
+        k = v.x * s.x + v.y * s.y
+        c_wo_r2 = s.x ** 2 + s.y ** 2
+
+        contacts = []
+        if self.owner.observer:
+            self._append_contacts(self.owner, static, t0, a, k, c_wo_r2, contacts)
+        if isinstance(static, Unit) and static.observer:
+            self._append_contacts(static, self.owner, t0, a, k, c_wo_r2, contacts)
+        return contacts
 
     def contacts_with_dynamic(self, motion):
         """
@@ -119,24 +126,13 @@ class Goto(Task):
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2  # -r**2
+        t0 = min(ta, tb)
         contacts = []
         if self.owner.observer:
-            self._contacts_with_dynamic_roots(self.owner, motion.owner, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, motion.owner, t0, a, k, c_wo_r2, contacts)
         if motion.owner.observer:
-            self._contacts_with_dynamic_roots(motion.owner, self.owner, a, k, c_wo_r2, contacts)
+            self._append_contacts(motion.owner, self.owner, t0, a, k, c_wo_r2, contacts)
         return contacts
-
-    @staticmethod
-    def _contacts_with_dynamic_roots(subj, obj, a, k, c_wo_r2, contacts):
-        d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r)
-        if d4 > 0:
-            d4 = sqrt(d4)
-            t1 = (-k - d4) / a
-            t2 = (-k + d4) / a
-            if t1 >= 0:  # todo: fix absolute t checking
-                contacts.append(Contact(t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
-            if t2 >= 0:
-                contacts.append(Contact(t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
 
     def get_duration(self):
         """
