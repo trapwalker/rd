@@ -64,7 +64,7 @@ class Goto(Task):
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
 
     @staticmethod
-    def _append_contacts(subj, obj, t0, a, k, c_wo_r2, contacts):
+    def _append_contacts(subj, obj, t0, tmax, a, k, c_wo_r2, contacts):
         """
         @param subj: base.VisibleObject
         @param obj: base.VisibleObject
@@ -79,9 +79,9 @@ class Goto(Task):
             d4 = sqrt(d4)
             t1 = (-k - d4) / a
             t2 = (-k + d4) / a
-            if t1 >= t0:
+            if t0 <= t1 <= tmax:
                 contacts.append(Contact(t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
-            if t2 >= t0:
+            if t0 <= t2 <= tmax:
                 contacts.append(Contact(t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
 
     def contacts_with_static(self, static):
@@ -92,6 +92,7 @@ class Goto(Task):
         # |P(t)-Q|=R
         p0 = self.start_point
         t0 = self.start_time
+        tmax = self.finish_time
         v = self.v
         q = static.position
         # |V*t-V*t0+P0-Q|=R
@@ -103,14 +104,14 @@ class Goto(Task):
 
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, static, t0, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, static, t0, tmax, a, k, c_wo_r2, contacts)
         if isinstance(static, Unit) and static.observer:
-            self._append_contacts(static, self.owner, t0, a, k, c_wo_r2, contacts)
+            self._append_contacts(static, self.owner, t0, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def contacts_with_dynamic(self, motion):
         """
-        @param motion: Goto
+        @param motion: tasks.Goto
         """
         a0 = self.start_point
         va = self.v
@@ -126,12 +127,14 @@ class Goto(Task):
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2  # -r**2
-        t0 = min(ta, tb)
+        t0 = max(ta, tb)
+        tmax = min(self.finish_time, motion.finish_time)
+
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, motion.owner, t0, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, motion.owner, t0, tmax, a, k, c_wo_r2, contacts)
         if motion.owner.observer:
-            self._append_contacts(motion.owner, self.owner, t0, a, k, c_wo_r2, contacts)
+            self._append_contacts(motion.owner, self.owner, t0, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def get_duration(self):
