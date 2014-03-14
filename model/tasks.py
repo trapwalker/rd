@@ -3,7 +3,6 @@
 from math import sqrt
 
 from abc import ABCMeta, abstractmethod
-from Queue import PriorityQueue
 from utils import get_time
 from units import Unit
 from contacts import Contact, KC_See, KC_Unsee
@@ -15,7 +14,7 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 
 class Task(object):
     __metaclass__ = ABCMeta
-    __slots__ = ['__weakref__', 'owner', 'start_time', 'events', '_duration']
+    __slots__ = ['__weakref__', 'owner', 'start_time', '_duration']
 
     def __init__(self, owner, start_time=None):
         """
@@ -25,8 +24,6 @@ class Task(object):
         super(Task, self).__init__()
         self.owner = owner
         self.start_time = start_time or get_time()
-        self.events = PriorityQueue()
-        # todo: calculate early event time
 
     @abstractmethod
     def get_duration(self):
@@ -52,7 +49,6 @@ class Goto(Task):
         """
         @param target_point: vetors.Point
         """
-        # todo: declare arg types
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
         start_point = self.owner.position
@@ -69,6 +65,7 @@ class Goto(Task):
         @param subj: base.VisibleObject
         @param obj: base.VisibleObject
         @param t0: utils.Time
+        @param tmax: utils.Time
         @param a: float
         @param k: float
         @c_wo_r2: float
