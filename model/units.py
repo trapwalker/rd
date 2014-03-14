@@ -2,7 +2,7 @@
 
 from balance import BALANCE
 from base import VisibleObject
-# from observe import Observer
+from observe import Observer
 import tasks
 
 
@@ -75,6 +75,8 @@ class Station(Unit):
 
     def __init__(self, **kw):
         super(Station, self).__init__(**kw)
+        self._observer = Observer(self)
+        """@type: Observer | None"""
         self.server.statics.append(self)
 
     def delete(self):
@@ -89,6 +91,8 @@ class Bot(Unit):
         super(Bot, self).__init__(**kw)
         self.motion = None
         """@type: tasks.Goto | None"""
+        self._observer = Observer(self)
+        """@type: Observer | None"""
 
     def stop(self):
         del self.task
@@ -97,7 +101,7 @@ class Bot(Unit):
         """
         @param position: vectors.Point
         """
-        self.task = tasks.Goto(position)
+        self.task = tasks.Goto(self, position)
 
     def get_position(self):
         """
