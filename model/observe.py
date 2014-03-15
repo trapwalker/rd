@@ -8,7 +8,7 @@ class Observer(object):
 
     def __init__(self, owner, r=None):
         """
-        @param owner: units.Unit
+        @param owner: model.units.Unit
         @param r: float | None
         """
         super(Observer, self).__init__()

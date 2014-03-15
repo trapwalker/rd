@@ -9,14 +9,14 @@ class BALANCE(object):
     @classmethod
     def get_ObserverRange(cls, unit):
         """
-        @type unit: units.Unit
+        @type unit: model.units.Unit
         """
         return 100 * (5 if isinstance(unit, Stationary) else 1)
 
     @classmethod
     def get_MaxVelocity(cls, bot):
         """
-        @type bot: units.Bot
+        @type bot: model.units.Bot
         """
         return 3 # m/s
 

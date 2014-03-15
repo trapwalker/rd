@@ -36,9 +36,9 @@ class Contact(tuple):
         """
         Create new instance of Contact(time, subj, obj)
         Contact(time, subj, obj, kind)
-            @param time: utils.Time
-            @param subj: units.Unit
-            @param obj: base.VisibleObject
+            @param time: model.utils.Time
+            @param subj: model.units.Unit
+            @param obj: model.base.VisibleObject
             @param kind: KindOfContact
         """
         obj = tuple.__new__(cls, (time, subj, obj, kind))
@@ -54,7 +54,7 @@ class Contact(tuple):
         return 'Contact(time=%r, subj=%r, obj=%r, kind=%r)' % self
 
     def __getnewargs__(self):
-        """Return self as a plain tuple.  Used by copy and pickle."""
+        """Return self as a plain tuple. Used by copy and pickle."""
         return tuple(self)
 
     def __getstate__(self):

@@ -38,7 +38,7 @@ class Task(object):
     @property
     def finish_time(self):
         """
-        @rtype: utils.Time
+        @rtype: model.utils.Time
         """
         return self.start_time + self.duration
 
@@ -49,7 +49,7 @@ class Goto(Task):
     def __init__(self, owner, target_point, **kw):
         """
         @param Bot owner: Owner of task
-        @param vetors.Point target_point: Target point of motion
+        @param model.vetors.Point target_point: Target point of motion
         """
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
@@ -62,13 +62,14 @@ class Goto(Task):
         self.target_point = target_point
         self.vector = target_point - start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
-        """@type: vectors.Point"""
+        """@type: model.vectors.Point"""
+        print self.owner.position
 
     @staticmethod
     def _append_contacts(subj, obj, t0, tmax, a, k, c_wo_r2, contacts):
         """
-        @param units.Unit subj: Subject of potential contacts
-        @param base.VisibleObject obj: Object of potential contacts
+        @param model.units.Unit subj: Subject of potential contacts
+        @param model.base.VisibleObject obj: Object of potential contacts
         @param float t0: Minimal possible time of potential contact
         @param float tmax: Maximal possible time of potential contact
         @param float a: First coefficient of polynome a*t^2+2*k*t+c=0
@@ -88,7 +89,7 @@ class Goto(Task):
 
     def contacts_with_static(self, static):
         """
-        @param base.VisibleObject static: Static object
+        @param model.base.VisibleObject static: Static object
         """
         # P(t)=V(t-t0)+P0
         # |P(t)-Q|=R
@@ -96,6 +97,7 @@ class Goto(Task):
         t0 = self.start_time
         tmax = self.finish_time
         v = self.v
+        """@type: model.vectors.Point"""
         q = static.position
         # |V*t-V*t0+P0-Q|=R
         s = -v * t0 + p0 - q  # S=-V*t0+P0-Q; |V*t+S|=R
@@ -113,7 +115,7 @@ class Goto(Task):
 
     def contacts_with_dynamic(self, motion):
         """
-        @param tasks.Goto motion: Motion task of mobile unit
+        @param model.tasks.Goto motion: Motion task of mobile unit
         """
         a0 = self.start_point
         va = self.v
@@ -149,7 +151,7 @@ class Goto(Task):
     def get_position(self, to_time=None):
         """
         @param float | None to_time: Time for getting position
-        @rtype: vectors.Point
+        @rtype: model.vectors.Point
         """
         to_time = to_time or get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time)

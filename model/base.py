@@ -17,26 +17,26 @@ class PointObject(object):
 
     def __init__(self, server, position):
         """
-        @type server: server.Server
-        @type position: vectors.Point
+        @type server: model.server.Server
+        @type position: model.vectors.Point
         """
         super(PointObject, self).__init__()
         self.server = server
-        """@type: server.Server"""
+        """@type: model.server.Server"""
         self.uid = get_uid()
         self._position = position
-        """@type: vectors.Point"""
+        """@type: model.vectors.Point"""
         self.server.objects[self.uid] = self
 
     def get_position(self):
         """
-        @rtype: vectors.Point
+        :rtype: model.vectors.Point
         """
         return self._position
 
     def set_position(self, position):
         """
-        @type position: vectors.Point
+        @param model.vectors.Point position: New position
         """
         self._position = position
 
@@ -92,7 +92,7 @@ class Heap(VisibleObject):
     # todo: rearrange class tree
     def __init__(self, items, **kw):
         """
-        @type items: list[inventory.Thing]
+        @type items: list[model.inventory.Thing]
         """
         super(Heap, self).__init__(**kw)
         self.inventory = Inventory(things=items)

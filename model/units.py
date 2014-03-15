@@ -12,9 +12,9 @@ class Unit(VisibleObject):
     def __init__(self, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
-        """@type: tasks.Task | None"""
+        """@type: model.tasks.Task | None"""
         self._observer = None
-        """@type: observe.Observer | None"""
+        """@type: model.observe.Observer | None"""
 
     def delete(self):
         del self.observer
@@ -34,13 +34,13 @@ class Unit(VisibleObject):
 
     def get_observer(self):
         """
-        @rtype: observe.Observer | None
+        @rtype: model.observe.Observer | None
         """
         return self._observer
 
     def set_observer(self, observer):
         """
-        @param observer: observe.Observer | None
+        @param observer: model.observe.Observer | None
         """
         self.change_observer_state(False)
         self._observer = observer
@@ -51,13 +51,13 @@ class Unit(VisibleObject):
 
     def get_task(self):
         """
-        @rtype: tasks.Task | None
+        @rtype: model.tasks.Task | None
         """
         return self._task
 
     def set_task(self, task):
         """
-        @param task: tasks.Task | None
+        @param task: model.tasks.Task | None
         """
         # old_task = self._task
         self._task = task
@@ -90,7 +90,7 @@ class Bot(Unit):
     def __init__(self, **kw):
         super(Bot, self).__init__(**kw)
         self.motion = None
-        """@type: tasks.Goto | None"""
+        """@type: model.tasks.Goto | None"""
         self._observer = Observer(self)
         """@type: Observer | None"""
 
@@ -99,13 +99,13 @@ class Bot(Unit):
 
     def goto(self, position):
         """
-        @param position: vectors.Point
+        @param position: model.vectors.Point
         """
         self.task = tasks.Goto(self, position)
 
     def get_position(self):
         """
-        @rtype: vectors.Point
+        @rtype: model.vectors.Point
         """
         return self.motion.position if self.motion else self.position
 
@@ -140,7 +140,7 @@ class Bot(Unit):
 
     def set_task(self, task):
         """
-        @param task: tasks.Task | None
+        @param task: model.tasks.Task | None
         """
         self.change_observer_state(False)
         old_motion = self.motion
