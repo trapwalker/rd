@@ -63,7 +63,6 @@ class Goto(Task):
         self.vector = target_point - start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
         """@type: model.vectors.Point"""
-        print self.owner.position
 
     @staticmethod
     def _append_contacts(subj, obj, t0, tmax, a, k, c_wo_r2, contacts):
