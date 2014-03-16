@@ -65,11 +65,11 @@ class Goto(Task):
         """@type: model.vectors.Point"""
 
     @staticmethod
-    def _append_contacts(subj, obj, t0, tmax, a, k, c_wo_r2, contacts):
+    def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, contacts):
         """
         @param model.units.Unit subj: Subject of potential contacts
         @param model.base.VisibleObject obj: Object of potential contacts
-        @param float t0: Minimal possible time of potential contact
+        @param float tmin: Minimal possible time of potential contact
         @param float tmax: Maximal possible time of potential contact
         @param float a: First coefficient of polynome a*t^2+2*k*t+c=0
         @param float k:
@@ -81,9 +81,9 @@ class Goto(Task):
             d4 = sqrt(d4)
             t1 = (-k - d4) / a
             t2 = (-k + d4) / a
-            if t0 <= t1 <= tmax:
+            if tmin <= t1 <= tmax:
                 contacts.append(Contact(t1, subj, obj, KC_See if t1 <= t2 else KC_Unsee))
-            if t0 <= t2 <= tmax:
+            if tmin <= t2 <= tmax:
                 contacts.append(Contact(t2, subj, obj, KC_See if t2 < t1 else KC_Unsee))
 
     def contacts_with_static(self, static):
@@ -93,13 +93,13 @@ class Goto(Task):
         # P(t)=V(t-t0)+P0
         # |P(t)-Q|=R
         p0 = self.start_point
-        t0 = self.start_time
+        tmin = self.start_time
         tmax = self.finish_time
         v = self.v
         """@type: model.vectors.Point"""
         q = static.position
         # |V*t-V*t0+P0-Q|=R
-        s = -v * t0 + p0 - q  # S=-V*t0+P0-Q; |V*t+S|=R
+        s = -v * tmin + p0 - q  # S=-V*t0+P0-Q; |V*t+S|=R
         # a*t^2+2*k*t+c=0; c=c_wo_r2-r^2
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
@@ -107,9 +107,9 @@ class Goto(Task):
 
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, static, t0, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, contacts)
         if isinstance(static, Unit) and static.observer:
-            self._append_contacts(static, self.owner, t0, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def contacts_with_dynamic(self, motion):
@@ -130,21 +130,21 @@ class Goto(Task):
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2  # -r**2
-        t0 = max(ta, tb)
+        tmin = max(ta, tb)
         tmax = min(self.finish_time, motion.finish_time)
 
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, motion.owner, t0, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, contacts)
         if motion.owner.observer:
-            self._append_contacts(motion.owner, self.owner, t0, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def get_duration(self):
         """
         @rtype: float
         """
-        assert self.owner.max_velocity != 0
+        assert self.owner.max_velocity > 0
         return self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
 
     def get_position(self, to_time=None):
