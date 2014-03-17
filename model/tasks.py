@@ -74,7 +74,7 @@ class Goto(Task):
         @param float a: First coefficient of polynome a*t^2+2*k*t+c=0
         @param float k:
         @param float c_wo_r2:
-        @param list contacts: Contact list
+        @param list[Contact] contacts: Contact list
         """
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
         if d4 > 0:
@@ -108,8 +108,9 @@ class Goto(Task):
         contacts = []
         if self.owner.observer:
             self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, contacts)
-        if isinstance(static, Unit) and static.observer:
-            self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
+        if isinstance(static, Unit):
+            if static.observer:
+                self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def contacts_with_dynamic(self, motion):
