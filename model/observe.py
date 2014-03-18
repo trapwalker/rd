@@ -13,21 +13,28 @@ class Observer(object):
         """
         super(Observer, self).__init__()
         self._r = r or BALANCE.get_ObserverRange(owner)
-        self.subscribers = set()
+        self.owner = owner
+        self.subscribers = []
+        """@type: list[model.agents.Agent]"""
 
-    def subscribe(self, s):
-        if isinstance(s, (list, tuple)):
-            s = set(s)
-        elif not isinstance(s, set):
-            s = {s}
-        self.subscribers += s
+    def emit(self, event):
+        """
+        @param Event event: New emited event
+        """
+        for subscriber in self.subscribers:
+            subscriber.onEvent(event)
 
-    def unsubscribe(self, s):
-        if isinstance(s, (list, tuple)):
-            s = set(s)
-        elif not isinstance(s, set):
-            s = {s}
-        self.subscribers -= s
+    def subscribe(self, agent):
+        """
+        @type agent: model.agents.Agent
+        """
+        self.subscribers.append(agent)
+
+    def unsubscribe(self, agent):
+        """
+        @type agent: model.agents.Agent
+        """
+        self.subscribers.remove(agent)
 
     @property
     def r(self):
