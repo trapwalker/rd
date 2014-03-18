@@ -33,6 +33,9 @@ class LocalServer(Server):
     def __init__(self, **kw):
         super(LocalServer, self).__init__(**kw)
 
+    def dispatch_event(self):
+        pass
+
 
 class RemoteServer(Server):
 
