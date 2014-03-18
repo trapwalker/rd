@@ -12,21 +12,29 @@ logging.basicConfig(level='DEBUG')
 # todo: fix side effect on edge of tile
 
 
-class PointObject(object):
+class Object(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, server, position):
+    def __init__(self, server):
         """
         @type server: model.server.Server
-        @type position: model.vectors.Point
         """
-        super(PointObject, self).__init__()
+        super(Object, self).__init__()
         self.server = server
         """@type: model.server.Server"""
         self.uid = get_uid()
+        self.server.objects[self.uid] = self
+
+
+class PointObject(Object):
+
+    def __init__(self, position, **kw):
+        """
+        @type position: model.vectors.Point
+        """
+        super(PointObject, self).__init__(**kw)
         self._position = position
         """@type: model.vectors.Point"""
-        self.server.objects[self.uid] = self
 
     def get_position(self):
         """
