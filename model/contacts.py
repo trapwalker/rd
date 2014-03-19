@@ -28,9 +28,9 @@ class Contact(tuple):
     _fields = ('time', 'subj', 'obj', 'kind')
 
     time = property(itemgetter(0), doc='Time of contact')
-    subj = property(itemgetter(2), doc='Subject-contacter')
-    obj = property(itemgetter(3), doc='Object-contacter')
-    kind = property(itemgetter(4), doc='Kind of contact')
+    subj = property(itemgetter(1), doc='Subject-contacter')
+    obj = property(itemgetter(2), doc='Object-contacter')
+    kind = property(itemgetter(3), doc='Kind of contact')
 
     def __new__(cls, time, subj, obj, kind):
         """
