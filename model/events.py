@@ -1,39 +1,47 @@
 # -*- coding: utf-8 -*-
 
+from functools import total_ordering
 from utils import get_time
 
 
-class EType(object):
-    __slots__ = ()
-    name = None
-
-
-class ET_See(EType):
-    name = 'See'
-
-
-class ET_Unsee(EType):
-    name = 'Unsee'
-
-
-class ET_NewTask(EType):
-    name = 'NewTask'
-
-
+@total_ordering
 class Event(object):
-    def __init__(self, e_type, time=None, position=None):
+    __slots__ = ('time', 'actual',)
+
+    def __init__(self, time=None):
         """
-        @param EType e_type: Event type
         @param model.utils.TimeClass time: Time of event
-        @param model.vectors.Point | None position: Event location
         """
-        self.e_type = e_type
         self.time = get_time() if time is None else time
-        self.position = position
+        self.actual = True
+
+    def __hash__(self):
+        return hash((self.time,))
+
+    def __lt__(self, other):
+        return self.time < other
+        # todo: __eq__?
+
+    def __nonzero__(self):
+        return self.actual
 
 
 class Contact(Event):
-    def __init__(self, obj, **kw):
-        super(Contact, self).__init__(**kw)
-        self.obj = obj  # todo: weakref?
+    __slots__ = ('subj', 'obj',)
 
+    def __init__(self, subj, obj, **kw):
+        """
+        @param model.units.Unit subj: Subject of contact
+        @param model.base.VisibleObject obj: Object of contact
+        """
+        super(Contact, self).__init__(**kw)
+        self.subj = subj  # todo: weakref?
+        self.obj = obj
+
+
+class ContactSee(Contact):
+    pass
+
+
+class ContactUnsee(Contact):
+    pass

@@ -5,8 +5,7 @@ from math import sqrt
 from abc import ABCMeta, abstractmethod
 from utils import get_time
 from units import Unit, Bot
-from contacts import Contact
-from events import ET_See, ET_Unsee
+from events import ContactSee, ContactUnsee
 
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
@@ -82,10 +81,11 @@ class Goto(Task):
             d4 = sqrt(d4)
             t1 = (-k - d4) / a
             t2 = (-k + d4) / a
+
             if tmin <= t1 <= tmax:
-                contacts.append(Contact(t1, subj, obj, ET_See if t1 <= t2 else ET_Unsee))
+                contacts.append(ContactSee(time=t1, subj=subj, obj=obj))
             if tmin <= t2 <= tmax:
-                contacts.append(Contact(t2, subj, obj, ET_See if t2 < t1 else ET_Unsee))
+                contacts.append(ContactUnsee(time=t2, subj=subj, obj=obj))
 
     def contacts_with_static(self, static):
         """
