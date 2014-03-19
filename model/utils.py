@@ -8,7 +8,7 @@ import heapq
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
 
-Time = get_time().__class__
+TimeClass = get_time().__class__
 
 
 class TimelineQueue(PriorityQueue):

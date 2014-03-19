@@ -36,7 +36,7 @@ class Contact(tuple):
         """
         Create new instance of Contact(time, subj, obj)
         Contact(time, subj, obj, kind)
-            @param time: model.utils.Time
+            @param time: model.utils.TimeClass
             @param subj: model.units.Unit
             @param obj: model.base.VisibleObject
             @param kind: KindOfContact

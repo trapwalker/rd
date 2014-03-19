@@ -20,7 +20,7 @@ class Task(object):
     def __init__(self, owner, start_time=None):
         """
         @param Unit owner: Owner of task
-        @param float | None start_time: Time of task starting
+        @param model.utils.TimeClass | None start_time: Time of task starting
         """
         super(Task, self).__init__()
         self.owner = owner
@@ -38,7 +38,7 @@ class Task(object):
     @property
     def finish_time(self):
         """
-        @rtype: model.utils.Time
+        @rtype: model.utils.TimeClass
         """
         return self.start_time + self.duration
 
@@ -150,7 +150,7 @@ class Goto(Task):
 
     def get_position(self, to_time=None):
         """
-        @param float | None to_time: Time for getting position
+        @param model.utils.TimeClass | None to_time: Time for getting position
         @rtype: model.vectors.Point
         """
         to_time = to_time or get_time()
