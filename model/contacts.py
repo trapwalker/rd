@@ -4,23 +4,6 @@ from collections import OrderedDict
 from operator import itemgetter
 
 
-class KindOfContact(object):
-    __slots__ = ()
-    name = None
-
-
-class KC_See(KindOfContact):
-    name = 'See'
-
-
-class KC_Unsee(KindOfContact):
-    name = 'Unsee'
-
-
-class KC_NewTask(KindOfContact):
-    name = 'NewTask'
-    
-
 class Contact(tuple):
     """
     Predicted event associated with the task robot:
@@ -33,8 +16,12 @@ class Contact(tuple):
 
     time = property(itemgetter(0), doc='Time of contact')
     subj = property(itemgetter(1), doc='Subject-contacter')
+    """:type : model.units.Unit"""
+    # todo: type-hinting fix
     obj = property(itemgetter(2), doc='Object-contacter')
+    """:type : model.base.VisibleObject"""
     kind = property(itemgetter(3), doc='Kind of contact')
+    """:type : T <= model.events.EType"""
 
     def __new__(cls, time, subj, obj, kind):
         """
@@ -43,7 +30,7 @@ class Contact(tuple):
             @param time: model.utils.TimeClass
             @param subj: model.units.Unit
             @param obj: model.base.VisibleObject
-            @param kind: KindOfContact
+            @param kind: T <= EType
         """
         obj = tuple.__new__(cls, (time, subj, obj, kind))
         # todo: may be need "valid" property
