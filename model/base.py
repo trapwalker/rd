@@ -89,6 +89,7 @@ class VisibleObject(PointObject):
         self.special_contacts_search()
         if self.contacts:
             self.server.timeline.put(self.contacts.head)
+            # todo: check for double including one contact into the servers timeline
 
     def delete(self):
         self.contacts_clear()
