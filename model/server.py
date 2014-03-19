@@ -15,7 +15,7 @@ class Server(object):
         self.statics = []  # Stationary objects (stations, heaps, standing robots)  # todo: GEO-index
         self.motions = []  # Active motion tasks  # todo: GEO-index
         self.static_observers = []  # todo: GEO-index
-        self.timeline = TimelineQueue()
+        self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
 
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
