@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from base import Object
+import logging
 
 
 class Agent(Object):
@@ -12,7 +13,7 @@ class Agent(Object):
         """
         @param Event event: Incoming event
         """
-        pass
+        logging.debug(repr(event))
 
 
 class User(Agent):
