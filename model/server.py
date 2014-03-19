@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from utils import get_uid, TimelineQueue
+import contacts
+import events
 
 
 class Server(object):
@@ -33,8 +35,14 @@ class LocalServer(Server):
     def __init__(self, **kw):
         super(LocalServer, self).__init__(**kw)
 
-    def dispatch_event(self):
-        pass
+    def dispatch_contact(self):
+        timeline = self.timeline
+        if timeline:
+            contact = timeline.head
+            assert isinstance(contact, contacts.Contact)
+            observer = contact.subj.observer
+            if observer:
+                observer.emit(events.Contact(e_type=contact.kind, time=contact.time, obj=con))
 
 
 class RemoteServer(Server):
