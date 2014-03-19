@@ -22,7 +22,7 @@ class Observer(object):
         @param Event event: New emited event
         """
         for subscriber in self.subscribers:
-            subscriber.onEvent(event)
+            subscriber.on_event(event)
 
     def subscribe(self, agent):
         """
