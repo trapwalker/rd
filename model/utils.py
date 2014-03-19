@@ -17,6 +17,9 @@ class TimelineQueue(PriorityQueue):
     class EMPTY(object):
         __slots__ = []
 
+        def __nonzero__(self):
+            return False
+
     def remove(self, item, heapify=heapq.heapify, heappop=heapq.heappop):
         """Remove item from queue.
         @rtype: bool
@@ -56,6 +59,7 @@ class TimelineQueue(PriorityQueue):
         )
 
     __len__ = PriorityQueue.qsize
+
     def __nonzero__(self):
         return self._head is not self.EMPTY
 
@@ -69,8 +73,8 @@ class TimelineQueue(PriorityQueue):
         self.queue = []
         self._head = self.EMPTY
 
-    def _qsize(self, len=len):
-        return 0 if self._head is self.EMPTY else (len(self.queue) + 1)
+    def _qsize(self, _len=len):
+        return 0 if self._head is self.EMPTY else (_len(self.queue) + 1)
 
     def _put(self, item, heappush=heapq.heappush):
         if self._head is self.EMPTY:
