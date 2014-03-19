@@ -17,6 +17,10 @@ class KC_Unsee(KindOfContact):
     name = 'Unsee'
 
 
+class KC_NewTask(KindOfContact):
+    name = 'NewTask'
+    
+
 class Contact(tuple):
     """
     Predicted event associated with the task robot:
