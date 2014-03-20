@@ -34,7 +34,10 @@ class LocalServer(Server):
     def __init__(self, **kw):
         super(LocalServer, self).__init__(**kw)
 
-    def dispatch_contact(self):
+    def event_loop(self):
+        pass
+
+    def dispatch_event(self):
         timeline = self.timeline
         if timeline:
             event = timeline.head
@@ -49,3 +52,11 @@ class RemoteServer(Server):
     def __init__(self, uri, **kw):
         super(RemoteServer, self).__init__(**kw)
         self.uri = uri
+
+
+def main(*args):
+
+
+if __name__ == '__main__':
+    import sys
+    main(*sys.argv)
