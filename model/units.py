@@ -32,6 +32,7 @@ class Unit(VisibleObject):
             logging.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
             if new_state:
                 self.server.static_observers.append(observer)
+                self.on_change()
             else:
                 self.server.static_observers.remove(observer)
 
@@ -66,6 +67,7 @@ class Unit(VisibleObject):
         # old_task = self._task
         logging.debug('%s:: task = %s', self, task)
         self._task = task
+        self.on_change()
         # todo: remove old timeline events, add new
 
     def del_task(self):
