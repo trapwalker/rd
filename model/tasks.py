@@ -162,7 +162,7 @@ class Goto(Task):
         @rtype: model.vectors.Point
         """
         to_time = to_time or get_time()
-        return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time)
+        return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
 
     position = property(get_position)
 
