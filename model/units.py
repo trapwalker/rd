@@ -14,8 +14,9 @@ class Unit(VisibleObject):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: model.tasks.Task | None"""
-        self._observer = None
-        """@type: model.observe.Observer | None"""
+        self._observer = Observer(self)
+        """@type: Observer | None"""
+        self.server.statics.append(self)
 
     def delete(self):
         del self.observer
@@ -77,12 +78,6 @@ class Unit(VisibleObject):
 class Station(Unit):
     u"""Class of buildings"""
 
-    def __init__(self, **kw):
-        super(Station, self).__init__(**kw)
-        self._observer = Observer(self)
-        """@type: Observer | None"""
-        self.server.statics.append(self)
-
     def delete(self):
         self.server.statics.remove(self)
         super(Station, self).delete()
@@ -95,8 +90,6 @@ class Bot(Unit):
         super(Bot, self).__init__(**kw)
         self.motion = None
         """@type: model.tasks.Goto | None"""
-        self._observer = Observer(self)
-        """@type: Observer | None"""
 
     def stop(self):
         del self.task
