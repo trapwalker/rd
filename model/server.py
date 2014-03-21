@@ -70,4 +70,22 @@ def main(*args):
 
 if __name__ == '__main__':
     import sys
-    main(*sys.argv)
+    logging.basicConfig(level=logging.DEBUG)
+    #main(*sys.argv)
+
+    from units import Station, Bot
+    from agents import User
+    from vectors import Point
+    
+    srv = LocalServer()
+    user = User(server=srv)
+    station = Station(server=srv, position=Point(0, 0))
+    station.observer.subscribe(user)
+
+    bot = Bot(server=srv, position=Point(-700, -700))
+    bot.observer.subscribe(user)
+
+    bot.goto(Point(800, 800))
+    
+    srv.event_loop()
+
