@@ -2,6 +2,8 @@
 
 from utils import get_uid, TimelineQueue
 from events import Contact
+from time import sleep
+import logging
 
 
 class Server(object):
@@ -35,16 +37,24 @@ class LocalServer(Server):
         super(LocalServer, self).__init__(**kw)
 
     def event_loop(self):
-        pass
+        logging.debug('Event loop start')
+        max_sleep_time = 0.1
+        dispatch = self.dispatch_event
+        while True:
+            if not dispatch():
+                sleep(max_sleep_time)
 
     def dispatch_event(self):
         timeline = self.timeline
         if timeline:
             event = timeline.head
+            logging.debug('Event dispatching')
             if isinstance(event, Contact):
                 observer = event.subj.observer
                 if observer:
                     observer.emit(event)
+
+            return True
 
 
 class RemoteServer(Server):
@@ -55,7 +65,8 @@ class RemoteServer(Server):
 
 
 def main(*args):
-
+    pass
+    
 
 if __name__ == '__main__':
     import sys
