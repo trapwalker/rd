@@ -4,7 +4,6 @@ from math import sqrt
 
 from abc import ABCMeta, abstractmethod
 from utils import get_time
-from units import Unit, Bot
 from events import ContactSee, ContactUnsee
 
 
