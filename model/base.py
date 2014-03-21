@@ -68,6 +68,7 @@ class VisibleObject(PointObject):
 
     def on_change(self):
         # todo: Notify nearest observers
+        logging.debug('%s:: changed', self)
         self.contacts_refresh()
 
     def contacts_refresh(self):
@@ -75,6 +76,7 @@ class VisibleObject(PointObject):
         self.contacts_search()
 
     def contacts_clear(self):
+        logging.debug('%s:: contacts clear', self)
         contacts = self.contacts
         while contacts:
             contact = contacts.get()
@@ -91,7 +93,10 @@ class VisibleObject(PointObject):
             contacts.extend(motion.contacts_with_static(self))
 
     def contacts_search(self):
+        # todo: rename methods (search->forecast)
+        logging.debug('%s:: contacts search', self)
         self.special_contacts_search()
+        logging.debug('%s:: contacts found: %s', self, len(self.contacts))
         if self.contacts:
             self.server.timeline.put(self.contacts.head)
             # todo: check for double including one contact into the servers timeline
