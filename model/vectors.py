@@ -29,7 +29,10 @@ class Point(complex):
     ## Syntactic sugar ##
 
     def __repr__(self):
-        return 'Point(x=%r, y=%r)' % (self.x, self.y)
+        return 'Point(x={}, y={})'.format(self.x, self.y)
+
+    def __str__(self):
+        return '[{:g}, {:g}]'.format(self.x, self.y)
 
     def __add__(self, p):
         """

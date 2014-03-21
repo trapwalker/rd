@@ -14,6 +14,7 @@ logging.basicConfig(level='DEBUG')
 
 class Object(object):
     __metaclass__ = ABCMeta
+    __str_template__ = '<{self.__class__.__name__} #{self.uid}>'
 
     def __init__(self, server):
         """
@@ -25,8 +26,12 @@ class Object(object):
         self.uid = get_uid()
         self.server.objects[self.uid] = self
 
+    def __str__(self):
+        return self.__str_template__.format(self=self)
+
 
 class PointObject(Object):
+    __str_template__ = '<{self.__class__.__name__} #{self.uid};{self.position}>'
 
     def __init__(self, position, **kw):
         """

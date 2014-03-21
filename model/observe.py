@@ -39,3 +39,9 @@ class Observer(object):
     @property
     def r(self):
         return self._r
+
+    def __str__(self):
+        return '<Observer: R={:g}; n=%d>'.format(self.r, len(self.subscribers))
+
+
+from balance import BALANCE
