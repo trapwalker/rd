@@ -1,8 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-from base import Stationary
-
-
 class BALANCE(object):
     u'''Gameplay balancing settings'''
 
@@ -11,7 +8,8 @@ class BALANCE(object):
         """
         @type unit: model.units.Unit
         """
-        return 100 * (5 if isinstance(unit, Stationary) else 1)
+        from units import Station
+        return 100 * (5 if isinstance(unit, Station) else 1)
 
     @classmethod
     def get_MaxVelocity(cls, bot):
