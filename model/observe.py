@@ -1,6 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-
-from balance import BALANCE
+import logging
 
 
 class Observer(object):
@@ -29,12 +28,14 @@ class Observer(object):
         @type agent: model.agents.Agent
         """
         self.subscribers.append(agent)
+        logging.debug('Subscribe %s to observe %s', agent, self.owner)
 
     def unsubscribe(self, agent):
         """
         @type agent: model.agents.Agent
         """
         self.subscribers.remove(agent)
+        logging.debug('Unsubscribe %s from observing %s', agent, self.owner)
 
     @property
     def r(self):
