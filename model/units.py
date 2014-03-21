@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from balance import BALANCE
+import logging
+
 from base import VisibleObject
 from observe import Observer
 import tasks
@@ -27,6 +28,7 @@ class Unit(VisibleObject):
         """
         observer = self._observer
         if observer:
+            logging.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
             if new_state:
                 self.server.static_observers.append(observer)
             else:
@@ -43,6 +45,7 @@ class Unit(VisibleObject):
         @param observer: model.observe.Observer | None
         """
         self.change_observer_state(False)
+        logging.debug('%s:: observer = %s', self, observer)
         self._observer = observer
         self.change_observer_state(True)
 
@@ -60,6 +63,7 @@ class Unit(VisibleObject):
         @param task: model.tasks.Task | None
         """
         # old_task = self._task
+        logging.debug('%s:: task = %s', self, task)
         self._task = task
         # todo: remove old timeline events, add new
 
@@ -159,3 +163,6 @@ class Bot(Unit):
         if motion:
             self.server.motions.remove(motion)
         super(Bot, self).delete()
+
+
+from balance import BALANCE
