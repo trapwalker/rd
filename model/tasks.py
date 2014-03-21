@@ -20,7 +20,7 @@ class Task(object):
 
     def __init__(self, owner, start_time=None):
         """
-        @param Unit owner: Owner of task
+        @param model.units.Unit owner: Owner of task
         @param model.utils.TimeClass | None start_time: Time of task starting
         """
         super(Task, self).__init__()
@@ -56,15 +56,14 @@ class Goto(Task):
 
     def __init__(self, owner, target_point, **kw):
         """
-        @param Bot owner: Owner of task
+        @param model.units.Bot owner: Owner of task
         @param model.vetors.Point target_point: Target point of motion
         """
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
-        start_point = self.owner.position
+        start_point = owner.position
         assert start_point != target_point  # todo: epsilon test to eq
         super(Goto, self).__init__(owner=owner, **kw)
-        assert isinstance(owner, Bot)
         self.owner = owner  # todo: spike review
         self.start_point = start_point
         self.target_point = target_point
@@ -117,9 +116,10 @@ class Goto(Task):
         contacts = []
         if self.owner.observer:
             self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, contacts)
-        if isinstance(static, Unit):
-            if static.observer:
-                self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
+
+        if hasattr(static, 'observer') and static.observer:
+            # todo: type hinting of "static" param fix
+            self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def contacts_with_dynamic(self, motion):
