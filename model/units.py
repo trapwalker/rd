@@ -152,12 +152,15 @@ class Bot(Unit):
         if old_motion:
             self.position = old_motion.position
             self.server.motions.remove(old_motion)
-        super(Bot, self).set_task(task)
         new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion
         if new_motion:
             self.server.motions.append(new_motion)
         self.change_observer_state(True)
+
+        super(Bot, self).set_task(task)
+
+    task = property(fget=Unit.get_task, fset=set_task, fdel=Unit.del_task)
 
     def delete(self):
         motion = self.motion
