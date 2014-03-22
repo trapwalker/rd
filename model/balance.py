@@ -16,5 +16,5 @@ class BALANCE(object):
         """
         @type bot: model.units.Bot
         """
-        return 3 # m/s
+        return 10 # m/s
 
