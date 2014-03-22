@@ -30,6 +30,9 @@ class Server(object):
     def filter_static_observers(self, quadrant):
         return self.static_observers  # todo: filter collection by quadrant
 
+    def get_time(self):
+        return get_time()
+
 
 class LocalServer(Server):
 
@@ -47,7 +50,7 @@ class LocalServer(Server):
     def dispatch_event(self, timeout):
         timeline = self.timeline
         if timeline:
-            if timeline.head.time <= get_time():
+            if timeline.head.time <= self.get_time():
                 event = timeline.get()
                 if isinstance(event, Contact):
                     event.subj.observer.emit(event)
@@ -87,11 +90,11 @@ if __name__ == '__main__':
 
     bot.goto(Point(800, 10))
 
-    t = get_time()
+    t = srv.get_time()
     while srv.timeline:        
-        if srv.dispatch_event(0.5) or (get_time() - t) > 1:
+        if srv.dispatch_event(0.5) or (srv.get_time() - t) > 1:
             print bot
-            t = get_time()
+            t = srv.get_time()
     
     #srv.event_loop()
 

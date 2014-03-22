@@ -3,7 +3,6 @@
 from math import sqrt
 
 from abc import ABCMeta
-from utils import get_time
 from events import ContactSee, ContactUnsee
 
 
@@ -14,7 +13,7 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 
 class Task(object):
     __metaclass__ = ABCMeta
-    __slots__ = ['__weakref__', 'owner', 'start_time', '_duration']
+    __slots__ = ['__weakref__', 'owner', 'start_time', '_duration', '_get_time']
     __str_template__ = '<{self.__class__.__name__} in {self.start_time:g}'
 
     def __init__(self, owner, start_time=None):
@@ -24,7 +23,8 @@ class Task(object):
         """
         super(Task, self).__init__()
         self.owner = owner
-        self.start_time = start_time or get_time()
+        self._get_time = owner.server.get_time
+        self.start_time = start_time or self._get_time()
 
     @property
     def duration(self):
@@ -163,7 +163,7 @@ class Goto(Task):
         @param model.utils.TimeClass | None to_time: Time for getting position
         @rtype: model.vectors.Point
         """
-        to_time = to_time or get_time()
+        to_time = to_time or self._get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
 
 

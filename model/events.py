@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from functools import total_ordering
-from utils import get_time
 
 
 @total_ordering
 class Event(object):
     __slots__ = ('time', 'actual',)
 
-    def __init__(self, time=None):
+    def __init__(self, time):
         """
         @param model.utils.TimeClass time: Time of event
         """
-        self.time = get_time() if time is None else time
+        self.time = time
         self.actual = True
 
     def __hash__(self):

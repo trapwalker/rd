@@ -18,7 +18,7 @@ class Observer(object):
 
     def emit(self, event):
         """
-        @param Event event: New emited event
+        @param model.events.Event event: New emited event
         """
         for subscriber in self.subscribers:
             subscriber.on_event(event)
@@ -42,7 +42,7 @@ class Observer(object):
         return self._r
 
     def __str__(self):
-        return '<Observer: R={:g}; n=%d>'.format(self.r, len(self.subscribers))
+        return '<Observer: R={:g}; n={}>'.format(self.r, len(self.subscribers))
 
     id = property(id)
 
