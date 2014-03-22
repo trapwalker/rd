@@ -14,9 +14,10 @@ class Unit(VisibleObject):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: model.tasks.Task | None"""
-        self._observer = Observer(self)
+        self._observer = None
         """@type: Observer | None"""
         self.server.statics.append(self)
+        self.observer = Observer(self)
 
     def delete(self):
         del self.observer
