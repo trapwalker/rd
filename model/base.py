@@ -14,12 +14,13 @@ logging.basicConfig(level='DEBUG')
 
 class Object(object):
     __metaclass__ = ABCMeta
-    __str_template__ = '<{self.__class__.__name__} #{self.uid}>'
+    __str_template__ = '<{self.__class__.__name__} #{self.id}>'
 
     def __init__(self, server):
         """
         @type server: model.server.Server
         """
+        logging.debug('%s #%d: Create', self.__class__.__name__, self.id)
         super(Object, self).__init__()
         self.server = server
         """@type: model.server.Server"""
@@ -29,9 +30,10 @@ class Object(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
+    id = property(id)
 
 class PointObject(Object):
-    __str_template__ = '<{self.__class__.__name__} #{self.uid};{self.position}>'
+    __str_template__ = '<{self.__class__.__name__} #{self.id};{self.position}>'
 
     def __init__(self, position, **kw):
         """
@@ -88,6 +90,7 @@ class VisibleObject(PointObject):
             del contact
 
     def special_contacts_search(self):
+        logging.debug('%s:: VisibleObject.special_contacts_search', self)
         contacts = self.contacts
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
             contacts.extend(motion.contacts_with_static(self))
