@@ -132,6 +132,9 @@ class Bot(Unit):
 
         contacts = self.contacts
 
+        logging.debug('%s:: Bot.special_contacts_search', self)
+        logging.debug('>> %s', self.server.filter_statics(None))
+
         contacts_with_static = self_motion.contacts_with_static
         for obj in self.server.filter_statics():  # todo: GEO-index clipping
             contacts.extend(contacts_with_static(obj))
