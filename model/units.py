@@ -107,7 +107,9 @@ class Bot(Unit):
         """
         @rtype: model.vectors.Point
         """
-        return self.motion.position if self.motion else self.position
+        return self.motion.position if self.motion else self._position
+
+    position = property(fget=get_position, fset=Unit.set_position)
 
     @property
     def max_velocity(self):  # m/s
