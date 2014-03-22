@@ -136,11 +136,11 @@ class Bot(Unit):
         logging.debug('>> %s', self.server.filter_statics(None))
 
         contacts_with_static = self_motion.contacts_with_static
-        for obj in self.server.filter_statics():  # todo: GEO-index clipping
+        for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
             contacts.extend(contacts_with_static(obj))
 
         contacts_with_dynamic = self_motion.contacts_with_dynamic
-        for motion in self.server.filter_motions():  # todo: GEO-index clipping
+        for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
             contacts.extend(contacts_with_dynamic(motion))
 
     def set_task(self, task):
