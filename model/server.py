@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from utils import get_uid, TimelineQueue
+from utils import get_uid, TimelineQueue, get_time
 from events import Contact
 from time import sleep
 import logging
@@ -38,23 +38,23 @@ class LocalServer(Server):
 
     def event_loop(self):
         logging.debug('Event loop start')
-        max_sleep_time = 0.1
         dispatch = self.dispatch_event
-        while True:
-            if not dispatch():
-                sleep(max_sleep_time)
+        MAX_SERVER_SLEEP_TIME = 0.1
 
-    def dispatch_event(self):
+        while True:
+            dispatch(MAX_SERVER_SLEEP_TIME)
+
+    def dispatch_event(self, timeout):
         timeline = self.timeline
         if timeline:
-            event = timeline.head
-            logging.debug('Event dispatching')
-            if isinstance(event, Contact):
-                observer = event.subj.observer
-                if observer:
-                    observer.emit(event)
+            if timeline.head.time <= get_time():
+                event = timeline.get()
+                if isinstance(event, Contact):
+                    event.subj.observer.emit(event)
+                else:
+                    logging.info('! Unknown event: %s', event)
 
-            return True
+                return event
 
 
 class RemoteServer(Server):
@@ -70,7 +70,7 @@ def main(*args):
 
 if __name__ == '__main__':
     import sys
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
     #main(*sys.argv)
 
     from units import Station, Bot
@@ -82,10 +82,16 @@ if __name__ == '__main__':
     station = Station(server=srv, position=Point(0, 0))
     station.observer.subscribe(user)
 
-    bot = Bot(server=srv, position=Point(-700, -700))
+    bot = Bot(server=srv, position=Point(-600, -10))
     bot.observer.subscribe(user)
 
-    bot.goto(Point(800, 800))
+    bot.goto(Point(800, 10))
+
+    t = get_time()
+    while srv.timeline:        
+        if srv.dispatch_event(0.5) or (get_time() - t) > 1:
+            print bot
+            t = get_time()
     
-    srv.event_loop()
+    #srv.event_loop()
 
