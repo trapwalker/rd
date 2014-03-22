@@ -90,9 +90,9 @@ class Bot(Unit):
     u"""Class of mobile units"""
 
     def __init__(self, **kw):
-        super(Bot, self).__init__(**kw)
         self.motion = None
         """@type: model.tasks.Goto | None"""
+        super(Bot, self).__init__(**kw)
 
     def stop(self):
         del self.task
