@@ -2,7 +2,7 @@
 
 from math import sqrt
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from utils import get_time
 from events import ContactSee, ContactUnsee
 
@@ -26,14 +26,12 @@ class Task(object):
         self.owner = owner
         self.start_time = start_time or get_time()
 
-    @abstractmethod
-    def get_duration(self):
+    @property
+    def duration(self):
         """
         @rtype: float
         """
         return None
-
-    duration = property(get_duration)
 
     @property
     def finish_time(self):
@@ -44,6 +42,8 @@ class Task(object):
 
     def __str__(self):
         return self.__str_template__.format(self=self)
+
+    id = property(id)
 
 
 class Goto(Task):
@@ -149,22 +149,22 @@ class Goto(Task):
             self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
-    def get_duration(self):
+    @property
+    def duration(self):
         """
         @rtype: float
         """
         assert self.owner.max_velocity > 0
         return self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
 
-    def get_position(self, to_time=None):
+    @property
+    def position(self, to_time=None):
         """
         @param model.utils.TimeClass | None to_time: Time for getting position
         @rtype: model.vectors.Point
         """
         to_time = to_time or get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
-
-    position = property(get_position)
 
 
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
