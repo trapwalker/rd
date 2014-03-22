@@ -25,6 +25,8 @@ class Inventory(object):
     def count(self):
         return len(self.things)
 
+    id = property(id)
+
     # todo: append, remove, check
 
 

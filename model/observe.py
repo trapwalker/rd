@@ -44,5 +44,7 @@ class Observer(object):
     def __str__(self):
         return '<Observer: R={:g}; n=%d>'.format(self.r, len(self.subscribers))
 
+    id = property(id)
+
 
 from balance import BALANCE

@@ -25,6 +25,8 @@ class Event(object):
     def __nonzero__(self):
         return self.actual
 
+    id = property(id)
+
 
 class Contact(Event):
     __slots__ = ('subj', 'obj',)
