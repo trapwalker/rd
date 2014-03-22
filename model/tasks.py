@@ -50,7 +50,7 @@ class Goto(Task):
     __slots__ = ['start_point', 'target_point', 'vector', 'v']
     __str_template__ = (
         '<{self.__class__.__name__} {self.start_time:g}: '
-        '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}'
+        '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
     )
 
     def __init__(self, owner, target_point, **kw):
