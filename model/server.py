@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from utils import get_uid, TimelineQueue, get_time
-from events import Contact
+import events
 from time import sleep
 import logging
 
@@ -52,12 +52,15 @@ class LocalServer(Server):
         if timeline:
             if timeline.head.time <= self.get_time():
                 event = timeline.get()
-                if isinstance(event, Contact):
-                    event.subj.observer.emit(event)
-                else:
-                    logging.info('! Unknown event: %s', event)
+                if event.actual:
+                    if isinstance(event, events.Contact):
+                        event.subj.observer.emit(event)
+                    elif isinstance(event, events.Callback):
+                        event.run()
+                    else:
+                        logging.info('! Unknown event: %s', event)
 
-                return event
+                    return event
 
 
 class RemoteServer(Server):
@@ -69,7 +72,7 @@ class RemoteServer(Server):
 
 def main(*args):
     pass
-    
+
 
 if __name__ == '__main__':
     import sys
@@ -79,8 +82,13 @@ if __name__ == '__main__':
     from units import Station, Bot
     from agents import User
     from vectors import Point
-    
+
+    def inspect(event):
+        srv.timeline.put(events.Callback(time=event.time + 1, func=inspect))
+        logging.info('!- %s', bot)
+
     srv = LocalServer()
+    srv.timeline.put(events.Callback(time=srv.get_time() + 1, func=inspect))
     user = User(server=srv)
     station = Station(server=srv, position=Point(0, 0))
     station.observer.subscribe(user)
@@ -91,10 +99,7 @@ if __name__ == '__main__':
     bot.goto(Point(800, 10))
 
     t = srv.get_time()
-    while srv.timeline:        
-        if srv.dispatch_event(0.5) or (srv.get_time() - t) > 1:
-            print bot
-            t = srv.get_time()
-    
-    #srv.event_loop()
+    while srv.timeline:
+        srv.dispatch_event(0.5)
+
 
