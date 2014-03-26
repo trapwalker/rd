@@ -46,3 +46,17 @@ class ContactSee(Contact):
 
 class ContactUnsee(Contact):
     pass
+
+
+class Callback(Event):
+    __slots__ = ('func',)
+
+    def __init__(self, func, **kw):
+        """
+        """
+        super(Callback, self).__init__(**kw)
+        self.func = func
+
+    def run(self):
+        return self.func(self)
+
