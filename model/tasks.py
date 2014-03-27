@@ -3,7 +3,7 @@
 from math import sqrt
 from abc import ABCMeta
 
-from events import ContactInp, ContactOut
+from events import ContactSee, ContactOut
 from utils import time_log_format
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
@@ -93,7 +93,7 @@ class Goto(Task):
             t2 = (-k + d4) / a
 
             if tmin <= t1 <= tmax:
-                contacts.append(ContactInp(time=t1, subj=subj, obj=obj))
+                contacts.append(ContactSee(time=t1, subj=subj, obj=obj))
             if tmin <= t2 <= tmax:
                 contacts.append(ContactOut(time=t2, subj=subj, obj=obj))
 

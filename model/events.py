@@ -52,7 +52,7 @@ class Contact(Event):
         self.obj = obj
 
 
-class ContactInp(Contact):
+class ContactSee(Contact):
     pass
 
 
