@@ -81,6 +81,7 @@ class LocalServer(Server):
                 continue
 
             dispatch(timeline.get())
+            
 
         logging.info('---- Event loop stop ' + '-' * 50 + '\n')        
 
@@ -106,6 +107,15 @@ class LocalServer(Server):
     def dispatch_event(self, event):
         assert event.actual
         if isinstance(event, events.Contact):
+            subj = event.subj
+            obj = event.obj
+            #print subj.contacts.get()
+            #obj.contacts.get()
+            next_event = None #min(subj.contacts.head, obj.contacts.head)
+            if next_event:                
+                #self.timeline.put(next_event)
+                logging.debug('SRV future event insert: %s', next_event)
+
             event.subj.observer.emit(event)
         elif isinstance(event, events.Callback):
             event.run()

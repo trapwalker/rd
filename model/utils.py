@@ -3,9 +3,9 @@
 from Queue import PriorityQueue, Full
 from time import time as _time
 from datetime import datetime
-from itertools import chain, imap
 import heapq
 from pprint import pformat
+from functools import total_ordering
 
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
@@ -33,11 +33,15 @@ time_log_format = TimeFormatter('{:%H:%M:%S.%f}')
 class TimelineQueue(PriorityQueue):
     #__slots__ = ['EMPTY'] # todo: future python versions optimization
 
+    @total_ordering
     class EMPTY(object):
         __slots__ = []
 
         def __nonzero__(self):
             return False
+
+        def __gt__(self, other):
+            return True
 
     def remove(self, item, heapify=heapq.heapify, heappop=heapq.heappop):
         """Remove item from queue.
