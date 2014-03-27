@@ -127,7 +127,7 @@ class Bot(Unit):
 
     def special_contacts_search(self):
         self_motion = self.motion
-        if not self_motion:
+        if self_motion is None:
             return super(Bot, self).special_contacts_search()
 
         contacts = self.contacts
@@ -154,19 +154,21 @@ class Bot(Unit):
             self.server.motions.remove(old_motion)
         new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion
+        logging.debug('%s: Motion set to %s (old=%s)', self, new_motion, old_motion)
         if new_motion:
             self.server.motions.append(new_motion)
+            self.server.statics.remove(self)
+        else:
+            self.server.statics.append(self)
+
         self.change_observer_state(True)
 
         super(Bot, self).set_task(task)
 
     task = property(fget=Unit.get_task, fset=set_task, fdel=Unit.del_task)
 
-    def delete(self):
-        motion = self.motion
-        if motion:
-            self.server.motions.remove(motion)
-        super(Bot, self).delete()
+    # todo: test motions deletion from server
+
 
 
 from balance import BALANCE
