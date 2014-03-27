@@ -70,7 +70,9 @@ class LocalServer(Server):
                 continue
             
             if not timeline.head.actual:
-                timeline.get()
+                event = timeline.get()
+                logging.debug('SKIP unactual %s', event)
+                del event
                 continue
 
             t = self.get_time()
@@ -109,13 +111,11 @@ class LocalServer(Server):
         if isinstance(event, events.Contact):
             subj = event.subj
             obj = event.obj
-            #print subj.contacts.get()
-            #obj.contacts.get()
-            next_event = None #min(subj.contacts.head, obj.contacts.head)
-            if next_event:                
-                #self.timeline.put(next_event)
-                logging.debug('SRV future event insert: %s', next_event)
-
+            print event
+            print subj.contacts
+            print obj.contacts
+            #subj.contacts.remove(event)
+            #obj.contacts.remove(event)
             event.subj.observer.emit(event)
         elif isinstance(event, events.Callback):
             event.run()
@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
     bot.goto(Point(800, 10))
 
-    print bot.contacts
+    pp(bot.contacts, width=1)
 
     srv.start()
 

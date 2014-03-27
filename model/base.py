@@ -65,8 +65,8 @@ class PointObject(Object):
 class VisibleObject(PointObject):
 
     def __init__(self, **kw):
-        self.contacts = TimelineQueue()
-        """@type: TimelineQueue"""
+        self.contacts = []
+        """@type: list[model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
 
     def on_change(self):
@@ -82,28 +82,24 @@ class VisibleObject(PointObject):
         logging.debug('%s:: contacts clear', self)
         contacts = self.contacts
         while contacts:
-            contact = contacts.get()
-            self.server.timeline.remove(contact)  # todo: optimize
-            if contact.subject != self:
-                contact.subject.contacts.remove(contact)
-            elif contact.object != self:
-                contact.object.contacts.remove(contact)
-            del contact
+            contacts.pop().actual = False
 
     def special_contacts_search(self):
         logging.debug('%s:: VisibleObject.special_contacts_search', self)
         contacts = self.contacts
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
-            contacts.extend(motion.contacts_with_static(self))
+            found = motion.contacts_with_static(self)
+            if found:
+                contacts.extend(found)
+                motion.owner.contacts.extend(found)
 
     def contacts_search(self):
         # todo: rename methods (search->forecast)
         logging.debug('%s:: contacts search', self)
         self.special_contacts_search()
         logging.debug('%s:: contacts found: %s', self, len(self.contacts))
-        if self.contacts:
-            self.server.timeline.put(self.contacts.head)
-            # todo: check for double including one contact into the servers timeline
+        self.server.timeline.extend(self.contacts)
+        # todo: check for double including one contact into the servers timeline
 
     def delete(self):
         self.contacts_clear()

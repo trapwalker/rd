@@ -69,7 +69,6 @@ class Unit(VisibleObject):
         logging.debug('%s:: task = %s', self, task)
         self._task = task
         self.on_change()
-        # todo: remove old timeline events, add new
 
     def del_task(self):
         self.set_task(None)
@@ -137,11 +136,17 @@ class Bot(Unit):
 
         contacts_with_static = self_motion.contacts_with_static
         for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
-            contacts.extend(contacts_with_static(obj))
+            found = contacts_with_static(obj)
+            if found:
+                contacts.extend(found)
+                obj.contacts.extend(found)
 
         contacts_with_dynamic = self_motion.contacts_with_dynamic
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
-            contacts.extend(contacts_with_dynamic(motion))
+            found = contacts_with_dynamic(motion)
+            if found:
+                contacts.extend(found)
+                motion.owner.contacts.extend(found)
 
     def set_task(self, task):
         """
