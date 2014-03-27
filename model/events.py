@@ -2,11 +2,12 @@
 
 from functools import total_ordering
 
+from utils import time_log_format
 
 @total_ordering
 class Event(object):
     __slots__ = ('time', 'actual',)
-    __str_template__ = '<{self.__class__.__name__} #{self.id}>[{self.time}]'
+    __str_template__ = '<{self.__class__.__name__} #{self.id}>[{self.time_str}]'
 
     def __init__(self, time):
         """
@@ -27,6 +28,10 @@ class Event(object):
 
     def __str__(self):
         return self.__str_template__.format(self=self)
+
+    @property
+    def time_str(self):
+        return time_log_format(self.time)
 
     __repr__ = __str__
 
