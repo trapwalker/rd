@@ -13,7 +13,7 @@ class Agent(Object):
         """
         @param Event event: Incoming event
         """
-        logging.info('%s say: %s %s -> %s', self, event.__class__.__name__, event.subj, event.obj)
+        logging.info('%s say: %s', self, event)
 
 
 class User(Agent):

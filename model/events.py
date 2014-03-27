@@ -6,6 +6,7 @@ from functools import total_ordering
 @total_ordering
 class Event(object):
     __slots__ = ('time', 'actual',)
+    __str_template__ = '<{self.__class__.__name__} #{self.id}>[{self.time}]'
 
     def __init__(self, time):
         """
@@ -24,11 +25,17 @@ class Event(object):
     def __nonzero__(self):
         return self.actual
 
+    def __str__(self):
+        return self.__str_template__.format(self=self)
+
+    __repr__ = __str__
+
     id = property(id)
 
 
 class Contact(Event):
     __slots__ = ('subj', 'obj',)
+    __str_template__ = '<{self.__class__.__name__} #{self.id}>[{self.time}] {self.subj}-{self.obj}'
 
     def __init__(self, subj, obj, **kw):
         """
