@@ -5,6 +5,8 @@ import events
 from time import sleep
 import logging
 
+MAX_SERVER_SLEEP_TIME = 0.1
+
 
 class Server(object):
 
@@ -41,48 +43,38 @@ class LocalServer(Server):
 
     def event_loop(self):
         logging.info('Event loop start')
+        timeout = MAX_SERVER_SLEEP_TIME
         dispatch = self.dispatch_event
-        MAX_SERVER_SLEEP_TIME = 0.1
+        timeline = self.timeline
 
         while True:
-            dispatch(MAX_SERVER_SLEEP_TIME)
-
-    def dispatch_event(self, timeout):
-        timeline = self.timeline
-        if not timeline:
-            sleep(timeout)
-            return
-
-        if not timeline.head.actual:
-            timeline.get()
-            return 
+            if not timeline:
+                sleep(timeout)
+                continue
             
-        t = self.get_time()
-        t1 = timeline.head.time
+            if not timeline.head.actual:
+                timeline.get()
+                continue
 
-        if t1 > t:
-            sleep(min(t1 - t, timeout))
-            return
-            
-        event = timeline.get()
-        if not event.actual:
-            return
+            t = self.get_time()
+            t1 = timeline.head.time
 
+            if t1 > t:
+                sleep(min(t1 - t, timeout))
+                continue
+
+            dispatch(timeline.get())
+
+    run = event_loop
+
+    def dispatch_event(self, event):
+        assert event.actual
         if isinstance(event, events.Contact):
             event.subj.observer.emit(event)
         elif isinstance(event, events.Callback):
             event.run()
         else:
             logging.info('! Unknown event: %s', event)
-
-        return event
-
-
-class RemoteServer(Server):
-
-    def __init__(self, uri, **kw):
-        super(RemoteServer, self).__init__(**kw)
-        self.uri = uri
 
 
 def main(*args):
@@ -92,7 +84,7 @@ def main(*args):
 if __name__ == '__main__':
     import sys
     logging.basicConfig(level=logging.DEBUG, filename='server.log')
-    logging.info('==== Start logging ' + '=' * 50)
+    logging.info('\n==== Start logging ' + '=' * 50)
     #main(*sys.argv)
 
     from units import Station, Bot
@@ -114,8 +106,6 @@ if __name__ == '__main__':
 
     bot.goto(Point(800, 10))
 
-    t = srv.get_time()
-    while srv.timeline:
-        srv.dispatch_event(0.5)
+    srv.run()
 
 
