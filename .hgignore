@@ -27,3 +27,4 @@ settings_local.py
 env/
 resources.bin/*
 *.png
+*.log

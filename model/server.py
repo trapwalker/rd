@@ -76,7 +76,8 @@ def main(*args):
 
 if __name__ == '__main__':
     import sys
-    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+    logging.basicConfig(level=logging.DEBUG, filename='server.log')
+    logging.info('==== Start logging ' + '=' * 50)
     #main(*sys.argv)
 
     from units import Station, Bot
@@ -85,7 +86,7 @@ if __name__ == '__main__':
 
     def inspect(event):
         srv.timeline.put(events.Callback(time=event.time + 1, func=inspect))
-        logging.info('!- %s', bot)
+        logging.info('INSPECT - %s', bot)
 
     srv = LocalServer()
     srv.timeline.put(events.Callback(time=srv.get_time() + 1, func=inspect))
