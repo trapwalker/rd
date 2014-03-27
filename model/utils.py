@@ -2,6 +2,7 @@
 
 from Queue import PriorityQueue, Full
 from time import time as _time
+from datetime import datetime
 from itertools import chain, imap
 import heapq
 
@@ -9,6 +10,23 @@ from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
 
 TimeClass = get_time().__class__
+
+
+class TimeFormatter(object):
+    def __init__(self, fmt='{:%Y-%m-%d %H:%M:%S.%f}'):
+        self.fmt = fmt
+
+    def __call__(self, t):
+        dt = datetime.fromtimestamp(t)
+        s = self.fmt.format(dt)
+        if self.fmt.endswith('%f}'):
+            s = s[:-3]
+        return s
+
+    __getitem__ = __call__
+
+
+time_log_format = TimeFormatter('{:%H:%M:%S.%f}')
 
 
 class TimelineQueue(PriorityQueue):
