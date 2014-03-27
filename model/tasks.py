@@ -1,10 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
 
 from math import sqrt
-
 from abc import ABCMeta
-from events import ContactSee, ContactUnsee
 
+from events import ContactSee, ContactUnsee
+from utils import time_log_format
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -14,7 +14,7 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 class Task(object):
     __metaclass__ = ABCMeta
     __slots__ = ['__weakref__', 'owner', 'start_time', '_duration', '_get_time']
-    __str_template__ = '<{self.__class__.__name__} in {self.start_time:g}'
+    __str_template__ = '<{self.__class__.__name__} in {self.start_time_str}'
 
     def __init__(self, owner, start_time=None):
         """
@@ -43,13 +43,17 @@ class Task(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
+    @property
+    def start_time_str(self):
+        return time_log_format(self.start_time)
+
     id = property(id)
 
 
 class Goto(Task):
     __slots__ = ['start_point', 'target_point', 'vector', 'v']
     __str_template__ = (
-        '<{self.__class__.__name__} {self.start_time:g}: '
+        '<{self.__class__.__name__} {self.start_time_str}: '
         '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
     )
 
