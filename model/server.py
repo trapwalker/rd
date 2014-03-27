@@ -40,7 +40,7 @@ class LocalServer(Server):
         super(LocalServer, self).__init__(**kw)
 
     def event_loop(self):
-        logging.debug('Event loop start')
+        logging.info('Event loop start')
         dispatch = self.dispatch_event
         MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -49,18 +49,33 @@ class LocalServer(Server):
 
     def dispatch_event(self, timeout):
         timeline = self.timeline
-        if timeline:
-            if timeline.head.time <= self.get_time():
-                event = timeline.get()
-                if event.actual:
-                    if isinstance(event, events.Contact):
-                        event.subj.observer.emit(event)
-                    elif isinstance(event, events.Callback):
-                        event.run()
-                    else:
-                        logging.info('! Unknown event: %s', event)
+        if not timeline:
+            sleep(timeout)
+            return
 
-                    return event
+        if not timeline.head.actual:
+            timeline.get()
+            return 
+            
+        t = self.get_time()
+        t1 = timeline.head.time
+
+        if t1 > t:
+            sleep(min(t1 - t, timeout))
+            return
+            
+        event = timeline.get()
+        if not event.actual:
+            return
+
+        if isinstance(event, events.Contact):
+            event.subj.observer.emit(event)
+        elif isinstance(event, events.Callback):
+            event.run()
+        else:
+            logging.info('! Unknown event: %s', event)
+
+        return event
 
 
 class RemoteServer(Server):
