@@ -7,6 +7,7 @@ import errors
 from time import sleep
 from threading import Thread
 import logging
+from pprint import pprint as pp
 
 
 MAX_SERVER_SLEEP_TIME = 0.1
@@ -25,6 +26,8 @@ class Server(object):
         self.motions = []  # Active motion tasks  # todo: GEO-index
         self.static_observers = []  # todo: GEO-index
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
+        self.start_time = None
+        # todo: blocking of init of servers with same uid
 
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
@@ -83,7 +86,8 @@ class LocalServer(Server):
 
     def start(self):
         if self.thread:
-            raise EServerAlreadyStarted()       
+            raise EServerAlreadyStarted()
+        self.start_time = self.get_time()
         self.thread = Thread(target=self.event_loop)
         self.thread.start()
 
@@ -137,6 +141,8 @@ if __name__ == '__main__':
     bot.observer.subscribe(user)
 
     bot.goto(Point(800, 10))
+
+    pp(list(bot.contacts), width=1)
 
     srv.start()
 
