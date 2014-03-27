@@ -2,6 +2,7 @@
 
 from utils import get_uid, TimelineQueue, get_time
 import events
+import errors
 
 from time import sleep
 from threading import Thread
@@ -39,11 +40,19 @@ class Server(object):
         return get_time()
 
 
+class EServerAlreadyStarted(errors.EIllegal):
+    pass
+
+
+class EServerIsNotStarted(errors.EIllegal):
+    pass
+
+
 class LocalServer(Server):
 
     def __init__(self, **kw):
         super(LocalServer, self).__init__(**kw)
-        self.thread = Thread(target=self.event_loop)
+        self.thread = None
         self.is_terminated = False
 
     def event_loop(self):
@@ -73,15 +82,22 @@ class LocalServer(Server):
         logging.info('---- Event loop stop ' + '-' * 50 + '\n')        
 
     def start(self):
+        if self.thread:
+            raise EServerAlreadyStarted()       
+        self.thread = Thread(target=self.event_loop)
         self.thread.start()
 
     def stop(self, timeout=None):
+        if not self.is_active:
+            raise EServerIsNotStarted()
         self.is_terminated = True
         self.thread.join(timeout)
+        self.thread = None
+        self.is_terminated = False
 
     @property
     def is_active(self):
-        return self.thread.is_alive()
+        return self.thread is not None and self.thread.is_alive()
 
     def dispatch_event(self, event):
         assert event.actual
