@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from utils import get_uid, TimelineQueue, get_time
+from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
 
@@ -128,8 +128,8 @@ if __name__ == '__main__':
     from vectors import Point
 
     def inspect(event):
-        srv.timeline.put(events.Callback(time=event.time + 1, func=inspect))
-        logging.info('INSPECT - %s', bot)
+        srv.timeline.put(events.Callback(time=srv.get_time() + 1, func=inspect))
+        logging.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
 
     srv = LocalServer()
     srv.timeline.put(events.Callback(time=srv.get_time() + 1, func=inspect))
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
     bot.goto(Point(800, 10))
 
-    pp(list(bot.contacts), width=1)
+    print bot.contacts
 
     srv.start()
 

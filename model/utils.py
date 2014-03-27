@@ -5,6 +5,7 @@ from time import time as _time
 from datetime import datetime
 from itertools import chain, imap
 import heapq
+from pprint import pformat
 
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
@@ -68,12 +69,9 @@ class TimelineQueue(PriorityQueue):
             self._init(0)
 
     def __repr__(self):
-        return '{}([{}])'.format(
+        return '{}(\n{}\n)'.format(
             self.__class__.__name__,
-            ', '.join(imap(repr, chain(
-                [self._head] if not self._head == self.EMPTY else [],
-                self.queue
-            )))
+            pformat(list(self), width=1, indent=4)
         )
 
     __len__ = PriorityQueue.qsize
