@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
     bot.goto(Point(800, 10))
 
-    pp(bot.contacts, width=1)
+    pp(srv.timeline, width=1)
 
     srv.start()
 

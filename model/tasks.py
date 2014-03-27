@@ -91,8 +91,8 @@ class Goto(Task):
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
         if d4 > 0:
             d4 = sqrt(d4)
-            t1 = (-k - d4) / a
-            t2 = (-k + d4) / a
+            t1 = (-k - d4) / a + tmin
+            t2 = (-k + d4) / a + tmin
 
             if tmin <= t1 <= tmax:
                 contacts.append(ContactSee(time=t1, subj=subj, obj=obj))
@@ -106,7 +106,7 @@ class Goto(Task):
         # P(t)=V(t-t0)+P0
         # |P(t)-Q|=R
         p0 = self.start_point
-        tmin = self.start_time
+        tmin = 0  #self.start_time
         tmax = self.finish_time
         v = self.v
         """@type: model.vectors.Point"""
@@ -121,11 +121,11 @@ class Goto(Task):
 
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, static, self.start_time, tmax, a, k, c_wo_r2, contacts)
 
         if hasattr(static, 'observer') and static.observer:
             # todo: type hinting of "static" param fix
-            self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(static, self.owner, self.start_time, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
     def contacts_with_dynamic(self, motion):
