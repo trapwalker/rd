@@ -2,6 +2,8 @@
 
 from math import sqrt
 from abc import ABCMeta
+import logging
+from pprint import pformat
 
 from events import ContactSee, ContactOut
 from utils import time_log_format
@@ -115,6 +117,7 @@ class Goto(Task):
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2
+        logging.debug('CWS: %s', pformat(locals(), width=1))
 
         contacts = []
         if self.owner.observer:
