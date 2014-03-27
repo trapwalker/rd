@@ -111,12 +111,10 @@ class LocalServer(Server):
         if isinstance(event, events.Contact):
             subj = event.subj
             obj = event.obj
-            print event
-            print subj.contacts
-            print obj.contacts
-            #subj.contacts.remove(event)
-            #obj.contacts.remove(event)
+            subj.contacts.remove(event)
+            obj.contacts.remove(event)
             event.subj.observer.emit(event)
+            logging.debug(self.timeline)
         elif isinstance(event, events.Callback):
             event.run()
         else:
