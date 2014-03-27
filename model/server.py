@@ -2,8 +2,11 @@
 
 from utils import get_uid, TimelineQueue, get_time
 import events
+
 from time import sleep
+from threading import Thread
 import logging
+
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -40,14 +43,16 @@ class LocalServer(Server):
 
     def __init__(self, **kw):
         super(LocalServer, self).__init__(**kw)
+        self.thread = Thread(target=self.event_loop)
+        self.is_terminated = False
 
     def event_loop(self):
-        logging.info('Event loop start')
+        logging.info('\n---- Event loop start ' + '-' * 50)
         timeout = MAX_SERVER_SLEEP_TIME
         dispatch = self.dispatch_event
         timeline = self.timeline
 
-        while True:
+        while not self.is_terminated:
             if not timeline:
                 sleep(timeout)
                 continue
@@ -65,7 +70,18 @@ class LocalServer(Server):
 
             dispatch(timeline.get())
 
-    run = event_loop
+        logging.info('---- Event loop stop ' + '-' * 50 + '\n')        
+
+    def start(self):
+        self.thread.start()
+
+    def stop(self, timeout=None):
+        self.is_terminated = True
+        self.thread.join(timeout)
+
+    @property
+    def is_active(self):
+        return self.thread.is_alive()
 
     def dispatch_event(self, event):
         assert event.actual
@@ -106,6 +122,6 @@ if __name__ == '__main__':
 
     bot.goto(Point(800, 10))
 
-    srv.run()
+    srv.start()
 
 
