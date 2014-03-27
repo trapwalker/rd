@@ -156,5 +156,13 @@ class TimelineQueue(PriorityQueue):
         for item in iterator:
             self.put(item)
 
+    def __iter__(self):
+        l = []
+        if self:
+            l.append(self.head)
+            l.extend(self.queue)
+
+        return (item for item in l)
+
 
 __all__ = [get_uid, get_time, TimelineQueue]
