@@ -5,6 +5,7 @@ import logging
 from base import VisibleObject
 from observe import Observer
 import tasks
+import events
 
 
 class Unit(VisibleObject):
@@ -69,6 +70,9 @@ class Unit(VisibleObject):
         # old_task = self._task
         logging.debug('%s:: task = %s', self, task)
         self._task = task
+        if isinstance(task, tasks.Determined):
+            self.server.post_event(events.TaskEnd(time=task.finish_time, subj=self))
+
         self.on_change()
 
     def del_task(self):
