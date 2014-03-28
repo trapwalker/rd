@@ -158,6 +158,12 @@ class TimelineQueue(PriorityQueue):
         for item in iterator:
             self.put(item)
 
+    def __copy__(self):
+        q = TimelineQueue()
+        q.queue = self.queue
+        q._head = self._head
+        return q
+
     def __iter__(self):
         l = []
         if self:
