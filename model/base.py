@@ -35,6 +35,10 @@ class Object(object):
 
     id = property(id)
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
 
 class PointObject(Object):
     __str_template__ = '<{self.__class__.__name__} #{self.id};{self.position}>'
