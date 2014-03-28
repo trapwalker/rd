@@ -108,3 +108,10 @@ class Callback(Event):
         super(Callback, self).perform()
         return self.func(self)
 
+
+class TaskEnd(Subjective):
+
+    def perform(self):
+        super(TaskEnd, self).perform()
+        del self.subj.task
+        logging.debug('TASK END - %s', self.subj)
