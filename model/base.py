@@ -3,7 +3,7 @@
 import logging
 
 from abc import ABCMeta
-from utils import get_uid, TimelineQueue
+from utils import get_uid
 from inventory import Inventory
 logging.basicConfig(level='DEBUG')
 
@@ -26,12 +26,14 @@ class Object(object):
         """@type: model.server.Server"""
         self.uid = get_uid()
         self.server.objects[self.uid] = self
+        self.is_alive = True
 
     def __str__(self):
         return self.__str_template__.format(self=self)
 
     def delete(self):
-        del(self.server.objects[self.uid])
+        self.is_alive = False
+        del self.server.objects[self.uid]
 
     id = property(id)
 
