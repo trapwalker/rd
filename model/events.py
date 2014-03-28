@@ -65,7 +65,7 @@ class Subjective(Event):
 
     def perform(self):
         super(Subjective, self).perform()
-        self.subj.observer.emit(self)  # todo: Not all subjective events must be sent
+        self.subj.observer.emit(self)  # todo: Not all subjective events must be sent to subscribers
 
 
 class Contact(Subjective):
