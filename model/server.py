@@ -61,7 +61,6 @@ class LocalServer(Server):
     def event_loop(self):
         logging.info('\n---- Event loop start ' + '-' * 50)
         timeout = MAX_SERVER_SLEEP_TIME
-        dispatch = self.dispatch_event
         timeline = self.timeline
 
         while not self.is_terminated:
@@ -82,8 +81,7 @@ class LocalServer(Server):
                 sleep(min(t1 - t, timeout))
                 continue
 
-            dispatch(timeline.get())
-            
+            timeline.get().perform()
 
         logging.info('---- Event loop stop ' + '-' * 50 + '\n')        
 
@@ -105,20 +103,6 @@ class LocalServer(Server):
     @property
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
-
-    def dispatch_event(self, event):
-        assert event.actual
-        if isinstance(event, events.Contact):
-            subj = event.subj
-            obj = event.obj
-            subj.contacts.remove(event)
-            obj.contacts.remove(event)
-            event.subj.observer.emit(event)
-            logging.debug(self.timeline)
-        elif isinstance(event, events.Callback):
-            event.run()
-        else:
-            logging.info('! Unknown event: %s', event)
 
 
 def main(*args):

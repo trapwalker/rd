@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from functools import total_ordering
+import logging
 
 from utils import time_log_format
 
+
 @total_ordering
 class Event(object):
-    __slots__ = ('time', 'actual',)
-    __str_template__ = '<{self.unactual_mark}{self.__class__.__name__} #{self.id} [{self.time_str}]>'
+    __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
 
     def __init__(self, time):
         """
@@ -45,19 +46,46 @@ class Event(object):
 
     id = property(id)
 
+    def perform(self):
+        pass
 
-class Contact(Event):
-    __slots__ = ('subj', 'obj',)
-    __str_template__ = '<{self.unactual_mark}{self.__class__.__name__} #{self.id} [{self.time_str}] {self.subj}-{self.obj}>'
 
-    def __init__(self, subj, obj, **kw):
+class Subjective(Event):
+    __str_template__ = (
+        '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
+        '{self.subj.classname}#{self.subj.id}>'
+    )
+
+    def __init__(self, subj, **kw):
         """
         @param model.units.Unit subj: Subject of contact
+        """
+        super(Subjective, self).__init__(**kw)
+        self.subj = subj  # todo: weakref?
+
+    def perform(self):
+        super(Subjective, self).perform()
+        self.subj.observer.emit(self)  # todo: Not all subjective events must be sent
+
+
+class Contact(Subjective):
+    __str_template__ = (
+        '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
+        '{self.subj.classname}#{self.subj.id}-'
+        '{self.obj.classname}#{self.obj.id}>'
+    )
+
+    def __init__(self, obj, **kw):
+        """
         @param model.base.VisibleObject obj: Object of contact
         """
         super(Contact, self).__init__(**kw)
-        self.subj = subj  # todo: weakref?
         self.obj = obj
+
+    def perform(self):
+        super(Contact, self).perform()
+        self.subj.contacts.remove(self)
+        self.obj.contacts.remove(self)
 
 
 class ContactSee(Contact):
@@ -69,7 +97,6 @@ class ContactOut(Contact):
 
 
 class Callback(Event):
-    __slots__ = ('func',)
 
     def __init__(self, func, **kw):
         """
@@ -77,6 +104,7 @@ class Callback(Event):
         super(Callback, self).__init__(**kw)
         self.func = func
 
-    def run(self):
+    def perform(self):
+        super(Callback, self).perform()
         return self.func(self)
 
