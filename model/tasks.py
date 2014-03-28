@@ -156,6 +156,7 @@ class Goto(Task):
         if motion.owner.observer:
             self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
 
+        logging.debug('contacts_with_dynamic: %s', pformat(locals(), width=1))
         return contacts
 
     @property
