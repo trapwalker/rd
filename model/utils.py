@@ -6,6 +6,7 @@ from datetime import datetime
 import heapq
 from pprint import pformat
 from functools import total_ordering
+from copy import copy
 
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
@@ -165,12 +166,9 @@ class TimelineQueue(PriorityQueue):
         return q
 
     def __iter__(self):
-        l = []
-        if self:
-            l.append(self.head)
-            l.extend(self.queue)
-
-        return (item for item in l)
+        q = copy(self)
+        while q:
+            yield q.get()
 
 
 __all__ = [get_uid, get_time, TimelineQueue]
