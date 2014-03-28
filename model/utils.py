@@ -161,7 +161,7 @@ class TimelineQueue(PriorityQueue):
 
     def __copy__(self):
         q = TimelineQueue()
-        q.queue = self.queue
+        q.queue = copy(self.queue)
         q._head = self._head
         return q
 
