@@ -7,7 +7,7 @@ from utils import time_log_format
 @total_ordering
 class Event(object):
     __slots__ = ('time', 'actual',)
-    __str_template__ = '<{self.__class__.__name__} #{self.id} [{self.time_str}]>'
+    __str_template__ = '<{self.unactual_mark}{self.__class__.__name__} #{self.id} [{self.time_str}]>'
 
     def __init__(self, time):
         """
@@ -30,6 +30,10 @@ class Event(object):
         return self.__str_template__.format(self=self)
 
     @property
+    def unactual_mark(self):
+        return '' if self.actual else '~'
+
+    @property
     def time_str(self):
         return time_log_format(self.time)
 
@@ -40,7 +44,7 @@ class Event(object):
 
 class Contact(Event):
     __slots__ = ('subj', 'obj',)
-    __str_template__ = '<{self.__class__.__name__} #{self.id} [{self.time_str}] {self.subj}-{self.obj}>'
+    __str_template__ = '<{self.unactual_mark}{self.__class__.__name__} #{self.id} [{self.time_str}] {self.subj}-{self.obj}>'
 
     def __init__(self, subj, obj, **kw):
         """
