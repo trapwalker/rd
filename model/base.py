@@ -78,6 +78,7 @@ class VisibleObject(PointObject):
         self.contacts = []
         """@type: list[model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
+        # todo: subscription to changes for external observers
 
     def on_change(self):
         # todo: Notify nearest observers
