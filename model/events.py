@@ -37,6 +37,10 @@ class Event(object):
     def time_str(self):
         return time_log_format(self.time)
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
     __repr__ = __str__
 
     id = property(id)
