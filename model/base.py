@@ -30,6 +30,9 @@ class Object(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
+    def delete(self):
+        del(self.server.objects[self.uid])
+
     id = property(id)
 
 
@@ -57,9 +60,6 @@ class PointObject(Object):
         self._position = position
 
     position = property(fget=get_position, fset=set_position)
-
-    def delete(self):
-        del(self.server.objects[self.uid])
 
 
 class VisibleObject(PointObject):
