@@ -77,7 +77,7 @@ class Goto(Task):
         """@type: model.vectors.Point"""
 
     @staticmethod
-    def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, contacts):
+    def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0, contacts):
         """
         @param model.units.Unit subj: Subject of potential contacts
         @param model.base.VisibleObject obj: Object of potential contacts
@@ -86,13 +86,14 @@ class Goto(Task):
         @param float a: First coefficient of polynome a*t^2+2*k*t+c=0
         @param float k:
         @param float c_wo_r2:
+        @param float t0: Common reference time point
         @param list[Contact] contacts: Contact list
         """
         d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
         if d4 > 0:
             d4 = sqrt(d4)
-            t1 = (-k - d4) / a + tmin
-            t2 = (-k + d4) / a + tmin
+            t1 = (-k - d4) / a + t0
+            t2 = (-k + d4) / a + t0
 
             if tmin <= t1 <= tmax:
                 contacts.append(ContactSee(time=t1, subj=subj, obj=obj))
@@ -106,6 +107,7 @@ class Goto(Task):
         # P(t)=V(t)+P0  // t0 is start_time
         # |P(t)-Q|=R
         p0 = self.start_point
+        tmin = self.start_time
         tmax = self.finish_time
         v = self.v
         """@type: model.vectors.Point"""
@@ -119,10 +121,10 @@ class Goto(Task):
 
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, static, self.start_time, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
 
         if hasattr(static, 'observer') and static.observer:
-            self._append_contacts(static, self.owner, self.start_time, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
         return contacts
 
     def contacts_with_dynamic(self, motion):
@@ -136,6 +138,8 @@ class Goto(Task):
         b0 = motion.start_point
         vb = motion.v
         tb = motion.start_time
+
+        t0 = 0 # todo: Use relative time for best accuracy
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
         s = vb*tb - va*ta + a0 - b0
         v = va - vb  # | t*v + s | = r
@@ -148,9 +152,10 @@ class Goto(Task):
 
         contacts = []
         if self.owner.observer:
-            self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
         if motion.owner.observer:
-            self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, contacts)
+            self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
+
         return contacts
 
     @property
