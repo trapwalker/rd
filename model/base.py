@@ -14,7 +14,7 @@ logging.basicConfig(level='DEBUG')
 
 class Object(object):
     __metaclass__ = ABCMeta
-    __str_template__ = '<{self.__class__.__name__} #{self.id}>'
+    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id}>'
 
     def __init__(self, server):
         """
@@ -41,9 +41,13 @@ class Object(object):
     def classname(self):
         return self.__class__.__name__
 
+    @property
+    def dead_mark(self):
+        return '' if self.is_alive else '~'
+
 
 class PointObject(Object):
-    __str_template__ = '<{self.__class__.__name__} #{self.id};{self.position}>'
+    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id};{self.position}>'
 
     def __init__(self, position, **kw):
         """
