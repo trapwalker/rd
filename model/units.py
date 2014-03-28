@@ -143,10 +143,11 @@ class Bot(Unit):
 
         contacts_with_dynamic = self_motion.contacts_with_dynamic
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
-            found = contacts_with_dynamic(motion)
-            if found:
-                contacts.extend(found)
-                motion.owner.contacts.extend(found)
+            if motion.owner != self:
+                found = contacts_with_dynamic(motion)
+                if found:
+                    contacts.extend(found)
+                    motion.owner.contacts.extend(found)
 
     def set_task(self, task):
         """
