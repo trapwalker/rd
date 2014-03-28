@@ -42,6 +42,19 @@ class Server(object):
     def get_time(self):
         return get_time()
 
+    def post_event(self, event):
+        """
+        @param model.events.Event event: New event
+        """
+        self.timeline.put(event)
+
+    def post_events(self, events_list):
+        """
+        @param iterable[model.events.Event] events_list: New events iterator
+        """
+        for event in events_list:
+            self.post_event(event)
+
 
 class EServerAlreadyStarted(errors.EIllegal):
     pass
@@ -120,11 +133,11 @@ if __name__ == '__main__':
     from vectors import Point
 
     def inspect(event):
-        srv.timeline.put(events.Callback(time=srv.get_time() + 1, func=inspect))
+        srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
         logging.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
 
     srv = LocalServer()
-    srv.timeline.put(events.Callback(time=srv.get_time() + 1, func=inspect))
+    srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
     user = User(server=srv)
     station = Station(server=srv, position=Point(0, 0))
     station.observer.subscribe(user)
@@ -137,5 +150,3 @@ if __name__ == '__main__':
     pp(srv.timeline, width=1)
 
     srv.start()
-
-

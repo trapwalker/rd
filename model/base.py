@@ -102,7 +102,7 @@ class VisibleObject(PointObject):
         logging.debug('%s:: contacts search', self)
         self.special_contacts_search()
         logging.debug('%s:: contacts found: %s', self, len(self.contacts))
-        self.server.timeline.extend(self.contacts)
+        self.server.post_events(self.contacts)
         # todo: check for double including one contact into the servers timeline
 
     def delete(self):
