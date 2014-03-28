@@ -15,7 +15,6 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 
 class Task(object):
     __metaclass__ = ABCMeta
-    __slots__ = ['__weakref__', 'owner', 'start_time', '_duration', '_get_time']
     __str_template__ = '<{self.__class__.__name__} in {self.start_time_str}'
 
     def __init__(self, owner, start_time=None):
@@ -28,20 +27,6 @@ class Task(object):
         self._get_time = owner.server.get_time
         self.start_time = start_time or self._get_time()
 
-    @property
-    def duration(self):
-        """
-        @rtype: float
-        """
-        return None
-
-    @property
-    def finish_time(self):
-        """
-        @rtype: model.utils.TimeClass
-        """
-        return self.start_time + self.duration
-
     def __str__(self):
         return self.__str_template__.format(self=self)
 
@@ -52,8 +37,31 @@ class Task(object):
     id = property(id)
 
 
-class Goto(Task):
-    __slots__ = ['start_point', 'target_point', 'vector', 'v']
+class Determined(Task):
+
+    def __init__(self, duration, **kw):
+        """
+        @param float duration: Duration of the task
+        """
+        super(Determined, self).__init__(**kw)
+        self._duration = duration
+
+    @property
+    def duration(self):
+        """
+        @rtype: float
+        """
+        return self._duration
+
+    @property
+    def finish_time(self):
+        """
+        @rtype: model.utils.TimeClass
+        """
+        return self.start_time + self.duration
+
+
+class Goto(Determined):
     __str_template__ = (
         '<{self.__class__.__name__} {self.start_time_str}: '
         '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
@@ -68,7 +76,9 @@ class Goto(Task):
         # todo: GEO-index
         start_point = owner.position
         assert start_point != target_point  # todo: epsilon test to eq
-        super(Goto, self).__init__(owner=owner, **kw)
+        assert owner.max_velocity > 0
+        duration = start_point.distance(target_point) / float(owner.max_velocity)
+        super(Goto, self).__init__(owner=owner, duration=duration, **kw)
         self.owner = owner  # todo: spike review
         self.start_point = start_point
         self.target_point = target_point
@@ -162,14 +172,6 @@ class Goto(Task):
 
         logging.debug('contacts_with_dynamic: %s', pformat(locals(), width=1))
         return contacts
-
-    @property
-    def duration(self):
-        """
-        @rtype: float
-        """
-        assert self.owner.max_velocity > 0
-        return self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
 
     @property
     def position(self, to_time=None):
