@@ -139,7 +139,11 @@ class Goto(Task):
         vb = motion.v
         tb = motion.start_time
 
-        t0 = 0 # todo: Use relative time for best accuracy
+        # Use relative time for best accuracy
+        t0 = ta
+        ta = 0
+        tb -= t0
+
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
         s = vb*tb - va*ta + a0 - b0
         v = va - vb  # | t*v + s | = r
