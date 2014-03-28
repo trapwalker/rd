@@ -81,7 +81,9 @@ class Goto(Determined):
         super(Goto, self).__init__(owner=owner, duration=duration, **kw)
         self.owner = owner  # todo: spike review
         self.start_point = start_point
+        """@type: model.vectors.Point"""
         self.target_point = target_point
+        """@type: model.vectors.Point"""
         self.vector = target_point - start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
         """@type: model.vectors.Point"""
@@ -151,7 +153,7 @@ class Goto(Determined):
 
         # Use relative time for best accuracy
         t0 = ta
-        ta = 0
+        ta = 0.0
         tb -= t0
 
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r

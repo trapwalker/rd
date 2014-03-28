@@ -89,11 +89,17 @@ class Contact(Subjective):
 
 
 class ContactSee(Contact):
-    pass
+
+    def perform(self):
+        super(ContactSee, self).perform()
+        self.subj.observer.see(self.obj)
 
 
 class ContactOut(Contact):
-    pass
+
+    def perform(self):
+        super(ContactOut, self).perform()
+        self.subj.observer.out(self.obj)
 
 
 class Callback(Event):
