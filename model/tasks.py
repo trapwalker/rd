@@ -103,16 +103,15 @@ class Goto(Task):
         """
         @param model.base.VisibleObject static: Static object
         """
-        # P(t)=V(t-t0)+P0
+        # P(t)=V(t)+P0  // t0 is start_time
         # |P(t)-Q|=R
         p0 = self.start_point
-        tmin = 0  #self.start_time
         tmax = self.finish_time
         v = self.v
         """@type: model.vectors.Point"""
         q = static.position
-        # |V*t-V*t0+P0-Q|=R
-        s = -v * tmin + p0 - q  # S=-V*t0+P0-Q; |V*t+S|=R
+        # |V*t+P0-Q|=R
+        s = p0 - q  # S=P0-Q; |V*t+S|=R
         # a*t^2+2*k*t+c=0; c=c_wo_r2-r^2
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
