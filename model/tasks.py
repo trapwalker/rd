@@ -145,7 +145,7 @@ class Goto(Task):
         tb -= t0
 
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
-        s = vb*tb - va*ta + a0 - b0
+        s = vb*tb - va*ta + a0 - b0  # todo: Remove multiplication by 0
         v = va - vb  # | t*v + s | = r
 
         a = v.x ** 2 + v.y ** 2
