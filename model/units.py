@@ -22,6 +22,7 @@ class Unit(VisibleObject):
     def delete(self):
         del self.observer
         del self.task
+        self.server.statics.remove(self)
         super(Unit, self).delete()
 
     def change_observer_state(self, new_state):
@@ -79,10 +80,6 @@ class Unit(VisibleObject):
 
 class Station(Unit):
     u"""Class of buildings"""
-
-    def delete(self):
-        self.server.statics.remove(self)
-        super(Station, self).delete()
 
 
 class Bot(Unit):
@@ -174,7 +171,6 @@ class Bot(Unit):
     task = property(fget=Unit.get_task, fset=set_task, fdel=Unit.del_task)
 
     # todo: test motions deletion from server
-
 
 
 from balance import BALANCE
