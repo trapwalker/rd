@@ -101,7 +101,7 @@ class Goto(Task):
 
     def contacts_with_static(self, static):
         """
-        @param model.base.VisibleObject static: Static object
+        @param model.base.VisibleObject | model.units.Unit static: Static object
         """
         # P(t)=V(t)+P0  // t0 is start_time
         # |P(t)-Q|=R
@@ -123,7 +123,6 @@ class Goto(Task):
             self._append_contacts(self.owner, static, self.start_time, tmax, a, k, c_wo_r2, contacts)
 
         if hasattr(static, 'observer') and static.observer:
-            # todo: type hinting of "static" param fix
             self._append_contacts(static, self.owner, self.start_time, tmax, a, k, c_wo_r2, contacts)
         return contacts
 
