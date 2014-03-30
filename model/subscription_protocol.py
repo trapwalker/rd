@@ -8,6 +8,10 @@ class Subscriber(object):
         super(Subscriber, self).__init__()
         self._emitters = []
 
+    @property
+    def emitters_count(self):
+        return len(self._emitters)
+
     def subscribe(self, emitter):
         self._emitters.append(emitter)
         emitter._subscribers.append(self)
@@ -31,6 +35,10 @@ class Emitter(object):
     def __init__(self):
         super(Emitter, self).__init__()
         self._subscribers = []
+
+    @property
+    def subscribers_count(self):
+        return len(self._subscribers)
 
     def emit(self, *av, **kw):
         for subscriber in self._subscribers:
