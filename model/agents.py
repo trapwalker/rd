@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
 from base import Object
+from subscription_protocol import Subscriber
+
+
 import logging
 
 
-class Agent(Object):
+class Agent(Object, Subscriber):
 
     def __init__(self, **kw):
         super(Agent, self).__init__(**kw)
 
-    def on_event(self, event):
+    def on_event(self, sender, event):
         """
         @param Event event: Incoming event
         """

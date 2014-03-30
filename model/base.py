@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
-from abc import ABCMeta
 from utils import get_uid
 from inventory import Inventory
-logging.basicConfig(level='DEBUG')
+import subscription_protocol
 
+from abc import ABCMeta
+import logging
+logging.basicConfig(level='DEBUG')
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -72,20 +72,21 @@ class PointObject(Object):
     position = property(fget=get_position, fset=set_position)
 
 
-class VisibleObject(PointObject):
+class VisibleObject(PointObject, subscription_protocol.Emitter):
+    """Observers subscribes to VisibleObject updates.
+    """
 
     def __init__(self, **kw):
         self.contacts = []
         """@type: list[model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        self.watchers = []
-        """@type: list[model.observe.Observer]"""
         # todo: subscription to changes for external observers
 
     def on_change(self):
         # todo: Notify nearest observers
         logging.debug('%s:: changed', self)
         self.contacts_refresh()
+        self.emit()  # todo: arguments?
 
     def contacts_refresh(self):
         self.contacts_clear()

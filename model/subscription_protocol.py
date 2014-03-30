@@ -44,6 +44,6 @@ class Emitter(object):
         for subscriber in self._subscribers:
             subscriber.on_event(self, *av, **kw)
 
-    def unsubscribe_all(self):
+    def reject_subscribers(self):
         for subscriber in self._subscribers[:]:
             subscriber.unsubscribe(self)

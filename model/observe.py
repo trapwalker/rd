@@ -1,8 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
+from subscription_protocol import Subscriber, Emitter
+
 import logging
 
 
-class Observer(object):
+class Observer(Subscriber, Emitter):
     """todo: make docstring"""
 
     def __init__(self, owner, r=None):
@@ -13,52 +15,28 @@ class Observer(object):
         super(Observer, self).__init__()
         self._r = r or BALANCE.get_ObserverRange(owner)
         self.owner = owner
-        self.subscribers = []
-        """@type: list[model.agents.Agent]"""
-        self.seeable = []
-        """@type: list[model.base.VisibleObject]"""
 
     def see(self, obj):
         """
         @param model.base.VisibleObject obj: New seeable object for registration
         """
-        self.seeable.append(obj)
-        obj.watchers.append(self)
+        self.subscribe(obj)
 
     def out(self, obj):
         """
         @param model.base.VisibleObject obj: Lost sight of the object
         """
-        obj.watchers.remove(self)
-        self.seeable.remove(obj)
+        self.unsubscribe(obj)
 
-    def emit(self, event):
-        """
-        @param model.events.Event event: New emited event
-        """
-        for subscriber in self.subscribers:
-            subscriber.on_event(event)
-
-    def subscribe(self, agent):
-        """
-        @type model.agents.Agent agent: New agent for subscribe
-        """
-        self.subscribers.append(agent)
-        logging.debug('Subscribe %s to observe %s', agent, self.owner)
-
-    def unsubscribe(self, agent):
-        """
-        @type model.agents.Agent agent: Unsubscribed agent
-        """
-        self.subscribers.remove(agent)
-        logging.debug('Unsubscribe %s from observing %s', agent, self.owner)
+    def on_event(self, emitter, *av, **kw):
+        logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
 
     @property
     def r(self):
         return self._r
 
     def __str__(self):
-        return '<Observer: R={:g}; n={}>'.format(self.r, len(self.subscribers))
+        return '<Observer: R={:g}; n={}>'.format(self.r, self.subscribers_count)
 
     id = property(id)
 
