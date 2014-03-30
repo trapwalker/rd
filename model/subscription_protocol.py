@@ -5,6 +5,7 @@
 class Subscriber(object):
     
     def __init__(self):
+        super(Subscriber, self).__init__()
         self._emitters = []
 
     def subscribe(self, emitter):
@@ -28,6 +29,7 @@ class Subscriber(object):
 class Emitter(object):
     
     def __init__(self):
+        super(Emitter, self).__init__()
         self._subscribers = []
 
     def emit(self, *av, **kw):
