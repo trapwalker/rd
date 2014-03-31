@@ -103,6 +103,13 @@ class Bot(Unit):
         """
         self.task = tasks.Goto(self, position)
 
+    @property
+    def v(self):
+        """
+        @rtype: model.vectors.Point
+        """
+        return self.motion.v if self.motion else None
+
     def get_position(self):
         """
         @rtype: model.vectors.Point
