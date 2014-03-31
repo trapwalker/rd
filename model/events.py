@@ -48,6 +48,9 @@ class Event(object):
     id = property(id)
 
     def perform(self):
+        """
+        Performing event logic.
+        """
         pass
 
 
@@ -66,8 +69,7 @@ class Subjective(Event):
 
     def perform(self):
         super(Subjective, self).perform()
-        self.subj.observer.emit(message=messages.See(sender=self.subj, obj=self.subj))
-        # todo: Not all subjective events must be sent to subscribers
+        logging.debug(str(self))
 
 
 class Contact(Subjective):
@@ -94,14 +96,17 @@ class ContactSee(Contact):
 
     def perform(self):
         super(ContactSee, self).perform()
-        self.subj.observer.see(self)
+        observer = self.subj.observer
+        observer.subscribe(self.obj)
+        observer.emit(message=messages.Contact(time=self.time, sender=self.subj, obj=self.obj))
+        # todo: Make 'as_message' method of Event class
 
 
 class ContactOut(Contact):
 
     def perform(self):
         super(ContactOut, self).perform()
-        self.subj.observer.out(self)
+        self.subj.observer.unsubscribe(self.obj)
 
 
 class Callback(Event):
@@ -122,4 +127,3 @@ class TaskEnd(Subjective):
     def perform(self):
         super(TaskEnd, self).perform()
         del self.subj.task
-        logging.debug('TASK END - %s', self.subj)

@@ -17,20 +17,6 @@ class Observer(Subscriber, Emitter):
         self._r = r or BALANCE.get_ObserverRange(owner)
         self.owner = owner
 
-    def see(self, event):
-        """
-        @param model.events.Contact event: Incomig contact event
-        """
-        self.subscribe(event.obj)
-        self.emit(message=messages.Contact(time=event.time, sender=self.owner, obj=event.obj))
-        # todo: Make 'as_message' method of Event class
-
-    def out(self, event):
-        """
-        @param model.events.Contact event: Incomig outcontact event
-        """
-        self.unsubscribe(event.obj)
-
     def on_event(self, emitter, *av, **kw):
         #logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
         self.emit(message=messages.See(sender=self.owner, obj=emitter))
