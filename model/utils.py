@@ -7,11 +7,25 @@ import heapq
 from pprint import pformat
 from functools import total_ordering
 from copy import copy
-
+import json
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
 
+from vectors import Point
+
+
 TimeClass = get_time().__class__
+
+
+def special_type_serialize_prepare(obj):
+    if isinstance(obj, (Point, complex)):
+        return dict(x=obj.real, y=obj.imag)
+
+    return obj
+
+
+def serialize(obj):
+    return json.dumps(obj, sort_keys=True, indent=4, default=special_type_serialize_prepare)
 
 
 class TimeFormatter(object):
