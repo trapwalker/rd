@@ -71,7 +71,9 @@ class Unit(VisibleObject):
         logging.debug('%s:: task = %s', self, task)
         self._task = task
         if isinstance(task, tasks.Determined):
-            self.server.post_event(events.TaskEnd(time=task.finish_time, subj=self))
+            endtask = events.TaskEnd(time=task.finish_time, subj=self)
+            self.contacts.append(endtask)
+            self.server.post_event(endtask)
 
         self.on_change()
 
