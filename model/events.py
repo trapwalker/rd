@@ -4,6 +4,7 @@ from functools import total_ordering
 import logging
 
 from utils import time_log_format
+import messages
 
 
 @total_ordering
@@ -65,7 +66,8 @@ class Subjective(Event):
 
     def perform(self):
         super(Subjective, self).perform()
-        self.subj.observer.emit(self)  # todo: Not all subjective events must be sent to subscribers
+        self.subj.observer.emit(message=messages.See(sender=self.subj, obj=self.subj))
+        # todo: Not all subjective events must be sent to subscribers
 
 
 class Contact(Subjective):
@@ -92,14 +94,14 @@ class ContactSee(Contact):
 
     def perform(self):
         super(ContactSee, self).perform()
-        self.subj.observer.see(self.obj)
+        self.subj.observer.see(self)
 
 
 class ContactOut(Contact):
 
     def perform(self):
         super(ContactOut, self).perform()
-        self.subj.observer.out(self.obj)
+        self.subj.observer.out(self)
 
 
 class Callback(Event):

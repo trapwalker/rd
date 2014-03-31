@@ -1,5 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 from subscription_protocol import Subscriber, Emitter
+import messages
 
 import logging
 
@@ -16,20 +17,23 @@ class Observer(Subscriber, Emitter):
         self._r = r or BALANCE.get_ObserverRange(owner)
         self.owner = owner
 
-    def see(self, obj):
+    def see(self, event):
         """
-        @param model.base.VisibleObject obj: New seeable object for registration
+        @param model.events.Contact event: Incomig contact event
         """
-        self.subscribe(obj)
+        self.subscribe(event.obj)
+        self.emit(message=messages.Contact(time=event.time, sender=self.owner, obj=event.obj))
+        # todo: Make 'as_message' method of Event class
 
-    def out(self, obj):
+    def out(self, event):
         """
-        @param model.base.VisibleObject obj: Lost sight of the object
+        @param model.events.Contact event: Incomig outcontact event
         """
-        self.unsubscribe(obj)
+        self.unsubscribe(event.obj)
 
     def on_event(self, emitter, *av, **kw):
-        logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
+        #logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
+        self.emit(message=messages.See(sender=self.owner, obj=emitter))
 
     @property
     def r(self):
