@@ -3,8 +3,11 @@
 
 
 class MetaSubscriberTo(type):
-    def __new__(cls, *args, **kwargs):
-        pass
+    def __new__(mcs, name, name_plural=None):
+        name_plural = name_plural or name
+        name = name
+        classname = 'SubscriberTo__{}'.format(name_plural)
+        return type.__new__(mcs, classname, (object,), )
 
 
 
