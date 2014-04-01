@@ -7,6 +7,7 @@ from pprint import pformat
 
 from events import ContactSee, ContactOut
 from utils import time_log_format
+from base import Observer
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -91,7 +92,7 @@ class Goto(Determined):
     @staticmethod
     def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0, contacts):
         """
-        @param model.units.Unit subj: Subject of potential contacts
+        @param model.base.Observer subj: Subject of potential contacts
         @param model.base.VisibleObject obj: Object of potential contacts
         @param float tmin: Minimal possible time of potential contact
         @param float tmax: Maximal possible time of potential contact
@@ -99,9 +100,9 @@ class Goto(Determined):
         @param float k:
         @param float c_wo_r2:
         @param float t0: Common reference time point
-        @param list[Contact] contacts: Contact list
+        @param list[ContactSee|ContactOut] contacts: Contact list
         """
-        d4 = k ** 2 - a * (c_wo_r2 - subj.observer.r ** 2)
+        d4 = k ** 2 - a * (c_wo_r2 - subj.r ** 2)
         if d4 > 0:
             d4 = sqrt(d4)
             t1 = (-k - d4) / a + t0
@@ -132,10 +133,9 @@ class Goto(Determined):
         c_wo_r2 = s.x ** 2 + s.y ** 2
 
         contacts = []
-        if self.owner.observer:
-            self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
+        self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
 
-        if hasattr(static, 'observer') and static.observer:
+        if isinstance(static, Observer):
             self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
         return contacts
 
@@ -167,10 +167,8 @@ class Goto(Determined):
         tmax = min(self.finish_time, motion.finish_time)
 
         contacts = []
-        if self.owner.observer:
-            self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
-        if motion.owner.observer:
-            self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
+        self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
+        self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
 
         logging.debug('contacts_with_dynamic: %s', pformat(locals(), width=1))
         return contacts

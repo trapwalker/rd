@@ -96,9 +96,9 @@ class ContactSee(Contact):
 
     def perform(self):
         super(ContactSee, self).perform()
-        observer = self.subj.observer
-        observer.subscribe(self.obj)
-        observer.emit(message=messages.Contact(time=self.time, sender=self.subj, obj=self.obj))
+        subj = self.subj
+        subj.subscribe(self.obj)
+        subj.emit(message=messages.Contact(time=self.time, sender=self.subj, obj=self.obj))
         # todo: Make 'as_message' method of Event class
 
 
@@ -106,7 +106,7 @@ class ContactOut(Contact):
 
     def perform(self):
         super(ContactOut, self).perform()
-        self.subj.observer.unsubscribe(self.obj)
+        self.subj.unsubscribe(self.obj)
 
 
 class Callback(Event):

@@ -1,20 +1,11 @@
 ﻿# -*- coding: utf-8 -*-
 
-class BALANCE(object):
+class BALANCE:
     u'''Gameplay balancing settings'''
 
-    @classmethod
-    def get_ObserverRange(cls, unit):
-        """
-        @type unit: model.units.Unit
-        """
-        from units import Station
-        return 100 * (5 if isinstance(unit, Station) else 1)
+    class Station:
+        observing_range = 500
 
-    @classmethod
-    def get_MaxVelocity(cls, bot):
-        """
-        @type bot: model.units.Bot
-        """
-        return 10 # m/s
-
+    class Bot:
+        observing_range = 100
+        velocity = 10  # m/s

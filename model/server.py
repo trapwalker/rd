@@ -140,10 +140,10 @@ if __name__ == '__main__':
     srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
     user = User(server=srv)
     station = Station(server=srv, position=Point(0, 0))
-    user.subscribe(station.observer)
+    user.subscribe(station)
 
     bot = Bot(server=srv, position=Point(-600, -10))
-    user.subscribe(bot.observer)
+    user.subscribe(bot)
 
     bot.goto(Point(800, 10))
 

@@ -44,7 +44,7 @@ class See(Message):
 
     def __init__(self, obj, **kw):
         """
-        @param model.units.Unit obj: Object
+        @param model.base.VisibleObject obj: Object
         """
         super(See, self).__init__(**kw)
         self.obj = obj
@@ -55,7 +55,7 @@ class See(Message):
         d['obj'] = repr(obj)  # todo: Serialize objects
         d['behavior'] = dict(
             position=obj.position,
-            v=obj.v if hasattr(obj, 'v') else None, # todo: Get behavior from unit directly
+            v=obj.v if hasattr(obj, 'v') else None,  # todo: Get behavior from unit directly
             # todo: add other behaviors
         )
         return d

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from subscription_protocol import Subscriber, Emitter
 from utils import get_uid
 from inventory import Inventory
-import subscription_protocol
+import messages
 
 from abc import ABCMeta
 import logging
@@ -72,7 +73,7 @@ class PointObject(Object):
     position = property(fget=get_position, fset=set_position)
 
 
-class VisibleObject(PointObject, subscription_protocol.Emitter):
+class VisibleObject(PointObject, Emitter):
     """Observers subscribes to VisibleObject updates.
     """
 
@@ -83,7 +84,6 @@ class VisibleObject(PointObject, subscription_protocol.Emitter):
         # todo: subscription to changes for external observers
 
     def on_change(self):
-        # todo: Notify nearest observers
         logging.debug('%s:: changed', self)
         self.contacts_refresh()
         self.emit()  # todo: arguments?
@@ -136,6 +136,21 @@ class Heap(VisibleObject):
         self.server.statics.remove(self)
         del self.inventory
         super(Heap, self).delete()
+
+
+class Observer(VisibleObject, Subscriber, Emitter):
+
+    def __init__(self, observing_range=0.0, **kw):
+        super(Observer, self).__init__(**kw)
+        self._r = observing_range
+
+    def on_event(self, emitter, *av, **kw):
+        #logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
+        self.emit(message=messages.See(sender=self, obj=emitter))
+
+    @property
+    def r(self):
+        return self._r
 
 
 if __name__ == '__main__':

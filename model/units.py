@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
-from base import VisibleObject
-from observe import Observer
+from base import Observer
 import tasks
 import events
+from balance import BALANCE
+
+import logging
 
 
-class Unit(VisibleObject):
+class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
     def __init__(self, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: model.tasks.Task | None"""
-        self._observer = None
-        """@type: Observer | None"""
         self.server.statics.append(self)
-        self.observer = Observer(self)
+        self.server.static_observers.append(self)
 
     def delete(self):
-        del self.observer
         del self.task
         self.server.statics.remove(self)
         super(Unit, self).delete()
@@ -30,32 +27,12 @@ class Unit(VisibleObject):
         """
         @param new_state: bool
         """
-        observer = self._observer
-        if observer:
-            logging.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
-            if new_state:
-                self.server.static_observers.append(observer)
-                self.on_change()
-            else:
-                self.server.static_observers.remove(observer)
-
-    def get_observer(self):
-        """
-        @rtype: model.observe.Observer | None
-        """
-        return self._observer
-
-    def set_observer(self, observer):
-        """
-        @param observer: model.observe.Observer | None
-        """
-        self.change_observer_state(False)
-        logging.debug('%s:: observer = %s', self, observer)
-        self._observer = observer
-        self.change_observer_state(True)
-
-    def del_observer(self):
-        self.set_observer(None)
+        logging.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
+        if new_state:
+            self.server.static_observers.append(self)
+            self.on_change()
+        else:
+            self.server.static_observers.remove(self)
 
     def get_task(self):
         """
@@ -81,20 +58,23 @@ class Unit(VisibleObject):
         self.set_task(None)
 
     task = property(fget=get_task, fset=set_task, fdel=del_task)
-    observer = property(fget=get_observer, fset=set_observer, fdel=del_observer)
 
 
 class Station(Unit):
     u"""Class of buildings"""
 
+    def __init__(self, observing_range=BALANCE.Station.observing_range, **kw):
+        super(Station, self).__init__(observing_range=observing_range, **kw)
+
 
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, **kw):
+    def __init__(self, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: model.tasks.Goto | None"""
-        super(Bot, self).__init__(**kw)
+        super(Bot, self).__init__(observing_range=observing_range, **kw)
+        self._max_velocity = BALANCE.Bot.velocity
 
     def stop(self):
         del self.task
@@ -125,7 +105,7 @@ class Bot(Unit):
         """
         @rtype: float
         """
-        return BALANCE.get_MaxVelocity(self)
+        return self._max_velocity
 
     def change_observer_state(self, new_state):
         """
@@ -184,6 +164,3 @@ class Bot(Unit):
     task = property(fget=Unit.get_task, fset=set_task, fdel=Unit.del_task)
 
     # todo: test motions deletion from server
-
-
-from balance import BALANCE

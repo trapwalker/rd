@@ -14,7 +14,7 @@ class Agent(Object, Subscriber):
 
     def on_event(self, emitter, message):
         """
-        @param model.observe.Observer emitter: Message emitter
+        @param model.units.Observer emitter: Message emitter
         @param model.messages.Message message: Incoming message
         """
         logging.info('%s. %s say: %s', self, emitter, message.serialize())
