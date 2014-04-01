@@ -2,6 +2,12 @@
 # todo: thread safe operations
 
 
+class MetaSubscriberTo(type):
+    def __new__(cls, *args, **kwargs):
+        pass
+
+
+
 class Subscriber(object):
     
     def __init__(self):
