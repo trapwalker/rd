@@ -44,14 +44,11 @@ class Unit(Observer):
         """
         @param task: model.tasks.Task | None
         """
-        # old_task = self._task
+        old_task = self._task
+        if old_task:
+            old_task.cancel()
         logging.debug('%s:: task = %s', self, task)
         self._task = task
-        if isinstance(task, tasks.Determined):
-            endtask = events.TaskEnd(time=task.finish_time, subj=self)
-            self.contacts.append(endtask)
-            self.server.post_event(endtask)
-
         self.on_change()
 
     def del_task(self):

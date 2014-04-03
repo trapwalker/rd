@@ -5,7 +5,7 @@ from abc import ABCMeta
 import logging
 from pprint import pformat
 
-from events import ContactSee, ContactOut
+from events import ContactSee, ContactOut, TaskEnd
 from utils import time_log_format
 from base import Observer
 
@@ -28,6 +28,9 @@ class Task(object):
         self._get_time = owner.server.get_time
         self.start_time = start_time or self._get_time()
 
+    def cancel(self):
+        pass
+
     def __str__(self):
         return self.__str_template__.format(self=self)
 
@@ -46,6 +49,8 @@ class Determined(Task):
         """
         super(Determined, self).__init__(**kw)
         self._duration = duration
+        self.end_task_event = TaskEnd(time=self.finish_time, subj=self.owner)
+        self.owner.server.post_event(self.end_task_event)
 
     @property
     def duration(self):
@@ -60,6 +65,9 @@ class Determined(Task):
         @rtype: model.utils.TimeClass
         """
         return self.start_time + self.duration
+
+    def cancel(self):
+        self.end_task_event.actual = False
 
 
 class Goto(Determined):
