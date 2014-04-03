@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from subscription_protocol import make_subscriber_emitter_classes
-from utils import get_uid
+from utils import get_uid, serialize
 from inventory import Inventory
 import messages
 
@@ -55,6 +55,15 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
+    def as_dict(self):
+        return dict(
+            cls=self.classname,
+            uid=self.uid,
+        )
+
+    def serialize(self):
+        return serialize(self.as_dict())
+
 
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id};{self.position}>'
@@ -66,6 +75,11 @@ class PointObject(Object):
         super(PointObject, self).__init__(**kw)
         self._position = position
         """@type: model.vectors.Point"""
+
+    def as_dict(self):
+        d = super(PointObject, self).as_dict()
+        d.update(position=self.position)
+        return d
 
     def get_position(self):
         """
@@ -160,6 +174,12 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     @property
     def r(self):
         return self._r
+
+    def as_dict(self):
+        d = super(Observer, self).as_dict()
+        d.update(r=self.r)
+        return d
+
 
 
 if __name__ == '__main__':
