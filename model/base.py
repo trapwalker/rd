@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from subscription_protocol import Subscriber, Emitter
+from subscription_protocol import make_subscriber_emitter_classes
 from utils import get_uid
 from inventory import Inventory
 import messages
@@ -11,6 +11,15 @@ logging.basicConfig(level='DEBUG')
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
+
+
+SubscriberTo__VisibleObject, EmitterFor__Observer = make_subscriber_emitter_classes(
+    subscriber_name='Observer',
+    emitter_name='VisibleObject')
+
+SubscriberTo__Observer, EmitterFor__Agent = make_subscriber_emitter_classes(
+    subscriber_name='Agent',
+    emitter_name='Observer')
 
 
 class Object(object):
@@ -73,7 +82,7 @@ class PointObject(Object):
     position = property(fget=get_position, fset=set_position)
 
 
-class VisibleObject(PointObject, Emitter):
+class VisibleObject(PointObject, EmitterFor__Observer):
     """Observers subscribes to VisibleObject updates.
     """
 
@@ -86,7 +95,7 @@ class VisibleObject(PointObject, Emitter):
     def on_change(self):
         logging.debug('%s:: changed', self)
         self.contacts_refresh()
-        self.emit()  # todo: arguments?
+        self.emit_for__Observer()  # todo: arguments?
 
     def contacts_refresh(self):
         self.contacts_clear()
@@ -138,15 +147,15 @@ class Heap(VisibleObject):
         super(Heap, self).delete()
 
 
-class Observer(VisibleObject, Subscriber, Emitter):
+class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
 
     def __init__(self, observing_range=0.0, **kw):
         super(Observer, self).__init__(**kw)
         self._r = observing_range
 
-    def on_event(self, emitter, *av, **kw):
+    def on_event_from__VisibleObject(self, emitter, *av, **kw):
         #logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
-        self.emit(message=messages.See(sender=self, obj=emitter))
+        self.emit_for__Agent(message=messages.See(sender=self, obj=emitter))
 
     @property
     def r(self):
