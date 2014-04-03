@@ -2,7 +2,6 @@
 
 from base import Observer
 import tasks
-import events
 from balance import BALANCE
 
 import logging
