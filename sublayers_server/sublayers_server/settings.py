@@ -1,5 +1,5 @@
 """
-Django settings for sublayer_server project.
+Django settings for sublayers_server project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -47,9 +47,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'sublayer_server.urls'
+ROOT_URLCONF = 'sublayers_server.urls'
 
-WSGI_APPLICATION = 'sublayer_server.wsgi.application'
+WSGI_APPLICATION = 'sublayers_server.wsgi.application'
 
 
 # Database
