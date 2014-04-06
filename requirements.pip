@@ -1,3 +1,4 @@
 virtualenv
 django==1.6
 #PIL
+django-websocket
