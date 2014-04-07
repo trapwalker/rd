@@ -3,10 +3,11 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('views',
     # Examples:
     # url(r'^$', 'sublayers_server.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^$', 'sublayers_api.views.index', name='index'),
+    url(r'^$', 'base_view'),
+    url(r'^echo$', 'echo'),
 )
