@@ -12,6 +12,12 @@ class Agent(Object, SubscriberTo__Observer):
         super(Agent, self).__init__(**kw)
         self.connection = connection
 
+    def on_message(self, connection, messahe):
+        pass
+
+    def on_disconnect(self, connection):
+        pass
+
     def on_event_from__Observer(self, emitter, message):
         """
         @param model.units.Observer emitter: Message emitter

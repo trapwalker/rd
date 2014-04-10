@@ -4,30 +4,31 @@ import tornado.websocket
 from model.agents import User
 
 
-class Connector(object):
+class ConnectorProxy(object):
 
-    server = None  # need to override attribute
+    user_id = None
 
     def __init__(self):
-        super(Connector, self).__init__()
-        self.agent = User(server=self.server, connection=self)
+        super(ConnectorProxy, self).__init__()
+        self.agent = self.get_user()
+        self.agent.connection = self
+        if hasattr(self.agent, 'on_disconnect'):
+            self.on_close = self.agent.on_disconnect
+
         # todo: Auth agent
         # todo: Recognize type of agent (User, AI, anything else?)
         # todo: Search existing agent instance in the server world model
 
+    def get_user(self):
+        raise NotImplementedError
+
+    def on_message(self, handler, message):
+        self.agent.on_message(message)
+
     def send(self, message, binary=False):
         raise NotImplementedError
 
-    def on_message(self, message):
-        raise NotImplementedError
-
-    def ping(self, data):
-        raise NotImplementedError
-
-    def on_pong(self, data):
-        pass
-
-    def on_close(self):
+    def on_close(self, handler):
         pass
 
 
@@ -38,11 +39,12 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def open(self):
-        user_id = self.get_secure_cookie("user")
+        _proxy = TornadoWebsocketConnection(self)
+        _proxy.user_id = self.get_secure_cookie("user")
 
 
 
-class TornadoWebsocketConnection(Connector):
+class TornadoWebsocketConnection(ConnectorProxy):
 
     def __init__(self, handler):
         super(TornadoWebsocketConnection, self).__init__()
@@ -50,5 +52,3 @@ class TornadoWebsocketConnection(Connector):
 
     def send(self, message, binary=False):
         self.handler.write_message(message, binary)
-
-
