@@ -39,7 +39,7 @@ class Application(tornado.web.Application):
             (r"/chatsocket", ChatSocketHandler),
         ]
         settings = dict(
-            cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+            cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,
