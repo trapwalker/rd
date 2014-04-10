@@ -8,8 +8,9 @@ import logging
 
 class Agent(Object, SubscriberTo__Observer):
 
-    def __init__(self, **kw):
+    def __init__(self, connection=None, **kw):
         super(Agent, self).__init__(**kw)
+        self.connection = connection
 
     def on_event_from__Observer(self, emitter, message):
         """
