@@ -10,6 +10,7 @@ import messages
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
+    # todo: __slots__
 
     def __init__(self, time):
         """
@@ -22,8 +23,10 @@ class Event(object):
         return hash((self.time,))
 
     def __lt__(self, other):
-        return self.time < other
-        # todo: __eq__?
+        return (self.time, id(self)) < (other.time, id(other))
+
+    def __le__(self, other):
+        return (self.time, id(self)) <= (other.time, id(other))
 
     def __nonzero__(self):
         return self.actual
