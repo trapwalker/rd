@@ -16,12 +16,14 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def open(self):
+        logging.debug('Agent socket Opened')
         self.user_id = self.get_secure_cookie("user")
-        self.agent = self.server.get_user(self.user_id)
+        self.agent = self.server.get_agent(self.user_id)
         self.agent.connection = self
 
     def on_close(self):
-        del self.agent.connection
+        logging.debug('Agent socket Closed')
+        #del self.agent.connection
 
     def on_message(self, message):
         logging.info("got message %r", message)
