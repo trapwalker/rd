@@ -1,54 +1,37 @@
 # -*- coding: utf-8 -*-
 import tornado.websocket
+import tornado.escape
+import uuid
+import logging
 
-from model.agents import User
+class AgentSocketHandler(tornado.websocket.WebSocketHandler):
+    server = None
 
-
-class ConnectorProxy(object):
-
-    user_id = None
-
-    def __init__(self):
-        super(ConnectorProxy, self).__init__()
-        self.agent = self.get_user()
-        self.agent.connection = self
-        if hasattr(self.agent, 'on_disconnect'):
-            self.on_close = self.agent.on_disconnect
-
-        # todo: Auth agent
-        # todo: Recognize type of agent (User, AI, anything else?)
-        # todo: Search existing agent instance in the server world model
-
-    def get_user(self):
-        raise NotImplementedError
-
-    def on_message(self, handler, message):
-        self.agent.on_message(message)
-
-    def send(self, message, binary=False):
-        raise NotImplementedError
-
-    def on_close(self, handler):
-        pass
-
-
-class SocketHandler(tornado.websocket.WebSocketHandler):
+    @classmethod
+    def make_bind_class(cls, server):
+        return type('{}_bound'.format(cls.__name__), (cls,), dict(server=server))
 
     def allow_draft76(self):
         # for iOS 5.0 Safari
         return True
 
     def open(self):
-        _proxy = TornadoWebsocketConnection(self)
-        _proxy.user_id = self.get_secure_cookie("user")
+        self.user_id = self.get_secure_cookie("user")
+        self.agent = self.server.get_user(self.user_id)
+        self.agent.connection = self
+
+    def on_close(self):
+        del self.agent.connection
+
+    def on_message(self, message):
+        logging.info("got message %r", message)
+        parsed = tornado.escape.json_decode(message)
+        chat = {
+            "id": str(uuid.uuid4()),
+            "body": parsed["body"],
+        }
+        chat["html"] = tornado.escape.to_basestring(
+            self.render_string("message.html", message=chat))
 
 
 
-class TornadoWebsocketConnection(ConnectorProxy):
-
-    def __init__(self, handler):
-        super(TornadoWebsocketConnection, self).__init__()
-        self.handler = handler
-
-    def send(self, message, binary=False):
-        self.handler.write_message(message, binary)
