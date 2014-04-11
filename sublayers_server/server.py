@@ -52,6 +52,9 @@ class Application(tornado.web.Application):
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
+    def stop(self):
+        tornado.ioloop.IOLoop.instance().stop()
+
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -66,5 +69,6 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG, filename='server.log')
     pass
-    #main()
+    main()
