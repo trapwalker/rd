@@ -66,10 +66,11 @@ class EServerIsNotStarted(errors.EIllegal):
 
 class LocalServer(Server):
 
-    def __init__(self, **kw):
+    def __init__(self, app=None, **kw):
         super(LocalServer, self).__init__(**kw)
         self.thread = None
         self.is_terminated = False
+        self.app = app
 
     def event_loop(self):
         logging.info('\n---- Event loop start ' + '-' * 50)
@@ -112,6 +113,8 @@ class LocalServer(Server):
         self.thread.join(timeout)
         self.thread = None
         self.is_terminated = False
+        if self.app:
+            self.app.stop()
 
     @property
     def is_active(self):
