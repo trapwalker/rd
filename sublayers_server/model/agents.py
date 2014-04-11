@@ -8,9 +8,12 @@ import logging
 
 class Agent(Object, SubscriberTo__Observer):
 
-    def __init__(self, connection=None, **kw):
+    def __init__(self, login, connection=None, **kw):
         super(Agent, self).__init__(**kw)
+        self.login = login
         self.connection = connection
+        # todo: normalize and check login
+        self.server.agents[login] = self
 
     def on_message(self, connection, messahe):
         pass

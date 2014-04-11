@@ -3,6 +3,7 @@
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
+from agents import User
 
 from time import sleep
 from threading import Thread
@@ -26,8 +27,16 @@ class Server(object):
         self.motions = []  # Active motion tasks  # todo: GEO-index
         self.static_observers = []  # todo: GEO-index
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
+        self.agents = {}  # Agents dictionary
+        # todo: Typehinting
         self.start_time = None
         # todo: blocking of init of servers with same uid
+
+    def get_agent(self, agent_id, make=False):
+        agent = self.agents.get(agent_id, None)
+        if not agent:
+            if make:
+                agent = User()
 
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
@@ -141,7 +150,7 @@ if __name__ == '__main__':
 
     srv = LocalServer()
     srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
-    user = User(server=srv)
+    user = User(login='user1', server=srv)
     station = Station(server=srv, position=Point(0, 0))
     user.subscribe_to__Observer(station)
 
