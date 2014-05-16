@@ -37,12 +37,11 @@ define("port", default=80, help="run on the given port", type=int)
 class Application(tornado.web.Application):
     def __init__(self):
         self.srv = LocalServer(app=self)
-        self.client_socket_handler = AgentSocketHandler.make_bind_class(self.srv)
         self.srv.start()
 
         handlers = [
             (r"/", MainHandler),
-            (r"/chatsocket", self.client_socket_handler),
+            (r"/chatsocket", AgentSocketHandler),
         ]
         settings = dict(
             cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
@@ -53,6 +52,7 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
 
     def stop(self):
+        self.srv.stop()
         tornado.ioloop.IOLoop.instance().stop()
 
 
@@ -66,9 +66,9 @@ def main():
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
+    globals().update(app=app, srv=app.srv)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, filename='server.log')
-    pass
     main()

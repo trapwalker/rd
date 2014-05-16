@@ -5,11 +5,6 @@ import uuid
 import logging
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
-    server = None
-
-    @classmethod
-    def make_bind_class(cls, server):
-        return type('{}_bound'.format(cls.__name__), (cls,), dict(server=server))
 
     def allow_draft76(self):
         # for iOS 5.0 Safari
@@ -18,12 +13,12 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         logging.debug('Agent socket Opened')
         self.user_id = self.get_secure_cookie("user")
-        self.agent = self.server.get_agent(self.user_id)
+        self.agent = self.application.srv.get_agent(self.user_id, make=True)  # todo: Change to make=False
         self.agent.connection = self
 
     def on_close(self):
         logging.debug('Agent socket Closed')
-        #del self.agent.connection
+        self.agent.connection = None
 
     def on_message(self, message):
         logging.info("got message %r", message)

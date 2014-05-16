@@ -34,9 +34,9 @@ class Server(object):
 
     def get_agent(self, agent_id, make=False):
         agent = self.agents.get(agent_id, None)
-        if not agent:
-            if make:
-                agent = User()
+        if not agent and make:
+            agent = User(login=agent_id)
+        return agent
 
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
