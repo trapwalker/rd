@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import logging
+log = logging.getLogger('__main__')
+
 from subscription_protocol import make_subscriber_emitter_classes
 from utils import get_uid, serialize
 from inventory import Inventory
 import messages
 
 from abc import ABCMeta
-import logging
-logging.basicConfig(level='DEBUG')
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -30,7 +31,7 @@ class Object(object):
         """
         @type server: model.server.Server
         """
-        logging.debug('%s #%d: Create', self.__class__.__name__, self.id)
+        log.debug('%s #%d: Create', self.__class__.__name__, self.id)
         super(Object, self).__init__()
         self.server = server
         """@type: model.server.Server"""
@@ -107,7 +108,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         # todo: subscription to changes for external observers
 
     def on_change(self):
-        logging.debug('%s:: changed', self)
+        log.debug('%s:: changed', self)
         self.contacts_refresh()
         self.emit_for__Observer()  # todo: arguments?
 
@@ -116,13 +117,13 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts_search()
 
     def contacts_clear(self):
-        logging.debug('%s:: contacts clear', self)
+        log.debug('%s:: contacts clear', self)
         contacts = self.contacts
         while contacts:
             contacts.pop().actual = False
 
     def special_contacts_search(self):
-        logging.debug('%s:: VisibleObject.special_contacts_search', self)
+        log.debug('%s:: VisibleObject.special_contacts_search', self)
         contacts = self.contacts
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
             found = motion.contacts_with_static(self)
@@ -132,9 +133,9 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def contacts_search(self):
         # todo: rename methods (search->forecast)
-        logging.debug('%s:: contacts search', self)
+        log.debug('%s:: contacts search', self)
         self.special_contacts_search()
-        logging.debug('%s:: contacts found: %s', self, len(self.contacts))
+        log.debug('%s:: contacts found: %s', self, len(self.contacts))
         self.server.post_events(self.contacts)
         # todo: check for double including one contact into the servers timeline
 
@@ -168,7 +169,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         self._r = observing_range
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
-        #logging.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
+        #log.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
         self.emit_for__Agent(message=messages.See(sender=self, obj=emitter))
 
     @property

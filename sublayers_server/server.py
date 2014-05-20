@@ -29,6 +29,8 @@ import uuid
 from tornado.options import define, options
 
 from model.event_machine import LocalServer
+logging.basicConfig(level=logging.DEBUG, filename='server.log')
+
 from client_connector import AgentSocketHandler
 
 define("port", default=80, help="run on the given port", type=int)

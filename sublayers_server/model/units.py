@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
+log = logging.getLogger('__main__')
+
 from base import Observer
 import tasks
 from balance import BALANCE
-
-import logging
 
 
 class Unit(Observer):
@@ -26,7 +27,7 @@ class Unit(Observer):
         """
         @param new_state: bool
         """
-        logging.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
+        log.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
         if new_state:
             self.server.static_observers.append(self)
             self.on_change()
@@ -46,7 +47,7 @@ class Unit(Observer):
         old_task = self._task
         if old_task:
             old_task.cancel()
-        logging.debug('%s:: task = %s', self, task)
+        log.debug('%s:: task = %s', self, task)
         self._task = task
         self.on_change()
 
@@ -117,8 +118,8 @@ class Bot(Unit):
 
         contacts = self.contacts
 
-        logging.debug('%s:: Bot.special_contacts_search', self)
-        logging.debug('>> %s', self.server.filter_statics(None))
+        log.debug('%s:: Bot.special_contacts_search', self)
+        log.debug('>> %s', self.server.filter_statics(None))
 
         contacts_with_static = self_motion.contacts_with_static
         for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
@@ -146,7 +147,7 @@ class Bot(Unit):
             self.server.motions.remove(old_motion)
         new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion
-        logging.debug('%s: Motion set to %s (old=%s)', self, new_motion, old_motion)
+        log.debug('%s: Motion set to %s (old=%s)', self, new_motion, old_motion)
         if new_motion:
             self.server.motions.append(new_motion)
             self.server.statics.remove(self)

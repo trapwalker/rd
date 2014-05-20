@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from base import Object, SubscriberTo__Observer
-
-
 import logging
+log = logging.getLogger('__main__')
+
+from base import Object, SubscriberTo__Observer
 
 
 class Agent(Object, SubscriberTo__Observer):
@@ -26,7 +26,7 @@ class Agent(Object, SubscriberTo__Observer):
         @param model.units.Observer emitter: Message emitter
         @param model.messages.Message message: Incoming message
         """
-        logging.info('%s. %s say: %s', self, emitter, message.serialize())
+        log.info('%s. %s say: %s', self, emitter, message.serialize())
 
 
 class User(Agent):

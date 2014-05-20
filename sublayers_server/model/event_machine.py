@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import logging
+if __name__ == '__main__':
+    log = logging.Logger(__name__, logging.DEBUG)
+    log.addHandler(logging.FileHandler(filename='server.log'))
+else:
+    log = logging.getLogger('__main__')
+
+print log    
+
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
@@ -7,9 +16,7 @@ from agents import User
 
 from time import sleep
 from threading import Thread
-import logging
 from pprint import pprint as pp
-
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -82,7 +89,7 @@ class LocalServer(Server):
         self.app = app
 
     def event_loop(self):
-        logging.info('\n---- Event loop start ' + '-' * 50)
+        log.info('\n---- Event loop start ' + '-' * 50)
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
 
@@ -93,7 +100,7 @@ class LocalServer(Server):
             
             if not timeline.head.actual:
                 event = timeline.get()
-                logging.debug('SKIP unactual %s', event)
+                log.debug('SKIP unactual %s', event)
                 del event
                 continue
 
@@ -106,7 +113,7 @@ class LocalServer(Server):
 
             timeline.get().perform()
 
-        logging.info('---- Event loop stop ' + '-' * 50 + '\n')        
+        log.info('---- Event loop stop ' + '-' * 50 + '\n')
 
     def start(self):
         if self.thread:
@@ -136,8 +143,7 @@ def main(*args):
 
 if __name__ == '__main__':
     import sys
-    logging.basicConfig(level=logging.DEBUG, filename='server.log')
-    logging.info('\n==== Start logging ' + '=' * 50)
+    log.info('\n==== Start logging ' + '=' * 50)
     #main(*sys.argv)
 
     from units import Station, Bot
@@ -161,4 +167,4 @@ if __name__ == '__main__':
 
     pp(srv.timeline, width=1)
 
-    srv.start()
+    #srv.start()

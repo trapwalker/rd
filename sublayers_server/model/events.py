@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from functools import total_ordering
 import logging
+log = logging.getLogger('main')
+print log    
+log.info('%s:: %r /// %r', __name__, logging.root, log)
+
+from functools import total_ordering
 
 from utils import time_log_format
 import messages
@@ -72,7 +76,7 @@ class Subjective(Event):
 
     def perform(self):
         super(Subjective, self).perform()
-        logging.debug(str(self))
+        log.debug(str(self))
 
 
 class Contact(Subjective):

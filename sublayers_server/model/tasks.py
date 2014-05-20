@@ -1,8 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
 
+import logging
+log = logging.getLogger('__main__')
+
 from math import sqrt
 from abc import ABCMeta
-import logging
 from pprint import pformat
 
 from events import ContactSee, ContactOut, TaskEnd
@@ -178,7 +180,7 @@ class Goto(Determined):
         self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
         self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
 
-        logging.debug('contacts_with_dynamic: %s', pformat(locals(), width=1))
+        log.debug('contacts_with_dynamic: %s', pformat(locals(), width=1))
         return contacts
 
     @property
