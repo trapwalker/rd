@@ -7,7 +7,7 @@ if __name__ == '__main__':
 else:
     log = logging.getLogger('__main__')
 
-print log    
+print 'event_machine:', log    
 
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
@@ -89,7 +89,7 @@ class LocalServer(Server):
         self.app = app
 
     def event_loop(self):
-        log.info('\n---- Event loop start ' + '-' * 50)
+        log.info('---- Event loop start ' + '-' * 50)
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
 

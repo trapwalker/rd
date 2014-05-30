@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger('__main__')
+log = logging.getLogger('main')
 
 from base import Object, SubscriberTo__Observer
 
