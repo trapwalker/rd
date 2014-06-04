@@ -20,6 +20,13 @@ function mulScalVector(aPoint: Point, aMul: number) {
     return new Point((aPoint.x * aMul), (aPoint.y * aMul));
 }
 
+function absVector(aPoint: Point):number
+{
+    return Math.sqrt((aPoint.x * aPoint.x) + (aPoint.y * aPoint.y));
+}
+
+//function угол между векторами
+
 class MoveTrack {
     timeStart: number; // UTC милисекунды делённые на 1000 => UTC секунды
     fuelStart: number;

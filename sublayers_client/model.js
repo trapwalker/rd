@@ -23,6 +23,11 @@ function mulScalVector(aPoint, aMul) {
     return new Point((aPoint.x * aMul), (aPoint.y * aMul));
 }
 
+function absVector(aPoint) {
+    return Math.sqrt((aPoint.x * aPoint.x) + (aPoint.y * aPoint.y));
+}
+
+//function угол между векторами
 var MoveTrack = (function () {
     function MoveTrack(aTimeStart, aFuelStart, aFuelDec, aReliefType) {
         this.timeStart = aTimeStart;
