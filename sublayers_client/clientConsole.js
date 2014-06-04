@@ -19,20 +19,22 @@ function addTextToInbox(astr){
 function timer(){
     var p = user.userCar.getCurrentCoord(clock1.getCurrentTime());
     var f = user.userCar.track.getCurrentFuel(clock1.getCurrentTime());
-    addTextToInbox( "P = {"+ p.x + "; "+ p.y+"};       Fuel =" + f);
+    var a = user.userCar.getCurrentDirection(clock1.getCurrentTime());
+    addTextToInbox( "P = {"+ p.x + "; "+ p.y+"};       Fuel =" + f + "    Angle ="+a);
 };
 
 $(document).ready(function() {
     addTextToInbox("Готовимся инициализировать");
     user = new User(15, 22);
     clock1 = new Clock();
-    var mt = new MoveLine(new Date().getTime()/1000. , 500, 0.25, 3, new Point(2, 2), new Point(1, 1), new Point(0, 0));
+    var mt = new MoveLine(new Date().getTime()/1000. , 500, 0.25, 3, new Point(2, 2), new Point(10, 0), new Point(-1, 0));
     user.userCar = new UserCar(152, mt, 2, 150, 100, 50);
     clock1.setDt(new Date().getTime()/1000.);
 //initialize(user, clock)
 
     addTextToInbox("Инициализация завершена. Запускаем таймер:");
     var myTimer = setInterval(timer, 500);
+
 });
 
 var user;

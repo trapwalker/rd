@@ -12,6 +12,9 @@ var Point = (function () {
         this.x = ax;
         this.y = ay;
     }
+    Point.prototype.abs = function () {
+        return Math.sqrt((this.x * this.x) + (this.y * this.y));
+    };
     return Point;
 })();
 
@@ -23,11 +26,22 @@ function mulScalVector(aPoint, aMul) {
     return new Point((aPoint.x * aMul), (aPoint.y * aMul));
 }
 
-function absVector(aPoint) {
-    return Math.sqrt((aPoint.x * aPoint.x) + (aPoint.y * aPoint.y));
+function mulScalVectors(aPoint1, aPoint2) {
+    return (aPoint1.x * aPoint2.x) + (aPoint1.y * aPoint2.y);
 }
 
-//function угол между векторами
+function absVector(aPoint) {
+    return aPoint.abs();
+}
+
+function angleVector(aPoint1, aPoint2) {
+    return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs())) * 180 / Math.PI;
+}
+
+function angleVectorRad(aPoint1, aPoint2) {
+    return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
+}
+
 var MoveTrack = (function () {
     function MoveTrack(aTimeStart, aFuelStart, aFuelDec, aReliefType) {
         this.timeStart = aTimeStart;
@@ -43,7 +57,7 @@ var MoveTrack = (function () {
         return null;
     };
 
-    MoveTrack.prototype.getCurrentDirection = function () {
+    MoveTrack.prototype.getCurrentDirection = function (aClockTime) {
         return null;
     };
 
@@ -70,8 +84,15 @@ var MoveLine = (function (_super) {
         return summVector(sum, this.coord);
     };
 
-    MoveLine.prototype.getCurrentDirection = function () {
-        return null;
+    MoveLine.prototype.getCurrentDirection = function (aClockTime) {
+        // Вычисляем относительное время t
+        var t = this.getRelativelyTime(aClockTime);
+
+        // Вычисляем текущую скорость Vt = A*t + V
+        var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
+
+        // Угол в радианах равен углу между единичным вектором и текущей скоростью
+        return angleVectorRad(Vt, new Point(1, 0));
     };
     return MoveLine;
 })(MoveTrack);
@@ -94,7 +115,7 @@ var MoveCircle = (function (_super) {
         return null;
     };
 
-    MoveCircle.prototype.getCurrentDirection = function () {
+    MoveCircle.prototype.getCurrentDirection = function (aClockTime) {
         return null;
     };
     return MoveCircle;
@@ -145,8 +166,8 @@ var DynamicObject = (function (_super) {
         _super.call(this, aID);
         this.track = aTrack;
     }
-    DynamicObject.prototype.getCurrentDirection = function () {
-        return this.track.getCurrentDirection();
+    DynamicObject.prototype.getCurrentDirection = function (aClockTime) {
+        return this.track.getCurrentDirection(aClockTime);
     };
 
     DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
