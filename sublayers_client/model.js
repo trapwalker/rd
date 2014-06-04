@@ -34,12 +34,16 @@ var MoveTrack = (function () {
         return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart) / 1000);
     };
 
-    MoveTrack.prototype.getCurrentCoord = function () {
+    MoveTrack.prototype.getCurrentCoord = function (aClockTime) {
         return null;
     };
 
     MoveTrack.prototype.getCurrentDirection = function () {
         return null;
+    };
+
+    MoveTrack.prototype.getRelativelyTime = function (aClockTime) {
+        return aClockTime - this.timeStart;
     };
     return MoveTrack;
 })();
@@ -52,10 +56,13 @@ var MoveLine = (function (_super) {
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
     }
-    MoveLine.prototype.getCurrentCoord = function () {
-        var result;
-
-        return null;
+    MoveLine.prototype.getCurrentCoord = function (aClockTime) {
+        // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
+        var t = this.getRelativelyTime(aClockTime);
+        var a = mulScalVector(this.acceleration, t * t);
+        var v = mulScalVector(this.speedV, t);
+        var sum = summVector(a, v);
+        return summVector(sum, this.coord);
     };
 
     MoveLine.prototype.getCurrentDirection = function () {
@@ -78,7 +85,7 @@ var MoveCircle = (function (_super) {
         return false;
     };
 
-    MoveCircle.prototype.getCurrentCoord = function () {
+    MoveCircle.prototype.getCurrentCoord = function (aClockTime) {
         return null;
     };
 
@@ -92,7 +99,7 @@ var MapObject = (function () {
     function MapObject(aID) {
         this.ID = aID;
     }
-    MapObject.prototype.getCurrentCoord = function () {
+    MapObject.prototype.getCurrentCoord = function (aClockTime) {
         return null;
     };
     return MapObject;
@@ -104,7 +111,7 @@ var StaticObject = (function (_super) {
         _super.call(this, aID);
         this.coord = aCoord;
     }
-    StaticObject.prototype.getCurrentCoord = function () {
+    StaticObject.prototype.getCurrentCoord = function (aClockTime) {
         return this.coord;
     };
     return StaticObject;
@@ -137,8 +144,8 @@ var DynamicObject = (function (_super) {
         return this.track.getCurrentDirection();
     };
 
-    DynamicObject.prototype.getCurrentCoord = function () {
-        return this.track.getCurrentCoord();
+    DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
+        return this.track.getCurrentCoord(aClockTime);
     };
     return DynamicObject;
 })(MapObject);

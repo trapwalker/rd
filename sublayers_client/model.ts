@@ -37,32 +37,39 @@ class MoveTrack {
         return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart) / 1000);
     }
 
-    getCurrentCoord(): Point {
+    getCurrentCoord(aClockTime: number): Point {
         return null;
     }
 
     getCurrentDirection(): Point {
         return null;
     }
+
+    getRelativelyTime(aClockTime: number): number {
+        return aClockTime - this.timeStart;
+    }
 }
 
 class MoveLine extends MoveTrack {
     coord: Point;
     speedV: Point;
-    acceleration: number;
+    acceleration: Point;
 
     constructor(aTimeStart: number, aFuelStart: number, aFuelDec: number, aReliefType: number,
-                aCoord: Point, aSpeedV: Point, aAcceleration: number) {
+                aCoord: Point, aSpeedV: Point, aAcceleration: Point) {
         super(aTimeStart, aFuelStart, aFuelDec, aReliefType);
         this.coord = aCoord;
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
     }
 
-    getCurrentCoord(): Point {
-        var result
-
-        return null;
+    getCurrentCoord(aClockTime: number): Point {
+        // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
+        var t = this.getRelativelyTime(aClockTime);
+        var a = mulScalVector(this.acceleration, t*t);
+        var v = mulScalVector(this.speedV, t);
+        var sum = summVector(a, v);
+        return summVector(sum, this.coord);
     }
 
     getCurrentDirection(): Point {
@@ -93,7 +100,7 @@ class MoveCircle extends MoveTrack {
         return false;
     }
 
-    getCurrentCoord(): Point {
+    getCurrentCoord(aClockTime: number): Point {
         return null;
     }
 
@@ -110,7 +117,7 @@ class MapObject {
         this.ID = aID;
     }
 
-    getCurrentCoord(): Point {
+    getCurrentCoord(aClockTime: number): Point {
         return null;
     }
 }
@@ -123,7 +130,7 @@ class StaticObject extends MapObject {
         this.coord = aCoord;
     }
 
-    getCurrentCoord(): Point {
+    getCurrentCoord(aClockTime: number): Point {
         return this.coord;
     }
 }
@@ -156,8 +163,8 @@ class DynamicObject extends MapObject {
         return this.track.getCurrentDirection();
     }
 
-    getCurrentCoord(): Point {
-        return this.track.getCurrentCoord();
+    getCurrentCoord(aClockTime: number): Point {
+        return this.track.getCurrentCoord(aClockTime);
     }
 
 }
