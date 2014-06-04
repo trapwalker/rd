@@ -21,7 +21,7 @@ function mulScalVector(aPoint: Point, aMul: number) {
 }
 
 class MoveTrack {
-    timeStart: number;
+    timeStart: number; // UTC милисекунды делённые на 1000 => UTC секунды
     fuelStart: number;
     fuelDec: number;
     reliefType: number; // 0,1,2,3
@@ -34,7 +34,7 @@ class MoveTrack {
     }
 
     getCurrentFuel(aCurrentTime: number): number {
-        return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart) / 1000);
+        return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart));
     }
 
     getCurrentCoord(aClockTime: number): Point {
@@ -65,7 +65,7 @@ class MoveLine extends MoveTrack {
 
     getCurrentCoord(aClockTime: number): Point {
         // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
-        var t = this.getRelativelyTime(aClockTime)/1000.;
+        var t = this.getRelativelyTime(aClockTime);
         var a = mulScalVector(this.acceleration, t*t);
         var v = mulScalVector(this.speedV, t);
         var sum = summVector(a, v);
@@ -223,20 +223,19 @@ class ListMapObject {
 }
 
 class Clock {
-    delay: number;
-    dt: number; //разница между серверным и клиентским временем
+    dt: number; //разница между серверным и клиентским временем в секундах
 
-    constructor(aDelay: number) {
-        this.delay = aDelay;
+    constructor() {
         this.dt = 0;
     }
 
     getCurrentTime(): number {
-        return new Date().getTime() + this.dt;
+        return new Date().getTime()/1000. + this.dt;
     }
 
+    // Для установки dt необходимо серверное время передать в секундах = UTC/1000.
     setDt(aTimeServer: number) {
-        this.dt = aTimeServer - new Date().getTime();
+        this.dt = aTimeServer - new Date().getTime()/1000.;
     }
 
 }

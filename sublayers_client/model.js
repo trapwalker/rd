@@ -31,7 +31,7 @@ var MoveTrack = (function () {
         this.reliefType = aReliefType;
     }
     MoveTrack.prototype.getCurrentFuel = function (aCurrentTime) {
-        return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart) / 1000);
+        return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart));
     };
 
     MoveTrack.prototype.getCurrentCoord = function (aClockTime) {
@@ -58,7 +58,7 @@ var MoveLine = (function (_super) {
     }
     MoveLine.prototype.getCurrentCoord = function (aClockTime) {
         // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
-        var t = this.getRelativelyTime(aClockTime) / 1000.;
+        var t = this.getRelativelyTime(aClockTime);
         var a = mulScalVector(this.acceleration, t * t);
         var v = mulScalVector(this.speedV, t);
         var sum = summVector(a, v);
@@ -193,16 +193,16 @@ var ListMapObject = (function () {
 })();
 
 var Clock = (function () {
-    function Clock(aDelay) {
-        this.delay = aDelay;
+    function Clock() {
         this.dt = 0;
     }
     Clock.prototype.getCurrentTime = function () {
-        return new Date().getTime() + this.dt;
+        return new Date().getTime() / 1000. + this.dt;
     };
 
+    // Для установки dt необходимо серверное время передать в секундах = UTC/1000.
     Clock.prototype.setDt = function (aTimeServer) {
-        this.dt = aTimeServer - new Date().getTime();
+        this.dt = aTimeServer - new Date().getTime() / 1000.;
     };
     return Clock;
 })();
