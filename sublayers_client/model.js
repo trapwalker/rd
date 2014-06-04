@@ -58,7 +58,7 @@ var MoveLine = (function (_super) {
     }
     MoveLine.prototype.getCurrentCoord = function (aClockTime) {
         // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
-        var t = this.getRelativelyTime(aClockTime);
+        var t = this.getRelativelyTime(aClockTime) / 1000.;
         var a = mulScalVector(this.acceleration, t * t);
         var v = mulScalVector(this.speedV, t);
         var sum = summVector(a, v);
@@ -206,34 +206,4 @@ var Clock = (function () {
     };
     return Clock;
 })();
-
-window.onload = function () {
-    alert(123);
-    var s = new ListMapObject();
-    var town1 = new MapTown(1, new Point(2, 3), 3);
-    var town2 = new MapTown(2, new Point(2, 3), 3);
-    var town3 = new MapTown(8888, new Point(2, 4), 3);
-    var gs1 = new MapGasStation(4, new Point(2, 4));
-    var gs2 = new MapGasStation(5, new Point(2, 4));
-    var gs3 = new MapGasStation(6565, new Point(2, 4));
-
-    s.addObject(town1);
-    s.addObject(town2);
-    s.addObject(town3);
-    s.addObject(gs1);
-    s.addObject(gs2);
-    s.addObject(gs3);
-
-    //alert(123123123);
-    s.delObject(3);
-    s.delObject(2);
-
-    s.addObject(town2);
-
-    for (var key in s.objects) {
-        if (s.objects[key] != null) {
-            alert(s.objects[key].ID);
-        }
-    }
-};
 //# sourceMappingURL=model.js.map
