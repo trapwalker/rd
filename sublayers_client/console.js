@@ -48,7 +48,7 @@ $(document).ready(function() {
     clock1 = new Clock();
     var mt = new MoveLine(new Date().getTime()/1000. , 500, 0.25, 3, new Point(2, 2), new Point(10, 0), new Point(-1, 0));
 
-    var mt2 = new MoveLine(new Date().getTime()/1000. , 300, 0.25, 3, new Point(2, 2), new Point(3, 0), new Point(0, 0));
+    var mt2 = new MoveLine(new Date().getTime()/1000. , 300, 0.25, 3, new Point(2, 2), new Point(3, 0), new Point(0, 1));
     car2 = new MapCar(38,mt2,2,200);
 
     user.userCar = new UserCar(152, mt, 2, 150, 100, 50);
