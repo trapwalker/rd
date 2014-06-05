@@ -192,6 +192,9 @@ class DynamicObject extends MapObject {
         return this.track.getCurrentCoord(aClockTime);
     }
 
+    getCurrentFuel(aClockTime: number): number {
+        return this.track.getCurrentFuel(aClockTime);
+    }
 }
 
 class MapCar extends DynamicObject {
@@ -207,7 +210,7 @@ class MapCar extends DynamicObject {
 }
 
 class UserCar extends MapCar {
-    maxSpeed: number; // 1..5
+    maxSpeed: number;
     speed: number;
 
     constructor(aID: number, aTrack: MoveTrack, aType: number, aHP: number, aMaxSpeed: number, aSpeed: number) {

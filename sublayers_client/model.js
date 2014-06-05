@@ -173,6 +173,10 @@ var DynamicObject = (function (_super) {
     DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
         return this.track.getCurrentCoord(aClockTime);
     };
+
+    DynamicObject.prototype.getCurrentFuel = function (aClockTime) {
+        return this.track.getCurrentFuel(aClockTime);
+    };
     return DynamicObject;
 })(MapObject);
 
