@@ -1,12 +1,8 @@
-/**
- * Created by Admin on 04.06.2014.
- */
-
 class Point {
     x: number;
     y: number;
 
-    constructor(ax: number, ay: number) {
+    constructor(ax, ay: number) {
         this.x = ax;
         this.y = ay;
     }
@@ -20,23 +16,23 @@ function summVector(aPoint1, aPoint2: Point): Point {
     return new Point((aPoint1.x + aPoint2.x), (aPoint1.y + aPoint2.y));
 }
 
-function mulScalVector(aPoint: Point, aMul: number) {
+function mulScalVector(aPoint: Point, aMul: number): Point {
     return new Point((aPoint.x * aMul), (aPoint.y * aMul));
 }
 
-function mulScalVectors(aPoint1: Point, aPoint2: Point) {
+function mulScalVectors(aPoint1, aPoint2: Point): number{
     return (aPoint1.x * aPoint2.x) + (aPoint1.y * aPoint2.y);
 }
 
-function absVector(aPoint: Point):number{
+function absVector(aPoint: Point):number {
     return aPoint.abs();
 }
 
-function angleVector(aPoint1: Point, aPoint2: Point): number{
+function angleVector(aPoint1, aPoint2: Point): number{
     return Math.acos(mulScalVectors(aPoint1, aPoint2) /(aPoint1.abs() * aPoint2.abs()))*180/Math.PI;
 }
 
-function angleVectorRad(aPoint1: Point, aPoint2: Point): number{
+function angleVectorRad(aPoint1, aPoint2: Point): number{
     return Math.acos(mulScalVectors(aPoint1, aPoint2) /(aPoint1.abs() * aPoint2.abs()));
 }
 
@@ -44,13 +40,11 @@ class MoveTrack {
     timeStart: number; // UTC милисекунды делённые на 1000 => UTC секунды
     fuelStart: number;
     fuelDec: number;
-    reliefType: number; // 0,1,2,3
 
-    constructor(aTimeStart: number, aFuelStart: number, aFuelDec: number, aReliefType: number) {
+    constructor(aTimeStart, aFuelStart, aFuelDec: number) {
         this.timeStart = aTimeStart;
         this.fuelStart = aFuelStart;
         this.fuelDec = aFuelDec;
-        this.reliefType = aReliefType;
     }
 
     getCurrentFuel(aCurrentTime: number): number {
@@ -75,9 +69,8 @@ class MoveLine extends MoveTrack {
     speedV: Point;
     acceleration: Point;
 
-    constructor(aTimeStart: number, aFuelStart: number, aFuelDec: number, aReliefType: number,
-                aCoord: Point, aSpeedV: Point, aAcceleration: Point) {
-        super(aTimeStart, aFuelStart, aFuelDec, aReliefType);
+    constructor(aTimeStart, aFuelStart, aFuelDec: number, aCoord, aSpeedV, aAcceleration: Point) {
+        super(aTimeStart, aFuelStart, aFuelDec);
         this.coord = aCoord;
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
@@ -86,19 +79,27 @@ class MoveLine extends MoveTrack {
     getCurrentCoord(aClockTime: number): Point {
         // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
         var t = this.getRelativelyTime(aClockTime);
-        var a = mulScalVector(this.acceleration, t*t);
+        var a = mulScalVector(this.acceleration, t * t);
         var v = mulScalVector(this.speedV, t);
         var sum = summVector(a, v);
         return summVector(sum, this.coord);
     }
 
-    getCurrentDirection(aClockTime: number): number { // Машинка всегда развёрнута по текущей скорости
+    getCurrentDirection(aClockTime: number): number {
+    // Машинка всегда развёрнута по текущей скорости
         // Вычисляем относительное время t
-        var t = this.getRelativelyTime(aClockTime);
+        //var t = this.getRelativelyTime(aClockTime);
         // Вычисляем текущую скорость Vt = A*t + V
-        var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
+        //var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
         // Угол в радианах равен углу между единичным вектором и текущей скоростью
-        return angleVectorRad(Vt, new Point(1,0));
+        //return angleVectorRad(Vt, new Point(1,0));
+        // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
+        if(this.speedV.abs() == 0){
+            return angleVectorRad(this.acceleration, new Point(0,1)); //
+        }
+        else {
+            return angleVectorRad(this.speedV, new Point(0,1));
+        }
     }
 
 }
@@ -110,10 +111,9 @@ class MoveCircle extends MoveTrack {
     accelerationA: number;
     radius: number;
 
-    constructor(aTimeStart: number, aFuelStart: number, aFuelDec: number, aReliefType: number,
-                aCenterCircle: Point, aAngleStart: number, aSpeedA: number, aAccelerationA: number,
-                aRadius: number) {
-        super(aTimeStart, aFuelStart, aFuelDec, aReliefType);
+    constructor(aTimeStart, aFuelStart, aFuelDec: number, aCenterCircle: Point, aAngleStart, aSpeedA,
+                aAccelerationA, aRadius: number) {
+        super(aTimeStart, aFuelStart, aFuelDec);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
         this.speedA = aSpeedA;
@@ -201,7 +201,7 @@ class MapCar extends DynamicObject {
     type: number; // 1..5
     hp: number;
 
-    constructor(aID: number, aTrack: MoveTrack, aType: number, aHP: number) {
+    constructor(aID, aType, aHP: number, aTrack: MoveTrack) {
         super(aID, aTrack);
         this.type = aType;
         this.hp = aHP;
@@ -213,8 +213,8 @@ class UserCar extends MapCar {
     maxSpeed: number;
     speed: number;
 
-    constructor(aID: number, aTrack: MoveTrack, aType: number, aHP: number, aMaxSpeed: number, aSpeed: number) {
-        super(aID, aTrack, aType, aHP);
+    constructor(aID, aType, aHP, aMaxSpeed, aSpeed: number, aTrack: MoveTrack) {
+        super(aID, aType, aHP, aTrack);
         this.maxSpeed = aMaxSpeed;
         this.speed = aSpeed;
     }
@@ -226,27 +226,31 @@ class User {
     credit: number;
     userCar: UserCar;
 
-    constructor(aID: number, aCredit: number) {
+    constructor(aID, aCredit: number) {
         this.ID = aID;
         this.credit = aCredit;
     }
-
 }
 
 class ListMapObject {
-    //objects: MapObject[];
     objects: Array<MapObject>;
 
     constructor() {
         this.objects = new Array<MapObject>();
     }
 
-    addObject(aMapObject: MapObject) {
-        this.objects[aMapObject.ID] = aMapObject;
+    add(aObject: MapObject) {
+          this.objects[aObject.ID] = aObject;
     }
 
-    delObject(aID: number) {
-        this.objects[aID] = null;
+    del(aID: number) {
+           this.objects[aID] = null;
+    }
+
+    setTrack(aID: number, aTrack: MoveTrack) {
+        if(!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))){
+            (<DynamicObject> this.objects[aID]).track = aTrack;
+        }
     }
 }
 

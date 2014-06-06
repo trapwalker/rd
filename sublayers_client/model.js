@@ -1,6 +1,3 @@
-/**
-* Created by Admin on 04.06.2014.
-*/
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -43,11 +40,10 @@ function angleVectorRad(aPoint1, aPoint2) {
 }
 
 var MoveTrack = (function () {
-    function MoveTrack(aTimeStart, aFuelStart, aFuelDec, aReliefType) {
+    function MoveTrack(aTimeStart, aFuelStart, aFuelDec) {
         this.timeStart = aTimeStart;
         this.fuelStart = aFuelStart;
         this.fuelDec = aFuelDec;
-        this.reliefType = aReliefType;
     }
     MoveTrack.prototype.getCurrentFuel = function (aCurrentTime) {
         return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart));
@@ -69,8 +65,8 @@ var MoveTrack = (function () {
 
 var MoveLine = (function (_super) {
     __extends(MoveLine, _super);
-    function MoveLine(aTimeStart, aFuelStart, aFuelDec, aReliefType, aCoord, aSpeedV, aAcceleration) {
-        _super.call(this, aTimeStart, aFuelStart, aFuelDec, aReliefType);
+    function MoveLine(aTimeStart, aFuelStart, aFuelDec, aCoord, aSpeedV, aAcceleration) {
+        _super.call(this, aTimeStart, aFuelStart, aFuelDec);
         this.coord = aCoord;
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
@@ -85,22 +81,27 @@ var MoveLine = (function (_super) {
     };
 
     MoveLine.prototype.getCurrentDirection = function (aClockTime) {
+        // Машинка всегда развёрнута по текущей скорости
         // Вычисляем относительное время t
-        var t = this.getRelativelyTime(aClockTime);
-
+        //var t = this.getRelativelyTime(aClockTime);
         // Вычисляем текущую скорость Vt = A*t + V
-        var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
-
+        //var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
         // Угол в радианах равен углу между единичным вектором и текущей скоростью
-        return angleVectorRad(Vt, new Point(1, 0));
+        //return angleVectorRad(Vt, new Point(1,0));
+        // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
+        if (this.speedV.abs() == 0) {
+            return angleVectorRad(this.acceleration, new Point(0, 1));
+        } else {
+            return angleVectorRad(this.speedV, new Point(0, 1));
+        }
     };
     return MoveLine;
 })(MoveTrack);
 
 var MoveCircle = (function (_super) {
     __extends(MoveCircle, _super);
-    function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aReliefType, aCenterCircle, aAngleStart, aSpeedA, aAccelerationA, aRadius) {
-        _super.call(this, aTimeStart, aFuelStart, aFuelDec, aReliefType);
+    function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aAngleStart, aSpeedA, aAccelerationA, aRadius) {
+        _super.call(this, aTimeStart, aFuelStart, aFuelDec);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
         this.speedA = aSpeedA;
@@ -182,7 +183,7 @@ var DynamicObject = (function (_super) {
 
 var MapCar = (function (_super) {
     __extends(MapCar, _super);
-    function MapCar(aID, aTrack, aType, aHP) {
+    function MapCar(aID, aType, aHP, aTrack) {
         _super.call(this, aID, aTrack);
         this.type = aType;
         this.hp = aHP;
@@ -192,8 +193,8 @@ var MapCar = (function (_super) {
 
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
-    function UserCar(aID, aTrack, aType, aHP, aMaxSpeed, aSpeed) {
-        _super.call(this, aID, aTrack, aType, aHP);
+    function UserCar(aID, aType, aHP, aMaxSpeed, aSpeed, aTrack) {
+        _super.call(this, aID, aType, aHP, aTrack);
         this.maxSpeed = aMaxSpeed;
         this.speed = aSpeed;
     }
@@ -212,12 +213,18 @@ var ListMapObject = (function () {
     function ListMapObject() {
         this.objects = new Array();
     }
-    ListMapObject.prototype.addObject = function (aMapObject) {
-        this.objects[aMapObject.ID] = aMapObject;
+    ListMapObject.prototype.add = function (aObject) {
+        this.objects[aObject.ID] = aObject;
     };
 
-    ListMapObject.prototype.delObject = function (aID) {
+    ListMapObject.prototype.del = function (aID) {
         this.objects[aID] = null;
+    };
+
+    ListMapObject.prototype.setTrack = function (aID, aTrack) {
+        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))) {
+            this.objects[aID].track = aTrack;
+        }
     };
     return ListMapObject;
 })();
