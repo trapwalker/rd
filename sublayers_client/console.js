@@ -32,6 +32,7 @@ function Init() {
     user = new User(-1, -1);
     clock = new Clock();
     listMapObject = new ListMapObject();
+    //WSJSON.Init();
 }
 
 $(document).ready(function() {
