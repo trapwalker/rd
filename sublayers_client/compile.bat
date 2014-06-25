@@ -1,2 +1,1 @@
-
 tsc model.ts

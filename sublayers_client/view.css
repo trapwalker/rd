@@ -1,0 +1,26 @@
+#map {
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    width: 100%;
+    height: 60%;
+}
+
+#console {
+    overflow: scroll;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    top: 60%;
+    width: 100%;
+    height: 40%;
+}
+
+.markerDiv {
+    background: rgba(255,255,255,0);
+    border:0px;
+}

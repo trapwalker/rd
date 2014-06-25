@@ -7,13 +7,21 @@ class Point {
         this.y = ay;
     }
 
-    abs(): number {
+    abs():number{
         return Math.sqrt((this.x * this.x) + (this.y * this.y));
     }
 }
 
+function normVector(aPoint: Point): Point {
+    return mulScalVector(aPoint, 1 / aPoint.abs());
+}
+
 function summVector(aPoint1, aPoint2: Point): Point {
     return new Point((aPoint1.x + aPoint2.x), (aPoint1.y + aPoint2.y));
+}
+
+function subVector(aPoint1, aPoint2: Point): Point {
+    return new Point((aPoint1.x - aPoint2.x), aPoint1.y - aPoint2.y)
 }
 
 function mulScalVector(aPoint: Point, aMul: number): Point {
@@ -29,11 +37,19 @@ function absVector(aPoint: Point): number {
 }
 
 function angleVector(aPoint1, aPoint2: Point): number {
-    return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs())) * 180 / Math.PI;
+    return Math.acos(mulScalVectors(aPoint1, aPoint2) /(aPoint1.abs() * aPoint2.abs()))*180/Math.PI;
 }
 
 function angleVectorRad(aPoint1, aPoint2: Point): number {
     return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
+}
+
+function radToGrad(rad: number): number {
+    return rad * 180 / Math.PI;
+}
+
+function gradToRad(grad: number): number {
+    return grad * Math.PI / 180.;
 }
 
 class MoveTrack {
@@ -89,19 +105,19 @@ class MoveLine extends MoveTrack {
     // Машинка всегда развёрнута по текущей скорости
         // Вычисляем относительное время t
         //var t = this.getRelativelyTime(aClockTime);
-        // Вычисляем текущую скорость Vt = A * t + V
+        // Вычисляем текущую скорость Vt = A*t + V
         //var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
         // Угол в радианах равен углу между единичным вектором и текущей скоростью
-        //return angleVectorRad(Vt, new Point(1, 0));
-        // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
-        if (this.speedV.abs() == 0) {
-            return angleVectorRad(this.acceleration, new Point(0, 1));
-        }
-        else {
-            return angleVectorRad(this.speedV, new Point(0, 1));
-        }
-    }
+        //return angleVectorRad(Vt, new Point(1,0));
 
+        // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
+        if(this.speedV.abs() != 0){
+            var res = angleVectorRad(this.speedV, new Point(0, -1));
+            if(this.speedV.x < 0) return -res;
+            return res;
+        }
+        else {return 0;} // Пока так
+}
 }
 
 class MoveCircle extends MoveTrack {
@@ -211,12 +227,10 @@ class MapCar extends DynamicObject {
 
 class UserCar extends MapCar {
     maxSpeed: number;
-    speed: number;
 
-    constructor(aID, aType, aHP, aMaxSpeed, aSpeed: number, aTrack: MoveTrack) {
+    constructor(aID, aType, aHP, aMaxSpeed: number, aTrack: MoveTrack) {
         super(aID, aType, aHP, aTrack);
         this.maxSpeed = aMaxSpeed;
-        this.speed = aSpeed;
     }
 
 }
@@ -248,26 +262,26 @@ class ListMapObject {
     }
 
     setTrack(aID: number, aTrack: MoveTrack) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))) {
+        if(!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))){
             (<DynamicObject> this.objects[aID]).track = aTrack;
         }
     }
 }
 
 class Clock {
-    dt: number; // разница между серверным и клиентским временем в секундах
+    dt: number; //разница между серверным и клиентским временем в секундах
 
     constructor() {
         this.dt = 0;
     }
 
     getCurrentTime(): number {
-        return new Date().getTime() / 1000. + this.dt;
+        return new Date().getTime()/1000. + this.dt;
     }
 
-    // Для установки dt необходимо серверное время передать в секундах = UTC / 1000.
+    // Для установки dt необходимо серверное время передать в секундах = UTC/1000.
     setDt(aTimeServer: number) {
-        this.dt = aTimeServer - new Date().getTime() / 1000.;
+        this.dt = aTimeServer - new Date().getTime()/1000.;
     }
 
 }

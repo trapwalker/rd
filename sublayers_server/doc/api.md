@@ -49,8 +49,47 @@ Push-уведомление с сервера имеет вид:
 
         # see
         'object': <object>,
-        'trajectory': <trajectory>,
     }
     
 
-
+	
+## procedure name
+	fire - сделать залп (по всем в секторе обстрела)
+	{
+	    'call': 'fire',
+        'params': {},
+        'uid': '<guid>' 
+	}
+	
+	goto - движение в заданные координаты
+	{
+		'call': 'goto',
+        'params': { 'position': {'x': <число>, 'y': <число>}},
+        'uid': '<guid>' 
+	}
+	
+	setspeed - установка скорости для машинки
+	{
+		'call': 'setspeed',
+        'params': { 'newspeed': <число>},
+        'uid': '<guid>' 
+	}
+	
+	
+## <object>
+	{
+		'uid' : <guid>,
+		'class' : ('car' | 'town' | 'loot'),
+		?'circular_motion' : {}
+		?'liner_motion' : {
+			'velocity' : {'x': <число>, 'y': <число>},
+			'acceleration' : {'x': <число>, 'y': <число>},
+			'fuel_start': <число>,
+			'fuel_decrement': <число>
+			// не забыть, что когда машинка стоит - у неё должно быть направление! даже у стоящей машинки!
+		}
+		// если circular_motion == 'none' и liner_motion == 'none'    - то машинка должна стоять на месте
+		'position' : { 'position': {'x': <число>, 'y': <число>}},
+		'server_time' : <UTC на сервере>
+	}
+	
