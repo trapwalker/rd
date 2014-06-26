@@ -17,7 +17,7 @@ function redrawMap() {
 }
 
 function onMouseClickMap(mouseEventObject) {
-    sendPoint(myMap.project(mouseEventObject.latlng, 16));
+    //sendPoint(myMap.project(mouseEventObject.latlng, 16));
     sendNewPoint(myMap.project(mouseEventObject.latlng, 16),user.userCar.ID);
 }
 
@@ -69,15 +69,11 @@ $(document).ready(function() {
     // Управление машинкой стрелками (тестовый вариант)
     document.body.addEventListener('keydown', function(e) {
         if (e.which == 38) {// поднять скорость
-            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
-            user.userCar.track.timeStart = clock.getCurrentTime();
-            user.userCar.track.speedV = mulScalVector(user.userCar.track.speedV, 1.1);
+            sendSetSpeed(user.userCar.track.speedV.abs()+2,user.userCar.ID);
             addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
         }
         if (e.which == 40) {// снизить скорость
-            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
-            user.userCar.track.timeStart = clock.getCurrentTime();
-            user.userCar.track.speedV = mulScalVector(user.userCar.track.speedV, 0.9);
+            sendSetSpeed(user.userCar.track.speedV.abs()-2,user.userCar.ID);
             addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
         }
         if (e.which == 37) {// повернуть налево

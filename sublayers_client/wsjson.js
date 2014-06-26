@@ -108,11 +108,10 @@ function servEmul(data){
     if (revent.call == 'setspeed') {
         // если setspeed
         // посчитать текущие коррдинаты и координаты немного вперёд, чтобы получить вектор скорости
-        var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        var tempPoint1 = user.userCar.getCurrentCoord(clock.getCurrentTime());
         var tempPoint2 = user.userCar.getCurrentCoord(clock.getCurrentTime() + 50);
         // посчитать новую скорость
         var tempSpeed = mulScalVector(normVector(subVector(tempPoint2, tempPoint1)), revent.params.newspeed);
-
         // формирование ответа от сервера
         ans = {
             message_type: "push",
@@ -122,8 +121,8 @@ function servEmul(data){
                     uid: revent.uid,
                     class: "car",
                     position: {
-                        x: tempPoint.x,
-                        y: tempPoint.y
+                        x: tempPoint1.x,
+                        y: tempPoint1.y
                     },
                     server_time: clock.getCurrentTime(),
                     liner_motion: {
@@ -144,7 +143,7 @@ function servEmul(data){
 }
 
     // ans уже сформирован. Теперь его нужно преобр. в строку и отправить в обработчик
-
+    receiveMesFromServ(JSON.stringify(ans));
 }
 
 
