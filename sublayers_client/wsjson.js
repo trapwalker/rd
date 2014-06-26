@@ -22,10 +22,49 @@ var WSJSON = {
 
 };
 
+// функции формирования исходящих сообщений
+
+// goto
+function sendNewPoint(aPoint, auid) {
+    var mes= {
+        call: "goto",
+        uid: auid,
+        params: {
+            position: {
+                x: aPoint.x,
+                y: aPoint.y
+            }
+        }
+    }
+    //alert(JSON.stringify(mes));
+}
+
+// fire
+function sendFire(aPoint, auid) {
+    var mes= {
+        call: "fire",
+        uid: auid,
+        params: {}
+        }
+    //alert(JSON.stringify(mes));
+}
+
+// setSpeed
+function sendSetSpeed(newSpeed, auid) {
+    var mes= {
+        call: "setspeed",
+        uid: auid,
+        params: {
+            newspeed: newSpeed
+        }
+    }
+    //alert(JSON.stringify(mes));
+}
 
 
 
-var WSJSON = new WSJSONInit();
+
+var WSJSON = new WSJSON.Init();
 
 function sendPoint(aPoint) {
     receiveTrack(aPoint);

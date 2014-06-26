@@ -26,6 +26,7 @@ function redrawMap() {
 
 function onMouseClickMap(mouseEventObject) {
     sendPoint(myMap.project(mouseEventObject.latlng, 16));
+    sendNewPoint(myMap.project(mouseEventObject.latlng, 16),user.userCar.ID);
 }
 
 function onMouseMoveMap(mouseEventObject) {

@@ -80,16 +80,25 @@ Push-уведомление с сервера имеет вид:
 	{
 		'uid' : <guid>,
 		'class' : ('car' | 'town' | 'loot'),
+		'position' : { 'position': {'x': <число>, 'y': <число>}},
+		'server_time' : <UTC на сервере>
+		
+		#car
+		?'health' : <число>, // присылается лишь в случае изменения ХП машинки
 		?'circular_motion' : {}
 		?'liner_motion' : {
 			'velocity' : {'x': <число>, 'y': <число>},
 			'acceleration' : {'x': <число>, 'y': <число>},
 			'fuel_start': <число>,
 			'fuel_decrement': <число>
-			// не забыть, что когда машинка стоит - у неё должно быть направление! даже у стоящей машинки!
 		}
 		// если circular_motion == 'none' и liner_motion == 'none'    - то машинка должна стоять на месте
-		'position' : { 'position': {'x': <число>, 'y': <число>}},
-		'server_time' : <UTC на сервере>
+		// даже если стоит на месте, то должен быть вектор направления машинки или угол
+		?'direction' : {'angle': <число в градусах>},
+		
+		#town
+		
+		#loot
+		'params': [<loot_object>]
 	}
 	
