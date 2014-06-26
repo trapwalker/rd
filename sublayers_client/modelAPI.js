@@ -21,7 +21,7 @@ function Init() {
                                           100,                          //Запас топлива
                                           1,                            //Расход топлива
                                           new Point(10093693, 5646447), //Начальная точка
-                                          new Point(8, 0),              //Скорость
+                                          new Point(15, 0),              //Скорость
                                           new Point(0, 0));             //Ускорение
 
     listMapObject = new ListMapObject();

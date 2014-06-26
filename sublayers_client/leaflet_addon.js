@@ -1,0 +1,21 @@
+/* Маркер с поворотом иконки на любой угол.
+Использование:
+    создание: var marker = L.rotatedMarker(<как обычный маркер>);
+    добавление на карту: marker.addTo(map);
+    установка угла в градусах: marker.options.angle = direction;
+    поворот картинки осуществляется при переустановке координат!
+    перерисовка маркера: marker.setLatLng(marker.getLatLng() - или нужные координаты);
+ */
+L.RotatedMarker = L.Marker.extend({
+    options: { angle: 0 },
+    _setPos: function(pos) {
+        L.Marker.prototype._setPos.call(this, pos);
+        if (L.DomUtil.TRANSFORM) {
+            // use the CSS transform rule if available
+            this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
+        }
+    }
+});
+L.rotatedMarker = function(pos, options) {
+    return new L.RotatedMarker(pos, options);
+};
