@@ -1,5 +1,6 @@
-.message {
+#chatArea .message {
     padding-top: 0.25em;
-    margin: 0px 10px;
+    color: red;
+    left: 0px;
 }
 

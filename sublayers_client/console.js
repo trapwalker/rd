@@ -19,4 +19,9 @@ function newIDFromP(){
     IDNum++;
     return "d"+IDNum;
 }
+
+function newIDFromChatMessage(){
+    IDNum++;
+    return "chatMes"+IDNum;
+}
 //Работа с логом (конец)

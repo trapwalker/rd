@@ -30,7 +30,9 @@ function onMouseMoveMap(mouseEventObject) {
 }
 
 function onMouseClickMarker(mouseEventObject) {
-    addDivToDiv("console", "mt1", "testID = " + this.testID);
+    //addDivToDiv("console", "mt1", "testID = " + this.testID);
+    sendChatMessage("My marker ID = " + this.testID, user.ID);
+
 }
 
 $(document).ready(function() {

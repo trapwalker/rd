@@ -40,9 +40,9 @@ Push-уведомление с сервера имеет вид:
 где <event> -- объект описывающий событие:
 
     {
-        'kind': ('message'|'see'),
+        'kind': ('chat_message'|'see'),
 
-        # message:
+        # chat_message:
         'from': <sender_info>,
         'text': <message_text>,
         'id': <message_id>,
@@ -73,6 +73,13 @@ Push-уведомление с сервера имеет вид:
 		'call': 'setspeed',
         'params': { 'newspeed': <число>},
         'uid': '<guid>' 
+	}
+	
+	chat_message - отправить сообщение в чат
+	{
+		'call': 'chat_message'
+	    'from': <sender_info>, // user.ID
+        'text': <message_text>, // текст сообщения
 	}
 	
 	

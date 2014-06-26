@@ -35,7 +35,7 @@ function sendNewPoint(aPoint, auid) {
                 y: aPoint.y
             }
         }
-    }
+    };
     servEmul(JSON.stringify(mes));
 }
 
@@ -45,7 +45,7 @@ function sendFire(aPoint, auid) {
         call: "fire",
         uid: auid,
         params: {}
-        }
+        };
     servEmul(JSON.stringify(mes));
 }
 
@@ -57,7 +57,17 @@ function sendSetSpeed(newSpeed, auid) {
         params: {
             newspeed: newSpeed
         }
-    }
+    };
+    servEmul(JSON.stringify(mes));
+}
+
+// send chat_message
+function sendChatMessage(atext, auid){
+    var mes= {
+        call: "chat_message",
+        from: auid,
+        text: atext
+    };
     servEmul(JSON.stringify(mes));
 }
 
@@ -102,7 +112,7 @@ function servEmul(data){
                     }
                 }
             }
-        }
+        };
     }
 
     if (revent.call == 'setspeed') {
@@ -111,7 +121,7 @@ function servEmul(data){
         var tempPoint1 = user.userCar.getCurrentCoord(clock.getCurrentTime());
         var tempPoint2 = user.userCar.getCurrentCoord(clock.getCurrentTime() + 50);
         // посчитать новую скорость
-        var tempSpeed = mulScalVector(normVector(subVector(tempPoint2, tempPoint1)), revent.params.newspeed);
+        var tempSpeed1 = mulScalVector(normVector(subVector(tempPoint2, tempPoint1)), revent.params.newspeed);
         // формирование ответа от сервера
         ans = {
             message_type: "push",
@@ -127,8 +137,8 @@ function servEmul(data){
                     server_time: clock.getCurrentTime(),
                     liner_motion: {
                         velocity: {
-                            x: tempSpeed.x,
-                            y: tempSpeed.y
+                            x: tempSpeed1.x,
+                            y: tempSpeed1.y
                         },
                         acceleration: {
                             x: 0,
@@ -139,9 +149,21 @@ function servEmul(data){
                     }
                 }
             }
-        }
-}
+        };
+    }
 
+    if (revent.call == 'chat_message'){
+        // если это сообщение чата, то сформировать ответ чата и всем его отправить, даже отправителю!
+        ans = {
+            message_type: "push",
+            event: {
+                kind: "chat_message",
+                from: revent.from,
+                text: revent.text,
+                id: newIDFromChatMessage()
+            }
+        };
+    }
     // ans уже сформирован. Теперь его нужно преобр. в строку и отправить в обработчик
     receiveMesFromServ(JSON.stringify(ans));
 }
@@ -152,11 +174,10 @@ function servEmul(data){
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data) {
     var mes = JSON.parse(data);
-
     // если message_type = push
-    if (mes.message_type = "push") {
+    if (mes.message_type == "push") {
         // значит тут есть евент, смотреть тип евента
-        if (mes.event.kind = "see") {
+        if (mes.event.kind == "see") {
             // это сообщение для модели
             // считываем uid
             var uid = mes.event.object.uid;
@@ -204,14 +225,18 @@ function receiveMesFromServ(data) {
 
             } // конец обработки town
         }
-
-
+        // если message_type = chat_message // Если пришло сообщение в чат
+        if (mes.event.kind == "chat_message") {
+            // нарисовать в специальный div, который выделен для чата
+            addDivToDiv("chatArea", mes.event.id, mes.event.from + ": " + mes.event.text);
+        }
     }
 }
 
+var wsjson = new WSJSON.Init();
 
-var WSJSON = new WSJSON.Init();
 
+/*
 function sendPoint(aPoint) {
     receiveTrack(aPoint);
 }
@@ -226,6 +251,6 @@ function receiveTrack(aPoint) {
                                       tempSpeed,                //Скорость
                                       new Point(0, 0));         //Ускорение
 }
-
+*/
 
 
