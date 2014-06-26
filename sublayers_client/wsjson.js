@@ -149,32 +149,67 @@ function servEmul(data){
 
 
 
-/*
+
 // Приём сообщения от сервера. Разбор принятого объекта
-function receiveMesFromServ(data){
+function receiveMesFromServ(data) {
     var mes = JSON.parse(data);
 
     // если message_type = push
-    if(mes.message_type = "push"){
+    if (mes.message_type = "push") {
         // значит тут есть евент, смотреть тип евента
-        if(mes.event.kind = "see"){
+        if (mes.event.kind = "see") {
             // это сообщение для модели
             // считываем uid
+            var uid = mes.event.object.uid;
             // считываем позицию
+            var position = new Point(mes.event.object.position.x, mes.event.object.position.y);
+            // считываем серверное время и корректируем в клоке
+            var stime = mes.event.object.server_time;
+            clock.setDt(stime);
             // смотрим класс мап-объекта
-
-            if(mes.event.object.class == "car"){
+            if (mes.event.object.class == "car") {
                 // если car
+                if (mes.event.object.health != null) {
+                    // запустить функцию установки хп
+                }
+                if (mes.event.object.circular_motion != null) {
+                    // запустить функцию установки кругового движения
+                }
+                if (mes.event.object.liner_motion != null) {
+                    // запустить функцию установки линейного движения
+                    var velocity = new Point(mes.event.object.liner_motion.velocity.x,
+                        mes.event.object.liner_motion.velocity.y);
+                    var acceleration = new Point(mes.event.object.liner_motion.acceleration.x,
+                        mes.event.object.liner_motion.acceleration.y);
+                    var fuel_start = mes.event.object.liner_motion.fuel_start;
+                    var fuel_decrement = mes.event.object.liner_motion.fuel_decrement
 
+                    user.userCar.track = new MoveLine(
+                        clock.getCurrentTime(),  //Время начала движения
+                        fuel_start,              //Запас топлива
+                        fuel_decrement,          //Расход топлива
+                        position,                //Начальная точка
+                        velocity,                //Скорость
+                        acceleration             //Ускорение
+                    );
 
-            }
+                }
+                if (mes.event.object.direction != null) {
+                    // запустить функцию установки линейного движения с нулевыми скоростью и ускорением, и углом поворта
+                }
+            } // конец обработки car
 
+            if (mes.event.object.class == "town") {
+                // если town
+                // добавить town с координатами position которую считали ранее
+
+            } // конец обработки town
         }
+
+
     }
-
-
 }
-*/
+
 
 var WSJSON = new WSJSON.Init();
 

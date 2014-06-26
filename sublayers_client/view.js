@@ -2,8 +2,6 @@
  * Created by Abbir on 22.06.2014.
  */
 
-
-
 function redrawMap() {
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
     var tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
@@ -16,7 +14,6 @@ function redrawMap() {
     userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
     // Установка новых координат маркера
     userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
-
 }
 
 function onMouseClickMap(mouseEventObject) {
@@ -93,8 +90,6 @@ $(document).ready(function() {
             user.userCar.track.timeStart = clock.getCurrentTime();
             user.userCar.track.speedV = rotateVector(user.userCar.track.speedV, 0.1745);
         }
-
-
     }, true);
 });
 
