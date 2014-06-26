@@ -14,7 +14,6 @@ L.RotatedMarker = L.Marker.extend({
     _setPos: function(pos) {
         L.Marker.prototype._setPos.call(this, pos);
         if (L.DomUtil.TRANSFORM) {
-            // use the CSS transform rule if available
             this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
         }
     }

@@ -17,11 +17,6 @@ function redrawMap() {
     // Установка новых координат маркера
     userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
 
-
-
- //   userCarMarker.setIcon(L.divIcon({html: '<img src="img/usercar_20.png" ' +
- //      'style="-webkit-transform: rotate(' + tempAngleGrad +'rad); opacity: 1;" />', className: 'markerDiv'})); // градусы в deg
- //   userCarMarker.on('click', onMouseClickMarker);
 }
 
 function onMouseClickMap(mouseEventObject) {
@@ -49,6 +44,9 @@ $(document).ready(function() {
          zoomControl: true,
          attributionControl: false,
          keyboard: false,
+         scrollWheelZoom: "center",
+         dragging: false,
+         doubleClickZoom: false,
          maxBounds: ([[50.21, 35.42], [51.43, 39.44]])}).setView([50.6041, 36.5954], 13);
 
     L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
@@ -72,20 +70,6 @@ $(document).ready(function() {
     userCarMarker.testID = 15;
 
 
-    /*
-    //Тест однородности координат
-    myMap = L.map('map').setView([50.6041, 36.5954], 13);
-    L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-        maxZoom: 16,
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'examples.map-i86knfo3'}).addTo(myMap);
-    myMap.on('click', OnMouseClickMap);
-    myMap.on('mousemove', OnMouseMoveMap);
-    //for (var j = 0; j <= 330; j+= 10)
-    //    for (var i = -90; i <= 90; i+= 10) {L.marker([i, j]).addTo(myMap);}
-    */
     // Add manual control of the airplane with left and right arrow keys, just because
     document.body.addEventListener('keydown', function(e) {
         if (e.which == 38) {

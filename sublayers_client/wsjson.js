@@ -36,7 +36,7 @@ function sendNewPoint(aPoint, auid) {
             }
         }
     }
-    //alert(JSON.stringify(mes));
+    servEmul(JSON.stringify(mes));
 }
 
 // fire
@@ -46,7 +46,7 @@ function sendFire(aPoint, auid) {
         uid: auid,
         params: {}
         }
-    //alert(JSON.stringify(mes));
+    servEmul(JSON.stringify(mes));
 }
 
 // setSpeed
@@ -58,11 +58,123 @@ function sendSetSpeed(newSpeed, auid) {
             newspeed: newSpeed
         }
     }
-    //alert(JSON.stringify(mes));
+    servEmul(JSON.stringify(mes));
 }
 
 
 
+// эмуляция сервера для тестирования JSON
+function servEmul(data){
+    var ans;
+    var revent = JSON.parse(data);
+    // сначало понять что за задача пришла
+    if(revent.call == 'goto'){
+        // если goto
+        // посчитать текущие коррдинаты
+        var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        // посчитать новую скорость
+        var aPoint = new Point(revent.params.position.x, revent.params.position.y);
+        var tempSpeed = mulScalVector(normVector(subVector(aPoint, tempPoint)), user.userCar.track.speedV.abs());
+        // формирование ответа от сервера
+        ans = {
+            message_type: "push",
+            event: {
+                kind: "see",
+                object: {
+                    uid: revent.uid,
+                    class: "car",
+                    position: {
+                        x: tempPoint.x,
+                        y: tempPoint.y
+                    },
+                    server_time: clock.getCurrentTime(),
+                    liner_motion: {
+                        velocity: {
+                            x: tempSpeed.x,
+                            y: tempSpeed.y
+                        },
+                        acceleration: {
+                            x: 0,
+                            y: 0
+                        },
+                        fuel_start: 100,
+                        fuel_decrement: 1
+                    }
+                }
+            }
+        }
+    }
+
+    if (revent.call == 'setspeed') {
+        // если setspeed
+        // посчитать текущие коррдинаты и координаты немного вперёд, чтобы получить вектор скорости
+        var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        var tempPoint2 = user.userCar.getCurrentCoord(clock.getCurrentTime() + 50);
+        // посчитать новую скорость
+        var tempSpeed = mulScalVector(normVector(subVector(tempPoint2, tempPoint1)), revent.params.newspeed);
+
+        // формирование ответа от сервера
+        ans = {
+            message_type: "push",
+            event: {
+                kind: "see",
+                object: {
+                    uid: revent.uid,
+                    class: "car",
+                    position: {
+                        x: tempPoint.x,
+                        y: tempPoint.y
+                    },
+                    server_time: clock.getCurrentTime(),
+                    liner_motion: {
+                        velocity: {
+                            x: tempSpeed.x,
+                            y: tempSpeed.y
+                        },
+                        acceleration: {
+                            x: 0,
+                            y: 0
+                        },
+                        fuel_start: 100,
+                        fuel_decrement: 1
+                    }
+                }
+            }
+        }
+}
+
+    // ans уже сформирован. Теперь его нужно преобр. в строку и отправить в обработчик
+
+}
+
+
+
+/*
+// Приём сообщения от сервера. Разбор принятого объекта
+function receiveMesFromServ(data){
+    var mes = JSON.parse(data);
+
+    // если message_type = push
+    if(mes.message_type = "push"){
+        // значит тут есть евент, смотреть тип евента
+        if(mes.event.kind = "see"){
+            // это сообщение для модели
+            // считываем uid
+            // считываем позицию
+            // смотрим класс мап-объекта
+
+            if(mes.event.object.class == "car"){
+                // если car
+
+
+            }
+
+        }
+    }
+
+
+}
+*/
 
 var WSJSON = new WSJSON.Init();
 
