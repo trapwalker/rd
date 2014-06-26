@@ -69,33 +69,32 @@ $(document).ready(function() {
 
     userCarMarker.testID = 15;
 
-
-    // Add manual control of the airplane with left and right arrow keys, just because
+    // Управление машинкой стрелками (тестовый вариант)
     document.body.addEventListener('keydown', function(e) {
-        if (e.which == 38) {
-            // поднять скорость
-            user.userCar.track = new MoveLine(
-                    clock.getCurrentTime(),       //Время начала движения
-                    100,                          //Запас топлива
-                    1,                            //Расход топлива
-                    user.userCar.getCurrentCoord(clock.getCurrentTime()), //Начальная точка
-                    mulScalVector(user.userCar.track.speedV, 1.1),        //Скорость
-                    new Point(0, 0)             //Ускорение
-            );
+        if (e.which == 38) {// поднять скорость
+            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            user.userCar.track.timeStart = clock.getCurrentTime();
+            user.userCar.track.speedV = mulScalVector(user.userCar.track.speedV, 1.1);
             addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
         }
-        if (e.which == 40) {
-            // снизить скорость
-            user.userCar.track = new MoveLine(
-                clock.getCurrentTime(),       //Время начала движения
-                100,                          //Запас топлива
-                1,                            //Расход топлива
-                user.userCar.getCurrentCoord(clock.getCurrentTime()), //Начальная точка
-                mulScalVector(user.userCar.track.speedV, 0.9),        //Скорость
-                new Point(0, 0)             //Ускорение
-            );
+        if (e.which == 40) {// снизить скорость
+            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            user.userCar.track.timeStart = clock.getCurrentTime();
+            user.userCar.track.speedV = mulScalVector(user.userCar.track.speedV, 0.9);
             addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
         }
+        if (e.which == 37) {// повернуть налево
+            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            user.userCar.track.timeStart = clock.getCurrentTime();
+            user.userCar.track.speedV = rotateVector(user.userCar.track.speedV, -0.1745); //10 градусов
+        }
+        if (e.which == 39) {// повернуть направо
+            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            user.userCar.track.timeStart = clock.getCurrentTime();
+            user.userCar.track.speedV = rotateVector(user.userCar.track.speedV, 0.1745);
+        }
+
+
     }, true);
 });
 
