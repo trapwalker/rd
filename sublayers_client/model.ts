@@ -62,11 +62,13 @@ class MoveTrack {
     timeStart: number; // UTC милисекунды делённые на 1000 => UTC секунды
     fuelStart: number;
     fuelDec: number;
+    direction: Point; // если машинка стоит на месте, то направление = direction
 
     constructor(aTimeStart, aFuelStart, aFuelDec: number) {
         this.timeStart = aTimeStart;
         this.fuelStart = aFuelStart;
         this.fuelDec = aFuelDec;
+        this.direction = new Point(0, -1);
     }
 
     getCurrentFuel(aCurrentTime: number): number {
@@ -107,8 +109,8 @@ class MoveLine extends MoveTrack {
         return summVector(sum, this.coord);
     }
 
-    getCurrentDirection(aClockTime: number): number {
-    // Машинка всегда развёрнута по текущей скорости
+    getCurrentDirection(aClockTime:number):number {
+        // Машинка всегда развёрнута по текущей скорости
         // Вычисляем относительное время t
         //var t = this.getRelativelyTime(aClockTime);
         // Вычисляем текущую скорость Vt = A*t + V
@@ -117,13 +119,20 @@ class MoveLine extends MoveTrack {
         //return angleVectorRad(Vt, new Point(1,0));
 
         // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
-        if(this.speedV.abs() != 0){
+        if (this.speedV.abs() != 0) {
             var res = angleVectorRad(this.speedV, new Point(0, -1));
-            if(this.speedV.x < 0) return -res;
+            if (this.speedV.x < 0) return -res;
             return res;
         }
-        else {return 0;} // Пока так
-}
+        else {
+            if (this.speedV.abs() != 0) {
+                var res1 = angleVectorRad(this.direction, new Point(0, -1));
+                if (this.direction.x < 0) return -res1;
+                return res1;
+            } else
+                return 0;
+        }
+    }
 }
 
 class MoveCircle extends MoveTrack {
@@ -265,6 +274,20 @@ class ListMapObject {
 
     del(aID: number) {
            this.objects[aID] = null;
+    }
+
+    exist(aID: number): boolean {
+        if(this.objects[aID] != null){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    setCarHP(aID: number, aHP: number) {
+        if(!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))){
+            (<MapCar> this.objects[aID]).hp = aHP;
+        }
     }
 
     setTrack(aID: number, aTrack: MoveTrack) {
