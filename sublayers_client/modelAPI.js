@@ -5,7 +5,7 @@ function timerRepaint(){
     redrawMap();
 }
 
-function Init() {
+function ModelInit() {
     clock = new Clock();
     clock.setDt(new Date().getTime()/1000.);
 
@@ -24,11 +24,13 @@ function Init() {
                                           new Point(15, 0),              //Скорость
                                           new Point(0, 0));             //Ускорение
 
+    //user.userCar.track.direction = new Point(1,-1);
+
     listMapObject = new ListMapObject();
 }
 
 $(document).ready(function() {
-    Init();
+    ModelInit();
     var myTimer = setInterval(timerRepaint, 50);
 });
 

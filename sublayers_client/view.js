@@ -75,7 +75,16 @@ $(document).ready(function() {
             addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
         }
         if (e.which == 40) {// снизить скорость
-            sendSetSpeed(user.userCar.track.speedV.abs()-2,user.userCar.ID);
+            if (user.userCar.track.speedV.abs() > 0) {
+                if (user.userCar.track.speedV.abs() < 5) {
+                    user.userCar.track.direction = normVector(user.userCar.track.speedV);
+                    user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+                    user.userCar.track.speedV = new Point(0, 0);
+                }
+                else {
+                    sendSetSpeed(user.userCar.track.speedV.abs() - 2, user.userCar.ID);
+                }
+            }
             addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
         }
         if (e.which == 37) {// повернуть налево

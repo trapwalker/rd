@@ -65,6 +65,7 @@ var MoveTrack = (function () {
         this.timeStart = aTimeStart;
         this.fuelStart = aFuelStart;
         this.fuelDec = aFuelDec;
+        this.direction = new Point(0, -1);
     }
     MoveTrack.prototype.getCurrentFuel = function (aCurrentTime) {
         return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart));
@@ -116,7 +117,13 @@ var MoveLine = (function (_super) {
                 return -res;
             return res;
         } else {
-            return 0;
+            if (this.speedV.abs() != 0) {
+                var res1 = angleVectorRad(this.direction, new Point(0, -1));
+                if (this.direction.x < 0)
+                    return -res1;
+                return res1;
+            } else
+                return 0;
         }
     };
     return MoveLine;
@@ -242,6 +249,20 @@ var ListMapObject = (function () {
 
     ListMapObject.prototype.del = function (aID) {
         this.objects[aID] = null;
+    };
+
+    ListMapObject.prototype.exist = function (aID) {
+        if (this.objects[aID] != null) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    ListMapObject.prototype.setCarHP = function (aID, aHP) {
+        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
+            this.objects[aID].hp = aHP;
+        }
     };
 
     ListMapObject.prototype.setTrack = function (aID, aTrack) {
