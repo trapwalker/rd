@@ -48,12 +48,20 @@ $(document).ready(function() {
          doubleClickZoom: false,
          maxBounds: ([[50.21, 35.42], [51.43, 39.44]])}).setView([50.6041, 36.5954], 13);
 
-    L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+ //   L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+ //       maxZoom: 16,
+ //       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+ //          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+ //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+ //       id: 'examples.map-i86knfo3'}).addTo(myMap);
+
+    L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
         maxZoom: 16,
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="http://mapbox.com">Mapbox</a>',
         id: 'examples.map-i86knfo3'}).addTo(myMap);
+
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
@@ -67,6 +75,20 @@ $(document).ready(function() {
     userCarMarker.on('click', onMouseClickMarker);
 
     userCarMarker.testID = 15;
+
+
+    // Добавление Города
+    var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+    testTownMarker = L.marker([50.21, 35.42]).addTo(myMap);
+    testTownMarker.setIcon(L.icon({
+        iconUrl: 'img/city_50.png',
+        iconSize: [50, 50]
+    }));
+    testTownMarker.setLatLng(myMap.unproject([tempPoint.x+20, tempPoint.y-100], 16));
+    testTownMarker.bindPopup("Город Белгород!");
+
+
+
 
     // Управление машинкой стрелками (тестовый вариант)
     document.body.addEventListener('keydown', function(e) {
@@ -105,3 +127,5 @@ $(document).ready(function() {
 
 var myMap;
 var userCarMarker;
+var userCarMarker;
+var testTownMarker;
