@@ -1,5 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 
+import logging
+log = logging.getLogger(__name__)
+
+
 STD_MAX_STACK_SIZE = 64
 
 

@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import logging
+log = logging.getLogger(__name__)
+
+
 from utils import time_log_format, serialize
 
 

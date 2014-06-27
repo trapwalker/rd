@@ -18,7 +18,10 @@
 Authentication, error handling, etc are left as an exercise for the reader :)
 """
 
-import logging
+import logging.config
+logging.config.fileConfig("logging.conf")
+log = logging.getLogger(__name__)
+
 import tornado.escape
 import tornado.ioloop
 import tornado.options
@@ -29,7 +32,6 @@ import uuid
 from tornado.options import define, options
 
 from model.event_machine import LocalServer
-logging.basicConfig(level=logging.DEBUG, filename='server.log')
 
 from client_connector import AgentSocketHandler
 
@@ -40,6 +42,8 @@ class Application(tornado.web.Application):
     def __init__(self):
         self.srv = LocalServer(app=self)
         self.srv.start()
+        
+        self.init_scene()
 
         handlers = [
             (r"/", MainHandler),
@@ -57,6 +61,12 @@ class Application(tornado.web.Application):
         self.srv.stop()
         tornado.ioloop.IOLoop.instance().stop()
 
+    def init_scene(self):
+        from model.units import Bot
+        from model.vectors import Point as P
+        b = Bot(server=self.srv, position=P(0, 0))
+        b.goto(P(1000, 1500))
+        
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -72,5 +82,4 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, filename='server.log')
     main()

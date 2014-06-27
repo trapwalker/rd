@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger('__main__')
+log = logging.getLogger(__name__)
 
 from base import Observer
 import tasks

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+
+import logging
+log = logging.getLogger(__name__)
+
+
 import tornado.websocket
 import tornado.escape
 import uuid
-import logging
+
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
 

@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger('__main__')
+log = logging.getLogger(__name__)
 
 from math import sqrt
 from abc import ABCMeta

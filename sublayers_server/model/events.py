@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger('main')
-print log    
-log.info('%s:: %r /// %r', __name__, logging.root, log)
+log = logging.getLogger(__name__)
 
 from functools import total_ordering
 

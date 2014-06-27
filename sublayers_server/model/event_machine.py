@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import logging
+import logging.config
 if __name__ == '__main__':
-    log = logging.Logger(__name__, logging.DEBUG)
-    log.addHandler(logging.FileHandler(filename='server.log'))
-else:
-    log = logging.getLogger('__main__')
+    logging.config.fileConfig("../logging.conf")
 
-print 'event_machine:', log    
+log = logging.getLogger(__name__)
 
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
@@ -143,7 +140,7 @@ def main(*args):
 
 if __name__ == '__main__':
     import sys
-    log.info('\n==== Start logging ' + '=' * 50)
+    log.info('==== Start logging ' + '=' * 50)
     #main(*sys.argv)
 
     from units import Station, Bot
@@ -152,7 +149,7 @@ if __name__ == '__main__':
 
     def inspect(event):
         srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
-        logging.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
+        log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
 
     srv = LocalServer()
     srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
@@ -167,4 +164,4 @@ if __name__ == '__main__':
 
     pp(srv.timeline, width=1)
 
-    #srv.start()
+    # srv.start()

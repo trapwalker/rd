@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger('main')
+log = logging.getLogger(__name__)
 
 from base import Object, SubscriberTo__Observer
 
@@ -9,6 +9,7 @@ from base import Object, SubscriberTo__Observer
 class Agent(Object, SubscriberTo__Observer):
 
     def __init__(self, login, connection=None, **kw):
+        log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
         self.login = login
         self.connection = connection

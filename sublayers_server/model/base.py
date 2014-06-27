@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger('__main__')
+log = logging.getLogger(__name__)
 
 from subscription_protocol import make_subscriber_emitter_classes
 from utils import get_uid, serialize
