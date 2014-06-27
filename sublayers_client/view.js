@@ -45,8 +45,9 @@ function onMouseMoveMap(mouseEventObject) {
 }
 
 function onMouseClickMarker(mouseEventObject) {
-    sendChatMessage("My marker ID = " + this.carID, user.ID);
+    //sendChatMessage("My marker ID = " + this.carID, user.ID);
 
+    listMarkers.markers[this.carID].bindPopup("мой номер "+this.carID + "!").openPopup().unbindPopup();
 }
 
 $(document).ready(function() {
