@@ -265,6 +265,13 @@ var ListMapObject = (function () {
         }
     };
 
+    ListMapObject.prototype.getCarHP = function (aID, aHP) {
+        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
+            return this.objects[aID].hp;
+        }
+        return -1;
+    };
+
     ListMapObject.prototype.setTrack = function (aID, aTrack) {
         if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))) {
             this.objects[aID].track = aTrack;

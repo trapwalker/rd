@@ -21,3 +21,43 @@ L.RotatedMarker = L.Marker.extend({
 L.rotatedMarker = function(pos, options) {
     return new L.RotatedMarker(pos, options);
 };
+
+
+
+
+// Список маркеров
+var MarkerList = (function () {
+    function MarkerList() {
+        this.markers = new Array();
+    };
+
+    MarkerList.prototype.add = function(aid, amarker) {
+        this.markers[aid] = amarker;
+        this.markers[aid].carID = aid;
+        // добавить на карту
+        //amarker.addTo(myMap);
+        myMap.addLayer(this.markers[aid]);
+    };
+
+    MarkerList.prototype.del = function(aid) {
+        // убрать с карты
+        myMap.removeLayer(this.markers[aid]);
+        // обнулить
+        this.markers[aid] = null;
+    };
+
+    return MarkerList;
+})();
+
+
+// создание маркера
+function getCarMarker(aid){
+    var newmarker = L.rotatedMarker([0, 0]);
+    newmarker.setIcon(L.icon({
+        iconUrl: 'img/car_20.png',
+        iconSize: [20, 20]
+    }));
+    //newmarker.on('click', removeCar_test);
+    newmarker.on('click', onMouseClickMarker);
+    return newmarker;
+}

@@ -19,11 +19,17 @@
     <script src="wsjson.js"></script>
 </head>
 <body>
-    <div id="map"> </div>
+    <div id="map"></div>
     <div id="footer">
+        <div id="buttonSet">
+            <input type="button" value="Увеличить скорость" onclick="addSpeed();">
+            <input type="button" value="Уменьшить скорость" onclick="subSpeed();">
+            <input type="button" value="Добавить машинку" onclick="createTestCar();">
+        </div>
         <div id="console"></div>
-        <div>
-            <div id="chatArea" class="chatArea">CHAT</div>
+        <div id="chatArea">
+            <div>CHAT</div>
+            <div id="chatInput">Здесь будет строка ввода сообщения </div>
         </div>
     </div>
 </body>

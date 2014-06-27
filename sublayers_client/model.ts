@@ -290,6 +290,13 @@ class ListMapObject {
         }
     }
 
+    getCarHP(aID: number, aHP: number): number  {
+        if(!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))){
+            return (<MapCar> this.objects[aID]).hp;
+        }
+        return -1;
+    }
+
     setTrack(aID: number, aTrack: MoveTrack) {
         if(!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))){
             (<DynamicObject> this.objects[aID]).track = aTrack;

@@ -263,16 +263,19 @@ function receiveMesFromServ(data) {
                     // запустить функцию установки хп
                     aHP = mes.event.object.health;
                 } else { // попытаться взять хп из лист мап обжект
-                    aHP = listMapObject.objects[uid].hp;
-                    if(aHP == null){aHP = 100;}
+                    if (listMapObject.exist(uid)) {
+                        aHP = listMapObject.getCarHP(uid);
+                        if (aHP == -1) aHP = 100;
+                    }
                 }
 
                 if (mes.event.object.type_car != null) {
                     // запустить функцию установки хп
                     aType = mes.event.object.type_car;
                 }else{ // попытаться взять хп из лист мап обжект
-                    aType = listMapObject.objects[uid].type;
-                    if(aType == null){aType = 1;}
+                    if (listMapObject.exist(uid)) {
+                        aType = listMapObject.objects[uid].type;
+                    } else {aType=0;}
                 }
 
                 if (mes.event.object.circular_motion != null) {
@@ -296,6 +299,7 @@ function receiveMesFromServ(data) {
                         acceleration             //Ускорение
                     );
                 }
+
                 //если есть direction, значит машинка стоит на месте
                 if (mes.event.object.direction != null) {
                     // запустить функцию установки линейного движения с нулевыми скоростью и ускорением, и углом поворта
@@ -312,15 +316,15 @@ function receiveMesFromServ(data) {
                     aTrack.direction = direction;
 
                 }
-
                 // добавить машинку, если её нет
-                if(! ListMapObject.exist(uid)) {
-                    ListMapObject.add(new MapCar(uid, aType, aHP, aTrack));
+                if(! listMapObject.exist(uid)) {
+                    listMapObject.add(new MapCar(uid, aType, aHP, aTrack));
                     // и сразу же добавить маркер
+                    listMarkers.add(uid, getCarMarker());
                 } else {
                     // установить все переменные
-                    ListMapObject.setCarHP(uid, aHP)
-                    ListMapObject.setTrack(uid, aTrack);
+                    listMapObject.setCarHP(uid, aHP)
+                    listMapObject.setTrack(uid, aTrack);
                 }
             } // конец обработки car
 
@@ -333,7 +337,7 @@ function receiveMesFromServ(data) {
         // если message_type = chat_message // Если пришло сообщение в чат
         if (mes.event.kind == "chat_message") {
             // нарисовать в специальный div, который выделен для чата
-            addDivToDiv("chatArea", mes.event.id, mes.event.from + ": " + mes.event.text);
+            addDivPrependDiv("chatInput", mes.event.id, mes.event.from + ": " + mes.event.text);
         }
     }
 }

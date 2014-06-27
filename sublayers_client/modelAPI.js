@@ -31,7 +31,8 @@ function ModelInit() {
 
 $(document).ready(function() {
     ModelInit();
-    var myTimer = setInterval(timerRepaint, 50);
+    var myTimer = setInterval(timerRepaint, 20);
+    var myTestTimer = setInterval(newRandSpeed,1000)
 });
 
 var user;

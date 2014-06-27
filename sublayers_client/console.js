@@ -15,6 +15,20 @@ function addDivToDiv(parentDivID, divID, astr){  // Если такой див �
     node.slideDown();
 }
 
+function addDivPrependDiv(parentDivID, divID, astr){  // Если такой див есть, то текст меняется в нём, иначе
+    if($("#"+divID).length) {
+        $("#"+divID).text(astr);
+        //document.getElementById(divID).textContent = astr;
+        return;
+    }
+    // создать див с именем divID
+    var str = "<div id=\"" + divID + "\" class=\"message\">" + astr + "</div>";
+    var node = $(str);
+    node.hide();
+    $("#"+parentDivID).prepend(node);
+    node.slideDown();
+}
+
 function newIDFromP(){
     IDNum++;
     return "d"+IDNum;
@@ -25,3 +39,8 @@ function newIDFromChatMessage(){
     return "chatMes"+IDNum;
 }
 //Работа с логом (конец)
+
+function newIDForTestCar(){
+    IDNum++;
+    return IDNum;
+}
