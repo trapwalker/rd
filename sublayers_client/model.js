@@ -294,4 +294,3 @@ var Clock = (function () {
     };
     return Clock;
 })();
-//# sourceMappingURL=model.js.map
