@@ -100,6 +100,23 @@ $(document).ready(function() {
 
     userCarMarker.carID = newIDForTestCar();
 
+    // тест Easy Button
+    L.easyButton(
+        'easy-button-add-car',
+        createTestCar,
+        "Добавить машинку",
+        myMap
+    );
+
+    L.easyButton(
+        'easy-footer',
+        footerToggle,
+        "Скрыть/Показать консоль",
+        myMap
+    );
+
+    $('#footer').hide();
+
 
     // Добавление Города
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
@@ -212,8 +229,8 @@ function newRandSpeed() {
                             server_time: clock.getCurrentTime(),
                             liner_motion: {
                                 velocity: {
-                                    x: Math.random() * 30 - 15,
-                                    y: Math.random() * 30 - 15
+                                    x: Math.random() * 50 - 25,
+                                    y: Math.random() * 50 - 25
                                 },
                                 acceleration: {
                                     x: 0,
@@ -231,12 +248,6 @@ function newRandSpeed() {
     }
 }
 
-// Почему-то маркеры останавливаются и глючат
-function removeCar_test(){
-    var uid = this.carID;
-    listMapObject.del(uid);
-    listMarkers.del(uid);
-}
 
 function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
@@ -255,6 +266,11 @@ function getTestInfo(aid){
         .setContent('<p>Hello world!<br /> ID = ' + aid + '</p>')
         .openOn(myMap);
 
+}
+
+// скрыть показать footer
+function footerToggle(e) {
+    $('#footer').slideToggle('slow');
 }
 
 var myMap;

@@ -6,7 +6,7 @@
     right: 0px;
     top: 0px;
     width: 100%;
-    height: 80%;
+    height: 100%;
 }
 
 #footer {
@@ -16,6 +16,7 @@
     left: 0px;
     right: 0px;
     top: 80%;
+    color: white;
 }
 
 #console {
@@ -38,6 +39,19 @@
 #buttonSet {
     position: absolute;
     width: 50%;
+}
+
+.easy-button-add-car {
+    background-image: url(img/car_20.png);
+}
+
+.easy-footer {
+    background-image: url(img/green-icon-footer.png);
+    background-size: 20px;
+}
+
+.default-easy-button {
+    background-color: blue;
 }
 
 
