@@ -47,7 +47,11 @@ function onMouseMoveMap(mouseEventObject) {
 function onMouseClickMarker(mouseEventObject) {
     //sendChatMessage("My marker ID = " + this.carID, user.ID);
 
-    listMarkers.markers[this.carID].bindPopup("мой номер "+this.carID + "!").openPopup().unbindPopup();
+    if(listMarkers.markers[this.carID])
+        listMarkers.markers[this.carID].bindPopup("мой номер "+this.carID + "!").openPopup().unbindPopup();
+    else {
+        userCarMarker.bindPopup("мой номер "+this.carID + "!").openPopup().unbindPopup();
+    }
 }
 
 $(document).ready(function() {
@@ -87,7 +91,12 @@ $(document).ready(function() {
         iconSize: [20, 20]
     }));
 
-    userCarMarker.on('click', onMouseClickMarker);
+    userCarMarker.on('popupopen', onMarkerPopupOpen);
+
+    userCarMarker.bindPopup("<input type="+'"image"' + "src=" + '"img/green-plus-for-speed.png"' + " height=15 width=15 " +" value="+'"Увеличить скорость" onclick="addSpeed();">' +" "+
+            "<input type="+'"image"' + "src=" + '"img/green-minus-for-speed.png"' + " height=15 width=15 " +" value="+'"Уменьшить скорость" onclick="subSpeed();">'+ "  "+
+            "<input type="+'"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " +" value="+'"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
+    );
 
     userCarMarker.carID = newIDForTestCar();
 
@@ -102,7 +111,6 @@ $(document).ready(function() {
 
     testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], 16));
     testTownMarker.bindPopup("Город Белгород!");
-    //testTownMarker.on('click',function(){ myMap.removeLayer(testTownMarker); }  );
 
 
     // Тест списка маркеров
@@ -230,7 +238,27 @@ function removeCar_test(){
     listMarkers.del(uid);
 }
 
+function onMarkerPopupOpen(e) {
+    lastIDPopupOpen = this.carID;
+}
+
+function getTestInfo(aid){
+    var mark;
+    if(listMarkers.markers[aid])
+         mark = listMarkers.markers[aid];
+    else {
+         mark = userCarMarker;
+     }
+
+    var popup = L.popup()
+        .setLatLng(mark.getLatLng())
+        .setContent('<p>Hello world!<br /> ID = ' + aid + '</p>')
+        .openOn(myMap);
+
+}
+
 var myMap;
+var lastIDPopupOpen;
 var userCarMarker;
 var testTownMarker;
 var listMarkers;

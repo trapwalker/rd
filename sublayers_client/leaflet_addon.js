@@ -58,6 +58,10 @@ function getCarMarker(aid){
         iconSize: [20, 20]
     }));
     //newmarker.on('click', removeCar_test);
-    newmarker.on('click', onMouseClickMarker);
+    //newmarker.on('click', onMouseClickMarker);
+    newmarker.on('popupopen', onMarkerPopupOpen);
+    newmarker.bindPopup(
+            "<input type="+'"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " +" value="+'"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
+    );
     return newmarker;
 }
