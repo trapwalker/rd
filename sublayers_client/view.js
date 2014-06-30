@@ -84,6 +84,8 @@ $(document).ready(function() {
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
+    myMap.on('zoomstart', hideMarkersBeforeZoom);
+    myMap.on('zoomend', showMarkersAfterZoom);
 
     userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
     userCarMarker.setIcon(L.icon({
@@ -271,6 +273,24 @@ function getTestInfo(aid){
 // скрыть показать footer
 function footerToggle(e) {
     $('#footer').slideToggle('slow');
+}
+
+// Скрыть все маркеры перед зумированием
+function hideMarkersBeforeZoom(){
+    for (var i in listMarkers.markers) {
+        if(listMarkers.markers[i]){
+            myMap.removeLayer(listMarkers.markers[i])
+        }
+    }
+}
+
+// Показать все маркеры после зумирования
+function showMarkersAfterZoom(){
+    for (var i in listMarkers.markers) {
+        if(listMarkers.markers[i]){
+            myMap.addLayer(listMarkers.markers[i])
+        }
+    }
 }
 
 var myMap;
