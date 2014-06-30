@@ -57,15 +57,23 @@ function onMouseClickMarker(mouseEventObject) {
 $(document).ready(function() {
 
     myMap = L.map('map',
-        {minZoom: 10,
-         maxZoom: 16,
-         zoomControl: true,
-         attributionControl: false,
-         keyboard: false,
-         scrollWheelZoom: "center",
-         dragging: false,
-         doubleClickZoom: false,
-         maxBounds: ([[50.21, 35.42], [51.43, 39.44]])}).setView([50.6041, 36.5954], 13);
+        {
+            minZoom: 10,
+            maxZoom: 16,
+            zoomControl: true,
+            attributionControl: false,
+            keyboard: false,
+            scrollWheelZoom: "center",
+            dragging: false,
+            doubleClickZoom: false,
+            //markerZoomAnimation: false,
+            //zoomAnimation: false,
+            //fadeAnimation: false,
+            //zoomAnimationThreshold: 2,
+            maxBounds: ([
+                [50.21, 35.42],
+                [51.43, 39.44]
+            ])}).setView([50.6041, 36.5954], 13);
 
  //   L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
  //       maxZoom: 16,
@@ -84,8 +92,6 @@ $(document).ready(function() {
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
-    myMap.on('zoomstart', hideMarkersBeforeZoom);
-    myMap.on('zoomend', showMarkersAfterZoom);
 
     userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
     userCarMarker.setIcon(L.icon({
