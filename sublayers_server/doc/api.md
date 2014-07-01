@@ -58,21 +58,24 @@ Push-уведомление с сервера имеет вид:
 	{
 	    'call': 'fire',
         'params': {},
-        'uid': '<guid>' 
 	}
 	
 	goto - движение в заданные координаты
 	{
 		'call': 'goto',
         'params': { 'position': {'x': <число>, 'y': <число>}},
-        'uid': '<guid>' 
+	}
+
+	stop - движение в заданные координаты
+	{
+		'call': 'stop',
+        'params': {},
 	}
 	
 	setspeed - установка скорости для машинки
 	{
 		'call': 'setspeed',
         'params': { 'newspeed': <число>},
-        'uid': '<guid>' 
 	}
 	
 	chat_message - отправить сообщение в чат
