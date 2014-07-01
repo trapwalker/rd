@@ -7,15 +7,11 @@ from agents import User, AI
 from utils import NameGenerator
 import units
 from vectors import Point
+from api_tools import API, PublicMethod
 
 
 def gen_uid():
     pass  # todo: implementation
-
-
-class API(object):
-    def __init__(self, server):
-        self.server = server
 
 
 class AgentAPI(API):
@@ -26,7 +22,7 @@ class AgentAPI(API):
             self.car = self.agent.cars[0]
         else:
             self.car = units.Bot(
-                server=self,
+                server=agent.server,
                 position=Point.random_gauss(position or Point(0, 0), position_sigma),
                 observing_range=1000,
             )
@@ -40,6 +36,8 @@ class AgentAPI(API):
 
 
 class ServerAPI(API):
+    def __init__(self, server):
+        self.server = server
 
     def get_agent(self, agent_id=None, make=False, ai=False):
         agent_id = agent_id or NameGenerator.new()['login']
