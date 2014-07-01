@@ -7,7 +7,7 @@ from agents import User, AI
 from utils import NameGenerator
 import units
 from vectors import Point
-from api_tools import API, PublicMethod
+from api_tools import API, public_method
 
 
 def gen_uid():
@@ -15,8 +15,8 @@ def gen_uid():
 
 
 class AgentAPI(API):
-    def __init__(self, agent, position=None, position_sigma=Point(0, 0), **kw):
-        super(AgentAPI, self).__init__(**kw)
+    def __init__(self, agent, position=None, position_sigma=Point(0, 0)):
+        super(AgentAPI, self).__init__()
         self.agent = agent
         if self.agent.cars:
             self.car = self.agent.cars[0]
@@ -28,10 +28,12 @@ class AgentAPI(API):
             )
             self.agent.append_car(self.car)
 
-    def goto(self, position):
-        self.car.goto(position)
+    @public_method
+    def goto(self, x, y):
+        self.car.goto(Point(x, y))
 
-    def car_stop(self):
+    @public_method
+    def stop(self):
         self.car.stop()
 
 
@@ -39,6 +41,7 @@ class ServerAPI(API):
     def __init__(self, server):
         self.server = server
 
+    @public_method
     def get_agent(self, agent_id=None, make=False, ai=False):
         agent_id = agent_id or NameGenerator.new()['login']
         agent = self.server.agents.get(agent_id, None)  # todo: raise exceptions if absent but not make
