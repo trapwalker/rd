@@ -123,6 +123,8 @@ class LocalServer(Server):
         if self.app:
             self.app.stop()
 
+    # todo: pause
+
     @property
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
