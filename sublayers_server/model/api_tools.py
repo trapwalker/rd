@@ -64,10 +64,11 @@ class API(object):
 if __name__ == '__main__':
     class TestAPI(API):
         g = 13
+
         @public_method
         def f(self, x, y=3, z=4):
-            '===some about f method==='
-            return x * 100 + y * 10 + z
+            """===some about f method==="""
+            return x * 100 + y * 10 + z, self.g
 
     api = TestAPI()
     print api.f(1, y=2)
