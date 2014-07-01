@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 from base import Observer
 import tasks
 from balance import BALANCE
-from api_tools import api_method, api_property
 
 
 class Unit(Observer):
@@ -23,6 +22,7 @@ class Unit(Observer):
         del self.task
         self.server.statics.remove(self)
         super(Unit, self).delete()
+        # todo: check staticobservers deletion
 
     def change_observer_state(self, new_state):
         """
@@ -74,18 +74,15 @@ class Bot(Unit):
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
 
-    @api_method
     def stop(self):
         del self.task
 
-    @api_method
     def goto(self, position):
         """
         @param position: model.vectors.Point
         """
         self.task = tasks.Goto(self, position)
 
-    @api_property
     @property
     def v(self):
         """
@@ -101,9 +98,8 @@ class Bot(Unit):
         """
         return self.motion.position if self.motion else self._position
 
-    position = api_property(property(fget=get_position, fset=Unit.set_position))
+    position = property(fget=get_position, fset=Unit.set_position)
 
-    @api_property
     @property
     def max_velocity(self):  # m/s
         """

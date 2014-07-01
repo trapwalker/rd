@@ -43,6 +43,7 @@ class Point(complex):
 
     def __repr__(self):
         return 'Point(x={}, y={})'.format(self.x, self.y)
+        # todo: override __init__
 
     def __str__(self):
         return '[{:g}, {:g}]'.format(self.x, self.y)
