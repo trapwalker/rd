@@ -1,9 +1,8 @@
-//Работа с логом
 var IDNum = 0;
 
-function addDivToDiv(parentDivID, divID, astr){  // Если такой див есть, то текст меняется в нём, иначе
-    if($("#"+divID).length) {
-        $("#"+divID).text(astr);
+function addDivToDiv(parentDivID, divID, astr, toTop) {  // Если такой див есть, то текст меняется в нём, иначе
+    if ($("#" + divID).length) {
+        $("#" + divID).text(astr);
         //document.getElementById(divID).textContent = astr;
         return;
     }
@@ -11,36 +10,27 @@ function addDivToDiv(parentDivID, divID, astr){  // Если такой див �
     var str = "<div id=\"" + divID + "\" class=\"message\">" + astr + "</div>";
     var node = $(str);
     node.hide();
-    $("#"+parentDivID).append(node);
-    node.slideDown();
-}
 
-function addDivPrependDiv(parentDivID, divID, astr){  // Если такой див есть, то текст меняется в нём, иначе
-    if($("#"+divID).length) {
-        $("#"+divID).text(astr);
-        //document.getElementById(divID).textContent = astr;
-        return;
+    if (toTop) {
+        $("#" + parentDivID).append(node)
     }
-    // создать див с именем divID
-    var str = "<div id=\"" + divID + "\" class=\"message\">" + astr + "</div>";
-    var node = $(str);
-    node.hide();
-    $("#"+parentDivID).prepend(node);
+    else {
+        $("#" + parentDivID).prepend(node);
+    }
     node.slideDown();
 }
 
-function newIDFromP(){
+function newIDFromP() {
     IDNum++;
-    return "d"+IDNum;
+    return "d" + IDNum;
 }
 
-function newIDFromChatMessage(){
+function newIDFromChatMessage() {
     IDNum++;
-    return "chatMes"+IDNum;
+    return "chatMes" + IDNum;
 }
-//Работа с логом (конец)
 
-function newIDForTestCar(){
+function newIDForTestCar() {
     IDNum++;
     return IDNum;
 }

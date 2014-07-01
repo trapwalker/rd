@@ -1,61 +1,48 @@
-/**
- * Created by Abbir on 22.06.2014.
- */
-
 function redrawMap() {
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
     var tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x + " " + tempPoint.y + "   угол = "+ tempAngleGrad);
-
+    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x + " " + tempPoint.y + "  угол = " + tempAngleGrad, true);
     // Перенос центра карты в центр маркера пользовательской машинки
     myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
-
     // Установка угла в для поворота иконки маркера (в градусах)
     userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
     // Установка новых координат маркера
     userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
 
-
-
-    addDivToDiv("console", "rm8", "Кол-во машинок = " +listMapObject.objects.length);
     // работа со списком машинок
-    for(var i in listMapObject.objects) {
-        if (!listMapObject.hasOwnProperty(i)) {//... сделать что-то с arr[i] ...
+    addDivToDiv("console", "rm8", "Кол-во машинок = " + listMapObject.objects.length, true);
+    for (var i in listMapObject.objects) {
+        if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
             // пересчёт координат
             tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
             // пересчёт угла
             tempAngleGrad = listMapObject.objects[i].getCurrentDirection(clock.getCurrentTime());
             // Установка угла в для поворота иконки маркера (в градусах)
-            listMarkers.markers[i].options.angle = tempAngleGrad * 180 / Math.PI;
+            listMapObject.objects[i].marker.options.angle = tempAngleGrad * 180 / Math.PI;
             // Установка новых координат маркера);
-            listMarkers.markers[i].setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
+            listMapObject.objects[i].marker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         }
     }
-
 }
 
 function onMouseClickMap(mouseEventObject) {
-    //sendPoint(myMap.project(mouseEventObject.latlng, 16));
-    sendNewPoint(myMap.project(mouseEventObject.latlng, 16),user.userCar.ID);
+    sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
 }
 
 function onMouseMoveMap(mouseEventObject) {
-    addDivToDiv("console", "mm4", "project = " + myMap.project(mouseEventObject.latlng, myMap.getZoom()));
-    addDivToDiv("console", "mm5", "zoom = " + myMap.getZoom());
+    addDivToDiv("console", "mm4", "project = " + myMap.project(mouseEventObject.latlng, myMap.getZoom()), true);
+    addDivToDiv("console", "mm5", "zoom = " + myMap.getZoom(), true);
 }
 
-function onMouseClickMarker(mouseEventObject) {
-    //sendChatMessage("My marker ID = " + this.carID, user.ID);
-
-    if(listMarkers.markers[this.carID])
-        listMarkers.markers[this.carID].bindPopup("мой номер "+this.carID + "!").openPopup().unbindPopup();
-    else {
-        userCarMarker.bindPopup("мой номер "+this.carID + "!").openPopup().unbindPopup();
-    }
+function onZoomStart(Event) {
+    clearInterval(timer);
 }
 
-$(document).ready(function() {
+function onZoomEnd(Event) {
+    timer = setInterval(timerRepaint, timerDelay);
+}
 
+$(document).ready(function () {
     myMap = L.map('map',
         {
             minZoom: 10,
@@ -66,21 +53,17 @@ $(document).ready(function() {
             scrollWheelZoom: "center",
             dragging: false,
             doubleClickZoom: false,
-            //markerZoomAnimation: false,
-            //zoomAnimation: false,
-            //fadeAnimation: false,
-            //zoomAnimationThreshold: 2,
             maxBounds: ([
                 [50.21, 35.42],
                 [51.43, 39.44]
             ])}).setView([50.6041, 36.5954], 13);
 
- //   L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
- //       maxZoom: 16,
- //       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
- //          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
- //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
- //       id: 'examples.map-i86knfo3'}).addTo(myMap);
+    //   L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    //       maxZoom: 16,
+    //       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+    //          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+    //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    //       id: 'examples.map-i86knfo3'}).addTo(myMap);
 
     L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
         maxZoom: 16,
@@ -92,6 +75,9 @@ $(document).ready(function() {
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
+    myMap.on('zoomstart', onZoomStart);
+    myMap.on('zoomend', onZoomEnd);
+
 
     userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
     userCarMarker.setIcon(L.icon({
@@ -101,9 +87,9 @@ $(document).ready(function() {
 
     userCarMarker.on('popupopen', onMarkerPopupOpen);
 
-    userCarMarker.bindPopup("<input type="+'"image"' + "src=" + '"img/green-plus-for-speed.png"' + " height=15 width=15 " +" value="+'"Увеличить скорость" onclick="addSpeed();">' +" "+
-            "<input type="+'"image"' + "src=" + '"img/green-minus-for-speed.png"' + " height=15 width=15 " +" value="+'"Уменьшить скорость" onclick="subSpeed();">'+ "  "+
-            "<input type="+'"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " +" value="+'"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
+    userCarMarker.bindPopup("<input type=" + '"image"' + "src=" + '"img/green-plus-for-speed.png"' + " height=15 width=15 " + " value=" + '"Увеличить скорость" onclick="addSpeed();">' + " " +
+            "<input type=" + '"image"' + "src=" + '"img/green-minus-for-speed.png"' + " height=15 width=15 " + " value=" + '"Уменьшить скорость" onclick="subSpeed();">' + "  " +
+            "<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" + '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
     );
 
     userCarMarker.carID = newIDForTestCar();
@@ -125,6 +111,8 @@ $(document).ready(function() {
 
     $('#footer').hide();
 
+    // по нажатию вызвать див с инпутом и кнопкой, и по кнопке сделать удаление машинки
+
 
     // Добавление Города
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
@@ -138,12 +126,8 @@ $(document).ready(function() {
     testTownMarker.bindPopup("Город Белгород!");
 
 
-    // Тест списка маркеров
-    listMarkers = new MarkerList();
-
-
     // Управление машинкой стрелками (тестовый вариант)
-    document.body.addEventListener('keydown', function(e) {
+    document.body.addEventListener('keydown', function (e) {
         if (e.which == 38) {// поднять скорость
             addSpeed();
         }
@@ -163,8 +147,7 @@ $(document).ready(function() {
     }, true);
 });
 
-
-function subSpeed(){
+function subSpeed() {
     if (user.userCar.track.speedV.abs() > 0) {
         if (user.userCar.track.speedV.abs() < 5) {
             user.userCar.track.direction = normVector(user.userCar.track.speedV);
@@ -175,16 +158,16 @@ function subSpeed(){
             sendSetSpeed(user.userCar.track.speedV.abs() - 2, user.userCar.ID);
         }
     }
-    addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
+    addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs(), true);
 }
 
-function addSpeed(){
-    sendSetSpeed(user.userCar.track.speedV.abs()+2,user.userCar.ID);
-    addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs());
+function addSpeed() {
+    sendSetSpeed(user.userCar.track.speedV.abs() + 2, user.userCar.ID);
+    addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs(), true);
 }
 
 // просто генерирует рандомную машинку и отправляет её сразу в ресив, чтобы клиент добавил её в модель через серверное взаимодействие
-function createTestCar(){
+function createTestCar() {
     var ans = {
         message_type: "push",
         event: {
@@ -193,14 +176,14 @@ function createTestCar(){
                 uid: newIDForTestCar(),
                 class: "car",
                 position: {
-                    x: 10093700 + Math.random()*100,
-                    y: 5646400 + Math.random()*100
+                    x: 10093700 + Math.random() * 100,
+                    y: 5646400 + Math.random() * 100
                 },
                 server_time: clock.getCurrentTime(),
                 liner_motion: {
                     velocity: {
-                        x: Math.random()*30 - 15,
-                        y: Math.random()*30 - 15
+                        x: Math.random() * 30 - 15,
+                        y: Math.random() * 30 - 15
                     },
                     acceleration: {
                         x: 0,
@@ -261,17 +244,17 @@ function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
 }
 
-function getTestInfo(aid){
+function getTestInfo(aid) {
     var mark;
-    if(listMarkers.markers[aid])
-         mark = listMarkers.markers[aid];
+    if (listMapObject.objects[aid].marker)
+        mark = listMapObject.objects[aid].marker;
     else {
-         mark = userCarMarker;
-     }
+        mark = userCarMarker;
+    }
 
     var popup = L.popup()
         .setLatLng(mark.getLatLng())
-        .setContent('<p>Hello world!<br /> ID = ' + aid + '</p>')
+        .setContent('<p>Hello world!<br /> ID = ' + mark.carID + '</p>')
         .openOn(myMap);
 
 }
@@ -281,26 +264,13 @@ function footerToggle(e) {
     $('#footer').slideToggle('slow');
 }
 
-// Скрыть все маркеры перед зумированием
-function hideMarkersBeforeZoom(){
-    for (var i in listMarkers.markers) {
-        if(listMarkers.markers[i]){
-            myMap.removeLayer(listMarkers.markers[i])
-        }
-    }
+function delCar() {
+    myMap.removeLayer(listMapObject.objects[lastIDPopupOpen].marker);
+    listMapObject.del(lastIDPopupOpen);
 }
 
-// Показать все маркеры после зумирования
-function showMarkersAfterZoom(){
-    for (var i in listMarkers.markers) {
-        if(listMarkers.markers[i]){
-            myMap.addLayer(listMarkers.markers[i])
-        }
-    }
-}
 
 var myMap;
 var lastIDPopupOpen;
 var userCarMarker;
 var testTownMarker;
-var listMarkers;

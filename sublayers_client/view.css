@@ -50,6 +50,10 @@
     background-size: 20px;
 }
 
+.easy-button-delete-car {
+    background-color: red;
+}
+
 .default-easy-button {
     background-color: blue;
 }
