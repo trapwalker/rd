@@ -63,7 +63,7 @@ Push-уведомление с сервера имеет вид:
 	goto - движение в заданные координаты
 	{
 		'call': 'goto',
-        'params': { 'position': {'x': <число>, 'y': <число>}},
+        'params': { 'x': <число>, 'y': <число> },
 	}
 
 	stop - движение в заданные координаты
@@ -72,16 +72,15 @@ Push-уведомление с сервера имеет вид:
         'params': {},
 	}
 	
-	setspeed - установка скорости для машинки
+	set_speed - установка скорости для машинки
 	{
-		'call': 'setspeed',
-        'params': { 'newspeed': <число>},
+		'call': 'set_speed',
+        'params': { 'new_speed': <число>},
 	}
 	
 	chat_message - отправить сообщение в чат
 	{
 		'call': 'chat_message'
-	    'from': <sender_info>, // user.ID
         'text': <message_text>, // текст сообщения
 	}
 	
