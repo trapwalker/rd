@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 import tornado.websocket
 import tornado.escape
 import uuid
+from model.api import AgentAPI
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
@@ -19,6 +20,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         log.info('!!! Open User connection: %s', self.user_id)
         self.agent = self.application.srv.get_agent(self.user_id, make=True)  # todo: Change to make=False
         self.agent.connection = self
+        self.api = AgentAPI(agent=self.agent, server=self.application.srv)
 
     def on_close(self):
         log.debug('Agent socket Closed')
