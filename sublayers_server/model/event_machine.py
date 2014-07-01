@@ -6,6 +6,7 @@ if __name__ == '__main__':
 
 log = logging.getLogger(__name__)
 
+from model.server_api import ServerAPI
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
@@ -33,6 +34,7 @@ class Server(object):
         self.agents = {}  # Agents dictionary
         # todo: Typehinting
         self.start_time = None
+        self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
     def filter_motions(self, quadrant):
