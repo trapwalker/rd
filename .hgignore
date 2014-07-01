@@ -29,3 +29,4 @@ resources.bin/*
 *.log
 sublayers_client/model.js
 *.log.*
+sublayers_client/model.js.map
