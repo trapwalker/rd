@@ -2,6 +2,8 @@
 
 __all__ = ['Point']
 
+from random import gauss
+
 
 class Point(complex):
 
@@ -9,6 +11,17 @@ class Point(complex):
 
     x = complex.real
     y = complex.imag
+
+    @classmethod
+    def random_gauss(cls, mu, sigma):
+        """
+        @param mu: Point
+        @param sigma: Point | float
+        @rtype: Point
+        """
+        if not isinstance(sigma, Point):
+            sigma = Point(sigma, sigma)
+        return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
 
     def distance(self, p):
         """
