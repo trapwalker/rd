@@ -36,6 +36,18 @@ class AgentAPI(API):
     def stop(self):
         self.car.stop()
 
+    @public_method
+    def fire(self):
+        pass  # todo: AgentAPI.fire implementation
+
+    @public_method
+    def set_speed(self, new_speed):
+        pass  # todo: AgentAPI.set_speed implementation
+
+    @public_method
+    def chat_message(self, text):
+        pass  # todo: AgentAPI.chat_message implementation
+
 
 class ServerAPI(API):
     def __init__(self, server):
