@@ -39,11 +39,7 @@ class AgentAPI(API):
         self.car.stop()
 
 
-
 class ServerAPI(API):
-
-    def new_agent(self, name):
-        pass
 
     def get_agent(self, agent_id=None, make=False, ai=False):
         agent_id = agent_id or NameGenerator.new()['login']
