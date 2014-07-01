@@ -15,17 +15,17 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def open(self):
-        logging.debug('Agent socket Opened')
         self.user_id = self.get_secure_cookie("user")
+        log.info('!!! Open User connection: %s', self.user_id)
         self.agent = self.application.srv.get_agent(self.user_id, make=True)  # todo: Change to make=False
         self.agent.connection = self
 
     def on_close(self):
-        logging.debug('Agent socket Closed')
+        log.debug('Agent socket Closed')
         self.agent.connection = None
 
     def on_message(self, message):
-        logging.info("got message %r", message)
+        log.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
         chat = {
             "id": str(uuid.uuid4()),
