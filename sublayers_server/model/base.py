@@ -7,6 +7,7 @@ from subscription_protocol import make_subscriber_emitter_classes
 from utils import get_uid, serialize
 from inventory import Inventory
 import messages
+from api_tools import api_property
 
 from abc import ABCMeta
 
@@ -94,7 +95,7 @@ class PointObject(Object):
         """
         self._position = position
 
-    position = property(fget=get_position, fset=set_position)
+    position = api_property(property(fget=get_position, fset=set_position))
 
 
 class VisibleObject(PointObject, EmitterFor__Observer):

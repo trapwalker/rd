@@ -6,10 +6,12 @@ if __name__ == '__main__':
 
 log = logging.getLogger(__name__)
 
-from utils import get_uid, TimelineQueue, get_time, time_log_format
+from utils import get_uid, TimelineQueue, get_time, time_log_format, NameGenerator
 import events
 import errors
-from agents import User
+from agents import User, AI
+from api_tools import api_method
+import units
 
 from time import sleep
 from threading import Thread
@@ -36,11 +38,38 @@ class Server(object):
         self.start_time = None
         # todo: blocking of init of servers with same uid
 
-    def get_agent(self, agent_id, make=False):
-        agent = self.agents.get(agent_id, None)
+    @api_method
+    def get_agent(self, agent_id=None, make=False, ai=False):
+        agent_id = agent_id or NameGenerator.new()['login']
+        agent = self.agents.get(agent_id, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
-            agent = User(login=agent_id)
+            cls = AI if ai else User
+            agent = cls(server=self, login=agent_id)
         return agent
+
+    @api_method
+    def get_car(self, agent_id=None, position=None, position_sigma=0, make=False):
+        agent = self.get_agent(agent_id=agent_id, make=make)
+        if agent.cars:
+            car = agent.cars[0]
+        else:
+            car = units.Bot(
+                server=self,
+                position=Point.random_gauss(position or Point(0,0), position_sigma),
+                observing_range=1000,
+            )
+            agent.append_car(car)
+        return car
+
+    @api_method
+    def car_goto(self, agent_id, position):
+        car = self.get_car(agent_id)  # todo: raise exception
+        car.goto(position)
+
+    @api_method
+    def car_stop(self, agent_id):
+        car = self.get_car(agent_id)  # todo: raise exception
+        car.stop()
 
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant

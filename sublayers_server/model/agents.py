@@ -16,6 +16,14 @@ class Agent(Object, SubscriberTo__Observer):
         # todo: normalize and check login
         self.server.agents[login] = self
 
+        self.cars = []  # specific
+
+    def append_car(self, car):  # specific
+        if car not in self.cars:
+            self.cars.append(car)
+        car.agent = self
+        self.subscribe_to__Observer(car)
+
     def on_message(self, connection, messahe):
         pass
 
