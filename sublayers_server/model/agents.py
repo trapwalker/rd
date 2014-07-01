@@ -15,7 +15,6 @@ class Agent(Object, SubscriberTo__Observer):
         self.connection = connection
         # todo: normalize and check login
         self.server.agents[login] = self
-
         self.cars = []  # specific
 
     def append_car(self, car):  # specific
