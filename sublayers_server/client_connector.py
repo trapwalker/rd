@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-import tornado.escape
 from model.api import AgentAPI
 
 
@@ -27,6 +26,5 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         log.info("got message %r", message)
-        parsed = tornado.escape.json_decode(message)
-        result = self.api.__rpc_call__(parsed)
+        result = self.api.__rpc_call__(message)
         self.write_message(result)
