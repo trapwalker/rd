@@ -10,11 +10,52 @@ from copy import copy
 import json
 from uuid import uuid1 as get_uid
 from time import time as get_time  # todo: integer vs float time
+import random
 
 from vectors import Point
 
 
 TimeClass = get_time().__class__
+
+
+class NameGenerator(object):
+    adjectives = '''Mad Adventurous Affectionate Aggressive Ambitious Angry Arrogant Boastful Brave Brutal Calm Candid
+Carefree Changeable Competent Competitive Considerate Courageous Cowardly Creative Critical Dedicated Demanding 
+Determined Devoted Dishonest Dominant Eas Egocentric Emotional Energetic Excitable Experienced Extrovert Fai Flabby 
+Forgetful Frank Fussy Generous Gentle Gullible Har Ho Humble Hypocritical Imaginative Impatient Impetuous 
+Impressionable Impulsive Indecisive Insincere Irresponsible Lively Logical Loyal Malicious Materialistic Mercenary 
+Modest Narro Obedient Obstinate Open Outgoing Passionate Passive Petty Pompous Possessive Practical Presumptuous 
+Protective Proud Rational Realistic Rebellious Remarkable Reserved Respectful Revolutionary Rude Ruthless Secretive 
+Selfish Sensible Sensitive Sentimental Shy Snobbish Spiteful Stubborn Taciturn Talkative Temperamental Tender 
+Thoughtful Timid Tolerant Truthful Uncontrollable Understanding Unpredictable Unreliable Unscrupulous Unstable 
+Vain Versatile Vicious Vindictive Violent'''.split()
+
+    animals = '''shark alligator alpaca anaconda antelope wild ram asp baboon sheep American bear badger snipe
+squirrel bison beaver chipmunk bull camel wolf otter desman viper gazelle hamadryas gecko cheetah gibbon hyena 
+hippopotamus gnu gorilla grizzly goose porcupine dingo dinosaur coon echidna hedgehog toad giraffe hare zebra snake 
+aurochs iguana turkey leopard boar cayman spurdog cachalot frog kangaroo whale cobra koala goat coyote horse cow 
+tomcat cat crocodile rabbit mole rat duck marten chicken lama manatee lobster deer weasel lion lemming lemur sloth 
+leopard fox lobster elk horse frog macaque mammoth mongoose baboon marmoset bear grass snake mollusc walrus cavy 
+anteater mouse rhea narwhal rhino monkey ape sheep okapi opossum donkey ass octopus baboon panther penguin puma 
+cougar crawfish glutton lynx saiga salamander pig swine hog sowboar serval chamois skunk dog sable marmot suslik 
+tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchilla jaguar yak lizard'''.split()
+
+    __doc__ = """ Returns one from {} combinations of pair (adjective, animal)
+    and {} variants of login like 'MadFrog123'.""".format(
+        len(adjectives) * len(animals), len(adjectives) * len(animals) * 900)
+
+    @classmethod
+    def pair(cls):
+        return random.choice(cls.adjectives).capitalize(), random.choice(cls.animals).capitalize(),
+
+    @classmethod
+    def login(cls, a, b):
+        return ''.join([a, b, str(random.randrange(100, 1000))])
+
+    @classmethod
+    def new(cls):
+        fname, lname = cls.pair()
+        return dict(fname=fname, lname=lname, login=cls.login(fname, lname))
 
 
 def special_type_serialize_prepare(obj):
