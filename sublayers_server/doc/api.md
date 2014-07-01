@@ -48,7 +48,7 @@ Push-уведомление с сервера имеет вид:
         'id': <message_id>,
 
         # see
-        'object': <object>,
+        'object': <object>
     }
     
 
@@ -57,31 +57,31 @@ Push-уведомление с сервера имеет вид:
 	fire - сделать залп (по всем в секторе обстрела)
 	{
 	    'call': 'fire',
-        'params': {},
+        'params': {}
 	}
 	
 	goto - движение в заданные координаты
 	{
 		'call': 'goto',
-        'params': { 'x': <число>, 'y': <число> },
+        'params': { 'x': <число>, 'y': <число> }
 	}
 
 	stop - движение в заданные координаты
 	{
 		'call': 'stop',
-        'params': {},
+        'params': {}
 	}
 	
 	set_speed - установка скорости для машинки
 	{
 		'call': 'set_speed',
-        'params': { 'new_speed': <число>},
+        'params': { 'new_speed': <число> }
 	}
 	
 	chat_message - отправить сообщение в чат
 	{
 		'call': 'chat_message'
-        'text': <message_text>, // текст сообщения
+        'params': { 'text': '<message_text>' }
 	}
 	
 	
