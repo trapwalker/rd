@@ -45,7 +45,8 @@ class Server(object):
     def filter_static_observers(self, quadrant):
         return self.static_observers  # todo: filter collection by quadrant
 
-    def get_time(self):
+    @staticmethod
+    def get_time():
         return get_time()
 
     def post_event(self, event):
@@ -127,14 +128,8 @@ class LocalServer(Server):
         return self.thread is not None and self.thread.is_alive()
 
 
-def main(*args):
-    pass
-
-
 if __name__ == '__main__':
-    import sys
     log.info('==== Start logging ' + '=' * 50)
-    #main(*sys.argv)
 
     from units import Station, Bot
     from agents import User
