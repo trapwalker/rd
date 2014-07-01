@@ -22,7 +22,7 @@
 
     {
         'message_type': 'answer',
-        'error': (null|{'code': 12345, 'title': '<title of error message>', 'message': '<error message>', 'details': (null|'<details>'}),
+        'error': (null|{'cls': '<classname of error>', 'message': '<error message>'}),
         'uid': '<message UID>',
         'result': <result>
     }
