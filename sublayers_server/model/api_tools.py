@@ -9,6 +9,8 @@ log.debug('-='*30)
 
 import functools
 
+from utils import serialize
+
 
 class EAPIError(Exception):
     """Abstract API exception"""
@@ -20,6 +22,14 @@ class EWrongMethodError(EAPIError):
 
 class EWrongParamsError(EAPIError):
     """Unsupported params format"""
+
+
+class EWrongMethodCallingFormat(EAPIError):
+    """Wrong format of API-method calling info/"""
+
+
+class EUnexpectedError(EAPIError):
+    """Unexpected internal error while calling API-function"""
 
 
 def public_method(func):
@@ -35,6 +45,11 @@ def public_method(func):
         except TypeError as e:
             log.error('API error: %s !-> %r', log_call, e)
             raise EWrongParamsError(e.message)
+        except Exception as e:
+            log.error('API UNEXPECTED(!) error: %s !-> %r', log_call, e)
+            # todo: detail logging unexpected errors
+            raise EUnexpectedError(repr(e))
+
         log.info('API result: %s --> %r', log_call, res)
         return res
 
@@ -46,8 +61,7 @@ def public_method(func):
 class API(object):
     """Base API provider class"""
     def __call__(self, method, params):
-        method = method.strip()
-        if not method or method[0] == '_' or not hasattr(self, method):
+        if not hasattr(self, method):
             raise EWrongMethodError('API Method {!r} is not supported.'.format(method))
 
         func = getattr(self, method)
@@ -59,6 +73,30 @@ class API(object):
             raise EWrongMethodError('API Method {!r} is not allowed.'.format(method))
 
         return func(**params)
+
+    def __rpc_call__(self, call_info):
+        method = call_info.get('call')
+        params = call_info.get('params', {})
+        uid = call_info.get('uid')
+        try:
+            result = self(method, params)
+        except EAPIError as e:
+            return self._make_respond(error=e, uid=uid)
+        else:
+            return self._make_respond(result=result, uid=uid)
+
+    @staticmethod
+    def _make_respond(result=None, error=None, uid=None):
+        # todo: check unicode
+        data = dict(
+            message_type='answer',
+            error=dict(cls=type(error).__name__, message=error.message) if error else None,
+            result=result,
+        )
+        if uid is not None:
+            data['uid'] = uid
+        # todo: serialization error
+        return serialize(data)
 
 
 if __name__ == '__main__':
