@@ -5,9 +5,7 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 import tornado.escape
-import uuid
 from model.api import AgentAPI
-from model.api_tools import EAPIError
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
@@ -32,6 +30,3 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         parsed = tornado.escape.json_decode(message)
         result = self.api.__rpc_call__(parsed)
         self.write_message(result)
-
-
-
