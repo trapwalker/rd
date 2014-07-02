@@ -28,7 +28,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r"/", MainHandler),
-            (r"/chatsocket", AgentSocketHandler),
+            (r"/ws", AgentSocketHandler),
         ]
         settings = dict(
             cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
