@@ -30,3 +30,4 @@ resources.bin/*
 sublayers_client/model.js
 *.log.*
 sublayers_client/model.js.map
+deploy/python/

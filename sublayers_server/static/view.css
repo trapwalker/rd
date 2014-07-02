@@ -31,7 +31,7 @@
 }
 
 #chatArea {
-    overflow-y: scroll;
+    overflow: auto;
     position: absolute;
     width: 50%;
     bottom: 0px;
@@ -46,26 +46,33 @@
 }
 
 #chatTextArea {
+    overflow-y: scroll;
+    max-height: 150px;
     background-color: whitesmoke;
 }
 
-#chat-message-button-send {
-    position: absolute;
-    width: 20%;
+#chatInput {
     bottom: 0;
+    width: 100%;
+    position: absolute;
+    height: 30px;
+}
+
+#chat-message-button-send {
+    width: 20%;
+    position: absolute;
     right: 0px;
 }
 
 #chat-message-input-text {
-    position: absolute;
     color: black;
-    left: 0px;
     width: 75%;
-    bottom: 0;
 }
 
 .easy-button-add-car {
     background-image: url(img/car_20.png);
+    height: 100px;
+    width: 100px;
 }
 
 .easy-footer {

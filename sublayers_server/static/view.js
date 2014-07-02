@@ -278,8 +278,6 @@ function submitChatMessage() {
     } else {
         $("#chat-message-input-text").focus();
     }
-
-
 }
 
 
