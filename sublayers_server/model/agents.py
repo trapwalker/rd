@@ -12,10 +12,18 @@ class Agent(Object, SubscriberTo__Observer):
         log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
         self.login = login
-        self.connection = connection
+        self._connection = connection
         # todo: normalize and check login
         self.server.agents[login] = self
         self.cars = []  # specific
+
+    @property
+    def connection(self):
+        return self._connection
+
+    @connection.setter
+    def connection(self, new_connection):
+        self._connection = new_connection
 
     def append_car(self, car):  # specific
         if car not in self.cars:
@@ -35,6 +43,8 @@ class Agent(Object, SubscriberTo__Observer):
         @param model.messages.Message message: Incoming message
         """
         log.info('%s. %s say: %s', self, emitter, message.serialize())
+        if self.connection:
+            self.connection.write_message(message.serialize())
 
 
 class User(Agent):
