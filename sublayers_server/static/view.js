@@ -271,8 +271,14 @@ function delCar() {
 }
 
 function submitChatMessage() {
-    sendChatMessage($("#chat-message-input-text").val());
-    $("#chat-message-input-text").val('').focus();
+    str = $("#chat-message-input-text").val();
+    if(str.length) {
+        sendChatMessage(str);
+        $("#chat-message-input-text").val('').focus();
+    } else {
+        $("#chat-message-input-text").focus();
+    }
+
 
 }
 

@@ -4,7 +4,7 @@ WSJSON = (function () {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
         this.socket.onmessage = function (event) {
-            receiveMesFromServ(event, true); // true - если от сервера, false - если моё тестовое
+            receiveMesFromServ(event.data, true); // true - если от сервера, false - если моё тестовое
         }
 
         this.tasks = new Array(); // Новые задачи
@@ -77,7 +77,6 @@ function sendChatMessage(atext, auid) {
         }
     };
     rpc_call_list.add(mes);
-    servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -187,8 +186,6 @@ function servEmul(data) {
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data, fromServ) {
     var mes = JSON.parse(data);
-    if(fromServ)
-        alert(data);
     // если message_type = push
     if (mes.message_type == "push") {
         // значит тут есть евент, смотреть тип евента
@@ -361,7 +358,7 @@ function receiveMesFromServ(data, fromServ) {
         // если message_type = chat_message // Если пришло сообщение в чат
         if (mes.event.kind == "chat_message") {
             // нарисовать в специальный div, который выделен для чата
-            addDivToDiv("chatInput", mes.event.id, mes.event.from + ": " + mes.event.text, false);
+            addDivToDiv("chatInput", "chat_text"+mes.event.id, mes.event.author + ": " + mes.event.text, false);
         }
     }
 
