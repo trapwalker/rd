@@ -153,7 +153,8 @@ class Bot(Unit):
         log.debug('%s: Motion set to %s (old=%s)', self, new_motion, old_motion)
         if new_motion:
             self.server.motions.append(new_motion)
-            self.server.statics.remove(self)
+            if not old_motion:
+                self.server.statics.remove(self)
         else:
             self.server.statics.append(self)
 
