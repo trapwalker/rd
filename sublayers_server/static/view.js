@@ -109,15 +109,7 @@ $(document).ready(function () {
         myMap
     );
 
-    $('#footer').hide();
-
-    //
-    L.easyButton(
-        'default-easy-button',
-        send_new_test_text,
-        "Text !!!",
-        myMap
-    );
+    //$('#footer').hide();
 
     wsjson = new WSJSON();
 
@@ -276,13 +268,10 @@ function delCar() {
     listMapObject.del(lastIDPopupOpen);
 }
 
-function send_new_test_text() {
-    sendChatMessage('text '+newIDFromChatMessage());
-}
-
 function submitChatMessage() {
     sendChatMessage($("#chat-message-input-text").val());
-    $("#chat-message-input-text").val('');
+    $("#chat-message-input-text").val('').focus();
+
 }
 
 
