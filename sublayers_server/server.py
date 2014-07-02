@@ -27,6 +27,7 @@ class Application(tornado.web.Application):
         self.srv.start()
         self.clients = []
         self.chat = []
+        # todo: tuncate chat history
 
         self.init_scene()
 
@@ -61,6 +62,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 def main():
     tornado.options.parse_config_file('server.conf')
+    tornado.options.parse_command_line()
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
