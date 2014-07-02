@@ -46,10 +46,13 @@ class AgentAPI(API):
         chat = app.chat
         msg_id = len(app.chat)
         msg = {
-            'kind': 'chat_message',
-            'from': self.agent.login,
-            'text': text,
-            'id': msg_id,
+            'message_type': 'push',
+            'event': {
+                'kind': 'chat_message',
+                'from': self.agent.login,
+                'text': text,
+                'id': msg_id,
+            }
         }
         chat.append(msg)
         for client_connection in app.clients:
