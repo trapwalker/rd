@@ -49,7 +49,7 @@ class AgentAPI(API):
             'message_type': 'push',
             'event': {
                 'kind': 'chat_message',
-                'from': self.agent.login,
+                'author': self.agent.login,
                 'text': text,
                 'id': msg_id,
             }
