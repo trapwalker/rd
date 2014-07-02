@@ -36,9 +36,16 @@
     right: 0px;
 }
 
-#buttonSet {
+#chat-message-button-send {
     position: absolute;
-    width: 50%;
+    width: 20%;
+    right: 0px;
+}
+
+#chat-message-input-text {
+    color: black;
+    left: 0px;
+    width: 75%;
 }
 
 .easy-button-add-car {

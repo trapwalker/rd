@@ -280,6 +280,11 @@ function send_new_test_text() {
     sendChatMessage('text '+newIDFromChatMessage());
 }
 
+function submitChatMessage() {
+    sendChatMessage($("#chat-message-input-text").val());
+    $("#chat-message-input-text").val('');
+}
+
 
 var myMap;
 var lastIDPopupOpen;
