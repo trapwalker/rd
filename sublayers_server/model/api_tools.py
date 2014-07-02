@@ -92,15 +92,15 @@ class API(object):
             return self._make_respond(result=result, rpc_call_id=rpc_call_id)
 
     @staticmethod
-    def _make_respond(result=None, error=None, uid=None):
+    def _make_respond(result=None, error=None, rpc_call_id=None):
         # todo: check unicode
         data = dict(
             message_type='answer',
             error=dict(cls=type(error).__name__, message=error.message) if error else None,
             result=result,
         )
-        if uid is not None:
-            data['uid'] = uid
+        if rpc_call_id is not None:
+            data['rpc_call_id'] = rpc_call_id
         # todo: serialization error
         return serialize(data)
 
