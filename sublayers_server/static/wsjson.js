@@ -57,7 +57,7 @@ function sendFire(aPoint, auid) {
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
         call: "set_speed",
-            rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpc_call_list.getID(),
         params: {
             new_speed: newSpeed
         }
@@ -131,10 +131,10 @@ function servEmul(data) {
         var tempSpeed1;
         // если tempPoint1 == tempPoint2, тогда взять direction
         if ((tempPoint1.x == tempPoint2.x) && (tempPoint1.y == tempPoint2.y)) {
-            tempSpeed1 = mulScalVector(normVector(user.userCar.track.direction), revent.params.newspeed);
+            tempSpeed1 = mulScalVector(normVector(user.userCar.track.direction), revent.params.new_speed);
         } else {
             // посчитать новую скорость
-            tempSpeed1 = mulScalVector(normVector(subVector(tempPoint2, tempPoint1)), revent.params.newspeed);
+            tempSpeed1 = mulScalVector(normVector(subVector(tempPoint2, tempPoint1)), revent.params.new_speed);
         }
         // формирование ответа от сервера
         ans = {
