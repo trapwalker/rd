@@ -1,7 +1,8 @@
 function redrawMap() {
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
     var tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x + " " + tempPoint.y + "  угол = " + tempAngleGrad, true);
+    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) + "  угол = " +
+                                  tempAngleGrad.toFixed(5), true);
     // Перенос центра карты в центр маркера пользовательской машинки
     myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
     // Установка угла в для поворота иконки маркера (в градусах)

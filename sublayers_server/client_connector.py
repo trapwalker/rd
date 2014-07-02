@@ -19,10 +19,12 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent = self.application.srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
         self.agent.connection = self
         self.api = AgentAPI(agent=self.agent)
+        self.application.clients.append(self)
 
     def on_close(self):
         log.info('Agent %r socket Closed', self)
-        #self.agent.connection = None
+        self.application.clients.remove(self)
+        self.agent.connection = None
 
     def on_message(self, message):
         log.info("got message %r", message)

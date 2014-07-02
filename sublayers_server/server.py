@@ -25,6 +25,8 @@ class Application(tornado.web.Application):
         log.info('\n' + '=-' * 70 + '\nAPPLICATION STARTED\n' + '--' * 70)
         self.srv = LocalServer(app=self)
         self.srv.start()
+        self.clients = []
+        self.chat = []
 
         self.init_scene()
 
