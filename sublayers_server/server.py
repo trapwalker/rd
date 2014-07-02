@@ -27,7 +27,8 @@ class Application(tornado.web.Application):
         self.init_scene()
 
         handlers = [
-            (r"/", MainHandler),
+            #(r"/", MainHandler),
+            (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/ws", AgentSocketHandler),
         ]
         settings = dict(
