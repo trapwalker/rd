@@ -1,14 +1,17 @@
-var WSJSON = {
-    socket: null,
-
-    Init: function (aurl) {
-        //var url = "ws://" + location.host + "/sublayers";
-        WSJSON.socket = new WebSocket(aurl);
-        WSJSON.socket.onmessage = function (event) {
+var WSJSON = (function () {
+    function WSJSON() {
+        var url = "ws://" + location.host + "/ws";
+        this.socket = new WebSocket(url);
+        this.socket.onmessage = function (event) {
             receiveMesFromServ(event);
         }
-    }
-};
+    };
+
+    return WSJSON;
+})();
+
+
+
 
 // функции формирования исходящих сообщений
 
@@ -18,14 +21,21 @@ function sendNewPoint(aPoint, auid) {
         call: "goto",
         uid: auid,
         params: {
-            position: {
                 x: aPoint.x,
                 y: aPoint.y
-            }
         }
     };
-    servEmul(JSON.stringify(mes));
-    //wsjson.socket.send(JSON.stringify(mes));
+    //servEmul(JSON.stringify(mes));
+    wsjson.socket.send(JSON.stringify(mes));
+}
+
+function sendStopCar(auid) {
+    var mes = {
+        call: "stop",
+        uid: auid,
+        params: { }
+    };
+    wsjson.socket.send(JSON.stringify(mes));
 }
 
 // fire
@@ -42,10 +52,10 @@ function sendFire(aPoint, auid) {
 // setSpeed
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
-        call: "setspeed",
+        call: "set_speed",
         uid: auid,
         params: {
-            newspeed: newSpeed
+            new_speed: newSpeed
         }
     };
     servEmul(JSON.stringify(mes));
@@ -56,11 +66,12 @@ function sendSetSpeed(newSpeed, auid) {
 function sendChatMessage(atext, auid) {
     var mes = {
         call: "chat_message",
-        from: auid,
-        text: atext
+        params: {
+            text: atext
+        }
     };
-    servEmul(JSON.stringify(mes));
-    //wsjson.socket.send(JSON.stringify(mes));
+    //servEmul(JSON.stringify(mes));
+    wsjson.socket.send(JSON.stringify(mes));
 }
 
 
@@ -344,7 +355,5 @@ function receiveMesFromServ(data) {
         }
     }
 }
-
-//var wsjson = new WSJSON.Init();
 
 

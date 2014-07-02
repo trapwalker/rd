@@ -111,8 +111,15 @@ $(document).ready(function () {
 
     $('#footer').hide();
 
-    // по нажатию вызвать див с инпутом и кнопкой, и по кнопке сделать удаление машинки
+    //
+    L.easyButton(
+        'default-easy-button',
+        send_new_test_text,
+        "Text !!!",
+        myMap
+    );
 
+    wsjson = new WSJSON();
 
     // Добавление Города
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
@@ -269,8 +276,13 @@ function delCar() {
     listMapObject.del(lastIDPopupOpen);
 }
 
+function send_new_test_text() {
+    sendChatMessage('text '+newIDFromChatMessage());
+}
+
 
 var myMap;
 var lastIDPopupOpen;
 var userCarMarker;
 var testTownMarker;
+var wsjson;
