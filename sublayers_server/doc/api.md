@@ -14,6 +14,7 @@
 
     {
         'call': '<procedure name>',
+		'rpc_call_id': <rpc_call_id>,
         'params': {...},
     }
 
@@ -21,8 +22,8 @@
 
     {
         'message_type': 'answer',
+		'rpc_call_id': <rpc_call_id>,
         'error': (null|{'cls': '<classname of error>', 'message': '<error message>'}),
-        'uid': '<message UID>',
         'result': <result>
     }
 
@@ -56,24 +57,28 @@ Push-уведомление с сервера имеет вид:
 	fire - сделать залп (по всем в секторе обстрела)
 	{
 	    'call': 'fire',
+		'rpc_call_id': <rpc_call_id>,
         'params': {}
 	}
 	
 	goto - движение в заданные координаты
 	{
 		'call': 'goto',
+		'rpc_call_id': <rpc_call_id>,
         'params': { 'x': <число>, 'y': <число> }
 	}
 
 	stop - движение в заданные координаты
 	{
 		'call': 'stop',
+		'rpc_call_id': <rpc_call_id>,
         'params': {}
 	}
 	
 	set_speed - установка скорости для машинки
 	{
 		'call': 'set_speed',
+		'rpc_call_id': <rpc_call_id>,
         'params': { 'new_speed': <число> }
 	}
 	
@@ -88,7 +93,7 @@ Push-уведомление с сервера имеет вид:
 	{
 		'uid' : <guid>,
 		'class' : ('car' | 'usercar' | 'invisible_object' | 'town' | 'loot'),
-		'position' : { 'position': {'x': <число>, 'y': <число>}},
+		'position' : {'x': <число>, 'y': <число>},
 		'server_time' : <UTC на сервере>
 		
 		#car   #usercar // очень нужно клиенту, чтобы отличать где своя, а где чужая машинки

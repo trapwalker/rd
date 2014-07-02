@@ -1,16 +1,15 @@
+// класс WSJSON - необходим для отправки и приёма сообщений от сервера
 var WSJSON = (function () {
     function WSJSON() {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
         this.socket.onmessage = function (event) {
-            receiveMesFromServ(event);
+            receiveMesFromServ(event, true); // true - если от сервера, false - если моё тестовое
         }
     };
 
     return WSJSON;
 })();
-
-
 
 
 // функции формирования исходящих сообщений
@@ -25,7 +24,7 @@ function sendNewPoint(aPoint, auid) {
                 y: aPoint.y
         }
     };
-    //servEmul(JSON.stringify(mes));
+    servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -85,7 +84,7 @@ function servEmul(data) {
         // посчитать текущие коррдинаты
         var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
         // посчитать новую скорость
-        var aPoint = new Point(revent.params.position.x, revent.params.position.y);
+        var aPoint = new Point(revent.params.x, revent.params.y);
         var tempSpeed = mulScalVector(normVector(subVector(aPoint, tempPoint)), user.userCar.track.speedV.abs());
         // формирование ответа от сервера
         ans = {
@@ -173,13 +172,15 @@ function servEmul(data) {
         };
     }
     // ans уже сформирован. Теперь его нужно преобр. в строку и отправить в обработчик
-    receiveMesFromServ(JSON.stringify(ans));
+    receiveMesFromServ(JSON.stringify(ans), false);
 }
 
 
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data) {
     var mes = JSON.parse(data);
+    if(fromServ)
+        alert(data);
     // если message_type = push
     if (mes.message_type == "push") {
         // значит тут есть евент, смотреть тип евента

@@ -14,8 +14,8 @@
     <script src="console.js"></script>
     <script src="model.js"></script>
     <script src="modelAPI.js"></script>
-    <script src="view.js"></script>
     <script src="wsjson.js"></script>
+    <script src="view.js"></script>
 </head>
 <body>
 <div id="map"></div>
@@ -23,7 +23,11 @@
     <div id="console"></div>
     <div id="chatArea">
         <div>CHAT</div>
-        <div id="chatInput">Здесь будет строка ввода сообщения</div>
+        <div id="chatInput">
+            <input type="text" id="chat-message-input-text" name="chatMessageInputText"/>
+            <input type="button" id="chat-message-button-send" value="Отправить" onclick=submitChatMessage()>
+        </div>
+
     </div>
 </div>
 </body>

@@ -1,7 +1,8 @@
 function redrawMap() {
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
     var tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x + " " + tempPoint.y + "  угол = " + tempAngleGrad, true);
+    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) + "  угол = " +
+                                  tempAngleGrad.toFixed(5), true);
     // Перенос центра карты в центр маркера пользовательской машинки
     myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
     // Установка угла в для поворота иконки маркера (в градусах)
@@ -109,15 +110,7 @@ $(document).ready(function () {
         myMap
     );
 
-    $('#footer').hide();
-
-    //
-    L.easyButton(
-        'default-easy-button',
-        send_new_test_text,
-        "Text !!!",
-        myMap
-    );
+    //$('#footer').hide();
 
     wsjson = new WSJSON();
 
@@ -276,8 +269,10 @@ function delCar() {
     listMapObject.del(lastIDPopupOpen);
 }
 
-function send_new_test_text() {
-    sendChatMessage('text '+newIDFromChatMessage());
+function submitChatMessage() {
+    sendChatMessage($("#chat-message-input-text").val());
+    $("#chat-message-input-text").val('').focus();
+
 }
 
 

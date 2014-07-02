@@ -83,13 +83,13 @@ class API(object):
 
         method = call_info.get('call')
         params = call_info.get('params', {})
-        uid = call_info.get('uid')
+        rpc_call_id = call_info.get('rpc_call_id')
         try:
             result = self(method, params)
         except EAPIError as e:
-            return self._make_respond(error=e, uid=uid)
+            return self._make_respond(error=e, rpc_call_id=rpc_call_id)
         else:
-            return self._make_respond(result=result, uid=uid)
+            return self._make_respond(result=result, rpc_call_id=rpc_call_id)
 
     @staticmethod
     def _make_respond(result=None, error=None, uid=None):
