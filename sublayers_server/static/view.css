@@ -45,6 +45,10 @@
     opacity: 0.9;
 }
 
+#chatTextArea {
+    background-color: whitesmoke;
+}
+
 #chat-message-button-send {
     position: absolute;
     width: 20%;
