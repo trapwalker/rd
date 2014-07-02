@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 import units
 from vectors import Point
 from api_tools import API, public_method
+from utils import serialize
 
 
 class AgentAPI(API):
@@ -40,4 +41,18 @@ class AgentAPI(API):
 
     @public_method
     def chat_message(self, text):
-        pass  # todo: AgentAPI.chat_message implementation
+        log.info('Agent %s say: %r', self.agent.login, text)
+        app = self.agent.connection.application
+        chat = app.chat
+        msg_id = len(app.chat)
+        msg = {
+            'kind': 'chat_message',
+            'from': self.agent.login,
+            'text': text,
+            'id': msg_id,
+        }
+        chat.append(msg)
+        for client_connection in app.clients:
+            client_connection.write_message(serialize(msg))
+
+        log.info('Broadcast send to %d clients DONE', len(app.clients))
