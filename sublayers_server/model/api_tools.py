@@ -5,7 +5,8 @@ if __name__ == '__main__':
     logging.config.fileConfig("../logging.conf")
 log = logging.getLogger(__name__)
 
-
+import sys
+import traceback
 import functools
 import tornado.escape  # todo: Need to be abstracted from tornado
 
@@ -47,6 +48,8 @@ def public_method(func):
             raise EWrongParamsError(e.message)
         except Exception as e:
             log.error('API UNEXPECTED(!) error: %s !-> %r', log_call, e)
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            log.error(''.join(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             # todo: detail logging unexpected errors
             raise EUnexpectedError(repr(e))
 
