@@ -82,7 +82,7 @@ class LocalServer(Server):
         self.app = app
 
     def event_loop(self):
-        log.info('---- Event loop start ' + '-' * 50)
+        log.info('---- Event loop start')
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
 

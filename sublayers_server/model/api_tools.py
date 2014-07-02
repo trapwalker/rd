@@ -5,7 +5,6 @@ if __name__ == '__main__':
     logging.config.fileConfig("../logging.conf")
 log = logging.getLogger(__name__)
 
-log.debug('-='*30)
 
 import functools
 import tornado.escape  # todo: Need to be abstracted from tornado

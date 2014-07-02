@@ -17,13 +17,15 @@ from model.event_machine import LocalServer
 from client_connector import AgentSocketHandler
 
 define("port", default=80, help="run on the given port", type=int)
+# todo: logging config file path define as tornado option
 
 
 class Application(tornado.web.Application):
     def __init__(self):
+        log.info('\n' + '=-' * 70 + '\nAPPLICATION STARTED\n' + '--' * 70)
         self.srv = LocalServer(app=self)
         self.srv.start()
-        
+
         self.init_scene()
 
         handlers = [
@@ -45,9 +47,9 @@ class Application(tornado.web.Application):
 
     def init_scene(self):
         from model.units import Bot
-        from model.vectors import Point as P
-        b = Bot(server=self.srv, position=P(0, 0))
-        b.goto(P(1000, 1500))
+        from model.vectors import Point
+        b = Bot(server=self.srv, position=Point(0, 0))
+        b.goto(Point(1000, 1500))
         
 
 class MainHandler(tornado.web.RequestHandler):
@@ -56,7 +58,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 def main():
-    tornado.options.parse_command_line()
+    tornado.options.parse_config_file('server.conf')
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
