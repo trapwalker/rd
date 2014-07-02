@@ -1,11 +1,13 @@
 // класс WSJSON - необходим для отправки и приёма сообщений от сервера
-var WSJSON = (function () {
+WSJSON = (function () {
     function WSJSON() {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
         this.socket.onmessage = function (event) {
             receiveMesFromServ(event, true); // true - если от сервера, false - если моё тестовое
         }
+
+        this.tasks = new Array(); // Новые задачи
     };
 
     return WSJSON;
@@ -18,12 +20,13 @@ var WSJSON = (function () {
 function sendNewPoint(aPoint, auid) {
     var mes = {
         call: "goto",
-        uid: auid,
+        rpc_call_id: rpc_call_list.getID(),
         params: {
                 x: aPoint.x,
                 y: aPoint.y
         }
     };
+    rpc_call_list.add(mes);
     servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
@@ -31,9 +34,10 @@ function sendNewPoint(aPoint, auid) {
 function sendStopCar(auid) {
     var mes = {
         call: "stop",
-        uid: auid,
+        rpc_call_id: rpc_call_list.getID(),
         params: { }
     };
+    rpc_call_list.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -41,35 +45,39 @@ function sendStopCar(auid) {
 function sendFire(aPoint, auid) {
     var mes = {
         call: "fire",
-        uid: auid,
+        rpc_call_id: rpc_call_list.getID(),
         params: {}
     };
+    rpc_call_list.add(mes);
     servEmul(JSON.stringify(mes));
-    //wsjson.socket.send(JSON.stringify(mes));
+    wsjson.socket.send(JSON.stringify(mes));
 }
 
 // setSpeed
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
         call: "set_speed",
-        uid: auid,
+            rpc_call_id: rpc_call_list.getID(),
         params: {
             new_speed: newSpeed
         }
     };
+    rpc_call_list.add(mes);
     servEmul(JSON.stringify(mes));
-    //wsjson.socket.send(JSON.stringify(mes));
+    wsjson.socket.send(JSON.stringify(mes));
 }
 
 // send chat_message
 function sendChatMessage(atext, auid) {
     var mes = {
         call: "chat_message",
+        rpc_call_id: rpc_call_list.getID(),
         params: {
             text: atext
         }
     };
-    //servEmul(JSON.stringify(mes));
+    rpc_call_list.add(mes);
+    servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -116,7 +124,7 @@ function servEmul(data) {
         };
     }
 
-    if (revent.call == 'setspeed') {
+    if (revent.call == 'set_speed') {
         // если setspeed
         // посчитать текущие коррдинаты и координаты немного вперёд, чтобы получить вектор скорости
         var tempPoint1 = user.userCar.getCurrentCoord(clock.getCurrentTime());
@@ -177,7 +185,7 @@ function servEmul(data) {
 
 
 // Приём сообщения от сервера. Разбор принятого объекта
-function receiveMesFromServ(data) {
+function receiveMesFromServ(data, fromServ) {
     var mes = JSON.parse(data);
     if(fromServ)
         alert(data);
@@ -198,6 +206,7 @@ function receiveMesFromServ(data) {
             if (mes.event.object.class == "usercar") {
                 // если usercar
                 var aTrack, aHP, aType;
+
 
                 if (mes.event.object.health != null) {
                     // запустить функцию установки хп
@@ -354,6 +363,12 @@ function receiveMesFromServ(data) {
             // нарисовать в специальный div, который выделен для чата
             addDivToDiv("chatInput", mes.event.id, mes.event.from + ": " + mes.event.text, false);
         }
+    }
+
+    if (mes.message_type == "answer") {
+      //  if (mes.result == "OK") {
+            rpc_call_list.execute(mes.rpc_call_id);
+      //  }
     }
 }
 
