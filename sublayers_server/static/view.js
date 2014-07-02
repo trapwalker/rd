@@ -112,6 +112,7 @@ $(document).ready(function () {
     //$('#footer').hide();
 
     wsjson = new WSJSON();
+    rpc_call_list = new RPCCallList();
 
     // Добавление Города
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
@@ -194,7 +195,7 @@ function createTestCar() {
             }
         }
     };
-    receiveMesFromServ(JSON.stringify(ans));
+    receiveMesFromServ(JSON.stringify(ans),false);
 };
 
 // проходит по списку рандомных машинок, меняет вектор скорости, осталяя тот же айдишник
@@ -232,7 +233,7 @@ function newRandSpeed() {
                         }
                     }
                 };
-                receiveMesFromServ(JSON.stringify(ans));
+                receiveMesFromServ(JSON.stringify(ans),false);
             }
         }
     }
@@ -280,3 +281,4 @@ var lastIDPopupOpen;
 var userCarMarker;
 var testTownMarker;
 var wsjson;
+var rpc_call_list;
