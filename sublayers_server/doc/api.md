@@ -15,7 +15,6 @@
     {
         'call': '<procedure name>',
         'params': {...},
-        'uid': '<message UID>'
     }
 
 Ответ сервера приходит следующего вида:
