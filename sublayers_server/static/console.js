@@ -17,7 +17,7 @@ function addDivToDiv(parentDivID, divID, astr, toTop) {  // Если такой 
     else {
         $("#" + parentDivID).prepend(node);
     }
-    node.slideDown();
+    node.slideDown('fast',function() {$('#'+parentDivID).scrollTop($('#'+parentDivID).scrollTop()+50);});
 }
 
 function newIDFromP() {

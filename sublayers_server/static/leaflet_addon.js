@@ -55,7 +55,7 @@ L.Control.EasyButtons = L.Control.extend({
     onAdd: function () {
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
-        this.link = L.DomUtil.create('a', 'leaflet-bar-part default-easy-button ' + this.options.intentedIcon, container); // Сюда вешается правильная картинка!
+        this.link = L.DomUtil.create('a', 'leaflet-bar-part ' + this.options.intentedIcon, container); // Сюда вешается правильная картинка!
         //L.DomUtil.create('i', 'fa fa-lg ' + this.options.intentedIcon , this.link); // test-easy-button
         //L.DomUtil.create('i', 'test-easy-button' , this.link); // test-easy-button
         this.link.href = '#';
