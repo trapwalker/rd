@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jQuery UI Slider - Default functionality</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script>
+        function plus() {
+            var step = ($("#slider").slider("option", "max") - $("#slider").slider("option", "min")) / 10.;
+            $("#slider").slider("value", $("#slider").slider("value") + step);
+        }
+
+        function minus() {
+            var step = ($("#slider").slider("option", "max") - $("#slider").slider("option", "min")) / 10.;
+            $("#slider").slider("value", $("#slider").slider("value") - step);
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $("#slider").slider({
+                max: 50,
+                min: 0,
+                orientation: 'vertical'
+            })
+                    .on('slidechange', function (event, ui) {
+                        $("#text1").text($("#slider").slider("value"));
+                    })
+            ;
+
+            $(".ui-slider-handle").css("height", "0.3em");
+            $(".ui-slider-vertical  .ui-slider-handle").css("margin-bottom", "-0.15em");
+            $(".ui-slider-vertical").css("height", "200px");
+            $(".ui-slider-handle").css("background", "#009900");
+            $(".ui-slider-handle").css("border-color", "#00FF00")
+        });
+    </script>
+
+    <style>
+        #mainSlider {
+            border-color: rgb(1, 255, 1);
+            border-style: groove;
+            width: 50px;
+            opacity: 0.7;
+        }
+
+        .sliderButton {
+            margin-bottom: 10px;
+            margin-top: 10px;
+            text-align: center;
+            width: 15px;
+            height: 15px;
+        }
+
+        #slider {
+            border-radius: 20px;
+        }
+    </style>
+
+
+</head>
+<body>
+
+
+<div id="mainSlider" align="center">
+    <div id="valueOfSlider"><span id="text1">0</span></div>
+    <div id="sliderPlus">
+        <input class="sliderButton" type="image" src="img/green-plus-for-speed.png" value="Увеличить скорость"
+               onclick="plus()">
+    </div>
+    <div id="slider"></div>
+    <div id="sliderMinus">
+        <input class="sliderButton" type="image" src="img/green-minus-for-speed.png" value="Уменьшить скорость"
+               onclick="minus()">
+    </div>
+</div>
+</body>
+</html>
