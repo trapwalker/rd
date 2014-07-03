@@ -229,6 +229,7 @@ class DynamicObject extends MapObject {
 class MapCar extends DynamicObject {
     type:number; // 1..5
     hp:number;
+    fireSectors: Array<FireSector>;
 
     constructor(aID, aType, aHP:number, aTrack:MoveTrack) {
         super(aID, aTrack);
@@ -236,6 +237,9 @@ class MapCar extends DynamicObject {
         this.hp = aHP;
     }
 
+    AddFireSector(aDirectionAngle, aWidthAngle, aRadius) {
+        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius));
+    }
 }
 
 class UserCar extends MapCar {
@@ -256,6 +260,18 @@ class User {
     constructor(aID, aCredit:number) {
         this.ID = aID;
         this.credit = aCredit;
+    }
+}
+
+class FireSector {
+    directionAngle:number;
+    widthAngle:number;
+    radius: number;
+
+    constructor(aDirectionAngle, aWidthAngle, aRadius: number) {
+        this.directionAngle = aDirectionAngle;
+        this.widthAngle = aWidthAngle;
+        this.radius = aRadius;
     }
 }
 

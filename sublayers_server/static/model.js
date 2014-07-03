@@ -219,6 +219,9 @@ var MapCar = (function (_super) {
         this.type = aType;
         this.hp = aHP;
     }
+    MapCar.prototype.AddFireSector = function (aDirectionAngle, aWidthAngle, aRadius) {
+        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius));
+    };
     return MapCar;
 })(DynamicObject);
 
@@ -237,6 +240,15 @@ var User = (function () {
         this.credit = aCredit;
     }
     return User;
+})();
+
+var FireSector = (function () {
+    function FireSector(aDirectionAngle, aWidthAngle, aRadius) {
+        this.directionAngle = aDirectionAngle;
+        this.widthAngle = aWidthAngle;
+        this.radius = aRadius;
+    }
+    return FireSector;
 })();
 
 var ListMapObject = (function () {
