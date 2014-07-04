@@ -358,7 +358,6 @@ function receiveMesFromServ(data, fromServ) {
         // если message_type = chat_message // Если пришло сообщение в чат
         if (mes.event.kind == "chat_message") {
             // нарисовать в специальный div, который выделен для чата
-            addDivToDiv("chatTextArea", "chat_text"+mes.event.id, mes.event.author + ": " + mes.event.text, true);
             addDivToDiv("viewMessengerList", "chat_text"+mes.event.id + "newChat", mes.event.author + ": " + mes.event.text, true);
         }
     }

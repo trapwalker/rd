@@ -40,54 +40,11 @@
     bottom: 0px;
     left: 7px;
     right: 0px;
-    width: 50%;
-    height: 100%;
-    opacity: 0.5;
-}
-
-#chatArea {
-    border-color: lime;
-    border-style: inset;
-    border-width: 2px;
-    background-color: black;
-    overflow: auto;
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-    width: 50%;
-    height: 100%;
-    opacity: 0.5;
-}
-
-#chatArea:hover {
-    opacity: 0.8;
-}
-
-#chatTextArea {
-    overflow-y: auto;
-    max-height: 150px;
-}
-
-#chatInput {
-    bottom: 0;
     width: 100%;
-    position: absolute;
-    height: 30px;
+    height: 100%;
+    opacity: 0.5;
 }
 
-#chat-message-button-send {
-    position: absolute;
-    right: 5px;
-    width: 20%;
-}
-
-#chat-message-input-text {
-    color: black;
-    position: absolute;
-    left: 5px;
-    width: 75%;
-}
 
 .easy-button-add-car {
     background-image: url(img/car_20.png);

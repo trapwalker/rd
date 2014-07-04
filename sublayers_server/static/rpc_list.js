@@ -1,6 +1,6 @@
 RPCCallList = ( function () {
     function RPCCallList() {
-        this.calls = new Array();
+        this.calls = [];
         this._generator = 0;
     }
 

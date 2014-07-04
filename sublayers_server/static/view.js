@@ -1,14 +1,20 @@
 function redrawMap() {
-    var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
-    var tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-    addDivToDiv("console", "rm1", "Игрок: координаты = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) +
-        " угол = " + tempAngleGrad.toFixed(5), true);
-    // Перенос центра карты в центр маркера пользовательской машинки
-    myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
-    // Установка угла в для поворота иконки маркера (в градусах)
-    userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
-    // Установка новых координат маркера
-    userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
+    var tempPoint;
+    var tempAngleGrad;
+
+    // работа с юзеркаром
+    if(user.userCar) {
+        tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
+        addDivToDiv("console", "rm1", "Игрок: координаты = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) +
+            " угол = " + tempAngleGrad.toFixed(5), true);
+        // Перенос центра карты в центр маркера пользовательской машинки
+        myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
+        // Установка угла в для поворота иконки маркера (в градусах)
+        userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
+        // Установка новых координат маркера
+        userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
+    }
 
     // работа со списком машинок
     addDivToDiv("console", "rm8", "Кол-во машинок = " + listMapObject.objects.length, true);
@@ -110,7 +116,7 @@ $(document).ready(function () {
         myMap
     );
 
-    //$('#footer').hide();
+    $('#footer').hide();
 
     wsjson = new WSJSON();
     rpc_call_list = new RPCCallList();
@@ -272,15 +278,6 @@ function delCar() {
     listMapObject.del(lastIDPopupOpen);
 }
 
-function submitChatMessage() {
-    str = $("#chat-message-input-text").val();
-    if (str.length) {
-        sendChatMessage(str);
-        $("#chat-message-input-text").val('').focus();
-    } else {
-        $("#chat-message-input-text").focus();
-    }
-}
 
 
 var myMap;
