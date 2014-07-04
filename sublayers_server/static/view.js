@@ -1,8 +1,8 @@
 function redrawMap() {
     var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
     var tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-    addDivToDiv("console", "rm1", "Машинка = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) + "  угол = " +
-                                  tempAngleGrad.toFixed(5), true);
+    addDivToDiv("console", "rm1", "Игрок: координаты = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) +
+        " угол = " + tempAngleGrad.toFixed(5), true);
     // Перенос центра карты в центр маркера пользовательской машинки
     myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
     // Установка угла в для поворота иконки маркера (в градусах)
@@ -31,8 +31,8 @@ function onMouseClickMap(mouseEventObject) {
 }
 
 function onMouseMoveMap(mouseEventObject) {
-    addDivToDiv("console", "mm4", "project = " + myMap.project(mouseEventObject.latlng, myMap.getZoom()), true);
-    addDivToDiv("console", "mm5", "zoom = " + myMap.getZoom(), true);
+    addDivToDiv("console", "mm4", "Курсор = " + myMap.project(mouseEventObject.latlng, myMap.getZoom()), true);
+    addDivToDiv("console", "mm5", "Масштаб = " + myMap.getZoom(), true);
 }
 
 function onZoomStart(Event) {
@@ -161,12 +161,12 @@ function subSpeed() {
             sendSetSpeed(user.userCar.track.speedV.abs() - 2, user.userCar.ID);
         }
     }
-    addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs(), true);
+    addDivToDiv("console", "st1", "Текущая скорость = " + user.userCar.track.speedV.abs().toFixed(2), true);
 }
 
 function addSpeed() {
     sendSetSpeed(user.userCar.track.speedV.abs() + 2, user.userCar.ID);
-    addDivToDiv("console", "st1", "текущая скорость = " + user.userCar.track.speedV.abs(), true);
+    addDivToDiv("console", "st1", "Текущая скорость = " + user.userCar.track.speedV.abs().toFixed(2), true);
 }
 
 // просто генерирует рандомную машинку и отправляет её сразу в ресив, чтобы клиент добавил её в модель через серверное взаимодействие
@@ -198,7 +198,7 @@ function createTestCar() {
             }
         }
     };
-    receiveMesFromServ(JSON.stringify(ans),false);
+    receiveMesFromServ(JSON.stringify(ans), false);
 };
 
 // проходит по списку рандомных машинок, меняет вектор скорости, осталяя тот же айдишник
@@ -236,7 +236,7 @@ function newRandSpeed() {
                         }
                     }
                 };
-                receiveMesFromServ(JSON.stringify(ans),false);
+                receiveMesFromServ(JSON.stringify(ans), false);
             }
         }
     }
@@ -274,7 +274,7 @@ function delCar() {
 
 function submitChatMessage() {
     str = $("#chat-message-input-text").val();
-    if(str.length) {
+    if (str.length) {
         sendChatMessage(str);
         $("#chat-message-input-text").val('').focus();
     } else {
