@@ -7,6 +7,7 @@ from base import Object, SubscriberTo__Observer
 
 
 class Agent(Object, SubscriberTo__Observer):
+    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 
     def __init__(self, login, connection=None, **kw):
         log.info('!!!!!!!!Agent before init')
@@ -42,7 +43,7 @@ class Agent(Object, SubscriberTo__Observer):
         @param model.units.Observer emitter: Message emitter
         @param model.messages.Message message: Incoming message
         """
-        log.info('%s. %s say: %s', self, emitter, message.serialize())
+        log.info('%s. %s say: %s\nMy cars: %s', self, emitter, message.serialize(), ', '.join(map(str, self.cars)))
         if self.connection:
             self.connection.write_message(message.serialize())
 
