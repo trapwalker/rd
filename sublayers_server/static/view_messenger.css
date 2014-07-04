@@ -79,7 +79,7 @@
     color: #00ff00;
     -webkit-border-bottom-left-radius: 10px;
     -moz-border-radius-bottomleft: 10px;
-    font-size: 14px;
+    font-size: 10px;
 }
 
 .button {
@@ -99,6 +99,7 @@
     color: #00ff00;
     font-family: helvetica, serif;
     text-decoration: none;
+    opacity: 0.5;
 }
 
 .button:hover {
@@ -112,6 +113,7 @@
     background: -o-linear-gradient(top, #000000, #666666);
     background-image: -ms-linear-gradient(top, #000000 0%, #666666 100%);
     color: #ffffff;
+    opacity: 0.9;
 }
 
 .button:active {

@@ -32,6 +32,7 @@ function createViewMessenger(parentDivID) {
     vMI.keydown(function(event){
         if(event.keyCode==13){sendMessage();}
     });
+
     //добавление дива с кнопкой отправки
     var vMLB = $("<div id=\"viewMessengerListButton\"> </div>");
     vMLIA.append(vMLB);
