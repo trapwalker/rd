@@ -153,7 +153,38 @@ $(document).ready(function () {
         }
     }, true);
 
+    // создание чата
     createViewMessenger("map");
+
+
+
+    // создание слайдера зума
+    zoomSetSlider = new SliderSpeed({
+        parentDiv: "zoomSetDivForSpeedSlider",
+        carriageHeight: 0.4,
+        height: 60,
+        parentCss: 'slider-zoom-parent',
+        max: myMap.getMaxZoom(),
+        min: myMap.getMinZoom(),
+        step: 1,
+        onChange: changeZoomOnSlider
+    });
+    zoomSetSlider.setSpeed(myMap.getZoom());
+
+
+    // создание слайдера скорости
+    speedSetSlider = new SliderSpeed({
+        parentDiv: "speedSetDivForSpeedSlider",
+        carriageHeight: 0.4,
+        height: 200,
+        parentCss: 'slider-speed-parent',
+        max: 999,
+        min: 5,
+        step: 5,
+        onChange: changeSpeedOnSlider
+    });
+    speedSetSlider.setSpeed(30);
+
 });
 
 function subSpeed() {
@@ -278,6 +309,13 @@ function delCar() {
     listMapObject.del(lastIDPopupOpen);
 }
 
+function changeSpeedOnSlider() {
+    sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
+}
+
+function changeZoomOnSlider() {
+    myMap.setZoom(zoomSetSlider.getSpeed());
+}
 
 
 var myMap;
@@ -286,3 +324,5 @@ var userCarMarker;
 var testTownMarker;
 var wsjson;
 var rpc_call_list;
+var speedSetSlider;
+var zoomSetSlider;

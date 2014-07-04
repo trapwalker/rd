@@ -1,0 +1,39 @@
+.slider-speed-parent-default {
+    position: absolute;
+}
+
+.slider-speed-value-default {
+    color: rgb(0,220,0);
+    text-align: center;
+}
+
+.slider-speed-slider-default {
+    border-radius: 20px;
+}
+
+.slider-speed-carriage-defualt {
+    background: #009900;
+    border-color: #00FF00;
+}
+
+.slider-speed-plus-default, .slider-speed-minus-default {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.slider-speed-btn-plus-default, .slider-speed-btn-minus-default {
+    height: 15px;
+    width: 15px;
+}
+
+
+.slider-speed-parent {
+    right: 40px;
+    bottom: 30px;
+}
+
+.slider-zoom-parent {
+    left: 20px;
+    top: 200px;
+    position: absolute;
+}
