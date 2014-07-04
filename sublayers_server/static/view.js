@@ -146,6 +146,8 @@ $(document).ready(function () {
             user.userCar.track.speedV = rotateVector(user.userCar.track.speedV, 0.1745);
         }
     }, true);
+
+    createViewMessenger("map");
 });
 
 function subSpeed() {
