@@ -31,3 +31,4 @@ sublayers_client/model.js
 *.log.*
 sublayers_client/model.js.map
 deploy/python/
+sublayers_server/server.local.conf

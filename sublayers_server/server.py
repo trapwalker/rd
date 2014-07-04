@@ -61,8 +61,14 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 def main():
-    tornado.options.parse_config_file('server.conf')
-    tornado.options.parse_command_line()
+    tornado.options.parse_config_file('server.conf', final=False)
+    try:
+        tornado.options.parse_config_file('server.local.conf', final=False)
+    except IOError as e:
+        log.warning('Local configuration file load FAIL: %s', e)
+    else:
+        log.info('Local configuration file load OK')
+    tornado.options.parse_command_line(final=True)
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
