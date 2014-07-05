@@ -72,7 +72,7 @@ $(document).ready(function () {
     //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
     //       id: 'examples.map-i86knfo3'}).addTo(myMap);
 
-    L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+    tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
         maxZoom: 16,
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -117,6 +117,25 @@ $(document).ready(function () {
     );
 
     $('#footer').hide();
+
+    // для скрытия тайлов, чтобы быстрее грузилось
+    L.easyButton(
+        'easy-button-show-tile',
+        function () {
+            tileLayerShow.addTo(myMap);
+        },
+        "Показать уровень тайлов",
+        myMap
+    );
+
+    L.easyButton(
+        'easy-button-hide-tile',
+        function () {
+            myMap.removeLayer(tileLayerShow);
+        },
+        "Скрыть уровень тайлов",
+        myMap
+    );
 
     wsjson = new WSJSON();
     rpc_call_list = new RPCCallList();
@@ -327,3 +346,5 @@ var wsjson;
 var rpc_call_list;
 var speedSetSlider;
 var zoomSetSlider;
+
+var tileLayerShow;

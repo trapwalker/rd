@@ -57,6 +57,17 @@
     background-size: 20px;
 }
 
+.easy-button-hide-tile {
+    background-image: url(img/green-minus-for-speed.png);
+    background-size: 20px;
+}
+
+.easy-button-show-tile {
+    background-image: url(img/green-plus-for-speed.png);
+    background-size: 20px;
+}
+
+
 .default-easy-button {
     background-color: blue;
 }
