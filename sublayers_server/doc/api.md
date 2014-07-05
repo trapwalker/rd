@@ -46,6 +46,7 @@ Push-уведомление с сервера имеет вид:
         'from': <sender_info>,
         'text': <message_text>,
         'id': <message_id>,
+		'mes_time': <время получения сервером сообщения> // (%H:%M:%S)
 
         # see
         'object': <object>
