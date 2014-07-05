@@ -170,6 +170,10 @@ $(document).ready(function () {
         onChange: changeZoomOnSlider
     });
     zoomSetSlider.setSpeed(myMap.getZoom());
+    // чтобы при изменении зума на карте менялся и слайдер.
+    myMap.on('zoomend',function() {
+        zoomSetSlider.setSpeed(myMap.getZoom());
+    });
 
 
     // создание слайдера скорости
