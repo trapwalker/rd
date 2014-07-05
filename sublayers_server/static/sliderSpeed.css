@@ -33,7 +33,7 @@
 }
 
 .slider-zoom-parent {
-    left: 20px;
-    top: 200px;
+    margin-left: 12.5px;
+    top: 250px;
     position: absolute;
 }
