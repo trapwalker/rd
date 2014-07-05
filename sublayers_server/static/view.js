@@ -154,9 +154,7 @@ $(document).ready(function () {
     }, true);
 
     // создание чата
-    createViewMessenger("map");
-
-
+    createViewMessenger("chatArea");
 
     // создание слайдера зума
     zoomSetSlider = new SliderSpeed({
@@ -174,7 +172,6 @@ $(document).ready(function () {
     myMap.on('zoomend',function() {
         zoomSetSlider.setSpeed(myMap.getZoom());
     });
-
 
     // создание слайдера скорости
     speedSetSlider = new SliderSpeed({
