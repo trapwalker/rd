@@ -8,16 +8,14 @@ from utils import time_log_format, serialize
 
 
 class Message(object):
-    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] sender={self.sender}>'
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, sender, time=None):
+    def __init__(self, time):
         """
         @param model.utils.TimeClass time: Time of message post
-        @param model.units.Unit sender: Sender of message
         """
         super(Message, self).__init__()
-        self.time = time or sender.server.get_time()
-        self.sender = sender
+        self.time = time
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -36,15 +34,30 @@ class Message(object):
         return dict(
             cls=self.classname,
             time=self.time,
-            sender=repr(self.sender),  # sender=self.sender.as_dict(),  # todo: Serialize senders
         )
 
     def serialize(self):
         return serialize(self.as_dict())
 
 
-class See(Message):
-    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] sender={self.sender}; obj={self.obj}>'
+class UnitMessage(Message):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
+
+    def __init__(self, subject, **kw):
+        """
+        @param model.units.Unit subject: Sender of message
+        """
+        super(UnitMessage, self).__init__(**kw)
+        self.subject = subject
+
+    def as_dict(self):
+        d = super(UnitMessage, self).as_dict()
+        d['subject'] = repr(self.subject),  # sender=self.subject.as_dict(),  # todo: Serialize senders
+        return d
+
+
+class See(UnitMessage):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subject={self.subject}; obj={self.obj}>'
 
     def __init__(self, obj, **kw):
         """

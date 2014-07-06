@@ -41,7 +41,7 @@ class Agent(Object, SubscriberTo__Observer):
     def on_event_from__Observer(self, emitter, message):
         """
         @param model.units.Observer emitter: Message emitter
-        @param model.messages.Message message: Incoming message
+        @param model.messages.UnitMessage message: Incoming message
         """
         log.info('%s. %s say: %s\nMy cars: %s', self, emitter, message.serialize(), ', '.join(map(str, self.cars)))
         if self.connection:

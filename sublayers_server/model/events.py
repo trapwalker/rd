@@ -103,7 +103,7 @@ class ContactSee(Contact):
         super(ContactSee, self).perform()
         subj = self.subj
         subj.subscribe_to__VisibleObject(self.obj)
-        subj.emit_for__Agent(message=messages.Contact(time=self.time, sender=self.subj, obj=self.obj))
+        subj.emit_for__Agent(message=messages.Contact(time=self.time, subject=self.subj, obj=self.obj))
         # todo: Make 'as_message' method of Event class
 
 

@@ -172,12 +172,12 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     def on_change(self):
         super(Observer, self).on_change()
         # todo: self update notification
-        #self.emit_for__Agent(message=messages.See(sender=self, obj=self))
+        #self.emit_for__Agent(message=messages.See(subject=self, obj=self))
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
         #log.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
         # todo: update event #events  
-        self.emit_for__Agent(message=messages.See(sender=self, obj=emitter))
+        self.emit_for__Agent(message=messages.See(subject=self, obj=emitter))
 
     @property
     def r(self):
