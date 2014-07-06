@@ -53,7 +53,7 @@ class AgentAPI(API):
                 'author': self.agent.login,
                 'text': text,
                 'id': msg_id,
-		        'mes_time': datetime.now().strftime('%H:%M:%S'),	
+                'mes_time': datetime.now().strftime('%H:%M:%S'),	
             }
         }
         chat.append(msg)
