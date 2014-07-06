@@ -40,6 +40,24 @@ class Message(object):
         return serialize(self.as_dict())
 
 
+class ChatMessage(Message):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
+
+    def __init__(self, author, text=None, client_id=None, **kw):
+        """
+        @param model.units.Unit subject: Sender of message
+        """
+        super(ChatMessage, self).__init__(**kw)
+        self.author = author
+        self.text = text
+        self.client_id = client_id
+
+    def as_dict(self):
+        d = super(ChatMessage, self).as_dict()
+        d['author'] = repr(self.subject),  # sender=self.subject.as_dict(),  # todo: Serialize senders
+        return d
+
+
 class UnitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
 
@@ -52,7 +70,7 @@ class UnitMessage(Message):
 
     def as_dict(self):
         d = super(UnitMessage, self).as_dict()
-        d['subject'] = repr(self.subject),  # sender=self.subject.as_dict(),  # todo: Serialize senders
+        d.update(subject=repr(self.subject))  # sender=self.subject.as_dict(),  # todo: Serialize senders
         return d
 
 
@@ -69,11 +87,13 @@ class See(UnitMessage):
     def as_dict(self):
         d = super(See, self).as_dict()
         obj = self.obj
-        d['obj'] = repr(obj)  # todo: Serialize objects
-        d['behavior'] = dict(
-            position=obj.position,
-            v=obj.v if hasattr(obj, 'v') else None,  # todo: Get behavior from unit directly
-            # todo: add other behaviors
+        d.update(
+            obj=repr(obj),  # todo: Serialize objects
+            behavior=dict(
+                position=obj.position,
+                v=obj.v if hasattr(obj, 'v') else None,  # todo: Get behavior from unit directly
+                # todo: add other behaviors
+            )
         )
         return d
 
