@@ -255,7 +255,7 @@ function createTestCar() {
             }
         }
     };
-    receiveMesFromServ(JSON.stringify(ans), false);
+    receiveMesFromServ(JSON.stringify(ans));
 };
 
 // проходит по списку рандомных машинок, меняет вектор скорости, осталяя тот же айдишник
@@ -293,7 +293,7 @@ function newRandSpeed() {
                         }
                     }
                 };
-                receiveMesFromServ(JSON.stringify(ans), false);
+                receiveMesFromServ(JSON.stringify(ans));
             }
         }
     }
