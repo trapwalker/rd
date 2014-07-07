@@ -371,3 +371,129 @@ function receiveMesFromServ(data) {
 }
 
 
+// Приём сообщения от сервера. Разбор принятого объекта
+function receiveMesFromServV2(data) {
+    var mes = JSON.parse(data);
+    // если message_type = push
+    if (mes.message_type == "push") {
+        // проходим по списку евентов
+        for (var event in mes.events) {
+            var servtime = event.time; // не забыть как-то преобразовать!
+            clock.setDt(servtime);
+            if (event.cls == "see" || event.cls == "contact" || event.cls == "update") {
+                // see || contact
+                var aTrack, aType, aHP;
+                aTrack = getTrack(event.object);
+                if (event.object.health != null) {
+                    // запустить функцию установки хп
+                    aHP = mes.event.object.health;
+                } else { // попытаться взять хп из лист мап обжект
+                    if (listMapObject.exist(uid)) {
+                        aHP = listMapObject.getCarHP(uid);
+                        if (aHP == -1) aHP = 100;
+                    }
+                }
+
+                if (mes.event.object.type_car != null) {
+                    // запустить функцию установки хп
+                    aType = event.object.type_car;
+                } else { // попытаться взять хп из лист мап обжект
+                    if (listMapObject.exist(uid)) {
+                        aType = listMapObject.objects[uid].type;
+                    } else {
+                        aType = 0;
+                    }
+                }
+
+                setCurrentCar(event.object.uid, aType, aHP, aTrack);
+            }
+            if (event.cls == "out") {
+                // out
+                var uid = event.object_id;
+                if(listMapObject.exist(uid)){
+                    myMap.removeLayer(listMapObject.objects[uid].marker);
+                    listMapObject.del(uid);
+                }
+            }
+            if (event.cls == "chat_message") {
+                // chat_message
+                addDivToDiv("viewMessengerList", "chat_text"+event.id + "newChat", servtime + " " +
+                    event.author + ": " + event.text, true);
+            }
+        }
+
+    }
+
+
+    // если message_type = answer
+    if (mes.message_type == "answer") {
+        if (mes.error == null) {
+            rpc_call_list.execute(mes.rpc_call_id);
+        }
+    }
+}
+
+
+function getTrack(data){
+    var aTrack;
+    var position = new Point(data.position.x,data.position.y);
+
+    // motion and direction
+    if (data.circular_motion != null) {
+        // запустить функцию получения кругового движения
+    }
+    if (data.liner_motion != null) {
+        // запустить функцию установки линейного движения
+        var velocity = new Point(data.liner_motion.velocity.x,
+            data.liner_motion.velocity.y);
+        var acceleration = new Point(data.liner_motion.acceleration.x,
+            data.liner_motion.acceleration.y);
+        var fuel_start = data.liner_motion.fuel_start;
+        var fuel_decrement = data.liner_motion.fuel_decrement
+
+        aTrack = new MoveLine(
+            clock.getCurrentTime(),  //Время начала движения
+            fuel_start,              //Запас топлива
+            fuel_decrement,          //Расход топлива
+            position,                //Начальная точка
+            velocity,                //Скорость
+            acceleration             //Ускорение
+        );
+
+    }
+    if (data.direction != null) {
+        // запустить функцию установки линейного движения с нулевыми скоростью и ускорением, и углом поворта
+        var direction = new Point(data.direction.x,
+            data.direction.y);
+        aTrack = new MoveLine(
+            clock.getCurrentTime(),  //Время начала движения
+            0,              //Запас топлива
+            0,          //Расход топлива
+            position,                //Начальная точка
+            new Point(0, 0),          //Скорость
+            new Point(0, 0)           //Ускорение
+        );
+        aTrack.direction = direction;
+    }
+
+    return aTrack;
+}
+
+function setCurrentCar(uid, aType, aHP, aTrack) {
+    if (uid = user.userCar.ID) { // если машинка своя
+        user.userCar.track = aTrack;
+        user.userCar.hp = aHP;
+    }
+    else { // если не своя, то проверить есть ли такая в модели
+        if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
+            listMapObject.add(new MapCar(uid, aType, aHP, aTrack));
+            // и сразу же добавить маркер
+            listMapObject.objects[uid].marker = getCarMarker(uid, myMap);
+        } else { // Если такая машинка уже есть, то
+            // установить все переменные
+            listMapObject.setCarHP(uid, aHP);
+            listMapObject.setTrack(uid, aTrack);
+        }
+    }
+
+}
