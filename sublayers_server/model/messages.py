@@ -45,7 +45,8 @@ class ChatMessage(Message):
 
     def __init__(self, author, text=None, client_id=None, **kw):
         """
-        @param model.units.Unit subject: Sender of message
+        @param model.agents.Agent author: Sender of message
+        @param unicode text: message text
         """
         super(ChatMessage, self).__init__(**kw)
         self.author = author
@@ -54,7 +55,11 @@ class ChatMessage(Message):
 
     def as_dict(self):
         d = super(ChatMessage, self).as_dict()
-        d['author'] = repr(self.subject),  # sender=self.subject.as_dict(),  # todo: Serialize senders
+        d.update(
+            author=self.author.as_dict(),
+            text=self.text,
+            id=self.client_id,
+        )
         return d
 
 
@@ -70,31 +75,33 @@ class UnitMessage(Message):
 
     def as_dict(self):
         d = super(UnitMessage, self).as_dict()
-        d.update(subject=repr(self.subject))  # sender=self.subject.as_dict(),  # todo: Serialize senders
+        d.update(subject_id=self.subject.uid)
         return d
 
 
-class See(UnitMessage):
+class RangeViewMessage(UnitMessage):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subject={self.subject}; obj={self.obj}>'
 
     def __init__(self, obj, **kw):
         """
         @param model.base.VisibleObject obj: Object
         """
-        super(See, self).__init__(**kw)
+        super(RangeViewMessage, self).__init__(**kw)
         self.obj = obj
+
+
+class Out(RangeViewMessage):
+    def as_dict(self):
+        d = super(Out, self).as_dict()
+        d.update(object_id=self.obj.uid)
+        return d
+
+
+class See(RangeViewMessage):
 
     def as_dict(self):
         d = super(See, self).as_dict()
-        obj = self.obj
-        d.update(
-            obj=repr(obj),  # todo: Serialize objects
-            behavior=dict(
-                position=obj.position,
-                v=obj.v if hasattr(obj, 'v') else None,  # todo: Get behavior from unit directly
-                # todo: add other behaviors
-            )
-        )
+        d.update(object=self.obj.as_dict())  # todo: Serialize objects with private case
         return d
 
 

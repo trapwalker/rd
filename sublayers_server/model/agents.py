@@ -18,6 +18,13 @@ class Agent(Object, SubscriberTo__Observer):
         self.server.agents[login] = self
         self.cars = []  # specific
 
+    def as_dict(self):
+        d = super(Agent, self).as_dict()
+        d.update(
+            login=self.login,
+        )
+        return d
+
     @property
     def connection(self):
         return self._connection
