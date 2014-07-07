@@ -412,6 +412,7 @@ function receiveMesFromServV2(data) {
                 var uid = event.object_id;
                 if(listMapObject.exist(uid)){
                     myMap.removeLayer(listMapObject.objects[uid].marker);
+                    delete listMapObject.objects[uid].marker;
                     listMapObject.del(uid);
                 }
             }

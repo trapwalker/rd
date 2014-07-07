@@ -287,7 +287,8 @@ class ListMapObject {
     }
 
     del(aID:number) {
-        this.objects[aID] = null;
+        delete this.objects[aID];
+        //this.objects[aID] = null;
     }
 
     exist(aID:number):boolean {
