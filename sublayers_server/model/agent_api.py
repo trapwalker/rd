@@ -8,6 +8,14 @@ from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
+from messages import ChatMessage
+
+
+def make_push_package(events):
+    return dict(
+        message_type='push',
+        events=[event.as_dict() for event in events],
+    )
 
 
 class AgentAPI(API):
@@ -45,19 +53,12 @@ class AgentAPI(API):
         log.info('Agent %s say: %r', self.agent.login, text)
         app = self.agent.connection.application
         chat = app.chat
-        msg_id = len(app.chat)
-        msg = {
-            'message_type': 'push',
-            'event': {
-                'kind': 'chat_message',
-                'author': self.agent.login,
-                'text': text,
-                'id': msg_id,
-                'time': datetime.now().strftime('%H:%M:%S'),	
-            }
-        }
+        msg_id = len(chat)  # todo: get "client_id" from client message info
+        msg = ChatMessage(author=self.agent, text=text, client_id=msg_id)
         chat.append(msg)
+
+        push_package = make_push_package([msg])
         for client_connection in app.clients:
-            client_connection.write_message(serialize(msg))
+            client_connection.write_message(serialize(push_package))
 
         log.info('Broadcast send to %d clients DONE: %r', len(app.clients), msg)
