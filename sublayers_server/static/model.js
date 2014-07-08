@@ -260,7 +260,8 @@ var ListMapObject = (function () {
     };
 
     ListMapObject.prototype.del = function (aID) {
-        this.objects[aID] = null;
+        delete this.objects[aID];
+        //this.objects[aID] = null;
     };
 
     ListMapObject.prototype.exist = function (aID) {
