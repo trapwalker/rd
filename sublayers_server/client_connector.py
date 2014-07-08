@@ -21,8 +21,10 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent.connection = self
         self.api = AgentAPI(agent=self.agent)
         self.application.clients.append(self)
+        self.send_push_message(self.application.chat)  # todo: slice to chunks
 
-        self.write_message(serialize(make_push_package(self.application.chat)))  # todo: slice to chunks
+    def send_push_message(self, data):
+        self.write_message(serialize(make_push_package(data)))
 
     def on_close(self):
         log.info('Agent %r socket Closed', self)

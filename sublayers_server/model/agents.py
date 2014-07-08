@@ -52,7 +52,7 @@ class Agent(Object, SubscriberTo__Observer):
         """
         log.info('%s. %s say: %s\nMy cars: %s', self, emitter, message.serialize(), ', '.join(map(str, self.cars)))
         if self.connection:
-            self.connection.write_message(message.serialize())
+            self.connection.send_push_message(message)
 
 
 class User(Agent):

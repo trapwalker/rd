@@ -168,6 +168,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     def __init__(self, observing_range=0.0, **kw):
         super(Observer, self).__init__(**kw)
         self._r = observing_range
+        # todo: Нужно увидеть соседние объекты при инициализации
 
     def on_change(self):
         super(Observer, self).on_change()
@@ -175,8 +176,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
         #log.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
-        # todo: update event #events  
-        self.emit_for__Agent(message=messages.See(subject=self, obj=emitter))
+        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter))
 
     @property
     def r(self):

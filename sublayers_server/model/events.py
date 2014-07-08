@@ -112,6 +112,7 @@ class ContactOut(Contact):
     def perform(self):
         super(ContactOut, self).perform()
         self.subj.unsubscribe_from__VisibleObject(self.obj)
+        self.subj.emit_for__Agent(message=messages.Out(time=self.time, subject=self.subj, obj=self.obj))
 
 
 class Callback(Event):
