@@ -12,9 +12,14 @@ from messages import ChatMessage
 
 
 def make_push_package(events):
+    if hasattr(events, 'as_dict'):
+        events = events.as_dict()
+    else:
+        events = [event.as_dict() for event in events]
+
     return dict(
         message_type='push',
-        events=[event.as_dict() for event in events],
+        events=events,
     )
 
 
