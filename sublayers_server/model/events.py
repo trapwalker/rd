@@ -74,7 +74,6 @@ class Subjective(Event):
 
     def perform(self):
         super(Subjective, self).perform()
-        log.debug(str(self))
 
 
 class Contact(Subjective):

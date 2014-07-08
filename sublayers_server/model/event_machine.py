@@ -93,7 +93,6 @@ class LocalServer(Server):
             
             if not timeline.head.actual:
                 event = timeline.get()
-                log.debug('SKIP unactual %s', event)
                 del event
                 continue
 

@@ -31,7 +31,6 @@ class Object(object):
         """
         @type server: model.server.Server
         """
-        log.debug('%s #%d: Create', self.__class__.__name__, self.id)
         super(Object, self).__init__()
         self.server = server
         """@type: model.server.Server"""
@@ -109,7 +108,6 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def on_change(self):  # todo: privacy level index
         # todo: emit update message
-        log.debug('%s:: changed', self)
         self.contacts_refresh()
         self.emit_for__Observer()  # todo: arguments?
 
@@ -118,13 +116,11 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts_search()
 
     def contacts_clear(self):
-        log.debug('%s:: contacts clear', self)
         contacts = self.contacts
         while contacts:
             contacts.pop().actual = False
 
     def special_contacts_search(self):
-        log.debug('%s:: VisibleObject.special_contacts_search', self)
         contacts = self.contacts
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
             found = motion.contacts_with_static(self)
@@ -134,9 +130,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def contacts_search(self):
         # todo: rename methods (search->forecast)
-        log.debug('%s:: contacts search', self)
         self.special_contacts_search()
-        log.debug('%s:: contacts found: %s', self, len(self.contacts))
         self.server.post_events(self.contacts)
         # todo: check for double including one contact into the servers timeline
 
@@ -175,7 +169,6 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         self.emit_for__Agent(message=messages.Update(subject=self, obj=self, time=self.server.get_time()))
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
-        #log.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
         self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter))
 
     @property
