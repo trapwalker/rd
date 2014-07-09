@@ -49,7 +49,23 @@ function onZoomEnd(Event) {
     timer = setInterval(timerRepaint, timerDelay);
 }
 
+function createStorageTileLaeyr(storage){
+    tileLayerShow = new StorageTileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+        maxZoom: 16,
+        storage: storage,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'examples.map-i86knfo3'}).addTo(myMap);
+}
+
+
 $(document).ready(function () {
+    var storage =getIndexedDBStorage(createStorageTileLaeyr) || getWebSqlStorage(createStorageTileLaeyr) || null;
+    if(!storage){
+        alert('Storage not loading!');
+    }
+
     myMap = L.map('map',
         {
             minZoom: 10,
@@ -71,14 +87,14 @@ $(document).ready(function () {
     //          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
     //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
     //       id: 'examples.map-i86knfo3'}).addTo(myMap);
-
-    tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-        maxZoom: 16,
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'examples.map-i86knfo3'});//.addTo(myMap);
-
+    /*
+     tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+     maxZoom: 16,
+     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+     '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+     'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+     id: 'examples.map-i86knfo3'});//.addTo(myMap);
+     */
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
@@ -122,11 +138,20 @@ $(document).ready(function () {
     L.easyButton(
         'easy-button-show-tile',
         function () {
+            if(!tileLayerShow){
+                tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+                    maxZoom: 16,
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                    id: 'examples.map-i86knfo3'}).addTo(myMap);
+            }
             tileLayerShow.addTo(myMap);
         },
         "Показать уровень тайлов",
         myMap
     );
+
 
     L.easyButton(
         'easy-button-hide-tile',
