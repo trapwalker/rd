@@ -21,7 +21,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent.connection = self
         self.api = AgentAPI(agent=self.agent)
         self.application.clients.append(self)
-        self.send_push_message(self.application.chat)  # todo: slice to chunks
+        if self.application.chat:
+            self.send_push_message(self.application.chat)  # todo: slice to chunks
 
     def send_push_message(self, data):
         self.write_message(serialize(make_push_package(data)))
@@ -32,6 +33,6 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent.connection = None
 
     def on_message(self, message):
-        log.info("got message %r", message)
+        log.debug("Got message from %s: %r", self.agent, message)
         result = self.api.__rpc_call__(message)
         self.write_message(result)
