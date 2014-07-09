@@ -4,7 +4,7 @@ WSJSON = (function () {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
         this.socket.onmessage = function (event) {
-            receiveMesFromServ(event.data, true); // true - если от сервера, false - если моё тестовое
+            receiveMesFromServ(event.data);
         }
 
         this.tasks = new Array(); // Новые задачи
@@ -179,12 +179,12 @@ function servEmul(data) {
         };
     }
     // ans уже сформирован. Теперь его нужно преобр. в строку и отправить в обработчик
-    receiveMesFromServ(JSON.stringify(ans), false);
+    receiveMesFromServ(JSON.stringify(ans));
 }
 
 
 // Приём сообщения от сервера. Разбор принятого объекта
-function receiveMesFromServ(data, fromServ) {
+function receiveMesFromServ(data) {
     var mes = JSON.parse(data);
     // если message_type = push
     if (mes.message_type == "push") {
@@ -358,7 +358,8 @@ function receiveMesFromServ(data, fromServ) {
         // если message_type = chat_message // Если пришло сообщение в чат
         if (mes.event.kind == "chat_message") {
             // нарисовать в специальный div, который выделен для чата
-            addDivToDiv("viewMessengerList", "chat_text"+mes.event.id + "newChat", mes.event.author + ": " + mes.event.text, true);
+            addDivToDiv("viewMessengerList", "chat_text"+mes.event.id + "newChat", mes.event.mes_time + " " +
+                mes.event.author + ": " + mes.event.text, true);
         }
     }
 

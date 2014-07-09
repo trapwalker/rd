@@ -49,7 +49,23 @@ function onZoomEnd(Event) {
     timer = setInterval(timerRepaint, timerDelay);
 }
 
+function createStorageTileLaeyr(storage){
+    tileLayerShow = new StorageTileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+        maxZoom: 16,
+        storage: storage,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'examples.map-i86knfo3'}).addTo(myMap);
+}
+
+
 $(document).ready(function () {
+    var storage =getIndexedDBStorage(createStorageTileLaeyr) || getWebSqlStorage(createStorageTileLaeyr) || null;
+    if(!storage){
+        alert('Storage not loading!');
+    }
+
     myMap = L.map('map',
         {
             minZoom: 10,
@@ -71,14 +87,14 @@ $(document).ready(function () {
     //          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
     //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
     //       id: 'examples.map-i86knfo3'}).addTo(myMap);
-
-    L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-        maxZoom: 16,
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'examples.map-i86knfo3'}).addTo(myMap);
-
+    /*
+     tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+     maxZoom: 16,
+     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+     '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+     'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+     id: 'examples.map-i86knfo3'});//.addTo(myMap);
+     */
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
@@ -118,6 +134,34 @@ $(document).ready(function () {
 
     $('#footer').hide();
 
+    // для скрытия тайлов, чтобы быстрее грузилось
+    L.easyButton(
+        'easy-button-show-tile',
+        function () {
+            if(!tileLayerShow){
+                tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+                    maxZoom: 16,
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                    id: 'examples.map-i86knfo3'}).addTo(myMap);
+            }
+            tileLayerShow.addTo(myMap);
+        },
+        "Показать уровень тайлов",
+        myMap
+    );
+
+
+    L.easyButton(
+        'easy-button-hide-tile',
+        function () {
+            myMap.removeLayer(tileLayerShow);
+        },
+        "Скрыть уровень тайлов",
+        myMap
+    );
+
     wsjson = new WSJSON();
     rpc_call_list = new RPCCallList();
 
@@ -153,7 +197,39 @@ $(document).ready(function () {
         }
     }, true);
 
-    createViewMessenger("map");
+    // создание чата
+    createViewMessenger("chatArea");
+
+    // создание слайдера зума
+    zoomSetSlider = new SliderSpeed({
+        parentDiv: "zoomSetDivForSpeedSlider",
+        carriageHeight: 0.4,
+        height: 60,
+        parentCss: 'slider-zoom-parent',
+        max: myMap.getMaxZoom(),
+        min: myMap.getMinZoom(),
+        step: 1,
+        onChange: changeZoomOnSlider
+    });
+    zoomSetSlider.setSpeed(myMap.getZoom());
+    // чтобы при изменении зума на карте менялся и слайдер.
+    myMap.on('zoomend',function() {
+        zoomSetSlider.setSpeed(myMap.getZoom());
+    });
+
+    // создание слайдера скорости
+    speedSetSlider = new SliderSpeed({
+        parentDiv: "speedSetDivForSpeedSlider",
+        carriageHeight: 0.4,
+        height: 200,
+        parentCss: 'slider-speed-parent',
+        max: 999,
+        min: 5,
+        step: 5,
+        onChange: changeSpeedOnSlider
+    });
+    speedSetSlider.setSpeed(30);
+
 });
 
 function subSpeed() {
@@ -204,7 +280,7 @@ function createTestCar() {
             }
         }
     };
-    receiveMesFromServ(JSON.stringify(ans), false);
+    receiveMesFromServ(JSON.stringify(ans));
 };
 
 // проходит по списку рандомных машинок, меняет вектор скорости, осталяя тот же айдишник
@@ -242,7 +318,7 @@ function newRandSpeed() {
                         }
                     }
                 };
-                receiveMesFromServ(JSON.stringify(ans), false);
+                receiveMesFromServ(JSON.stringify(ans));
             }
         }
     }
@@ -278,6 +354,13 @@ function delCar() {
     listMapObject.del(lastIDPopupOpen);
 }
 
+function changeSpeedOnSlider() {
+    sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
+}
+
+function changeZoomOnSlider() {
+    myMap.setZoom(zoomSetSlider.getSpeed());
+}
 
 
 var myMap;
@@ -286,3 +369,7 @@ var userCarMarker;
 var testTownMarker;
 var wsjson;
 var rpc_call_list;
+var speedSetSlider;
+var zoomSetSlider;
+
+var tileLayerShow;

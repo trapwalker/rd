@@ -107,7 +107,8 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         super(VisibleObject, self).__init__(**kw)
         # todo: subscription to changes for external observers
 
-    def on_change(self):
+    def on_change(self):  # todo: privacy level index
+        # todo: emit update message
         log.debug('%s:: changed', self)
         self.contacts_refresh()
         self.emit_for__Observer()  # todo: arguments?
@@ -168,8 +169,14 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         super(Observer, self).__init__(**kw)
         self._r = observing_range
 
+    def on_change(self):
+        super(Observer, self).on_change()
+        # todo: self update notification
+        #self.emit_for__Agent(message=messages.See(sender=self, obj=self))
+
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
         #log.debug('{self}: {emitter}  {av}, {kw}'.format(**locals()))
+        # todo: update event #events  
         self.emit_for__Agent(message=messages.See(sender=self, obj=emitter))
 
     @property

@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import units
+from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
@@ -52,6 +53,7 @@ class AgentAPI(API):
                 'author': self.agent.login,
                 'text': text,
                 'id': msg_id,
+                'mes_time': datetime.now().strftime('%H:%M:%S'),	
             }
         }
         chat.append(msg)
