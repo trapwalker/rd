@@ -43,12 +43,14 @@ class Message(object):
 class ChatMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
 
-    def __init__(self, author, text=None, client_id=None, **kw):
+    def __init__(self, author, text=None, client_id=None, time=None, **kw):
         """
         @param model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
-        super(ChatMessage, self).__init__(**kw)
+        if not time:
+            time = author.server.get_time()
+        super(ChatMessage, self).__init__(time=time, **kw)
         self.author = author
         self.text = text
         self.client_id = client_id
@@ -66,11 +68,13 @@ class ChatMessage(Message):
 class UnitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
 
-    def __init__(self, subject, **kw):
+    def __init__(self, subject, time=None, **kw):
         """
         @param model.units.Unit subject: Sender of message
         """
-        super(UnitMessage, self).__init__(**kw)
+        if not time:
+            time = subject.server.get_time()
+        super(UnitMessage, self).__init__(time=time, **kw)
         self.subject = subject
 
     def as_dict(self):
