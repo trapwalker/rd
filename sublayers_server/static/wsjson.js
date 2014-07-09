@@ -4,7 +4,7 @@ WSJSON = (function () {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
         this.socket.onmessage = function (event) {
-            receiveMesFromServ(event.data);
+            receiveMesFromServV2(event.data);
         }
 
         this.tasks = new Array(); // Новые задачи
@@ -373,17 +373,25 @@ function receiveMesFromServ(data) {
 
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServV2(data) {
-    var mes = JSON.parse(data);
+    var mes = JSON.parse(data,function(key, value){
+        if (key == 'time') return new Date(value*1000);
+        return value;
+    });
+    alert(data + '         client time = '+ new Date().getTime());
+    addDivToDiv("viewMessengerList", "mes"+newIDFromP(), "ПРИНЯТО: " + data, true);
+    alert(mes.events.time);
     // если message_type = push
     if (mes.message_type == "push") {
         // проходим по списку евентов
         for (var event in mes.events) {
+            //alert('event='+event);
             var servtime = event.time; // не забыть как-то преобразовать!
-            clock.setDt(servtime);
+            //alert(event.time);
+            //clock.setDt(servtime);
             if (event.cls == "see" || event.cls == "contact" || event.cls == "update") {
                 // see || contact
                 var aTrack, aType, aHP;
-                aTrack = getTrack(event.object);
+         /*       aTrack = getTrack(event.object);
                 if (event.object.health != null) {
                     // запустить функцию установки хп
                     aHP = mes.event.object.health;
@@ -404,8 +412,8 @@ function receiveMesFromServV2(data) {
                         aType = 0;
                     }
                 }
-
-                setCurrentCar(event.object.uid, aType, aHP, aTrack);
+*/
+                //setCurrentCar(event.object.uid, aType, aHP, aTrack);
             }
             if (event.cls == "out") {
                 // out
@@ -497,4 +505,9 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
         }
     }
 
+}
+
+function jsonParseTime(key, value){
+    if (key == 'time') return new Date(value);
+    return value;
 }
