@@ -12,11 +12,7 @@ from messages import ChatMessage
 
 
 def make_push_package(events):
-    if hasattr(events, 'as_dict'):
-        events = events.as_dict()
-    else:
-        events = [event.as_dict() for event in events]
-
+    events = [event.as_dict() for event in events]
     return dict(
         message_type='push',
         events=events,
@@ -62,8 +58,9 @@ class AgentAPI(API):
         msg = ChatMessage(author=self.agent, text=text, client_id=msg_id)
         chat.append(msg)
 
-        push_package = make_push_package([msg])
+        push_data = serialize(make_push_package([msg]))
+
         for client_connection in app.clients:
-            client_connection.write_message(serialize(push_package))
+            client_connection.write_message(push_data)
 
         log.info('Broadcast send to %d clients DONE: %r', len(app.clients), msg)
