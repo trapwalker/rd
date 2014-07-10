@@ -28,7 +28,7 @@ class AgentAPI(API):
         else:
             self.car = units.Bot(
                 server=agent.server,
-                position=Point.random_gauss(position or Point(0, 0), position_sigma),
+                position=Point.random_gauss(position or Point(10093693, 5646447), position_sigma),
                 observing_range=1000,
             )
             self.agent.append_car(self.car)
