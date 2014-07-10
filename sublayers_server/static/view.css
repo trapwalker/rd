@@ -1,26 +1,31 @@
 #map {
-    border-color: lime;
+    border-color: limegreen;
     border-style: double;
     border-width: 5px 7px 5px 7px;
     background-color: black;
     overflow: hidden;
     position: absolute;
-    top: 7px;
+    top: 0px;
     bottom: 0px;
     left: 0px;
     right: 0px;
 }
 
 #title {
-    color: black;
-    background-color: lime;
+    border-color: limegreen;
+    border-style: solid;
+    border-width: 2px;
+    color: limegreen;
+    background-color: darkgreen;
+    font: 15px arial;
     position: absolute;
-    left: 45%;
-    top: 0px;
+    top: 3px;
+    left: 5px;
+    right: 5px;
 }
 
 #footer {
-    border-color: lime;
+    border-color: limegreen;
     border-style: double;
     border-width: 5px 7px 5px 7px;
     overflow: hidden;
@@ -29,7 +34,7 @@
     left: 10px;
     right: 10px;
     height: 20%;
-    color: lime;
+    color: limegreen;
 }
 
 #console {
@@ -72,6 +77,6 @@
 
 #buttonFullScreen {
     position: absolute;
-    top: 20px;
+    top: 35px;
     right: 15px;
 }
