@@ -45,7 +45,6 @@
     opacity: 0.5;
 }
 
-
 .easy-button-add-car {
     background-image: url(img/car_20.png);
     height: 100px;
@@ -67,7 +66,12 @@
     background-size: 20px;
 }
 
-
 .default-easy-button {
     background-color: blue;
+}
+
+#buttonFullScreen {
+    position: absolute;
+    top: 20px;
+    right: 15px;
 }

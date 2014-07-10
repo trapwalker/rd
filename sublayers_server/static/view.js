@@ -3,7 +3,7 @@ function redrawMap() {
     var tempAngleGrad;
 
     // работа с юзеркаром
-    if(user.userCar) {
+    if (user.userCar) {
         tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
         tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
         addDivToDiv("console", "rm1", "Игрок: координаты = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) +
@@ -49,7 +49,7 @@ function onZoomEnd(Event) {
     timer = setInterval(timerRepaint, timerDelay);
 }
 
-function createStorageTileLaeyr(storage){
+function createStorageTileLaeyr(storage) {
     tileLayerShow = new StorageTileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
         maxZoom: 16,
         storage: storage,
@@ -61,8 +61,8 @@ function createStorageTileLaeyr(storage){
 
 
 $(document).ready(function () {
-    var storage =getIndexedDBStorage(createStorageTileLaeyr) || getWebSqlStorage(createStorageTileLaeyr) || null;
-    if(!storage){
+    var storage = getIndexedDBStorage(createStorageTileLaeyr) || getWebSqlStorage(createStorageTileLaeyr) || null;
+    if (!storage) {
         alert('Storage not loading!');
     }
 
@@ -80,6 +80,21 @@ $(document).ready(function () {
                 [50.21, 35.42],
                 [51.43, 39.44]
             ])}).setView([50.6041, 36.5954], 13);
+
+    //Переключение в полноэкранный режим и обратно по кнопке
+    var btnFS = document.getElementById("buttonFullScreen");
+    var html = document.documentElement;
+
+    btnFS.onclick = function () {
+
+        if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
+            RunPrefixMethod(document, "CancelFullScreen");
+        }
+        else {
+            RunPrefixMethod(html, "RequestFullScreen");
+        }
+
+    }
 
     //   L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
     //       maxZoom: 16,
@@ -138,7 +153,7 @@ $(document).ready(function () {
     L.easyButton(
         'easy-button-show-tile',
         function () {
-            if(!tileLayerShow){
+            if (!tileLayerShow) {
                 tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
                     maxZoom: 16,
                     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -213,7 +228,7 @@ $(document).ready(function () {
     });
     zoomSetSlider.setSpeed(myMap.getZoom());
     // чтобы при изменении зума на карте менялся и слайдер.
-    myMap.on('zoomend',function() {
+    myMap.on('zoomend', function () {
         zoomSetSlider.setSpeed(myMap.getZoom());
     });
 
@@ -362,6 +377,26 @@ function changeZoomOnSlider() {
     myMap.setZoom(zoomSetSlider.getSpeed());
 }
 
+//Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
+function RunPrefixMethod(obj, method) {
+
+    var p = 0, m, t;
+    while (p < pfx.length && !obj[m]) {
+        m = method;
+        if (pfx[p] == "") {
+            m = m.substr(0, 1).toLowerCase() + m.substr(1);
+        }
+        m = pfx[p] + m;
+        t = typeof obj[m];
+        if (t != "undefined") {
+            pfx = [pfx[p]];
+            return (t == "function" ? obj[m]() : obj[m]);
+        }
+        p++;
+    }
+
+}
+
 
 var myMap;
 var lastIDPopupOpen;
@@ -373,3 +408,6 @@ var speedSetSlider;
 var zoomSetSlider;
 
 var tileLayerShow;
+
+//Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
+var pfx = ["webkit", "moz", "ms", "o", ""];
