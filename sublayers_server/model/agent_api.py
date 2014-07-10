@@ -47,7 +47,7 @@ class AgentAPI(API):
 
     @public_method
     def set_speed(self, new_speed):
-        pass  # todo: AgentAPI.set_speed implementation
+        self.car.max_velocity = new_speed  # todo: check value
 
     @public_method
     def chat_message(self, text):
