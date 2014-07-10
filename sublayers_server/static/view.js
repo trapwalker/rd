@@ -315,7 +315,7 @@ function getTestInfo(aid) {
 
     var popup = L.popup()
         .setLatLng(mark.getLatLng())
-        .setContent('<p>Hello world!<br /> ID = ' + mark.carID + '</p>')
+        .setContent('<p>Hello world!<br /> ID = ' + aid + '</p>')
         .openOn(myMap);
 
 }
