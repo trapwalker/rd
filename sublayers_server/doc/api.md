@@ -40,10 +40,10 @@ Push-уведомление с сервера имеет вид:
 где <event> -- объект описывающий событие:
 
     {
-        'cls': ('chat_message'|'see'|'update'|'contact'|'out'),
+        'cls': ('ChatMessage'|'see'|'update'|'contact'|'out'),
         'time': <time>,  // точное время события (для корректной отрисовки в случае задержки сигнала)
 
-        # chat_message:
+        # ChatMessage:
         'author': {'cls': <agent_class>, 'uid': <agent_uid>, 'login': '<agent_name>'},
         'text': <message_text>,
         'id': <message_id>,
