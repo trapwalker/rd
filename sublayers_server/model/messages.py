@@ -40,17 +40,38 @@ class Message(object):
         return serialize(self.as_dict())
 
 
+class InitMessage(Message):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
+
+    def __init__(self, agent, time=None):
+        """
+        @param model.agents.Agent agent
+        """
+        if not time:
+            time = agent.server.get_time()
+        super(InitMessage, self).__init__(time=time)
+        self.agent = agent
+
+    def as_dict(self):
+        d = super(InitMessage, self).as_dict()
+        d.update(
+            agent=self.agent.as_dict(),
+            cars=self.agent.cars,
+        )
+        return d
+
+
 class ChatMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
 
-    def __init__(self, author, text=None, client_id=None, time=None, **kw):
+    def __init__(self, author, text=None, client_id=None, time=None):
         """
         @param model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
         if not time:
             time = author.server.get_time()
-        super(ChatMessage, self).__init__(time=time, **kw)
+        super(ChatMessage, self).__init__(time=time)
         self.author = author
         self.text = text
         self.client_id = client_id
@@ -68,13 +89,13 @@ class ChatMessage(Message):
 class UnitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
 
-    def __init__(self, subject, time=None, **kw):
+    def __init__(self, subject, time=None):
         """
         @param model.units.Unit subject: Sender of message
         """
         if not time:
             time = subject.server.get_time()
-        super(UnitMessage, self).__init__(time=time, **kw)
+        super(UnitMessage, self).__init__(time=time)
         self.subject = subject
 
     def as_dict(self):
