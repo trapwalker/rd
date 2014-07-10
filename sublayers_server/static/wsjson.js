@@ -383,6 +383,7 @@ function receiveMesFromServV2(data) {
     if (mes.message_type == "push") {
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
+            // Установка времени
             var servtime = event.time;
             clock.setDt(servtime);
             if (event.cls == "see" || event.cls == "contact" || event.cls == "update") {
@@ -411,6 +412,11 @@ function receiveMesFromServV2(data) {
                  }
                  */
                 //setCurrentCar(event.object.uid, aType, aHP, aTrack);
+            }
+            if (event.cls == "InitMessage") {
+                // InitMessage
+                var aTrack = getTrack(event.cars[0]);
+                initUserCar(event.cars[0].uid, 0, 0, aTrack);
             }
             if (event.cls == "out") {
                 // out
@@ -483,6 +489,18 @@ function getTrack(data){
         aTrack.direction = direction;
     }
 
+
+
+    if(aTrack == null) {
+        aTrack = new MoveLine(
+            clock.getCurrentTime(),  //Время начала движения
+            0,              //Запас топлива
+            0,          //Расход топлива
+            position,                //Начальная точка
+            new Point(0, 0),          //Скорость
+            new Point(0, 0)           //Ускорение
+        );
+    }
     return aTrack;
 }
 
@@ -504,6 +522,16 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
     }
 
 }
+
+
+function initUserCar(uid, aType, aHP, aTrack) {
+    user.userCar = new UserCar(uid,       //ID машинки
+        aType,       //Тип машинки
+        aHP,      //HP машинки
+        30,      //Максималка
+        aTrack);   //Текущая траектория
+}
+
 
 function jsonParseTime(key, value){
     if (key == 'time') return new Date(value);
