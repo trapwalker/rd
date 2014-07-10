@@ -27,7 +27,7 @@ function sendNewPoint(aPoint, auid) {
         }
     };
     rpc_call_list.add(mes);
-    servEmul(JSON.stringify(mes));
+   // servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -49,7 +49,7 @@ function sendFire(aPoint, auid) {
         params: {}
     };
     rpc_call_list.add(mes);
-    servEmul(JSON.stringify(mes));
+  //  servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -63,7 +63,7 @@ function sendSetSpeed(newSpeed, auid) {
         }
     };
     rpc_call_list.add(mes);
-    servEmul(JSON.stringify(mes));
+  //  servEmul(JSON.stringify(mes));
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -375,50 +375,34 @@ function receiveMesFromServ(data) {
 function receiveMesFromServV2(data) {
     var mes = JSON.parse(data,function(key, value){
         if (key == 'time') return new Date(value*1000);
+        if (key == 'start_time') return new Date(value*1000);
         return value;
     });
     addDivToDiv("viewMessengerList", "mes"+newIDFromP(), "ПРИНЯТО: " + data, true);
-    alert(data);
     // если message_type = push
     if (mes.message_type == "push") {
+        alert(data);
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
             clock.setDt(servtime);
-            if (event.cls == "see" || event.cls == "contact" || event.cls == "update") {
+            if (event.cls == "See" || event.cls == "Contact" || event.cls == "Update") {
                 // see || contact
                 var aTrack, aType, aHP;
-                /*       aTrack = getTrack(event.object);
-                 if (event.object.health != null) {
-                 // запустить функцию установки хп
-                 aHP = mes.event.object.health;
-                 } else { // попытаться взять хп из лист мап обжект
-                 if (listMapObject.exist(uid)) {
-                 aHP = listMapObject.getCarHP(uid);
-                 if (aHP == -1) aHP = 100;
-                 }
-                 }
+                aTrack = getTrack(event.object);
 
-                 if (mes.event.object.type_car != null) {
-                 // запустить функцию установки хп
-                 aType = event.object.type_car;
-                 } else { // попытаться взять хп из лист мап обжект
-                 if (listMapObject.exist(uid)) {
-                 aType = listMapObject.objects[uid].type;
-                 } else {
-                 aType = 0;
-                 }
-                 }
-                 */
-                //setCurrentCar(event.object.uid, aType, aHP, aTrack);
+                setCurrentCar(event.object.uid, aType, aHP, aTrack);
             }
             if (event.cls == "InitMessage") {
                 // InitMessage
                 var aTrack = getTrack(event.cars[0]);
-                initUserCar(event.cars[0].uid, 0, 0, aTrack);
+                var max_speed;
+
+                if(event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
+                initUserCar(event.cars[0].uid, 0, 0, aTrack, max_speed);
             }
-            if (event.cls == "out") {
+            if (event.cls == "Out") {
                 // out
                 var uid = event.object_id;
                 if (listMapObject.exist(uid)) {
@@ -449,47 +433,49 @@ function receiveMesFromServV2(data) {
 
 function getTrack(data){
     var aTrack;
-    var position = new Point(data.position.x,data.position.y);
+    var position;
 
-    // motion and direction
-    if (data.circular_motion != null) {
-        // запустить функцию получения кругового движения
+    if (data.position)
+        position = new Point(data.position.x, data.position.y);
+    else
+        position = new Point(0, 0);
+
+
+    if(data.motion) {
+        // motions
+        if (data.motion.cls == "Goto") {
+            // запустить функцию установки линейного движения
+            var velocity = new Point(data.motion.velocity.x,
+                data.motion.velocity.y);
+            var start_time = data.motion.start_time;
+            aTrack = new MoveLine(
+                start_time,  //Время начала движения
+                0,              //Запас топлива
+                0,          //Расход топлива
+                position,                //Начальная точка
+                velocity,                //Скорость
+                new Point(0, 0)             //Ускорение
+            );
+            return aTrack;
+        }
+
+        //direction
+        if (data.direction != null) {
+            // запустить функцию установки линейного движения с нулевыми скоростью и ускорением, и углом поворта
+            var direction = new Point(data.direction.x,
+                data.direction.y);
+            aTrack = new MoveLine(
+                clock.getCurrentTime(),  //Время начала движения
+                0,              //Запас топлива
+                0,          //Расход топлива
+                position,                //Начальная точка
+                new Point(0, 0),          //Скорость
+                new Point(0, 0)           //Ускорение
+            );
+            aTrack.direction = direction;
+
+        }
     }
-    if (data.liner_motion != null) {
-        // запустить функцию установки линейного движения
-        var velocity = new Point(data.liner_motion.velocity.x,
-            data.liner_motion.velocity.y);
-        var acceleration = new Point(data.liner_motion.acceleration.x,
-            data.liner_motion.acceleration.y);
-        var fuel_start = data.liner_motion.fuel_start;
-        var fuel_decrement = data.liner_motion.fuel_decrement
-
-        aTrack = new MoveLine(
-            clock.getCurrentTime(),  //Время начала движения
-            fuel_start,              //Запас топлива
-            fuel_decrement,          //Расход топлива
-            position,                //Начальная точка
-            velocity,                //Скорость
-            acceleration             //Ускорение
-        );
-
-    }
-    if (data.direction != null) {
-        // запустить функцию установки линейного движения с нулевыми скоростью и ускорением, и углом поворта
-        var direction = new Point(data.direction.x,
-            data.direction.y);
-        aTrack = new MoveLine(
-            clock.getCurrentTime(),  //Время начала движения
-            0,              //Запас топлива
-            0,          //Расход топлива
-            position,                //Начальная точка
-            new Point(0, 0),          //Скорость
-            new Point(0, 0)           //Ускорение
-        );
-        aTrack.direction = direction;
-    }
-
-
 
     if(aTrack == null) {
         aTrack = new MoveLine(
@@ -510,6 +496,7 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
         user.userCar.hp = aHP;
     }
     else { // если не своя, то проверить есть ли такая в модели
+        alert('Мы находимся в алерте! и для НЕ нашей машинки!');
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
             listMapObject.add(new MapCar(uid, aType, aHP, aTrack));
             // и сразу же добавить маркер
@@ -524,11 +511,11 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
 }
 
 
-function initUserCar(uid, aType, aHP, aTrack) {
+function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
     user.userCar = new UserCar(uid,       //ID машинки
         aType,       //Тип машинки
         aHP,      //HP машинки
-        30,      //Максималка
+        amax_speed,      //Максималка
         aTrack);   //Текущая траектория
 }
 
