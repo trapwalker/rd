@@ -381,14 +381,14 @@ function receiveMesFromServV2(data) {
     addDivToDiv("viewMessengerList", "mes"+newIDFromP(), "ПРИНЯТО: " + data, true);
     // если message_type = push
     if (mes.message_type == "push") {
-        alert(data);
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
             clock.setDt(servtime);
             if (event.cls == "See" || event.cls == "Contact" || event.cls == "Update") {
-                // see || contact
+                // see || contact || Update
+                //alert(data);
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
 

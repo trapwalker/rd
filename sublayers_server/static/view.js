@@ -199,12 +199,12 @@ $(document).ready(function () {
         carriageHeight: 0.4,
         height: 200,
         parentCss: 'slider-speed-parent',
-        max: 999,
-        min: 5,
+        max: 200,
+        min: 0,
         step: 5,
         onChange: changeSpeedOnSlider
     });
-    speedSetSlider.setSpeed(30);
+    speedSetSlider.setSpeed(speedSetSlider.getSpeed());
 
 });
 
