@@ -72,6 +72,16 @@ class Bot(Unit):
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
 
+    def as_dict(self):
+        d = super(Bot, self).as_dict()
+        log.debug('++++++++++++++++++ NEW MOTION: %r', self.motion)
+
+        d.update(
+            motion=self.motion.as_dict() if self.motion else None,
+            max_velocity=self.max_velocity,
+        )
+        return d
+
     def stop(self):
         del self.task
 

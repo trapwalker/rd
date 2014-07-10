@@ -51,8 +51,8 @@ class Application(tornado.web.Application):
     def init_scene(self):
         from model.units import Bot
         from model.vectors import Point
-        b = Bot(server=self.srv, position=Point(0, 0))
-        b.goto(Point(1000, 1500))
+        #b = Bot(server=self.srv, position=Point(0, 0))
+        #b.goto(Point(1000, 1500))
         
 
 class MainHandler(tornado.web.RequestHandler):

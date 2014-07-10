@@ -30,6 +30,16 @@ class Task(object):
         self._get_time = owner.server.get_time
         self.start_time = start_time or self._get_time()
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
+    def as_dict(self):
+        return dict(
+            cls=self.classname,
+            start_time=self.start_time,  #todo: relative time for client
+        )
+
     def cancel(self):
         pass
 
@@ -98,6 +108,13 @@ class Goto(Determined):
         self.vector = target_point - start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
         """@type: model.vectors.Point"""
+
+    def as_dict(self):
+        d = super(Goto, self).as_dict()
+        d.update(
+            velocity=self.v,
+        )
+        return d
 
     @staticmethod
     def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0, contacts):
