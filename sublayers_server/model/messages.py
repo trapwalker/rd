@@ -56,7 +56,7 @@ class InitMessage(Message):
         d = super(InitMessage, self).as_dict()
         d.update(
             agent=self.agent.as_dict(),
-            cars=self.agent.cars,
+            cars=[car.as_dict() for car in self.agent.cars],
         )
         return d
 
