@@ -377,59 +377,57 @@ function receiveMesFromServV2(data) {
         if (key == 'time') return new Date(value*1000);
         return value;
     });
-    alert(data + '         client time = '+ new Date().getTime());
     addDivToDiv("viewMessengerList", "mes"+newIDFromP(), "ПРИНЯТО: " + data, true);
-    alert(mes.events.time);
+    alert(data);
     // если message_type = push
     if (mes.message_type == "push") {
         // проходим по списку евентов
-        for (var event in mes.events) {
-            //alert('event='+event);
-            var servtime = event.time; // не забыть как-то преобразовать!
-            //alert(event.time);
-            //clock.setDt(servtime);
+        mes.events.forEach(function (event, index) {
+            var servtime = event.time;
+            clock.setDt(servtime);
             if (event.cls == "see" || event.cls == "contact" || event.cls == "update") {
                 // see || contact
                 var aTrack, aType, aHP;
-         /*       aTrack = getTrack(event.object);
-                if (event.object.health != null) {
-                    // запустить функцию установки хп
-                    aHP = mes.event.object.health;
-                } else { // попытаться взять хп из лист мап обжект
-                    if (listMapObject.exist(uid)) {
-                        aHP = listMapObject.getCarHP(uid);
-                        if (aHP == -1) aHP = 100;
-                    }
-                }
+                /*       aTrack = getTrack(event.object);
+                 if (event.object.health != null) {
+                 // запустить функцию установки хп
+                 aHP = mes.event.object.health;
+                 } else { // попытаться взять хп из лист мап обжект
+                 if (listMapObject.exist(uid)) {
+                 aHP = listMapObject.getCarHP(uid);
+                 if (aHP == -1) aHP = 100;
+                 }
+                 }
 
-                if (mes.event.object.type_car != null) {
-                    // запустить функцию установки хп
-                    aType = event.object.type_car;
-                } else { // попытаться взять хп из лист мап обжект
-                    if (listMapObject.exist(uid)) {
-                        aType = listMapObject.objects[uid].type;
-                    } else {
-                        aType = 0;
-                    }
-                }
-*/
+                 if (mes.event.object.type_car != null) {
+                 // запустить функцию установки хп
+                 aType = event.object.type_car;
+                 } else { // попытаться взять хп из лист мап обжект
+                 if (listMapObject.exist(uid)) {
+                 aType = listMapObject.objects[uid].type;
+                 } else {
+                 aType = 0;
+                 }
+                 }
+                 */
                 //setCurrentCar(event.object.uid, aType, aHP, aTrack);
             }
             if (event.cls == "out") {
                 // out
                 var uid = event.object_id;
-                if(listMapObject.exist(uid)){
+                if (listMapObject.exist(uid)) {
                     myMap.removeLayer(listMapObject.objects[uid].marker);
                     delete listMapObject.objects[uid].marker;
                     listMapObject.del(uid);
                 }
             }
-            if (event.cls == "chat_message") {
+            if (event.cls == "ChatMessage") {
                 // chat_message
-                addDivToDiv("viewMessengerList", "chat_text"+event.id + "newChat", servtime + " " +
-                    event.author + ": " + event.text, true);
+                addDivToDiv("viewMessengerList", "chat_text" + event.id + "newChat", servtime + " " +
+                    event.author.login + ": " + event.text, true);
             }
-        }
+        });
+
 
     }
 
