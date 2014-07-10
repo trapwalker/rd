@@ -18,7 +18,7 @@ function redrawMap() {
 
     // работа со списком машинок
     addDivToDiv("console", "rm8", "Кол-во машинок = " + listMapObject.objects.length, true);
-    for (var i in listMapObject.objects) {
+    for (var i in listMapObject.objects) { // переписать for на forEach метод у массива
         if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
             // пересчёт координат
             tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
@@ -94,21 +94,12 @@ $(document).ready(function () {
 
     userCarMarker.on('popupopen', onMarkerPopupOpen);
 
-    userCarMarker.bindPopup("<input type=" + '"image"' + "src=" + '"img/green-plus-for-speed.png"' + " height=15 width=15 " + " value=" + '"Увеличить скорость" onclick="addSpeed();">' + " " +
-            "<input type=" + '"image"' + "src=" + '"img/green-minus-for-speed.png"' + " height=15 width=15 " + " value=" + '"Уменьшить скорость" onclick="subSpeed();">' + "  " +
-            "<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" + '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
+    userCarMarker.bindPopup("<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" +
+            '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
     );
 
-    userCarMarker.carID = newIDForTestCar();
 
     // тест Easy Button
-    L.easyButton(
-        'easy-button-add-car',
-        createTestCar,
-        "Добавить машинку",
-        myMap
-    );
-
     L.easyButton(
         'easy-footer',
         footerToggle,
@@ -141,7 +132,6 @@ $(document).ready(function () {
     rpc_call_list = new RPCCallList();
 
     // Добавление Города
-    //var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
     var tempPoint = new Point(10093693, 5646447);
     testTownMarker = L.marker([50.21, 35.42]).addTo(myMap);
     testTownMarker.setIcon(L.icon({
@@ -227,79 +217,6 @@ function addSpeed() {
     addDivToDiv("console", "st1", "Текущая скорость = " + user.userCar.track.speedV.abs().toFixed(2), true);
 }
 
-// просто генерирует рандомную машинку и отправляет её сразу в ресив, чтобы клиент добавил её в модель через серверное взаимодействие
-function createTestCar() {
-    var ans = {
-        message_type: "push",
-        event: {
-            kind: "see",
-            object: {
-                uid: newIDForTestCar(),
-                class: "car",
-                position: {
-                    x: 10093700 + Math.random() * 100,
-                    y: 5646400 + Math.random() * 100
-                },
-                server_time: clock.getCurrentTime(),
-                liner_motion: {
-                    velocity: {
-                        x: Math.random() * 30 - 15,
-                        y: Math.random() * 30 - 15
-                    },
-                    acceleration: {
-                        x: 0,
-                        y: 0
-                    },
-                    fuel_start: 100,
-                    fuel_decrement: 1
-                }
-            }
-        }
-    };
-    receiveMesFromServ(JSON.stringify(ans));
-};
-
-// проходит по списку рандомных машинок, меняет вектор скорости, осталяя тот же айдишник
-function newRandSpeed() {
-    for (var i in listMapObject.objects) {
-        if (Math.random() < 0.05) {
-            if (!listMapObject.hasOwnProperty(i)) {//... сделать что-то с arr[i] ...
-                // пересчёт координат
-                var tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
-                // пересчёт угла
-                var ans = {
-                    message_type: "push",
-                    event: {
-                        kind: "see",
-                        object: {
-                            uid: listMapObject.objects[i].ID,
-                            class: "car",
-                            position: {
-                                x: tempPoint.x,
-                                y: tempPoint.y
-                            },
-                            server_time: clock.getCurrentTime(),
-                            liner_motion: {
-                                velocity: {
-                                    x: Math.random() * 50 - 25,
-                                    y: Math.random() * 50 - 25
-                                },
-                                acceleration: {
-                                    x: 0,
-                                    y: 0
-                                },
-                                fuel_start: 100,
-                                fuel_decrement: 1
-                            }
-                        }
-                    }
-                };
-                receiveMesFromServ(JSON.stringify(ans));
-            }
-        }
-    }
-}
-
 
 function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
@@ -307,7 +224,7 @@ function onMarkerPopupOpen(e) {
 
 function getTestInfo(aid) {
     var mark;
-    if (listMapObject.objects[aid].marker)
+    if (listMapObject.objects[aid])
         mark = listMapObject.objects[aid].marker;
     else {
         mark = userCarMarker;
@@ -315,7 +232,7 @@ function getTestInfo(aid) {
 
     var popup = L.popup()
         .setLatLng(mark.getLatLng())
-        .setContent('<p>Hello world!<br /> ID = ' + aid + '</p>')
+        .setContent('<p>Hello world!<br /> ID = ' + mark.carID + '</p>')
         .openOn(myMap);
 
 }
@@ -331,6 +248,7 @@ function delCar() {
 }
 
 function changeSpeedOnSlider() {
+    if(user.userCar)
     sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
 }
 

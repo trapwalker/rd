@@ -29,7 +29,6 @@ function ModelInit() {
 $(document).ready(function () {
     ModelInit();
     timer = setInterval(timerRepaint, timerDelay);
-    var myTestTimer = setInterval(newRandSpeed, 1000); //для рандомного перемещения машинок
 });
 
 var timerDelay = 20; //константа задающая временной интервал таймера (юзать по всему проекту только это)

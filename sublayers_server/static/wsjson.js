@@ -6,8 +6,6 @@ WSJSON = (function () {
         this.socket.onmessage = function (event) {
             receiveMesFromServ(event.data);
         }
-
-        this.tasks = []; // Новые задачи
     };
 
     return WSJSON;
@@ -223,4 +221,6 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         aHP,      //HP машинки
         amax_speed,      //Максималка
         aTrack);   //Текущая траектория
+
+    userCarMarker.carID = uid; // возможно сделать инициализацию маркера тут
 }
