@@ -86,6 +86,10 @@ class MoveTrack {
     getRelativelyTime(aClockTime:number):number {
         return aClockTime - this.timeStart;
     }
+
+    getCurrentSpeedAbs(aClockTime:number):number {
+        return null;
+    }
 }
 
 class MoveLine extends MoveTrack {
@@ -125,13 +129,16 @@ class MoveLine extends MoveTrack {
             return res;
         }
         else {
-            if (this.speedV.abs() != 0) {
-                var res1 = angleVectorRad(this.direction, new Point(0, -1));
-                if (this.direction.x < 0) return -res1;
-                return res1;
-            } else
-                return 0;
+            var res1 = angleVectorRad(this.direction, new Point(0, -1));
+            if (this.direction.x < 0) return -res1;
+            return res1;
         }
+    }
+
+    getCurrentSpeedAbs(aClockTime:number):number {
+        var t = this.getRelativelyTime(aClockTime);
+        // Вычисляем текущую скорость Vt = A*t + V
+        return summVector(mulScalVector(this.acceleration, t), this.speedV).abs();
     }
 }
 
@@ -151,15 +158,15 @@ class MoveCircle extends MoveTrack {
         this.radius = aRadius;
     }
 
-    refresh():boolean {
-        return false;
-    }
-
     getCurrentCoord(aClockTime:number):Point {
         return null;
     }
 
     getCurrentDirection(aClockTime:number):number {
+        return null;
+    }
+
+    getCurrentSpeedAbs(aClockTime:number):number {
         return null;
     }
 
@@ -223,6 +230,10 @@ class DynamicObject extends MapObject {
 
     getCurrentFuel(aClockTime:number):number {
         return this.track.getCurrentFuel(aClockTime);
+    }
+
+    getCurrentSpeedAbs(aClockTime:number):number {
+        return this.track.getCurrentSpeedAbs(aClockTime);
     }
 }
 
