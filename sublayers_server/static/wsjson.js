@@ -84,9 +84,9 @@ function receiveMesFromServ(data) {
         if (key == 'start_time') return new Date(value*1000);
         return value;
     });
-    addDivToDiv("viewMessengerList", "mes"+newIDFromP(), "ПРИНЯТО: " + data, true);
     // если message_type = push
     if (mes.message_type == "push") {
+        addMesToConsole(data);
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
@@ -94,7 +94,6 @@ function receiveMesFromServ(data) {
             clock.setDt(servtime);
             if (event.cls == "See" || event.cls == "Contact" || event.cls == "Update") {
                 // see || contact || Update
-                //alert(data);
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
                 setCurrentCar(event.object.uid, aType, aHP, aTrack);
@@ -103,9 +102,15 @@ function receiveMesFromServ(data) {
                 // InitMessage
                 var aTrack = getTrack(event.cars[0]);
                 var max_speed;
-
+                // Инициализация userCar
                 if(event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
                 initUserCar(event.cars[0].uid, 0, 0, aTrack, max_speed);
+
+                // Инициализация Юзера
+                if(event.agent.cls == "User"){
+                    user.login = event.agent.login;
+                    user.ID = event.agent.uid;
+                }
             }
             if (event.cls == "Out") {
                 // out

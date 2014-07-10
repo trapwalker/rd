@@ -255,6 +255,7 @@ class UserCar extends MapCar {
 class User {
     ID:number;
     credit:number;
+    login: string;
     userCar:UserCar;
 
     constructor(aID, aCredit:number) {
