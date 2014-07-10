@@ -141,7 +141,8 @@ $(document).ready(function () {
     rpc_call_list = new RPCCallList();
 
     // Добавление Города
-    var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+    //var tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+    var tempPoint = new Point(10093693, 5646447);
     testTownMarker = L.marker([50.21, 35.42]).addTo(myMap);
     testTownMarker.setIcon(L.icon({
         iconUrl: 'img/city_50.png',

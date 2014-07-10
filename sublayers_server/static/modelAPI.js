@@ -8,7 +8,7 @@ function ModelInit() {
 
     user = new User(1,      //ID пользователя
         1000);  //Количество кредитов
-
+/*
     user.userCar = new UserCar(2,       //ID машинки
         0,       //Тип машинки
         100,      //HP машинки
@@ -20,7 +20,7 @@ function ModelInit() {
         new Point(10093693, 5646447), //Начальная точка
         new Point(15, 0),              //Скорость
         new Point(0, 0));             //Ускорение
-
+*/
     //user.userCar.track.direction = new Point(1,-1);
 
     listMapObject = new ListMapObject();
