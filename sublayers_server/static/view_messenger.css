@@ -1,7 +1,7 @@
 #viewMessengerArea {
     position: absolute;
-    top: 0px;
-    right: 0px;
+    bottom: 0px;
+    left: 7px;
     overflow: auto;
 }
 
@@ -54,14 +54,14 @@
 
 #viewMessengerListButton {
     position: relative;
-    float: right;
+    float: left;
     height: 30px;
     width: 23%;
 }
 
 #viewMessengerSlideButtonArea {
     position: relative;
-    float: right;
+    float: left;
     height: 35px;
 }
 
@@ -74,8 +74,8 @@
     font-size: 10px;
 }
 
-#viewMessengerSlideButton  {
-    float: right;
+#viewMessengerSlideButton {
+    float: left;
     color: #00ff00;
     -webkit-border-bottom-left-radius: 10px;
     -moz-border-radius-bottomleft: 10px;
@@ -92,9 +92,9 @@
     background: -o-linear-gradient(top, #000000, #666666);
     background-image: -ms-linear-gradient(top, #000000 0%, #666666 100%);
     padding: 5px 10px;
-    -webkit-box-shadow: rgba(255,255,255,0.4) 0 0px 0, inset rgba(255,255,255,0.4) 0 0px 0;
-    -moz-box-shadow: rgba(255,255,255,0.4) 0 0px 0, inset rgba(255,255,255,0.4) 0 0px 0;
-    box-shadow: rgba(255,255,255,0.4) 0 0px 0, inset rgba(255,255,255,0.4) 0 0px 0;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.4) 0 0px 0, inset rgba(255, 255, 255, 0.4) 0 0px 0;
+    -moz-box-shadow: rgba(255, 255, 255, 0.4) 0 0px 0, inset rgba(255, 255, 255, 0.4) 0 0px 0;
+    box-shadow: rgba(255, 255, 255, 0.4) 0 0px 0, inset rgba(255, 255, 255, 0.4) 0 0px 0;
     text-shadow: #000000 0 1px 0;
     color: #00ff00;
     font-family: helvetica, serif;
@@ -138,12 +138,12 @@
     -moz-border-radius: 4px;
     border-radius: 4px;
     color: #00ff00;
-    -webkit-box-shadow: rgba(255,255,255,0.4) 0 1px 0, inset rgba(000,000,000,0.7) 0 0px 0px;
-    -moz-box-shadow: rgba(255,255,255,0.4) 0 1px 0, inset rgba(000,000,000,0.7) 0 0px 0px;
-    box-shadow: rgba(255,255,255,0.4) 0 1px 0, inset rgba(000,000,000,0.7) 0 0px 0px;
-    padding:4px;
-    margin-bottom:20px;
-    width:230px;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0, inset rgba(000, 000, 000, 0.7) 0 0px 0px;
+    -moz-box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0, inset rgba(000, 000, 000, 0.7) 0 0px 0px;
+    box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0, inset rgba(000, 000, 000, 0.7) 0 0px 0px;
+    padding: 4px;
+    margin-bottom: 20px;
+    width: 230px;
 }
 
 #viewMessengerInput:focus {

@@ -82,6 +82,10 @@ var MoveTrack = (function () {
     MoveTrack.prototype.getRelativelyTime = function (aClockTime) {
         return aClockTime - this.timeStart;
     };
+
+    MoveTrack.prototype.getCurrentSpeedAbs = function (aClockTime) {
+        return null;
+    };
     return MoveTrack;
 })();
 
@@ -117,14 +121,18 @@ var MoveLine = (function (_super) {
                 return -res;
             return res;
         } else {
-            if (this.speedV.abs() != 0) {
-                var res1 = angleVectorRad(this.direction, new Point(0, -1));
-                if (this.direction.x < 0)
-                    return -res1;
-                return res1;
-            } else
-                return 0;
+            var res1 = angleVectorRad(this.direction, new Point(0, -1));
+            if (this.direction.x < 0)
+                return -res1;
+            return res1;
         }
+    };
+
+    MoveLine.prototype.getCurrentSpeedAbs = function (aClockTime) {
+        var t = this.getRelativelyTime(aClockTime);
+
+        // Вычисляем текущую скорость Vt = A*t + V
+        return summVector(mulScalVector(this.acceleration, t), this.speedV).abs();
     };
     return MoveLine;
 })(MoveTrack);
@@ -139,15 +147,15 @@ var MoveCircle = (function (_super) {
         this.accelerationA = aAccelerationA;
         this.radius = aRadius;
     }
-    MoveCircle.prototype.refresh = function () {
-        return false;
-    };
-
     MoveCircle.prototype.getCurrentCoord = function (aClockTime) {
         return null;
     };
 
     MoveCircle.prototype.getCurrentDirection = function (aClockTime) {
+        return null;
+    };
+
+    MoveCircle.prototype.getCurrentSpeedAbs = function (aClockTime) {
         return null;
     };
     return MoveCircle;
@@ -208,6 +216,10 @@ var DynamicObject = (function (_super) {
 
     DynamicObject.prototype.getCurrentFuel = function (aClockTime) {
         return this.track.getCurrentFuel(aClockTime);
+    };
+
+    DynamicObject.prototype.getCurrentSpeedAbs = function (aClockTime) {
+        return this.track.getCurrentSpeedAbs(aClockTime);
     };
     return DynamicObject;
 })(MapObject);

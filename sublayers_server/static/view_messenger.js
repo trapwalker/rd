@@ -2,10 +2,12 @@ function createViewMessenger(parentDivID) {
 
     function sendMessage() {
         var str = vMI.val();
-        if(str.length) {
+        if (str.length) {
             sendChatMessage(str);
             vMI.val('').focus();
-        } else {vMI.focus()}
+        } else {
+            vMI.focus()
+        }
     }
 
     //добавление основного дива
@@ -29,8 +31,10 @@ function createViewMessenger(parentDivID) {
     vMLIA.append(vMLI);
     var vMI = $("<input id=\"viewMessengerInput\" type=\"text\"/>");
     vMLI.append(vMI);
-    vMI.keydown(function(event){
-        if(event.keyCode==13){sendMessage();}
+    vMI.keydown(function (event) {
+        if (event.keyCode == 13) {
+            sendMessage();
+        }
     });
 
     //добавление дива с кнопкой отправки
@@ -42,12 +46,16 @@ function createViewMessenger(parentDivID) {
     //добавление (нижнего) дива с кнопкой Свернуть/Развернуть
     var vMSBA = $("<div id=\"viewMessengerSlideButtonArea\"> </div>");
     vMA.append(vMSBA);
-    var vMSB = $("<a id=\"viewMessengerSlideButton\" class=\"button\">Свернуть</a>");
+    var vMSB = $("<a id=\"viewMessengerSlideButton\" class=\"button\">Свернуть чат</a>");
     vMSBA.append(vMSB);
     vMSB.click(function () {
-        vMLA.slideToggle("slow", function() {
-            if(vMSB.text() == "Свернуть") {vMSB.text("Развернуть")}
-            else {vMSB.text("Свернуть")}
+        vMLA.slideToggle("slow", function () {
+            if (vMSB.text() == "Свернуть чат") {
+                vMSB.text("Развернуть чат")
+            }
+            else {
+                vMSB.text("Свернуть чат")
+            }
         });
     });
 }
