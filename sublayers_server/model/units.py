@@ -66,11 +66,12 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, direction=0, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: model.tasks.Goto | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
+        self._direction = direction
 
     def as_dict(self):
         d = super(Bot, self).as_dict()
@@ -107,6 +108,17 @@ class Bot(Unit):
         return self.motion.position if self.motion else self._position
 
     position = property(fget=get_position, fset=Unit.set_position)
+
+    @property
+    def direction(self):
+        """
+        @rtype: float
+        """
+        return self.motion.direction if self.motion else self._direction
+
+    @direction.setter
+    def direction(self, value):
+        self._diection = value
 
     @property
     def max_velocity(self):  # m/s
