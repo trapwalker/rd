@@ -9,7 +9,9 @@
  перерисовка маркера: marker.setLatLng(marker.getLatLng() - или нужные координаты);
  */
 L.RotatedMarker = L.Marker.extend({
-    options: { angle: 0 },
+    options: {
+        angle: 0
+    },
     _setPos: function (pos) {
         L.Marker.prototype._setPos.call(this, pos);
         if (L.DomUtil.TRANSFORM) {

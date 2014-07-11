@@ -18,7 +18,7 @@ WSJSON = (function () {
 function sendNewPoint(aPoint, auid) {
     var mes = {
         call: "goto",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {
                 x: aPoint.x,
                 y: aPoint.y
@@ -32,7 +32,7 @@ function sendNewPoint(aPoint, auid) {
 function sendStopCar(auid) {
     var mes = {
         call: "stop",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: { }
     };
     rpcCallList.add(mes);
@@ -43,7 +43,7 @@ function sendStopCar(auid) {
 function sendFire(aPoint, auid) {
     var mes = {
         call: "fire",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {}
     };
     rpcCallList.add(mes);
@@ -54,7 +54,7 @@ function sendFire(aPoint, auid) {
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
         call: "set_speed",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {
             new_speed: newSpeed
         }
@@ -67,7 +67,7 @@ function sendSetSpeed(newSpeed, auid) {
 function sendChatMessage(atext, auid) {
     var mes = {
         call: "chat_message",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {
             text: atext
         }

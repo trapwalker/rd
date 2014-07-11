@@ -261,7 +261,7 @@ var lastIDPopupOpen;
 var userCarMarker;
 var testTownMarker;
 var wsjson;
-var rpc_call_list;
+var rpcCallList;
 var speedSetSlider;
 var zoomSetSlider;
 
