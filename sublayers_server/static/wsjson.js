@@ -24,7 +24,7 @@ function sendNewPoint(aPoint, auid) {
                 y: aPoint.y
         }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -35,7 +35,7 @@ function sendStopCar(auid) {
         rpc_call_id: rpc_call_list.getID(),
         params: { }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -46,7 +46,7 @@ function sendFire(aPoint, auid) {
         rpc_call_id: rpc_call_list.getID(),
         params: {}
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -59,7 +59,7 @@ function sendSetSpeed(newSpeed, auid) {
             new_speed: newSpeed
         }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -72,7 +72,7 @@ function sendChatMessage(atext, auid) {
             text: atext
         }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -133,8 +133,8 @@ function receiveMesFromServ(data) {
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        if (mes.error == null) {
-            rpc_call_list.execute(mes.rpc_call_id);
+        if (! mes.error) {
+            rpcCallList.execute(mes.rpc_call_id);
         }
     }
 }

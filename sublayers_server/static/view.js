@@ -49,19 +49,30 @@ function onZoomEnd(Event) {
     timer = setInterval(timerRepaint, timerDelay);
 }
 
-function createStorageTileLaeyr(storage) {
-    tileLayerShow = new StorageTileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-        maxZoom: 16,
-        storage: storage,
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'examples.map-i86knfo3'}).addTo(myMap);
+function createTileLayer(storage) {
+    if (storage) {
+        tileLayerShow = new StorageTileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            storage: storage,
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            id: 'examples.map-i86knfo3'});
+    }
+    else {
+        tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            id: 'examples.map-i86knfo3'});
+    }
+    tileLayerShow.addTo(myMap);
 }
 
 
 $(document).ready(function () {
-    var storage = getIndexedDBStorage(createStorageTileLaeyr) || getWebSqlStorage(createStorageTileLaeyr) || null;
+    var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
         alert('Storage not loading!');
     }
@@ -86,36 +97,18 @@ $(document).ready(function () {
     var html = document.documentElement;
 
     btnFS.onclick = function () {
-
         if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
             RunPrefixMethod(document, "CancelFullScreen");
         }
         else {
             RunPrefixMethod(html, "RequestFullScreen");
         }
-
     }
-
-    //   L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-    //       maxZoom: 16,
-    //       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-    //          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-    //           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    //       id: 'examples.map-i86knfo3'}).addTo(myMap);
-    /*
-     tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-     maxZoom: 16,
-     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-     '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-     'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-     id: 'examples.map-i86knfo3'});//.addTo(myMap);
-     */
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
-
 
     userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
     userCarMarker.setIcon(L.icon({
@@ -124,11 +117,9 @@ $(document).ready(function () {
     }));
 
     userCarMarker.on('popupopen', onMarkerPopupOpen);
-
     userCarMarker.bindPopup("<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" +
             '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
     );
-
 
     // тест Easy Button
     L.easyButton(
@@ -144,32 +135,23 @@ $(document).ready(function () {
     L.easyButton(
         'easy-button-show-tile',
         function () {
-            if (!tileLayerShow) {
-                tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-                    maxZoom: 16,
-                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                    id: 'examples.map-i86knfo3'}).addTo(myMap);
-            }
             tileLayerShow.addTo(myMap);
         },
-        "Показать уровень тайлов",
+        "Показать слой тайлов",
         myMap
     );
-
 
     L.easyButton(
         'easy-button-hide-tile',
         function () {
             myMap.removeLayer(tileLayerShow);
         },
-        "Скрыть уровень тайлов",
+        "Скрыть слой тайлов",
         myMap
     );
 
     wsjson = new WSJSON();
-    rpc_call_list = new RPCCallList();
+    rpcCallList = new RPCCallList();
 
     // Добавление Города
     var tempPoint = new Point(10093693, 5646447);
@@ -181,27 +163,6 @@ $(document).ready(function () {
 
     testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], 16));
     testTownMarker.bindPopup("Город Белгород!");
-
-
-    // Управление машинкой стрелками (тестовый вариант)
-    document.body.addEventListener('keydown', function (e) {
-        if (e.which == 38) {// поднять скорость
-            addSpeed();
-        }
-        if (e.which == 40) {// снизить скорость
-            subSpeed();
-        }
-        if (e.which == 37) {// повернуть налево
-            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
-            user.userCar.track.timeStart = clock.getCurrentTime();
-            user.userCar.track.speedV = rotateVector(user.userCar.track.speedV, -0.1745); //10 градусов
-        }
-        if (e.which == 39) {// повернуть направо
-            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
-            user.userCar.track.timeStart = clock.getCurrentTime();
-            user.userCar.track.speedV = rotateVector(user.userCar.track.speedV, 0.1745);
-        }
-    }, true);
 
     // создание чата
     createViewMessenger("chatArea");
@@ -238,26 +199,6 @@ $(document).ready(function () {
 
 });
 
-function subSpeed() {
-    if (user.userCar.track.speedV.abs() > 0) {
-        if (user.userCar.track.speedV.abs() < 5) {
-            user.userCar.track.direction = normVector(user.userCar.track.speedV);
-            user.userCar.track.coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
-            user.userCar.track.speedV = new Point(0, 0);
-        }
-        else {
-            sendSetSpeed(user.userCar.track.speedV.abs() - 2, user.userCar.ID);
-        }
-    }
-    addDivToDiv("console", "st1", "Текущая скорость = " + user.userCar.track.speedV.abs().toFixed(2), true);
-}
-
-function addSpeed() {
-    sendSetSpeed(user.userCar.track.speedV.abs() + 2, user.userCar.ID);
-    addDivToDiv("console", "st1", "Текущая скорость = " + user.userCar.track.speedV.abs().toFixed(2), true);
-}
-
-
 function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
 }
@@ -288,8 +229,8 @@ function delCar() {
 }
 
 function changeSpeedOnSlider() {
-    if(user.userCar)
-    sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
+    if (user.userCar)
+        sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
 }
 
 function changeZoomOnSlider() {
@@ -314,7 +255,6 @@ function RunPrefixMethod(obj, method) {
     }
 
 }
-
 
 var myMap;
 var lastIDPopupOpen;
