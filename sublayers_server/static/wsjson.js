@@ -18,13 +18,13 @@ WSJSON = (function () {
 function sendNewPoint(aPoint, auid) {
     var mes = {
         call: "goto",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {
                 x: aPoint.x,
                 y: aPoint.y
         }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -32,10 +32,10 @@ function sendNewPoint(aPoint, auid) {
 function sendStopCar(auid) {
     var mes = {
         call: "stop",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: { }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -43,10 +43,10 @@ function sendStopCar(auid) {
 function sendFire(aPoint, auid) {
     var mes = {
         call: "fire",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {}
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -54,12 +54,12 @@ function sendFire(aPoint, auid) {
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
         call: "set_speed",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {
             new_speed: newSpeed
         }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -67,12 +67,12 @@ function sendSetSpeed(newSpeed, auid) {
 function sendChatMessage(atext, auid) {
     var mes = {
         call: "chat_message",
-        rpc_call_id: rpc_call_list.getID(),
+        rpc_call_id: rpcCallList.getID(),
         params: {
             text: atext
         }
     };
-    rpc_call_list.add(mes);
+    rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
 }
 
@@ -133,8 +133,8 @@ function receiveMesFromServ(data) {
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        if (mes.error == null) {
-            rpc_call_list.execute(mes.rpc_call_id);
+        if (! mes.error) {
+            rpcCallList.execute(mes.rpc_call_id);
         }
     }
 }

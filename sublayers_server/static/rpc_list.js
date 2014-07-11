@@ -15,7 +15,8 @@ RPCCallList = ( function () {
 
     RPCCallList.prototype.execute = function (aCallID) {
         if(this.calls[aCallID]) {
-            this.calls[aCallID]=null;
+            //this.calls[aCallID]=null;
+            delete this.calls[aCallID];
         }
     }
 
