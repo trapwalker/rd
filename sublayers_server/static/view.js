@@ -298,7 +298,6 @@ function changeZoomOnSlider() {
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
-
     var p = 0, m, t;
     while (p < pfx.length && !obj[m]) {
         m = method;
