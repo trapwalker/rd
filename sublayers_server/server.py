@@ -61,6 +61,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 def main():
+    import socket
     tornado.options.parse_config_file('server.conf', final=False)
     try:
         tornado.options.parse_config_file('server.local.conf', final=False)
@@ -70,8 +71,14 @@ def main():
         log.info('Local configuration file load OK')
     tornado.options.parse_command_line(final=True)
     app = Application()
-    app.listen(options.port)
-    tornado.ioloop.IOLoop.instance().start()
+    try:
+        app.listen(options.port)
+    except socket.error as e:
+        log.critical(e)
+        print e
+    else:
+        tornado.ioloop.IOLoop.instance().start()
+
     globals().update(app=app, srv=app.srv)
 
 
