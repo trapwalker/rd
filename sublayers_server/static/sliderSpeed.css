@@ -1,33 +1,108 @@
-.slider-speed-parent-default {
+
+
+
+.slider-speed-digital-main {
+    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 200px;
+    left: 200px;
+    height: 39px;
+    width: 68px;
+}
+
+.slider-speed-digital-value {
+    font: bold 19px Arial;
+    color: #2dc34a;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.slider-speed-digital-label {
+    font: bold 11px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.slider-zoom-parent-default {
     position: absolute;
 }
 
-.slider-speed-value-default {
+.slider-zoom-value-default {
     color: rgb(0,220,0);
     text-align: center;
 }
 
-.slider-speed-slider-default {
+.slider-zoom-slider-default {
     border-radius: 20px;
 }
 
-.slider-speed-carriage-defualt {
+.slider-zoom-carriage-defualt {
     background: #009900;
     border-color: #00FF00;
 }
 
-.slider-speed-plus-default, .slider-speed-minus-default {
+.slider-zoom-plus-default, .slider-zoom-minus-default {
     margin-bottom: 10px;
     margin-top: 10px;
 }
 
-.slider-speed-btn-plus-default, .slider-speed-btn-minus-default {
+.slider-zoom-btn-plus-default, .slider-zoom-btn-minus-default {
     height: 15px;
     width: 15px;
 }
 
-
 .slider-speed-parent {
+    border: 1px solid limegreen;
     right: 40px;
     bottom: 30px;
 }
