@@ -142,7 +142,7 @@ var SliderZoom = (function () {
 var SliderSpeed = (function () {
     function SliderSpeed(options) {
         this.options = {
-            parentDiv: '',
+            parent: '',
             orientation: 'vertical',
             max: 100,
             min: 0,
@@ -155,7 +155,7 @@ var SliderSpeed = (function () {
         _SlidersMass[this._id]=this;
 
         if (options) {
-            if (options.parentDiv) this.options.parentDiv = options.parentDiv;
+            if (options.parent) this.options.parent = options.parent;
             if (options.orientation) this.options.orientation = options.orientation;
             if (options.max) this.options.max = options.max;
             if (options.min) this.options.min = options.min;
@@ -165,7 +165,19 @@ var SliderSpeed = (function () {
         }
 
 
-        // создание дивов
+        // создание и добавление двух главных дивов - правого и левого.
+        var nodeParentLeft = '<div id="sliderSpeedLeft" class="slider-speed-left-main"></div>';
+        var nodeParentRight = '<div id="sliderSpeedRight"class="slider-speed-right-main"></div>';
+        $('#' + this.options.parent).append(nodeParentLeft);
+        $('#' + this.options.parent).append(nodeParentRight);
+
+        // создание левых дивов-картинок
+        var nodeLeft1 = '<div id="slider-speed-left-hwy"></div>';
+        var nodeLeft2 = '<div id="slider-speed-left-rd"></div>';
+        var nodeLeft3 = '<div id="slider-speed-left-drt"></div>';
+        var nodeLeft4 = '<div id="slider-speed-left-frst"></div>';
+        // добавление всех дивов-картинок
+        $('#sliderSpeedLeft').append(nodeLeft1).append(nodeLeft2).append(nodeLeft3).append(nodeLeft4);
 
         // создание дива Цифровой реальной скорости
         var nodeDigitalSpeed = '<div class="slider-speed-digital-main">' +
@@ -175,9 +187,9 @@ var SliderSpeed = (function () {
         // Создание дива слайдера
         var nodeSlider = '<div id="sliderSpeedSlider""></div>';
 
-        // добавление дивов в родительский див
-        $('#' + this.options.parentDiv).append(nodeDigitalSpeed);
-        $('#' + this.options.parentDiv).append(nodeSlider);
+        // добавление дивов скорости в правый див
+        $('#sliderSpeedRight').append(nodeDigitalSpeed);
+        $('#sliderSpeedRight').append(nodeSlider);
 
         // создание слайдера
         $('#sliderSpeedSlider').slider({
@@ -192,6 +204,8 @@ var SliderSpeed = (function () {
         // настройка слайдера
         $('#sliderSpeedSlider').addClass('slider-speed-slider');
         $('#sliderSpeedSlider').css("height", this.options.height);
+        $('#sliderSpeedSlider').css("width", '2px');
+        $('#sliderSpeedSlider').css("border", '0px');
 
 
 /*

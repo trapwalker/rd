@@ -1,9 +1,29 @@
+/*Настройка трёх главных дивов*/
 .slider-speed-main {
     position: absolute;
     top: 70px;
     left: 100px;
+    width: 90px;
 }
 
+.slider-speed-left-main {
+    position: absolute;
+    border: 1px solid green;
+    width: 40px;
+    height: 363px;
+    left: 0px;
+}
+
+.slider-speed-right-main {
+    position: absolute;
+    border: 1px solid green;
+    width: 68px;
+    right: 0px;
+}
+/*Настройка трёх главных дивов завершена*/
+
+
+/*Настройки слайдера и каретки*/
 .slider-speed-carriage{
 
 }
@@ -11,16 +31,70 @@
 .slider-speed-slider {
     border: 0px;
     position: relative;
+    margin-left: 30px;
+    width: 2px;
+}
+/*Настройки слайдера и каретки завершены*/
+
+
+
+
+/*Настройка левых 5-ти дивов - 4 для картинок и один для надписи*/
+#slider-speed-left-hwy {
+    background-image: url('./img/CruiseControl/if_spd_limit_hwy.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 30px;
+    width: 40px;
+    top: 40px;
+    position: absolute;
 }
 
+#slider-speed-left-rd {
+    background-image: url('./img/CruiseControl/if_spd_limit_rd.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 30px;
+    width: 40px;
+    top: 125px;
+    position: absolute;
+}
+
+#slider-speed-left-drt {
+    background-image: url('./img/CruiseControl/if_spd_limit_drt.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 30px;
+    width: 40px;
+    top: 224px;
+    position: absolute;
+}
+
+#slider-speed-left-frst {
+    background-image: url('./img/CruiseControl/if_spd_limit_frst.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 30px;
+    width: 40px;
+    top: 284px;
+    position: absolute;
+}
+
+.slider-speed-left-text {
+    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 30px;
+    width: 40px;
+    position: absolute;
+}
+
+/*Насройка левых дивов завершена*/
 
 
 
 
-
-
-
-
+/* Настройки Цифрового Спидометра - Непосредственно цифра! */
 .slider-speed-digital-main {
     background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
     background-repeat: no-repeat;
@@ -41,7 +115,7 @@
     color: #2dc34a;
     text-align: center;
 }
-
+/* Настройки цифрового спидометра завершены*/
 
 
 
