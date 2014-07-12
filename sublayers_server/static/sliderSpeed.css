@@ -1,12 +1,30 @@
+.slider-speed-main {
+    position: absolute;
+    top: 70px;
+    left: 100px;
+}
+
+.slider-speed-carriage{
+
+}
+
+.slider-speed-slider {
+    border: 0px;
+    position: relative;
+}
+
+
+
+
+
+
 
 
 
 .slider-speed-digital-main {
     background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
     background-repeat: no-repeat;
-    position: absolute;
-    top: 200px;
-    left: 200px;
+    position: relative;
     height: 39px;
     width: 68px;
 }
@@ -86,7 +104,7 @@
     border-radius: 20px;
 }
 
-.slider-zoom-carriage-defualt {
+.slider-zoom-carriage-default {
     background: #009900;
     border-color: #00FF00;
 }
