@@ -1,8 +1,8 @@
 /*Настройка трёх главных дивов*/
 .slider-speed-main {
     position: absolute;
-    top: 30px;
-    left: 150px;
+    bottom: 450px;
+    right: 20px;
     width: 90px;
 }
 

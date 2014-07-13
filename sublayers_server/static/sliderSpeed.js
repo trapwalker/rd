@@ -143,6 +143,7 @@ var SliderSpeed = (function () {
     function SliderSpeed(options) {
         this.options = {
             parent: '',
+            parentCss: '',
             orientation: 'vertical',
             max: 100,
             min: 0,
@@ -156,6 +157,7 @@ var SliderSpeed = (function () {
 
         if (options) {
             if (options.parent) this.options.parent = options.parent;
+            if (options.parentCss) this.options.parentCss = options.parentCss;
             if (options.orientation) this.options.orientation = options.orientation;
             if (options.max) this.options.max = options.max;
             if (options.min) this.options.min = options.min;
@@ -163,6 +165,8 @@ var SliderSpeed = (function () {
             if (options.height) this.options.height = options.height;
             if (options.onChange) this.options.onChange = options.onChange;
         }
+        // сразу же применить родительскую css для родительского дива
+        $('#' + this.options.parent).addClass(this.options.parentCss);
 
         // создание и добавление двух главных дивов - правого и левого.
         var nodeParentLeft = '<div id="sliderSpeedLeft" class="slider-speed-left-main"></div>';
@@ -268,12 +272,14 @@ var SliderSpeed = (function () {
     }
 
     SliderSpeed.prototype.setGround = function (newGround) {
-        for(var i =0; i<4 ; i++){
-            $('#'+this.options.leftIcons[i]).css('opacity',0.4);
+        for (var i = 0; i < 4; i++) {
+            $('#' + this.options.leftIcons[i]).css('opacity', 0.4);
         }
-        $('#'+this.options.leftIcons[newGround]).css('opacity',1);
+        $('#' + this.options.leftIcons[newGround]).css('opacity', 1);
+    }
 
-
+    SliderSpeed.prototype.getSpeed = function () {
+        return $('#sliderSpeedSlider').slider("value");
     }
 
     return SliderSpeed;
