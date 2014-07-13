@@ -14,6 +14,8 @@ function redrawMap() {
         userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
         // Установка новых координат маркера
         userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
+        // перерисовка контроллеров пользователя
+        redrawUserControllers();
     }
 
     // работа со списком машинок
@@ -31,6 +33,14 @@ function redrawMap() {
         }
     }
 }
+
+function redrawUserControllers(){
+    redrawSliderSpeedController();
+}
+
+function redrawSliderSpeedController(){
+    speedSetSlider.setRealSpeed(user.userCar.getCurrentSpeedAbs(clock.getCurrentTime()));
+};
 
 function onMouseClickMap(mouseEventObject) {
     sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);

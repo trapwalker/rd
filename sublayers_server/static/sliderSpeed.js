@@ -268,7 +268,7 @@ var SliderSpeed = (function () {
         prc = 99-prc;
         $('#slider-speed-filler-arrow').css('top', prc+'%');
         $('#slider-speed-filler').css('top', prc+'%');
-        $('#speedRealValue').text(newSpeed);
+        $('#speedRealValue').text(newSpeed.toFixed(1));
     }
 
     SliderSpeed.prototype.setGround = function (newGround) {
