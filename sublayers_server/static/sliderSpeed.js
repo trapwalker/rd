@@ -199,8 +199,6 @@ var SliderSpeed = (function () {
             step: this.options.step
         });
 
-
-
         // настройка слайдера
         $('#sliderSpeedSlider').addClass('slider-speed-slider');
         $('#sliderSpeedSlider').css("height", this.options.height);
@@ -208,15 +206,33 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider').css("border", '0px');
 
 
-/*
         // Изменение размеров ползунка
-        $('#' + this.options.sliderDiv+' span:first-child').css("height", this.options.carriageHeight+'em');
-        $('#' + this.options.sliderDiv+' span:first-child').css("margin-bottom", -this.options.carriageHeight+'em');
+        //$('#sliderSpeedSlider span:first-child').css("height", this.options.carriageHeight+'em');
+        //$('#sliderSpeedSlider span:first-child').css("margin-bottom", -this.options.carriageHeight+'em');
 
 
-        $('#' + names.sliderDiv + ' span:first-child').css("background", "#009900");
-        $('#' + names.sliderDiv + ' span:first-child').css("border-color", "#00FF00");
-*/
+
+
+
+        $('#sliderSpeedSlider span:first-child').addClass('slider-speed-carriage');
+        $('#sliderSpeedSlider span:first-child').css('width', '39px');
+        $('#sliderSpeedSlider span:first-child').css('height', '31px');
+        $('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
+        $('#sliderSpeedSlider span:first-child').css('border', '0px');
+        //$('#sliderSpeedSlider span:first-child').css('font', 'bold 14px Arial');
+        //$('#sliderSpeedSlider span:first-child').css('color', '#2dc34a');
+        //$('#sliderSpeedSlider span:first-child').css('text-align', 'center');
+
+        var newSpan = '<span id="newSpan" class="slider-speed-carriage-label">0</span>';
+        $('#sliderSpeedSlider span:first-child').append(newSpan);
+
+
+        //$('#sliderSpeedSlider span:first-child').text('0');
+
+
+        //$('#sliderSpeedSlider span:first-child').css("background", "#009900");
+        //$('#sliderSpeedSlider span:first-child').css("border-color", "#00FF00");
+
 
     }
 
