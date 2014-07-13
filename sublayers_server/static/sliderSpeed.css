@@ -1,8 +1,8 @@
 /*Настройка трёх главных дивов*/
 .slider-speed-main {
     position: absolute;
-    top: 70px;
-    left: 100px;
+    top: 30px;
+    left: 150px;
     width: 90px;
 }
 
@@ -95,6 +95,7 @@
     width: 40px;
     top: 55px;
     position: absolute;
+    opacity: 0.4
 }
 
 #slider-speed-left-rd {
@@ -104,6 +105,7 @@
     width: 40px;
     top: 140px;
     position: absolute;
+    opacity: 0.4
 }
 
 #slider-speed-left-drt {
@@ -113,6 +115,7 @@
     width: 40px;
     top: 238px;
     position: absolute;
+    opacity: 0.4
 }
 
 #slider-speed-left-frst {
@@ -122,6 +125,7 @@
     width: 40px;
     top: 294px;
     position: absolute;
+    opacity: 0.4;
 }
 
 /*Насройка левых дивов завершена*/

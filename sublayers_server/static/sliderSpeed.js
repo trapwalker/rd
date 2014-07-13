@@ -177,6 +177,12 @@ var SliderSpeed = (function () {
         var nodeLeft4 = '<div id="slider-speed-left-frst"></div>';
         // добавление всех дивов-картинок
         $('#sliderSpeedLeft').append(nodeLeft1).append(nodeLeft2).append(nodeLeft3).append(nodeLeft4);
+        this.options.leftIcons = [];
+        this.options.leftIcons[0] = 'slider-speed-left-hwy';
+        this.options.leftIcons[1] = 'slider-speed-left-rd';
+        this.options.leftIcons[2] = 'slider-speed-left-drt';
+        this.options.leftIcons[3] = 'slider-speed-left-frst';
+        this.setGround(1);
 
         // создание дива Цифровой реальной скорости
         var nodeDigitalSpeed = '<div class="slider-speed-digital-main">' +
@@ -209,7 +215,6 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider').removeClass('ui-widget-content');
         $('#sliderSpeedSlider').css("z-index", '4');
 
-
         // Изменение ползунка
         $('#sliderSpeedSlider span:first-child').addClass('slider-speed-carriage');
         $('#sliderSpeedSlider span:first-child').css('width', '39px');
@@ -222,15 +227,13 @@ var SliderSpeed = (function () {
         var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label">0</span>';
         $('#sliderSpeedSlider span:first-child').append(newSpan);
 
-
         // Создание и добавление фона шкалы
         var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main">'+
             '<div id="slider-speed-filler-arrow"></div>'+
             '<div id="slider-speed-filler"></div>'+
             '</div>';
         $('#sliderSpeedSlider').append(nodeSliderBarFillerMain);
-        this.setSpeed(0);
-
+        this.setRealSpeed(0);
 
         // Создание кнопки стоп
         var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main">' +
@@ -240,6 +243,7 @@ var SliderSpeed = (function () {
         $('#sliderSpeedRight').append(nodeStopMain);
         $('#sliderSpeedStopButton').click(_SpeedSlider_StopButton);
 
+        // создание и расстановка текста
 
     }
 
@@ -253,13 +257,23 @@ var SliderSpeed = (function () {
         $('#sliderSpeedCarriageLabel').text(ui.value);
     }
 
-    SliderSpeed.prototype.setSpeed = function (newSpeed) {
+    SliderSpeed.prototype.setRealSpeed = function (newSpeed) {
         var prc= (newSpeed * 100) / this.options.max;
         if(prc > 99) prc = 99;
         if(prc < 0) prc = 0;
-        prc = 100-prc;
+        prc = 99-prc;
         $('#slider-speed-filler-arrow').css('top', prc+'%');
         $('#slider-speed-filler').css('top', prc+'%');
+        $('#speedRealValue').text(newSpeed);
+    }
+
+    SliderSpeed.prototype.setGround = function (newGround) {
+        for(var i =0; i<4 ; i++){
+            $('#'+this.options.leftIcons[i]).css('opacity',0.4);
+        }
+        $('#'+this.options.leftIcons[newGround]).css('opacity',1);
+
+
     }
 
     return SliderSpeed;
