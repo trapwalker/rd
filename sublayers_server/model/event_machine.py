@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-if __name__ == '__main__':
-    logging.config.fileConfig("../logging.conf")
-
 log = logging.getLogger(__name__)
 
 from model.server_api import ServerAPI
@@ -155,9 +152,4 @@ def main():
 
     pp(srv.timeline, width=1)
 
-    globals().update(locals())
-    # srv.start()
-
-
-if __name__ == '__main__':
-    main()
+    return locals()
