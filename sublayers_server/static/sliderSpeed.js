@@ -164,7 +164,6 @@ var SliderSpeed = (function () {
             if (options.onChange) this.options.onChange = options.onChange;
         }
 
-
         // создание и добавление двух главных дивов - правого и левого.
         var nodeParentLeft = '<div id="sliderSpeedLeft" class="slider-speed-left-main"></div>';
         var nodeParentRight = '<div id="sliderSpeedRight"class="slider-speed-right-main"></div>';
@@ -226,6 +225,16 @@ var SliderSpeed = (function () {
         //var nodeSliderBar = '<div class="slider-speed-bar"></div>';
         //$('#sliderSpeedRight').append(nodeSliderBar);
 
+
+        // Создание кнопки стоп
+        var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main">' +
+            '<span>STOP</span>' +
+            '</div>';
+        // добавление дива кнопки стоп в правый див
+        $('#sliderSpeedRight').append(nodeStopMain);
+        $('#sliderSpeedStopButton').click(_SpeedSlider_StopButton);
+
+
     }
 
     SliderSpeed.prototype.change = function (event, ui) {
@@ -241,6 +250,14 @@ var SliderSpeed = (function () {
 
     return SliderSpeed;
 })();
+
+
+
+// функции, необходимые для логики работы слайдеров
+_SpeedSlider_StopButton = function () {
+    $('#sliderSpeedSlider').slider("value", 0);
+    $('#sliderSpeedCarriageLabel').text(0);
+}
 
 
 var _SlidersMass = [];
