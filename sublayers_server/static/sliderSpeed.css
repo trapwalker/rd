@@ -35,6 +35,8 @@
     font: bold 14px Arial;
     color: #2dc34a;
     text-align: center;
+    position: relative;
+    top: 7px;
 }
 
 .slider-speed-slider {

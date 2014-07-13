@@ -197,7 +197,8 @@ var SliderSpeed = (function () {
             min: this.options.min,
             orientation: this.options.orientation,
             step: this.options.step
-        });
+        })
+            .on('slidechange', {id: this._id}, this.change);
 
         // настройка слайдера
         $('#sliderSpeedSlider').addClass('slider-speed-slider');
@@ -206,24 +207,14 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider').css("border", '0px');
 
 
-        // Изменение размеров ползунка
-        //$('#sliderSpeedSlider span:first-child').css("height", this.options.carriageHeight+'em');
-        //$('#sliderSpeedSlider span:first-child').css("margin-bottom", -this.options.carriageHeight+'em');
-
-
-
-
-
+        // Изменение ползунка
         $('#sliderSpeedSlider span:first-child').addClass('slider-speed-carriage');
         $('#sliderSpeedSlider span:first-child').css('width', '39px');
         $('#sliderSpeedSlider span:first-child').css('height', '31px');
         $('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
-        //$('#sliderSpeedSlider span:first-child').css('font', 'bold 14px Arial');
-        //$('#sliderSpeedSlider span:first-child').css('color', '#2dc34a');
-        //$('#sliderSpeedSlider span:first-child').css('text-align', 'center');
 
-        var newSpan = '<span id="newSpan" class="slider-speed-carriage-label">0</span>';
+        var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label">0</span>';
         $('#sliderSpeedSlider span:first-child').append(newSpan);
 
 
@@ -234,6 +225,14 @@ var SliderSpeed = (function () {
         //$('#sliderSpeedSlider span:first-child').css("border-color", "#00FF00");
 
 
+    }
+
+    SliderSpeed.prototype.change = function (event, ui) {
+        //event.preventDefault();
+        var slider = _SlidersMass[event.data.id];
+        $('#sliderSpeedCarriageLabel').text($('#sliderSpeedSlider').slider("value"));
+        if(slider.options.onChange)
+            slider.options.onChange();
     }
 
 
