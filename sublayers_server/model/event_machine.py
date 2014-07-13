@@ -131,7 +131,7 @@ class LocalServer(Server):
         return self.thread is not None and self.thread.is_alive()
 
 
-if __name__ == '__main__':
+def main():
     log.info('==== Start logging ' + '=' * 50)
 
     from units import Station, Bot
@@ -155,4 +155,9 @@ if __name__ == '__main__':
 
     pp(srv.timeline, width=1)
 
+    globals().update(locals())
     # srv.start()
+
+
+if __name__ == '__main__':
+    main()
