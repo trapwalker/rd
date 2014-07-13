@@ -23,23 +23,35 @@
 
 /*Настройка фона шкалы*/
 
-
-.slider-speed-filler {
-    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
+.slider-speed-filler-main {
     position: absolute;
-    height: 319px;
-    width: 33px;
-    top: -319px;
-    left: 17.5px;
+    height: 315px;
+    width: 29px;
+    left: 1px;
+    z-index: 2;
+    bottom: 2px;
+    overflow-y: hidden;
+
 }
 
-.slider-speed-arrow {
-    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
+#slider-speed-filler {
+    background: transparent url(./img/CruiseControl/if_spd_filler.png) 50% 50% no-repeat;
+    height: 100%;
+    top: 40%;
+    width: 29px;
+    bottom: 0px;
     position: absolute;
-    height: 319px;
-    width: 33px;
-    top: -319px;
-    left: 17.5px;
+    opacity: 0.2;
+
+}
+
+#slider-speed-filler-arrow {
+    background: transparent url(./img/CruiseControl/if_spd_arrow.png) 50% 50% no-repeat;
+    width: 29px;
+    height: 2px;
+    z-index: 2;
+    position: absolute;
+    top: 40%;
 }
 
 

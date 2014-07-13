@@ -207,6 +207,7 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider').css("border", '0px');
         $('#sliderSpeedSlider').css("border-radius", '0px');
         $('#sliderSpeedSlider').removeClass('ui-widget-content');
+        $('#sliderSpeedSlider').css("z-index", '4');
 
 
         // Изменение ползунка
@@ -216,14 +217,19 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
         $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
+        $('#sliderSpeedSlider span:first-child').css("z-index", '5');
 
         var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label">0</span>';
         $('#sliderSpeedSlider span:first-child').append(newSpan);
 
 
         // Создание и добавление фона шкалы
-        //var nodeSliderBar = '<div class="slider-speed-bar"></div>';
-        //$('#sliderSpeedRight').append(nodeSliderBar);
+        var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main">'+
+            '<div id="slider-speed-filler-arrow"></div>'+
+            '<div id="slider-speed-filler"></div>'+
+            '</div>';
+        $('#sliderSpeedSlider').append(nodeSliderBarFillerMain);
+        this.setSpeed(0);
 
 
         // Создание кнопки стоп
@@ -247,6 +253,14 @@ var SliderSpeed = (function () {
         $('#sliderSpeedCarriageLabel').text(ui.value);
     }
 
+    SliderSpeed.prototype.setSpeed = function (newSpeed) {
+        var prc= (newSpeed * 100) / this.options.max;
+        if(prc > 99) prc = 99;
+        if(prc < 0) prc = 0;
+        prc = 100-prc;
+        $('#slider-speed-filler-arrow').css('top', prc+'%');
+        $('#slider-speed-filler').css('top', prc+'%');
+    }
 
     return SliderSpeed;
 })();
