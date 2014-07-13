@@ -21,6 +21,33 @@
 /*Настройка трёх главных дивов завершена*/
 
 
+/*Настройка фона шкалы*/
+
+
+.slider-speed-filler {
+    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
+    position: absolute;
+    height: 319px;
+    width: 33px;
+    top: -319px;
+    left: 17.5px;
+}
+
+.slider-speed-arrow {
+    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
+    position: absolute;
+    height: 319px;
+    width: 33px;
+    top: -319px;
+    left: 17.5px;
+}
+
+
+/*Настройка фона шкалы завершена*/
+
+
+
+
 /*Настройки слайдера и каретки*/
 .slider-speed-carriage{
     width: 39px;
@@ -40,7 +67,8 @@
 }
 
 .slider-speed-slider {
-    margin-left: 19.5px;
+    margin-left: 18.5px;
+    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
 }
 /*Настройки слайдера и каретки завершены*/
 
@@ -51,49 +79,36 @@
 #slider-speed-left-hwy {
     background-image: url('./img/CruiseControl/if_spd_limit_hwy.png');
     background-repeat: no-repeat;
-    position: relative;
     height: 30px;
     width: 40px;
-    top: 40px;
+    top: 55px;
     position: absolute;
 }
 
 #slider-speed-left-rd {
     background-image: url('./img/CruiseControl/if_spd_limit_rd.png');
     background-repeat: no-repeat;
-    position: relative;
     height: 30px;
     width: 40px;
-    top: 125px;
+    top: 140px;
     position: absolute;
 }
 
 #slider-speed-left-drt {
     background-image: url('./img/CruiseControl/if_spd_limit_drt.png');
     background-repeat: no-repeat;
-    position: relative;
     height: 30px;
     width: 40px;
-    top: 224px;
+    top: 238px;
     position: absolute;
 }
 
 #slider-speed-left-frst {
     background-image: url('./img/CruiseControl/if_spd_limit_frst.png');
     background-repeat: no-repeat;
-    position: relative;
     height: 30px;
     width: 40px;
-    top: 284px;
-    position: absolute;
-}
-
-.slider-speed-left-text {
-    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
-    background-repeat: no-repeat;
-    position: relative;
-    height: 30px;
-    width: 40px;
+    top: 294px;
     position: absolute;
 }
 
@@ -109,6 +124,7 @@
     position: relative;
     height: 39px;
     width: 68px;
+    margin-bottom: 15.5px;
 }
 
 .slider-speed-digital-value {

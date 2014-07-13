@@ -198,13 +198,16 @@ var SliderSpeed = (function () {
             orientation: this.options.orientation,
             step: this.options.step
         })
-            .on('slidechange', {id: this._id}, this.change);
+            .on('slidechange', {id: this._id}, this.change) // отправка сообщений серверу
+            .on('slide', this._slide);                      // чтобы менялись циферки внутри каретки
 
         // настройка слайдера
         $('#sliderSpeedSlider').addClass('slider-speed-slider');
         $('#sliderSpeedSlider').css("height", this.options.height);
-        $('#sliderSpeedSlider').css("width", '2px');
+        $('#sliderSpeedSlider').css("width", '31px');
         $('#sliderSpeedSlider').css("border", '0px');
+        $('#sliderSpeedSlider').css("border-radius", '0px');
+        $('#sliderSpeedSlider').removeClass('ui-widget-content');
 
 
         // Изменение ползунка
@@ -213,26 +216,26 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').css('height', '31px');
         $('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
+        $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
 
         var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label">0</span>';
         $('#sliderSpeedSlider span:first-child').append(newSpan);
 
 
-        //$('#sliderSpeedSlider span:first-child').text('0');
-
-
-        //$('#sliderSpeedSlider span:first-child').css("background", "#009900");
-        //$('#sliderSpeedSlider span:first-child').css("border-color", "#00FF00");
-
+        // Создание и добавление фона шкалы
+        //var nodeSliderBar = '<div class="slider-speed-bar"></div>';
+        //$('#sliderSpeedRight').append(nodeSliderBar);
 
     }
 
     SliderSpeed.prototype.change = function (event, ui) {
-        //event.preventDefault();
         var slider = _SlidersMass[event.data.id];
-        $('#sliderSpeedCarriageLabel').text($('#sliderSpeedSlider').slider("value"));
         if(slider.options.onChange)
             slider.options.onChange();
+    }
+
+    SliderSpeed.prototype._slide = function (event, ui) {
+        $('#sliderSpeedCarriageLabel').text(ui.value);
     }
 
 
