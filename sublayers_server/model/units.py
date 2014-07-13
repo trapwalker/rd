@@ -75,10 +75,9 @@ class Bot(Unit):
 
     def as_dict(self):
         d = super(Bot, self).as_dict()
-        log.debug('++++++++++++++++++ NEW MOTION: %r', self.motion)
-
         d.update(
             motion=self.motion.as_dict() if self.motion else None,
+            direction=self.direction,
             max_velocity=self.max_velocity,
         )
         return d
@@ -135,8 +134,6 @@ class Bot(Unit):
         self._max_velocity = value
         if motion:
             self.goto(motion.target_point)
-
-
 
     def change_observer_state(self, new_state):
         """
