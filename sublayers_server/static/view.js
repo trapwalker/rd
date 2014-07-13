@@ -14,6 +14,8 @@ function redrawMap() {
         userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
         // Установка новых координат маркера
         userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
+        // перерисовка контроллеров пользователя
+        redrawUserControllers();
     }
 
     // работа со списком машинок
@@ -31,6 +33,14 @@ function redrawMap() {
         }
     }
 }
+
+function redrawUserControllers(){
+    redrawSliderSpeedController();
+}
+
+function redrawSliderSpeedController(){
+    speedSetSlider.setRealSpeed(user.userCar.getCurrentSpeedAbs(clock.getCurrentTime()));
+};
 
 function onMouseClickMap(mouseEventObject) {
     sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
@@ -168,7 +178,7 @@ $(document).ready(function () {
     createViewMessenger("chatArea");
 
     // создание слайдера зума
-    zoomSetSlider = new SliderSpeed({
+    zoomSetSlider = new SliderZoom({
         parentDiv: "zoomSetDivForSpeedSlider",
         carriageHeight: 0.4,
         height: 60,
@@ -178,24 +188,23 @@ $(document).ready(function () {
         step: 1,
         onChange: changeZoomOnSlider
     });
-    zoomSetSlider.setSpeed(myMap.getZoom());
+    zoomSetSlider.setZoom(myMap.getZoom());
     // чтобы при изменении зума на карте менялся и слайдер.
     myMap.on('zoomend', function () {
-        zoomSetSlider.setSpeed(myMap.getZoom());
+        zoomSetSlider.setZoom(myMap.getZoom());
     });
 
     // создание слайдера скорости
     speedSetSlider = new SliderSpeed({
-        parentDiv: "speedSetDivForSpeedSlider",
-        carriageHeight: 0.4,
-        height: 200,
-        parentCss: 'slider-speed-parent',
-        max: 200,
+        parent: "speedSetDivForSpeedSlider",
+        height: 320,
+        parentCss: 'slider-speed-main',
+        max: 125,
         min: 0,
-        step: 5,
+        step: 1,
         onChange: changeSpeedOnSlider
     });
-    speedSetSlider.setSpeed(speedSetSlider.getSpeed());
+
 
 });
 
@@ -234,7 +243,7 @@ function changeSpeedOnSlider() {
 }
 
 function changeZoomOnSlider() {
-    myMap.setZoom(zoomSetSlider.getSpeed());
+    myMap.setZoom(zoomSetSlider.getZoom());
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test Speed Slider</title>
+
+    <link rel="stylesheet" href="sliderSpeed.css"/>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="sliderSpeed.js"></script>
+</head>
+<body>
+
+<div id="speed" class="slider-speed-main"> </div>
+
+
+
+<script>
+    var a = new SliderSpeed({
+        parent: "speed",
+        height: 320,
+        parentCss: 'slider-speed-parent',
+        max: 125,
+        min: 0,
+        step: 1
+    });
+
+</script>
+
+</body>
+</html>
