@@ -41,10 +41,10 @@ var SliderZoom = (function () {
         // создание 4 дивов
         var nodeText = '<div id="' + this.options.valueDiv+'"><span id="' + this.options.parentDiv + '_text">0</span></div>';
         var nodePlus = '<div id="' + this.options.parentDiv + '_sliderPlus">' +
-            '<input id="'+this.options.parentDiv+'_btnPlus" type="image" src="img/green-plus-for-speed.png" value="Увеличить скорость"></div>';
+            '<input id="'+this.options.parentDiv+'_btnPlus" type="image" src="img/button_map_on.png" value="Увеличить скорость"></div>';
         var nodeSlider = '<div id="' + this.options.sliderDiv + '"></div>';
         var nodeMinus = '<div id="' + this.options.parentDiv + '_sliderMinus">' +
-            '<input id="'+this.options.parentDiv+'_btnMinus" type="image" src="img/green-minus-for-speed.png" value="Уменьшить скорость"></div>';
+            '<input id="'+this.options.parentDiv+'_btnMinus" type="image" src="img/button_map_off.png" value="Уменьшить скорость"></div>';
 
         // добавление дивов в родительский див
         $('#' + this.options.parentDiv).append(nodeText);
