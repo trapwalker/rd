@@ -16,6 +16,9 @@ function redrawMap() {
         userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         // перерисовка контроллеров пользователя
         redrawUserControllers();
+        // перерисовка следа (шлейфа) за машинкой
+        if (userCarTail)
+            userCarTail.drawTail(myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
     }
 
     // работа со списком машинок
@@ -164,8 +167,7 @@ $(document).ready(function () {
     rpcCallList = new RPCCallList();
 
     // Добавление Города
-    var tempPoint = new Point(10093693, 5646447);
-    testTownMarker = L.marker([50.21, 35.42]).addTo(myMap);
+    testTownMarker = L.marker([0,0]).addTo(myMap);
     testTownMarker.setIcon(L.icon({
         iconUrl: 'img/city_50.png',
         iconSize: [50, 50]
@@ -204,7 +206,6 @@ $(document).ready(function () {
         step: 1,
         onChange: changeSpeedOnSlider
     });
-
 
 });
 
@@ -275,6 +276,8 @@ var speedSetSlider;
 var zoomSetSlider;
 
 var tileLayerShow;
+
+var userCarTail;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

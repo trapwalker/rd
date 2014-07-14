@@ -76,7 +76,6 @@ function sendChatMessage(atext, auid) {
     wsjson.socket.send(JSON.stringify(mes));
 }
 
-
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data) {
     var mes = JSON.parse(data, function(key, value){
@@ -138,7 +137,6 @@ function receiveMesFromServ(data) {
         }
     }
 }
-
 
 function getTrack(data){
     var aTrack;
@@ -219,7 +217,6 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
 
 }
 
-
 function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
     user.userCar = new UserCar(uid,       //ID машинки
         aType,       //Тип машинки
@@ -228,4 +225,6 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         aTrack);   //Текущая траектория
 
     userCarMarker.carID = uid; // возможно сделать инициализацию маркера тут
+    // Создание следа за пользовательской машинкой
+    userCarTail = new CarTail(user.userCar, myMap, clock);
 }
