@@ -169,7 +169,7 @@ $(document).ready(function () {
     // Добавление Города
     testTownMarker = L.marker([0,0]).addTo(myMap);
     testTownMarker.setIcon(L.icon({
-        iconUrl: 'img/city_50.png',
+        iconUrl: 'img/city.png',
         iconSize: [50, 50]
     }));
 
