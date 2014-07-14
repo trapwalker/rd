@@ -125,8 +125,8 @@ $(document).ready(function () {
 
     userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
     userCarMarker.setIcon(L.icon({
-        iconUrl: 'img/usercar_20.png',
-        iconSize: [20, 20]
+        iconUrl: 'img/car_user.png',
+        iconSize: [35, 35]
     }));
 
     userCarMarker.on('popupopen', onMarkerPopupOpen);
