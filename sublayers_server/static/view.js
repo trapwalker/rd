@@ -16,6 +16,9 @@ function redrawMap() {
         userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         // перерисовка контроллеров пользователя
         redrawUserControllers();
+        // перерисовка следа (шлейфа) за машинкой
+        if (userCarTail)
+            userCarTail.drawTail(myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
     }
 
     // работа со списком машинок
@@ -34,11 +37,11 @@ function redrawMap() {
     }
 }
 
-function redrawUserControllers(){
+function redrawUserControllers() {
     redrawSliderSpeedController();
 }
 
-function redrawSliderSpeedController(){
+function redrawSliderSpeedController() {
     speedSetSlider.setRealSpeed(user.userCar.getCurrentSpeedAbs(clock.getCurrentTime()));
 };
 
@@ -91,7 +94,7 @@ $(document).ready(function () {
         {
             minZoom: 10,
             maxZoom: 16,
-            zoomControl: true,
+            zoomControl: false,
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
@@ -103,16 +106,33 @@ $(document).ready(function () {
             ])}).setView([50.6041, 36.5954], 13);
 
     //Переключение в полноэкранный режим и обратно по кнопке
-    var btnFS = document.getElementById("buttonFullScreen");
     var html = document.documentElement;
 
-    btnFS.onclick = function () {
+    buttonFullScreen.onclick = function () {
         if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
             RunPrefixMethod(document, "CancelFullScreen");
         }
         else {
             RunPrefixMethod(html, "RequestFullScreen");
         }
+    }
+
+    //Включение отображения карты
+    buttonMapOn.onclick = function () {
+        tileLayerShow.addTo(myMap);
+    }
+
+    //Выключение отображения карты
+    buttonMapOff.onclick = function () {
+        myMap.removeLayer(tileLayerShow);
+    }
+
+    //Изначальное скрытие консоли
+    $('#footer').hide();
+
+    //Открытие/закрытие консоли
+    buttonConsole.onclick = function () {
+        footerToggle();
     }
 
     myMap.on('click', onMouseClickMap);
@@ -122,8 +142,8 @@ $(document).ready(function () {
 
     userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
     userCarMarker.setIcon(L.icon({
-        iconUrl: 'img/usercar_20.png',
-        iconSize: [20, 20]
+        iconUrl: 'img/car_user.png',
+        iconSize: [35, 35]
     }));
 
     userCarMarker.on('popupopen', onMarkerPopupOpen);
@@ -131,43 +151,13 @@ $(document).ready(function () {
             '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
     );
 
-    // тест Easy Button
-    L.easyButton(
-        'easy-footer',
-        footerToggle,
-        "Скрыть/Показать консоль",
-        myMap
-    );
-
-    $('#footer').hide();
-
-    // для скрытия тайлов, чтобы быстрее грузилось
-    L.easyButton(
-        'easy-button-show-tile',
-        function () {
-            tileLayerShow.addTo(myMap);
-        },
-        "Показать слой тайлов",
-        myMap
-    );
-
-    L.easyButton(
-        'easy-button-hide-tile',
-        function () {
-            myMap.removeLayer(tileLayerShow);
-        },
-        "Скрыть слой тайлов",
-        myMap
-    );
-
     wsjson = new WSJSON();
     rpcCallList = new RPCCallList();
 
     // Добавление Города
-    var tempPoint = new Point(10093693, 5646447);
-    testTownMarker = L.marker([50.21, 35.42]).addTo(myMap);
+    testTownMarker = L.marker([0, 0]).addTo(myMap);
     testTownMarker.setIcon(L.icon({
-        iconUrl: 'img/city_50.png',
+        iconUrl: 'img/city.png',
         iconSize: [50, 50]
     }));
 
@@ -204,7 +194,6 @@ $(document).ready(function () {
         step: 1,
         onChange: changeSpeedOnSlider
     });
-
 
 });
 
@@ -275,6 +264,8 @@ var speedSetSlider;
 var zoomSetSlider;
 
 var tileLayerShow;
+
+var userCarTail;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

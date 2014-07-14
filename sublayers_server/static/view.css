@@ -33,7 +33,7 @@
     bottom: 10px;
     left: 10px;
     right: 10px;
-    height: 70%;
+    height: 65%;
     color: limegreen;
 }
 
@@ -50,33 +50,26 @@
     opacity: 0.5;
 }
 
-.easy-button-add-car {
-    background-image: url(img/car_20.png);
-    height: 100px;
-    width: 100px;
-}
-
-.easy-footer {
-    background-image: url(img/green-icon-footer.png);
-    background-size: 20px;
-}
-
-.easy-button-hide-tile {
-    background-image: url(img/green-minus-for-speed.png);
-    background-size: 20px;
-}
-
-.easy-button-show-tile {
-    background-image: url(img/green-plus-for-speed.png);
-    background-size: 20px;
-}
-
-.default-easy-button {
-    background-color: blue;
-}
-
 #buttonFullScreen {
     position: absolute;
     top: 35px;
+    right: 15px;
+}
+
+#buttonMapOn {
+    position: absolute;
+    top: 120px;
+    right: 15px;
+}
+
+#buttonMapOff {
+    position: absolute;
+    top: 180px;
+    right: 15px;
+}
+
+#buttonConsole {
+    position: absolute;
+    top: 240px;
     right: 15px;
 }

@@ -178,54 +178,11 @@
     opacity: 1;
 }
 
-/* Настройка кнопки стоп завершена*/
+/* Настройка кнопки стоп завершена */
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Настройка слайдера зума */
 .slider-zoom-parent-default {
     position: absolute;
 }
@@ -261,7 +218,7 @@
 }
 
 .slider-zoom-parent {
-    margin-left: 12.5px;
-    top: 300px;
+    margin-left: 15px;
+    top: 50px;
     position: absolute;
 }
