@@ -13,17 +13,16 @@
 </head>
 <body>
 
-<div id="Zoom_sliderParent"></div>
-
-
+<div id="speed"></div>
 
 <script>
-    var a = new SliderZoom({
-        parentDiv: "Zoom_sliderParent",
-        max: 16,
-        min: 10,
-        step: 1
+    var a = new ProgressBarFuel({
+        parent: "speed"
     });
+
+    var b = 100;
+
+    setInterval(function(){a.setValue(b--);}, 20);
 
 </script>
 

@@ -254,6 +254,49 @@ _SpeedSlider_StopButton = function () {
 }
 
 
+var ProgressBarFuel = (function () {
+    function ProgressBarFuel(options) {
+        var parent = options.parent;
+        // Добавление класса для родителя
+        $('#' + parent).addClass('pbar-fuel-parent');
+        // создать 2 дива: левый и правый
+        var nodeParentLeft = '<div id="pbarFuelLeft"></div>';
+        var nodeParentRight = '<div id="pbarFuelRight"></div>';
+        // Добавить их внутрь parent
+        $('#' + parent).append(nodeParentLeft);
+        $('#' + parent).append(nodeParentRight);
+        // Создать 3 дива для правого дива: цифры. шкала, надпись
+        var nodeRightDigits = '<div id="pbarFuelRightDigits"></div>';
+        var nodeRightBar = '<div id="pbarFuelRightBar"></div>';
+        var nodeRightLabel = '<div id="pbarFuelRightLabel"></div>';
+        // Добавить эти 3 дива
+        $('#pbarFuelRight').append(nodeRightDigits);
+        $('#pbarFuelRight').append(nodeRightBar);
+        $('#pbarFuelRight').append(nodeRightLabel);
+        // в pbarFuelRightBar добавить pbarFuelBarFiller
+        var nodeRightFiller = '<div id="pbarFuelBarFiller"></div>';
+        $('#pbarFuelRightBar').append(nodeRightFiller);
+        //  добавить в pbarFuelBarFiller два дива: стрелка и наполнитель
+        var nodeRightFill = '<div id="pbarFuelBarFillerFill"></div>';
+        var nodeRightArrow = '<div id="pbarFuelBarFillerArrow"></div>';
+        $('#pbarFuelBarFiller').append(nodeRightFill);
+        $('#pbarFuelBarFiller').append(nodeRightArrow);
+    }
+
+
+    ProgressBarFuel.prototype.setValue = function (value) {
+        var temp = value > 100 ? 100 : value;
+        temp = value < 0 ? 0 : value;
+        temp = 100 - temp;
+        temp = temp > 98 ? 98 : temp;
+        $('#pbarFuelBarFiller').css('right', temp + '%');
+    }
+
+
+    return ProgressBarFuel;
+})();
+
+
 var _SlidersMass = [];
 
 

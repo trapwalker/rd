@@ -212,3 +212,75 @@
     position: absolute;
     top: 207px;
 }
+/* Настройка слайдера зума завершена */
+
+/* Настройка прогресс бара для Fuel*/
+
+.pbar-fuel-parent {
+    position: absolute;
+    left: 500px;
+    top: 70px;
+}
+
+#pbarFuelLeft {
+    height: 30px;
+    width: 30px;
+    border: solid #000000 1px;
+    position: absolute;
+}
+
+#pbarFuelRight {
+    height: 60px;
+    width: 200px;
+    border: solid #000000 1px;
+    left: 30px;
+    position: absolute;
+}
+
+#pbarFuelRightDigits {
+    height: 15px;
+    width: 200px;
+    border: solid red 1px;
+    position: absolute;
+    top: -20px;
+}
+
+#pbarFuelRightBar {
+    height: 30px;
+    width: 200px;
+    border: solid lightpink 1px;
+    position: absolute;
+    overflow-x: hidden;
+}
+
+#pbarFuelRightLabel {
+    height: 20px;
+    width: 200px;
+    border: solid peru 1px;
+    top: 30px;
+    position: absolute;
+}
+
+#pbarFuelBarFiller {
+    position: absolute;
+    height: 30px;
+    width: 200px;
+
+    opacity: 0.5;
+}
+
+#pbarFuelBarFillerFill {
+    position: absolute;
+    background-color: aquamarine;
+    height: 100%;
+    width: 100%;
+    margin-right: 5px;
+}
+
+#pbarFuelBarFillerArrow {
+    position: absolute;
+    background-color: red;
+    height: 100%;
+    width: 5px;
+    right: 0px;
+}
