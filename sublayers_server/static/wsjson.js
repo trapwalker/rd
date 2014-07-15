@@ -3,9 +3,40 @@ WSJSON = (function () {
     function WSJSON() {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
+        this.isConnected = false;
+        this.timeDelay = 5000; // 5 ескунд
+
+        this.onopen = function() {
+            this.isConnected = true;
+        }
+
         this.socket.onmessage = function (event) {
             receiveMesFromServ(event.data);
         }
+
+        this.socket.onerror = function (error) {
+            this.isConnected = false;
+            alert("Ошибка " + error.message);
+            /*
+            setTimeout(function reconnect(){
+                alert('in reconnect');
+                this.timeDelay *= 2;
+                this.socket = new WebSocket(this.url);
+            }, this.timeDelay);
+            */
+        }
+
+        this.socket.onclose = function (event) {
+            // websocket is closed.
+            this.isConnected = false;
+            if (event.wasClean) {
+                alert('Соединение закрыто чисто');
+            } else {
+                alert('Обрыв соединения'); // например, "убит" процесс сервера
+            }
+            alert('Код: ' + event.code + ' причина: ' + event.reason);
+        };
+
     };
 
     return WSJSON;
