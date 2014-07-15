@@ -111,9 +111,11 @@ $(document).ready(function () {
     buttonFullScreen.onclick = function () {
         if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
             RunPrefixMethod(document, "CancelFullScreen");
+            buttonFullScreen.src = "img/button_fullscreen_unclicked.png";
         }
         else {
             RunPrefixMethod(html, "RequestFullScreen");
+            buttonFullScreen.src = "img/button_fullscreen_clicked.png";
         }
     }
 
