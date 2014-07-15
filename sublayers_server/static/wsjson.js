@@ -226,5 +226,5 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
 
     userCarMarker.carID = uid; // возможно сделать инициализацию маркера тут
     // Создание следа за пользовательской машинкой
-    userCarTail = new CarTail(user.userCar, myMap, clock);
+    userCarTail = new CarTail(aTrack.coord, myMap);
 }

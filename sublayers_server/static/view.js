@@ -18,7 +18,7 @@ function redrawMap() {
         redrawUserControllers();
         // перерисовка следа (шлейфа) за машинкой
         if (userCarTail)
-            userCarTail.drawTail(myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
+            userCarTail.drawTail(tempPoint, myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
     }
 
     // работа со списком машинок

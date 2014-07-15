@@ -66,15 +66,12 @@ var SubLayersQueue = ( function () {
 })();
 
 var CarTail = ( function () {
-    function CarTail(aCar, aMap, aClock) {
-        this._car = aCar;
+    function CarTail(aStartPoint, aMap) {
         this._tail = new SubLayersQueue();
         this._map = aMap;
-        this._clock = aClock;
         // заполнение очереди (изначально одинаковыми значениями)
-        var tempPoint = this._car.getCurrentCoord(this._clock.getCurrentTime());
         for(var i=0; i< this._tail._queueLength; i++) {
-            this._tail.addPoint(tempPoint);
+            this._tail.addPoint(aStartPoint);
         }
         // Создание сразу трёх маркеров
         this._tailPath1 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(5).addTo(this._map);
@@ -82,9 +79,9 @@ var CarTail = ( function () {
         this._tailPath3 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(2).addTo(this._map);
     }
 
-    CarTail.prototype.drawTail = function(needDraw) {
+    CarTail.prototype.drawTail = function(newPoint ,needDraw) {
         // пересчёт новой точки
-        this._tail.addPoint(this._car.getCurrentCoord(this._clock.getCurrentTime()));
+        this._tail.addPoint(newPoint);
         if(needDraw){
             // перерисовка трёх маркеров
             var tempPoints = this._tail.getPoints();
