@@ -16,7 +16,7 @@ WSJSON = (function () {
 
         this.socket.onerror = function (error) {
             this.isConnected = false;
-            alert("Ошибка " + error.message);
+            alert("Ошибка соединения...Попытка переподключения пока отсутствует. Приносим свои извинения.");
             /*
             setTimeout(function reconnect(){
                 alert('in reconnect');
