@@ -14,15 +14,24 @@
 <body>
 
 <div id="speed"></div>
+<div id="hp"></div>
 
 <script>
     var a = new ProgressBarFuel({
-        parent: "speed"
+        parent: "speed",
+        max: 100
+    });
+
+    var hp = new ProgressBarHP({
+        parent: "hp",
+        max: 300
     });
 
     var b = 100;
+    var c = 250;
 
-    setInterval(function(){a.setValue(b--);}, 20);
+    setInterval(function(){a.setValue(b--, 0);}, 50);
+    setInterval(function(){hp.setValue(c--);}, 20);
 
 </script>
 

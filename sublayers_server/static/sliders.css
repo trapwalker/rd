@@ -214,11 +214,13 @@
 }
 /* Настройка слайдера зума завершена */
 
+
+
 /* Настройка прогресс бара для Fuel*/
 
 .pbar-fuel-parent {
     position: absolute;
-    left: 500px;
+    left: 50px;
     top: 70px;
 }
 
@@ -237,14 +239,6 @@
     position: absolute;
 }
 
-#pbarFuelRightDigits {
-    height: 15px;
-    width: 200px;
-    border: solid red 1px;
-    position: absolute;
-    top: -20px;
-}
-
 #pbarFuelRightBar {
     height: 30px;
     width: 200px;
@@ -253,20 +247,10 @@
     overflow-x: hidden;
 }
 
-#pbarFuelRightLabel {
-    height: 20px;
-    width: 200px;
-    border: solid peru 1px;
-    top: 30px;
-    position: absolute;
-}
-
 #pbarFuelBarFiller {
     position: absolute;
     height: 30px;
     width: 200px;
-
-    opacity: 0.5;
 }
 
 #pbarFuelBarFillerFill {
@@ -284,3 +268,153 @@
     width: 5px;
     right: 0px;
 }
+
+
+/* Строковые дивы и классы для спанов*/
+
+#pbarFuelRightDigits {
+    height: 15px;
+    width: 200px;
+    border: solid red 1px;
+    position: absolute;
+    top: -20px;
+    font: bold 12px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+
+.pbarRightsDigitsLeft {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarRightsDigitsCenter {
+
+}
+
+.pbarRightsDigitsRight{
+    position: absolute;
+    right: 0px;
+}
+
+#pbarFuelRightLabel {
+    height: 20px;
+    width: 200px;
+    border: solid peru 1px;
+    top: 30px;
+    position: absolute;
+    font: bold 12px Arial;
+    color: #2dc34a;
+}
+
+.pbarFuelRightLabelt1 {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarFuelRightLabelt2 {
+    position: absolute;
+    left: 40px;
+}
+
+.pbarFuelRightLabelt3 {
+    position: absolute;
+    right: 40px;
+}
+
+.pbarFuelRightLabelt4 {
+    position: absolute;
+    right: 0px;
+}
+
+/* Завершены настройки FUEL прогресс бара*/
+
+
+/* Настройка прогресс бара для HP*/
+
+.pbar-hp-parent {
+    position: absolute;
+    left: 50px;
+    top: 150px;
+}
+
+#pbarHPLeft {
+    height: 30px;
+    width: 30px;
+    border: solid #000000 1px;
+    position: absolute;
+}
+
+#pbarHPRight {
+    height: 60px;
+    width: 200px;
+    border: solid #000000 1px;
+    left: 30px;
+    position: absolute;
+}
+
+#pbarHPRightBar {
+    height: 30px;
+    width: 200px;
+    border: solid lightpink 1px;
+    position: absolute;
+    overflow-x: hidden;
+}
+
+#pbarHPBarFiller {
+    position: absolute;
+    height: 30px;
+    width: 200px;
+}
+
+#pbarHPBarFillerFill {
+    position: absolute;
+    background-color: aquamarine;
+    height: 100%;
+    width: 100%;
+    margin-right: 5px;
+}
+
+#pbarHPBarFillerArrow {
+    position: absolute;
+    background-color: red;
+    height: 100%;
+    width: 5px;
+    right: 0px;
+}
+
+
+/* Строковые дивы и классы для спанов*/
+
+#pbarHPRightDigits {
+    height: 15px;
+    width: 200px;
+    border: solid red 1px;
+    position: absolute;
+    top: -20px;
+    font: bold 12px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+#pbarHPRightLabel {
+    height: 20px;
+    width: 200px;
+    border: solid peru 1px;
+    top: 30px;
+    position: absolute;
+    font: bold 12px Arial;
+    color: #2dc34a;
+}
+
+.pbarHPRightLabelt1 {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarHPRightLabelt2 {
+    position: absolute;
+    left: 95px;
+}
+

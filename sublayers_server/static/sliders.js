@@ -256,7 +256,14 @@ _SpeedSlider_StopButton = function () {
 
 var ProgressBarFuel = (function () {
     function ProgressBarFuel(options) {
+        this.options = {
+            parent: '',
+            max: 100
+        }
         var parent = options.parent;
+        if (options.max)
+            this.options.max = options.max;
+        this.koeff = 100 / this.options.max;
         // Добавление класса для родителя
         $('#' + parent).addClass('pbar-fuel-parent');
         // создать 2 дива: левый и правый
@@ -266,9 +273,18 @@ var ProgressBarFuel = (function () {
         $('#' + parent).append(nodeParentLeft);
         $('#' + parent).append(nodeParentRight);
         // Создать 3 дива для правого дива: цифры. шкала, надпись
-        var nodeRightDigits = '<div id="pbarFuelRightDigits"></div>';
+        var nodeRightDigits = '<div id="pbarFuelRightDigits">' +
+            '<span class="pbarRightsDigitsLeft">0</span>' +
+            '<span class="pbarRightsDigitsCenter">1/2</span>' +
+            '<span class="pbarRightsDigitsRight">F</span>' +
+            '</div>';
         var nodeRightBar = '<div id="pbarFuelRightBar"></div>';
-        var nodeRightLabel = '<div id="pbarFuelRightLabel"></div>';
+        var nodeRightLabel = '<div id="pbarFuelRightLabel">' +
+            '<span class="pbarFuelRightLabelt1">Fuel:</span>' +
+            '<span class="pbarFuelRightLabelt2" id="pbarFuelRightLabelt2ID">0</span>' +
+            '<span class="pbarFuelRightLabelt3">Range:</span>' +
+            '<span class="pbarFuelRightLabelt4" id="pbarFuelRightLabelt4ID">0 km</span>' +
+            '</div>';
         // Добавить эти 3 дива
         $('#pbarFuelRight').append(nodeRightDigits);
         $('#pbarFuelRight').append(nodeRightBar);
@@ -284,17 +300,75 @@ var ProgressBarFuel = (function () {
     }
 
 
-    ProgressBarFuel.prototype.setValue = function (value) {
-        var temp = value > 100 ? 100 : value;
-        temp = value < 0 ? 0 : value;
-        temp = 100 - temp;
-        temp = temp > 98 ? 98 : temp;
+    ProgressBarFuel.prototype.setValue = function (value, distance) { // distance = rashod * value
+        var temp = 100 - (value * this.koeff);
+        if((temp > 100) || (temp < 0)) return;
         $('#pbarFuelBarFiller').css('right', temp + '%');
+        // Установить значение остатка value и ввести второй параметр, сколько можем ещё проехать.
+        $('#pbarFuelRightLabelt2ID').text(value.toFixed(0));
+        $('#pbarFuelRightLabelt4ID').text(distance.toFixed(0) +' km');
     }
 
 
     return ProgressBarFuel;
 })();
+
+var ProgressBarHP = (function () {
+    function ProgressBarHP(options) {
+        this.options = {
+            parent: '',
+            max: 100
+        }
+        var parent = options.parent;
+        if (options.max)
+            this.options.max = options.max;
+        this.koeff = 100 / this.options.max;
+        // Добавление класса для родителя
+        $('#' + parent).addClass('pbar-hp-parent');
+        // создать 2 дива: левый и правый
+        var nodeParentLeft = '<div id="pbarHPLeft"></div>';
+        var nodeParentRight = '<div id="pbarHPRight"></div>';
+        // Добавить их внутрь parent
+        $('#' + parent).append(nodeParentLeft);
+        $('#' + parent).append(nodeParentRight);
+        // Создать 3 дива для правого дива: цифры. шкала, надпись
+        var nodeRightDigits = '<div id="pbarHPRightDigits">' +
+            '<span class="pbarRightsDigitsLeft">0</span>' +
+            '<span class="pbarRightsDigitsCenter">50</span>' +
+            '<span class="pbarRightsDigitsRight">100</span>' +
+            '</div>';
+        var nodeRightBar = '<div id="pbarHPRightBar"></div>';
+        var nodeRightLabel = '<div id="pbarHPRightLabel">' +
+            '<span class="pbarHPRightLabelt1">Vehicle health:</span>' +
+            '<span class="pbarHPRightLabelt2" id="pbarHPRightLabelt2ID">0%</span>' +
+            '</div>';
+        // Добавить эти 3 дива
+        $('#pbarHPRight').append(nodeRightDigits);
+        $('#pbarHPRight').append(nodeRightBar);
+        $('#pbarHPRight').append(nodeRightLabel);
+        // в pbarHPRightBar добавить pbarHPBarFiller
+        var nodeRightFiller = '<div id="pbarHPBarFiller"></div>';
+        $('#pbarHPRightBar').append(nodeRightFiller);
+        //  добавить в pbarHPBarFiller два дива: стрелка и наполнитель
+        var nodeRightFill = '<div id="pbarHPBarFillerFill"></div>';
+        var nodeRightArrow = '<div id="pbarHPBarFillerArrow"></div>';
+        $('#pbarHPBarFiller').append(nodeRightFill);
+        $('#pbarHPBarFiller').append(nodeRightArrow);
+    }
+
+
+    ProgressBarHP.prototype.setValue = function (value) {
+        var temp = 100 - (value * this.koeff);
+        if((temp > 100) || (temp < 0)) return;
+        $('#pbarHPBarFiller').css('right', temp + '%');
+        // Установить значение остатка value и ввести второй параметр, сколько можем ещё проехать.
+        $('#pbarHPRightLabelt2ID').text((100-temp).toFixed(0) + '%');
+    }
+
+
+    return ProgressBarHP;
+})();
+
 
 
 var _SlidersMass = [];
