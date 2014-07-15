@@ -18,8 +18,8 @@
     width: 68px;
     right: 0px;
 }
-/*Настройка трёх главных дивов завершена*/
 
+/*Настройка трёх главных дивов завершена*/
 
 /*Настройка фона шкалы*/
 
@@ -54,14 +54,10 @@
     top: 40%;
 }
 
-
 /*Настройка фона шкалы завершена*/
 
-
-
-
 /*Настройки слайдера и каретки*/
-.slider-speed-carriage{
+.slider-speed-carriage {
     width: 39px;
     height: 31px;
     background: green url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat;
@@ -82,10 +78,8 @@
     margin-left: 18.5px;
     background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
 }
+
 /*Настройки слайдера и каретки завершены*/
-
-
-
 
 /*Настройка левых 5-ти дивов - 4 для картинок и один для надписи*/
 #slider-speed-left-hwy {
@@ -130,9 +124,6 @@
 
 /*Насройка левых дивов завершена*/
 
-
-
-
 /* Настройки Цифрового Спидометра - Непосредственно цифра! */
 .slider-speed-digital-main {
     background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
@@ -155,9 +146,8 @@
     color: #2dc34a;
     text-align: center;
 }
+
 /* Настройки цифрового спидометра завершены*/
-
-
 
 /* Настройки кнопки стоп! */
 .slider-speed-stop-main {
@@ -180,45 +170,45 @@
 
 /* Настройка кнопки стоп завершена */
 
-
-
 /* Настройка слайдера зума */
-.slider-zoom-parent-default {
-    position: absolute;
-}
-
-.slider-zoom-value-default {
-    color: rgb(0,220,0);
-    text-align: center;
-}
-
-.slider-zoom-slider-default {
-    border-radius: 20px;
-}
-
-.slider-zoom-carriage-default {
-    background: #009900;
-    border-color: #00FF00;
-}
-
-.slider-zoom-plus-default, .slider-zoom-minus-default {
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
-
-.slider-zoom-btn-plus-default, .slider-zoom-btn-minus-default {
-    height: 15px;
-    width: 15px;
-}
-
-.slider-speed-parent {
-    border: 1px solid limegreen;
-    right: 40px;
-    bottom: 30px;
-}
-
 .slider-zoom-parent {
-    margin-left: 15px;
-    top: 50px;
+    left: 30px;
+    top: 90px;
     position: absolute;
+}
+
+#Zoom_slider {
+    border-radius: 0px;
+    height: 150px;
+    width: 25px;
+    border: 0px;
+    position: absolute;
+    top: 12px;
+}
+
+.slider-zoom-carriage {
+    background: green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat;
+    margin-left: -3px;
+}
+
+#Zoom_sliderBar {
+    height: 180px;
+    width: 25px;
+    background: transparent url('./img/control_zoom/ctrl_zm_bar.png') 50% 50% no-repeat;
+    position: absolute;
+    top: 27px;
+    left: 5px;
+}
+
+#Zoom_btnPlus {
+    height: 27px;
+    width: 35px;
+    position: absolute;
+}
+
+#Zoom_btnMinus {
+    height: 27px;
+    width: 35px;
+    position: absolute;
+    top: 207px;
 }

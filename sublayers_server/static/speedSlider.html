@@ -4,26 +4,24 @@
     <meta charset="UTF-8">
     <title>Test Speed Slider</title>
 
-    <link rel="stylesheet" href="sliderSpeed.css"/>
+    <link rel="stylesheet" href="sliders.css"/>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script src="sliderSpeed.js"></script>
+    <script src="sliders.js"></script>
 </head>
 <body>
 
-<div id="speed" class="slider-speed-main"> </div>
+<div id="Zoom_sliderParent"></div>
 
 
 
 <script>
-    var a = new SliderSpeed({
-        parent: "speed",
-        height: 320,
-        parentCss: 'slider-speed-parent',
-        max: 125,
-        min: 0,
+    var a = new SliderZoom({
+        parentDiv: "Zoom_sliderParent",
+        max: 16,
+        min: 10,
         step: 1
     });
 

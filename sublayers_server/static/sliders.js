@@ -2,138 +2,99 @@ var SliderZoom = (function () {
     function SliderZoom(options) {
         this.options = {
             parentDiv: '',
-            sliderDiv: '',
-            valueDiv: '',
-            orientation: 'vertical',
             max: 100,
             min: 0,
             step: 1,
-            carriageHeight: 1, // in em
-            carriageWidth: 1, // in em
             height: 100, // px
             width: 5, // px
-            onChange: '',
-            parentCss: ''
+            onChange: ''
         };
 
+        var parent = options.parentDiv;
+        // сразу же применение стиля для зум-парент
+        $('#'+parent).addClass('slider-zoom-parent');
+
         this._id = _SlidersMass.length;
-        _SlidersMass[this._id]=this;
+        _SlidersMass[this._id] = this;
 
         if (options) {
             if (options.parentDiv) this.options.parentDiv = options.parentDiv;
-            if (options.orientation) this.options.orientation = options.orientation;
             if (options.max) this.options.max = options.max;
             if (options.min) this.options.min = options.min;
             if (options.step) this.options.step = options.step;
-            if (options.carriageHeight) this.options.carriageHeight = options.carriageHeight;
-            if (options.carriageWidth) this.options.carriageWidth = options.carriageWidth;
             if (options.height) this.options.height = options.height;
             if (options.width) this.options.width = options.width;
             if (options.onChange) this.options.onChange = options.onChange;
-            if (options.parentCss) this.options.parentCss = options.parentCss;
         }
 
-        var names = this.genSliderNamesElement();
-        this.options.sliderDiv = names.sliderDiv;
-        this.options.valueDiv = names.valueDiv;
-
-
         // создание 4 дивов
-        var nodeText = '<div id="' + this.options.valueDiv+'"><span id="' + this.options.parentDiv + '_text">0</span></div>';
-        var nodePlus = '<div id="' + this.options.parentDiv + '_sliderPlus">' +
-            '<input id="'+this.options.parentDiv+'_btnPlus" type="image" src="img/button_map_on.png" value="Увеличить скорость"></div>';
-        var nodeSlider = '<div id="' + this.options.sliderDiv + '"></div>';
-        var nodeMinus = '<div id="' + this.options.parentDiv + '_sliderMinus">' +
-            '<input id="'+this.options.parentDiv+'_btnMinus" type="image" src="img/button_map_off.png" value="Уменьшить скорость"></div>';
+        var nodePlus = '<input id="Zoom_btnPlus" type="image" src="img/control_zoom/ctrl_zm_plus.png" value="Приблизить">';
+        var nodeBar = '<div id="Zoom_sliderBar"></div>';
+        var nodeSlider = '<div id="Zoom_slider"></div>';
+        var nodeMinus = '<input id="Zoom_btnMinus" type="image" src="img/control_zoom/ctrl_zm_minus.png" value="Отдалить">';
+
 
         // добавление дивов в родительский див
-        $('#' + this.options.parentDiv).append(nodeText);
-        $('#' + this.options.parentDiv).append(nodePlus);
-        $('#' + this.options.parentDiv).append(nodeSlider);
-        $('#' + this.options.parentDiv).append(nodeMinus);
+        $('#' + parent).append(nodePlus);
+        $('#' + parent).append(nodeBar);
+        $('#Zoom_sliderBar').append(nodeSlider);
+        $('#' + parent).append(nodeMinus);
 
-        $('#' + names.btnPlus).on('click', {id: this._id}, this.plusFunc);
-        $('#' + names.btnMinus).on('click', {id: this._id}, this.minusFunc);
+        $('#Zoom_btnPlus').on('click', {id: this._id}, this.plusFunc);
+        $('#Zoom_btnMinus').on('click', {id: this._id}, this.minusFunc);
 
         // создание слайдера
 
-        $('#'+this.options.sliderDiv).slider({
+        $('#Zoom_slider').slider({
             max: this.options.max,
             min: this.options.min,
-            orientation: this.options.orientation,
+            orientation: 'vertical',
             step: this.options.step
         })
             .on('slidechange', {id: this._id}, this.change);
 
-        // установка дефолтных css классов
-        $('#' + names.btnPlus).addClass('slider-zoom-btn-plus-default'); // +
-        $('#' + names.btnMinus).addClass('slider-zoom-btn-minus-default'); // -
-        $('#' + names.valueDiv).addClass('slider-zoom-value-default'); // text
-        $('#' + names.sliderPlus).addClass('slider-zoom-plus-default');
-        $('#' + names.sliderMinus).addClass('slider-zoom-minus-default');
-        $('#' + names.sliderDiv).addClass('slider-zoom-slider-default');
-        $('#' + names.sliderDiv + ' span:first-child').addClass('slider-speed-carriage-default');
-        $('#' + names.parentDiv).addClass('slider-zoom-parent-default');
-
         // Изменение размеров ползунка
-        $('#' + this.options.sliderDiv+' span:first-child').css("height", this.options.carriageHeight+'em');
-        $('#' + this.options.sliderDiv+' span:first-child').css("margin-bottom", -this.options.carriageHeight+'em');
+        $('#Zoom_slider').removeClass('ui-widget-content');
+        $('#Zoom_slider span:first-child').addClass('slider-zoom-carriage');
+        $('#Zoom_slider span:first-child').css('width', '39px');
+        $('#Zoom_slider span:first-child').css('height', '20px');
+        $('#Zoom_slider span:first-child').css('background', 'green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat');
+        $('#Zoom_slider span:first-child').css('border', '0px');
+        $('#Zoom_slider span:first-child').css('left', '-7px');
+        $('#Zoom_slider span:first-child').css('margin-bottom', '-12.5px');
 
-        $('#' + this.options.sliderDiv).css("height", this.options.height);
-        $('#' + names.sliderDiv + ' span:first-child').css("background", "#009900");
-        $('#' + names.sliderDiv + ' span:first-child').css("border-color", "#00FF00");
-
-
-        // установка дополнительных css классов
-        if(this.options.parentCss) {
-            $('#' + names.parentDiv).addClass(this.options.parentCss);
-        }
     }
 
 
     SliderZoom.prototype.plusFunc = function (event, ui) {
         var slider = _SlidersMass[event.data.id];
-        $('#' + slider.options.sliderDiv).slider("value", $('#' + slider.options.sliderDiv).slider("value") + slider.options.step);
+        $('#Zoom_slider').slider("value", $('#Zoom_slider').slider("value") + slider.options.step);
     }
 
     SliderZoom.prototype.minusFunc = function (event, ui) {
         var slider = _SlidersMass[event.data.id];
-        $('#' + slider.options.sliderDiv).slider("value", $('#' + slider.options.sliderDiv).slider("value") - slider.options.step);
+        $('#Zoom_slider').slider("value", $('#Zoom_slider').slider("value") - slider.options.step);
     }
 
     SliderZoom.prototype.change = function (event, ui) {
         //event.preventDefault();
         var slider = _SlidersMass[event.data.id];
-        $('#' + slider.options.valueDiv).text($('#' + slider.options.sliderDiv).slider("value"));
-        if(slider.options.onChange)
+        if (slider.options.onChange)
             slider.options.onChange();
     }
 
     SliderZoom.prototype.getZoom = function () {
-        return $('#' + this.options.sliderDiv).slider("value");
+        return $('#Zoom_slider').slider("value");
     }
 
     SliderZoom.prototype.setZoom = function (newZoom) {
-        $('#' + this.options.sliderDiv).slider("value", newZoom);
+        $('#Zoom_slider').slider("value", newZoom);
     }
 
     SliderZoom.prototype.delete = function () {
         // удаление всех дом элементов
         // удаление из массива всех слайдеров
         delete _SlidersMass[this._id];
-    }
-
-    SliderZoom.prototype.genSliderNamesElement = function() {
-        var res = {
-            parentDiv: this.options.parentDiv,
-            sliderDiv: this.options.parentDiv + '_slider',
-            valueDiv: this.options.parentDiv + '_valueOfSlider',
-            btnPlus: this.options.parentDiv+'_btnPlus',
-            btnMinus: this.options.parentDiv+'_btnMinus',
-            sliderPlus: this.options.parentDiv+'_sliderPlus',
-            sliderMinus: this.options.parentDiv+'_sliderMinus'
-        }
-        return res;
     }
 
     return SliderZoom;
@@ -153,7 +114,7 @@ var SliderSpeed = (function () {
         };
 
         this._id = _SlidersMass.length;
-        _SlidersMass[this._id]=this;
+        _SlidersMass[this._id] = this;
 
         if (options) {
             if (options.parent) this.options.parent = options.parent;
@@ -190,8 +151,8 @@ var SliderSpeed = (function () {
 
         // создание дива Цифровой реальной скорости
         var nodeDigitalSpeed = '<div class="slider-speed-digital-main">' +
-                '<div class="slider-speed-digital-value"><span id="speedRealValue">0</span></div>' +
-                '<div class="slider-speed-digital-label"><span>KM/H</span></div>'+
+            '<div class="slider-speed-digital-value"><span id="speedRealValue">0</span></div>' +
+            '<div class="slider-speed-digital-label"><span>KM/H</span></div>' +
             '</div>';
         // Создание дива слайдера
         var nodeSlider = '<div id="sliderSpeedSlider""></div>';
@@ -232,9 +193,9 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').append(newSpan);
 
         // Создание и добавление фона шкалы
-        var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main">'+
-            '<div id="slider-speed-filler-arrow"></div>'+
-            '<div id="slider-speed-filler"></div>'+
+        var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main">' +
+            '<div id="slider-speed-filler-arrow"></div>' +
+            '<div id="slider-speed-filler"></div>' +
             '</div>';
         $('#sliderSpeedSlider').append(nodeSliderBarFillerMain);
         this.setRealSpeed(0);
@@ -253,7 +214,7 @@ var SliderSpeed = (function () {
 
     SliderSpeed.prototype.change = function (event, ui) {
         var slider = _SlidersMass[event.data.id];
-        if(slider.options.onChange)
+        if (slider.options.onChange)
             slider.options.onChange();
     }
 
@@ -262,12 +223,12 @@ var SliderSpeed = (function () {
     }
 
     SliderSpeed.prototype.setRealSpeed = function (newSpeed) {
-        var prc= (newSpeed * 100) / this.options.max;
-        if(prc > 99) prc = 99;
-        if(prc < 0) prc = 0;
-        prc = 99-prc;
-        $('#slider-speed-filler-arrow').css('top', prc+'%');
-        $('#slider-speed-filler').css('top', prc+'%');
+        var prc = (newSpeed * 100) / this.options.max;
+        if (prc > 99) prc = 99;
+        if (prc < 0) prc = 0;
+        prc = 99 - prc;
+        $('#slider-speed-filler-arrow').css('top', prc + '%');
+        $('#slider-speed-filler').css('top', prc + '%');
         $('#speedRealValue').text(newSpeed.toFixed(1));
     }
 
@@ -284,7 +245,6 @@ var SliderSpeed = (function () {
 
     return SliderSpeed;
 })();
-
 
 
 // функции, необходимые для логики работы слайдеров

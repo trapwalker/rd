@@ -169,10 +169,7 @@ $(document).ready(function () {
 
     // создание слайдера зума
     zoomSetSlider = new SliderZoom({
-        parentDiv: "zoomSetDivForSpeedSlider",
-        carriageHeight: 0.4,
-        height: 60,
-        parentCss: 'slider-zoom-parent',
+        parentDiv: "zoomSetDivForZoomSlider",
         max: myMap.getMaxZoom(),
         min: myMap.getMinZoom(),
         step: 1,
