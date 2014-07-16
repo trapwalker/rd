@@ -3,11 +3,14 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Test Speed Slider</title>
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
+    <!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/> -->
+    <link rel="stylesheet" href="css/third_party/jquery-ui.css"/>
     <link rel="stylesheet" href="fireControl.css"/>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script> -->
+    <script src="js/third_party/jquery.min.js"></script>
+    <script src="js/third_party/jquery-ui.min.js"></script>
     <script src="model.js"></script>
     <script src="rafael.js"></script>
     <script src="fireControl.js"></script>
@@ -25,16 +28,16 @@
         diameter: 200
     });
 
-    qa.addSector(new FireSector(gradToRad(0),gradToRad(60), 40, 0, 0));
-    qa.addSector(new FireSector(gradToRad(180),gradToRad(60), 40, 0, 0));
+    qa.addSector(new FireSector(gradToRad(0), gradToRad(60), 40, 0, 0));
+    qa.addSector(new FireSector(gradToRad(180), gradToRad(60), 40, 0, 0));
 
-    qa.addSector(new FireSector(gradToRad(90),gradToRad(60), 40, 0, 0));
+    qa.addSector(new FireSector(gradToRad(90), gradToRad(60), 40, 0, 0));
     var angle = 0;
-    setInterval(function(){
+    setInterval(function () {
         qa.setRotate(gradToRad(angle++));
     }, 20);
 
-    qa.addSector(new FireSector(gradToRad(45),gradToRad(60), 40, 0, 0));
+    qa.addSector(new FireSector(gradToRad(45), gradToRad(60), 40, 0, 0));
 
 
 </script>
