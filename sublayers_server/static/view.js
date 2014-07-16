@@ -38,7 +38,14 @@ function redrawMap() {
 }
 
 function redrawUserControllers() {
+    // Отрисовка контролера скорости
     redrawSliderSpeedController();
+    // Отрисовка контроллера хп
+    // hpController.setValue(user.userCar.hp);
+    // Отрисовка контроллера Fuel
+    // var tfuel = user.userCar.getCurrentFuel(clock.getCurrentTime());
+    // fuelController.setValue(tfuel, tfuel * user.userCar.track.fuelDec);
+
 }
 
 function redrawSliderSpeedController() {

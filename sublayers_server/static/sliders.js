@@ -303,10 +303,16 @@ var ProgressBarFuel = (function () {
     ProgressBarFuel.prototype.setValue = function (value, distance) { // distance = rashod * value
         var temp = 100 - (value * this.koeff);
         if((temp > 100) || (temp < 0)) return;
+        var tdist = distance > 0 ? distance.toFixed(0) + ' km' : "--------";
         $('#pbarFuelBarFiller').css('right', temp + '%');
         // Установить значение остатка value и ввести второй параметр, сколько можем ещё проехать.
         $('#pbarFuelRightLabelt2ID').text(value.toFixed(0));
-        $('#pbarFuelRightLabelt4ID').text(distance.toFixed(0) +' km');
+        $('#pbarFuelRightLabelt4ID').text(tdist);
+    }
+
+    ProgressBarFuel.prototype.setMax = function (value) {
+        this.options.max = value;
+        this.koeff = 100 / value;
     }
 
 
@@ -365,6 +371,10 @@ var ProgressBarHP = (function () {
         $('#pbarHPRightLabelt2ID').text((100-temp).toFixed(0) + '%');
     }
 
+    ProgressBarHP.prototype.setMax = function (value) {
+        this.options.max = value;
+        this.koeff = 100 / value;
+    }
 
     return ProgressBarHP;
 })();

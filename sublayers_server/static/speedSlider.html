@@ -30,8 +30,20 @@
     var b = 100;
     var c = 250;
 
-    setInterval(function(){a.setValue(b--, 0);}, 50);
-    setInterval(function(){hp.setValue(c--);}, 20);
+    var int1 = setInterval(function(){a.setValue(b--, 0);}, 50);
+    var int2 = setInterval(function(){hp.setValue(c--);}, 20);
+
+    setTimeout(function(){
+        clearInterval(int1);
+        clearInterval(int2);
+        setTimeout(function(){
+            a.setMax(300);
+            a.setValue(150, 0);
+            hp.setMax(200);
+            hp.setValue(100);
+        },2000);
+    }, 3000);
+
 
 </script>
 
