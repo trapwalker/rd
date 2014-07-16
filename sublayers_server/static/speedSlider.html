@@ -3,40 +3,49 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Test Speed Slider</title>
+
+    <link rel="stylesheet" href="sliders.css"/>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
-    <link rel="stylesheet" href="fireControl.css"/>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script src="model.js"></script>
-    <script src="rafael.js"></script>
-    <script src="fireControl.js"></script>
-
+    <script src="sliders.js"></script>
 </head>
 <body>
 
 <div id="speed"></div>
 <div id="hp"></div>
+
 <script>
-
-
-    var qa = new FireControl({
-        parentDiv: 'speed',
-        diameter: 200
+    var a = new ProgressBarFuel({
+        parent: "speed",
+        max: 100
     });
 
-    qa.addSector(new FireSector(gradToRad(0),gradToRad(60), 40, 0, 0));
-    qa.addSector(new FireSector(gradToRad(180),gradToRad(60), 40, 0, 0));
+    var hp = new ProgressBarHP({
+        parent: "hp",
+        max: 300
+    });
 
-    qa.addSector(new FireSector(gradToRad(90),gradToRad(60), 40, 0, 0));
-    var angle = 0;
-    setInterval(function(){
-        qa.setRotate(gradToRad(angle++));
-    }, 20);
+    var b = 100;
+    var c = 250;
 
-    qa.addSector(new FireSector(gradToRad(45),gradToRad(60), 40, 0, 0));
+    var int1 = setInterval(function(){a.setValue(b--, 0);}, 50);
+    var int2 = setInterval(function(){hp.setValue(c--);}, 20);
+
+    setTimeout(function(){
+        clearInterval(int1);
+        clearInterval(int2);
+        setTimeout(function(){
+            a.setMax(300);
+            a.setValue(150, 0);
+            hp.setMax(200);
+            hp.setValue(100);
+        },2000);
+    }, 3000);
 
 
 </script>
+
 </body>
 </html>
