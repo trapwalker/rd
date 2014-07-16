@@ -4,28 +4,46 @@
     <meta charset="UTF-8">
     <title>Test Speed Slider</title>
 
-    <link rel="stylesheet" href="sliderSpeed.css"/>
+    <link rel="stylesheet" href="sliders.css"/>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script src="sliderSpeed.js"></script>
+    <script src="sliders.js"></script>
 </head>
 <body>
 
-<div id="speed" class="slider-speed-main"> </div>
-
-
+<div id="speed"></div>
+<div id="hp"></div>
 
 <script>
-    var a = new SliderSpeed({
+    var a = new ProgressBarFuel({
         parent: "speed",
-        height: 320,
-        parentCss: 'slider-speed-parent',
-        max: 125,
-        min: 0,
-        step: 1
+        max: 100
     });
+
+    var hp = new ProgressBarHP({
+        parent: "hp",
+        max: 300
+    });
+
+    var b = 100;
+    var c = 250;
+
+    var int1 = setInterval(function(){a.setValue(b--, 0);}, 50);
+    var int2 = setInterval(function(){hp.setValue(c--);}, 20);
+
+    setTimeout(function(){
+        clearInterval(int1);
+        clearInterval(int2);
+        setTimeout(function(){
+            a.setMax(300);
+            a.setValue(150, 0);
+            hp.setMax(200);
+            hp.setValue(100);
+        },2000);
+    }, 3000);
+
 
 </script>
 

@@ -3,9 +3,40 @@ WSJSON = (function () {
     function WSJSON() {
         var url = "ws://" + location.host + "/ws";
         this.socket = new WebSocket(url);
+        this.isConnected = false;
+        this.timeDelay = 5000; // 5 ескунд
+
+        this.onopen = function() {
+            this.isConnected = true;
+        }
+
         this.socket.onmessage = function (event) {
             receiveMesFromServ(event.data);
         }
+
+        this.socket.onerror = function (error) {
+            this.isConnected = false;
+            alert("Ошибка соединения...Попытка переподключения пока отсутствует. Приносим свои извинения.");
+            /*
+            setTimeout(function reconnect(){
+                alert('in reconnect');
+                this.timeDelay *= 2;
+                this.socket = new WebSocket(this.url);
+            }, this.timeDelay);
+            */
+        }
+
+        this.socket.onclose = function (event) {
+            // websocket is closed.
+            this.isConnected = false;
+            if (event.wasClean) {
+                alert('Соединение закрыто чисто');
+            } else {
+                alert('Обрыв соединения'); // например, "убит" процесс сервера
+            }
+            alert('Код: ' + event.code + ' причина: ' + event.reason);
+        };
+
     };
 
     return WSJSON;
@@ -226,5 +257,5 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
 
     userCarMarker.carID = uid; // возможно сделать инициализацию маркера тут
     // Создание следа за пользовательской машинкой
-    userCarTail = new CarTail(user.userCar, myMap, clock);
+    userCarTail = new CarTail(aTrack.coord, myMap);
 }

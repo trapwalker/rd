@@ -18,7 +18,7 @@ function redrawMap() {
         redrawUserControllers();
         // перерисовка следа (шлейфа) за машинкой
         if (userCarTail)
-            userCarTail.drawTail(myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
+            userCarTail.drawTail(tempPoint, myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
     }
 
     // работа со списком машинок
@@ -38,7 +38,14 @@ function redrawMap() {
 }
 
 function redrawUserControllers() {
+    // Отрисовка контролера скорости
     redrawSliderSpeedController();
+    // Отрисовка контроллера хп
+    // hpController.setValue(user.userCar.hp);
+    // Отрисовка контроллера Fuel
+    // var tfuel = user.userCar.getCurrentFuel(clock.getCurrentTime());
+    // fuelController.setValue(tfuel, tfuel * user.userCar.track.fuelDec);
+
 }
 
 function redrawSliderSpeedController() {
@@ -83,7 +90,6 @@ function createTileLayer(storage) {
     tileLayerShow.addTo(myMap);
 }
 
-
 $(document).ready(function () {
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
@@ -111,9 +117,11 @@ $(document).ready(function () {
     buttonFullScreen.onclick = function () {
         if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
             RunPrefixMethod(document, "CancelFullScreen");
+            buttonFullScreen.src = "img/button_fullscreen_unclicked.png";
         }
         else {
             RunPrefixMethod(html, "RequestFullScreen");
+            buttonFullScreen.src = "img/button_fullscreen_clicked.png";
         }
     }
 
@@ -169,10 +177,7 @@ $(document).ready(function () {
 
     // создание слайдера зума
     zoomSetSlider = new SliderZoom({
-        parentDiv: "zoomSetDivForSpeedSlider",
-        carriageHeight: 0.4,
-        height: 60,
-        parentCss: 'slider-zoom-parent',
+        parentDiv: "zoomSetDivForZoomSlider",
         max: myMap.getMaxZoom(),
         min: myMap.getMinZoom(),
         step: 1,
@@ -195,6 +200,7 @@ $(document).ready(function () {
         onChange: changeSpeedOnSlider
     });
 
+    fireControl = new FireControl({parentDiv: "fireControlArea"});
 });
 
 function onMarkerPopupOpen(e) {
@@ -262,10 +268,9 @@ var wsjson;
 var rpcCallList;
 var speedSetSlider;
 var zoomSetSlider;
-
 var tileLayerShow;
-
 var userCarTail;
+var fireControl;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

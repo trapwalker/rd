@@ -1,0 +1,420 @@
+/*Настройка трёх главных дивов*/
+.slider-speed-main {
+    position: absolute;
+    bottom: 450px;
+    right: 20px;
+    width: 90px;
+}
+
+.slider-speed-left-main {
+    position: absolute;
+    width: 40px;
+    height: 363px;
+    left: 0px;
+}
+
+.slider-speed-right-main {
+    position: absolute;
+    width: 68px;
+    right: 0px;
+}
+
+/*Настройка трёх главных дивов завершена*/
+
+/*Настройка фона шкалы*/
+
+.slider-speed-filler-main {
+    position: absolute;
+    height: 315px;
+    width: 29px;
+    left: 1px;
+    z-index: 2;
+    bottom: 2px;
+    overflow-y: hidden;
+
+}
+
+#slider-speed-filler {
+    background: transparent url(./img/CruiseControl/if_spd_filler.png) 50% 50% no-repeat;
+    height: 100%;
+    top: 40%;
+    width: 29px;
+    bottom: 0px;
+    position: absolute;
+    opacity: 0.2;
+
+}
+
+#slider-speed-filler-arrow {
+    background: transparent url(./img/CruiseControl/if_spd_arrow.png) 50% 50% no-repeat;
+    width: 29px;
+    height: 2px;
+    z-index: 2;
+    position: absolute;
+    top: 40%;
+}
+
+/*Настройка фона шкалы завершена*/
+
+/*Настройки слайдера и каретки*/
+.slider-speed-carriage {
+    width: 39px;
+    height: 31px;
+    background: green url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat;
+    font: bold 14px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+.slider-speed-carriage-label {
+    font: bold 14px Arial;
+    color: #2dc34a;
+    text-align: center;
+    position: relative;
+    top: 7px;
+}
+
+.slider-speed-slider {
+    margin-left: 18.5px;
+    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
+}
+
+/*Настройки слайдера и каретки завершены*/
+
+/*Настройка левых 5-ти дивов - 4 для картинок и один для надписи*/
+#slider-speed-left-hwy {
+    background-image: url('./img/CruiseControl/if_spd_limit_hwy.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 55px;
+    position: absolute;
+    opacity: 0.4
+}
+
+#slider-speed-left-rd {
+    background-image: url('./img/CruiseControl/if_spd_limit_rd.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 140px;
+    position: absolute;
+    opacity: 0.4
+}
+
+#slider-speed-left-drt {
+    background-image: url('./img/CruiseControl/if_spd_limit_drt.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 238px;
+    position: absolute;
+    opacity: 0.4
+}
+
+#slider-speed-left-frst {
+    background-image: url('./img/CruiseControl/if_spd_limit_frst.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 294px;
+    position: absolute;
+    opacity: 0.4;
+}
+
+/*Насройка левых дивов завершена*/
+
+/* Настройки Цифрового Спидометра - Непосредственно цифра! */
+.slider-speed-digital-main {
+    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 39px;
+    width: 68px;
+    margin-bottom: 15.5px;
+}
+
+.slider-speed-digital-value {
+    font: bold 19px Arial;
+    color: #2dc34a;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.slider-speed-digital-label {
+    font: bold 11px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+/* Настройки цифрового спидометра завершены*/
+
+/* Настройки кнопки стоп! */
+.slider-speed-stop-main {
+    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 39px;
+    width: 68px;
+    margin-top: 15.5px;
+    text-align: center;
+    font: bold 19px Arial;
+    color: #2dc34a;
+    padding-top: 8px;
+    opacity: 0.8;
+}
+
+.slider-speed-stop-main:hover {
+    opacity: 1;
+}
+
+/* Настройка кнопки стоп завершена */
+
+/* Настройка слайдера зума */
+.slider-zoom-parent {
+    left: 30px;
+    top: 90px;
+    position: absolute;
+}
+
+#Zoom_slider {
+    border-radius: 0px;
+    height: 150px;
+    width: 25px;
+    border: 0px;
+    position: absolute;
+    top: 12px;
+}
+
+.slider-zoom-carriage {
+    background: green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat;
+    margin-left: -3px;
+}
+
+#Zoom_sliderBar {
+    height: 180px;
+    width: 25px;
+    background: transparent url('./img/control_zoom/ctrl_zm_bar.png') 50% 50% no-repeat;
+    position: absolute;
+    top: 27px;
+    left: 5px;
+}
+
+#Zoom_btnPlus {
+    height: 27px;
+    width: 35px;
+    position: absolute;
+}
+
+#Zoom_btnMinus {
+    height: 27px;
+    width: 35px;
+    position: absolute;
+    top: 207px;
+}
+/* Настройка слайдера зума завершена */
+
+
+
+/* Настройка прогресс бара для Fuel*/
+
+.pbar-fuel-parent {
+    position: absolute;
+    left: 50px;
+    top: 70px;
+}
+
+#pbarFuelLeft {
+    height: 30px;
+    width: 30px;
+    border: solid #000000 1px;
+    position: absolute;
+}
+
+#pbarFuelRight {
+    height: 60px;
+    width: 200px;
+    border: solid #000000 1px;
+    left: 30px;
+    position: absolute;
+}
+
+#pbarFuelRightBar {
+    height: 30px;
+    width: 200px;
+    border: solid lightpink 1px;
+    position: absolute;
+    overflow-x: hidden;
+}
+
+#pbarFuelBarFiller {
+    position: absolute;
+    height: 30px;
+    width: 200px;
+}
+
+#pbarFuelBarFillerFill {
+    position: absolute;
+    background-color: aquamarine;
+    height: 100%;
+    width: 100%;
+    margin-right: 5px;
+}
+
+#pbarFuelBarFillerArrow {
+    position: absolute;
+    background-color: red;
+    height: 100%;
+    width: 5px;
+    right: 0px;
+}
+
+
+/* Строковые дивы и классы для спанов*/
+
+#pbarFuelRightDigits {
+    height: 15px;
+    width: 200px;
+    border: solid red 1px;
+    position: absolute;
+    top: -20px;
+    font: bold 12px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+
+.pbarRightsDigitsLeft {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarRightsDigitsCenter {
+
+}
+
+.pbarRightsDigitsRight{
+    position: absolute;
+    right: 0px;
+}
+
+#pbarFuelRightLabel {
+    height: 20px;
+    width: 200px;
+    border: solid peru 1px;
+    top: 30px;
+    position: absolute;
+    font: bold 12px Arial;
+    color: #2dc34a;
+}
+
+.pbarFuelRightLabelt1 {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarFuelRightLabelt2 {
+    position: absolute;
+    left: 40px;
+}
+
+.pbarFuelRightLabelt3 {
+    position: absolute;
+    right: 40px;
+}
+
+.pbarFuelRightLabelt4 {
+    position: absolute;
+    right: 0px;
+}
+
+/* Завершены настройки FUEL прогресс бара*/
+
+
+/* Настройка прогресс бара для HP*/
+
+.pbar-hp-parent {
+    position: absolute;
+    left: 50px;
+    top: 150px;
+}
+
+#pbarHPLeft {
+    height: 30px;
+    width: 30px;
+    border: solid #000000 1px;
+    position: absolute;
+}
+
+#pbarHPRight {
+    height: 60px;
+    width: 200px;
+    border: solid #000000 1px;
+    left: 30px;
+    position: absolute;
+}
+
+#pbarHPRightBar {
+    height: 30px;
+    width: 200px;
+    border: solid lightpink 1px;
+    position: absolute;
+    overflow-x: hidden;
+}
+
+#pbarHPBarFiller {
+    position: absolute;
+    height: 30px;
+    width: 200px;
+}
+
+#pbarHPBarFillerFill {
+    position: absolute;
+    background-color: aquamarine;
+    height: 100%;
+    width: 100%;
+    margin-right: 5px;
+}
+
+#pbarHPBarFillerArrow {
+    position: absolute;
+    background-color: red;
+    height: 100%;
+    width: 5px;
+    right: 0px;
+}
+
+
+/* Строковые дивы и классы для спанов*/
+
+#pbarHPRightDigits {
+    height: 15px;
+    width: 200px;
+    border: solid red 1px;
+    position: absolute;
+    top: -20px;
+    font: bold 12px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+#pbarHPRightLabel {
+    height: 20px;
+    width: 200px;
+    border: solid peru 1px;
+    top: 30px;
+    position: absolute;
+    font: bold 12px Arial;
+    color: #2dc34a;
+}
+
+.pbarHPRightLabelt1 {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarHPRightLabelt2 {
+    position: absolute;
+    left: 95px;
+}
+

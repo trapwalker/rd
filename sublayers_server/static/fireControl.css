@@ -1,0 +1,13 @@
+
+
+.fire-control-sector {
+    fill: green;
+    stroke: #333;
+    opacity: 0.5;
+}
+
+.fire-control-all {
+    fill: blue;
+    stroke: #333;
+    opacity: 0.8;
+}
