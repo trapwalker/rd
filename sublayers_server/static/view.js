@@ -90,7 +90,6 @@ function createTileLayer(storage) {
     tileLayerShow.addTo(myMap);
 }
 
-
 $(document).ready(function () {
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
@@ -201,6 +200,7 @@ $(document).ready(function () {
         onChange: changeSpeedOnSlider
     });
 
+    fireControl = new FireControl({parentDiv: "fireControlArea"});
 });
 
 function onMarkerPopupOpen(e) {
@@ -268,10 +268,9 @@ var wsjson;
 var rpcCallList;
 var speedSetSlider;
 var zoomSetSlider;
-
 var tileLayerShow;
-
 var userCarTail;
+var fireControl;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

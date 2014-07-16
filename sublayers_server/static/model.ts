@@ -13,6 +13,7 @@ class Point {
 }
 
 //Поворот вектора на угол aAngle(в радианах) по часовой стрелке
+
 function rotateVector(aPoint:Point, aAngle:number):Point {
     return new Point((aPoint.x * Math.cos(aAngle) - aPoint.y * Math.sin(aAngle)),
         (aPoint.x * Math.sin(aAngle) + aPoint.y * Math.cos(aAngle)));
@@ -248,8 +249,8 @@ class MapCar extends DynamicObject {
         this.hp = aHP;
     }
 
-    AddFireSector(aDirectionAngle, aWidthAngle, aRadius) {
-        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius));
+    AddFireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
+        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
     }
 }
 
@@ -279,11 +280,15 @@ class FireSector {
     directionAngle:number;
     widthAngle:number;
     radius: number;
+    uid: number;
+    recharge: number;
 
-    constructor(aDirectionAngle, aWidthAngle, aRadius: number) {
+    constructor(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge: number) {
         this.directionAngle = aDirectionAngle;
         this.widthAngle = aWidthAngle;
         this.radius = aRadius;
+        this.uid = aUid;
+        this.recharge = aRecharge;
     }
 }
 

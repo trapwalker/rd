@@ -231,8 +231,8 @@ var MapCar = (function (_super) {
         this.type = aType;
         this.hp = aHP;
     }
-    MapCar.prototype.AddFireSector = function (aDirectionAngle, aWidthAngle, aRadius) {
-        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius));
+    MapCar.prototype.AddFireSector = function (aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
+        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
     };
     return MapCar;
 })(DynamicObject);
@@ -255,10 +255,12 @@ var User = (function () {
 })();
 
 var FireSector = (function () {
-    function FireSector(aDirectionAngle, aWidthAngle, aRadius) {
+    function FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
         this.directionAngle = aDirectionAngle;
         this.widthAngle = aWidthAngle;
         this.radius = aRadius;
+        this.uid = aUid;
+        this.recharge = aRecharge;
     }
     return FireSector;
 })();
