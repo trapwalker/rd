@@ -30,10 +30,6 @@ var FireControl = (function () {
         // Инициализация векторного дива
         if (this.options.parentDiv) this.paper = Raphael(this.options.parentDiv, this.options.diameter, this.options.diameter)
         else this.paper = Raphael(0, 0, this.options.diameter, this.options.diameter);
-        //this.paper.circle(this.center.x, this.center.y, this.radiusOut);
-        //this.paper.circle(this.center.x, this.center.y, this.radiusOut)
-        //    .attr({fill: 'r(0.5, 0.5)#82b6d4:0-#20569a:50-#073776:50-#1291cf:100'});
-        //, "opacityStops": "1-0-0.6"
         // Кнопка All
         this.allFire = this.paper.circle(this.center.x, this.center.y, this.radiusIn);
         // Класс кнопки All
@@ -100,16 +96,7 @@ var FireControl = (function () {
         // Поворачиваем сектор на свой угол
         sector.transform('R'+ sector.myAngle +' '+this.center.x + ' ' + this.center.y);
         // Ставим сектору атрибут класс - по умолчанию
-        //$(sector.node).attr('class', 'fire-control-sector');
-        //$(sector.node).attr({fill: '20-#FF0000:0-#AAFFAA:50-#0000FF:100'});
-        sector.attr({
-            "stroke-width": 4,
-            "stroke": "#00f",
-            "stroke-opacity": 0.5,
-            fill: "30-#f00:5-#00f:95"
-        });
-
-        //$(sector.node).attr('stroke-linejoin', 'round');
+        $(sector.node).attr('class', 'fire-control-sector');
         // Вешаем на сектор обработчик клика данного сектора
         $(sector.node).on('click', {sector: sector}, fireSectorEvent);
         // Добавить в сектор ссылку на fireSector, чтобы при вызове коллбека передать первым параметром
@@ -158,14 +145,11 @@ function fireSectorEvent(event) {
     if(! sector.recharged) {
         // установить sector.recharged в true
         sector.recharged = true;
-        //$(sector.node).attr('class', 'fire-control-sector-recharge');
-
-        $(sector.node).attr({
-           // fill: "r(.5,.1)#ccc-#ccc"
-        });
+        $(sector.node).attr('class', 'fire-control-sector-recharge');
         // Запустить timeOut речарджа
         setTimeout(function () {
                 sector.recharged = false;
+                $(sector.node).attr('class', 'fire-control-sector');
             },
             sector._fs.recharge);
         // Вызвать свой коллБэк и передать туда fireSector

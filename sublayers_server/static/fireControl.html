@@ -24,9 +24,10 @@
 
 
     var sectors = [
-        new FireSector(gradToRad(60), gradToRad(60), 40, 1, 5 * 1000),
-        new FireSector(gradToRad(-60), gradToRad(60), 40, 2, 2 * 1000),
-        new FireSector(gradToRad(180), gradToRad(60), 40, 3, 3 * 1000)
+        new FireSector(gradToRad(0), gradToRad(30), 40, 1, 6 * 1000),
+        new FireSector(gradToRad(180), gradToRad(50), 40, 2, 4 * 1000),
+        new FireSector(gradToRad(90), gradToRad(70), 40, 3, 2 * 1000),
+        new FireSector(gradToRad(-90), gradToRad(70), 40, 3, 2 * 1000)
     ]
 
     var qa = new FireControl({
@@ -39,10 +40,10 @@
 
     var angle = 0;
 
-   // var si = setInterval(function () {
-   //     qa.setRotate(angle);
-   //     angle+=0.1;
-   // }, 200);
+    var si = setInterval(function () {
+        qa.setRotate(angle);
+        angle+=0.1;
+    }, 200);
 
    // setTimeout(function(){clearInterval(si);}, 1800000);
 
