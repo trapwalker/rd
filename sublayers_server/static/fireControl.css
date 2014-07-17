@@ -1,13 +1,30 @@
-
-
 .fire-control-sector {
     fill: green;
+    stroke: #333;
+    opacity: 0.3;
+}
+
+.fire-control-sector-recharge {
+    fill: #848685;
     stroke: #333;
     opacity: 0.5;
 }
 
-.fire-control-all {
-    fill: blue;
+.fire-control-sector:hover {
+    fill: 90-#f00:5-#00f:100;
     stroke: #333;
-    opacity: 0.8;
+    opacity: 0.6;
+}
+
+
+.fire-control-all {
+    fill: limegreen;
+    stroke: #333;
+    opacity: 0.3;
+}
+
+.fire-control-all:hover {
+    fill: #30bb30;
+    stroke: #333;
+    opacity: 0.6;
 }
