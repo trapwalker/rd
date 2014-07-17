@@ -84,10 +84,12 @@ class API(object):
 
     def __rpc_call__(self, message):
         try:
-            call_info = tornado.escape.json_decode(message)
+            call_info = json_decode(message)
         except Exception as e:
+            msg = "Can't parse JSON message {!r}: {!r}".format(message, e)
+            log.error(msg)
             return self._make_respond(
-                error=EWrongMethodCallingFormat("Can't parse JSON message {!r}: {!r}".format(message, e)))
+                error=EWrongMethodCallingFormat(msg))
 
         method = call_info.get('call')
         params = call_info.get('params', {})
