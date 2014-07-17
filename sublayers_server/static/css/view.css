@@ -77,3 +77,9 @@
 input:focus {
     outline: none;
 }
+
+#fireControlArea {
+    position: absolute;
+    bottom: 30px;
+    left: 45%;
+}

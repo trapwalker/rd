@@ -5,17 +5,17 @@ function redrawMap() {
     // работа с юзеркаром
     if (user.userCar) {
         tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
-        tempAngleGrad = user.userCar.getCurrentDirection(clock.getCurrentTime());
+        tempAngleRad = user.userCar.getCurrentDirection(clock.getCurrentTime());
         addDivToDiv("console", "rm1", "Игрок: координаты = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) +
-            " угол = " + tempAngleGrad.toFixed(5), true);
+            " угол = " + tempAngleRad.toFixed(5), true);
         // Перенос центра карты в центр маркера пользовательской машинки
         myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
         // Установка угла в для поворота иконки маркера (в градусах)
-        userCarMarker.options.angle = tempAngleGrad * 180 / Math.PI;
+        userCarMarker.options.angle = tempAngleRad * 180 / Math.PI;
         // Установка новых координат маркера
         userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         // перерисовка контроллеров пользователя
-        redrawUserControllers();
+        redrawUserControllers(tempAngleRad);
         // перерисовка следа (шлейфа) за машинкой
         if (userCarTail)
             userCarTail.drawTail(tempPoint, myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
@@ -30,22 +30,30 @@ function redrawMap() {
             // пересчёт угла
             tempAngleGrad = listMapObject.objects[i].getCurrentDirection(clock.getCurrentTime());
             // Установка угла в для поворота иконки маркера (в градусах)
-            listMapObject.objects[i].marker.options.angle = tempAngleGrad * 180 / Math.PI;
+            listMapObject.objects[i].marker.options.angle = tempAngleRad * 180 / Math.PI;
             // Установка новых координат маркера);
             listMapObject.objects[i].marker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         }
     }
 }
 
-function redrawUserControllers() {
+function redrawUserControllers(directionCar) {
     // Отрисовка контролера скорости
     redrawSliderSpeedController();
+
     // Отрисовка контроллера хп
     // hpController.setValue(user.userCar.hp);
     // Отрисовка контроллера Fuel
     // var tfuel = user.userCar.getCurrentFuel(clock.getCurrentTime());
     // fuelController.setValue(tfuel, tfuel * user.userCar.track.fuelDec);
 
+    // Отрисовка контроллера стрельбы
+    if (!(directionCar == 0)) // Пока присылаются два стопа, нужно это условие
+        if (fireControl)
+            if (Math.abs(fireControl.options.rotateAngle - directionCar) > 0.1) {
+                //alert('Povorot na = '+directionCar.toFixed(2)+ '    tekPovorot='+fireControl.options.rotateAngle.toFixed(2));
+                fireControl.setRotate(directionCar);
+            }
 }
 
 function redrawSliderSpeedController() {
@@ -200,7 +208,25 @@ $(document).ready(function () {
         onChange: changeSpeedOnSlider
     });
 
-    fireControl = new FireControl({parentDiv: "fireControlArea"});
+
+
+    // Тестовые вектора для контролера стрельбы
+    var sectors = [
+        new FireSector(gradToRad(0), gradToRad(30), 40, 1, 6 * 1000),
+        new FireSector(gradToRad(180), gradToRad(50), 40, 2, 4 * 1000),
+        new FireSector(gradToRad(90), gradToRad(70), 40, 3, 2 * 1000),
+        new FireSector(gradToRad(-90), gradToRad(70), 40, 3, 2 * 1000)
+    ];
+
+    // Инициализация контролера стрельбы
+    fireControl = new FireControl({
+        parentDiv: 'fireControlArea',
+        diameter: 150,
+        sectors: sectors,
+        sectorCallBack: cbForSectors,
+        allCallBack: cbForAllBtn
+    });
+
 });
 
 function onMarkerPopupOpen(e) {
@@ -240,6 +266,16 @@ function changeSpeedOnSlider() {
 function changeZoomOnSlider() {
     myMap.setZoom(zoomSetSlider.getZoom());
 }
+
+// колл бек для выстрела того или иного сектора
+function cbForSectors(fs){
+    //alert('Выстрел из сектора id = '+fs.uid + '   Перезарядка = '+ fs.recharge);
+}
+// коллбек для кнопки All
+function cbForAllBtn(){
+    //alert('Дан залп из всех орудий своей машинки (user.userCar.id)');
+}
+
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
