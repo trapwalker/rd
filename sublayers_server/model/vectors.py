@@ -3,6 +3,7 @@
 __all__ = ['Point']
 
 from random import gauss
+from math import atan2
 
 
 class Point(complex):
@@ -11,6 +12,10 @@ class Point(complex):
 
     x = complex.real
     y = complex.imag
+
+    @property
+    def angle(self):
+        return atan2(self.imag, self.real)
 
     @classmethod
     def random_gauss(cls, mu, sigma):
