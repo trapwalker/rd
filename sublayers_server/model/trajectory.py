@@ -11,7 +11,11 @@ def rv(v):
 
 def calc(cp, direction, v, tp, rv_func=rv):
     """Calculate and return segmets of trajectory:
-    
+    @param cp: model.vectors.Point
+    @param direction: float
+    @param v: float
+    @param tp: model.vectors.Point
+    @param rv_func callable
     """
     pass
 
