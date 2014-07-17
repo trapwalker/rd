@@ -8,7 +8,12 @@ log = logging.getLogger(__name__)
 import sys
 import traceback
 import functools
-import tornado.escape  # todo: Need to be abstracted from tornado
+try:
+    from tornado.escape import json_decode  # todo: Need to be abstracted from tornado
+except ImportError as e:
+    log.warning(e)
+    from json import loads as json_decode
+    
 
 from utils import serialize
 
@@ -79,10 +84,12 @@ class API(object):
 
     def __rpc_call__(self, message):
         try:
-            call_info = tornado.escape.json_decode(message)
+            call_info = json_decode(message)
         except Exception as e:
+            msg = "Can't parse JSON message {!r}: {!r}".format(message, e)
+            log.error(msg)
             return self._make_respond(
-                error=EWrongMethodCallingFormat("Can't parse JSON message {!r}: {!r}".format(message, e)))
+                error=EWrongMethodCallingFormat(msg))
 
         method = call_info.get('call')
         params = call_info.get('params', {})

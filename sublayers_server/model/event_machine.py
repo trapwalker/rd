@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-if __name__ == '__main__':
-    logging.config.fileConfig("../logging.conf")
-
 log = logging.getLogger(__name__)
 
 from model.server_api import ServerAPI
@@ -131,7 +128,7 @@ class LocalServer(Server):
         return self.thread is not None and self.thread.is_alive()
 
 
-if __name__ == '__main__':
+def main():
     log.info('==== Start logging ' + '=' * 50)
 
     from units import Station, Bot
@@ -155,4 +152,4 @@ if __name__ == '__main__':
 
     pp(srv.timeline, width=1)
 
-    # srv.start()
+    return locals()
