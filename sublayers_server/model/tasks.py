@@ -103,6 +103,22 @@ class Motion(Determined):
         self.start_direction = owner.direction
         """@type: float"""
 
+    @property
+    def position(self, to_time=None):
+        """
+        @param model.utils.TimeClass | None to_time: Time for getting position
+        @rtype: model.vectors.Point
+        """
+        return self.start_point
+
+    @property
+    def direction(self, to_time=None):
+        """
+        @param model.utils.TimeClass | None to_time: Time for getting direction
+        @rtype: float
+        """
+        return self.start_direction
+
 
 class Goto(Motion):
 
@@ -223,6 +239,14 @@ class Goto(Motion):
         """
         to_time = to_time or self._get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
+
+    @property
+    def direction(self, to_time=None):
+        """
+        @param model.utils.TimeClass | None to_time: Time for getting direction
+        @rtype: float
+        """
+        return self.vector.angle
 
 
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
