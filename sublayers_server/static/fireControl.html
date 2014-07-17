@@ -23,26 +23,53 @@
 <script>
 
 
+    var sectors = [
+        new FireSector(gradToRad(60), gradToRad(60), 40, 1, 5 * 1000),
+        new FireSector(gradToRad(-60), gradToRad(60), 40, 2, 2 * 1000),
+        new FireSector(gradToRad(180), gradToRad(60), 40, 3, 3 * 1000)
+    ]
+
     var qa = new FireControl({
         parentDiv: 'speed',
-        diameter: 200
+        diameter: 200,
+        sectors: sectors,
+        sectorCallBack: cbForSectors,
+        allCallBack: cbForAllBtn
     });
-
-    qa.addSector(new FireSector(gradToRad(60), gradToRad(60), 40, 0, 0));
-    qa.addSector(new FireSector(gradToRad(-60), gradToRad(60), 40, 0, 0));
-
-    qa.addSector(new FireSector(gradToRad(180), gradToRad(60), 40, 0, 0));
 
     var angle = 0;
 
-    //qa.setRotate(gradToRad(30));
-    var si = setInterval(function () {
-        qa.setRotate(angle);
-        angle+=0.1;
-        if(angle > 6.3) angle = 0;
-    }, 20);
+   // var si = setInterval(function () {
+   //     qa.setRotate(angle);
+   //     angle+=0.1;
+   // }, 200);
 
-    setTimeout(function(){clearInterval(si);}, 1800000);
+   // setTimeout(function(){clearInterval(si);}, 1800000);
+
+    // колл бек для выстрела того или иного сектора
+    function cbForSectors(fs){
+        alert('Выстрел из сектора id = '+fs.uid + '   Перезарядка = '+ fs.recharge);
+    }
+    // коллбек для кнопки All
+    function cbForAllBtn(){
+        alert('Дан залп из всех орудий своей машинки (user.userCar.id)');
+    }
+
+
+/*
+$(document).ready(function() {
+    var paper = new Raphael(document.getElementById('speed'), 1000, 1000);
+    var tetronimo = paper.path("M 700 700 l 0 -50 l -50 0 l 0 -50 l -50 0 l 0 50 l -50 0 l 0 50 z");
+    tetronimo.attr({
+        fill: '90-#526c7a-#64a0c1',
+        'fill-opacity': 0.5,
+        stroke: '#3b4449',
+        'stroke-width': 10,
+        'stroke-linejoin': 'round',
+        rotation: -90
+    });
+});
+*/
 
 
 </script>

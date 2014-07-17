@@ -1,13 +1,41 @@
 
 
+
+#rect1 { fill: url(#Gradient1); }
+.stop1 { stop-color: white; }
+.stop2 { stop-color: black; stop-opacity: 0; }
+
+
+
+
+
 .fire-control-sector {
     fill: green;
     stroke: #333;
     opacity: 0.5;
 }
 
+.fire-control-sector-recharge {
+    fill: black;
+    stroke: #333;
+    opacity: 1;
+}
+
+.fire-control-sector:hover {
+    fill: 90-#f00:5-#00f:100;
+    stroke: #333;
+    opacity: 0.8;
+}
+
+
 .fire-control-all {
     fill: blue;
+    stroke: #333;
+    opacity: 0.8;
+}
+
+.fire-control-all:hover {
+    fill: black;
     stroke: #333;
     opacity: 0.8;
 }
