@@ -110,12 +110,23 @@ var FireControl = (function () {
     }
 
     FireControl.prototype.setRotate = function(angle) {
-        var tAngle = (angle - this.options.rotateAngle);
+        var tAngle = angle;
         this.options.rotateAngle = tAngle;
         tAngle = tAngle *180/Math.PI;
         this.options.sectors.forEach(function(sector){
             sector.transform('R'+ (this.an + sector.myAngle)+' '+
                        this.x + ' ' + this.y);
+        }, {x: this.center.x, y: this.center.y, an: tAngle});
+        tAngle = null;
+    }
+
+    FireControl.prototype.setRelativeRotate = function(angle) {
+        var tAngle = (angle + this.options.rotateAngle);
+        this.options.rotateAngle = tAngle;
+        tAngle = tAngle *180/Math.PI;
+        this.options.sectors.forEach(function(sector){
+            sector.transform('R'+ (this.an + sector.myAngle)+' '+
+                this.x + ' ' + this.y);
         }, {x: this.center.x, y: this.center.y, an: tAngle});
         tAngle = null;
     }

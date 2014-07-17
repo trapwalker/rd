@@ -12,7 +12,7 @@
     <script src="js/third_party/jquery.min.js"></script>
     <script src="js/third_party/jquery-ui.min.js"></script>
     <script src="js/model.js"></script>
-    <script src="rafael.js"></script>
+    <script src="js/third_party/rafael.js"></script>
     <script src="fireControl.js"></script>
 
 </head>
@@ -41,7 +41,7 @@
     var angle = 0;
 
     var si = setInterval(function () {
-        qa.setRotate(angle);
+        qa.setRelativeRotate(0.3);
         angle+=0.1;
     }, 200);
 
