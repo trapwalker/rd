@@ -6,7 +6,8 @@ var FireControl = (function () {
         this.options = {
             parentDiv: '',
             diameter: 200,
-            rotateAngle: 0
+            rotateAngle: 0,
+            sectors: []
             //onFireAll: ''
         };
 
@@ -31,9 +32,15 @@ var FireControl = (function () {
 
         $(this.allFire.node).attr('class', 'fire-control-all');
 
-        this.allFire.node.onclick = function() {
-            alert(22);
-        }
+        this.allFire.node.onclick =
+            (function() {
+                return function(center) {alert(center.x);}
+            }
+                )({x: 15, y: 22});
+
+
+        // создать сет из элементов
+        this.myset = this.paper.set();
     }
 
     FireControl.prototype.addSector = function(fireSector) {
@@ -85,19 +92,37 @@ var FireControl = (function () {
 
         var sector = this.paper.path(pathstr);
 
-        sector.rotate(radToGrad(fireSector.directionAngle + this.options.rotateAngle), this.center.x, this.center.y);
+        //sector.rotate(radToGrad(fireSector.directionAngle + this.options.rotateAngle), this.center.x, this.center.y);
+
+        sector.myAngle = radToGrad(fireSector.directionAngle + this.options.rotateAngle);
+        sector.transform('R'+ sector.myAngle +' '+
+                            this.center.x + ' ' + this.center.y);
 
         $(sector.node).attr('class', 'fire-control-sector');
+        //this.myset.push(sector);
+
+        this.options.sectors.push(sector);
 
     }
 
     FireControl.prototype.setRotate = function(angle) {
-        var center = this.center;
-        var tempAngle = angle - this.options.rotateAngle;
-        this.options.rotateAngle = angle;
-        this.paper.forEach(function (el) {
-                el.rotate(radToGrad(tempAngle), center.x, center.y);
-            });
+        //this.myset.rotate((angle - this.options.rotateAngle)*180/Math.PI, this.center.x, this.center.y);
+        //this.options.rotateAngle = angle;
+        var tAngle = (angle - this.options.rotateAngle);
+        this.options.rotateAngle = tAngle;
+        tAngle = tAngle *180/Math.PI;
+       // for(var i = 0; i < this.options.sectors.length; i++){
+       //     this.options.sectors[i].transform('R'+ (tAngle + this.options.sectors[i].myAngle)+' '+
+       //                                         this.center.x + ' ' + this.center.y);
+       // }
+
+        this.options.sectors.forEach(function(sector){
+            sector.transform('R'+ (this.an + sector.myAngle)+' '+
+                       this.x + ' ' + this.y);
+        }, {x: this.center.x, y: this.center.y, an: tAngle});
+
+
+        tAngle = null;
 
     }
 
