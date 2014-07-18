@@ -166,10 +166,10 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
 
     def on_change(self):
         super(Observer, self).on_change()
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=self, time=self.server.get_time()))
+        self.emit_for__Agent(message=messages.Update(subject=self, obj=self, comment='message for owner'))
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter))
+        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
 
     @property
     def r(self):
