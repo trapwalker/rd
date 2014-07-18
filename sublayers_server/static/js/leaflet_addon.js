@@ -32,12 +32,9 @@ function getCarMarker(aID, aMap) {
         iconUrl: 'img/car_20.png',
         iconSize: [20, 20]
     }));
-    //newmarker.on('click', removeCar_test);
-    //newmarker.on('click', onMouseClickMarker);
     newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.bindPopup(
-            "<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" + '"Информация" onclick="getTestInfo(lastIDPopupOpen);">' +
-            "<input type=" + '"image"' + "src=" + '"img/green-minus-for-speed.png"' + " height=15 width=15 " + " value=" + '"Удалить" onclick="delCar();">'
+            "<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" + '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
     );
     newMarker.addTo(aMap);
     newMarker.carID = aID;

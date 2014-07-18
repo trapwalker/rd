@@ -28,7 +28,7 @@ function redrawMap() {
     }
 
     // работа со списком машинок
-/*
+
     for (var i in listMapObject.objects) { // переписать for на forEach метод у массива
         if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
             // пересчёт координат
@@ -41,8 +41,8 @@ function redrawMap() {
             listMapObject.objects[i].marker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         }
     }
-*/
 
+/*   // Данный способ безосновательно грузит систему, что не логично... Когда будем делать push, тогда и воспользуемся им
     listMapObject.objects.forEach(function(car){
         // пересчёт координат
         var tempP = car.getCurrentCoord(clock.getCurrentTime());
@@ -57,7 +57,7 @@ function redrawMap() {
         addDivToDiv("console2", car.ID+'1', "Игрок"+car.ID+": Y = " + tempP.y.toFixed(2), true);
 
     });
-
+*/
 
     addDivToDiv("console2", "cn28", "Кол-во машинок = " + listMapObject.objects.length, true);
 }
