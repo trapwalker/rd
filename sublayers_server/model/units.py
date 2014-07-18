@@ -30,7 +30,6 @@ class Unit(Observer):
         """
         if new_state:
             self.server.static_observers.append(self)
-            self.on_change()
         else:
             self.server.static_observers.remove(self)
 
