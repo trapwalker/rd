@@ -220,16 +220,20 @@ function getTrack(data){
 }
 
 function setCurrentCar(uid, aType, aHP, aTrack) {
-    if (uid = user.userCar.ID) { // если машинка своя
+    if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
     }
     else { // если не своя, то проверить есть ли такая в модели
-        alert('Мы находимся в алерте! и для НЕ нашей машинки!');
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
-            listMapObject.add(new MapCar(uid, aType, aHP, aTrack));
+            var car = new MapCar(uid, aType, aHP, aTrack);
+            listMapObject.add(car);
             // и сразу же добавить маркер
             listMapObject.objects[uid].marker = getCarMarker(uid, myMap);
+
+            addDivToDiv("console2", uid+'33', "Добавили машинку: " + listMapObject.objects.length, true);
+            addDivToDiv("console2", uid+'22', "id: " + car.ID, true);
+
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);

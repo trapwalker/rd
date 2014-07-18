@@ -84,3 +84,11 @@ input:focus {
     left: 50%;
     margin-left: -75px;
 }
+
+#console2 {
+    color: #00ff00;
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    overflow: visible;
+}

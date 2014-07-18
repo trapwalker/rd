@@ -34,7 +34,7 @@ class Object(object):
         super(Object, self).__init__()
         self.server = server
         """@type: model.server.Server"""
-        self.uid = get_uid()
+        self.uid = id(self)
         self.server.objects[self.uid] = self
         self.is_alive = True
 
