@@ -63,13 +63,13 @@ class MoveTrack {
     timeStart:number; // UTC милисекунды делённые на 1000 => UTC секунды
     fuelStart:number;
     fuelDec:number;
-    direction:Point; // если машинка стоит на месте, то направление = direction
+    direction:number; // если машинка стоит на месте, то направление = direction
 
-    constructor(aTimeStart, aFuelStart, aFuelDec:number) {
+    constructor(aTimeStart, aFuelStart, aFuelDec, aDirection:number) {
         this.timeStart = aTimeStart;
         this.fuelStart = aFuelStart;
         this.fuelDec = aFuelDec;
-        this.direction = new Point(0, -1);
+        this.direction = aDirection;
     }
 
     getCurrentFuel(aCurrentTime:number):number {
@@ -98,8 +98,8 @@ class MoveLine extends MoveTrack {
     speedV:Point;
     acceleration:Point;
 
-    constructor(aTimeStart, aFuelStart, aFuelDec:number, aCoord, aSpeedV, aAcceleration:Point) {
-        super(aTimeStart, aFuelStart, aFuelDec);
+    constructor(aTimeStart, aFuelStart, aFuelDec, aDirection:number, aCoord, aSpeedV, aAcceleration:Point) {
+        super(aTimeStart, aFuelStart, aFuelDec, aDirection);
         this.coord = aCoord;
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
@@ -115,25 +115,8 @@ class MoveLine extends MoveTrack {
     }
 
     getCurrentDirection(aClockTime:number):number {
-        // Машинка всегда развёрнута по текущей скорости
-        // Вычисляем относительное время t
-        //var t = this.getRelativelyTime(aClockTime);
-        // Вычисляем текущую скорость Vt = A*t + V
-        //var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
-        // Угол в радианах равен углу между единичным вектором и текущей скоростью
-        //return angleVectorRad(Vt, new Point(1,0));
-
-        // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
-        if (this.speedV.abs() != 0) {
-            var res = angleVectorRad(this.speedV, new Point(0, -1));
-            if (this.speedV.x < 0) return -res;
-            return res;
-        }
-        else {
-            var res1 = angleVectorRad(this.direction, new Point(0, -1));
-            if (this.direction.x < 0) return -res1;
-            return res1;
-        }
+        // возвращает угол относительно севера и не разворачивает машинку
+       return this.direction;
     }
 
     getCurrentSpeedAbs(aClockTime:number):number {
@@ -151,7 +134,7 @@ class MoveCircle extends MoveTrack {
     radius:number;
 
     constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle:Point, aAngleStart, aSpeedA, aAccelerationA, aRadius:number) {
-        super(aTimeStart, aFuelStart, aFuelDec);
+        super(aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
         this.speedA = aSpeedA;

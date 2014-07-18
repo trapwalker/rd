@@ -81,5 +81,6 @@ input:focus {
 #fireControlArea {
     position: absolute;
     bottom: 30px;
-    left: 45%;
+    left: 50%;
+    margin-left: -75px;
 }

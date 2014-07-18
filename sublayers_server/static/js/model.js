@@ -61,11 +61,11 @@ function gradToRad(grad) {
 }
 
 var MoveTrack = (function () {
-    function MoveTrack(aTimeStart, aFuelStart, aFuelDec) {
+    function MoveTrack(aTimeStart, aFuelStart, aFuelDec, aDirection) {
         this.timeStart = aTimeStart;
         this.fuelStart = aFuelStart;
         this.fuelDec = aFuelDec;
-        this.direction = new Point(0, -1);
+        this.direction = aDirection;
     }
     MoveTrack.prototype.getCurrentFuel = function (aCurrentTime) {
         return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart));
@@ -91,8 +91,8 @@ var MoveTrack = (function () {
 
 var MoveLine = (function (_super) {
     __extends(MoveLine, _super);
-    function MoveLine(aTimeStart, aFuelStart, aFuelDec, aCoord, aSpeedV, aAcceleration) {
-        _super.call(this, aTimeStart, aFuelStart, aFuelDec);
+    function MoveLine(aTimeStart, aFuelStart, aFuelDec, aDirection, aCoord, aSpeedV, aAcceleration) {
+        _super.call(this, aTimeStart, aFuelStart, aFuelDec, aDirection);
         this.coord = aCoord;
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
@@ -107,25 +107,8 @@ var MoveLine = (function (_super) {
     };
 
     MoveLine.prototype.getCurrentDirection = function (aClockTime) {
-        // Машинка всегда развёрнута по текущей скорости
-        // Вычисляем относительное время t
-        //var t = this.getRelativelyTime(aClockTime);
-        // Вычисляем текущую скорость Vt = A*t + V
-        //var Vt = summVector(mulScalVector(this.acceleration, t), this.speedV);
-        // Угол в радианах равен углу между единичным вектором и текущей скоростью
-        //return angleVectorRad(Vt, new Point(1,0));
-        // Вариант 2: возвращает угол относительно севера и не разворачивает машинку
-        if (this.speedV.abs() != 0) {
-            var res = angleVectorRad(this.speedV, new Point(0, -1));
-            if (this.speedV.x < 0)
-                return -res;
-            return res;
-        } else {
-            var res1 = angleVectorRad(this.direction, new Point(0, -1));
-            if (this.direction.x < 0)
-                return -res1;
-            return res1;
-        }
+        // возвращает угол относительно севера и не разворачивает машинку
+        return this.direction;
     };
 
     MoveLine.prototype.getCurrentSpeedAbs = function (aClockTime) {
@@ -140,7 +123,7 @@ var MoveLine = (function (_super) {
 var MoveCircle = (function (_super) {
     __extends(MoveCircle, _super);
     function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aAngleStart, aSpeedA, aAccelerationA, aRadius) {
-        _super.call(this, aTimeStart, aFuelStart, aFuelDec);
+        _super.call(this, aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
         this.speedA = aSpeedA;

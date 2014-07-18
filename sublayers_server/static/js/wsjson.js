@@ -172,11 +172,16 @@ function receiveMesFromServ(data) {
 function getTrack(data){
     var aTrack;
     var position;
+    var direction;
 
     if (data.position)
         position = new Point(data.position.x, data.position.y);
     else
         position = new Point(0, 0);
+
+    direction = data.direction ? (data.direction + Math.PI/2.) : 0; // так как у сервера 0 в другую сторону
+
+
 
 
     if(data.motion) {
@@ -190,28 +195,13 @@ function getTrack(data){
                 start_time,             //Время начала движения
                 0,                      //Запас топлива
                 0,                      //Расход топлива
+                direction,              //Направление
                 position,               //Начальная точка
                 velocity,               //Скорость
                 new Point(0, 0)         //Ускорение
             );
+
             return aTrack;
-        }
-
-        //direction
-        if (data.direction != null) {
-            // запустить функцию установки линейного движения с нулевыми скоростью и ускорением, и углом поворта
-            var direction = new Point(data.direction.x,
-                data.direction.y);
-            aTrack = new MoveLine(
-                clock.getCurrentTime(), //Время начала движения
-                0,                      //Запас топлива
-                0,                      //Расход топлива
-                position,               //Начальная точка
-                new Point(0, 0),        //Скорость
-                new Point(0, 0)         //Ускорение
-            );
-            aTrack.direction = direction;
-
         }
     }
 
@@ -220,6 +210,7 @@ function getTrack(data){
             clock.getCurrentTime(),     //Время начала движения
             0,                          //Запас топлива
             0,                          //Расход топлива
+            direction,                  //Направление
             position,                   //Начальная точка
             new Point(0, 0),            //Скорость
             new Point(0, 0)             //Ускорение
