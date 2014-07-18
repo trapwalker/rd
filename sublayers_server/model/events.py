@@ -92,8 +92,11 @@ class Contact(Subjective):
 
     def perform(self):
         super(Contact, self).perform()
-        self.subj.contacts.remove(self)
-        self.obj.contacts.remove(self)
+        try:  # todo: Устранить хак
+            self.subj.contacts.remove(self)
+            self.obj.contacts.remove(self)
+        except:
+            pass
 
 
 class ContactSee(Contact):

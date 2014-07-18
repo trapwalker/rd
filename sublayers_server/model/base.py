@@ -7,6 +7,7 @@ from subscription_protocol import make_subscriber_emitter_classes
 from utils import get_uid, serialize
 from inventory import Inventory
 import messages
+from events import ContactSee
 
 from abc import ABCMeta
 
@@ -104,7 +105,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts = []
         """@type: list[model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        # todo: subscription to changes for external observers
+        self.init_contacts_search()
 
     def on_change(self):  # todo: privacy level index
         # todo: emit update message
@@ -119,6 +120,17 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         contacts = self.contacts
         while contacts:
             contacts.pop().actual = False
+
+    def init_contacts_search(self):
+        contacts = self.contacts
+        for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
+            if isinstance(obj, Observer) and obj is not self:  # todo: optimize filtration observers
+                dist = abs(obj.position - self.position)
+                if dist <= obj.r:  # todo: check <= vs <
+                    contacts.append(ContactSee(time=self.server.get_time(), subj=obj, obj=self))
+
+        self.contacts_search()
+        log.debug('INIT VO %s: found %d contacts', self, len(contacts))
 
     def special_contacts_search(self):
         contacts = self.contacts
@@ -160,8 +172,8 @@ class Heap(VisibleObject):
 class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
 
     def __init__(self, observing_range=0.0, **kw):
-        super(Observer, self).__init__(**kw)
         self._r = observing_range
+        super(Observer, self).__init__(**kw)
         # todo: Нужно увидеть соседние объекты при инициализации
 
     def on_change(self):
@@ -179,3 +191,19 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         d = super(Observer, self).as_dict()
         d.update(r=self.r)
         return d
+
+    def init_contacts_search(self):
+        # todo: need to refactorig
+        contacts = self.contacts
+        for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
+            if isinstance(obj, VisibleObject) and obj is not self:  # todo: optimize filtration VisibleObkects
+                dist = abs(obj.position - self.position)
+
+                if dist <= self.r:
+                    contacts.append(ContactSee(time=self.server.get_time(), subj=self, obj=obj))
+
+                if isinstance(obj, Observer) and dist <= obj.r:  # todo: check <= vs <
+                    contacts.append(ContactSee(time=self.server.get_time(), subj=obj, obj=self))
+
+        self.contacts_search()
+        log.debug('INIT OBSERVER %s: found %d contacts', self, len(contacts))
