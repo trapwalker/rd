@@ -10,12 +10,13 @@ from utils import time_log_format, serialize
 class Message(object):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, time):
+    def __init__(self, time, comment=None):
         """
         @param model.utils.TimeClass time: Time of message post
         """
         super(Message, self).__init__()
         self.time = time
+        self.comment = comment
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -34,6 +35,7 @@ class Message(object):
         return dict(
             cls=self.classname,
             time=self.time,
+            comment=self.comment,
         )
 
     def serialize(self):
@@ -43,13 +45,13 @@ class Message(object):
 class InitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
 
-    def __init__(self, agent, time=None):
+    def __init__(self, agent, time=None, **kw):
         """
         @param model.agents.Agent agent
         """
         if not time:
             time = agent.server.get_time()
-        super(InitMessage, self).__init__(time=time)
+        super(InitMessage, self).__init__(time=time, **kw)
         self.agent = agent
 
     def as_dict(self):
@@ -64,14 +66,14 @@ class InitMessage(Message):
 class ChatMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
 
-    def __init__(self, author, text=None, client_id=None, time=None):
+    def __init__(self, author, text=None, client_id=None, time=None, **kw):
         """
         @param model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
         if not time:
             time = author.server.get_time()
-        super(ChatMessage, self).__init__(time=time)
+        super(ChatMessage, self).__init__(time=time, **kw)
         self.author = author
         self.text = text
         self.client_id = client_id
@@ -89,13 +91,13 @@ class ChatMessage(Message):
 class UnitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
 
-    def __init__(self, subject, time=None):
+    def __init__(self, subject, time=None, **kw):
         """
         @param model.units.Unit subject: Sender of message
         """
         if not time:
             time = subject.server.get_time()
-        super(UnitMessage, self).__init__(time=time)
+        super(UnitMessage, self).__init__(time=time, **kw)
         self.subject = subject
 
     def as_dict(self):
