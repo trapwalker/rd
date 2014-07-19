@@ -50,6 +50,16 @@
     opacity: 0.5;
 }
 
+#serverStatus {
+    position: absolute;
+    top: 5px;
+    left: 60%;
+    overflow: visible;
+    min-height: 200px;
+    min-width: 300px;
+    color: floralwhite;
+}
+
 #buttonFullScreen {
     position: absolute;
     top: 35px;
