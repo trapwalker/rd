@@ -24,7 +24,7 @@ function redrawMap() {
         if(userCarMarker._visibleCircle){
             userCarMarker._visibleCircle.setLatLng(userCarMarker.getLatLng());
         } else {
-            userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 500,
+            userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 1000,
                 {
                     color: '#11FF11',
                     opacity: 0.3
