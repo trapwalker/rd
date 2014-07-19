@@ -180,8 +180,9 @@ $(document).ready(function () {
     testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], 16));
     testTownMarker.bindPopup("Город Белгород!");
 
-    // создание чата
+    // создание чата и моментальное сворачивание его.
     createViewMessenger("chatArea");
+    viewMessengerSlideButton.click();
 
     // создание слайдера зума
     zoomSetSlider = new SliderZoom({
