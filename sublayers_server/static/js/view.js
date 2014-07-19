@@ -236,7 +236,8 @@ $(document).ready(function () {
         max: 125,
         min: 0,
         step: 1,
-        onChange: changeSpeedOnSlider
+        onChange: changeSpeedOnSlider,
+        onStop: stopSpeedOnSlider
     });
 
 
@@ -300,6 +301,10 @@ function delCar() {
 function changeSpeedOnSlider() {
     if (user.userCar)
         sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
+}
+
+function stopSpeedOnSlider() {
+    if (user.userCar) sendStopCar();
 }
 
 function changeZoomOnSlider() {

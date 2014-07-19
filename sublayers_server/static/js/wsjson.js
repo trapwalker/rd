@@ -60,7 +60,7 @@ function sendNewPoint(aPoint, auid) {
 }
 
 // stop
-function sendStopCar(auid) {
+function sendStopCar() {
     var mes = {
         call: "stop",
         rpc_call_id: rpcCallList.getID(),
