@@ -124,7 +124,7 @@ function receiveMesFromServ(data){
             addDivToDiv("console2",'start_time3',"servTime = " + servtime/1000., true);
             // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
            // clock.setDt(servtime/1000.);
-            if (event.cls === "See" || event.cls === "Contact" || event.cls === "Update") {
+            if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
@@ -133,6 +133,8 @@ function receiveMesFromServ(data){
             if (event.cls === "Update") {
                 // Update
                 var aTrack, aType, aHP;
+                // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
+                clock.setDt(servtime/1000.);
                 aTrack = getTrack(event.object);
                 updateCurrentCar(event.object.uid, aType, aHP, aTrack);
             }
