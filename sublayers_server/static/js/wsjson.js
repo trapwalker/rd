@@ -129,6 +129,21 @@ function receiveMesFromServ(data){
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
                 setCurrentCar(event.object.uid, aType, aHP, aTrack);
+
+                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                L.marker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16),{
+                    icon: L.icon({
+                            iconUrl: 'img/marker_origin.png',
+                            iconSize: [25, 41],
+                            shadowUrl: ''
+                        })
+                })
+                    .bindPopup(
+                        'Тип сообщения: '+event.cls + '</br>'+
+                        'Server-Time: '+servtime + '</br>' +
+                        'uid объекта: ' +event.object.uid + '</br>'
+                )
+                    .addTo(myMap);
             }
             if (event.cls === "Update") {
                 // Update
