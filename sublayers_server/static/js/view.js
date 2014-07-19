@@ -267,6 +267,8 @@ $(document).ready(function () {
 
 function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
+
+    this.setPopupContent('My ID = ' + this.carID);
 }
 
 function getTestInfo(aid) {
