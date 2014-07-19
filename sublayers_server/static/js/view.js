@@ -20,6 +20,18 @@ function redrawMap() {
 
         //userCarMarker.update();
 
+        // добавление области видимости машинки
+        if(userCarMarker._visibleCircle){
+            userCarMarker._visibleCircle.setLatLng(userCarMarker.getLatLng());
+        } else {
+            userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 1000,
+                {
+                    color: '#11FF11',
+                    opacity: 0.3
+                }
+            ).addTo(myMap);
+        }
+
         // перерисовка контроллеров пользователя
         redrawUserControllers(tempAngleRad);
         // перерисовка следа (шлейфа) за машинкой
@@ -210,8 +222,9 @@ $(document).ready(function () {
     testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], 16));
     testTownMarker.bindPopup("Город Белгород!");
 
-    // создание чата
+    // создание чата и моментальное сворачивание его.
     createViewMessenger("chatArea");
+    viewMessengerSlideButton.click();
 
     // создание слайдера зума
     zoomSetSlider = new SliderZoom({
@@ -235,7 +248,8 @@ $(document).ready(function () {
         max: 125,
         min: 0,
         step: 1,
-        onChange: changeSpeedOnSlider
+        onChange: changeSpeedOnSlider,
+        onStop: stopSpeedOnSlider
     });
 
 
@@ -267,6 +281,8 @@ $(document).ready(function () {
 
 function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
+
+    this.setPopupContent('My ID = ' + this.carID);
 }
 
 function getTestInfo(aid) {
@@ -297,6 +313,10 @@ function delCar() {
 function changeSpeedOnSlider() {
     if (user.userCar)
         sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
+}
+
+function stopSpeedOnSlider() {
+    if (user.userCar) sendStopCar();
 }
 
 function changeZoomOnSlider() {

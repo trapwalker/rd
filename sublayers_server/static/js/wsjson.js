@@ -60,7 +60,7 @@ function sendNewPoint(aPoint, auid) {
 }
 
 // stop
-function sendStopCar(auid) {
+function sendStopCar() {
     var mes = {
         call: "stop",
         rpc_call_id: rpcCallList.getID(),
@@ -124,15 +124,32 @@ function receiveMesFromServ(data){
             addDivToDiv("console2",'start_time3',"servTime = " + servtime/1000., true);
             // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
            // clock.setDt(servtime/1000.);
-            if (event.cls === "See" || event.cls === "Contact" || event.cls === "Update") {
+            if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
                 setCurrentCar(event.object.uid, aType, aHP, aTrack);
+
+                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                L.marker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16),{
+                    icon: L.icon({
+                            iconUrl: 'img/marker_origin.png',
+                            iconSize: [25, 41],
+                            shadowUrl: ''
+                        })
+                })
+                    .bindPopup(
+                        'Тип сообщения: '+event.cls + '</br>'+
+                        'Server-Time: '+servtime + '</br>' +
+                        'uid объекта: ' +event.object.uid + '</br>'
+                )
+                    .addTo(myMap);
             }
             if (event.cls === "Update") {
                 // Update
                 var aTrack, aType, aHP;
+                // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
+                clock.setDt(servtime/1000.);
                 aTrack = getTrack(event.object);
                 updateCurrentCar(event.object.uid, aType, aHP, aTrack);
             }
