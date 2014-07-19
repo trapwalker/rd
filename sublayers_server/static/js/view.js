@@ -20,6 +20,18 @@ function redrawMap() {
 
         //userCarMarker.update();
 
+        // добавление области видимости машинки
+        if(userCarMarker._visibleCircle){
+            userCarMarker._visibleCircle.setLatLng(userCarMarker.getLatLng());
+        } else {
+            userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 500,
+                {
+                    color: '#11FF11',
+                    opacity: 0.3
+                }
+            ).addTo(myMap);
+        }
+
         // перерисовка контроллеров пользователя
         redrawUserControllers(tempAngleRad);
         // перерисовка следа (шлейфа) за машинкой
