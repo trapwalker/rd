@@ -222,51 +222,68 @@
     position: absolute;
     left: 50px;
     top: 70px;
+    height: 50px;
+    width: 232px;
 }
 
 #pbarFuelLeft {
     height: 30px;
     width: 30px;
-    border: solid #000000 1px;
     position: absolute;
+    background: transparent url('./img/fuel/fuel_icon.png') 100% 100% no-repeat;
+    opacity: 0.8;
+    left: -10px;
+    top: 2px;
 }
 
 #pbarFuelRight {
-    height: 60px;
+    height: 50px;
     width: 200px;
-    border: solid #000000 1px;
     left: 30px;
     position: absolute;
 }
 
 #pbarFuelRightBar {
     height: 30px;
-    width: 200px;
-    border: solid lightpink 1px;
+    width: 202px;
     position: absolute;
-    overflow-x: hidden;
 }
 
 #pbarFuelBarFiller {
     position: absolute;
     height: 30px;
     width: 200px;
+    overflow-x: hidden;
 }
 
 #pbarFuelBarFillerFill {
     position: absolute;
-    background-color: aquamarine;
-    height: 100%;
+    height: 30px;
     width: 100%;
-    margin-right: 5px;
+    background: transparent url('./img/fuel/fuel_filler.png') 100% 100% no-repeat;
+    z-index: 1;
+    opacity: 0.4;
 }
 
-#pbarFuelBarFillerArrow {
+#pbarFuelBarScale {
     position: absolute;
-    background-color: red;
+    background: transparent url('./img/fuel/fuel_bar.png') 100% 100% no-repeat;
     height: 100%;
-    width: 5px;
-    right: 0px;
+    width: 100%;
+    z-index: 2;
+    opacity: 1;
+}
+
+#pbarFuelBarArrow {
+    position: absolute;
+    background: transparent url('./img/fuel/fuel_arrow.png') 100% 100% no-repeat;
+    width: 9px;
+    height: 16px;
+    right: 0%;
+    bottom: 0px;
+    margin-right: -4.5px;
+    z-index: 3;
+    opacity: 1;
 }
 
 
@@ -275,18 +292,18 @@
 #pbarFuelRightDigits {
     height: 15px;
     width: 200px;
-    border: solid red 1px;
     position: absolute;
     top: -20px;
     font: bold 12px Arial;
     color: #2dc34a;
     text-align: center;
+    top: 3px;
 }
 
 
 .pbarRightsDigitsLeft {
     position: absolute;
-    left: 0px;
+    left: -2px;
 }
 
 .pbarRightsDigitsCenter {
@@ -295,13 +312,12 @@
 
 .pbarRightsDigitsRight{
     position: absolute;
-    right: 0px;
+    right: -4px;
 }
 
 #pbarFuelRightLabel {
     height: 20px;
     width: 200px;
-    border: solid peru 1px;
     top: 30px;
     position: absolute;
     font: bold 12px Arial;
@@ -336,52 +352,70 @@
 .pbar-hp-parent {
     position: absolute;
     left: 50px;
-    top: 150px;
+    top: 125px;
+    height: 50px;
+    width: 232px;
 }
 
 #pbarHPLeft {
     height: 30px;
     width: 30px;
-    border: solid #000000 1px;
     position: absolute;
+    background: transparent url('./img/health/health_icon.png') 100% 100% no-repeat;
+    opacity: 0.8;
+    left: -10px;
+    top: 2px;
 }
 
 #pbarHPRight {
-    height: 60px;
+    height: 50px;
     width: 200px;
-    border: solid #000000 1px;
     left: 30px;
     position: absolute;
 }
 
 #pbarHPRightBar {
     height: 30px;
-    width: 200px;
-    border: solid lightpink 1px;
+    width: 202px;
     position: absolute;
-    overflow-x: hidden;
 }
 
 #pbarHPBarFiller {
     position: absolute;
     height: 30px;
     width: 200px;
+    overflow-x: hidden;
+
 }
 
 #pbarHPBarFillerFill {
     position: absolute;
-    background-color: aquamarine;
-    height: 100%;
+    height: 30px;
     width: 100%;
-    margin-right: 5px;
+    background: transparent url('./img/health/health_filler.png') 100% 100% no-repeat;
+    z-index: 1;
+    opacity: 0.4;
 }
 
-#pbarHPBarFillerArrow {
+#pbarHPBarScale {
     position: absolute;
-    background-color: red;
+    background: transparent url('./img/health/health_bar.png') 100% 100% no-repeat;
     height: 100%;
-    width: 5px;
-    right: 0px;
+    width: 100%;
+    z-index: 2;
+    opacity: 1;
+}
+
+#pbarHPBarArrow {
+    position: absolute;
+    background: transparent url('./img/health/health_arrow.png') 100% 100% no-repeat;
+    width: 9px;
+    height: 16px;
+    right: 0%;
+    bottom: 0px;
+    margin-right: -4.5px;
+    z-index: 3;
+    opacity: 1;
 }
 
 
@@ -390,9 +424,8 @@
 #pbarHPRightDigits {
     height: 15px;
     width: 200px;
-    border: solid red 1px;
     position: absolute;
-    top: -20px;
+    top: 3px;
     font: bold 12px Arial;
     color: #2dc34a;
     text-align: center;
@@ -401,11 +434,24 @@
 #pbarHPRightLabel {
     height: 20px;
     width: 200px;
-    border: solid peru 1px;
     top: 30px;
     position: absolute;
     font: bold 12px Arial;
     color: #2dc34a;
+}
+
+.pbarHPRightsDigitsLeft {
+    position: absolute;
+    left: -2px;
+}
+
+.pbarHPRightsDigitsCenter {
+
+}
+
+.pbarHPRightsDigitsRight{
+    position: absolute;
+    right: -10.5px;
 }
 
 .pbarHPRightLabelt1 {

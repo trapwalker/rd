@@ -289,22 +289,27 @@ var ProgressBarFuel = (function () {
         $('#pbarFuelRight').append(nodeRightDigits);
         $('#pbarFuelRight').append(nodeRightBar);
         $('#pbarFuelRight').append(nodeRightLabel);
-        // в pbarFuelRightBar добавить pbarFuelBarFiller
+        // в pbarFuelRightBar добавить pbarFuelBarFiller, pbarFuelBarScale, pbarFuelBarArrow
         var nodeRightFiller = '<div id="pbarFuelBarFiller"></div>';
+        var nodeRightScale = '<div id="pbarFuelBarScale"></div>';
+        var nodeRightArrow = '<div id="pbarFuelBarArrow"></div>';
         $('#pbarFuelRightBar').append(nodeRightFiller);
-        //  добавить в pbarFuelBarFiller два дива: стрелка и наполнитель
-        var nodeRightFill = '<div id="pbarFuelBarFillerFill"></div>';
-        var nodeRightArrow = '<div id="pbarFuelBarFillerArrow"></div>';
-        $('#pbarFuelBarFiller').append(nodeRightFill);
-        $('#pbarFuelBarFiller').append(nodeRightArrow);
-    }
+        $('#pbarFuelRightBar').append(nodeRightScale);
+        $('#pbarFuelRightBar').append(nodeRightArrow);
+        // Теперь в pbarFuelBarFiller добавить pbarFuelBarFillerFill чтобы именно в pbarFuelBarFiller  сделать overflow-x
+        // А допустим стрелка могла спокойно выезжать за пределы своего pbarFuelRightBar
+        var nodeRightFillerFill = '<div id="pbarFuelBarFillerFill"></div>';
+        $('#pbarFuelBarFiller').append(nodeRightFillerFill);
 
+
+    }
 
     ProgressBarFuel.prototype.setValue = function (value, distance) { // distance = rashod * value
         var temp = 100 - (value * this.koeff);
         if((temp > 100) || (temp < 0)) return;
         var tdist = distance > 0 ? distance.toFixed(0) + ' km' : "--------";
-        $('#pbarFuelBarFiller').css('right', temp + '%');
+        $('#pbarFuelBarFillerFill').css('right', temp + '%');
+        $('#pbarFuelBarArrow').css('right', temp + '%');
         // Установить значение остатка value и ввести второй параметр, сколько можем ещё проехать.
         $('#pbarFuelRightLabelt2ID').text(value.toFixed(0));
         $('#pbarFuelRightLabelt4ID').text(tdist);
@@ -339,9 +344,9 @@ var ProgressBarHP = (function () {
         $('#' + parent).append(nodeParentRight);
         // Создать 3 дива для правого дива: цифры. шкала, надпись
         var nodeRightDigits = '<div id="pbarHPRightDigits">' +
-            '<span class="pbarRightsDigitsLeft">0</span>' +
-            '<span class="pbarRightsDigitsCenter">50</span>' +
-            '<span class="pbarRightsDigitsRight">100</span>' +
+            '<span class="pbarHPRightsDigitsLeft">0</span>' +
+            '<span class="pbarHPRightsDigitsCenter">50</span>' +
+            '<span class="pbarHPRightsDigitsRight">100</span>' +
             '</div>';
         var nodeRightBar = '<div id="pbarHPRightBar"></div>';
         var nodeRightLabel = '<div id="pbarHPRightLabel">' +
@@ -352,21 +357,24 @@ var ProgressBarHP = (function () {
         $('#pbarHPRight').append(nodeRightDigits);
         $('#pbarHPRight').append(nodeRightBar);
         $('#pbarHPRight').append(nodeRightLabel);
-        // в pbarHPRightBar добавить pbarHPBarFiller
+        // в pbarHPRightBar добавить pbarHPBarFiller, pbarHPBarScale, pbarHPBarArrow
         var nodeRightFiller = '<div id="pbarHPBarFiller"></div>';
+        var nodeRightScale = '<div id="pbarHPBarScale"></div>';
+        var nodeRightArrow = '<div id="pbarHPBarArrow"></div>';
         $('#pbarHPRightBar').append(nodeRightFiller);
-        //  добавить в pbarHPBarFiller два дива: стрелка и наполнитель
-        var nodeRightFill = '<div id="pbarHPBarFillerFill"></div>';
-        var nodeRightArrow = '<div id="pbarHPBarFillerArrow"></div>';
-        $('#pbarHPBarFiller').append(nodeRightFill);
-        $('#pbarHPBarFiller').append(nodeRightArrow);
+        $('#pbarHPRightBar').append(nodeRightScale);
+        $('#pbarHPRightBar').append(nodeRightArrow);
+        // Теперь в pbarHPBarFiller добавить pbarHPBarFillerFill чтобы именно в pbarHPBarFiller  сделать overflow-x
+        // А допустим стрелка могла спокойно выезжать за пределы своего pbarHPRightBar
+        var nodeRightFillerFill = '<div id="pbarHPBarFillerFill"></div>';
+        $('#pbarHPBarFiller').append(nodeRightFillerFill);
     }
-
 
     ProgressBarHP.prototype.setValue = function (value) {
         var temp = 100 - (value * this.koeff);
         if((temp > 100) || (temp < 0)) return;
-        $('#pbarHPBarFiller').css('right', temp + '%');
+        $('#pbarHPBarFillerFill').css('right', temp + '%');
+        $('#pbarHPBarArrow').css('right', temp + '%');
         // Установить значение остатка value и ввести второй параметр, сколько можем ещё проехать.
         $('#pbarHPRightLabelt2ID').text((100-temp).toFixed(0) + '%');
     }
