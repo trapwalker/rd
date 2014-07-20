@@ -96,7 +96,8 @@ class Contact(Subjective):
             self.subj.contacts.remove(self)
             self.obj.contacts.remove(self)
         except:
-            pass
+            import traceback
+            log.error(traceback.format_exc())
 
 
 class ContactSee(Contact):
