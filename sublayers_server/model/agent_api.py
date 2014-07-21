@@ -20,7 +20,7 @@ def make_push_package(events):
 
 
 class AgentAPI(API):
-    def __init__(self, agent, position=None, position_sigma=Point(0, 0)):
+    def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
         super(AgentAPI, self).__init__()
         self.agent = agent
         if self.agent.cars:

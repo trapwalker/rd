@@ -30,7 +30,6 @@ class Unit(Observer):
         """
         if new_state:
             self.server.static_observers.append(self)
-            self.on_change()
         else:
             self.server.static_observers.remove(self)
 
@@ -117,7 +116,8 @@ class Bot(Unit):
 
     @direction.setter
     def direction(self, value):
-        self._diection = value
+        self._direction = value
+
 
     @property
     def max_velocity(self):  # m/s
@@ -172,6 +172,7 @@ class Bot(Unit):
         old_motion = self.motion
         if old_motion:
             self.position = old_motion.position
+            self.direction = old_motion.direction
             self.server.motions.remove(old_motion)
         new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion

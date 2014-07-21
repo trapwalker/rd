@@ -60,7 +60,7 @@ function sendNewPoint(aPoint, auid) {
 }
 
 // stop
-function sendStopCar(auid) {
+function sendStopCar() {
     var mes = {
         call: "stop",
         rpc_call_id: rpcCallList.getID(),
@@ -108,10 +108,10 @@ function sendChatMessage(atext, auid) {
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
-function receiveMesFromServ(data) {
+function receiveMesFromServ(data){
+
     var mes = JSON.parse(data, function(key, value){
-        if (key == 'time') return new Date(value*1000);
-        if (key == 'start_time') return new Date(value*1000);
+        if((key === 'time') || (key === 'start_time')) return new Date(value * 1000).getTime();
         return value;
     });
     // если message_type = push
@@ -121,14 +121,39 @@ function receiveMesFromServ(data) {
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            clock.setDt(servtime);
-            if (event.cls == "See" || event.cls == "Contact" || event.cls == "Update") {
-                // see || contact || Update
+            addDivToDiv("console2",'start_time3',"servTime = " + servtime/1000., true);
+            // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
+           // clock.setDt(servtime/1000.);
+            if (event.cls === "See" || event.cls === "Contact") {
+                // see || contact
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
                 setCurrentCar(event.object.uid, aType, aHP, aTrack);
+
+                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                L.marker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16),{
+                    icon: L.icon({
+                            iconUrl: 'img/marker_origin.png',
+                            iconSize: [25, 41],
+                            shadowUrl: ''
+                        })
+                })
+                    .bindPopup(
+                        'Тип сообщения: '+event.cls + '</br>'+
+                        'Server-Time: '+servtime + '</br>' +
+                        'uid объекта: ' +event.object.uid + '</br>'
+                )
+                    .addTo(myMap);
             }
-            if (event.cls == "InitMessage") {
+            if (event.cls === "Update") {
+                // Update
+                var aTrack, aType, aHP;
+                // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
+                clock.setDt(servtime/1000.);
+                aTrack = getTrack(event.object);
+                updateCurrentCar(event.object.uid, aType, aHP, aTrack);
+            }
+            if (event.cls === "InitMessage") {
                 // InitMessage
                 var aTrack = getTrack(event.cars[0]);
                 var max_speed;
@@ -142,7 +167,7 @@ function receiveMesFromServ(data) {
                     user.ID = event.agent.uid;
                 }
             }
-            if (event.cls == "Out") {
+            if (event.cls === "Out") {
                 // out
                 var uid = event.object_id;
                 if (listMapObject.exist(uid)) {
@@ -151,7 +176,7 @@ function receiveMesFromServ(data) {
                     listMapObject.del(uid);
                 }
             }
-            if (event.cls == "ChatMessage") {
+            if (event.cls === "ChatMessage") {
                 // chat_message
                 addDivToDiv("viewMessengerList", "chat_text" + event.id + "newChat", servtime + " " +
                     event.author.login + ": " + event.text, true);
@@ -191,8 +216,11 @@ function getTrack(data){
             var velocity = new Point(data.motion.velocity.x,
                 data.motion.velocity.y);
             var start_time = data.motion.start_time;
+            addDivToDiv("console2",'start_time1', "lastTTrack  = " + data.motion.start_time/1000., true);
+            addDivToDiv("console2",'start_time2', "my_time     = " + clock.getCurrentTime(), true);
+
             aTrack = new MoveLine(
-                start_time,             //Время начала движения
+                start_time/1000.,             //Время начала движения
                 0,                      //Запас топлива
                 0,                      //Расход топлива
                 direction,              //Направление
@@ -220,21 +248,38 @@ function getTrack(data){
 }
 
 function setCurrentCar(uid, aType, aHP, aTrack) {
-    if (uid = user.userCar.ID) { // если машинка своя
+    if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
     }
     else { // если не своя, то проверить есть ли такая в модели
-        alert('Мы находимся в алерте! и для НЕ нашей машинки!');
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
-            listMapObject.add(new MapCar(uid, aType, aHP, aTrack));
+            var car = new MapCar(uid, aType, aHP, aTrack);
+            listMapObject.add(car);
             // и сразу же добавить маркер
             listMapObject.objects[uid].marker = getCarMarker(uid, myMap);
+
+            addDivToDiv("console2", uid+'33', "Добавили машинку: " + listMapObject.objects.length, true);
+            addDivToDiv("console2", uid+'22', "id: " + car.ID, true);
+
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);
             listMapObject.setTrack(uid, aTrack);
         }
+    }
+
+}
+
+
+function updateCurrentCar(uid, aType, aHP, aTrack) {
+    if (uid == user.userCar.ID) { // если машинка своя
+        user.userCar.track = aTrack;
+        user.userCar.hp = aHP;
+    }
+    else { // если не своя, то проверить есть ли такая в модели
+        listMapObject.setCarHP(uid, aHP);
+        listMapObject.setTrack(uid, aTrack);
     }
 
 }

@@ -20,8 +20,7 @@ function addDivToDiv(parentDivID, divID, astr, toTop) {  // Если такой 
 }
 
 
-function addMesToConsole(mes) {  // Если такой див есть, то текст меняется в нём, иначе
-    // создать див с именем divID
+function addMesToConsole(mes) {  // Добавлять сообщения в консоль
     var str = "<div class=\"message\">" +
         '<span style="color: aquamarine">' + 'Push от сервера #' + newIDFromP() + '</span>'+
         '<span style="color: #00ff00"> <pre>' + mes + '</pre></span>'+
@@ -29,6 +28,17 @@ function addMesToConsole(mes) {  // Если такой див есть, то т
 
     var node = $(str);
     $("#console").append(node).scrollTop(999999);
+}
+
+
+function addStatusServer(key, value) {  // Постоянно обновляет сообщения от сервера
+    var astr = key + ': ' + value;
+    if ($("#" + key+'_stServ').length) {
+        $("#" + key+'_stServ').text(astr);
+        return;
+    }
+    var str = '<div id="' + key +'_stServ' + '" class="message">' + astr + '</div>';
+    $("#serverStatus").append($(str));
 }
 
 function newIDFromP() {

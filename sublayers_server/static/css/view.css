@@ -50,6 +50,16 @@
     opacity: 0.5;
 }
 
+#serverStatus {
+    position: absolute;
+    top: 5px;
+    left: 60%;
+    overflow: visible;
+    min-height: 200px;
+    min-width: 300px;
+    color: floralwhite;
+}
+
 #buttonFullScreen {
     position: absolute;
     top: 35px;
@@ -83,4 +93,12 @@ input:focus {
     bottom: 30px;
     left: 50%;
     margin-left: -75px;
+}
+
+#console2 {
+    color: #00ff00;
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    overflow: visible;
 }

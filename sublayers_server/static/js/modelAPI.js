@@ -24,12 +24,19 @@ function ModelInit() {
     //user.userCar.track.direction = new Point(1,-1);
 
     listMapObject = new ListMapObject();
+
+
+    //listMapObject.add(new MapCar(1,2,3, null));
+    //listMapObject.add(new MapCar(2,2,3, null));
+    //listMapObject.add(new MapCar('asdadsaasdasasdasdasda',2,3, null));
+    //listMapObject.add(new MapCar('asdkjahsdaiduhasdadasd',2,3, null));
+
+    //alert(listMapObject.objects.length);
+
 }
 
-$(document).ready(function () {
-    ModelInit();
-    timer = setInterval(timerRepaint, timerDelay);
-});
+
+
 
 var timerDelay = 20; //константа задающая временной интервал таймера (юзать по всему проекту только это)
 var user;

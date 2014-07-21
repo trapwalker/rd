@@ -1,40 +1,77 @@
 function redrawMap() {
-    var tempPoint;
-    var tempAngleGrad;
+    var tempPointMain;
+    var tempAngleRad;
+
 
     // работа с юзеркаром
     if (user.userCar) {
-        tempPoint = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        tempPointMain = user.userCar.getCurrentCoord(clock.getCurrentTime());
         tempAngleRad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-        addDivToDiv("console", "rm1", "Игрок: координаты = " + tempPoint.x.toFixed(2) + " " + tempPoint.y.toFixed(2) +
-            " угол = " + tempAngleRad.toFixed(5), true);
+        addDivToDiv("console2", "cn21", "Игрок: X = " + tempPointMain.x.toFixed(2), true);
+        addDivToDiv("console2", "cn22", "Игрок: Y = " + tempPointMain.y.toFixed(2), true);
+
         // Перенос центра карты в центр маркера пользовательской машинки
-        myMap.panTo(myMap.unproject([tempPoint.x, tempPoint.y], 16), {animate: false});
+        //myMap.panTo(myMap.unproject([tempPointMain.x, tempPointMain.y], 16), {animate: false});
+        //myMap.setView();
         // Установка угла в для поворота иконки маркера (в градусах)
         userCarMarker.options.angle = tempAngleRad * 180 / Math.PI;
         // Установка новых координат маркера
-        userCarMarker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
+        userCarMarker.setLatLng(myMap.unproject([tempPointMain.x, tempPointMain.y], 16));
+
+        //userCarMarker.update();
+
+        // добавление области видимости машинки
+        if(userCarMarker._visibleCircle){
+            userCarMarker._visibleCircle.setLatLng(userCarMarker.getLatLng());
+        } else {
+            userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 1000,
+                {
+                    color: '#11FF11',
+                    opacity: 0.3
+                }
+            ).addTo(myMap);
+        }
+
         // перерисовка контроллеров пользователя
         redrawUserControllers(tempAngleRad);
         // перерисовка следа (шлейфа) за машинкой
         if (userCarTail)
-            userCarTail.drawTail(tempPoint, myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
+            userCarTail.drawTail(tempPointMain, myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
     }
 
     // работа со списком машинок
-    addDivToDiv("console", "rm8", "Кол-во машинок = " + listMapObject.objects.length, true);
+
     for (var i in listMapObject.objects) { // переписать for на forEach метод у массива
         if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
             // пересчёт координат
-            tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
+            var tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
             // пересчёт угла
-            tempAngleGrad = listMapObject.objects[i].getCurrentDirection(clock.getCurrentTime());
+            var tempAngleRadCars = listMapObject.objects[i].getCurrentDirection(clock.getCurrentTime());
             // Установка угла в для поворота иконки маркера (в градусах)
-            listMapObject.objects[i].marker.options.angle = tempAngleRad * 180 / Math.PI;
+            listMapObject.objects[i].marker.options.angle = tempAngleRadCars * 180 / Math.PI;
             // Установка новых координат маркера);
             listMapObject.objects[i].marker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         }
     }
+
+/*   // Данный способ безосновательно грузит систему, что не логично... Когда будем делать push, тогда и воспользуемся им
+    listMapObject.objects.forEach(function(car){
+        // пересчёт координат
+        var tempP = car.getCurrentCoord(clock.getCurrentTime());
+        // пересчёт угла
+        var tempA = car.getCurrentDirection(clock.getCurrentTime());
+        // Установка угла в для поворота иконки маркера (в градусах)
+        car.marker.options.angle = tempA * 180 / Math.PI;
+        // Установка новых координат маркера);
+        car.marker.setLatLng(myMap.unproject([tempP.x, tempP.y], 16));
+
+        addDivToDiv("console2", car.ID,     "Игрок"+car.ID+": X = " + tempP.x.toFixed(2), true);
+        addDivToDiv("console2", car.ID+'1', "Игрок"+car.ID+": Y = " + tempP.y.toFixed(2), true);
+
+    });
+*/
+
+    addDivToDiv("console2", "cn28", "Кол-во машинок = " + listMapObject.objects.length, true);
 }
 
 function redrawUserControllers(directionCar) {
@@ -104,6 +141,10 @@ $(document).ready(function () {
         alert('Storage not loading!');
     }
 
+    // Инициализация.
+    ModelInit();
+
+
     myMap = L.map('map',
         {
             minZoom: 10,
@@ -112,12 +153,13 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-            dragging: false,
-            doubleClickZoom: false,
-            maxBounds: ([
-                [50.21, 35.42],
-                [51.43, 39.44]
-            ])}).setView([50.6041, 36.5954], 13);
+        //    dragging: false,
+            doubleClickZoom: false
+        //    maxBounds: ([
+        //        [50.21, 35.42],
+        //        [51.43, 39.44]
+        //    ])
+        }).setView([50.6041, 36.5954], 13);
 
     //Переключение в полноэкранный режим и обратно по кнопке
     var html = document.documentElement;
@@ -206,7 +248,8 @@ $(document).ready(function () {
         max: 125,
         min: 0,
         step: 1,
-        onChange: changeSpeedOnSlider
+        onChange: changeSpeedOnSlider,
+        onStop: stopSpeedOnSlider
     });
 
 
@@ -228,10 +271,18 @@ $(document).ready(function () {
         allCallBack: cbForAllBtn
     });
 
+
+
+
+
+    // Запуск тамера
+    timer = setInterval(timerRepaint, timerDelay);
 });
 
 function onMarkerPopupOpen(e) {
     lastIDPopupOpen = this.carID;
+
+    this.setPopupContent('My ID = ' + this.carID);
 }
 
 function getTestInfo(aid) {
@@ -262,6 +313,10 @@ function delCar() {
 function changeSpeedOnSlider() {
     if (user.userCar)
         sendSetSpeed(speedSetSlider.getSpeed(), user.userCar.ID);
+}
+
+function stopSpeedOnSlider() {
+    if (user.userCar) sendStopCar();
 }
 
 function changeZoomOnSlider() {

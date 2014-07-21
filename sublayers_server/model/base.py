@@ -7,6 +7,7 @@ from subscription_protocol import make_subscriber_emitter_classes
 from utils import get_uid, serialize
 from inventory import Inventory
 import messages
+from events import ContactSee
 
 from abc import ABCMeta
 
@@ -29,12 +30,12 @@ class Object(object):
 
     def __init__(self, server):
         """
-        @type server: model.server.Server
+        @type server: model.event_machine.Server
         """
         super(Object, self).__init__()
         self.server = server
-        """@type: model.server.Server"""
-        self.uid = get_uid()
+        """@type: model.event_machine.Server"""
+        self.uid = id(self)
         self.server.objects[self.uid] = self
         self.is_alive = True
 
@@ -104,7 +105,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts = []
         """@type: list[model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        # todo: subscription to changes for external observers
+        self.init_contacts_search()
 
     def on_change(self):  # todo: privacy level index
         # todo: emit update message
@@ -119,6 +120,21 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         contacts = self.contacts
         while contacts:
             contacts.pop().actual = False
+
+    def init_contact_test(self, obj):
+        """Test to contacts between *self* and *obj*, append them if is."""
+        if obj.can_see(self):
+            self.contacts.append(ContactSee(time=self.server.get_time(), subj=obj, obj=self))  # todo: optimize
+
+    def init_contacts_search(self):
+        """Search init contacts"""
+        contacts = self.contacts
+        for obj in self.server.filter_objects(None):  # todo: GEO-index clipping
+            if isinstance(obj, Observer) and obj is not self:  # todo: optimize filtration observers
+                self.init_contact_test(obj)
+
+        self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
+        log.debug('INIT CONTACTS SEARCH %s: found %d contacts', self, len(contacts))
 
     def special_contacts_search(self):
         contacts = self.contacts
@@ -160,20 +176,34 @@ class Heap(VisibleObject):
 class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
 
     def __init__(self, observing_range=0.0, **kw):
-        super(Observer, self).__init__(**kw)
         self._r = observing_range
+        super(Observer, self).__init__(**kw)
         # todo: Нужно увидеть соседние объекты при инициализации
+
+    def init_contact_test(self, obj):
+        """Override test to contacts between *self* and *obj*, append them if is."""
+        super(Observer, self).init_contact_test(obj)
+        if self.can_see(obj):
+            self.contacts.append(ContactSee(time=self.server.get_time(), subj=self, obj=obj))  # todo: optimize
 
     def on_change(self):
         super(Observer, self).on_change()
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=self, time=self.server.get_time()))
+        self.emit_for__Agent(message=messages.Update(subject=self, obj=self, comment='message for owner'))
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter))
+        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
 
     @property
     def r(self):
         return self._r
+
+    def can_see(self, obj):
+        """
+        @type obj: VisibleObject
+        """
+        dist = abs(self.position - obj.position)
+        return dist <= self._r  # todo: check <= vs <
+        # todo: Расчет видимости с учетом маскировки противника
 
     def as_dict(self):
         d = super(Observer, self).as_dict()

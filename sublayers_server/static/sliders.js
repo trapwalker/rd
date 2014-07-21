@@ -110,7 +110,8 @@ var SliderSpeed = (function () {
             min: 0,
             step: 1,
             height: 100, // px
-            onChange: ''
+            onChange: '',
+            onStop: ''
         };
 
         this._id = _SlidersMass.length;
@@ -125,6 +126,7 @@ var SliderSpeed = (function () {
             if (options.step) this.options.step = options.step;
             if (options.height) this.options.height = options.height;
             if (options.onChange) this.options.onChange = options.onChange;
+            if (options.onStop) this.options.onStop = options.onStop;
         }
         // сразу же применить родительскую css для родительского дива
         $('#' + this.options.parent).addClass(this.options.parentCss);
@@ -206,7 +208,7 @@ var SliderSpeed = (function () {
             '</div>';
         // добавление дива кнопки стоп в правый див
         $('#sliderSpeedRight').append(nodeStopMain);
-        $('#sliderSpeedStopButton').click(_SpeedSlider_StopButton);
+        $('#sliderSpeedStopButton').on('click', {id: this._id}, this._onStop);
 
         // создание и расстановка текста
 
@@ -214,8 +216,14 @@ var SliderSpeed = (function () {
 
     SliderSpeed.prototype.change = function (event, ui) {
         var slider = _SlidersMass[event.data.id];
-        if (slider.options.onChange)
+        if (typeof(slider.options.onChange) === "function")
             slider.options.onChange();
+    }
+
+    SliderSpeed.prototype._onStop = function (event, ui) {
+        var slider = _SlidersMass[event.data.id];
+        if (typeof(slider.options.onStop) === "function")
+            slider.options.onStop();
     }
 
     SliderSpeed.prototype._slide = function (event, ui) {
@@ -245,14 +253,6 @@ var SliderSpeed = (function () {
 
     return SliderSpeed;
 })();
-
-
-// функции, необходимые для логики работы слайдеров
-_SpeedSlider_StopButton = function () {
-    $('#sliderSpeedSlider').slider("value", 0);
-    $('#sliderSpeedCarriageLabel').text(0);
-}
-
 
 var ProgressBarFuel = (function () {
     function ProgressBarFuel(options) {

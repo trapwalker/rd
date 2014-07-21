@@ -3,7 +3,7 @@
 import logging.config
 log = logging.getLogger(__name__)
 
-from model.server_api import ServerAPI
+from server_api import ServerAPI
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
@@ -11,6 +11,7 @@ import errors
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
+from itertools import chain
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -34,11 +35,19 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
+    def filter_objects(self, quadrant):
+        # todo: typehinting of quadrant
+        return chain(
+            self.filter_statics(quadrant),
+            (motion.owner for motion in self.filter_motions(quadrant)),  # todo: optimize
+        )
+
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
         return self.motions  # todo: filter collection by quadrant
 
     def filter_statics(self, quadrant):
+        # todo: typehinting of quadrant
         return self.statics  # todo: filter collection by quadrant
 
     def filter_static_observers(self, quadrant):
