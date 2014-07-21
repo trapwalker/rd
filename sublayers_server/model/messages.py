@@ -8,16 +8,15 @@ from utils import time_log_format, serialize
 
 
 class Message(object):
-    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] sender={self.sender}>'
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, sender, time=None):
+    def __init__(self, time, comment=None):
         """
         @param model.utils.TimeClass time: Time of message post
-        @param model.units.Unit sender: Sender of message
         """
         super(Message, self).__init__()
-        self.time = time or sender.server.get_time()
-        self.sender = sender
+        self.time = time
+        self.comment = comment
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -36,32 +35,100 @@ class Message(object):
         return dict(
             cls=self.classname,
             time=self.time,
-            sender=repr(self.sender),  # sender=self.sender.as_dict(),  # todo: Serialize senders
+            comment=self.comment,
         )
 
     def serialize(self):
         return serialize(self.as_dict())
 
 
-class See(Message):
-    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] sender={self.sender}; obj={self.obj}>'
+class InitMessage(Message):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
+
+    def __init__(self, agent, time=None, **kw):
+        """
+        @param model.agents.Agent agent
+        """
+        if not time:
+            time = agent.server.get_time()
+        super(InitMessage, self).__init__(time=time, **kw)
+        self.agent = agent
+
+    def as_dict(self):
+        d = super(InitMessage, self).as_dict()
+        d.update(
+            agent=self.agent.as_dict(),
+            cars=[car.as_dict() for car in self.agent.cars],
+        )
+        return d
+
+
+class ChatMessage(Message):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
+
+    def __init__(self, author, text=None, client_id=None, time=None, **kw):
+        """
+        @param model.agents.Agent author: Sender of message
+        @param unicode text: message text
+        """
+        if not time:
+            time = author.server.get_time()
+        super(ChatMessage, self).__init__(time=time, **kw)
+        self.author = author
+        self.text = text
+        self.client_id = client_id
+
+    def as_dict(self):
+        d = super(ChatMessage, self).as_dict()
+        d.update(
+            author=self.author.as_dict(),
+            text=self.text,
+            id=self.client_id,
+        )
+        return d
+
+
+class UnitMessage(Message):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
+
+    def __init__(self, subject, time=None, **kw):
+        """
+        @param model.units.Unit subject: Sender of message
+        """
+        if not time:
+            time = subject.server.get_time()
+        super(UnitMessage, self).__init__(time=time, **kw)
+        self.subject = subject
+
+    def as_dict(self):
+        d = super(UnitMessage, self).as_dict()
+        d.update(subject_id=self.subject.uid)
+        return d
+
+
+class RangeViewMessage(UnitMessage):
+    __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subject={self.subject}; obj={self.obj}>'
 
     def __init__(self, obj, **kw):
         """
         @param model.base.VisibleObject obj: Object
         """
-        super(See, self).__init__(**kw)
+        super(RangeViewMessage, self).__init__(**kw)
         self.obj = obj
+
+
+class Out(RangeViewMessage):
+    def as_dict(self):
+        d = super(Out, self).as_dict()
+        d.update(object_id=self.obj.uid)
+        return d
+
+
+class See(RangeViewMessage):
 
     def as_dict(self):
         d = super(See, self).as_dict()
-        obj = self.obj
-        d['obj'] = repr(obj)  # todo: Serialize objects
-        d['behavior'] = dict(
-            position=obj.position,
-            v=obj.v if hasattr(obj, 'v') else None,  # todo: Get behavior from unit directly
-            # todo: add other behaviors
-        )
+        d.update(object=self.obj.as_dict())  # todo: Serialize objects with private case
         return d
 
 

@@ -74,7 +74,6 @@ class Subjective(Event):
 
     def perform(self):
         super(Subjective, self).perform()
-        log.debug(str(self))
 
 
 class Contact(Subjective):
@@ -93,8 +92,12 @@ class Contact(Subjective):
 
     def perform(self):
         super(Contact, self).perform()
-        self.subj.contacts.remove(self)
-        self.obj.contacts.remove(self)
+        try:  # todo: Устранить хак
+            self.subj.contacts.remove(self)
+            self.obj.contacts.remove(self)
+        except:
+            import traceback
+            log.error(traceback.format_exc())
 
 
 class ContactSee(Contact):
@@ -103,7 +106,7 @@ class ContactSee(Contact):
         super(ContactSee, self).perform()
         subj = self.subj
         subj.subscribe_to__VisibleObject(self.obj)
-        subj.emit_for__Agent(message=messages.Contact(time=self.time, sender=self.subj, obj=self.obj))
+        subj.emit_for__Agent(message=messages.Contact(time=self.time, subject=self.subj, obj=self.obj))
         # todo: Make 'as_message' method of Event class
 
 
@@ -112,6 +115,7 @@ class ContactOut(Contact):
     def perform(self):
         super(ContactOut, self).perform()
         self.subj.unsubscribe_from__VisibleObject(self.obj)
+        self.subj.emit_for__Agent(message=messages.Out(time=self.time, subject=self.subj, obj=self.obj))
 
 
 class Callback(Event):

@@ -30,6 +30,16 @@ class Task(object):
         self._get_time = owner.server.get_time
         self.start_time = start_time or self._get_time()
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
+    def as_dict(self):
+        return dict(
+            cls=self.classname,
+            start_time=self.start_time,  # todo: relative time for client
+        )
+
     def cancel(self):
         pass
 
@@ -72,13 +82,13 @@ class Determined(Task):
         self.end_task_event.actual = False
 
 
-class Goto(Determined):
+class Motion(Determined):
     __str_template__ = (
         '<{self.__class__.__name__} {self.start_time_str}: '
         '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
     )
 
-    def __init__(self, owner, target_point, **kw):
+    def __init__(self, owner, **kw):
         """
         @param model.units.Bot owner: Owner of task
         @param model.vetors.Point target_point: Target point of motion
@@ -86,18 +96,54 @@ class Goto(Determined):
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
         start_point = owner.position
-        assert start_point != target_point  # todo: epsilon test to eq
-        assert owner.max_velocity > 0
-        duration = start_point.distance(target_point) / float(owner.max_velocity)
-        super(Goto, self).__init__(owner=owner, duration=duration, **kw)
+        super(Motion, self).__init__(owner=owner, **kw)
         self.owner = owner  # todo: spike review
         self.start_point = start_point
         """@type: model.vectors.Point"""
+        self.start_direction = owner.direction
+        """@type: float"""
+
+    @property
+    def position(self, to_time=None):
+        """
+        @param model.utils.TimeClass | None to_time: Time for getting position
+        @rtype: model.vectors.Point
+        """
+        return self.start_point
+
+    @property
+    def direction(self, to_time=None):
+        """
+        @param model.utils.TimeClass | None to_time: Time for getting direction
+        @rtype: float
+        """
+        return self.start_direction
+
+
+class Goto(Motion):
+
+    def __init__(self, owner, target_point, **kw):
+        """
+        @param model.units.Bot owner: Owner of task
+        @param model.vetors.Point target_point: Target point of motion
+        """
+        start_point = owner.position
+        assert owner.max_velocity > 0
+        duration = start_point.distance(target_point) / float(owner.max_velocity)
+        super(Goto, self).__init__(owner=owner, duration=duration, **kw)
+        assert self.start_point != target_point  # todo: epsilon test to eq
         self.target_point = target_point
         """@type: model.vectors.Point"""
-        self.vector = target_point - start_point
+        self.vector = self.target_point - self.start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
         """@type: model.vectors.Point"""
+
+    def as_dict(self):
+        d = super(Goto, self).as_dict()
+        d.update(
+            velocity=self.v,
+        )
+        return d
 
     @staticmethod
     def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0, contacts):
@@ -168,7 +214,10 @@ class Goto(Determined):
 
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
         s = vb*tb - va*ta + a0 - b0  # todo: Remove multiplication by 0
+        """@type: model.vectors.Point"""
+
         v = va - vb  # | t*v + s | = r
+        """@type: model.vectors.Point"""
 
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
@@ -180,7 +229,6 @@ class Goto(Determined):
         self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
         self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
 
-        #log.debug('contacts_with_dynamic: %s', pformat(locals(), width=1))
         return contacts
 
     @property
@@ -191,6 +239,14 @@ class Goto(Determined):
         """
         to_time = to_time or self._get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
+
+    @property
+    def direction(self, to_time=None):
+        """
+        @param model.utils.TimeClass | None to_time: Time for getting direction
+        @rtype: float
+        """
+        return self.vector.angle
 
 
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)

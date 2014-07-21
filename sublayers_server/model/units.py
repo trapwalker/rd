@@ -28,10 +28,8 @@ class Unit(Observer):
         """
         @param new_state: bool
         """
-        log.debug('%s:: Static observing %s', self, ('ENABLE' if new_state else 'DISABLE'))
         if new_state:
             self.server.static_observers.append(self)
-            self.on_change()
         else:
             self.server.static_observers.remove(self)
 
@@ -48,7 +46,6 @@ class Unit(Observer):
         old_task = self._task
         if old_task:
             old_task.cancel()
-        log.debug('%s:: task = %s', self, task)
         self._task = task
         self.on_change()
 
@@ -68,11 +65,21 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, direction=0, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: model.tasks.Goto | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
+        self._direction = direction
+
+    def as_dict(self):
+        d = super(Bot, self).as_dict()
+        d.update(
+            motion=self.motion.as_dict() if self.motion else None,
+            direction=self.direction,
+            max_velocity=self.max_velocity,
+        )
+        return d
 
     def stop(self):
         del self.task
@@ -101,11 +108,32 @@ class Bot(Unit):
     position = property(fget=get_position, fset=Unit.set_position)
 
     @property
+    def direction(self):
+        """
+        @rtype: float
+        """
+        return self.motion.direction if self.motion else self._direction
+
+    @direction.setter
+    def direction(self, value):
+        self._direction = value
+
+
+    @property
     def max_velocity(self):  # m/s
         """
         @rtype: float
         """
         return self._max_velocity
+
+    @max_velocity.setter
+    def max_velocity(self, value):
+        motion = self.motion
+        if motion:
+            self.stop()  # todo: change speed refactoring
+        self._max_velocity = value
+        if motion:
+            self.goto(motion.target_point)
 
     def change_observer_state(self, new_state):
         """
@@ -120,9 +148,6 @@ class Bot(Unit):
             return super(Bot, self).special_contacts_search()
 
         contacts = self.contacts
-
-        log.debug('%s:: Bot.special_contacts_search', self)
-        log.debug('>> %s', self.server.filter_statics(None))
 
         contacts_with_static = self_motion.contacts_with_static
         for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
@@ -147,10 +172,10 @@ class Bot(Unit):
         old_motion = self.motion
         if old_motion:
             self.position = old_motion.position
+            self.direction = old_motion.direction
             self.server.motions.remove(old_motion)
         new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion
-        log.debug('%s: Motion set to %s (old=%s)', self, new_motion, old_motion)
         if new_motion:
             self.server.motions.append(new_motion)
             if not old_motion:

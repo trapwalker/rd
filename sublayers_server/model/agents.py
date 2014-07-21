@@ -4,6 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import Object, SubscriberTo__Observer
+from agent_api import make_push_package
+from utils import serialize
 
 
 class Agent(Object, SubscriberTo__Observer):
@@ -17,6 +19,13 @@ class Agent(Object, SubscriberTo__Observer):
         # todo: normalize and check login
         self.server.agents[login] = self
         self.cars = []  # specific
+
+    def as_dict(self):
+        d = super(Agent, self).as_dict()
+        d.update(
+            login=self.login,
+        )
+        return d
 
     @property
     def connection(self):
@@ -41,11 +50,12 @@ class Agent(Object, SubscriberTo__Observer):
     def on_event_from__Observer(self, emitter, message):
         """
         @param model.units.Observer emitter: Message emitter
-        @param model.messages.Message message: Incoming message
+        @param model.messages.UnitMessage message: Incoming message
         """
-        log.info('%s. %s say: %s\nMy cars: %s', self, emitter, message.serialize(), ', '.join(map(str, self.cars)))
         if self.connection:
-            self.connection.write_message(message.serialize())
+            package = make_push_package([message])
+            log.debug('Send to agent %s: %r', self, package)
+            self.connection.write_message(serialize(package))
 
 
 class User(Agent):

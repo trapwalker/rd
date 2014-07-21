@@ -4,8 +4,10 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-from model.agent_api import AgentAPI
+from model.agent_api import AgentAPI, make_push_package
+from model.messages import InitMessage
 from model.utils import serialize
+
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
 
@@ -21,8 +23,12 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.api = AgentAPI(agent=self.agent)
         self.application.clients.append(self)
 
-        for msg in self.application.chat:
-            self.write_message(serialize(msg))
+        self.write_message(serialize(make_push_package([InitMessage(agent=self.agent)])))
+
+        if self.application.chat:
+            package = make_push_package(self.application.chat)  # todo: slice to chunks
+            log.debug('Send to agent %s: %r', self.agent, package)
+            self.write_message(serialize(package))
 
     def on_close(self):
         log.info('Agent %r socket Closed', self)
@@ -30,6 +36,6 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent.connection = None
 
     def on_message(self, message):
-        log.info("got message %r", message)
+        log.debug("Got message from %s: %r", self.agent, message)
         result = self.api.__rpc_call__(message)
         self.write_message(result)

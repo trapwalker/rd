@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+log = logging.getLogger(__name__)
 
 from Queue import PriorityQueue, Full
 from time import time as _time
@@ -8,7 +10,7 @@ from pprint import pformat
 from functools import total_ordering
 from copy import copy
 import json
-from uuid import uuid1 as get_uid
+from uuid import uuid1 as get_uid, UUID
 from time import time as get_time  # todo: integer vs float time
 import random
 
@@ -61,6 +63,8 @@ tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchil
 def special_type_serialize_prepare(obj):
     if isinstance(obj, (Point, complex)):
         return dict(x=obj.real, y=obj.imag)
+    elif isinstance(obj, UUID):
+        return str(obj)
 
     return obj
 

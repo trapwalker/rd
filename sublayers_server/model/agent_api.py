@@ -8,10 +8,19 @@ from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
+from messages import ChatMessage
+
+
+def make_push_package(events):
+    events = [event.as_dict() for event in events]
+    return dict(
+        message_type='push',
+        events=events,
+    )
 
 
 class AgentAPI(API):
-    def __init__(self, agent, position=None, position_sigma=Point(0, 0)):
+    def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
         super(AgentAPI, self).__init__()
         self.agent = agent
         if self.agent.cars:
@@ -19,7 +28,7 @@ class AgentAPI(API):
         else:
             self.car = units.Bot(
                 server=agent.server,
-                position=Point.random_gauss(position or Point(0, 0), position_sigma),
+                position=Point.random_gauss(position or Point(10093693, 5646447), position_sigma),
                 observing_range=1000,
             )
             self.agent.append_car(self.car)
@@ -38,26 +47,20 @@ class AgentAPI(API):
 
     @public_method
     def set_speed(self, new_speed):
-        pass  # todo: AgentAPI.set_speed implementation
+        self.car.max_velocity = new_speed  # todo: check value
 
     @public_method
     def chat_message(self, text):
         log.info('Agent %s say: %r', self.agent.login, text)
         app = self.agent.connection.application
         chat = app.chat
-        msg_id = len(app.chat)
-        msg = {
-            'message_type': 'push',
-            'event': {
-                'kind': 'chat_message',
-                'author': self.agent.login,
-                'text': text,
-                'id': msg_id,
-                'mes_time': datetime.now().strftime('%H:%M:%S'),	
-            }
-        }
+        msg_id = len(chat)  # todo: get "client_id" from client message info
+        msg = ChatMessage(author=self.agent, text=text, client_id=msg_id)
         chat.append(msg)
+
+        push_data = serialize(make_push_package([msg]))
+
         for client_connection in app.clients:
-            client_connection.write_message(serialize(msg))
+            client_connection.write_message(push_data)
 
         log.info('Broadcast send to %d clients DONE: %r', len(app.clients), msg)
