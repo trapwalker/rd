@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from server import Server
+from .event_machine import Server
 
 
 class RemoteServer(Server):
