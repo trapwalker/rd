@@ -34,11 +34,16 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
+    def filter_objects(self, quadrant):
+        # todo: typehinting of quadrant
+        return self.objects  # todo: filter collection by quadrant
+
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
         return self.motions  # todo: filter collection by quadrant
 
     def filter_statics(self, quadrant):
+        # todo: typehinting of quadrant
         return self.statics  # todo: filter collection by quadrant
 
     def filter_static_observers(self, quadrant):
