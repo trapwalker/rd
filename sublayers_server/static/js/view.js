@@ -21,7 +21,7 @@ function redrawMap() {
         //userCarMarker.update();
 
         // добавление области видимости машинки
-        if(userCarMarker._visibleCircle){
+        if (userCarMarker._visibleCircle) {
             userCarMarker._visibleCircle.setLatLng(userCarMarker.getLatLng());
         } else {
             userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 1000,
@@ -54,22 +54,22 @@ function redrawMap() {
         }
     }
 
-/*   // Данный способ безосновательно грузит систему, что не логично... Когда будем делать push, тогда и воспользуемся им
-    listMapObject.objects.forEach(function(car){
-        // пересчёт координат
-        var tempP = car.getCurrentCoord(clock.getCurrentTime());
-        // пересчёт угла
-        var tempA = car.getCurrentDirection(clock.getCurrentTime());
-        // Установка угла в для поворота иконки маркера (в градусах)
-        car.marker.options.angle = tempA * 180 / Math.PI;
-        // Установка новых координат маркера);
-        car.marker.setLatLng(myMap.unproject([tempP.x, tempP.y], 16));
+    /*   // Данный способ безосновательно грузит систему, что не логично... Когда будем делать push, тогда и воспользуемся им
+     listMapObject.objects.forEach(function(car){
+     // пересчёт координат
+     var tempP = car.getCurrentCoord(clock.getCurrentTime());
+     // пересчёт угла
+     var tempA = car.getCurrentDirection(clock.getCurrentTime());
+     // Установка угла в для поворота иконки маркера (в градусах)
+     car.marker.options.angle = tempA * 180 / Math.PI;
+     // Установка новых координат маркера);
+     car.marker.setLatLng(myMap.unproject([tempP.x, tempP.y], 16));
 
-        addDivToDiv("console2", car.ID,     "Игрок"+car.ID+": X = " + tempP.x.toFixed(2), true);
-        addDivToDiv("console2", car.ID+'1', "Игрок"+car.ID+": Y = " + tempP.y.toFixed(2), true);
+     addDivToDiv("console2", car.ID,     "Игрок"+car.ID+": X = " + tempP.x.toFixed(2), true);
+     addDivToDiv("console2", car.ID+'1', "Игрок"+car.ID+": Y = " + tempP.y.toFixed(2), true);
 
-    });
-*/
+     });
+     */
 
     addDivToDiv("console2", "cn28", "Кол-во машинок = " + listMapObject.objects.length, true);
 }
@@ -153,12 +153,12 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-        //    dragging: false,
+            //    dragging: false,
             doubleClickZoom: false
-        //    maxBounds: ([
-        //        [50.21, 35.42],
-        //        [51.43, 39.44]
-        //    ])
+            //    maxBounds: ([
+            //        [50.21, 35.42],
+            //        [51.43, 39.44]
+            //    ])
         }).setView([50.6041, 36.5954], 13);
 
     //Переключение в полноэкранный режим и обратно по кнопке
@@ -192,6 +192,18 @@ $(document).ready(function () {
     buttonConsole.onclick = function () {
         footerToggle();
     }
+
+    //Шкала топлива машины игрока
+    var a = new ProgressBarFuel({
+        parent: "divScaleCarFuel",
+        max: 100
+    });
+
+    //Шкала здоровья машины игрока
+    var hp = new ProgressBarHP({
+        parent: "divScaleCarHealth",
+        max: 300
+    });
 
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
@@ -253,7 +265,6 @@ $(document).ready(function () {
     });
 
 
-
     // Тестовые вектора для контролера стрельбы
     var sectors = [
         new FireSector(gradToRad(0), gradToRad(30), 40, 1, 6 * 1000),
@@ -270,9 +281,6 @@ $(document).ready(function () {
         sectorCallBack: cbForSectors,
         allCallBack: cbForAllBtn
     });
-
-
-
 
 
     // Запуск тамера
@@ -324,11 +332,11 @@ function changeZoomOnSlider() {
 }
 
 // колл бек для выстрела того или иного сектора
-function cbForSectors(fs){
+function cbForSectors(fs) {
     //alert('Выстрел из сектора id = '+fs.uid + '   Перезарядка = '+ fs.recharge);
 }
 // коллбек для кнопки All
-function cbForAllBtn(){
+function cbForAllBtn() {
     //alert('Дан залп из всех орудий своей машинки (user.userCar.id)');
 }
 
