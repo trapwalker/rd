@@ -151,7 +151,7 @@ function receiveMesFromServ(data){
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime/1000.);
                 aTrack = getTrack(event.object);
-                updateCurrentCar(event.object.uid, aType, aHP, aTrack);
+                updateCurrentCar(event.object.uid, aType, Math.random() * hpMaxProbka, aTrack);
             }
             if (event.cls === "InitMessage") {
                 // InitMessage
@@ -159,7 +159,7 @@ function receiveMesFromServ(data){
                 var max_speed;
                 // Инициализация userCar
                 if(event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, 0, aTrack, max_speed);
+                initUserCar(event.cars[0].uid, 0, Math.random() * hpMaxProbka, aTrack, max_speed);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
@@ -221,8 +221,8 @@ function getTrack(data){
 
             aTrack = new MoveLine(
                 start_time/1000.,             //Время начала движения
-                0,                      //Запас топлива
-                0,                      //Расход топлива
+                fuelMaxProbka,                      //Запас топлива
+                fuelDecrProbka,                      //Расход топлива
                 direction,              //Направление
                 position,               //Начальная точка
                 velocity,               //Скорость
@@ -236,8 +236,8 @@ function getTrack(data){
     if(aTrack == null) {
         aTrack = new MoveLine(
             clock.getCurrentTime(),     //Время начала движения
-            0,                          //Запас топлива
-            0,                          //Расход топлива
+            fuelMaxProbka,                          //Запас топлива
+            fuelDecrProbka,                          //Расход топлива
             direction,                  //Направление
             position,                   //Начальная точка
             new Point(0, 0),            //Скорость
@@ -291,7 +291,18 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         amax_speed,      //Максималка
         aTrack);   //Текущая траектория
 
-    userCarMarker.carID = uid; // возможно сделать инициализацию маркера тут
-    // Создание следа за пользовательской машинкой
-    userCarTail = new CarTail(aTrack.coord, myMap);
+    // Инициализация маркера машинки
+    userCarMarker = new UserCarMarker({
+        position: myMap.unproject([aTrack.coord.x, aTrack.coord.y],16),
+        tailEnable: false,
+        _map: myMap,
+        radiusView: 1000,
+        carID: uid
+    });
 }
+
+
+
+var fuelMaxProbka = 500;
+var fuelDecrProbka = 1;
+var hpMaxProbka = 100;

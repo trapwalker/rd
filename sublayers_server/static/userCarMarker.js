@@ -57,10 +57,10 @@ var CarTail = (function () {
         }
 
         // Создание очереди
-        this.options._tail = new SubLayersQueue();
+        this._tail = new SubLayersQueue();
         // заполнение очереди (изначально одинаковыми значениями)
         for (var i = 0; i < this._tail._queueLength; i++)
-            this._tail.addPoint(aStartPoint);
+            this._tail.addPoint(this.options.aStartPoint);
 
         // Создание сразу трёх маркеров
         this._tailPath1 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(5);
@@ -78,8 +78,8 @@ var CarTail = (function () {
             // перерисовка трёх маркеров
             var tempPoints = this._tail.getPoints();
             this._tailPath1.setLatLng(tempPoints[0]);
-            this._tailPath1.setLatLng(tempPoints[1]);
-            this._tailPath1.setLatLng(tempPoints[2]);
+            this._tailPath2.setLatLng(tempPoints[1]);
+            this._tailPath3.setLatLng(tempPoints[2]);
         }
     }
 
@@ -87,14 +87,14 @@ var CarTail = (function () {
         this.options._enable = enable;
         if (enable) {
             var tempPoints = this._tail.getPoints();
-            this._tailPath1.setLatLng(tempPoints[0]).addTo(this._map);
-            this._tailPath1.setLatLng(tempPoints[1]).addTo(this._map);
-            this._tailPath1.setLatLng(tempPoints[2]).addTo(this._map);
+            this._tailPath1.setLatLng(tempPoints[0]).addTo(this.options._map);
+            this._tailPath2.setLatLng(tempPoints[1]).addTo(this.options._map);
+            this._tailPath3.setLatLng(tempPoints[2]).addTo(this.options._map);
         }
         else {
-            this._map.removeLayer(this._tailPath1);
-            this._map.removeLayer(this._tailPath2);
-            this._map.removeLayer(this._tailPath3);
+            this.options._map.removeLayer(this._tailPath1);
+            this.options._map.removeLayer(this._tailPath2);
+            this.options._map.removeLayer(this._tailPath3);
         }
     }
 
@@ -102,23 +102,23 @@ var CarTail = (function () {
 })();
 
 
-//
-
-
-
+// Класс нужен для централизованного рисования машинки пользователя и сопутствующих объектов
 var UserCarMarker = (function () {
     function UserCarMarker(options) {
         this.options = {
             position: null,
             tailEnable: false,
             _map: null,
-            radiusView: 0
+            radiusView: 0,
+            carID: null
         }
 
         if(options){
             if(options.position) this.options.position = options.position;
             if(options.tailEnable) this.options.tailEnable = options.tailEnable;
             if(options._map) this.options._map = options._map;
+            if(options.carID) this.options.carID = options.carID;
+            if(options.radiusView) this.options.radiusView = options.radiusView;
         }
 
         // Создание Маркера
@@ -127,6 +127,11 @@ var UserCarMarker = (function () {
             iconUrl: 'img/car_user.png',
             iconSize: [35, 35]
         }));
+        this.marker.carID = this.options.carID;
+
+        // Повесить PopUp и ивент на него
+        this.marker.on('popupopen', onMarkerPopupOpen);
+        this.marker.bindPopup('popUp');
 
         // Создание шлейфа
         this.tail = new CarTail({
@@ -136,13 +141,12 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(userCarMarker.getLatLng(), this.options.radiusView,
+        this.circleView = L.circle(this.options.position, this.options.radiusView,
             {
                 color: '#11FF11',
                 opacity: 0.3
             }
         ).addTo(this.options._map);
-
         // Создание секторов стрельбы
 
     }
@@ -161,7 +165,7 @@ var UserCarMarker = (function () {
         this.circleView.setLatLng(aNewPoint);
 
         // Перерисовка секторов стрельбы
-        
+
 
     }
 
