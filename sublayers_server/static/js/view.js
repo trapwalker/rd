@@ -166,6 +166,8 @@ $(document).ready(function () {
         max: hpMaxProbka
     });
 
+    iconConnectServer.src = "img/connect.png";
+
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
     myMap.on('zoomstart', onZoomStart);

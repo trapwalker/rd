@@ -16,7 +16,7 @@ WSJSON = (function () {
 
         this.socket.onerror = function (error) {
             this.isConnected = false;
-            alert("Ошибка соединения...Попытка переподключения пока отсутствует. Приносим свои извинения.");
+            //alert("Ошибка соединения...Попытка переподключения пока отсутствует. Приносим свои извинения.");
             /*
             setTimeout(function reconnect(){
                 alert('in reconnect');
@@ -32,9 +32,10 @@ WSJSON = (function () {
             if (event.wasClean) {
                 alert('Соединение закрыто чисто');
             } else {
-                alert('Обрыв соединения'); // например, "убит" процесс сервера
+                //alert('Обрыв соединения'); // например, "убит" процесс сервера
             }
-            alert('Код: ' + event.code + ' причина: ' + event.reason);
+            //alert('Код: ' + event.code + ' причина: ' + event.reason);
+            iconConnectServer.src = "img/disconnect.png";
         };
 
     };
