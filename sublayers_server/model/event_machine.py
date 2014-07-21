@@ -11,6 +11,7 @@ import errors
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
+from itertools import chain
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -36,7 +37,10 @@ class Server(object):
 
     def filter_objects(self, quadrant):
         # todo: typehinting of quadrant
-        return self.objects  # todo: filter collection by quadrant
+        return chain(
+            self.filter_statics(quadrant),
+            (motion.owner for motion in self.filter_motions(quadrant)),  # todo: optimize
+        )
 
     def filter_motions(self, quadrant):
         # todo: typehinting of quadrant
