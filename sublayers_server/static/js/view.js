@@ -12,66 +12,26 @@ function redrawMap() {
 
         // Перенос центра карты в центр маркера пользовательской машинки
         //myMap.panTo(myMap.unproject([tempPointMain.x, tempPointMain.y], 16), {animate: false});
-        //myMap.setView();
-        // Установка угла в для поворота иконки маркера (в градусах)
-        userCarMarker.options.angle = tempAngleRad * 180 / Math.PI;
-        // Установка новых координат маркера
-        userCarMarker.setLatLng(myMap.unproject([tempPointMain.x, tempPointMain.y], 16));
 
-        //userCarMarker.update();
+        userCarMarker.draw(myMap.unproject([tempPointMain.x, tempPointMain.y], 16),tempAngleRad);
 
-        // добавление области видимости машинки
-        if(userCarMarker._visibleCircle){
-            userCarMarker._visibleCircle.setLatLng(userCarMarker.getLatLng());
-        } else {
-            userCarMarker._visibleCircle = L.circle(userCarMarker.getLatLng(), 1000,
-                {
-                    color: '#11FF11',
-                    opacity: 0.3
-                }
-            ).addTo(myMap);
-        }
-
-        // перерисовка контроллеров пользователя
         redrawUserControllers(tempAngleRad);
-        // перерисовка следа (шлейфа) за машинкой
-        if (userCarTail)
-            userCarTail.drawTail(tempPointMain, myMap.getZoom() > 14); // только на максимальных приближениях будет рисоваться хвост
-    }
+}
 
     // работа со списком машинок
-
-    for (var i in listMapObject.objects) { // переписать for на forEach метод у массива
+    for (var i in listMapObject.objects) {
         if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
             // пересчёт координат
             var tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
             // пересчёт угла
             var tempAngleRadCars = listMapObject.objects[i].getCurrentDirection(clock.getCurrentTime());
             // Установка угла в для поворота иконки маркера (в градусах)
-            listMapObject.objects[i].marker.options.angle = tempAngleRadCars * 180 / Math.PI;
+            listMapObject.objects[i].marker.options.angle = tempAngleRadCars;
             // Установка новых координат маркера);
             listMapObject.objects[i].marker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
         }
     }
 
-/*   // Данный способ безосновательно грузит систему, что не логично... Когда будем делать push, тогда и воспользуемся им
-    listMapObject.objects.forEach(function(car){
-        // пересчёт координат
-        var tempP = car.getCurrentCoord(clock.getCurrentTime());
-        // пересчёт угла
-        var tempA = car.getCurrentDirection(clock.getCurrentTime());
-        // Установка угла в для поворота иконки маркера (в градусах)
-        car.marker.options.angle = tempA * 180 / Math.PI;
-        // Установка новых координат маркера);
-        car.marker.setLatLng(myMap.unproject([tempP.x, tempP.y], 16));
-
-        addDivToDiv("console2", car.ID,     "Игрок"+car.ID+": X = " + tempP.x.toFixed(2), true);
-        addDivToDiv("console2", car.ID+'1', "Игрок"+car.ID+": Y = " + tempP.y.toFixed(2), true);
-
-    });
-*/
-
-    addDivToDiv("console2", "cn28", "Кол-во машинок = " + listMapObject.objects.length, true);
 }
 
 function redrawUserControllers(directionCar) {
@@ -79,10 +39,10 @@ function redrawUserControllers(directionCar) {
     redrawSliderSpeedController();
 
     // Отрисовка контроллера хп
-    // hpController.setValue(user.userCar.hp);
+     hpController.setValue(user.userCar.hp);
     // Отрисовка контроллера Fuel
-    // var tfuel = user.userCar.getCurrentFuel(clock.getCurrentTime());
-    // fuelController.setValue(tfuel, tfuel * user.userCar.track.fuelDec);
+     var tfuel = user.userCar.getCurrentFuel(clock.getCurrentTime());
+     fuelController.setValue(tfuel, tfuel * user.userCar.track.fuelDec);
 
     // Отрисовка контроллера стрельбы
     if (!(directionCar == 0)) // Пока присылаются два стопа, нужно это условие
@@ -111,7 +71,7 @@ function onZoomStart(Event) {
 }
 
 function onZoomEnd(Event) {
-    timer = setInterval(timerRepaint, timerDelay);
+    timer = setInterval(redrawMap, timerDelay);
 }
 
 function createTileLayer(storage) {
@@ -143,7 +103,8 @@ $(document).ready(function () {
 
     // Инициализация.
     ModelInit();
-
+    wsjson = new WSJSON();
+    rpcCallList = new RPCCallList();
 
     myMap = L.map('map',
         {
@@ -153,12 +114,12 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-        //    dragging: false,
+            //    dragging: false,
             doubleClickZoom: false
-        //    maxBounds: ([
-        //        [50.21, 35.42],
-        //        [51.43, 39.44]
-        //    ])
+            //    maxBounds: ([
+            //        [50.21, 35.42],
+            //        [51.43, 39.44]
+            //    ])
         }).setView([50.6041, 36.5954], 13);
 
     //Переключение в полноэкранный режим и обратно по кнопке
@@ -193,24 +154,25 @@ $(document).ready(function () {
         footerToggle();
     }
 
+    //Шкала топлива машины игрока
+    fuelController = new ProgressBarFuel({
+        parent: "divScaleCarFuel",
+        max: fuelMaxProbka
+    });
+
+    //Шкала здоровья машины игрока
+    hpController = new ProgressBarHP({
+        parent: "divScaleCarHealth",
+        max: hpMaxProbka
+    });
+
+    iconConnectServer.src = "img/connect.png";
+
     myMap.on('click', onMouseClickMap);
     myMap.on('mousemove', onMouseMoveMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
 
-    userCarMarker = L.rotatedMarker([50.21, 35.42]).addTo(myMap);
-    userCarMarker.setIcon(L.icon({
-        iconUrl: 'img/car_user.png',
-        iconSize: [35, 35]
-    }));
-
-    userCarMarker.on('popupopen', onMarkerPopupOpen);
-    userCarMarker.bindPopup("<input type=" + '"image"' + "src=" + '"img/green-info-icon.png"' + " height=15 width=15 " + " value=" +
-            '"Информация" onclick="getTestInfo(lastIDPopupOpen);">'
-    );
-
-    wsjson = new WSJSON();
-    rpcCallList = new RPCCallList();
 
     // Добавление Города
     testTownMarker = L.marker([0, 0]).addTo(myMap);
@@ -253,13 +215,12 @@ $(document).ready(function () {
     });
 
 
-
     // Тестовые вектора для контролера стрельбы
     var sectors = [
-        new FireSector(gradToRad(0), gradToRad(30), 40, 1, 6 * 1000),
-        new FireSector(gradToRad(180), gradToRad(50), 40, 2, 4 * 1000),
-        new FireSector(gradToRad(90), gradToRad(70), 40, 3, 2 * 1000),
-        new FireSector(gradToRad(-90), gradToRad(70), 40, 3, 2 * 1000)
+        new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
+        new FireSector(gradToRad(180), gradToRad(50), 400, 2, 4 * 1000),
+        new FireSector(gradToRad(90), gradToRad(70), 400, 3, 2 * 1000),
+        new FireSector(gradToRad(-90), gradToRad(70), 400, 3, 2 * 1000)
     ];
 
     // Инициализация контролера стрельбы
@@ -271,43 +232,17 @@ $(document).ready(function () {
         allCallBack: cbForAllBtn
     });
 
-
-
-
-
     // Запуск тамера
-    timer = setInterval(timerRepaint, timerDelay);
+    timer = setInterval(redrawMap, timerDelay);
 });
 
 function onMarkerPopupOpen(e) {
-    lastIDPopupOpen = this.carID;
-
     this.setPopupContent('My ID = ' + this.carID);
-}
-
-function getTestInfo(aid) {
-    var mark;
-    if (listMapObject.objects[aid])
-        mark = listMapObject.objects[aid].marker;
-    else {
-        mark = userCarMarker;
-    }
-
-    var popup = L.popup()
-        .setLatLng(mark.getLatLng())
-        .setContent('<p>Hello world!<br /> ID = ' + mark.carID + '</p>')
-        .openOn(myMap);
-
 }
 
 // скрыть показать footer
 function footerToggle(e) {
     $('#footer').slideToggle('slow');
-}
-
-function delCar() {
-    myMap.removeLayer(listMapObject.objects[lastIDPopupOpen].marker);
-    listMapObject.del(lastIDPopupOpen);
 }
 
 function changeSpeedOnSlider() {
@@ -321,14 +256,16 @@ function stopSpeedOnSlider() {
 
 function changeZoomOnSlider() {
     myMap.setZoom(zoomSetSlider.getZoom());
+    if(userCarMarker)
+        userCarMarker.tail.setActive(myMap.getZoom() > 14);
 }
 
 // колл бек для выстрела того или иного сектора
-function cbForSectors(fs){
+function cbForSectors(fs) {
     //alert('Выстрел из сектора id = '+fs.uid + '   Перезарядка = '+ fs.recharge);
 }
 // коллбек для кнопки All
-function cbForAllBtn(){
+function cbForAllBtn() {
     //alert('Дан залп из всех орудий своей машинки (user.userCar.id)');
 }
 
@@ -353,7 +290,6 @@ function RunPrefixMethod(obj, method) {
 }
 
 var myMap;
-var lastIDPopupOpen;
 var userCarMarker;
 var testTownMarker;
 var wsjson;
@@ -361,8 +297,9 @@ var rpcCallList;
 var speedSetSlider;
 var zoomSetSlider;
 var tileLayerShow;
-var userCarTail;
 var fireControl;
+var hpController;
+var fuelController;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

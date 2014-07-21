@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <title>NUKE Navigator v5.51</title>
 
-    <link rel="stylesheet" href="css/view.css"/>
-    <link rel="stylesheet" href="css/console.css"/>
     <!-- <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/> -->
     <!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/> -->
+    <!-- <script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script> -->
+    <!-- <script src="//raw.githubusercontent.com/DmitryBaranovskiy/raphael/master/raphael.js"></script> -->
+
+    <link rel="stylesheet" href="css/view.css"/>
+    <link rel="stylesheet" href="css/console.css"/>
     <link rel="stylesheet" href="css/third_party/leaflet.css"/>
     <link rel="stylesheet" href="css/third_party/jquery-ui.css"/>
     <link rel="stylesheet" href="view_messenger.css"/>
     <link rel="stylesheet" href="sliders.css"/>
     <link rel="stylesheet" href="fireControl.css"/>
 
-
-    <!-- <script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script> -->
-    <!-- <script src="//raw.githubusercontent.com/DmitryBaranovskiy/raphael/master/raphael.js"></script> -->
     <script src="js/third_party/leaflet.js"></script>
     <script src="js/third_party/jquery.min.js"></script>
     <script src="js/third_party/jquery-ui.min.js"></script>
@@ -34,6 +34,7 @@
     <script src="sliders.js"></script>
     <script src="js/cache.js"></script>
     <script src="fireControl.js"></script>
+    <script src="userCarMarker.js"></script>
 
 </head>
 <body style="background-color: black">
@@ -45,6 +46,9 @@
     <input id="buttonMapOff" type="image" src="img/button_map_off.png">
     <input id="buttonConsole" type="image" src="img/button_console.png">
 </div>
+<div id="divScaleCarFuel"></div>
+<div id="divScaleCarHealth"></div>
+<div id="divIconConnectServer"><img id="iconConnectServer" src="img/disconnect.png"></div>
 <div id="footer">
     <div id="console"></div>
     <div id="serverStatus">STATUS</div>
