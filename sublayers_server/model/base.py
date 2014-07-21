@@ -187,6 +187,14 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     def r(self):
         return self._r
 
+    def can_see(self, obj):
+        """
+        @type obj: VisibleObject
+        """
+        dist = abs(self.position - obj.position)
+        return dist <= self._r  # todo: check <= vs <
+        # todo: Расчет видимости с учетом маскировки противника
+
     def as_dict(self):
         d = super(Observer, self).as_dict()
         d.update(r=self.r)
