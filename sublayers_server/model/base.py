@@ -30,11 +30,11 @@ class Object(object):
 
     def __init__(self, server):
         """
-        @type server: model.server.Server
+        @type server: model.event_machine.Server
         """
         super(Object, self).__init__()
         self.server = server
-        """@type: model.server.Server"""
+        """@type: model.event_machine.Server"""
         self.uid = id(self)
         self.server.objects[self.uid] = self
         self.is_alive = True

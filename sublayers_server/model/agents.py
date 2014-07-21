@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import Object, SubscriberTo__Observer
-from model.agent_api import make_push_package
-from model.utils import serialize
+from agent_api import make_push_package
+from utils import serialize
 
 
 class Agent(Object, SubscriberTo__Observer):

@@ -3,7 +3,7 @@
 import logging.config
 log = logging.getLogger(__name__)
 
-from model.server_api import ServerAPI
+from server_api import ServerAPI
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
