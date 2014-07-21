@@ -212,16 +212,15 @@
     position: absolute;
     top: 207px;
 }
+
 /* Настройка слайдера зума завершена */
-
-
 
 /* Настройка прогресс бара для Fuel*/
 
 .pbar-fuel-parent {
     position: absolute;
-    left: 50px;
-    top: 70px;
+    bottom: 25px;
+    right: 150px;
     height: 50px;
     width: 232px;
 }
@@ -286,7 +285,6 @@
     opacity: 1;
 }
 
-
 /* Строковые дивы и классы для спанов*/
 
 #pbarFuelRightDigits {
@@ -300,7 +298,6 @@
     top: 3px;
 }
 
-
 .pbarRightsDigitsLeft {
     position: absolute;
     left: -2px;
@@ -310,7 +307,7 @@
 
 }
 
-.pbarRightsDigitsRight{
+.pbarRightsDigitsRight {
     position: absolute;
     right: -4px;
 }
@@ -346,13 +343,12 @@
 
 /* Завершены настройки FUEL прогресс бара*/
 
-
 /* Настройка прогресс бара для HP*/
 
 .pbar-hp-parent {
     position: absolute;
-    left: 50px;
-    top: 125px;
+    bottom: 75px;
+    right: 150px;
     height: 50px;
     width: 232px;
 }
@@ -418,7 +414,6 @@
     opacity: 1;
 }
 
-
 /* Строковые дивы и классы для спанов*/
 
 #pbarHPRightDigits {
@@ -449,7 +444,7 @@
 
 }
 
-.pbarHPRightsDigitsRight{
+.pbarHPRightsDigitsRight {
     position: absolute;
     right: -10.5px;
 }

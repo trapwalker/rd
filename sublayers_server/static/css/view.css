@@ -102,3 +102,9 @@ input:focus {
     left: 5%;
     overflow: visible;
 }
+
+#divIconConnectServer {
+    position: absolute;
+    top: 45px;
+    left: 32px;
+}

@@ -104,7 +104,7 @@ var FireControl = (function () {
         // Добавить в сектор ссылку на свой собственный колл-бек
         sector._cbSectorFunc = this.options.sectorCallBack;
         // устанавливаем флаг речарджа сектора в false
-        sector.recharged = false
+        sector.recharged = false;
         // Помещаем сектор в массив секторов данного объекта
         this.options.sectors.push(sector);
     }
