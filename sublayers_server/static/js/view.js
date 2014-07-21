@@ -217,10 +217,10 @@ $(document).ready(function () {
 
     // Тестовые вектора для контролера стрельбы
     var sectors = [
-        new FireSector(gradToRad(0), gradToRad(30), 40, 1, 6 * 1000),
-        new FireSector(gradToRad(180), gradToRad(50), 40, 2, 4 * 1000),
-        new FireSector(gradToRad(90), gradToRad(70), 40, 3, 2 * 1000),
-        new FireSector(gradToRad(-90), gradToRad(70), 40, 3, 2 * 1000)
+        new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
+        new FireSector(gradToRad(180), gradToRad(50), 400, 2, 4 * 1000),
+        new FireSector(gradToRad(90), gradToRad(70), 400, 3, 2 * 1000),
+        new FireSector(gradToRad(-90), gradToRad(70), 400, 3, 2 * 1000)
     ];
 
     // Инициализация контролера стрельбы

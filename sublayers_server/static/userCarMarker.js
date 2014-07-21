@@ -101,6 +101,78 @@ var CarTail = (function () {
     return CarTail;
 })();
 
+//Сектора стрельбы
+var SectorsView = (function () {
+    function SectorsView(options) {
+        this.options = {
+            _map: null,
+            rotateAngle: 0,
+            sectors: []
+        };
+
+        if (options) {
+            if(options._map) this.options._map = options._map;
+        }
+
+        // Сделать addSector для каждого элемента массива options.sectors
+        if(options.sectors)
+            for(var i = 0; i < options.sectors.length; i++) {
+                this.addSector(options.sectors[i]);
+            }
+    }
+
+    SectorsView.prototype.addSector = function(fireSector) {
+        var tempWidth = fireSector.widthAngle / 2;
+        var vertV = new Point(0, - fireSector.radius);
+
+        var rightV = new Point((-vertV.y * Math.sin(tempWidth)), (vertV.y * Math.cos(tempWidth)));
+        var leftV = new Point((vertV.y * Math.sin(tempWidth)), (vertV.y * Math.cos(tempWidth)));
+
+        var polygon = new Point(0, 0);
+        polygon._basicPoints = [rightV, leftV];
+        polygon._fireSector = fireSector;
+        this.options.sectors.push(polygon);
+    }
+
+    SectorsView.prototype.drawSectors = function(aNewPoint, aNewAngle) {
+
+        this.options.sectors.forEach(function(sector) {
+            if (this.map.hasLayer(sector.polygon)) {
+                this.map.removeLayer(sector.polygon);
+            }
+
+            var tempCenter = this.map.project(this.center, 16);
+            var tempAngle = this.angle + sector._fireSector.directionAngle;
+
+            var tempPoint1 = summVector(tempCenter,
+                new Point((sector._basicPoints[0].x * Math.cos(tempAngle) - sector._basicPoints[0].y * Math.sin(tempAngle)),
+                          (sector._basicPoints[0].x * Math.sin(tempAngle) + sector._basicPoints[0].y * Math.cos(tempAngle)))
+            );
+
+            var tempPoint2 = summVector(tempCenter,
+                new Point((sector._basicPoints[1].x * Math.cos(tempAngle) - sector._basicPoints[1].y * Math.sin(tempAngle)),
+                          (sector._basicPoints[1].x * Math.sin(tempAngle) + sector._basicPoints[1].y * Math.cos(tempAngle)))
+            );
+
+            sector.polygon = L.polygon([
+                this.center,
+                this.map.unproject([tempPoint1.x, tempPoint1.y], 16),
+                this.map.unproject([tempPoint2.x, tempPoint2.y], 16)
+            ],
+                {
+                    color: '#FF1111',
+                    opacity: 0.3
+                });
+
+            this.map.addLayer(sector.polygon);
+
+        }, {center: aNewPoint, angle: aNewAngle, map: this.options._map});
+
+    };
+
+    return SectorsView;
+})();
+
 
 // Класс нужен для централизованного рисования машинки пользователя и сопутствующих объектов
 var UserCarMarker = (function () {
@@ -147,8 +219,12 @@ var UserCarMarker = (function () {
                 opacity: 0.3
             }
         ).addTo(this.options._map);
-        // Создание секторов стрельбы
 
+        // Создание секторов стрельбы
+        this.sectorsView = new SectorsView({
+            _map: this.options._map,
+            sectors: options.sectors
+        });
     }
 
     UserCarMarker.prototype.draw = function(aNewPoint, aNewAngle) {
@@ -165,8 +241,7 @@ var UserCarMarker = (function () {
         this.circleView.setLatLng(aNewPoint);
 
         // Перерисовка секторов стрельбы
-
-
+        this.sectorsView.drawSectors(aNewPoint, aNewAngle);
     }
 
     return UserCarMarker;

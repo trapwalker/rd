@@ -183,8 +183,6 @@ function receiveMesFromServ(data){
                     event.author.login + ": " + event.text, true);
             }
         });
-
-
     }
 
     // если message_type = answer
@@ -298,7 +296,13 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         tailEnable: false,
         _map: myMap,
         radiusView: 1000,
-        carID: uid
+        carID: uid,
+        sectors: [
+            new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
+            new FireSector(gradToRad(180), gradToRad(50), 350, 2, 4 * 1000),
+            new FireSector(gradToRad(90), gradToRad(70), 300, 3, 2 * 1000),
+            new FireSector(gradToRad(-90), gradToRad(70), 300, 3, 2 * 1000)
+        ]
     });
 }
 
