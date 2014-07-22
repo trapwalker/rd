@@ -161,7 +161,8 @@ var SectorsView = (function () {
             ],
                 {
                     color: '#FF1111',
-                    opacity: 0.3
+                    opacity: 0.3,
+                    clickable: false
                 });
 
             this.map.addLayer(sector.polygon);
