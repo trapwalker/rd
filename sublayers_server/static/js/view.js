@@ -7,11 +7,11 @@ function redrawMap() {
     if (user.userCar) {
         tempPointMain = user.userCar.getCurrentCoord(clock.getCurrentTime());
         tempAngleRad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-        addDivToDiv("console2", "cn21", "Игрок: X = " + tempPointMain.x.toFixed(2), true);
-        addDivToDiv("console2", "cn22", "Игрок: Y = " + tempPointMain.y.toFixed(2), true);
+        //addDivToDiv("console2", "cn21", "Игрок: X = " + tempPointMain.x.toFixed(2), true);
+        //addDivToDiv("console2", "cn22", "Игрок: Y = " + tempPointMain.y.toFixed(2), true);
 
         // Перенос центра карты в центр маркера пользовательской машинки
-        //myMap.panTo(myMap.unproject([tempPointMain.x, tempPointMain.y], 16), {animate: false});
+        myMap.panTo(myMap.unproject([tempPointMain.x, tempPointMain.y], 16), {animate: false});
 
         userCarMarker.draw(myMap.unproject([tempPointMain.x, tempPointMain.y], 16),tempAngleRad);
 

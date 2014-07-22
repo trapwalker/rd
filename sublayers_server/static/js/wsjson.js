@@ -122,7 +122,7 @@ function receiveMesFromServ(data){
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            addDivToDiv("console2",'start_time3',"servTime = " + servtime/1000., true);
+            //addDivToDiv("console2",'start_time3',"servTime = " + servtime/1000., true);
             // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
            // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
@@ -215,8 +215,8 @@ function getTrack(data){
             var velocity = new Point(data.motion.velocity.x,
                 data.motion.velocity.y);
             var start_time = data.motion.start_time;
-            addDivToDiv("console2",'start_time1', "lastTTrack  = " + data.motion.start_time/1000., true);
-            addDivToDiv("console2",'start_time2', "my_time     = " + clock.getCurrentTime(), true);
+            //addDivToDiv("console2",'start_time1', "lastTTrack  = " + data.motion.start_time/1000., true);
+            //addDivToDiv("console2",'start_time2', "my_time     = " + clock.getCurrentTime(), true);
 
             aTrack = new MoveLine(
                 start_time/1000.,             //Время начала движения
@@ -258,8 +258,8 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
             // и сразу же добавить маркер
             listMapObject.objects[uid].marker = getCarMarker(uid, myMap);
 
-            addDivToDiv("console2", uid+'33', "Добавили машинку: " + listMapObject.objects.length, true);
-            addDivToDiv("console2", uid+'22', "id: " + car.ID, true);
+            //addDivToDiv("console2", uid+'33', "Добавили машинку: " + listMapObject.objects.length, true);
+            //addDivToDiv("console2", uid+'22', "id: " + car.ID, true);
 
         } else { // Если такая машинка уже есть, то
             // установить все переменные
