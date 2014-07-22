@@ -89,12 +89,12 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-            //    dragging: false,
-            doubleClickZoom: false
-            //    maxBounds: ([
-            //        [50.21, 35.42],
-            //        [51.43, 39.44]
-            //    ])
+                dragging: false,
+            doubleClickZoom: false,
+                maxBounds: ([
+                    [50.21, 35.42],
+                    [51.43, 39.44]
+                ])
         }).setView([50.6041, 36.5954], 13);
 
     //Переключение в полноэкранный режим и обратно по кнопке
