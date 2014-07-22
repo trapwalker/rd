@@ -215,7 +215,8 @@ function getTrack(data){
             // запустить функцию установки линейного движения
             var velocity = new Point(data.motion.velocity.x,
                 data.motion.velocity.y);
-            var start_time = data.motion.start_time;
+           // var start_time = data.motion.start_time;
+            var start_time = clock.getCurrentTime() * 1000; // Сделано чтобы не дёргались машинки!
             //addDivToDiv("console2",'start_time1', "lastTTrack  = " + data.motion.start_time/1000., true);
             //addDivToDiv("console2",'start_time2', "my_time     = " + clock.getCurrentTime(), true);
 
