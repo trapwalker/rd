@@ -1,0 +1,152 @@
+#viewMessengerArea {
+    position: absolute;
+    bottom: 0px;
+    left: 7px;
+    overflow: auto;
+}
+
+#viewMessengerListArea {
+    position: relative;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    width: 330px;
+    height: 355px;
+    -webkit-border-bottom-left-radius: 10px;
+    -moz-border-radius-bottomleft: 10px;
+    background-color: #000000;
+    opacity: 0.5;
+}
+
+#viewMessengerListArea:hover {
+    opacity: 0.9;
+}
+
+#viewMessengerList {
+    position: relative;
+    overflow-y: auto;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    height: 310px;
+    color: #00ff00;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#viewMessengerListInputArea {
+    position: relative;
+    right: 0px;
+    left: 0px;
+    height: 30px;
+}
+
+#viewMessengerListInput {
+    position: relative;
+    float: left;
+    top: 2px;
+    left: 4px;
+    height: 30px;
+    width: 77%;
+}
+
+#viewMessengerListButton {
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 23%;
+}
+
+#viewMessengerSlideButtonArea {
+    position: relative;
+    float: left;
+    height: 35px;
+}
+
+#viewMessengerButton {
+    position: relative;
+    top: 6px;
+    color: #00ff00;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    font-size: 10px;
+}
+
+#viewMessengerSlideButton {
+    float: left;
+    color: #00ff00;
+    -webkit-border-bottom-left-radius: 10px;
+    -moz-border-radius-bottomleft: 10px;
+    font-size: 10px;
+}
+
+.button {
+    border: 1px solid #000000;
+    background: #666666;
+    background: -webkit-gradient(linear, left top, left bottom, from(#000000), to(#666666));
+    background: -webkit-linear-gradient(top, #000000, #666666);
+    background: -moz-linear-gradient(top, #000000, #666666);
+    background: -ms-linear-gradient(top, #000000, #666666);
+    background: -o-linear-gradient(top, #000000, #666666);
+    background-image: -ms-linear-gradient(top, #000000 0%, #666666 100%);
+    padding: 5px 10px;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.4) 0 0px 0, inset rgba(255, 255, 255, 0.4) 0 0px 0;
+    -moz-box-shadow: rgba(255, 255, 255, 0.4) 0 0px 0, inset rgba(255, 255, 255, 0.4) 0 0px 0;
+    box-shadow: rgba(255, 255, 255, 0.4) 0 0px 0, inset rgba(255, 255, 255, 0.4) 0 0px 0;
+    text-shadow: #000000 0 1px 0;
+    color: #00ff00;
+    font-family: helvetica, serif;
+    text-decoration: none;
+    opacity: 0.5;
+}
+
+.button:hover {
+    border: 1px solid #000000;
+    text-shadow: #000000 0 1px 0;
+    background: #666666;
+    background: -webkit-gradient(linear, left top, left bottom, from(#000000), to(#666666));
+    background: -webkit-linear-gradient(top, #000000, #666666);
+    background: -moz-linear-gradient(top, #000000, #666666);
+    background: -ms-linear-gradient(top, #000000, #666666);
+    background: -o-linear-gradient(top, #000000, #666666);
+    background-image: -ms-linear-gradient(top, #000000 0%, #666666 100%);
+    color: #ffffff;
+    opacity: 0.9;
+}
+
+.button:active {
+    text-shadow: #000000 0 1px 0;
+    border: 1px solid #000000;
+    background: #000000;
+    background: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#666666));
+    background: -webkit-linear-gradient(top, #666666, #000000);
+    background: -moz-linear-gradient(top, #666666, #000000);
+    background: -ms-linear-gradient(top, #666666, #000000);
+    background: -o-linear-gradient(top, #666666, #000000);
+    background-image: -ms-linear-gradient(top, #666666 0%, #000000 100%);
+    color: #ffffff;
+}
+
+#viewMessengerInput {
+    position: relative;
+    left: 5px;
+    border: 0px solid #000000;
+    background: #000000;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    color: #00ff00;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0, inset rgba(000, 000, 000, 0.7) 0 0px 0px;
+    -moz-box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0, inset rgba(000, 000, 000, 0.7) 0 0px 0px;
+    box-shadow: rgba(255, 255, 255, 0.4) 0 1px 0, inset rgba(000, 000, 000, 0.7) 0 0px 0px;
+    padding: 4px;
+    margin-bottom: 20px;
+    width: 230px;
+}
+
+#viewMessengerInput:focus {
+    background: #000000;
+    color: #00ff00;
+}

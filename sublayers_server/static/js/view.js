@@ -185,8 +185,24 @@ $(document).ready(function () {
     testTownMarker.bindPopup("Город Белгород!");
 
     // создание чата и моментальное сворачивание его.
-    createViewMessenger("chatArea");
-    viewMessengerSlideButton.click();
+    chat = new ViewMessenger({
+            parentDiv: 'chatArea',
+            height: 400,
+            width: 400});
+    //createViewMessenger("chatArea");
+    //viewMessengerSlideButton.click();
+    chat.addChat(12, 'system');
+    chat.addChat(13, 'log');
+    chat.addChat(14, 'name14');
+    chat.addChat(15, 'name15');
+    chat.addChat(16, 'name16');
+    chat.addChat(17, 'name17');
+    chat.addChat(18, 'name17');
+    chat.addChat(19, 'name17');
+    chat.addChat(20, 'name17');
+    chat.addChat(21, 'name17');
+    chat.addChat(22, 'name18');
+    chat.setActiveChat(12);
 
     // создание слайдера зума
     zoomSetSlider = new SliderZoom({
@@ -290,6 +306,7 @@ function RunPrefixMethod(obj, method) {
 }
 
 var myMap;
+var chat;
 var userCarMarker;
 var testTownMarker;
 var wsjson;
