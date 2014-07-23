@@ -13,10 +13,9 @@ class Point {
 }
 
 //Поворот вектора на угол aAngle(в радианах) по часовой стрелке
-
 function rotateVector(aPoint:Point, aAngle:number):Point {
     return new Point((aPoint.x * Math.cos(aAngle) - aPoint.y * Math.sin(aAngle)),
-        (aPoint.x * Math.sin(aAngle) + aPoint.y * Math.cos(aAngle)));
+                     (aPoint.x * Math.sin(aAngle) + aPoint.y * Math.cos(aAngle)));
 }
 
 function normVector(aPoint:Point):Point {

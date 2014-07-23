@@ -50,10 +50,10 @@ var CarTail = (function () {
             _enable: false
         };
 
-        if(options){
-            if(options.aStartPoint) this.options.aStartPoint = options.aStartPoint;
-            if(options._map) this.options._map = options._map;
-            if(options._enable) this.options._enable = options._enable;
+        if (options) {
+            if (options.aStartPoint) this.options.aStartPoint = options.aStartPoint;
+            if (options._map) this.options._map = options._map;
+            if (options._enable) this.options._enable = options._enable;
         }
 
         // Создание очереди
@@ -83,7 +83,7 @@ var CarTail = (function () {
         }
     }
 
-    CarTail.prototype.setActive = function(enable) {
+    CarTail.prototype.setActive = function (enable) {
         this.options._enable = enable;
         if (enable) {
             var tempPoints = this._tail.getPoints();
@@ -107,36 +107,43 @@ var SectorsView = (function () {
         this.options = {
             _map: null,
             rotateAngle: 0,
-            sectors: []
+            sectors: [],
+            countPoints: 10
         };
 
         if (options) {
-            if(options._map) this.options._map = options._map;
+            if (options._map) this.options._map = options._map;
+            if (options.countPoints) this.options.countPoints = options.countPoints;
         }
 
         // Сделать addSector для каждого элемента массива options.sectors
-        if(options.sectors)
-            for(var i = 0; i < options.sectors.length; i++) {
+        if (options.sectors)
+            for (var i = 0; i < options.sectors.length; i++) {
                 this.addSector(options.sectors[i]);
             }
     }
 
-    SectorsView.prototype.addSector = function(fireSector) {
+    SectorsView.prototype.addSector = function (fireSector) {
+        var sector = {};
         var tempWidth = fireSector.widthAngle / 2;
-        var vertV = new Point(0, - fireSector.radius);
+        var vertV = new Point(0, -fireSector.radius);
 
-        var rightV = new Point((-vertV.y * Math.sin(tempWidth)), (vertV.y * Math.cos(tempWidth)));
-        var leftV = new Point((vertV.y * Math.sin(tempWidth)), (vertV.y * Math.cos(tempWidth)));
+        //внесли центр сектора
+        sector._points = [];
+        sector._points.push(new Point(0, 0));
 
-        var polygon = new Point(0, 0);
-        polygon._basicPoints = [rightV, leftV];
-        polygon._fireSector = fireSector;
-        this.options.sectors.push(polygon);
+        //добавление точек сектора
+        for (var angle = -tempWidth; angle <= tempWidth;
+             angle += fireSector.widthAngle / (this.options.countPoints - 2)) {
+            sector._points.push(new rotateVector(vertV, angle));
+        }
+
+        sector._fireSector = fireSector;
+        this.options.sectors.push(sector);
     }
 
-    SectorsView.prototype.drawSectors = function(aNewPoint, aNewAngle) {
-
-        this.options.sectors.forEach(function(sector) {
+    SectorsView.prototype.drawSectors = function (aNewPoint, aNewAngle) {
+        this.options.sectors.forEach(function (sector) {
             if (this.map.hasLayer(sector.polygon)) {
                 this.map.removeLayer(sector.polygon);
             }
@@ -144,24 +151,18 @@ var SectorsView = (function () {
             var tempCenter = this.map.project(this.center, 16);
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
-            var tempPoint1 = summVector(tempCenter,
-                new Point((sector._basicPoints[0].x * Math.cos(tempAngle) - sector._basicPoints[0].y * Math.sin(tempAngle)),
-                          (sector._basicPoints[0].x * Math.sin(tempAngle) + sector._basicPoints[0].y * Math.cos(tempAngle)))
-            );
+            var tempPoints = [];
 
-            var tempPoint2 = summVector(tempCenter,
-                new Point((sector._basicPoints[1].x * Math.cos(tempAngle) - sector._basicPoints[1].y * Math.sin(tempAngle)),
-                          (sector._basicPoints[1].x * Math.sin(tempAngle) + sector._basicPoints[1].y * Math.cos(tempAngle)))
-            );
+            for(var i = 0; i < sector._points.length; i++) {
+                var tempPoint = summVector(tempCenter, rotateVector(sector._points[i], tempAngle));
+                tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], 16));
+            }
 
-            sector.polygon = L.polygon([
-                this.center,
-                this.map.unproject([tempPoint1.x, tempPoint1.y], 16),
-                this.map.unproject([tempPoint2.x, tempPoint2.y], 16)
-            ],
-                {
-                    color: '#FF1111',
-                    opacity: 0.3
+            sector.polygon = L.polygon(tempPoints, {
+                    color: '#215c23',
+                    fillOpacity: 0.6,
+                    opacity: 0.1,
+                    clickable: false
                 });
 
             this.map.addLayer(sector.polygon);
@@ -173,7 +174,6 @@ var SectorsView = (function () {
     return SectorsView;
 })();
 
-
 // Класс нужен для централизованного рисования машинки пользователя и сопутствующих объектов
 var UserCarMarker = (function () {
     function UserCarMarker(options) {
@@ -182,15 +182,17 @@ var UserCarMarker = (function () {
             tailEnable: false,
             _map: null,
             radiusView: 0,
-            carID: null
+            carID: null,
+            countSectorPoints: 10
         }
 
-        if(options){
-            if(options.position) this.options.position = options.position;
-            if(options.tailEnable) this.options.tailEnable = options.tailEnable;
-            if(options._map) this.options._map = options._map;
-            if(options.carID) this.options.carID = options.carID;
-            if(options.radiusView) this.options.radiusView = options.radiusView;
+        if (options) {
+            if (options.position) this.options.position = options.position;
+            if (options.tailEnable) this.options.tailEnable = options.tailEnable;
+            if (options._map) this.options._map = options._map;
+            if (options.carID) this.options.carID = options.carID;
+            if (options.radiusView) this.options.radiusView = options.radiusView;
+            if (options.countSectorPoints) this.options.countSectorPoints = options.countSectorPoints;
         }
 
         // Создание Маркера
@@ -223,11 +225,12 @@ var UserCarMarker = (function () {
         // Создание секторов стрельбы
         this.sectorsView = new SectorsView({
             _map: this.options._map,
-            sectors: options.sectors
+            sectors: options.sectors,
+            countPoints: this.options.countSectorPoints
         });
     }
 
-    UserCarMarker.prototype.draw = function(aNewPoint, aNewAngle) {
+    UserCarMarker.prototype.draw = function (aNewPoint, aNewAngle) {
         // Перерисовка маркера
         // Установка угла в для поворота иконки маркера (в градусах)
         this.marker.options.angle = aNewAngle;
