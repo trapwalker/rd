@@ -33,11 +33,11 @@ var ViewMessenger = (function () {
         this.vMSB.on('click', {self: this}, this.changeVisible);
 
         //добавление заголовка
-        this.vMTA = $("<div id='viewMessengerTitleArea'><span class='messenger-text'>NUKE Messanger: </span></div>");
+        this.vMTA = $("<div id='viewMessengerTitleArea'><span class='messenger-text'>NUKE Messanger </span></div>");
         this.vMTA.css({width: this.options.width - parseInt(this.vMSB.css('width')) -
                                                    parseInt(this.vMSB.css('margin-left')) -
                                                    parseInt(this.vMSB.css('margin-right'))});
-        this.vMHTS = $("<span id='viewMessengerHeaderTitleSpan' class='messenger-text'>Test</span>");
+        this.vMHTS = $("<span id='viewMessengerHeaderTitleSpan' class='messenger-text'></span>");
         this.vMHA.append(this.vMTA);
         this.vMTA.append(this.vMHTS);
 
@@ -166,6 +166,7 @@ var ViewMessenger = (function () {
                 if(chat.id == this.id){
                     chat.textArea.addClass('textOutAreaActive');
                     chat.pageButton.addClass('pageButtonActive');
+                    this.self.vMHTS.text('['+chat.name+']');
                 }
                 else {
                     chat.textArea.removeClass('textOutAreaActive');
