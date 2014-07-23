@@ -7,8 +7,8 @@ function redrawMap() {
     if (user.userCar) {
         tempPointMain = user.userCar.getCurrentCoord(clock.getCurrentTime());
         tempAngleRad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-        addDivToDiv("console2", "cn21", "Игрок: X = " + tempPointMain.x.toFixed(2), true);
-        addDivToDiv("console2", "cn22", "Игрок: Y = " + tempPointMain.y.toFixed(2), true);
+        addMessageToSystem("cn21", "Игрок: X = " + tempPointMain.x.toFixed(2));
+        addMessageToSystem("cn22", "Игрок: Y = " + tempPointMain.y.toFixed(2));
 
         // Перенос центра карты в центр маркера пользовательской машинки
         //myMap.panTo(myMap.unproject([tempPointMain.x, tempPointMain.y], 16), {animate: false});
@@ -59,11 +59,6 @@ function redrawSliderSpeedController() {
 
 function onMouseClickMap(mouseEventObject) {
     sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
-}
-
-function onMouseMoveMap(mouseEventObject) {
-    addDivToDiv("console", "mm4", "Курсор = " + myMap.project(mouseEventObject.latlng, myMap.getZoom()), true);
-    addDivToDiv("console", "mm5", "Масштаб = " + myMap.getZoom(), true);
 }
 
 function onZoomStart(Event) {
@@ -146,13 +141,6 @@ $(document).ready(function () {
         myMap.removeLayer(tileLayerShow);
     }
 
-    //Изначальное скрытие консоли
-    $('#footer').hide();
-
-    //Открытие/закрытие консоли
-    buttonConsole.onclick = function () {
-        footerToggle();
-    }
 
     //Шкала топлива машины игрока
     fuelController = new ProgressBarFuel({
@@ -169,7 +157,6 @@ $(document).ready(function () {
     iconConnectServer.src = "img/connect.png";
 
     myMap.on('click', onMouseClickMap);
-    myMap.on('mousemove', onMouseMoveMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
 
@@ -184,13 +171,14 @@ $(document).ready(function () {
     testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], 16));
     testTownMarker.bindPopup("Город Белгород!");
 
-    // создание чата и моментальное сворачивание его.
+    // создание чата
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
             height: 450,
             width: 500});
     chat.addChat(0, 'broadcast');
     chat.addChat(-1, 'log');
+    chat.addChat(-2, 'system');
     chat.setActiveChat(0);
 
     // создание слайдера зума
@@ -243,11 +231,6 @@ $(document).ready(function () {
 
 function onMarkerPopupOpen(e) {
     this.setPopupContent('My ID = ' + this.carID);
-}
-
-// скрыть показать footer
-function footerToggle(e) {
-    $('#footer').slideToggle('slow');
 }
 
 function changeSpeedOnSlider() {

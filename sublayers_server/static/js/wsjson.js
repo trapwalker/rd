@@ -117,13 +117,12 @@ function receiveMesFromServ(data){
     });
     // если message_type = push
     if (mes.message_type == "push") {
-        addMesToConsole(data);
         addMessageToLog(data);
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            addDivToDiv("console2",'start_time3',"servTime = " + servtime/1000., true);
+            addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
             // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
            // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
@@ -180,8 +179,6 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "ChatMessage") {
                 // chat_message
-               // addDivToDiv("viewMessengerList", "chat_text" + event.id + "newChat", servtime + " " +
-               //     event.author.login + ": " + event.text, true);
                 chat.addMessage(0, event.id, new Date(servtime), event.author, event.text);
             }
         });
@@ -217,8 +214,8 @@ function getTrack(data){
             var velocity = new Point(data.motion.velocity.x,
                 data.motion.velocity.y);
             var start_time = data.motion.start_time;
-            addDivToDiv("console2",'start_time1', "lastTTrack  = " + data.motion.start_time/1000., true);
-            addDivToDiv("console2",'start_time2', "my_time     = " + clock.getCurrentTime(), true);
+            addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.start_time/1000.);
+            addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
 
             aTrack = new MoveLine(
                 start_time/1000.,             //Время начала движения
@@ -259,10 +256,6 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
             listMapObject.add(car);
             // и сразу же добавить маркер
             listMapObject.objects[uid].marker = getCarMarker(uid, myMap);
-
-            addDivToDiv("console2", uid+'33', "Добавили машинку: " + listMapObject.objects.length, true);
-            addDivToDiv("console2", uid+'22', "id: " + car.ID, true);
-
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);

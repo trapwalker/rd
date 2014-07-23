@@ -204,6 +204,12 @@ var ViewMessenger = (function () {
         var spanUser = $('<span class="view-messenger-text-user">'+ aUser.login +'</span>');
         var spanText = $('<span class="view-messenger-text-text">'+ ': ' + aText +'</span>');
 
+        // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
+        if ($("#" + chat.name+chatID+messageID + ' span:last-child').length) {
+            $("#" + chat.name+chatID+messageID + ' span:last-child').text(aText);
+            return;
+        }
+
         // Добавить, предварительно скрыв
         mesDiv.hide();
         chat.textArea.append(mesDiv);
@@ -212,7 +218,8 @@ var ViewMessenger = (function () {
         mesDiv.append(spanText);
 
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
-        spanUser.on('click',{user: aUser}, viewMessengerClickSpanUser);
+        if (chat.id >= 0)
+            spanUser.on('click', {user: aUser}, viewMessengerClickSpanUser);
 
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if(aUser.login == user.login)
@@ -232,9 +239,13 @@ function clickForPageButton(event){
 }
 
 function addMessageToLog(aText) {
-    chat.addMessage(-1, '', new Date(), {login: 'Push от сервера #'+newIDFromP()}, '<pre>'+aText+'</pre>');
+    var logID = newIDFromP();
+    chat.addMessage(-1, logID, new Date(), {login: 'Push от сервера #'+logID}, '<pre>'+aText+'</pre>');
 }
 
+function addMessageToSystem(messID, aText) {
+    chat.addMessage(-2, messID, new Date(), {login: '#'}, aText);
+}
 
 function viewMessngerSendMessage() {
     var str = chat.vMI.val();
