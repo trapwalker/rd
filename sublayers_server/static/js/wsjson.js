@@ -118,6 +118,7 @@ function receiveMesFromServ(data){
     // если message_type = push
     if (mes.message_type == "push") {
         addMesToConsole(data);
+        addMessageToLog(data);
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
@@ -181,6 +182,7 @@ function receiveMesFromServ(data){
                 // chat_message
                // addDivToDiv("viewMessengerList", "chat_text" + event.id + "newChat", servtime + " " +
                //     event.author.login + ": " + event.text, true);
+                chat.addMessage(0, event.id, new Date(servtime), event.author, event.text);
             }
         });
     }

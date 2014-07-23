@@ -74,6 +74,7 @@ var ViewMessenger = (function () {
         //добавление кнопки 'отправить соосбщение'
         this.vMEB = $("<div id='viewMessengerEnterButton'></div>");
         this.vMFA.append(this.vMEB);
+        this.vMEB.on('click', viewMessngerSendMessage);
 //  Повесить Send
 
         //добавление дива с Input
@@ -87,11 +88,11 @@ var ViewMessenger = (function () {
         this.vMIA.append(this.vMI);
 
 //  Повесить Send
-        /*vMI.keydown(function (event) {
-         if (event.keyCode == 13) {
-         sendMessage();
-         }
-         });*/
+        this.vMI.keydown(function (event) {
+            if (event.keyCode == 13) {
+                viewMessngerSendMessage();
+            }
+        });
 
 
         //добавление дива с сообщениями
@@ -143,7 +144,7 @@ var ViewMessenger = (function () {
         var chat = {
             id: aID,
             name: aName,
-            textArea: $('<div id="textArea' + aID + '" class="textOutArea">' + aName + '</div>'),
+            textArea: $('<div id="textArea' + aID + '" class="textOutArea"></div>'),
             pageButton: $('<div id="pageButton' + aID + '" class="pageButton">' + aName + '</div>')
         }
 
@@ -158,6 +159,8 @@ var ViewMessenger = (function () {
 
         this.chats.push(chat);
         this.setActiveChat(chat.id);
+
+        return chat;
     }
 
 
@@ -179,10 +182,71 @@ var ViewMessenger = (function () {
     }
 
 
+    ViewMessenger.prototype._getChat = function(chatID) {
+        // Найти чат
+        for(var i in this.chats){
+            if(this.chats[i])
+                if(this.chats[i].id == chatID)
+                   return this.chats[i];
+        }
+        // Если чата нет, то создать новый и его же вернуть
+        // return this.addChat(chatID, 'какой-то текст или логин');
+    }
+
+    ViewMessenger.prototype.addMessage = function(chatID, messageID, aTime, aUser, aText) {
+        // Найти чат для добавления в него сообщения
+        var chat = this._getChat(chatID);
+        // Отформатировать время
+        var tempTime = aTime.toTimeString().split(' ')[0];
+        // создать див соощения и спаны
+        var mesDiv = $('<div id="'+chat.name+chatID+messageID+'" class="view-messenger-message"></div>');
+        var spanTime = $('<span class="view-messenger-text-time">'+ '[' + tempTime + '] ' +'</span>');
+        var spanUser = $('<span class="view-messenger-text-user">'+ aUser.login +'</span>');
+        var spanText = $('<span class="view-messenger-text-text">'+ ': ' + aText +'</span>');
+
+        // Добавить, предварительно скрыв
+        mesDiv.hide();
+        chat.textArea.append(mesDiv);
+        mesDiv.append(spanTime);
+        mesDiv.append(spanUser);
+        mesDiv.append(spanText);
+
+        // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
+        spanUser.on('click',{user: aUser}, viewMessengerClickSpanUser);
+
+        // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
+        if(aUser.login == user.login)
+            spanUser.addClass("view-messenger-text-my-user");
+        // Показать сообщение, опустивскрол дива
+        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+
+    };
+
+
     return ViewMessenger;
 })();
 
 
 function clickForPageButton(event){
     event.data.self.setActiveChat(event.data.id);
+}
+
+function addMessageToLog(aText) {
+    chat.addMessage(-1, '', new Date(), {login: 'Push от сервера #'+newIDFromP()}, '<pre>'+aText+'</pre>');
+}
+
+
+function viewMessngerSendMessage() {
+    var str = chat.vMI.val();
+    if (str.length) {
+        sendChatMessage(str);
+        chat.vMI.val('').focus();
+    } else {
+        chat.vMI.focus()
+    }
+}
+
+function viewMessengerClickSpanUser(event) {
+    var gamer = event.data.user;
+    alert(gamer.login);
 }

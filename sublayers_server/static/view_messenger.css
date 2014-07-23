@@ -135,14 +135,34 @@
 .textOutArea {
     height: 0%;
     width: 100%;
-    background-color: red;
     position: relative;
     top: 0px;
     left: 0px;
+    overflow-y: auto;
 }
 
 .textOutAreaActive {
     height: 100%;
+}
+
+.view-messenger-message{
+    opacity: 1;
+}
+
+.view-messenger-text-time {
+    font-style: italic;
+    color: yellowgreen;
+}
+.view-messenger-text-user {
+    color: #ff0000;
+}
+
+.view-messenger-text-my-user {
+    color: #ffa517;
+}
+
+.view-messenger-text-text {
+    color: limegreen;
 }
 
 .pageButton {
