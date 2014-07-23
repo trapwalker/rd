@@ -108,3 +108,22 @@ input:focus {
     top: 45px;
     left: 32px;
 }
+
+::-webkit-scrollbar {
+    width: 16px;
+}
+
+::-webkit-scrollbar-button {
+    height: 16px;
+    background: darkgreen;
+    border: 1px solid limegreen;
+}
+
+::-webkit-scrollbar-thumb {
+    background: darkgreen;
+    border: 1px solid limegreen;
+}
+
+::-webkit-scrollbar-track {
+    background: black;
+}
