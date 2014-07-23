@@ -159,9 +159,9 @@ var SectorsView = (function () {
             }
 
             sector.polygon = L.polygon(tempPoints, {
-                    color: '#215c23',
-                    fillOpacity: 0.6,
-                    opacity: 0.1,
+                    weight: 0,
+                    fillColor: '#32cd32',
+                    fillOpacity: 0.2,
                     clickable: false
                 });
 
@@ -217,8 +217,10 @@ var UserCarMarker = (function () {
         // Создание круга обзора
         this.circleView = L.circle(this.options.position, this.options.radiusView,
             {
-                color: '#11FF11',
-                opacity: 0.3
+                weight: 0,
+                fillColor: '#32cd32',
+                fillOpacity: 0.2,
+                clickable: false
             }
         ).addTo(this.options._map);
 

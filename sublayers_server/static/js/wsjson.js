@@ -179,8 +179,8 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "ChatMessage") {
                 // chat_message
-                addDivToDiv("viewMessengerList", "chat_text" + event.id + "newChat", servtime + " " +
-                    event.author.login + ": " + event.text, true);
+               // addDivToDiv("viewMessengerList", "chat_text" + event.id + "newChat", servtime + " " +
+               //     event.author.login + ": " + event.text, true);
             }
         });
     }
@@ -303,7 +303,7 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
             new FireSector(gradToRad(90), gradToRad(70), 300, 3, 2 * 1000),
             new FireSector(gradToRad(-90), gradToRad(70), 300, 3, 2 * 1000)
         ],
-        countSectorPoints: 10
+        countSectorPoints: 20
     });
 }
 
