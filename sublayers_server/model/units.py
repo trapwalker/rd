@@ -11,12 +11,21 @@ from balance import BALANCE
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, **kw):
+    def __init__(self, owner=None, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: model.tasks.Task | None"""
         self.server.statics.append(self)
         self.server.static_observers.append(self)
+        self.owner = owner
+
+    def as_dict(self):
+        d = super(Unit, self).as_dict()
+        owner = self.owner
+        d.update(
+            owner=owner and owner.as_dict(),
+        )
+        return d
 
     def delete(self):
         del self.task
@@ -117,7 +126,6 @@ class Bot(Unit):
     @direction.setter
     def direction(self, value):
         self._direction = value
-
 
     @property
     def max_velocity(self):  # m/s
