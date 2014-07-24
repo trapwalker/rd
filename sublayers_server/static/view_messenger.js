@@ -33,7 +33,7 @@ var ViewMessenger = (function () {
         this.vMSB.on('click', {self: this}, this.changeVisible);
 
         //добавление заголовка
-        this.vMTA = $("<div id='viewMessengerTitleArea'><span class='messenger-text'>NUKE Messanger </span></div>");
+        this.vMTA = $("<div id='viewMessengerTitleArea'><span class='messenger-text'>NUKE Messenger </span></div>");
         this.vMTA.css({width: this.options.width - parseInt(this.vMSB.css('width')) -
                                                    parseInt(this.vMSB.css('margin-left')) -
                                                    parseInt(this.vMSB.css('margin-right'))});

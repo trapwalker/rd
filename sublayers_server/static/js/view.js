@@ -141,8 +141,8 @@ $(document).ready(function () {
     // создание чата
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
-            height: 450,
-            width: 500});
+            height: 550,
+            width: 400});
     chat.addChat(0, 'broadcast');
     chat.addChat(-1, 'log');
     chat.addChat(-2, 'system');
