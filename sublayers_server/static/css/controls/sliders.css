@@ -35,7 +35,7 @@
 }
 
 #slider-speed-filler {
-    background: transparent url(./img/CruiseControl/if_spd_filler.png) 50% 50% no-repeat;
+    background: transparent url('/static/img/CruiseControl/if_spd_filler.png') 50% 50% no-repeat;
     height: 100%;
     top: 40%;
     width: 29px;
@@ -46,7 +46,7 @@
 }
 
 #slider-speed-filler-arrow {
-    background: transparent url(./img/CruiseControl/if_spd_arrow.png) 50% 50% no-repeat;
+    background: transparent url('/static/img/CruiseControl/if_spd_arrow.png') 50% 50% no-repeat;
     width: 29px;
     height: 2px;
     z-index: 2;
@@ -60,7 +60,7 @@
 .slider-speed-carriage {
     width: 39px;
     height: 31px;
-    background: green url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat;
+    background: green url('/static/img/CruiseControl/if_spd_slider.png') 50% 50% no-repeat;
     font: bold 14px Arial;
     color: #2dc34a;
     text-align: center;
@@ -76,14 +76,14 @@
 
 .slider-speed-slider {
     margin-left: 18.5px;
-    background: transparent url(./img/CruiseControl/if_spd_bar.png) 50% 50% no-repeat;
+    background: transparent url('/static/img/CruiseControl/if_spd_bar.png') 50% 50% no-repeat;
 }
 
 /*Настройки слайдера и каретки завершены*/
 
 /*Настройка левых 5-ти дивов - 4 для картинок и один для надписи*/
 #slider-speed-left-hwy {
-    background-image: url('./img/CruiseControl/if_spd_limit_hwy.png');
+    background-image: url('/static/img/CruiseControl/if_spd_limit_hwy.png');
     background-repeat: no-repeat;
     height: 30px;
     width: 40px;
@@ -93,7 +93,7 @@
 }
 
 #slider-speed-left-rd {
-    background-image: url('./img/CruiseControl/if_spd_limit_rd.png');
+    background-image: url('/static/img/CruiseControl/if_spd_limit_rd.png');
     background-repeat: no-repeat;
     height: 30px;
     width: 40px;
@@ -103,7 +103,7 @@
 }
 
 #slider-speed-left-drt {
-    background-image: url('./img/CruiseControl/if_spd_limit_drt.png');
+    background-image: url('/static/img/CruiseControl/if_spd_limit_drt.png');
     background-repeat: no-repeat;
     height: 30px;
     width: 40px;
@@ -113,7 +113,7 @@
 }
 
 #slider-speed-left-frst {
-    background-image: url('./img/CruiseControl/if_spd_limit_frst.png');
+    background-image: url('/static/img/CruiseControl/if_spd_limit_frst.png');
     background-repeat: no-repeat;
     height: 30px;
     width: 40px;
@@ -126,7 +126,7 @@
 
 /* Настройки Цифрового Спидометра - Непосредственно цифра! */
 .slider-speed-digital-main {
-    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
+    background-image: url('/static/img/CruiseControl/if_spd_digital_speed.png');
     background-repeat: no-repeat;
     position: relative;
     height: 39px;
@@ -151,7 +151,7 @@
 
 /* Настройки кнопки стоп! */
 .slider-speed-stop-main {
-    background-image: url('./img/CruiseControl/if_spd_digital_speed.png');
+    background-image: url('/static/img/CruiseControl/if_spd_digital_speed.png');
     background-repeat: no-repeat;
     position: relative;
     height: 39px;
@@ -187,14 +187,14 @@
 }
 
 .slider-zoom-carriage {
-    background: green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat;
+    background: green url('/static/img/control_zoom/ctrl_zm_slider.png') 50% 50% no-repeat;
     margin-left: -3px;
 }
 
 #Zoom_sliderBar {
     height: 180px;
     width: 25px;
-    background: transparent url('./img/control_zoom/ctrl_zm_bar.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/control_zoom/ctrl_zm_bar.png') 50% 50% no-repeat;
     position: absolute;
     top: 27px;
     left: 5px;
@@ -229,7 +229,7 @@
     height: 30px;
     width: 30px;
     position: absolute;
-    background: transparent url('./img/fuel/fuel_icon.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fuel/fuel_icon.png') 100% 100% no-repeat;
     opacity: 0.8;
     left: -10px;
     top: 2px;
@@ -259,14 +259,14 @@
     position: absolute;
     height: 30px;
     width: 100%;
-    background: transparent url('./img/fuel/fuel_filler.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fuel/fuel_filler.png') 100% 100% no-repeat;
     z-index: 1;
     opacity: 0.4;
 }
 
 #pbarFuelBarScale {
     position: absolute;
-    background: transparent url('./img/fuel/fuel_bar.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fuel/fuel_bar.png') 100% 100% no-repeat;
     height: 100%;
     width: 100%;
     z-index: 2;
@@ -275,7 +275,7 @@
 
 #pbarFuelBarArrow {
     position: absolute;
-    background: transparent url('./img/fuel/fuel_arrow.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fuel/fuel_arrow.png') 100% 100% no-repeat;
     width: 9px;
     height: 16px;
     right: 0%;
@@ -357,7 +357,7 @@
     height: 30px;
     width: 30px;
     position: absolute;
-    background: transparent url('./img/health/health_icon.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/health/health_icon.png') 100% 100% no-repeat;
     opacity: 0.8;
     left: -10px;
     top: 2px;
@@ -388,14 +388,14 @@
     position: absolute;
     height: 30px;
     width: 100%;
-    background: transparent url('./img/health/health_filler.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/health/health_filler.png') 100% 100% no-repeat;
     z-index: 1;
     opacity: 0.4;
 }
 
 #pbarHPBarScale {
     position: absolute;
-    background: transparent url('./img/health/health_bar.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/health/health_bar.png') 100% 100% no-repeat;
     height: 100%;
     width: 100%;
     z-index: 2;
@@ -404,7 +404,7 @@
 
 #pbarHPBarArrow {
     position: absolute;
-    background: transparent url('./img/health/health_arrow.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/health/health_arrow.png') 100% 100% no-repeat;
     width: 9px;
     height: 16px;
     right: 0%;

@@ -17,7 +17,7 @@
     border-width: 2px;
     color: limegreen;
     background-color: darkgreen;
-    font: 15px arial;
+    font: 16px sans-serif;
     position: absolute;
     top: 3px;
     left: 5px;
@@ -107,4 +107,23 @@ input:focus {
     position: absolute;
     top: 45px;
     left: 32px;
+}
+
+::-webkit-scrollbar {
+    width: 16px;
+}
+
+::-webkit-scrollbar-button {
+    height: 16px;
+    background: darkgreen;
+    border: 1px solid limegreen;
+}
+
+::-webkit-scrollbar-thumb {
+    background: darkgreen;
+    border: 1px solid limegreen;
+}
+
+::-webkit-scrollbar-track {
+    background: black;
 }

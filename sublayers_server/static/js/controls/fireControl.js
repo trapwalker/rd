@@ -47,8 +47,8 @@ var FireControl = (function () {
 
     FireControl.prototype.addSector = function(fireSector) {
         var tempWidth = fireSector.widthAngle / 2;
-        var vertVOut = new Point(0, -this.radiusOut);
-        var vertVIn = new Point(0, -this.radiusIn);
+        var vertVOut = new Point(0, -this.radiusOut + 1);
+        var vertVIn = new Point(0, -this.radiusIn - 7);
         // Много математики
         var l_out = (4 / 3) * Math.tan(0.25 * fireSector.widthAngle) * this.radiusOut;
         var l_in = (4 / 3) * Math.tan(0.25 * fireSector.widthAngle) * this.radiusIn;
@@ -107,7 +107,7 @@ var FireControl = (function () {
         sector.recharged = false;
         // Помещаем сектор в массив секторов данного объекта
         this.options.sectors.push(sector);
-    }
+    };
 
     FireControl.prototype.setRotate = function(angle) {
         var tAngle = angle;
@@ -118,7 +118,7 @@ var FireControl = (function () {
                        this.x + ' ' + this.y);
         }, {x: this.center.x, y: this.center.y, an: tAngle});
         tAngle = null;
-    }
+    };
 
     FireControl.prototype.setRelativeRotate = function(angle) {
         var tAngle = (angle + this.options.rotateAngle);
@@ -129,7 +129,17 @@ var FireControl = (function () {
                 this.x + ' ' + this.y);
         }, {x: this.center.x, y: this.center.y, an: tAngle});
         tAngle = null;
+    };
+
+    FireControl.prototype.clearSectors = function() {
+        alert('Unbind');
+        this.options.sectors.forEach(function(sector){
+            // Снять клик с каждого сектора
+            $(sector.node).off('click',fireSectorEvent);
+             sector.node.remove();
+        });
     }
+
 
 
     return FireControl;
