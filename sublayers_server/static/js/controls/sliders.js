@@ -80,7 +80,7 @@ var SliderZoom = (function () {
         //event.preventDefault();
         var slider = _SlidersMass[event.data.id];
         if (slider.options.onChange)
-            slider.options.onChange();
+            slider.options.onChange(slider);
     }
 
     SliderZoom.prototype.getZoom = function () {
