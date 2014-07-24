@@ -55,6 +55,19 @@ var Controllers = (function () {
 
         // Так как все контролеры проинициализированы, то сделать их активными
         this.isActive = true;
+
+
+        // Тест!
+        //
+     /*   setTimeout(function(){
+            controllers.fireControl.clearSectors();
+        }, 3000);
+
+        setTimeout(function(){
+            controllers.fireControl.addSector( new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000));
+        }, 10000);
+     */
+
     }
 
     Controllers.prototype.draw = function (directionCar, uCar) {

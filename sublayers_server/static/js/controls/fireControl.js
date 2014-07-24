@@ -107,7 +107,7 @@ var FireControl = (function () {
         sector.recharged = false;
         // Помещаем сектор в массив секторов данного объекта
         this.options.sectors.push(sector);
-    }
+    };
 
     FireControl.prototype.setRotate = function(angle) {
         var tAngle = angle;
@@ -118,7 +118,7 @@ var FireControl = (function () {
                        this.x + ' ' + this.y);
         }, {x: this.center.x, y: this.center.y, an: tAngle});
         tAngle = null;
-    }
+    };
 
     FireControl.prototype.setRelativeRotate = function(angle) {
         var tAngle = (angle + this.options.rotateAngle);
@@ -129,7 +129,17 @@ var FireControl = (function () {
                 this.x + ' ' + this.y);
         }, {x: this.center.x, y: this.center.y, an: tAngle});
         tAngle = null;
+    };
+
+    FireControl.prototype.clearSectors = function() {
+        alert('Unbind');
+        this.options.sectors.forEach(function(sector){
+            // Снять клик с каждого сектора
+            $(sector.node).off('click',fireSectorEvent);
+             sector.node.remove();
+        });
     }
+
 
 
     return FireControl;
