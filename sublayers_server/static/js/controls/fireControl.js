@@ -47,8 +47,8 @@ var FireControl = (function () {
 
     FireControl.prototype.addSector = function(fireSector) {
         var tempWidth = fireSector.widthAngle / 2;
-        var vertVOut = new Point(0, -this.radiusOut);
-        var vertVIn = new Point(0, -this.radiusIn);
+        var vertVOut = new Point(0, -this.radiusOut + 1);
+        var vertVIn = new Point(0, -this.radiusIn - 7);
         // Много математики
         var l_out = (4 / 3) * Math.tan(0.25 * fireSector.widthAngle) * this.radiusOut;
         var l_in = (4 / 3) * Math.tan(0.25 * fireSector.widthAngle) * this.radiusIn;
