@@ -8,11 +8,11 @@ WSJSON = (function () {
 
         this.onopen = function() {
             this.isConnected = true;
-        }
+        };
 
         this.socket.onmessage = function (event) {
             receiveMesFromServ(event.data);
-        }
+        };
 
         this.socket.onerror = function (error) {
             this.isConnected = false;
@@ -285,6 +285,13 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         amax_speed,      //Максималка
         aTrack);   //Текущая траектория
 
+    var fireSectorsProbka = [
+        new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
+        new FireSector(gradToRad(180), gradToRad(50), 350, 2, 4 * 1000),
+        new FireSector(gradToRad(90), gradToRad(70), 300, 3, 2 * 1000),
+        new FireSector(gradToRad(-90), gradToRad(70), 300, 3, 2 * 1000)
+    ];
+
     // Инициализация маркера машинки
     userCarMarker = new UserCarMarker({
         position: myMap.unproject([aTrack.coord.x, aTrack.coord.y],16),
@@ -292,14 +299,18 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         _map: myMap,
         radiusView: 1000,
         carID: uid,
-        sectors: [
-            new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
-            new FireSector(gradToRad(180), gradToRad(50), 350, 2, 4 * 1000),
-            new FireSector(gradToRad(90), gradToRad(70), 300, 3, 2 * 1000),
-            new FireSector(gradToRad(-90), gradToRad(70), 300, 3, 2 * 1000)
-        ],
+        sectors: fireSectorsProbka,
         countSectorPoints: 20
     });
+
+    // Инициализация контроллеров
+    // controllers
+    controllers = new Controllers({
+        fuelMax: fuelMaxProbka,
+        hpMax: hpMaxProbka,
+        fireSectors: fireSectorsProbka
+    });
+
 }
 
 

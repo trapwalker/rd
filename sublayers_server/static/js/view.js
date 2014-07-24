@@ -35,7 +35,8 @@ function redrawMap() {
 
 
 function onMouseClickMap(mouseEventObject) {
-    sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
+    if(user.userCar)
+        sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
 }
 
 function onZoomStart(Event) {
@@ -146,9 +147,6 @@ $(document).ready(function () {
     chat.addChat(-1, 'log');
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
-
-    // controllers
-    controllers = new Controllers();
 
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);

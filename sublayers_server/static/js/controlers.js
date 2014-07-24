@@ -1,3 +1,9 @@
+/* TODO: сделать функции
+    1. Создание болванок контроллеров - запускается при старте страницы
+    2. Задание параметров контроллеров - срабатывает при InitMessage - передаются сектора обстрела, maxHP и maxFuel
+    3. Деактивация контроллеров - срабатывает при дисконнекте, контроллеры должны вернуться к состоянию 1 - т.е. к болванкам
+*/
+
 var Controllers = (function () {
     function Controllers(options) {
         // Активны ли сейчас контроллеры
@@ -6,13 +12,13 @@ var Controllers = (function () {
         //Шкала топлива машины игрока
         this.fuelController = new ProgressBarFuel({
             parent: "divScaleCarFuel",
-            max: fuelMaxProbka
+            max: options.fuelMax ? options.fuelMax : 100
         });
 
         //Шкала здоровья машины игрока
         this.hpController = new ProgressBarHP({
             parent: "divScaleCarHealth",
-            max: hpMaxProbka
+            max: options.hpMax ? options.hpMax : 100
         });
 
         // создание слайдера зума
@@ -37,19 +43,11 @@ var Controllers = (function () {
             onStop: stopSpeedOnSlider
         });
 
-        // Тестовые вектора для контролера стрельбы
-        var sectors = [
-            new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
-            new FireSector(gradToRad(180), gradToRad(50), 400, 2, 4 * 1000),
-            new FireSector(gradToRad(90), gradToRad(70), 400, 3, 2 * 1000),
-            new FireSector(gradToRad(-90), gradToRad(70), 400, 3, 2 * 1000)
-        ];
-
         // Инициализация контролера стрельбы
         this.fireControl = new FireControl({
             parentDiv: 'fireControlArea',
             diameter: 150,
-            sectors: sectors,
+            sectors: options.fireSectors,
             sectorCallBack: cbForSectors,
             allCallBack: cbForAllBtn
         });
@@ -77,7 +75,7 @@ var Controllers = (function () {
             if (this.fireControl)
                 if (Math.abs(this.fireControl.options.rotateAngle - directionCar) > 0.1)
                     this.fireControl.setRotate(directionCar);
-    }
+    };
 
     return Controllers;
 })();
@@ -101,8 +99,8 @@ function changeZoomOnSlider(aSliderZoom) {
 }
 
 // колл бек для выстрела того или иного сектора
-function cbForSectors(fs) {
-    //alert('Выстрел из сектора id = '+fs.uid + '   Перезарядка = '+ fs.recharge);
+function cbForSectors(aFireSector) {
+    //alert('Выстрел из сектора id = '+aFireSector.uid + '   Перезарядка = '+ aFireSector.recharge);
 }
 // коллбек для кнопки All
 function cbForAllBtn() {
