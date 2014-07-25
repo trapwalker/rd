@@ -184,7 +184,7 @@ var wsjson;
 var rpcCallList;
 var tileLayerShow;
 var controllers;
-var flagDebug = true;
+var flagDebug = false;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

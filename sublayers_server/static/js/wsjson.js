@@ -214,7 +214,7 @@ function getTrack(data){
             addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
 
             aTrack = new MoveLine(
-                start_time/1000.,             //Время начала движения
+                clock.getCurrentTime(),             //Время начала движения
                 fuelMaxProbka,                      //Запас топлива
                 fuelDecrProbka,                      //Расход топлива
                 direction,              //Направление
