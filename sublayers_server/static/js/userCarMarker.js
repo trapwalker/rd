@@ -127,15 +127,23 @@ var SectorsView = (function () {
         var sector = {};
         var tempWidth = fireSector.widthAngle / 2;
         var vertV = new Point(0, -fireSector.radius);
+        var vertVIn = new Point(0, -25);
 
         //внесли центр сектора
         sector._points = [];
-        sector._points.push(new Point(0, 0));
+        //sector._points.push(new Point(0, 0));
 
         //добавление точек сектора
         for (var angle = -tempWidth; angle <= tempWidth;
-             angle += fireSector.widthAngle / (this.options.countPoints - 2)) {
+             angle += fireSector.widthAngle / (this.options.countPoints - 1)) {
             sector._points.push(new rotateVector(vertV, angle));
+        }
+
+        //внутренние точки
+        //добавление точек сектора
+        for (var angle = tempWidth; angle >= -tempWidth;
+             angle -= fireSector.widthAngle / (this.options.countPoints - 1)) {
+            sector._points.push(new rotateVector(vertVIn, angle));
         }
 
         sector._fireSector = fireSector;
