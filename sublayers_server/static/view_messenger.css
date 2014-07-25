@@ -99,6 +99,8 @@ border-image-width: 2px 0px 2px 0px;
     border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
     border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
+    border-left: 0px;
+    border-right: 0px;
 }
 
 
