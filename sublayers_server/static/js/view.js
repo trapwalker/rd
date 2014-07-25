@@ -29,7 +29,8 @@ function redrawMap() {
     }
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
-    //myMap.panTo(myMap.unproject([tempPointMain.x, tempPointMain.y], 16), {animate: false});
+    if(! flagDebug)
+        myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
 }
 
@@ -89,7 +90,7 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-            //    dragging: false,
+            dragging: flagDebug,
             doubleClickZoom: false
             //    maxBounds: ([
             //        [50.21, 35.42],
