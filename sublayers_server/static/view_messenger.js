@@ -221,7 +221,7 @@ var ViewMessenger = (function () {
 
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
         if (chat.id >= 0)
-            spanUser.on('click', {user: aUser}, viewMessengerClickSpanUser);
+            spanUser.on('click', {owner: aUser}, viewMessengerClickSpanUser);
 
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if(aUser.login == user.login)
@@ -260,6 +260,6 @@ function viewMessngerSendMessage() {
 }
 
 function viewMessengerClickSpanUser(event) {
-    var gamer = event.data.user;
-    alert(gamer.login);
+    var owner = event.data.owner;
+    alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
 }

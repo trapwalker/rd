@@ -129,7 +129,7 @@ function receiveMesFromServ(data){
                 // see || contact
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
-                setCurrentCar(event.object.uid, aType, aHP, aTrack);
+                setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
@@ -144,10 +144,11 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Update") {
                 // Update
-                var aTrack, aType, aHP;
+                var aTrack, aType, aHP, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime/1000.);
                 aTrack = getTrack(event.object);
+                owner = getOwner(event.object.owner);
                 updateCurrentCar(event.object.uid, aType, Math.random() * hpMaxProbka, aTrack);
             }
             if (event.cls === "InitMessage") {
@@ -168,6 +169,7 @@ function receiveMesFromServ(data){
                 // out
                 var uid = event.object_id;
                 if (listMapObject.exist(uid)) {
+                    unbindCar(listMapObject.objects[uid]);
                     myMap.removeLayer(listMapObject.objects[uid].marker);
                     delete listMapObject.objects[uid].marker;
                     listMapObject.del(uid);
@@ -175,7 +177,7 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "ChatMessage") {
                 // chat_message
-                chat.addMessage(0, event.id, new Date(servtime), event.author, event.text);
+                chat.addMessage(0, event.id, new Date(servtime), getOwner(event.author), event.text);
             }
         });
     }
@@ -241,7 +243,19 @@ function getTrack(data){
     return aTrack;
 }
 
-function setCurrentCar(uid, aType, aHP, aTrack) {
+function getOwner(data) {
+    if (data.cls === "User") {
+        var owner = new Owner(data.uid, data.login);
+        if (owner) {
+            owner = ownerList.add(owner);
+            return owner;
+        }
+    }
+    return null;
+}
+
+
+function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
@@ -249,9 +263,10 @@ function setCurrentCar(uid, aType, aHP, aTrack) {
     else { // если не своя, то проверить есть ли такая в модели
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
             var car = new MapCar(uid, aType, aHP, aTrack);
+            bindOwnerCar(aOwner, car);
             listMapObject.add(car);
             // и сразу же добавить маркер
-            listMapObject.objects[uid].marker = getCarMarker(uid, myMap);
+            listMapObject.objects[uid].marker = getCarMarker(car, myMap);
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);

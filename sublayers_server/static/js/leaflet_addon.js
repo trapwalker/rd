@@ -26,7 +26,7 @@ L.rotatedMarker = function (pos, options) {
 
 
 // создание маркера
-function getCarMarker(aID, aMap) {
+function getCarMarker(aCar, aMap) {
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(L.icon({
         iconUrl: 'img/car_20.png',
@@ -35,7 +35,7 @@ function getCarMarker(aID, aMap) {
     newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.bindPopup('popUp');
     newMarker.addTo(aMap);
-    newMarker.carID = aID;
+    newMarker.carID = aCar.ID;
 
     return newMarker;
 }

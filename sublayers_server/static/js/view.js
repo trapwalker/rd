@@ -154,7 +154,10 @@ $(document).ready(function () {
 });
 
 function onMarkerPopupOpen(e) {
-    this.setPopupContent('My ID = ' + this.carID);
+    if (this.carID === user.userCar.ID)
+        this.setPopupContent('My name is ' + user.login + '<br>' + 'My Car ID = '+ user.userCar.ID);
+    else
+        this.setPopupContent('My name is ' + listMapObject.objects[this.carID].owner.login+ '<br>' + 'My Car ID = '+ this.carID);
 }
 
 
@@ -185,6 +188,7 @@ var rpcCallList;
 var tileLayerShow;
 var controllers;
 var flagDebug = true;
+var ownerList;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

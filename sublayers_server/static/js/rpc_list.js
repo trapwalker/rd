@@ -71,3 +71,63 @@ var ListMapObject2 = ( function(){
 
     return ListMapObject2;
 })();
+
+
+// Владелец машины
+var Owner = (function () {
+    function Owner(uid, login) {
+        this.uid = uid;
+        this.login = login;
+        this.car = null;
+    }
+    return Owner;
+})();
+
+// прямое связывание Владельца с его машиной
+function bindOwnerCar(Owner, Car){
+    Car.owner = Owner;
+    Owner.car = Car;
+}
+
+function unbindCar(Car){
+    Car.owner.car = null;
+}
+
+
+// Список владельцев машин
+var OwnerList;
+OwnerList = (function () {
+    function OwnerList() {
+        this.owners = [];
+    }
+
+    OwnerList.prototype.add = function (owner) {
+        var exstOwner = this.getOwnerByUid(owner.uid);
+        if (!exstOwner) {
+            this.owners.push(owner);
+            return owner;
+        }
+        return exstOwner;
+    };
+
+    OwnerList.prototype.getOwnerByUid = function (uid) {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].uid === uid) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    };
+
+    OwnerList.prototype.getOwnerByLogin = function (login) {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].login === login) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    };
+
+    return OwnerList;
+})();
+
