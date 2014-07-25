@@ -7,6 +7,7 @@
     bottom: 6px; /*отступ для рамки*/
     left: 10px; /*отступ для рамки*/
     overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 #viewMessengerHeaderArea {
@@ -61,8 +62,6 @@
 
 #viewMessengerPageControl {
     overflow: auto;
-    background-color: #000000;
-    opacity: 0.6;
 }
 
 #viewMessengerPageControlLeftButton {
@@ -93,6 +92,16 @@
     float: left;
 }
 
+#viewMessengerTextArea {
+border-image-slice: 2 0 2 0;
+border-image-width: 2px 0px 2px 0px;
+    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: linear-gradient(to right, transparent, lime, transparent);
+}
+
+
 #viewMessengerFooterArea {
     position: relative;
     overflow: auto;
@@ -112,6 +121,7 @@
 #viewMessengerInputArea {
     padding-right: 3px;
     padding-left: 3px;
+    position: relative;
 }
 
 #viewMessengerInput {
@@ -139,14 +149,11 @@
 
 .textOutAreaActive {
     height: 100%;
-    opacity: 0.6;
-    background-color: #000000;
 }
 
 .view-messenger-message {
     padding-left: 3px;
     padding-right: 3px;
-    opacity: 1;
 }
 
 .view-messenger-text-time {
@@ -171,7 +178,6 @@
 
 .pageButton {
     opacity: 0.6;
-    background-color: black;
     float: left;
     position: relative;
     color: lime;

@@ -79,13 +79,14 @@ var ViewMessenger = (function () {
 
         //добавление дива с Input
         this.vMIA = $("<div id='viewMessengerInputArea'></div>");
-        this.vMIA.css({width: this.options.width - parseInt(this.vMEB.css('width')) -
-                      2 * parseInt(this.vMEB.css('margin'))});
         this.vMFA.append(this.vMIA);
+        this.vMIA.css({width: this.options.width - parseInt(this.vMEB.css('width')) -
+            2 * parseInt(this.vMEB.css('margin'))});
 
         //добавление Input
         this.vMI = $("<input id='viewMessengerInput' type='text'>");
         this.vMIA.append(this.vMI);
+        this.vMI.css({width: parseInt(this.vMIA.css('width'))-5});
 
 //  Повесить Send
         this.vMI.keydown(function (event) {
@@ -155,7 +156,8 @@ var ViewMessenger = (function () {
 
         this.vMTA.css({height: parseInt(this.vMDA.css('height')) -
                             parseInt(this.vMFA.css('height')) -
-                            parseInt(this.vMPC.css('height'))});
+                            parseInt(this.vMPC.css('height'))-
+                        2*parseInt(this.vMTA.css('border-image-width'))});
 
         this.chats.push(chat);
         this.setActiveChat(chat.id);
