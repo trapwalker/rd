@@ -262,4 +262,10 @@ function viewMessngerSendMessage() {
 function viewMessengerClickSpanUser(event) {
     var owner = event.data.owner;
     alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
+
+    if (owner.uid == user.ID)
+        backLight.on(userCarMarker.marker);
+    else
+        if(owner.car)
+            backLight.on(owner.car.marker);
 }

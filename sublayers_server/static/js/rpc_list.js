@@ -131,3 +131,61 @@ OwnerList = (function () {
     return OwnerList;
 })();
 
+
+
+// Подсветка выбранного маркера
+var BackLight;
+BackLight = (function () {
+    function BackLight(options) {
+        this.options = {
+            _map: null,
+            color: '#ff0000',
+            radius: 30,
+            weight: 5
+        };
+
+        if (options) {
+            if (options._map) this.options._map = options._map;
+            if (options.color) this.options.color = options.color;
+            if (options.radius) this.options.radius = options.radius;
+            if (options.weight) this.options.weight = options.weight;
+        }
+
+        this.backCircle = L.circle([0,0], this.options.radius,
+            {
+                weight: this.options.weight,
+                color: this.options.color,
+                fillColor: '#AA0000',
+                fillOpacity: 0.2,
+                clickable: false
+            }
+        );
+
+
+        return this;
+    }
+
+    BackLight.prototype.on = function (marker) {
+        this.marker = marker;
+        this.options._map.addLayer(this.backCircle);
+    };
+
+    BackLight.prototype.off = function () {
+        this.options._map.removeLayer(this.backCircle);
+        this.marker = null;
+    };
+
+    BackLight.prototype.draw = function () {
+        if (this.marker)
+            this.backCircle.setLatLng(this.marker.getLatLng());
+    };
+
+    BackLight.prototype.offMarker = function (marker) {
+        if (this.marker == marker)
+            this.off();
+
+    };
+
+
+    return BackLight;
+})();

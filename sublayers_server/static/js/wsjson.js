@@ -171,6 +171,7 @@ function receiveMesFromServ(data){
                 if (listMapObject.exist(uid)) {
                     unbindCar(listMapObject.objects[uid]);
                     myMap.removeLayer(listMapObject.objects[uid].marker);
+                    backLight.offMarker(listMapObject.objects[uid].marker);
                     delete listMapObject.objects[uid].marker;
                     listMapObject.del(uid);
                 }

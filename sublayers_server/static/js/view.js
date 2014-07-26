@@ -32,12 +32,16 @@ function redrawMap() {
     if(! flagDebug)
         myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
+    backLight.draw();
+
 }
 
 
 function onMouseClickMap(mouseEventObject) {
     if(user.userCar)
         sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
+
+    backLight.off();
 }
 
 function onZoomStart(Event) {
@@ -149,6 +153,11 @@ $(document).ready(function () {
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
 
+
+    backLight = new BackLight({
+        _map: myMap
+    });
+
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);
 });
@@ -158,6 +167,8 @@ function onMarkerPopupOpen(e) {
         this.setPopupContent('My name is ' + user.login + '<br>' + 'My Car ID = '+ user.userCar.ID);
     else
         this.setPopupContent('My name is ' + listMapObject.objects[this.carID].owner.login+ '<br>' + 'My Car ID = '+ this.carID);
+
+    backLight.on(this);
 }
 
 
@@ -189,6 +200,7 @@ var tileLayerShow;
 var controllers;
 var flagDebug = true;
 var ownerList;
+var backLight;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];
