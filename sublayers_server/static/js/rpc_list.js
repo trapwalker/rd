@@ -140,7 +140,7 @@ BackLight = (function () {
         this.options = {
             _map: null,
             color: '#ff0000',
-            radius: 30,
+            radius: 20,
             weight: 5
         };
 
@@ -151,7 +151,7 @@ BackLight = (function () {
             if (options.weight) this.options.weight = options.weight;
         }
 
-        this.backCircle = L.circle([0,0], this.options.radius,
+        this.backCircle = L.circleMarker([0,0],
             {
                 weight: this.options.weight,
                 color: this.options.color,
@@ -159,7 +159,7 @@ BackLight = (function () {
                 fillOpacity: 0.2,
                 clickable: false
             }
-        );
+        ).setRadius(this.options.radius);
 
 
         return this;
