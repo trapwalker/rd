@@ -95,8 +95,7 @@ function unbindCar(Car){
 
 
 // Список владельцев машин
-var OwnerList;
-OwnerList = (function () {
+var OwnerList = (function () {
     function OwnerList() {
         this.owners = [];
     }
@@ -134,8 +133,7 @@ OwnerList = (function () {
 
 
 // Подсветка выбранного маркера
-var BackLight;
-BackLight = (function () {
+var BackLight = (function () {
     function BackLight(options) {
         this.options = {
             _map: null,
