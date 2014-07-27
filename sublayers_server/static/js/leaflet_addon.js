@@ -30,12 +30,26 @@ function getCarMarker(aCar, aMap) {
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(L.icon({
         iconUrl: 'img/car_20.png',
-        iconSize: [20, 20]
+        iconSize: [20, 20],
+        labelAnchor: [-65, -20] // центровка в пикселях относительно центра маркера
     }));
+    newMarker.bindLabel(aCar.owner.login, {direction: 'right'});
     newMarker.on('popupopen', onMarkerPopupOpen);
+    newMarker.on('mouseover', onMouseOverForLabels);
+    newMarker.on('mouseout', onMouseOutForLabels);
     newMarker.bindPopup('popUp');
     newMarker.addTo(aMap);
     newMarker.carID = aCar.ID;
 
     return newMarker;
+}
+
+
+function onMouseOverForLabels(){
+    if(this._labelNoHide) return false;
+    this.setLabelNoHide(true);
+}
+
+function onMouseOutForLabels(){
+    this.setLabelNoHide(myMap.getZoom() > 14);
 }

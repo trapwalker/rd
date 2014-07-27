@@ -29,8 +29,9 @@ function redrawMap() {
     }
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
-    if(! flagDebug)
-        myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
+    if (!flagDebug)
+        if (userCarMarker)
+            myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
     backLight.draw();
 
@@ -44,14 +45,22 @@ function onMouseClickMap(mouseEventObject) {
     backLight.off();
 }
 
-function onZoomStart(Event) {
+function onZoomStart(event) {
     clearInterval(timer);
 }
 
-function onZoomEnd(Event) {
+function onZoomEnd(event) {
     timer = setInterval(redrawMap, timerDelay);
     if(controllers.isActive)  // чтобы при изменении зума карты  менялся и слайдер.
         controllers.zoomSetSlider.setZoom(myMap.getZoom());
+
+    // если мы отдалились далеко, то скрыть все лейблы и показывать их только по наведению
+    var noHide = myMap.getZoom() > 14;
+    for (var i in listMapObject.objects) {
+        if (listMapObject.exist(i)) {
+            listMapObject.objects[i].marker.setLabelNoHide(noHide);
+        }
+    }
 }
 
 function createTileLayer(storage) {
@@ -134,7 +143,7 @@ $(document).ready(function () {
     myMap.on('zoomend', onZoomEnd);
 
     // Добавление Города
-    var testTownMarker = L.marker([0, 0]).addTo(myMap);
+    var testTownMarker = L.marker([0, 0]).bindLabel("Belgorod City").addTo(myMap);
     testTownMarker.setIcon(L.icon({
         iconUrl: 'img/city.png',
         iconSize: [50, 50]

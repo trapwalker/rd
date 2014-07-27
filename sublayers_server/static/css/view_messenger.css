@@ -40,11 +40,11 @@
 }
 
 .viewMessengerSlideButtonShowed {
-    background: transparent url(./img/chat/button_down.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_down.png) 100% 100% no-repeat;
 }
 
 .viewMessengerSlideButtonHided {
-    background: transparent url(./img/chat/button_up.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_up.png) 100% 100% no-repeat;
 }
 
 #viewMessengerSlideButton {
@@ -65,7 +65,7 @@
 }
 
 #viewMessengerPageControlLeftButton {
-    background: transparent url(./img/chat/button_left.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_left.png) 100% 100% no-repeat;
     margin: 3px;
     position: relative;
     height: 18px;
@@ -83,7 +83,7 @@
 }
 
 #viewMessengerPageControlRightButton {
-    background: transparent url(./img/chat/button_right.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_right.png) 100% 100% no-repeat;
     margin: 3px;
     position: relative;
     height: 18px;
@@ -111,7 +111,7 @@ border-image-width: 2px 0px 2px 0px;
 }
 
 #viewMessengerEnterButton {
-    background: transparent url(./img/chat/button_enter.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_enter.png) 100% 100% no-repeat;
     margin: 3px;
     position: relative;
     height: 18px;
