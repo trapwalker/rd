@@ -19,6 +19,7 @@
     stroke: limegreen;
     stroke-width: 2;
     opacity: 0.2;
+    pointer-events: auto;
 }
 
 .fire-control-sector:hover {

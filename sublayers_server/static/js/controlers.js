@@ -40,8 +40,11 @@ var Controllers = (function () {
             min: 0,
             step: 1,
             onChange: changeSpeedOnSlider,
-            onStop: stopSpeedOnSlider
+            onStop: stopSpeedOnSlider,
+            max_velocity: options.max_velocity
         });
+
+
 
         // Инициализация контролера стрельбы
         this.fireControl = new FireControl({
@@ -55,18 +58,6 @@ var Controllers = (function () {
 
         // Так как все контролеры проинициализированы, то сделать их активными
         this.isActive = true;
-
-
-        // Тест!
-        //
-     /*   setTimeout(function(){
-            controllers.fireControl.clearSectors();
-        }, 3000);
-
-        setTimeout(function(){
-            controllers.fireControl.addSector( new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000));
-        }, 10000);
-     */
 
     }
 

@@ -36,7 +36,7 @@ var FireControl = (function () {
         // Кнопка All
         this.allFire = this.paper.circle(this.center.x, this.center.y, this.radiusIn);
         // Класс кнопки All
-        $(this.allFire.node).attr('class', 'fire-control-all');
+        $(this.allFire.node).attr('class', 'fire-control-all sublayers-clickable');
         // Событие кнопки All
         $(this.allFire.node).on('click', {self: this}, allFireEvent);
 
@@ -99,7 +99,7 @@ var FireControl = (function () {
         // Поворачиваем сектор на свой угол
         sector.transform('R'+ sector.myAngle +' '+this.center.x + ' ' + this.center.y);
         // Ставим сектору атрибут класс - по умолчанию
-        $(sector.node).attr('class', 'fire-control-sector');
+        $(sector.node).attr('class', 'fire-control-sector sublayers-clickable');
         // Вешаем на сектор обработчик клика данного сектора
         $(sector.node).on('click', {sector: sector}, fireSectorEvent);
         // Добавить в сектор ссылку на fireSector, чтобы при вызове коллбека передать первым параметром
@@ -165,7 +165,7 @@ function fireSectorEvent(event) {
         // Запустить timeOut речарджа
         setTimeout(function () {
                 sector.recharged = false;
-                $(sector.node).attr('class', 'fire-control-sector');
+                $(sector.node).attr('class', 'fire-control-sector sublayers-clickable');
             },
             sector._fs.recharge);
         // Вызвать свой коллБэк и передать туда fireSector

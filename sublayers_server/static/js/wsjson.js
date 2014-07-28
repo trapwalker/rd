@@ -134,7 +134,7 @@ function receiveMesFromServ(data){
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
-                        .setRadius(10)
+                        .setRadius(3)
                         .bindPopup(
                             'Тип сообщения: ' + event.cls + '</br>' +
                             'Server-Time: ' + servtime + '</br>' +
@@ -320,7 +320,8 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
     controllers = new Controllers({
         fuelMax: fuelMaxProbka,
         hpMax: hpMaxProbka,
-        fireSectors: fireSectorsProbka
+        fireSectors: fireSectorsProbka,
+        max_velocity: amax_speed
     });
 
 }
