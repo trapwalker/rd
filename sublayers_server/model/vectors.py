@@ -68,6 +68,13 @@ class Point(complex):
         """
         return self / abs(self)
 
+    def cross_mul(a, b):
+        """
+        @param b: Point
+        @rtype: float
+        """
+        return a.x * b.y - a.y * b.x
+
     # todo: turn vector
     # todo: vector multiply
 
