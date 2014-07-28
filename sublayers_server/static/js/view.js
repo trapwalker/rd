@@ -58,6 +58,13 @@ function onZoomEnd(event) {
     for (var i in listMapObject.objects) {
         if (listMapObject.exist(i)) {
             listMapObject.objects[i].marker.setLabelNoHide(noHide);
+/*
+            if(noHide)
+            // повесить клик на кнопочку инфо
+                $('#idCar'+listMapObject.objects[i].ID).on('click', {car: listMapObject.objects[i]}, carInfoClickEvent);
+            else
+                $('#idCar'+listMapObject.objects[i].ID).off('click', carInfoClickEvent);
+*/
         }
     }
 }

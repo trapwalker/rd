@@ -18,7 +18,6 @@
     user-select: none;
     pointer-events: none;
     white-space: nowrap;
-    z-index: -1;
 }
 
 .leaflet-label.leaflet-clickable {
@@ -26,9 +25,15 @@
     pointer-events: auto;
 }
 
-
-.leaflet-label:hover {
-    z-index: 10;
+.car-label-info-class {
+    width: 12px;
+    height: 12px;
+    background-color: lightsalmon;
+    position: absolute;
+    right: -15px;
+    top: 3px;
+    cursor: default;
+    pointer-events: auto;
 }
 
 /* Оригинал

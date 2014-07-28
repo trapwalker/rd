@@ -27,13 +27,14 @@ L.rotatedMarker = function (pos, options) {
 
 // создание маркера
 function getCarMarker(aCar, aMap) {
+    var test_html_str = '<div id="idCar_' + aCar.ID + '" class="car-label-info-class" onClick="carInfoClickEvent(event)"></div>';
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(L.icon({
         iconUrl: 'img/car_20.png',
         iconSize: [20, 20],
         labelAnchor: [-65, -20] // центровка в пикселях относительно центра маркера
     }));
-    newMarker.bindLabel(aCar.owner.login, {direction: 'right'});
+    newMarker.bindLabel(aCar.owner.login+test_html_str, {direction: 'right'});
     newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
@@ -52,4 +53,27 @@ function onMouseOverForLabels(){
 
 function onMouseOutForLabels(){
     this.setLabelNoHide(myMap.getZoom() > 14);
+}
+
+function carInfoClickEvent2(event){
+    var car = event.data.car;
+    //alert('Я машинка номер' + car.ID + '   Мой хозяин зовут '+ car.owner.login);
+    //alert('aaaaaaaaaaaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeeeeeee');
+    return false;
+}
+
+function carInfoClickEvent(event){
+    var car = listMapObject.objects[event.target.id.split('_')[1]];
+    alert('Я машинка номер' + car.ID + '  Мой хозяин зовут '+ car.owner.login);
+    //alert(car.owner.login);
+
+    // остановка всплытия события, чтобы не считался клик на карте
+    if (event.stopPropagation) {
+        // Вариант стандарта W3C:
+        event.stopPropagation()
+    } else {
+        // Вариант Internet Explorer:
+        event.cancelBubble = true
+    }
+
 }
