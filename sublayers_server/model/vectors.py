@@ -34,7 +34,6 @@ class Point(complex):
         @param eps: float
         @rtype: bool
         """
-        return (other / self).angle
         return self.x < eps and self.y < eps
 
     @classmethod
@@ -68,12 +67,12 @@ class Point(complex):
         """
         return self / abs(self)
 
-    def cross_mul(a, b):
+    def cross_mul(self, other):
         """
         @param b: Point
         @rtype: float
         """
-        return a.x * b.y - a.y * b.x
+        return self.real * other.imag - self.imag * other.real
 
     # todo: turn vector
     # todo: vector multiply
