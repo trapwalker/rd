@@ -93,7 +93,6 @@ var Controllers = (function () {
     return Controllers;
 })();
 
-
 // Колбеки Для работы с контроллерами
 function changeSpeedOnSlider() {
     if (user.userCar)

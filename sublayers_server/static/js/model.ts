@@ -38,6 +38,10 @@ function mulScalVectors(aPoint1, aPoint2:Point):number {
     return (aPoint1.x * aPoint2.x) + (aPoint1.y * aPoint2.y);
 }
 
+function getPerpendicular(aPoint:Point) {
+    return new Point(aPoint.y, - aPoint.x);
+}
+
 function absVector(aPoint:Point):number {
     return aPoint.abs();
 }

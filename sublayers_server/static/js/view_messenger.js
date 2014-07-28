@@ -4,7 +4,6 @@ var ViewMessenger = (function () {
             parentDiv: '',
             height: 400,
             width: 300,
-            onSend: '',
             _visible: true
         };
 
@@ -14,7 +13,6 @@ var ViewMessenger = (function () {
             if (options.parentDiv) this.options.parentDiv = options.parentDiv;
             if (options.height) this.options.height = options.height;
             if (options.width) this.options.width = options.width;
-            if (options.onSend) this.options.onChange = options.onChange;
         }
 
         //добавление основного дива
@@ -75,7 +73,6 @@ var ViewMessenger = (function () {
         this.vMEB = $("<div id='viewMessengerEnterButton'></div>");
         this.vMFA.append(this.vMEB);
         this.vMEB.on('click', viewMessngerSendMessage);
-//  Повесить Send
 
         //добавление дива с Input
         this.vMIA = $("<div id='viewMessengerInputArea'></div>");
@@ -88,13 +85,11 @@ var ViewMessenger = (function () {
         this.vMIA.append(this.vMI);
         this.vMI.css({width: parseInt(this.vMIA.css('width'))-5});
 
-//  Повесить Send
         this.vMI.keydown(function (event) {
             if (event.keyCode == 13) {
                 viewMessngerSendMessage();
             }
         });
-
 
         //добавление дива с сообщениями
         this.vMTA = $("<div id='viewMessengerTextArea'></div>");
@@ -155,13 +150,12 @@ var ViewMessenger = (function () {
         chat.pageButton.on('click', {self: this, id: chat.id}, clickForPageButton);
 
         this.vMTA.css({height: parseInt(this.vMDA.css('height')) -
-                            parseInt(this.vMFA.css('height')) -
-                            parseInt(this.vMPC.css('height'))-
-                        2*parseInt(this.vMTA.css('border-image-width'))});
+                               parseInt(this.vMFA.css('height')) -
+                               parseInt(this.vMPC.css('height'))-
+                               2 * parseInt(this.vMTA.css('border-image-width'))});
 
         this.chats.push(chat);
         this.setActiveChat(chat.id);
-
         return chat;
     }
 
@@ -177,8 +171,6 @@ var ViewMessenger = (function () {
                     chat.textArea.removeClass('textOutAreaActive');
                     chat.pageButton.removeClass('pageButtonActive');
                 }
-
-
             },
             {self: this, id: aID})
     }
@@ -200,11 +192,11 @@ var ViewMessenger = (function () {
         var chat = this._getChat(chatID);
         // Отформатировать время
         var tempTime = aTime.toTimeString().split(' ')[0];
-        // создать див соощения и спаны
-        var mesDiv = $('<div id="'+chat.name+chatID+messageID+'" class="view-messenger-message"></div>');
-        var spanTime = $('<span class="view-messenger-text-time">'+ '[' + tempTime + '] ' +'</span>');
-        var spanUser = $('<span class="view-messenger-text-user">'+ aUser.login +'</span>');
-        var spanText = $('<span class="view-messenger-text-text">'+ ': ' + aText +'</span>');
+        // создать див сообщения и спаны
+        var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="view-messenger-message"></div>');
+        var spanTime = $('<span class="view-messenger-text-time">' + '[' + tempTime + '] ' + '</span>');
+        var spanUser = $('<span class="view-messenger-text-user">' + aUser.login + '</span>');
+        var spanText = $('<span class="view-messenger-text-text">' + ': ' + aText + '</span>');
 
         // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
         if ($("#" + chat.name+chatID+messageID + ' span:last-child').length) {
@@ -242,7 +234,7 @@ function clickForPageButton(event){
 
 function addMessageToLog(aText) {
     var logID = newIDFromP();
-    chat.addMessage(-1, logID, new Date(), {login: 'Push от сервера #'+logID}, '<pre>'+aText+'</pre>');
+    chat.addMessage(-1, logID, new Date(), {login: 'Push от сервера #'+logID}, '<pre>' + aText + '</pre>');
 }
 
 function addMessageToSystem(messID, aText) {
@@ -261,7 +253,7 @@ function viewMessngerSendMessage() {
 
 function viewMessengerClickSpanUser(event) {
     var owner = event.data.owner;
-    alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
+    //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
 
     if (owner.uid == user.ID)
         backLight.on(userCarMarker.marker);

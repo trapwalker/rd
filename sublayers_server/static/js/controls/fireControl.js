@@ -19,6 +19,9 @@ var FireControl = (function () {
             if (options.sectorCallBack) this.options.sectorCallBack = options.sectorCallBack;
             if (options.allCallBack) this.options.allCallBack = options.allCallBack;
         }
+
+        $('#' + this.options.parentDiv).addClass('fire-control-parent');
+
         this.radiusOut = this.options.diameter / 2;
         this.radiusIn = this.options.diameter / 6;
 
@@ -132,24 +135,16 @@ var FireControl = (function () {
     };
 
     FireControl.prototype.clearSectors = function() {
-        alert('Unbind');
+       // alert('Unbind');
         this.options.sectors.forEach(function(sector){
             // Снять клик с каждого сектора
             $(sector.node).off('click',fireSectorEvent);
-             sector.node.remove();
+            sector.node.remove();
         });
-    }
-
-
+    };
 
     return FireControl;
 })();
-
-function getPerpendicular(aPoint) {
-    return new Point(aPoint.y, -aPoint.x);
-}
-
-
 
 // Обработчики кликов !!
 function allFireEvent(event){

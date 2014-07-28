@@ -37,7 +37,6 @@ function redrawMap() {
 
 }
 
-
 function onMouseClickMap(mouseEventObject) {
     if(user.userCar)
         sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
@@ -179,7 +178,6 @@ function onMarkerPopupOpen(e) {
 
     backLight.on(this);
 }
-
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {

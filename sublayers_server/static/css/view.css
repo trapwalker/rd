@@ -88,13 +88,6 @@ input:focus {
     outline: none;
 }
 
-#fireControlArea {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    margin-left: -75px;
-}
-
 #console2 {
     color: #00ff00;
     position: absolute;
