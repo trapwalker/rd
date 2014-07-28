@@ -12,17 +12,27 @@
     cursor: default;
 }
 
+body{
+    background-color: black;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 #title {
     border-color: limegreen;
     border-style: solid;
     border-width: 2px;
     color: limegreen;
     background-color: darkgreen;
-    font: 16px sans-serif;
+    font: bold 16px sans-serif;
     position: absolute;
     top: 3px;
     left: 5px;
     right: 5px;
+    text-align: center;
 }
 
 #footer {

@@ -63,9 +63,9 @@ var CarTail = (function () {
             this._tail.addPoint(this.options.aStartPoint);
 
         // Создание сразу трёх маркеров
-        this._tailPath1 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(5);
-        this._tailPath2 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(3.5);
-        this._tailPath3 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(2);
+        this._tailPath1 = L.circleMarker([0, 0], {color: '#11FF11', clickable: false}).setRadius(5);
+        this._tailPath2 = L.circleMarker([0, 0], {color: '#11FF11', clickable: false}).setRadius(3.5);
+        this._tailPath3 = L.circleMarker([0, 0], {color: '#11FF11', clickable: false}).setRadius(2);
 
         // Добавить или не доавбить маркеры на карту
         this.setActive(this.options._enable);

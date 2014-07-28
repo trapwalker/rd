@@ -101,6 +101,11 @@ border-image-width: 2px 0px 2px 0px;
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
     border-left: 0px;
     border-right: 0px;
+
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
 }
 
 
