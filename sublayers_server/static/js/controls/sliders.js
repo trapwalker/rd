@@ -168,12 +168,13 @@ var SliderSpeed = (function () {
             max: this.options.max,
             min: this.options.min,
             orientation: this.options.orientation,
-            step: this.options.step
+            step: this.options.step,
+            value: options.max_velocity
         })
             .on('slidechange', {id: this._id}, this.change) // отправка сообщений серверу
             .on('slide', this._slide);                      // чтобы менялись циферки внутри каретки
 
-        // настройка слайдера
+             // настройка слайдера
         $('#sliderSpeedSlider').addClass('slider-speed-slider');
         $('#sliderSpeedSlider').css("height", this.options.height);
         $('#sliderSpeedSlider').css("width", '31px');
@@ -212,12 +213,16 @@ var SliderSpeed = (function () {
 
         // создание и расстановка текста
 
+        // Вызвать _slide() для установки цифры внутри каретки
+        this._slide({},{value: options.max_velocity});
+
     }
 
     SliderSpeed.prototype.change = function (event, ui) {
         var slider = _SlidersMass[event.data.id];
-        if (typeof(slider.options.onChange) === "function")
+        if (typeof(slider.options.onChange) === "function") {
             slider.options.onChange();
+        }
     }
 
     SliderSpeed.prototype._onStop = function (event, ui) {
@@ -250,6 +255,7 @@ var SliderSpeed = (function () {
     SliderSpeed.prototype.getSpeed = function () {
         return $('#sliderSpeedSlider').slider("value");
     }
+
 
     return SliderSpeed;
 })();
