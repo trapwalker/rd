@@ -15,6 +15,9 @@ var ViewMessenger = (function () {
             if (options.width) this.options.width = options.width;
         }
 
+        // Счётчик сообщений лога.
+        this.logID = 0;
+
         //добавление основного дива
         this.vMA = $("<div id='viewMessengerArea'></div>");
         this.vMA.css({width: this.options.width});
@@ -72,7 +75,7 @@ var ViewMessenger = (function () {
         //добавление кнопки 'отправить соосбщение'
         this.vMEB = $("<div id='viewMessengerEnterButton'></div>");
         this.vMFA.append(this.vMEB);
-        this.vMEB.on('click', viewMessngerSendMessage);
+        this.vMEB.on('click', this.viewMessngerSendMessage);
 
         //добавление дива с Input
         this.vMIA = $("<div id='viewMessengerInputArea'></div>");
@@ -85,9 +88,9 @@ var ViewMessenger = (function () {
         this.vMIA.append(this.vMI);
         this.vMI.css({width: parseInt(this.vMIA.css('width'))-5});
 
-        this.vMI.keydown(function (event) {
+        this.vMI.on('keydown', {self: this}, function (event) {
             if (event.keyCode == 13) {
-                viewMessngerSendMessage();
+                event.data.self.viewMessngerSendMessage();
             }
         });
 
@@ -147,7 +150,7 @@ var ViewMessenger = (function () {
         this.vMTA.append(chat.textArea);
         this.vMPCCC.append(chat.pageButton);
 
-        chat.pageButton.on('click', {self: this, id: chat.id}, clickForPageButton);
+        chat.pageButton.on('click', {self: this, id: chat.id}, this.clickForPageButton);
 
         this.vMTA.css({height: parseInt(this.vMDA.css('height')) -
                                parseInt(this.vMFA.css('height')) -
@@ -187,6 +190,7 @@ var ViewMessenger = (function () {
         // return this.addChat(chatID, 'какой-то текст или логин');
     }
 
+
     ViewMessenger.prototype.addMessage = function(chatID, messageID, aTime, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
@@ -213,7 +217,7 @@ var ViewMessenger = (function () {
 
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
         if (chat.id >= 0)
-            spanUser.on('click', {owner: aUser}, viewMessengerClickSpanUser);
+            spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
 
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if(aUser.login == user.login)
@@ -224,40 +228,43 @@ var ViewMessenger = (function () {
     };
 
 
-    return ViewMessenger;
-})();
-
-
-function clickForPageButton(event){
-    event.data.self.setActiveChat(event.data.id);
-}
-
-function addMessageToLog(aText) {
-    var logID = newIDFromP();
-    chat.addMessage(-1, logID, new Date(), {login: 'Push от сервера #'+logID}, '<pre>' + aText + '</pre>');
-}
-
-function addMessageToSystem(messID, aText) {
-    chat.addMessage(-2, messID, new Date(), {login: '#'}, aText);
-}
-
-function viewMessngerSendMessage() {
-    var str = chat.vMI.val();
-    if (str.length) {
-        sendChatMessage(str);
-        chat.vMI.val('').focus();
-    } else {
-        chat.vMI.focus()
+    ViewMessenger.prototype.addMessageToLog = function(aText) {
+        this.logID++;
+        this.addMessage(-1, this.logID, new Date(), {login: 'Push от сервера #' + this.logID}, '<pre>' + aText + '</pre>');
     }
-}
 
-function viewMessengerClickSpanUser(event) {
-    var owner = event.data.owner;
-    //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
 
-    if (owner.uid == user.ID)
-        backLight.on(userCarMarker.marker);
-    else
+    ViewMessenger.prototype.addMessageToSystem = function(messID, aText) {
+        this.addMessage(-2, messID, new Date(), {login: '#'}, aText);
+    }
+
+
+    ViewMessenger.prototype.viewMessngerSendMessage = function() {
+        var str = chat.vMI.val();
+        if (str.length) {
+            sendChatMessage(str);
+            chat.vMI.val('').focus();
+        } else {
+            chat.vMI.focus()
+        }
+    }
+
+
+    ViewMessenger.prototype.clickForPageButton = function (event) {
+        event.data.self.setActiveChat(event.data.id);
+    }
+
+
+    ViewMessenger.prototype.viewMessengerClickSpanUser = function (event) {
+        var owner = event.data.owner;
+        //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
+
+        if (owner.uid == user.ID)
+            backLight.on(userCarMarker.marker);
+        else
         if(owner.car)
             backLight.on(owner.car.marker);
-}
+    }
+
+    return ViewMessenger;
+})();

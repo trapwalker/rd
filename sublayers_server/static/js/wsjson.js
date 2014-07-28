@@ -117,12 +117,12 @@ function receiveMesFromServ(data){
     });
     // если message_type = push
     if (mes.message_type == "push") {
-        addMessageToLog(data);
+        chat.addMessageToLog(data);
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
+            chat.addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
             // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
            // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
@@ -213,8 +213,8 @@ function getTrack(data){
             var velocity = new Point(data.motion.velocity.x,
                 data.motion.velocity.y);
             var start_time = data.motion.start_time;
-            addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.start_time/1000.);
-            addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
+            chat.addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.start_time/1000.);
+            chat.addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
 
             aTrack = new MoveLine(
                 start_time/1000.,             //Время начала движения
