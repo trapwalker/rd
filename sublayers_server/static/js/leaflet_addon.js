@@ -27,7 +27,8 @@ L.rotatedMarker = function (pos, options) {
 
 // создание маркера
 function getCarMarker(aCar, aMap) {
-    var test_html_str = '<div id="idCar_' + aCar.ID + '" class="car-label-info-class" onClick="carInfoClickEvent(event)"></div>';
+    var test_html_str = '<div id="idCar_' + aCar.ID +
+        '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(L.icon({
         iconUrl: 'img/car_20.png',

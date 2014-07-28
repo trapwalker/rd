@@ -9,6 +9,7 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
+    cursor: default;
 }
 
 #title {
@@ -100,6 +101,15 @@ input:focus {
     position: absolute;
     top: 45px;
     left: 32px;
+}
+
+
+.sublayers-clickable {
+    cursor: pointer;
+}
+
+.sublayers-unclickable {
+    cursor: default;
 }
 
 ::-webkit-scrollbar {

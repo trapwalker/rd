@@ -19,7 +19,7 @@ var ViewMessenger = (function () {
         this.logID = 0;
 
         //добавление основного дива
-        this.vMA = $("<div id='viewMessengerArea'></div>");
+        this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
         this.vMA.css({width: this.options.width});
         $("#" + this.options.parentDiv).append(this.vMA);
 
@@ -29,7 +29,7 @@ var ViewMessenger = (function () {
         this.vMA.append(this.vMHA);
 
         //добавление дива с кнопкой Свернуть/Развернуть
-        this.vMSB = $("<div id='viewMessengerSlideButton' class='viewMessengerSlideButtonShowed'></div>");
+        this.vMSB = $("<div id='viewMessengerSlideButton' class='viewMessengerSlideButtonShowed sublayers-clickable'></div>");
         this.vMHA.append(this.vMSB);
         this.vMSB.on('click', {self: this}, this.changeVisible);
 
@@ -73,7 +73,7 @@ var ViewMessenger = (function () {
         this.vMDA.append(this.vMFA);
 
         //добавление кнопки 'отправить соосбщение'
-        this.vMEB = $("<div id='viewMessengerEnterButton'></div>");
+        this.vMEB = $("<div id='viewMessengerEnterButton' class='sublayers-clickable'></div>");
         this.vMFA.append(this.vMEB);
         this.vMEB.on('click', this.viewMessngerSendMessage);
 
@@ -144,7 +144,7 @@ var ViewMessenger = (function () {
             id: aID,
             name: aName,
             textArea: $('<div id="textArea' + aID + '" class="textOutArea"></div>'),
-            pageButton: $('<div id="pageButton' + aID + '" class="pageButton">' + aName + '</div>')
+            pageButton: $('<div id="pageButton' + aID + '" class="pageButton sublayers-clickable">' + aName + '</div>')
         }
 
         this.vMTA.append(chat.textArea);
@@ -199,7 +199,7 @@ var ViewMessenger = (function () {
         // создать див сообщения и спаны
         var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="view-messenger-message"></div>');
         var spanTime = $('<span class="view-messenger-text-time">' + '[' + tempTime + '] ' + '</span>');
-        var spanUser = $('<span class="view-messenger-text-user">' + aUser.login + '</span>');
+        var spanUser = $('<span class="view-messenger-text-user sublayers-clickable">' + aUser.login + '</span>');
         var spanText = $('<span class="view-messenger-text-text">' + ': ' + aText + '</span>');
 
         // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
