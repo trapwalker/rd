@@ -145,17 +145,18 @@ border-image-width: 2px 0px 2px 0px;
 }
 
 .textOutArea {
-    height: 0%;
+    height: 100%;
     width: 100%;
     position: relative;
     top: 0px;
     left: 0px;
     overflow-y: auto;
     overflow-x: hidden;
+    display: none;
 }
 
 .textOutAreaActive {
-    height: 100%;
+    display: block;
 }
 
 .view-messenger-message {
