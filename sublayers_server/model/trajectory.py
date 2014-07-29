@@ -32,7 +32,7 @@ def pfmt(x, indent=0, indent_filling='  '):
         return repr(x)
 
 
-def calc(p, direction_angle, velocity, t, rv_func=rv):
+def build_trajectory(p, direction_angle, velocity, t, rv_func=rv):
     """Calculate and return segmets of trajectory:
     @param p: model.vectors.Point
     @param direction_angle: float
@@ -87,7 +87,7 @@ def calc(p, direction_angle, velocity, t, rv_func=rv):
 
 
 if __name__ == '__main__':
-    print calc(
+    print build_trajectory(
         p=Point(10, 10),
         direction_angle=0,
         velocity=0,

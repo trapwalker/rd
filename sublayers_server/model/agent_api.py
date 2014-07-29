@@ -9,6 +9,7 @@ from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
 from messages import ChatMessage
+from trajectory import build_trajectory
 
 
 def make_push_package(events):
@@ -36,7 +37,16 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y):
-        self.car.goto(Point(x, y))
+        t = Point(x, y)
+        car = self.car
+        path = build_trajectory(
+            car.position,
+            car.direction,
+            car.max_velocity,  # todo: current velocity fix
+            t,
+        )
+        car.goto(t)
+        return dict(path=path)
 
     @public_method
     def stop(self):
