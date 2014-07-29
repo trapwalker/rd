@@ -3,59 +3,93 @@
 import logging
 log = logging.getLogger(__name__)
 
-from math import copysign, pi, degrees, cos, sqrt
+from math import copysign, pi, sqrt, acos
 
-from vectors import Point as P
+from vectors import Point
+
+EPS = 1e-10
+
 
 def rv(v):
     return abs(v) + 5
 
-def ppp(d):
-    if d:
-        maxk = max(map(len, d.keys()))
-        for k, v in d.items():
-            print '{:{}} = {}'.format(k, maxk, v)
+
+def pfmt(x, indent=0, indent_filling='  '):
+    if not x:
+        return repr(x)
+    elif isinstance(x, dict):
+        maxk = max(map(len, x.keys()))
+        return '{\n' + '\n'.join([
+            '{}{:{}} = {}'.format((indent + 1) * indent_filling, k, maxk, pfmt(v, indent=indent + 1))
+            for k, v in sorted(x.items())
+        ]) + '\n' + indent * indent_filling + '}'
+    elif isinstance(x, list):
+        return '[\n' + '\n'.join([
+            '{}{},'.format((indent + 1) * indent_filling, pfmt(v, indent=indent + 1))
+            for v in x
+        ]) + '\n' + indent * indent_filling + ']'
+    else:
+        return repr(x)
 
 
-def calc(cp, direction, v, tp, rv_func=rv):
+def calc(p, direction_angle, velocity, t, rv_func=rv):
     """Calculate and return segmets of trajectory:
-    @param cp: model.vectors.Point
-    @param direction: float
-    @param v: float
-    @param tp: model.vectors.Point
+    @param p: model.vectors.Point
+    @param direction_angle: float
+    @param velocity: float
+    @param t: model.vectors.Point
     @param rv_func callable
     """
     segments = []  # сегменты будущей траектории
-    r = rv_func(v)  # вычисляем радиус разворота на заданной скорости
-    t = tp - cp  # перемещаем систему координат в позицию машины
+    radius = rv_func(velocity)  # вычисляем радиус разворота на заданной скорости
     # todo: test to zero vector
-    d = P(1).rotate(direction)  # получаем вектор направления
-    turn_side = copysign(1.0, d.cross_mul(t))  # получаем направление поворота: -1 по часовой, 1 - против
-    rc = d.rotate(turn_side * pi / 2) * r  # вычисляем центр поворота
-    ct = t - rc  # получаем вектор из центра поворота к цели
-    if abs(ct) < r:  # если целевая точка внутри радиуса разворота
-        _ = ct.rotate(-direction)  # поворачиваем локальную временную систему координат в направлении машины
-        l = sqrt(pow(r, 2) - pow(_.x, 2)) + _.y  # сколько проехать, чтобы целевая точка встала на окружность поаорота
-        print 'Escape turn circle: t={t}, l={l}'.format(**locals())
-        segments.append(dict(cls='Linear', l=l))  # добавляем прямолинейный сегмент удаления от цели
-        t = t - d * l  # смещаем систему координат на расстояние, пройденное в сегменте
-        ct = t - rc  # получаем вектор из центра поворота к цели
+    d = Point(1).rotate(direction_angle)  # получаем вектор направления
+    turn_side_sign = copysign(1.0, d.cross_mul(t))  # получаем направление поворота: -1 по часовой, 1 - против
+    pc = d.rotate(turn_side_sign * pi / 2) * radius  # получаем вектор pc (к центру разворота)
+    c = p + pc  # координаты центра поворота
+    ct = t - c  # вектор из центра поворота к цели
+    ct_size = abs(ct)
+    if ct_size < radius:  # если целевая точка внутри радиуса разворота
+        _ = ct.rotate(-direction_angle)  # поворачиваем локальную временную систему координат в направлении машины
+        l = (sqrt(pow(radius, 2) - pow(_.y, 2)) + _.x) * d  # вектор проезда до вывода целевой точки из радиуса поворота
+        segments.append(dict(cls='Linear', a=p, b=p + l))  # добавляем прямолинейный сегмент удаления от цели
+        p += l
+        c += l
+        ct = t - c
+        ct_size = radius
+        assert abs(ct_size - abs(ct)) < EPS, 'Turn circle escape failed: radius={radius}, /ct/={ct_size_new}'.format(
+            ct_size_new=abs(ct),
+            **locals()
+        )
+        log.info('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(l_size=abs(l), **locals()))
+        log.info('Turn circle escape accuracy = %s', ct_size - abs(ct))
 
+    # todo: test to direct way
+    k = radius / ct_size
+    x = c + k * ct.rotate(-turn_side_sign * acos(k))
 
+    segments.append(dict(
+        cls='Circular',
+        r=radius,
+        a=p,
+        b=x,
+        alpha=(-pc).angle,
+        beta=(x - c).angle,
+        ccw=1 if turn_side_sign > 0 else 0,
+    ))  # добавляем круговой сегмент траектории
 
+    if abs(x - t) > EPS:
+        segments.append(dict(cls='Linear', a=x, b=t))  # добавляем прямолинейный сегмент прибытия в целевую точку
 
-        
-
-    ppp(locals())
+    print pfmt(locals())
     globals().update(locals())
+    return segments
 
-
-    
 
 if __name__ == '__main__':
     print calc(
-        cp=P(10, 10),
-        direction=0,
-        v=0,
-        tp=P(9.9, 10),
+        p=Point(10, 10),
+        direction_angle=0,
+        velocity=0,
+        t=Point(8, 10),
     )
