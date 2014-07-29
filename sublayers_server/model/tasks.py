@@ -35,10 +35,10 @@ class Task(object):
         return self.__class__.__name__
 
     def as_dict(self):
+        # todo: suspend store serialization
         return dict(
             cls=self.classname,
-            start_time=self.start_time,  # todo: relative time for client
-        )
+            start_time=self.owner.server.get_time(),  # todo: Вынести публикацию времени для клиента из сериализации
 
     def cancel(self):
         pass

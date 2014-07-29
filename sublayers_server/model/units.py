@@ -76,7 +76,7 @@ class Bot(Unit):
 
     def __init__(self, direction=0, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
-        """@type: model.tasks.Goto | None"""
+        """@type: model.tasks.Motion | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
         self._direction = direction
