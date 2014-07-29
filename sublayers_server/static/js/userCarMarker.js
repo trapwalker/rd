@@ -212,8 +212,8 @@ var UserCarMarker = (function () {
         this.marker.carID = this.options.carID;
 
         // Повесить PopUp и ивент на него
-        this.marker.on('popupopen', onMarkerPopupOpen);
-        this.marker.bindPopup('popUp');
+        //this.marker.on('popupopen', onMarkerPopupOpen);
+        //this.marker.bindPopup('popUp');
 
         // Создание шлейфа
         this.tail = new CarTail({

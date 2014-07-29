@@ -139,7 +139,9 @@ var BackLight = (function () {
             _map: null,
             color: '#ff0000',
             radius: 20,
-            weight: 5
+            weight: 5,
+            fillColor: '#AA0000',
+            fillOpacity: 0.2
         };
 
         if (options) {
@@ -147,43 +149,131 @@ var BackLight = (function () {
             if (options.color) this.options.color = options.color;
             if (options.radius) this.options.radius = options.radius;
             if (options.weight) this.options.weight = options.weight;
+            if (options.fillColor) this.options.fillColor = options.fillColor;
+            if (options.fillOpacity) this.options.fillOpacity = options.fillOpacity;
         }
 
         this.backCircle = L.circleMarker([0,0],
             {
                 weight: this.options.weight,
                 color: this.options.color,
-                fillColor: '#AA0000',
-                fillOpacity: 0.2,
+                fillColor: this.options.fillColor ,
+                fillOpacity: this.options.fillOpacity,
                 clickable: false
             }
         ).setRadius(this.options.radius);
 
-
+        this.isActive = false;
         return this;
     }
 
     BackLight.prototype.on = function (marker) {
-        this.marker = marker;
-        this.options._map.addLayer(this.backCircle);
+        if (marker)
+            this.marker = marker;
+        if (this.marker)
+            if (!this.isActive) {
+                this.options._map.addLayer(this.backCircle);
+                this.isActive = true;
+            }
+        return this;
     };
 
     BackLight.prototype.off = function () {
+        if(this.isActive) {
+            this.options._map.removeLayer(this.backCircle);
+            //this.marker = null;
+            this.isActive = false;
+        }
+    };
+
+    BackLight.prototype.delete = function () {
         this.options._map.removeLayer(this.backCircle);
         this.marker = null;
+        this.isActive = false;
     };
 
     BackLight.prototype.draw = function () {
-        if (this.marker)
+        //if (this.marker)
+        if(this.isActive)
             this.backCircle.setLatLng(this.marker.getLatLng());
     };
 
     BackLight.prototype.offMarker = function (marker) {
-        if (this.marker == marker)
+        if (this.marker == marker) {
             this.off();
+            this.isActive = false;
+        }
 
+    };
+
+    BackLight.prototype.toggle = function () {
+        if (this.isActive)
+            this.off();
+        else
+            this.on();
     };
 
 
     return BackLight;
+})();
+
+
+// Подсветка выбранных маркеров
+// TODO сделать массив по marker.carID, упростит доступ и решит проблему удаления с последующим добавлением
+var BackLightList = (function (){
+    function BackLightList(){
+        this.backLights = [];
+    }
+
+    BackLightList.prototype._addMarker = function (marker){
+        this.backLights.push(new BackLight({
+            _map: myMap,
+            color: '#FFFF00',
+            radius: 20,
+            weight: 2,
+            fillColor: '#FFFF00',
+            fillOpacity: 0.2
+
+        }).on(marker));
+    };
+
+
+    BackLightList.prototype.draw = function () {
+        for(var i = 0; i < this.backLights.length; i++)
+            this.backLights[i].draw();
+    };
+
+
+    BackLightList.prototype.offMarker = function(marker){
+        var backL = this._getMarker(marker);
+        if(backL) {
+            backL.delete();
+            delete backL;
+        }
+    };
+
+    BackLightList.prototype.on = function(marker){
+
+    };
+
+
+    BackLightList.prototype._getMarker = function (marker){
+        for(var i = 0; i < this.backLights.length; i++)
+            if(this.backLights[i].marker == marker) {
+                return this.backLights[i];
+            }
+    };
+
+    BackLightList.prototype.toggle = function(marker){
+        if(marker) {
+            var backL = this._getMarker(marker);
+            if (backL)
+                backL.toggle();
+            else
+                this._addMarker(marker);
+        }
+    };
+
+
+    return BackLightList;
 })();

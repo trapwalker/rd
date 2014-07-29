@@ -34,6 +34,8 @@ function redrawMap() {
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
     backLight.draw();
+    backLightList.draw();
+
 
 }
 
@@ -173,18 +175,13 @@ $(document).ready(function () {
         _map: myMap
     });
 
+    backLightList = new BackLightList();
+
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);
 });
 
-function onMarkerPopupOpen(e) {
-    if (this.carID === user.userCar.ID)
-        this.setPopupContent('My name is ' + user.login + '<br>' + 'My Car ID = '+ user.userCar.ID);
-    else
-        this.setPopupContent('My name is ' + listMapObject.objects[this.carID].owner.login+ '<br>' + 'My Car ID = '+ this.carID);
 
-    backLight.on(this);
-}
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
