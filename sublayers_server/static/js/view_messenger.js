@@ -4,7 +4,6 @@ var ViewMessenger = (function () {
             parentDiv: '',
             height: 400,
             width: 300,
-            onSend: '',
             _visible: true
         };
 
@@ -14,11 +13,15 @@ var ViewMessenger = (function () {
             if (options.parentDiv) this.options.parentDiv = options.parentDiv;
             if (options.height) this.options.height = options.height;
             if (options.width) this.options.width = options.width;
-            if (options.onSend) this.options.onChange = options.onChange;
         }
 
+        // Счётчик сообщений лога.
+        this.pushID = 0;
+        this.rpcID = 0;
+        this.ansID = 0;
+
         //добавление основного дива
-        this.vMA = $("<div id='viewMessengerArea'></div>");
+        this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
         this.vMA.css({width: this.options.width});
         $("#" + this.options.parentDiv).append(this.vMA);
 
@@ -28,7 +31,7 @@ var ViewMessenger = (function () {
         this.vMA.append(this.vMHA);
 
         //добавление дива с кнопкой Свернуть/Развернуть
-        this.vMSB = $("<div id='viewMessengerSlideButton' class='viewMessengerSlideButtonShowed'></div>");
+        this.vMSB = $("<div id='viewMessengerSlideButton' class='viewMessengerSlideButtonShowed sublayers-clickable'></div>");
         this.vMHA.append(this.vMSB);
         this.vMSB.on('click', {self: this}, this.changeVisible);
 
@@ -72,28 +75,26 @@ var ViewMessenger = (function () {
         this.vMDA.append(this.vMFA);
 
         //добавление кнопки 'отправить соосбщение'
-        this.vMEB = $("<div id='viewMessengerEnterButton'></div>");
+        this.vMEB = $("<div id='viewMessengerEnterButton' class='sublayers-clickable'></div>");
         this.vMFA.append(this.vMEB);
-        this.vMEB.on('click', viewMessngerSendMessage);
-//  Повесить Send
+        this.vMEB.on('click', this.viewMessngerSendMessage);
 
         //добавление дива с Input
         this.vMIA = $("<div id='viewMessengerInputArea'></div>");
-        this.vMIA.css({width: this.options.width - parseInt(this.vMEB.css('width')) -
-                      2 * parseInt(this.vMEB.css('margin'))});
         this.vMFA.append(this.vMIA);
+        this.vMIA.css({width: this.options.width - parseInt(this.vMEB.css('width')) -
+            2 * parseInt(this.vMEB.css('margin'))});
 
         //добавление Input
         this.vMI = $("<input id='viewMessengerInput' type='text'>");
         this.vMIA.append(this.vMI);
+        this.vMI.css({width: parseInt(this.vMIA.css('width'))-5});
 
-//  Повесить Send
-        this.vMI.keydown(function (event) {
+        this.vMI.on('keydown', {self: this}, function (event) {
             if (event.keyCode == 13) {
-                viewMessngerSendMessage();
+                event.data.self.viewMessngerSendMessage();
             }
         });
-
 
         //добавление дива с сообщениями
         this.vMTA = $("<div id='viewMessengerTextArea'></div>");
@@ -145,21 +146,21 @@ var ViewMessenger = (function () {
             id: aID,
             name: aName,
             textArea: $('<div id="textArea' + aID + '" class="textOutArea"></div>'),
-            pageButton: $('<div id="pageButton' + aID + '" class="pageButton">' + aName + '</div>')
+            pageButton: $('<div id="pageButton' + aID + '" class="pageButton sublayers-clickable">' + aName + '</div>')
         }
 
         this.vMTA.append(chat.textArea);
         this.vMPCCC.append(chat.pageButton);
 
-        chat.pageButton.on('click', {self: this, id: chat.id}, clickForPageButton);
+        chat.pageButton.on('click', {self: this, id: chat.id}, this.clickForPageButton);
 
         this.vMTA.css({height: parseInt(this.vMDA.css('height')) -
-                            parseInt(this.vMFA.css('height')) -
-                            parseInt(this.vMPC.css('height'))});
+                               parseInt(this.vMFA.css('height')) -
+                               parseInt(this.vMPC.css('height'))-
+                               2 * parseInt(this.vMTA.css('border-image-width'))});
 
         this.chats.push(chat);
         this.setActiveChat(chat.id);
-
         return chat;
     }
 
@@ -175,8 +176,6 @@ var ViewMessenger = (function () {
                     chat.textArea.removeClass('textOutAreaActive');
                     chat.pageButton.removeClass('pageButtonActive');
                 }
-
-
             },
             {self: this, id: aID})
     }
@@ -193,16 +192,17 @@ var ViewMessenger = (function () {
         // return this.addChat(chatID, 'какой-то текст или логин');
     }
 
+
     ViewMessenger.prototype.addMessage = function(chatID, messageID, aTime, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
         // Отформатировать время
         var tempTime = aTime.toTimeString().split(' ')[0];
-        // создать див соощения и спаны
-        var mesDiv = $('<div id="'+chat.name+chatID+messageID+'" class="view-messenger-message"></div>');
-        var spanTime = $('<span class="view-messenger-text-time">'+ '[' + tempTime + '] ' +'</span>');
-        var spanUser = $('<span class="view-messenger-text-user">'+ aUser.login +'</span>');
-        var spanText = $('<span class="view-messenger-text-text">'+ ': ' + aText +'</span>');
+        // создать див сообщения и спаны
+        var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="view-messenger-message"></div>');
+        var spanTime = $('<span class="view-messenger-text-time">' + '[' + tempTime + '] ' + '</span>');
+        var spanUser = $('<span class="view-messenger-text-user sublayers-clickable">' + aUser.login + '</span>');
+        var spanText = $('<span class="view-messenger-text-text">' + ': ' + aText + '</span>');
 
         // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
         if ($("#" + chat.name+chatID+messageID + ' span:last-child').length) {
@@ -219,7 +219,7 @@ var ViewMessenger = (function () {
 
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
         if (chat.id >= 0)
-            spanUser.on('click', {user: aUser}, viewMessengerClickSpanUser);
+            spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
 
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if(aUser.login == user.login)
@@ -230,34 +230,56 @@ var ViewMessenger = (function () {
     };
 
 
+    ViewMessenger.prototype.addMessageToLog = function(aText, aLogType) {
+        if (aLogType == "rpc") {
+            this.rpcID++;
+            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID}, aText);
+        }
+
+        if (aLogType == "answer") {
+            this.ansID++;
+            this.addMessage(-3, this.ansID, new Date(), {login: 'Answer от сервера #' + this.ansID}, '<pre>' + aText + '</pre>');
+        }
+
+        if (aLogType == "push") {
+            this.pushID++;
+            this.addMessage(-1, this.pushID, new Date(), {login: 'Push от сервера #' + this.pushID}, '<pre>' + aText + '</pre>');
+        }
+
+    }
+
+
+    ViewMessenger.prototype.addMessageToSystem = function(messID, aText) {
+        this.addMessage(-2, messID, new Date(), {login: '#'}, aText);
+    }
+
+
+    ViewMessenger.prototype.viewMessngerSendMessage = function() {
+        var str = chat.vMI.val();
+        if (str.length) {
+            sendChatMessage(str);
+            chat.vMI.val('').focus();
+        } else {
+            chat.vMI.focus()
+        }
+    }
+
+
+    ViewMessenger.prototype.clickForPageButton = function (event) {
+        event.data.self.setActiveChat(event.data.id);
+    }
+
+
+    ViewMessenger.prototype.viewMessengerClickSpanUser = function (event) {
+        var owner = event.data.owner;
+        //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
+
+        if (owner.uid == user.ID)
+            backLight.on(userCarMarker.marker);
+        else
+        if(owner.car)
+            backLight.on(owner.car.marker);
+    }
+
     return ViewMessenger;
 })();
-
-
-function clickForPageButton(event){
-    event.data.self.setActiveChat(event.data.id);
-}
-
-function addMessageToLog(aText) {
-    var logID = newIDFromP();
-    chat.addMessage(-1, logID, new Date(), {login: 'Push от сервера #'+logID}, '<pre>'+aText+'</pre>');
-}
-
-function addMessageToSystem(messID, aText) {
-    chat.addMessage(-2, messID, new Date(), {login: '#'}, aText);
-}
-
-function viewMessngerSendMessage() {
-    var str = chat.vMI.val();
-    if (str.length) {
-        sendChatMessage(str);
-        chat.vMI.val('').focus();
-    } else {
-        chat.vMI.focus()
-    }
-}
-
-function viewMessengerClickSpanUser(event) {
-    var gamer = event.data.user;
-    alert(gamer.login);
-}

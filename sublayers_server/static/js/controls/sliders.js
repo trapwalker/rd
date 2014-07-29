@@ -12,7 +12,7 @@ var SliderZoom = (function () {
 
         var parent = options.parentDiv;
         // сразу же применение стиля для зум-парент
-        $('#'+parent).addClass('slider-zoom-parent');
+        $('#'+parent).addClass('slider-zoom-parent sublayers-clickable');
 
         this._id = _SlidersMass.length;
         _SlidersMass[this._id] = this;
@@ -62,6 +62,7 @@ var SliderZoom = (function () {
         $('#Zoom_slider span:first-child').css('border', '0px');
         $('#Zoom_slider span:first-child').css('left', '-7px');
         $('#Zoom_slider span:first-child').css('margin-bottom', '-12.5px');
+        $('#Zoom_slider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
 
     }
 
@@ -168,13 +169,14 @@ var SliderSpeed = (function () {
             max: this.options.max,
             min: this.options.min,
             orientation: this.options.orientation,
-            step: this.options.step
+            step: this.options.step,
+            value: options.max_velocity
         })
             .on('slidechange', {id: this._id}, this.change) // отправка сообщений серверу
             .on('slide', this._slide);                      // чтобы менялись циферки внутри каретки
 
-        // настройка слайдера
-        $('#sliderSpeedSlider').addClass('slider-speed-slider');
+             // настройка слайдера
+        $('#sliderSpeedSlider').addClass('slider-speed-slider sublayers-clickable');
         $('#sliderSpeedSlider').css("height", this.options.height);
         $('#sliderSpeedSlider').css("width", '31px');
         $('#sliderSpeedSlider').css("border", '0px');
@@ -190,12 +192,13 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
         $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
         $('#sliderSpeedSlider span:first-child').css("z-index", '5');
+        $('#sliderSpeedSlider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
 
-        var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label">0</span>';
+        var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label sublayers-clickable">0</span>';
         $('#sliderSpeedSlider span:first-child').append(newSpan);
 
         // Создание и добавление фона шкалы
-        var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main">' +
+        var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main sublayers-clickable">' +
             '<div id="slider-speed-filler-arrow"></div>' +
             '<div id="slider-speed-filler"></div>' +
             '</div>';
@@ -203,7 +206,7 @@ var SliderSpeed = (function () {
         this.setRealSpeed(0);
 
         // Создание кнопки стоп
-        var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main">' +
+        var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main sublayers-clickable">' +
             '<span>STOP</span>' +
             '</div>';
         // добавление дива кнопки стоп в правый див
@@ -212,12 +215,16 @@ var SliderSpeed = (function () {
 
         // создание и расстановка текста
 
+        // Вызвать _slide() для установки цифры внутри каретки
+        this._slide({},{value: options.max_velocity});
+
     }
 
     SliderSpeed.prototype.change = function (event, ui) {
         var slider = _SlidersMass[event.data.id];
-        if (typeof(slider.options.onChange) === "function")
+        if (typeof(slider.options.onChange) === "function") {
             slider.options.onChange();
+        }
     }
 
     SliderSpeed.prototype._onStop = function (event, ui) {
@@ -250,6 +257,7 @@ var SliderSpeed = (function () {
     SliderSpeed.prototype.getSpeed = function () {
         return $('#sliderSpeedSlider').slider("value");
     }
+
 
     return SliderSpeed;
 })();

@@ -63,9 +63,9 @@ var CarTail = (function () {
             this._tail.addPoint(this.options.aStartPoint);
 
         // Создание сразу трёх маркеров
-        this._tailPath1 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(5);
-        this._tailPath2 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(3.5);
-        this._tailPath3 = L.circleMarker([0, 0], {color: '#11FF11'}).setRadius(2);
+        this._tailPath1 = L.circleMarker([0, 0], {color: '#11FF11', clickable: false}).setRadius(5);
+        this._tailPath2 = L.circleMarker([0, 0], {color: '#11FF11', clickable: false}).setRadius(3.5);
+        this._tailPath3 = L.circleMarker([0, 0], {color: '#11FF11', clickable: false}).setRadius(2);
 
         // Добавить или не доавбить маркеры на карту
         this.setActive(this.options._enable);
@@ -127,15 +127,23 @@ var SectorsView = (function () {
         var sector = {};
         var tempWidth = fireSector.widthAngle / 2;
         var vertV = new Point(0, -fireSector.radius);
+        var vertVIn = new Point(0, -25);
 
         //внесли центр сектора
         sector._points = [];
-        sector._points.push(new Point(0, 0));
+        //sector._points.push(new Point(0, 0));
 
         //добавление точек сектора
         for (var angle = -tempWidth; angle <= tempWidth;
-             angle += fireSector.widthAngle / (this.options.countPoints - 2)) {
+             angle += fireSector.widthAngle / (this.options.countPoints - 1)) {
             sector._points.push(new rotateVector(vertV, angle));
+        }
+
+        //внутренние точки
+        //добавление точек сектора
+        for (var angle = tempWidth; angle >= -tempWidth;
+             angle -= fireSector.widthAngle / (this.options.countPoints - 1)) {
+            sector._points.push(new rotateVector(vertVIn, angle));
         }
 
         sector._fireSector = fireSector;
@@ -204,8 +212,8 @@ var UserCarMarker = (function () {
         this.marker.carID = this.options.carID;
 
         // Повесить PopUp и ивент на него
-        this.marker.on('popupopen', onMarkerPopupOpen);
-        this.marker.bindPopup('popUp');
+        //this.marker.on('popupopen', onMarkerPopupOpen);
+        //this.marker.bindPopup('popUp');
 
         // Создание шлейфа
         this.tail = new CarTail({
@@ -215,7 +223,7 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(this.options.position, this.options.radiusView,
+        this.circleView = L.circle(this.options.position, this.options.radiusView * 1.5,
             {
                 weight: 0,
                 fillColor: '#32cd32',

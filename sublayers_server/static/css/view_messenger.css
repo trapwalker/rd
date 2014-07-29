@@ -7,6 +7,7 @@
     bottom: 6px; /*отступ для рамки*/
     left: 10px; /*отступ для рамки*/
     overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 #viewMessengerHeaderArea {
@@ -39,11 +40,11 @@
 }
 
 .viewMessengerSlideButtonShowed {
-    background: transparent url(./img/chat/button_down.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_down.png) 100% 100% no-repeat;
 }
 
 .viewMessengerSlideButtonHided {
-    background: transparent url(./img/chat/button_up.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_up.png) 100% 100% no-repeat;
 }
 
 #viewMessengerSlideButton {
@@ -61,12 +62,10 @@
 
 #viewMessengerPageControl {
     overflow: auto;
-    background-color: #000000;
-    opacity: 0.6;
 }
 
 #viewMessengerPageControlLeftButton {
-    background: transparent url(./img/chat/button_left.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_left.png) 100% 100% no-repeat;
     margin: 3px;
     position: relative;
     height: 18px;
@@ -84,7 +83,7 @@
 }
 
 #viewMessengerPageControlRightButton {
-    background: transparent url(./img/chat/button_right.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_right.png) 100% 100% no-repeat;
     margin: 3px;
     position: relative;
     height: 18px;
@@ -93,6 +92,23 @@
     float: left;
 }
 
+#viewMessengerTextArea {
+border-image-slice: 2 0 2 0;
+border-image-width: 2px 0px 2px 0px;
+    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: linear-gradient(to right, transparent, lime, transparent);
+    border-left: 0px;
+    border-right: 0px;
+
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+}
+
+
 #viewMessengerFooterArea {
     position: relative;
     overflow: auto;
@@ -100,7 +116,7 @@
 }
 
 #viewMessengerEnterButton {
-    background: transparent url(./img/chat/button_enter.png) 100% 100% no-repeat;
+    background: transparent url(../img/chat/button_enter.png) 100% 100% no-repeat;
     margin: 3px;
     position: relative;
     height: 18px;
@@ -112,6 +128,7 @@
 #viewMessengerInputArea {
     padding-right: 3px;
     padding-left: 3px;
+    position: relative;
 }
 
 #viewMessengerInput {
@@ -128,25 +145,23 @@
 }
 
 .textOutArea {
-    height: 0%;
+    height: 100%;
     width: 100%;
     position: relative;
     top: 0px;
     left: 0px;
     overflow-y: auto;
     overflow-x: hidden;
+    display: none;
 }
 
 .textOutAreaActive {
-    height: 100%;
-    opacity: 0.6;
-    background-color: #000000;
+    display: block;
 }
 
 .view-messenger-message {
     padding-left: 3px;
     padding-right: 3px;
-    opacity: 1;
 }
 
 .view-messenger-text-time {
@@ -171,7 +186,6 @@
 
 .pageButton {
     opacity: 0.6;
-    background-color: black;
     float: left;
     position: relative;
     color: lime;

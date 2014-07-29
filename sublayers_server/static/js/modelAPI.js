@@ -5,6 +5,7 @@ function ModelInit() {
         1000);  //Количество кредитов
 
     listMapObject = new ListMapObject();
+    ownerList = new OwnerList();
 }
 
 

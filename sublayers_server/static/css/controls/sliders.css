@@ -4,6 +4,7 @@
     bottom: 450px;
     right: 20px;
     width: 90px;
+    pointer-events: none;
 }
 
 .slider-speed-left-main {
@@ -31,6 +32,7 @@
     z-index: 2;
     bottom: 2px;
     overflow-y: hidden;
+    pointer-events: auto;
 
 }
 
@@ -77,6 +79,7 @@
 .slider-speed-slider {
     margin-left: 18.5px;
     background: transparent url('/static/img/CruiseControl/if_spd_bar.png') 50% 50% no-repeat;
+    pointer-events: auto;
 }
 
 /*Настройки слайдера и каретки завершены*/
@@ -162,6 +165,7 @@
     color: #2dc34a;
     padding-top: 8px;
     opacity: 0.8;
+    pointer-events: auto;
 }
 
 .slider-speed-stop-main:hover {
@@ -223,6 +227,7 @@
     right: 150px;
     height: 50px;
     width: 232px;
+    pointer-events: none;
 }
 
 #pbarFuelLeft {
@@ -333,7 +338,7 @@
 
 .pbarFuelRightLabelt3 {
     position: absolute;
-    right: 40px;
+    right: 55px;
 }
 
 .pbarFuelRightLabelt4 {
@@ -351,6 +356,7 @@
     right: 150px;
     height: 50px;
     width: 232px;
+    pointer-events: none;
 }
 
 #pbarHPLeft {

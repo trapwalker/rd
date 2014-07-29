@@ -1,8 +1,17 @@
+.fire-control-parent {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    margin-left: -75px;
+    pointer-events: none;
+}
+
 .fire-control-sector {
     fill: green;
     stroke: limegreen;
     stroke-width: 2;
     opacity: 0.4;
+    pointer-events: auto;
 }
 
 .fire-control-sector-recharge {
@@ -10,6 +19,7 @@
     stroke: limegreen;
     stroke-width: 2;
     opacity: 0.2;
+    pointer-events: auto;
 }
 
 .fire-control-sector:hover {
@@ -24,6 +34,7 @@
     stroke: lime;
     stroke-width: 2;
     opacity: 0.4;
+    pointer-events: auto;
 }
 
 .fire-control-all:hover {

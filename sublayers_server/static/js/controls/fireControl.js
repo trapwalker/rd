@@ -19,6 +19,9 @@ var FireControl = (function () {
             if (options.sectorCallBack) this.options.sectorCallBack = options.sectorCallBack;
             if (options.allCallBack) this.options.allCallBack = options.allCallBack;
         }
+
+        $('#' + this.options.parentDiv).addClass('fire-control-parent');
+
         this.radiusOut = this.options.diameter / 2;
         this.radiusIn = this.options.diameter / 6;
 
@@ -33,7 +36,7 @@ var FireControl = (function () {
         // Кнопка All
         this.allFire = this.paper.circle(this.center.x, this.center.y, this.radiusIn);
         // Класс кнопки All
-        $(this.allFire.node).attr('class', 'fire-control-all');
+        $(this.allFire.node).attr('class', 'fire-control-all sublayers-clickable');
         // Событие кнопки All
         $(this.allFire.node).on('click', {self: this}, allFireEvent);
 
@@ -96,7 +99,7 @@ var FireControl = (function () {
         // Поворачиваем сектор на свой угол
         sector.transform('R'+ sector.myAngle +' '+this.center.x + ' ' + this.center.y);
         // Ставим сектору атрибут класс - по умолчанию
-        $(sector.node).attr('class', 'fire-control-sector');
+        $(sector.node).attr('class', 'fire-control-sector sublayers-clickable');
         // Вешаем на сектор обработчик клика данного сектора
         $(sector.node).on('click', {sector: sector}, fireSectorEvent);
         // Добавить в сектор ссылку на fireSector, чтобы при вызове коллбека передать первым параметром
@@ -132,24 +135,16 @@ var FireControl = (function () {
     };
 
     FireControl.prototype.clearSectors = function() {
-        alert('Unbind');
+       // alert('Unbind');
         this.options.sectors.forEach(function(sector){
             // Снять клик с каждого сектора
             $(sector.node).off('click',fireSectorEvent);
-             sector.node.remove();
+            sector.node.remove();
         });
-    }
-
-
+    };
 
     return FireControl;
 })();
-
-function getPerpendicular(aPoint) {
-    return new Point(aPoint.y, -aPoint.x);
-}
-
-
 
 // Обработчики кликов !!
 function allFireEvent(event){
@@ -170,7 +165,7 @@ function fireSectorEvent(event) {
         // Запустить timeOut речарджа
         setTimeout(function () {
                 sector.recharged = false;
-                $(sector.node).attr('class', 'fire-control-sector');
+                $(sector.node).attr('class', 'fire-control-sector sublayers-clickable');
             },
             sector._fs.recharge);
         // Вызвать свой коллБэк и передать туда fireSector

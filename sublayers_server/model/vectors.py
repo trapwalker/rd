@@ -3,7 +3,9 @@
 __all__ = ['Point']
 
 from random import gauss
-from math import atan2
+from math import atan2, e
+
+EPS = 1e-9
 
 
 class Point(complex):
@@ -15,7 +17,24 @@ class Point(complex):
 
     @property
     def angle(self):
+        """
+        @rtype: float
+        """
         return atan2(self.imag, self.real)
+
+    def angle_with(self, other):
+        """
+        @param other: Point
+        @rtype: float
+        """
+        return (other / self).angle
+
+    def is_zero(self, eps=EPS):
+        """
+        @param eps: float
+        @rtype: bool
+        """
+        return self.x < eps and self.y < eps
 
     @classmethod
     def random_gauss(cls, mu, sigma):
@@ -27,6 +46,13 @@ class Point(complex):
         if not isinstance(sigma, Point):
             sigma = Point(sigma, sigma)
         return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
+
+    def rotate(self, fi):
+        """
+        @param fi: float
+        @rtype: Point
+        """
+        return self * e ** (1j * fi)
 
     def distance(self, p):
         """
@@ -40,6 +66,13 @@ class Point(complex):
         @rtype: Point
         """
         return self / abs(self)
+
+    def cross_mul(self, other):
+        """
+        @param b: Point
+        @rtype: float
+        """
+        return self.real * other.imag - self.imag * other.real
 
     # todo: turn vector
     # todo: vector multiply
