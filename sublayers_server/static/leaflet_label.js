@@ -21,6 +21,7 @@ L.Label = L.Class.extend({
     },
 
     onAdd: function (map) {
+        var firstTry = false;
         this._map = map;
 
         this._pane = this.options.pane ? map._panes[this.options.pane] :
@@ -28,6 +29,7 @@ L.Label = L.Class.extend({
 
         if (!this._container) {
             this._initLayout();
+            firstTry = true;
         }
 
         this._pane.appendChild(this._container);
@@ -35,6 +37,13 @@ L.Label = L.Class.extend({
         this._initInteraction();
 
         this._update();
+
+        // Теперь, когда оно добавлено уже, сделать сдвиг и вызвать ещё один апдейт, но делать только один раз
+        if(firstTry){
+            this.options.offset = [- this._container.offsetWidth/2. , -30]; // Здесь учитывается только длина текста!
+            this._update();
+        }
+
 
         this.setOpacity(this.options.opacity);
 

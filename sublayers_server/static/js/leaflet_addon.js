@@ -32,8 +32,7 @@ function getCarMarker(aCar, aMap) {
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(L.icon({
         iconUrl: 'img/car_20.png',
-        iconSize: [20, 20],
-        labelAnchor: [-65, -20] // центровка в пикселях относительно центра маркера
+        iconSize: [20, 20]
     }));
     newMarker.bindLabel(aCar.owner.login+test_html_str, {direction: 'right'});
     newMarker.on('popupopen', onMarkerPopupOpen);
