@@ -58,6 +58,8 @@ function sendNewPoint(aPoint, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(JSON.parse(JSON.stringify(mes))), 'rpc');
+
 }
 
 // stop
@@ -69,6 +71,7 @@ function sendStopCar() {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
 }
 
 // fire
@@ -80,6 +83,7 @@ function sendFire(aPoint, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
 }
 
 // setSpeed
@@ -93,6 +97,7 @@ function sendSetSpeed(newSpeed, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
 }
 
 // send chat_message
@@ -106,6 +111,7 @@ function sendChatMessage(atext, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
@@ -117,7 +123,7 @@ function receiveMesFromServ(data){
     });
     // если message_type = push
     if (mes.message_type == "push") {
-        chat.addMessageToLog(data);
+        chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
@@ -172,6 +178,7 @@ function receiveMesFromServ(data){
                     unbindCar(listMapObject.objects[uid]);
                     myMap.removeLayer(listMapObject.objects[uid].marker);
                     backLight.offMarker(listMapObject.objects[uid].marker);
+                    backLightList.offMarker(listMapObject.objects[uid].marker);
                     delete listMapObject.objects[uid].marker;
                     listMapObject.del(uid);
                 }
@@ -185,6 +192,7 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
+        chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
         }

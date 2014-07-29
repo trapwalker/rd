@@ -34,6 +34,8 @@ function redrawMap() {
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
     backLight.draw();
+    backLightList.draw();
+
 
 }
 
@@ -42,6 +44,30 @@ function onMouseClickMap(mouseEventObject) {
         sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
 
     backLight.off();
+
+    //myMap.panTo(mouseEventObject.latlng);
+/*
+    // Нарисовать здесь что-то!
+    // Попытка нарисовать что-нибудь в SVG в лефлете
+    // Координаты в лифлете считаются от изначального SetView - проверить, будут ли они меняться
+    //alert(L.Path.SVG_NS);
+    var NS="http://www.w3.org/2000/svg";
+    var svgPane = myMap.getPanes().overlayPane.childNodes[0];
+    var g = document.createElementNS(NS,"g");
+    var svgObj = document.createElementNS(NS,"circle");
+    //alert(mouseEventObject.originalEvent.clientX);
+    svgObj.setAttribute('fill-rule', 'evenodd');
+    //svgObj.setAttribute('d', 'M 300 300 L 200 200 L 200 300 z');
+    svgObj.setAttribute('r', 30);
+    var p = myMap.mouseEventToContainerPoint(mouseEventObject.originalEvent);
+    //var p = myMap.latLngToContainerPoint(mouseEventObject.latlng);
+    svgObj.setAttribute('cx', p.x);
+    svgObj.setAttribute('cy', p.y);
+    svgObj.style.fill = "blue";
+    svgPane.appendChild(g);
+    //svgPane.appendChild(svgObj);
+    g.appendChild(svgObj);
+*/
 }
 
 function onZoomStart(event) {
@@ -164,7 +190,9 @@ $(document).ready(function () {
             height: 550,
             width: 400});
     chat.addChat(0, 'broadcast');
-    chat.addChat(-1, 'log');
+    chat.addChat(-1, 'log-push');
+    chat.addChat(-3, 'log-answer');
+    chat.addChat(-4, 'log-rpc');
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
 
@@ -173,18 +201,14 @@ $(document).ready(function () {
         _map: myMap
     });
 
+    backLightList = new BackLightList();
+
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);
+
 });
 
-function onMarkerPopupOpen(e) {
-    if (this.carID === user.userCar.ID)
-        this.setPopupContent('My name is ' + user.login + '<br>' + 'My Car ID = '+ user.userCar.ID);
-    else
-        this.setPopupContent('My name is ' + listMapObject.objects[this.carID].owner.login+ '<br>' + 'My Car ID = '+ this.carID);
 
-    backLight.on(this);
-}
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {

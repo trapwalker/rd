@@ -32,14 +32,14 @@ function getCarMarker(aCar, aMap) {
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(L.icon({
         iconUrl: 'img/car_20.png',
-        iconSize: [20, 20],
-        labelAnchor: [-65, -20] // центровка в пикселях относительно центра маркера
+        iconSize: [20, 20]
     }));
     newMarker.bindLabel(aCar.owner.login+test_html_str, {direction: 'right'});
-    newMarker.on('popupopen', onMarkerPopupOpen);
+    //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
-    newMarker.bindPopup('popUp');
+    newMarker.on('click', onMouseClickMarker);
+    //newMarker.bindPopup('popUp');
     newMarker.addTo(aMap);
     newMarker.carID = aCar.ID;
 
@@ -76,5 +76,18 @@ function carInfoClickEvent(event){
         // Вариант Internet Explorer:
         event.cancelBubble = true
     }
+}
 
+function onMouseClickMarker(){
+    //alert('click '+this.carID);
+    backLightList.toggle(this);
+   // backLight.on(this);
+}
+
+
+function onMarkerPopupOpen(e) {
+    if (this.carID === user.userCar.ID)
+        this.setPopupContent('My name is ' + user.login + '<br>' + 'My Car ID = '+ user.userCar.ID);
+    else
+        this.setPopupContent('My name is ' + listMapObject.objects[this.carID].owner.login+ '<br>' + 'My Car ID = '+ this.carID);
 }

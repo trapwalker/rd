@@ -212,8 +212,8 @@ var UserCarMarker = (function () {
         this.marker.carID = this.options.carID;
 
         // Повесить PopUp и ивент на него
-        this.marker.on('popupopen', onMarkerPopupOpen);
-        this.marker.bindPopup('popUp');
+        //this.marker.on('popupopen', onMarkerPopupOpen);
+        //this.marker.bindPopup('popUp');
 
         // Создание шлейфа
         this.tail = new CarTail({
@@ -223,7 +223,7 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(this.options.position, this.options.radiusView,
+        this.circleView = L.circle(this.options.position, this.options.radiusView * 1.5,
             {
                 weight: 0,
                 fillColor: '#32cd32',
