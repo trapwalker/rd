@@ -44,6 +44,30 @@ function onMouseClickMap(mouseEventObject) {
         sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
 
     backLight.off();
+
+    //myMap.panTo(mouseEventObject.latlng);
+/*
+    // Нарисовать здесь что-то!
+    // Попытка нарисовать что-нибудь в SVG в лефлете
+    // Координаты в лифлете считаются от изначального SetView - проверить, будут ли они меняться
+    //alert(L.Path.SVG_NS);
+    var NS="http://www.w3.org/2000/svg";
+    var svgPane = myMap.getPanes().overlayPane.childNodes[0];
+    var g = document.createElementNS(NS,"g");
+    var svgObj = document.createElementNS(NS,"circle");
+    //alert(mouseEventObject.originalEvent.clientX);
+    svgObj.setAttribute('fill-rule', 'evenodd');
+    //svgObj.setAttribute('d', 'M 300 300 L 200 200 L 200 300 z');
+    svgObj.setAttribute('r', 30);
+    var p = myMap.mouseEventToContainerPoint(mouseEventObject.originalEvent);
+    //var p = myMap.latLngToContainerPoint(mouseEventObject.latlng);
+    svgObj.setAttribute('cx', p.x);
+    svgObj.setAttribute('cy', p.y);
+    svgObj.style.fill = "blue";
+    svgPane.appendChild(g);
+    //svgPane.appendChild(svgObj);
+    g.appendChild(svgObj);
+*/
 }
 
 function onZoomStart(event) {
@@ -179,6 +203,7 @@ $(document).ready(function () {
 
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);
+
 });
 
 
