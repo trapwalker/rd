@@ -190,7 +190,9 @@ $(document).ready(function () {
             height: 550,
             width: 400});
     chat.addChat(0, 'broadcast');
-    chat.addChat(-1, 'log');
+    chat.addChat(-1, 'log-push');
+    chat.addChat(-3, 'log-answer');
+    chat.addChat(-4, 'log-rpc');
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
 

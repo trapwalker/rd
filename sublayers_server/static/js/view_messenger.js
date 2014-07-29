@@ -16,7 +16,9 @@ var ViewMessenger = (function () {
         }
 
         // Счётчик сообщений лога.
-        this.logID = 0;
+        this.pushID = 0;
+        this.rpcID = 0;
+        this.ansID = 0;
 
         //добавление основного дива
         this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
@@ -228,9 +230,22 @@ var ViewMessenger = (function () {
     };
 
 
-    ViewMessenger.prototype.addMessageToLog = function(aText) {
-        this.logID++;
-        this.addMessage(-1, this.logID, new Date(), {login: 'Push от сервера #' + this.logID}, '<pre>' + aText + '</pre>');
+    ViewMessenger.prototype.addMessageToLog = function(aText, aLogType) {
+        if (aLogType == "rpc") {
+            this.rpcID++;
+            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID}, aText);
+        }
+
+        if (aLogType == "answer") {
+            this.ansID++;
+            this.addMessage(-3, this.ansID, new Date(), {login: 'Answer от сервера #' + this.ansID}, '<pre>' + aText + '</pre>');
+        }
+
+        if (aLogType == "push") {
+            this.pushID++;
+            this.addMessage(-1, this.pushID, new Date(), {login: 'Push от сервера #' + this.pushID}, '<pre>' + aText + '</pre>');
+        }
+
     }
 
 
