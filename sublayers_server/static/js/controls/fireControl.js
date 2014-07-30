@@ -110,7 +110,8 @@ var FireControl = (function () {
     FireControl.prototype.setRotate = function(angle) {
         var tAngle = angle;
         this.options.rotateAngle = tAngle;
-        tAngle = tAngle *180/Math.PI;
+        //tAngle = tAngle *180/Math.PI;
+        tAngle = radToGrad(tAngle);
         this.options.sectors.forEach(function(sector){
             sector.transform('R'+ (this.an + sector.myAngle)+' '+
                        this.x + ' ' + this.y);
@@ -121,7 +122,8 @@ var FireControl = (function () {
     FireControl.prototype.setRelativeRotate = function(angle) {
         var tAngle = (angle + this.options.rotateAngle);
         this.options.rotateAngle = tAngle;
-        tAngle = tAngle *180/Math.PI;
+        //tAngle = tAngle *180/Math.PI;
+        tAngle = radToGrad(tAngle);
         this.options.sectors.forEach(function(sector){
             sector.transform('R'+ (this.an + sector.myAngle)+' '+
                 this.x + ' ' + this.y);
