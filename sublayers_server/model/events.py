@@ -133,6 +133,14 @@ class Callback(Event):
 
 class TaskEnd(Subjective):
 
+    def __init__(self, task, **kw):
+        """
+        """
+        subj = task.owner
+        super(TaskEnd, self).__init__(subj=subj, **kw)
+        self.task = task
+
     def perform(self):
         super(TaskEnd, self).perform()
-        self.subj.next_task()
+        if self.subj.task is self.task:
+            self.task.done()

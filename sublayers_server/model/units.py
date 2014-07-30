@@ -30,12 +30,14 @@ class Unit(Observer):
             self.task = task
 
     def next_task(self):
-        self.task = self.task_list.pop(0) if self.task_list else None
-        log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
+        if self.task_list:
+            self.task_list.pop(0).start()
+            log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
 
     def clear_tasks(self):
         self.task_list = []
-        self.task = None
+        if self.task:
+            self.task.cancel()
 
     def as_dict(self):
         d = super(Unit, self).as_dict()
@@ -66,17 +68,7 @@ class Unit(Observer):
         """
         return self._task
 
-    def set_task(self, task):
-        """
-        @param task: model.tasks.Task | None
-        """
-        old_task = self._task
-        if old_task:
-            old_task.cancel()
-        self._task = task
-        self.on_change()
-
-    task = property(fget=get_task, fset=set_task)
+    task = property(fget=get_task)
 
 
 class Station(Unit):
@@ -209,8 +201,6 @@ class Bot(Unit):
         self.change_observer_state(False)
         old_motion = self.motion
         if old_motion:
-            self.position = old_motion.position
-            self.direction = old_motion.direction
             self.server.motions.remove(old_motion)
         new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion

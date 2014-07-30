@@ -28,7 +28,7 @@ class Task(object):
         super(Task, self).__init__()
         self.owner = owner
         self._get_time = owner.server.get_time
-        self.start_time = start_time or self._get_time()
+        self.start_time = start_time
 
     @property
     def classname(self):
@@ -41,8 +41,24 @@ class Task(object):
             start_time=self.owner.server.get_time(),  # todo: Вынести публикацию времени для клиента из сериализации
         )
 
+    def done(self, **kw):
+        self.on_end(**kw)
+
+    def start(self, **kw):
+        if self.owner.task:
+            self.owner.task.cancel()
+        self.owner._task = self
+        self.on_start(**kw)
+
+    def on_start(self, **kw):
+        if self.start_time is None:
+             self.start_time = self._get_time()
+
+    def on_end(self, **kw):
+        self.owner._task = None
+
     def cancel(self):
-        pass
+        self.on_end()
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -62,6 +78,10 @@ class Determined(Task):
         """
         super(Determined, self).__init__(**kw)
         self._duration = duration
+        self.end_task_event = None
+
+    def on_start(self, **kw):
+        super(Determined, self).on_start(**kw)
         self.end_task_event = TaskEnd(time=self.finish_time, subj=self.owner)
         self.owner.server.post_event(self.end_task_event)
 
@@ -89,20 +109,26 @@ class Motion(Determined):
         '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
     )
 
-    def __init__(self, owner, **kw):
+    def __init__(self, **kw):
         """
-        @param model.units.Bot owner: Owner of task
-        @param model.vetors.Point target_point: Target point of motion
         """
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
-        start_point = owner.position
-        super(Motion, self).__init__(owner=owner, **kw)
-        self.owner = owner  # todo: spike review
-        self.start_point = start_point
-        """@type: model.vectors.Point"""
-        self.start_direction = owner.direction
-        """@type: float"""
+        super(Motion, self).__init__(**kw)
+        self.start_point = None
+        """@type: model.vectors.Point | None"""
+        self.start_direction = None
+        """@type: float | None"""
+
+    def on_start(self, **kw):
+        super(Motion, self).on_start(**kw)
+        self.start_point = self.owner.position
+        self.start_direction = self.owner.direction
+
+    def on_end(self, **kw):
+        super(Motion, self).on_end(**kw)
+        self.owner.position = self.position
+        self.owner.direction = self.direction
 
     @property
     def position(self, to_time=None):
@@ -123,21 +149,25 @@ class Motion(Determined):
 
 class Goto(Motion):
 
-    def __init__(self, owner, target_point, **kw):
+    def __init__(self, target_point, **kw):
         """
-        @param model.units.Bot owner: Owner of task
         @param model.vetors.Point target_point: Target point of motion
         """
-        start_point = owner.position
-        assert owner.max_velocity > 0
-        duration = start_point.distance(target_point) / float(owner.max_velocity)
-        super(Goto, self).__init__(owner=owner, duration=duration, **kw)
-        assert self.start_point != target_point  # todo: epsilon test to eq
+        super(Goto, self).__init__(duration=None, **kw)
         self.target_point = target_point
         """@type: model.vectors.Point"""
+        self.vector = None
+        """@type: model.vectors.Point | None"""
+        self.v = None
+        """@type: model.vectors.Point | None"""
+
+    def on_start(self, **kw):
+        super(Goto, self).on_start(**kw)
+        assert self.owner.max_velocity > 0
+        self._duration = self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
+        assert self.start_point != self.target_point  # todo: epsilon test to eq
         self.vector = self.target_point - self.start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
-        """@type: model.vectors.Point"""
 
     def as_dict(self):
         d = super(Goto, self).as_dict()
