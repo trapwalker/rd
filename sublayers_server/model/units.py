@@ -31,6 +31,7 @@ class Unit(Observer):
 
     def next_task(self):
         self.task = self.task_list.pop(0) if self.task_list else None
+        log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
 
     def clear_tasks(self):
         self.task_list = []
@@ -121,7 +122,10 @@ class Bot(Unit):
         if not chain:
             self.clear_tasks()
 
-        self.add_task(tasks.Goto(self, position))  # todo: (!) Добавлять траекторию пути вместо хорды
+        for segment in path:
+            self.add_task(tasks.Goto(self, segment['b']))
+
+        #self.add_task(tasks.Goto(self, position))  # todo: (!) Добавлять траекторию пути вместо хорды
         return path
 
     @property
