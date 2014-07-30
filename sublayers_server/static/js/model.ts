@@ -62,6 +62,10 @@ function gradToRad(grad:number):number {
     return grad * Math.PI / 180.;
 }
 
+function distancePoints(aPoint1, aPoint2:Point):number {
+    return subVector(aPoint1, aPoint2).abs();
+}
+
 class MoveTrack {
     timeStart:number; // UTC милисекунды делённые на 1000 => UTC секунды
     fuelStart:number;

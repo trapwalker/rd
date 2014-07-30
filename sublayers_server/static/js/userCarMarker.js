@@ -182,6 +182,77 @@ var SectorsView = (function () {
     return SectorsView;
 })();
 
+
+// Траектория движения (TrackView)
+var TrackView = (function (){
+    function TrackView(options){
+        this.trackes = [];
+        this.currentTrack = null;
+        this.isActive;
+        this.map = options.map;
+    }
+
+
+    TrackView.prototype.empty = function () {
+        for (var i = 0; i < this.trackes.length; i++) {
+            this.map.removeLayer(this.trackes[i].line);
+        }
+        if (this.currentTrack)
+            this.map.removeLayer(this.currentTrack.line);
+
+        // TODO: Проверить, будет ли здесь течь память, так как просто присваивается 0 массиву
+        this.trackes.length = 0;
+        this.currentTrack = null;
+    };
+
+
+    TrackView.prototype.addLinear = function(aTrack){
+        var obj = {
+            a: aTrack.a,
+            b: aTrack.b,
+            dist: distancePoints(aTrack.a, aTrack.b),
+            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], 16)
+        };
+
+        obj.line = L.polyline([
+            this.map.unproject([obj.a.x, obj.a.y], 16),
+            obj.bl
+        ]).addTo(this.map);
+
+        this.trackes.push(obj);
+    };
+
+
+    TrackView.prototype.draw  = function(aPos){
+        if (!this.currentTrack) {
+            if (this.trackes.length >= 1) {
+                this.currentTrack = this.trackes.shift();
+            }
+        }
+        else if (distancePoints(aPos, this.currentTrack.a) >= this.currentTrack.dist) {
+            this.map.removeLayer(this.currentTrack.line);
+            if (this.trackes.length >= 1) {
+                this.currentTrack = this.trackes.shift();
+            }
+            else {
+                this.currentTrack = null;
+            }
+        }
+
+        if(this.currentTrack){
+            // перерисовываем текущую линию
+            this.currentTrack.line.setLatLngs([
+                this.map.unproject([aPos.x, aPos.y], 16),
+                this.currentTrack.bl
+            ]);
+        }
+
+}
+
+
+    return TrackView;
+})();
+
 // Класс нужен для централизованного рисования машинки пользователя и сопутствующих объектов
 var UserCarMarker = (function () {
     function UserCarMarker(options) {
@@ -237,6 +308,11 @@ var UserCarMarker = (function () {
             _map: this.options._map,
             sectors: options.sectors,
             countPoints: this.options.countSectorPoints
+        });
+
+        // Создание траекторий движения (TrackView)
+        this.trackView = new TrackView({
+            map: this.options._map
         });
     }
 
