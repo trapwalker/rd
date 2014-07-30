@@ -194,6 +194,12 @@ var TrackView = (function (){
 
 
     TrackView.prototype.empty = function () {
+        for (var i = 0; i < this.trackes.length; i++) {
+            this.map.removeLayer(this.trackes[i].line);
+        }
+        if (this.currentTrack)
+            this.map.removeLayer(this.currentTrack.line);
+
         // TODO: Проверить, будет ли здесь течь память, так как просто присваивается 0 массиву
         this.trackes.length = 0;
         this.currentTrack = null;
@@ -205,7 +211,7 @@ var TrackView = (function (){
             a: aTrack.a,
             b: aTrack.b,
             dist: distancePoints(aTrack.a, aTrack.b),
-            bl: this.map.unproject([obj.b.x, obj.b.y], 16)
+            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], 16)
         };
 
         obj.line = L.polyline([

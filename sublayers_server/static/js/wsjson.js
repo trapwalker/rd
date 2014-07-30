@@ -195,6 +195,22 @@ function receiveMesFromServ(data){
         chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
+            if (mes.result)
+                if (mes.result.path) {
+                    // Очистка текущей траектории движения
+                    userCarMarker.trackView.empty();
+                    // Для каждого отрезка
+                    mes.result.path.forEach(function (segment, index) {
+                        // Если линейное движение
+                        if (segment.cls === 'Linear') {
+                            userCarMarker.trackView.addLinear({
+                                a: segment.a,
+                                b: segment.b
+                            });
+                        }
+                    });
+
+                }
         }
     }
 }
