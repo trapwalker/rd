@@ -89,7 +89,7 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, direction=pi/2, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, direction=-pi/2, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: model.tasks.Motion | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
