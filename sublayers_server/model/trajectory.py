@@ -81,15 +81,13 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv):
     if abs(x - t) > EPS:
         segments.append(dict(cls='Linear', a=x, b=t))  # добавляем прямолинейный сегмент прибытия в целевую точку
 
-    print pfmt(locals())
-    globals().update(locals())
     return segments
 
 
 if __name__ == '__main__':
-    print build_trajectory(
+    print pfmt(build_trajectory(
         p=Point(10, 10),
         direction_angle=0,
         velocity=0,
         t=Point(8, 10),
-    )
+    ))

@@ -39,6 +39,7 @@ class Task(object):
         return dict(
             cls=self.classname,
             start_time=self.owner.server.get_time(),  # todo: Вынести публикацию времени для клиента из сериализации
+        )
 
     def cancel(self):
         pass
