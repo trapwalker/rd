@@ -8,4 +8,4 @@ class BALANCE:
 
     class Bot:
         observing_range = 100
-        velocity = 10  # m/s
+        velocity = 100  # m/s

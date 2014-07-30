@@ -135,4 +135,4 @@ class TaskEnd(Subjective):
 
     def perform(self):
         super(TaskEnd, self).perform()
-        del self.subj.task
+        self.subj.next_task()
