@@ -16,9 +16,21 @@ class Unit(Observer):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: model.tasks.Task | None"""
+        self.task_list = []
+        """@type: list[model.tasks.Task]"""
         self.server.statics.append(self)
         self.server.static_observers.append(self)
         self.owner = owner
+
+    def add_task(self, task):
+        if self.task:
+            self.task_list.append(task)
+        else:
+            self.task = task
+
+    def clear_tasks(self):
+        self.task_list = []
+        del self.task
 
     def as_dict(self):
         d = super(Unit, self).as_dict()
@@ -29,7 +41,7 @@ class Unit(Observer):
         return d
 
     def delete(self):
-        del self.task
+        self.clear_tasks()
         self.server.statics.remove(self)
         super(Unit, self).delete()
         # todo: check staticobservers deletion
@@ -92,9 +104,9 @@ class Bot(Unit):
         return d
 
     def stop(self):
-        del self.task
+        self.clear_tasks()
 
-    def goto(self, position):
+    def goto(self, position, chain=False):
         """
         @param position: model.vectors.Point
         """
@@ -105,10 +117,11 @@ class Bot(Unit):
             position,
         )
 
-        self.task = tasks.Goto(self, position)
+        if not chain:
+            self.clear_tasks()
 
+        self.add_task(tasks.Goto(self, position))  # todo: (!) Добавлять траекторию пути вместо хорды
         return path
-
 
     @property
     def v(self):
@@ -187,6 +200,7 @@ class Bot(Unit):
         """
         @param task: model.tasks.Task | None
         """
+        # todo: (!) Скрывать событие остановки если цепочка тасков перемещения не пуста
         self.change_observer_state(False)
         old_motion = self.motion
         if old_motion:
