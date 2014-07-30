@@ -225,7 +225,7 @@ function getTrack(data){
     else
         position = new Point(0, 0);
 
-    direction = data.direction ? (data.direction + Math.PI/2.) : 0; // так как у сервера 0 в другую сторону
+    direction = data.direction ? (data.direction) : 0; // TODO: сделать вылет с ошибкой
 
 
 

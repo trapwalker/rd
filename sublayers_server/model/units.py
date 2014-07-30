@@ -7,6 +7,7 @@ from base import Observer
 import tasks
 from balance import BALANCE
 from trajectory import build_trajectory
+from math import pi
 
 
 class Unit(Observer):
@@ -16,9 +17,25 @@ class Unit(Observer):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: model.tasks.Task | None"""
+        self.task_list = []
+        """@type: list[model.tasks.Task]"""
         self.server.statics.append(self)
         self.server.static_observers.append(self)
         self.owner = owner
+
+    def add_task(self, task):
+        if self.task:
+            self.task_list.append(task)
+        else:
+            self.task = task
+
+    def next_task(self):
+        self.task = self.task_list.pop(0) if self.task_list else None
+        log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
+
+    def clear_tasks(self):
+        self.task_list = []
+        self.task = None
 
     def as_dict(self):
         d = super(Unit, self).as_dict()
@@ -29,7 +46,7 @@ class Unit(Observer):
         return d
 
     def delete(self):
-        del self.task
+        self.clear_tasks()
         self.server.statics.remove(self)
         super(Unit, self).delete()
         # todo: check staticobservers deletion
@@ -59,10 +76,7 @@ class Unit(Observer):
         self._task = task
         self.on_change()
 
-    def del_task(self):
-        self.set_task(None)
-
-    task = property(fget=get_task, fset=set_task, fdel=del_task)
+    task = property(fget=get_task, fset=set_task)
 
 
 class Station(Unit):
@@ -75,7 +89,7 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, direction=0, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, direction=pi/2, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: model.tasks.Motion | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
@@ -92,9 +106,9 @@ class Bot(Unit):
         return d
 
     def stop(self):
-        del self.task
+        self.clear_tasks()
 
-    def goto(self, position):
+    def goto(self, position, chain=False):
         """
         @param position: model.vectors.Point
         """
@@ -105,10 +119,14 @@ class Bot(Unit):
             position,
         )
 
-        self.task = tasks.Goto(self, position)
+        if not chain:
+            self.clear_tasks()
 
+        for segment in path:
+            self.add_task(tasks.Goto(self, segment['b']))
+
+        #self.add_task(tasks.Goto(self, position))  # todo: (!) Добавлять траекторию пути вместо хорды
         return path
-
 
     @property
     def v(self):
@@ -187,6 +205,7 @@ class Bot(Unit):
         """
         @param task: model.tasks.Task | None
         """
+        # todo: (!) Скрывать событие остановки если цепочка тасков перемещения не пуста
         self.change_observer_state(False)
         old_motion = self.motion
         if old_motion:
@@ -206,6 +225,6 @@ class Bot(Unit):
 
         super(Bot, self).set_task(task)
 
-    task = property(fget=Unit.get_task, fset=set_task, fdel=Unit.del_task)
+    task = property(fget=Unit.get_task, fset=set_task)
 
     # todo: test motions deletion from server
