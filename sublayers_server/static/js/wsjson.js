@@ -225,7 +225,7 @@ function getTrack(data){
     else
         position = new Point(0, 0);
 
-    direction = data.direction ? (data.direction) : 0; // TODO: сделать вылет с ошибкой
+    direction = data.direction ? data.direction : 0; // TODO: сделать вылет с ошибкой
 
 
 

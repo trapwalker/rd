@@ -50,22 +50,17 @@ var FireControl = (function () {
 
     FireControl.prototype.addSector = function(fireSector) {
         var tempWidth = fireSector.widthAngle / 2;
-        var vertVOut = new Point(0, -this.radiusOut + 1);
-        var vertVIn = new Point(0, -this.radiusIn - 7);
+        var vertVOut = new Point(this.radiusOut - 1, 0);
+        var vertVIn = new Point(this.radiusIn + 7, 0);
         // Много математики
         var l_out = (4 / 3) * Math.tan(0.25 * fireSector.widthAngle) * this.radiusOut;
         var l_in = (4 / 3) * Math.tan(0.25 * fireSector.widthAngle) * this.radiusIn;
 
-        var rightVOut = new Point((-vertVOut.y * Math.sin(tempWidth)),
-                                 (vertVOut.y * Math.cos(tempWidth)));
-        var leftVOut = new Point((vertVOut.y * Math.sin(tempWidth)),
-                                 (vertVOut.y * Math.cos(tempWidth)));
+        var rightVOut = rotateVector(vertVOut, tempWidth);
+        var leftVOut = rotateVector(vertVOut, -tempWidth);
 
-        var rightVIn = new Point((-vertVIn.y * Math.sin(tempWidth)),
-                                (vertVIn.y * Math.cos(tempWidth)));
-
-        var leftVIn  = new Point((vertVIn.y * Math.sin(tempWidth)),
-                                (vertVIn.y * Math.cos(tempWidth)));
+        var rightVIn = rotateVector(vertVIn, tempWidth);
+        var leftVIn  = rotateVector(vertVIn, -tempWidth);
 
         var p1out = mulScalVector(normVector(getPerpendicular(rightVOut)), l_out);
         var p2out = mulScalVector(normVector(getPerpendicular(leftVOut)), -l_out);

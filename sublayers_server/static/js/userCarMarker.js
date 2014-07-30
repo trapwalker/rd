@@ -126,8 +126,8 @@ var SectorsView = (function () {
     SectorsView.prototype.addSector = function (fireSector) {
         var sector = {};
         var tempWidth = fireSector.widthAngle / 2;
-        var vertV = new Point(0, -fireSector.radius);
-        var vertVIn = new Point(0, -25);
+        var vertV = new Point(fireSector.radius, 0);
+        var vertVIn = new Point(25, 0);
 
         //внесли центр сектора
         sector._points = [];
