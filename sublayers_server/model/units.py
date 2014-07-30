@@ -28,9 +28,12 @@ class Unit(Observer):
         else:
             self.task = task
 
+    def next_task(self):
+        self.task = self.task_list.pop(0) if self.task_list else None
+
     def clear_tasks(self):
         self.task_list = []
-        del self.task
+        self.task = None
 
     def as_dict(self):
         d = super(Unit, self).as_dict()
@@ -71,10 +74,7 @@ class Unit(Observer):
         self._task = task
         self.on_change()
 
-    def del_task(self):
-        self.set_task(None)
-
-    task = property(fget=get_task, fset=set_task, fdel=del_task)
+    task = property(fget=get_task, fset=set_task)
 
 
 class Station(Unit):
@@ -220,6 +220,6 @@ class Bot(Unit):
 
         super(Bot, self).set_task(task)
 
-    task = property(fget=Unit.get_task, fset=set_task, fdel=Unit.del_task)
+    task = property(fget=Unit.get_task, fset=set_task)
 
     # todo: test motions deletion from server
