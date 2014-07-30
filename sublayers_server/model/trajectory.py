@@ -61,8 +61,11 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv):
             ct_size_new=abs(ct),
             **locals()
         )
-        log.info('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(l_size=abs(l), **locals()))
-        log.info('Turn circle escape accuracy = %s', ct_size - abs(ct))
+        log.info('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(
+            l_size=abs(l),
+            e=ct_size - abs(ct),
+            **locals())
+        )
 
     # todo: test to direct way
     k = radius / ct_size
