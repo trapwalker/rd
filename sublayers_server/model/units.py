@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from base import Observer
 import tasks
 from balance import BALANCE
+from trajectory import build_trajectory
 
 
 class Unit(Observer):
@@ -97,7 +98,17 @@ class Bot(Unit):
         """
         @param position: model.vectors.Point
         """
+        path = build_trajectory(
+            self.position,
+            self.direction,
+            self.max_velocity,  # todo: current velocity fix
+            position,
+        )
+
         self.task = tasks.Goto(self, position)
+
+        return path
+
 
     @property
     def v(self):
