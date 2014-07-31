@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 from math import sqrt
 from abc import ABCMeta
-from pprint import pformat
 
 from events import ContactSee, ContactOut, TaskEnd
 from utils import time_log_format
@@ -20,15 +19,21 @@ class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} in {self.start_time_str}'
 
-    def __init__(self, owner, start_time=None):
+    def __init__(self, owner):
         """
         @param model.units.Unit owner: Owner of task
-        @param model.utils.TimeClass | None start_time: Time of task starting
         """
         super(Task, self).__init__()
         self.owner = owner
         self._get_time = owner.server.get_time
-        self.start_time = start_time or self._get_time()
+        self.start_time = None
+        self.is_started = False
+        self.is_cancelled = False
+        self.is_done = False
+
+    @property
+    def is_worked(self):
+        return self.is_started and not self.is_cancelled and not self.is_done
 
     @property
     def classname(self):
@@ -41,7 +46,34 @@ class Task(object):
             start_time=self.owner.server.get_time(),  # todo: Вынести публикацию времени для клиента из сериализации
         )
 
-    def cancel(self):
+    def start(self, **kw):
+        self.on_before_start(**kw)
+        self.start_time = self._get_time()
+        self.is_started = True
+        self.on_after_start(**kw)
+
+    def done(self, **kw):
+        self.on_before_end(**kw)
+        self.is_done = True
+        self.on_after_end(**kw)
+        self.owner.next_task()
+
+    def cancel(self, **kw):
+        self.on_before_end(**kw)
+        self.is_cancelled = True
+        self.on_after_end(**kw)
+        self.owner.next_task()
+
+    def on_before_start(self, **kw):
+        pass
+
+    def on_after_start(self, **kw):
+        pass
+
+    def on_before_end(self, **kw):
+        pass
+
+    def on_after_end(self, **kw):
         pass
 
     def __str__(self):
@@ -62,7 +94,11 @@ class Determined(Task):
         """
         super(Determined, self).__init__(**kw)
         self._duration = duration
-        self.end_task_event = TaskEnd(time=self.finish_time, subj=self.owner)
+        self.end_task_event = None
+
+    def on_after_start(self, **kw):
+        super(Determined, self).on_after_start(**kw)
+        self.end_task_event = TaskEnd(time=self.finish_time, task=self)
         self.owner.server.post_event(self.end_task_event)
 
     @property
@@ -89,20 +125,26 @@ class Motion(Determined):
         '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
     )
 
-    def __init__(self, owner, **kw):
+    def __init__(self, **kw):
         """
-        @param model.units.Bot owner: Owner of task
-        @param model.vetors.Point target_point: Target point of motion
         """
         # todo: cut task with local quad square, store rest part of task
         # todo: GEO-index
-        start_point = owner.position
-        super(Motion, self).__init__(owner=owner, **kw)
-        self.owner = owner  # todo: spike review
-        self.start_point = start_point
-        """@type: model.vectors.Point"""
-        self.start_direction = owner.direction
-        """@type: float"""
+        super(Motion, self).__init__(**kw)
+        self.start_point = None
+        """@type: model.vectors.Point | None"""
+        self.start_direction = None
+        """@type: float | None"""
+
+    def on_before_start(self, **kw):
+        super(Motion, self).on_before_start(**kw)
+        self.start_point = self.owner.position
+        self.start_direction = self.owner.direction
+
+    def on_after_end(self, **kw):
+        self.owner.position = self.position
+        self.owner.direction = self.direction
+        super(Motion, self).on_after_end(**kw)
 
     @property
     def position(self, to_time=None):
@@ -123,21 +165,25 @@ class Motion(Determined):
 
 class Goto(Motion):
 
-    def __init__(self, owner, target_point, **kw):
+    def __init__(self, target_point, **kw):
         """
-        @param model.units.Bot owner: Owner of task
         @param model.vetors.Point target_point: Target point of motion
         """
-        start_point = owner.position
-        assert owner.max_velocity > 0
-        duration = start_point.distance(target_point) / float(owner.max_velocity)
-        super(Goto, self).__init__(owner=owner, duration=duration, **kw)
-        assert self.start_point != target_point  # todo: epsilon test to eq
+        super(Goto, self).__init__(duration=None, **kw)
         self.target_point = target_point
         """@type: model.vectors.Point"""
+        self.vector = None
+        """@type: model.vectors.Point | None"""
+        self.v = None
+        """@type: model.vectors.Point | None"""
+
+    def on_before_start(self, **kw):
+        super(Goto, self).on_before_start(**kw)
+        assert self.owner.max_velocity > 0
+        self._duration = self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
+        assert self.start_point != self.target_point  # todo: epsilon test to eq
         self.vector = self.target_point - self.start_point
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
-        """@type: model.vectors.Point"""
 
     def as_dict(self):
         d = super(Goto, self).as_dict()
@@ -215,10 +261,10 @@ class Goto(Motion):
 
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
         s = vb*tb - va*ta + a0 - b0  # todo: Remove multiplication by 0
-        """@type: model.vectors.Point"""
+        """@type: Point"""
 
         v = va - vb  # | t*v + s | = r
-        """@type: model.vectors.Point"""
+        """@type: Point"""
 
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y

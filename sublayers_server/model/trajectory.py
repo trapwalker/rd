@@ -32,7 +32,7 @@ def pfmt(x, indent=0, indent_filling='  '):
         return repr(x)
 
 
-def circle_interpolate(r, c, alpha, beta, ccw, accuracy=8, **kw):
+def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **kw):
     fi = beta - alpha
     if not ccw:
         fi = 2 * pi - fi
