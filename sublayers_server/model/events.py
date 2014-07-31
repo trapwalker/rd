@@ -14,12 +14,13 @@ class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
 
-    def __init__(self, time):
+    def __init__(self, time, comment=None):
         """
         @param float time: Time of event
         """
         self.time = time
         self.actual = True
+        self.comment = comment  # todo: Устранить отладочную информацию
 
     def __hash__(self):
         return hash((self.time,))
@@ -72,9 +73,6 @@ class Subjective(Event):
         super(Subjective, self).__init__(**kw)
         self.subj = subj  # todo: weakref?
 
-    def perform(self):
-        super(Subjective, self).perform()
-
 
 class Contact(Subjective):
     __str_template__ = (
@@ -106,7 +104,7 @@ class ContactSee(Contact):
         super(ContactSee, self).perform()
         subj = self.subj
         subj.subscribe_to__VisibleObject(self.obj)
-        subj.emit_for__Agent(message=messages.Contact(time=self.time, subject=self.subj, obj=self.obj))
+        subj.emit_for__Agent(message=messages.Contact(time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
         # todo: Make 'as_message' method of Event class
 
 
@@ -115,7 +113,7 @@ class ContactOut(Contact):
     def perform(self):
         super(ContactOut, self).perform()
         self.subj.unsubscribe_from__VisibleObject(self.obj)
-        self.subj.emit_for__Agent(message=messages.Out(time=self.time, subject=self.subj, obj=self.obj))
+        self.subj.emit_for__Agent(message=messages.Out(time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
 
 
 class Callback(Event):
