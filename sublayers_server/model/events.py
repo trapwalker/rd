@@ -73,9 +73,6 @@ class Subjective(Event):
         super(Subjective, self).__init__(**kw)
         self.subj = subj  # todo: weakref?
 
-    def perform(self):
-        super(Subjective, self).perform()
-
 
 class Contact(Subjective):
     __str_template__ = (
