@@ -13,6 +13,9 @@ class ServerAPI(API):
         self.server = server
 
     def get_agent(self, agent_id=None, make=False, ai=False):
+        """
+        @rtype sublayers_server.model.agents.Agent
+        """
         agent_id = agent_id or NameGenerator.new()['login']
         agent = self.server.agents.get(agent_id, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
