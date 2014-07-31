@@ -126,8 +126,8 @@ var SectorsView = (function () {
     SectorsView.prototype.addSector = function (fireSector) {
         var sector = {};
         var tempWidth = fireSector.widthAngle / 2;
-        var vertV = new Point(0, -fireSector.radius);
-        var vertVIn = new Point(0, -25);
+        var vertV = new Point(fireSector.radius, 0);
+        var vertVIn = new Point(25, 0);
 
         //внесли центр сектора
         sector._points = [];
@@ -217,19 +217,23 @@ var TrackView = (function (){
         obj.line = L.polyline([
             this.map.unproject([obj.a.x, obj.a.y], 16),
             obj.bl
-        ]).addTo(this.map);
+        ],{
+            stroke: 0.5,
+            color: '#00FF00'
+        }).addTo(this.map);
 
         this.trackes.push(obj);
     };
 
 
     TrackView.prototype.draw  = function(aPos){
+        var tempPoint = this.map.project(aPos, 16);
         if (!this.currentTrack) {
             if (this.trackes.length >= 1) {
                 this.currentTrack = this.trackes.shift();
             }
         }
-        else if (distancePoints(aPos, this.currentTrack.a) >= this.currentTrack.dist) {
+        else if (distancePoints(tempPoint, this.currentTrack.a) >= this.currentTrack.dist) {
             this.map.removeLayer(this.currentTrack.line);
             if (this.trackes.length >= 1) {
                 this.currentTrack = this.trackes.shift();
@@ -242,7 +246,7 @@ var TrackView = (function (){
         if(this.currentTrack){
             // перерисовываем текущую линию
             this.currentTrack.line.setLatLngs([
-                this.map.unproject([aPos.x, aPos.y], 16),
+                aPos,
                 this.currentTrack.bl
             ]);
         }
@@ -331,6 +335,9 @@ var UserCarMarker = (function () {
 
         // Перерисовка секторов стрельбы
         this.sectorsView.drawSectors(aNewPoint, aNewAngle);
+
+        // Перерисовка траектории
+        //this.trackView.draw(aNewPoint);
     }
 
     return UserCarMarker;

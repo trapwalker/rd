@@ -139,14 +139,16 @@ function receiveMesFromServ(data){
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
-                    L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
-                        .setRadius(3)
-                        .bindPopup(
-                            'Тип сообщения: ' + event.cls + '</br>' +
-                            'Server-Time: ' + servtime + '</br>' +
-                            'uid объекта: ' + event.object.uid + '</br>'
-                    )
-                        .addTo(myMap);
+                    debugMapList.push(
+                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
+                            .setRadius(8)
+                            .bindPopup(
+                                'Тип сообщения: ' + event.cls + '</br>' +
+                                'Server-Time: ' + servtime / 1000. + '</br>' +
+                                'uid объекта: ' + event.object.uid + '</br>'
+                        )
+                            .addTo(myMap)
+                    );
             }
             if (event.cls === "Update") {
                 // Update
@@ -156,6 +158,20 @@ function receiveMesFromServ(data){
                 aTrack = getTrack(event.object);
                 owner = getOwner(event.object.owner);
                 updateCurrentCar(event.object.uid, aType, Math.random() * hpMaxProbka, aTrack);
+
+                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                if (flagDebug)
+                    debugMapList.push(
+                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FF0000'})
+                            .setRadius(3)
+                            .bindPopup(
+                                'Тип сообщения: ' + event.cls + '</br>' +
+                                'Server-Time: ' + servtime / 1000. + '</br>' +
+                                'uid объекта: ' + event.object.uid + '</br>'
+                        )
+                            .addTo(myMap)
+                    );
+
             }
             if (event.cls === "InitMessage") {
                 // InitMessage
@@ -225,7 +241,7 @@ function getTrack(data){
     else
         position = new Point(0, 0);
 
-    direction = data.direction ? (data.direction) : 0; // TODO: сделать вылет с ошибкой
+    direction = data.direction ? data.direction : 0; // TODO: сделать вылет с ошибкой
 
 
 
