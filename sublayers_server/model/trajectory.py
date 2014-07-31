@@ -93,11 +93,6 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
                 ct_size_new=abs(ct),
                 **locals()
             )
-            log.error('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(
-                l_size=abs(l),
-                e=ct_size - abs(ct),
-                **locals())
-            )
 
         k = radius / ct_size
         x = c + k * ct.rotate(-turn_side_sign * acos(k))
