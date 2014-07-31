@@ -30,11 +30,11 @@ class Object(object):
 
     def __init__(self, server):
         """
-        @type server: model.event_machine.Server
+        @type server: sublayers_server.model.event_machine.Server
         """
         super(Object, self).__init__()
         self.server = server
-        """@type: model.event_machine.Server"""
+        """@type: sublayers_server.model.event_machine.Server"""
         self.uid = id(self)
         self.server.objects[self.uid] = self
         self.is_alive = True
@@ -71,11 +71,11 @@ class PointObject(Object):
 
     def __init__(self, position, **kw):
         """
-        @type position: model.vectors.Point
+        @type position: sublayers_server.model.vectors.Point
         """
         super(PointObject, self).__init__(**kw)
         self._position = position
-        """@type: model.vectors.Point"""
+        """@type: sublayers_server.model.vectors.Point"""
 
     def as_dict(self):
         d = super(PointObject, self).as_dict()
@@ -90,7 +90,7 @@ class PointObject(Object):
 
     def set_position(self, position):
         """
-        @param model.vectors.Point position: New position
+        @param sublayers_server.model.vectors.Point position: New position
         """
         self._position = position
 
@@ -103,7 +103,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def __init__(self, **kw):
         self.contacts = []
-        """@type: list[model.events.Contact]"""
+        """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
         self.init_contacts_search()
 
@@ -160,7 +160,7 @@ class Heap(VisibleObject):
     # todo: rearrange class tree
     def __init__(self, items, **kw):
         """
-        @type items: list[model.inventory.Thing]
+        @type items: list[sublayers_server.model.inventory.Thing]
         """
         super(Heap, self).__init__(**kw)
         self.inventory = Inventory(things=items)

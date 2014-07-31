@@ -126,8 +126,8 @@ var SectorsView = (function () {
     SectorsView.prototype.addSector = function (fireSector) {
         var sector = {};
         var tempWidth = fireSector.widthAngle / 2;
-        var vertV = new Point(0, -fireSector.radius);
-        var vertVIn = new Point(0, -25);
+        var vertV = new Point(fireSector.radius, 0);
+        var vertVIn = new Point(25, 0);
 
         //внесли центр сектора
         sector._points = [];
@@ -180,6 +180,81 @@ var SectorsView = (function () {
     };
 
     return SectorsView;
+})();
+
+
+// Траектория движения (TrackView)
+var TrackView = (function (){
+    function TrackView(options){
+        this.trackes = [];
+        this.currentTrack = null;
+        this.isActive;
+        this.map = options.map;
+    }
+
+
+    TrackView.prototype.empty = function () {
+        for (var i = 0; i < this.trackes.length; i++) {
+            this.map.removeLayer(this.trackes[i].line);
+        }
+        if (this.currentTrack)
+            this.map.removeLayer(this.currentTrack.line);
+
+        // TODO: Проверить, будет ли здесь течь память, так как просто присваивается 0 массиву
+        this.trackes.length = 0;
+        this.currentTrack = null;
+    };
+
+
+    TrackView.prototype.addLinear = function(aTrack){
+        var obj = {
+            a: aTrack.a,
+            b: aTrack.b,
+            dist: distancePoints(aTrack.a, aTrack.b),
+            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], 16)
+        };
+
+        obj.line = L.polyline([
+            this.map.unproject([obj.a.x, obj.a.y], 16),
+            obj.bl
+        ],{
+            stroke: 0.5,
+            color: '#00FF00'
+        }).addTo(this.map);
+
+        this.trackes.push(obj);
+    };
+
+
+    TrackView.prototype.draw  = function(aPos){
+        var tempPoint = this.map.project(aPos, 16);
+        if (!this.currentTrack) {
+            if (this.trackes.length >= 1) {
+                this.currentTrack = this.trackes.shift();
+            }
+        }
+        else if (distancePoints(tempPoint, this.currentTrack.a) >= this.currentTrack.dist) {
+            this.map.removeLayer(this.currentTrack.line);
+            if (this.trackes.length >= 1) {
+                this.currentTrack = this.trackes.shift();
+            }
+            else {
+                this.currentTrack = null;
+            }
+        }
+
+        if(this.currentTrack){
+            // перерисовываем текущую линию
+            this.currentTrack.line.setLatLngs([
+                aPos,
+                this.currentTrack.bl
+            ]);
+        }
+
+}
+
+
+    return TrackView;
 })();
 
 // Класс нужен для централизованного рисования машинки пользователя и сопутствующих объектов
@@ -238,6 +313,11 @@ var UserCarMarker = (function () {
             sectors: options.sectors,
             countPoints: this.options.countSectorPoints
         });
+
+        // Создание траекторий движения (TrackView)
+        this.trackView = new TrackView({
+            map: this.options._map
+        });
     }
 
     UserCarMarker.prototype.draw = function (aNewPoint, aNewAngle) {
@@ -255,6 +335,9 @@ var UserCarMarker = (function () {
 
         // Перерисовка секторов стрельбы
         this.sectorsView.drawSectors(aNewPoint, aNewAngle);
+
+        // Перерисовка траектории
+        //this.trackView.draw(aNewPoint);
     }
 
     return UserCarMarker;

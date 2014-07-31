@@ -64,6 +64,10 @@ function gradToRad(grad) {
     return grad * Math.PI / 180.;
 }
 
+function distancePoints(aPoint1, aPoint2) {
+    return subVector(aPoint1, aPoint2).abs();
+}
+
 var MoveTrack = (function () {
     function MoveTrack(aTimeStart, aFuelStart, aFuelDec, aDirection) {
         this.timeStart = aTimeStart;

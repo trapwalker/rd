@@ -3,14 +3,14 @@
 import logging
 log = logging.getLogger(__name__)
 
-from math import copysign, pi, sqrt, acos
+from math import copysign, pi, sqrt, acos, ceil
 
 from vectors import Point
 
-EPS = 1e-10
+EPS = 1e-6
 
 
-def rv(v):
+def rv_relation(v):
     return abs(v) + 5
 
 
@@ -32,20 +32,49 @@ def pfmt(x, indent=0, indent_filling='  '):
         return repr(x)
 
 
-def build_trajectory(p, direction_angle, velocity, t, rv_func=rv):
+def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **_):
+    fi = beta - alpha
+    if not ccw:
+        fi = 2 * pi - fi
+    fi %= 2 * pi
+    fi = abs(fi)
+
+    count = int(ceil(abs(fi * accuracy / (2 * pi))))  # вычисляем количество сегментов интерполяции
+    psi = float(fi) / count * (1 if ccw else -1)  # вычисляем угол дуги сегмента интерполяции
+    rv = (Point(1) * r)
+
+    segments = []
+    gamma = alpha
+    a = rv.rotate(gamma) + c
+
+    #fi_, psi_, alpha_, beta_ = map(degrees, (fi, psi, alpha, beta))
+    #log.debug(pfmt(locals()))
+
+    for i in xrange(count):
+        gamma += psi
+        b = rv.rotate(gamma) + c
+        segments.append(dict(cls='Linear', a=a, b=b))
+        a = b
+
+    return segments
+
+
+def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
     """Calculate and return segmets of trajectory:
-    @param p: model.vectors.Point
+    @param p: sublayers_server.model.vectors.Point
     @param direction_angle: float
     @param velocity: float
-    @param t: model.vectors.Point
+    @param t: sublayers_server.model.vectors.Point
     @param rv_func callable
     """
     segments = []  # сегменты будущей траектории
+    if p == t:
+        return segments
     radius = rv_func(velocity)  # вычисляем радиус разворота на заданной скорости
-    # todo: test to zero vector
     d = Point(1).rotate(direction_angle)  # получаем вектор направления
-    turn_side_sign = copysign(1.0, d.cross_mul(t))  # получаем направление поворота: -1 по часовой, 1 - против
+    turn_side_sign = copysign(1.0, d.cross_mul(t - p))  # получаем направление поворота: -1 по часовой, 1 - против
     pc = d.rotate(turn_side_sign * pi / 2) * radius  # получаем вектор pc (к центру разворота)
+    # todo: optimize rotation 90
     c = p + pc  # координаты центра поворота
     ct = t - c  # вектор из центра поворота к цели
     ct_size = abs(ct)
@@ -61,7 +90,7 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv):
             ct_size_new=abs(ct),
             **locals()
         )
-        log.info('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(
+        log.error('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(
             l_size=abs(l),
             e=ct_size - abs(ct),
             **locals())
@@ -71,26 +100,30 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv):
     k = radius / ct_size
     x = c + k * ct.rotate(-turn_side_sign * acos(k))
 
-    segments.append(dict(
+    arc = dict(
         cls='Circular',
         r=radius,
         a=p,
         b=x,
+        c=c,
         alpha=(-pc).angle,
         beta=(x - c).angle,
         ccw=1 if turn_side_sign > 0 else 0,
-    ))  # добавляем круговой сегмент траектории
+    )  # Формирование круговой сегмент траектории
+    # segments.append(arc)  # todo: реализовать круговые сегменты траекторий
+    segments += circle_interpolate(**arc)
 
     if abs(x - t) > EPS:
         segments.append(dict(cls='Linear', a=x, b=t))  # добавляем прямолинейный сегмент прибытия в целевую точку
 
+    #alpha_, beta_ = map(degrees, (arc['alpha'], arc['beta']))
     return segments
 
 
 if __name__ == '__main__':
     print pfmt(build_trajectory(
-        p=Point(10, 10),
-        direction_angle=0,
-        velocity=0,
-        t=Point(8, 10),
+        p=Point(-10, 0),
+        direction_angle=pi/2,
+        velocity=5,
+        t=Point(20, 10),
     ))

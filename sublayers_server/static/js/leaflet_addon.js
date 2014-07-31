@@ -82,6 +82,12 @@ function onMouseClickMarker(){
     //alert('click '+this.carID);
     backLightList.toggle(this);
    // backLight.on(this);
+
+
+    // тест эффекта мигания маркера
+    this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
+    var self = this;
+    setTimeout(function(){self.setOpacity(1);}, 500);
 }
 
 

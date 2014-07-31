@@ -16,7 +16,7 @@ class Event(object):
 
     def __init__(self, time):
         """
-        @param model.utils.TimeClass time: Time of event
+        @param float time: Time of event
         """
         self.time = time
         self.actual = True
@@ -67,7 +67,7 @@ class Subjective(Event):
 
     def __init__(self, subj, **kw):
         """
-        @param model.units.Unit subj: Subject of contact
+        @param sublayers_server.model.units.Unit subj: Subject of contact
         """
         super(Subjective, self).__init__(**kw)
         self.subj = subj  # todo: weakref?
@@ -85,7 +85,7 @@ class Contact(Subjective):
 
     def __init__(self, obj, **kw):
         """
-        @param model.base.VisibleObject obj: Object of contact
+        @param sublayers_server.model.base.VisibleObject obj: Object of contact
         """
         super(Contact, self).__init__(**kw)
         self.obj = obj
@@ -133,6 +133,14 @@ class Callback(Event):
 
 class TaskEnd(Subjective):
 
+    def __init__(self, task, **kw):
+        """
+        """
+        subj = task.owner
+        super(TaskEnd, self).__init__(subj=subj, **kw)
+        self.task = task
+
     def perform(self):
         super(TaskEnd, self).perform()
-        del self.subj.task
+        if self.subj.task is self.task:
+            self.task.done()

@@ -139,14 +139,16 @@ function receiveMesFromServ(data){
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
-                    L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
-                        .setRadius(3)
-                        .bindPopup(
-                            'Тип сообщения: ' + event.cls + '</br>' +
-                            'Server-Time: ' + servtime + '</br>' +
-                            'uid объекта: ' + event.object.uid + '</br>'
-                    )
-                        .addTo(myMap);
+                    debugMapList.push(
+                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
+                            .setRadius(8)
+                            .bindPopup(
+                                'Тип сообщения: ' + event.cls + '</br>' +
+                                'Server-Time: ' + servtime / 1000. + '</br>' +
+                                'uid объекта: ' + event.object.uid + '</br>'
+                        )
+                            .addTo(myMap)
+                    );
             }
             if (event.cls === "Update") {
                 // Update
@@ -156,6 +158,20 @@ function receiveMesFromServ(data){
                 aTrack = getTrack(event.object);
                 owner = getOwner(event.object.owner);
                 updateCurrentCar(event.object.uid, aType, Math.random() * hpMaxProbka, aTrack);
+
+                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                if (flagDebug)
+                    debugMapList.push(
+                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FF0000'})
+                            .setRadius(3)
+                            .bindPopup(
+                                'Тип сообщения: ' + event.cls + '</br>' +
+                                'Server-Time: ' + servtime / 1000. + '</br>' +
+                                'uid объекта: ' + event.object.uid + '</br>'
+                        )
+                            .addTo(myMap)
+                    );
+
             }
             if (event.cls === "InitMessage") {
                 // InitMessage
@@ -195,6 +211,22 @@ function receiveMesFromServ(data){
         chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
+            if (mes.result)
+                if (mes.result.path) {
+                    // Очистка текущей траектории движения
+                    userCarMarker.trackView.empty();
+                    // Для каждого отрезка
+                    mes.result.path.forEach(function (segment, index) {
+                        // Если линейное движение
+                        if (segment.cls === 'Linear') {
+                            userCarMarker.trackView.addLinear({
+                                a: segment.a,
+                                b: segment.b
+                            });
+                        }
+                    });
+
+                }
         }
     }
 }
@@ -209,7 +241,7 @@ function getTrack(data){
     else
         position = new Point(0, 0);
 
-    direction = data.direction ? (data.direction + Math.PI/2.) : 0; // так как у сервера 0 в другую сторону
+    direction = data.direction ? data.direction : 0; // TODO: сделать вылет с ошибкой
 
 
 

@@ -12,7 +12,7 @@ class Inventory(object):
     def __init__(self, size=None, things=None):
         """
         @param int size: Capacity of inventory
-        @param collections.Iterable[Thing] things:
+        @param list[Thing] things:
         """
         self.size = size
         self.things = things or []

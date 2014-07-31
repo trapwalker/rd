@@ -34,7 +34,7 @@ class Point(complex):
         @param eps: float
         @rtype: bool
         """
-        return self.x < eps and self.y < eps
+        return abs(self.x) < eps and abs(self.y) < eps
 
     @classmethod
     def random_gauss(cls, mu, sigma):
@@ -69,7 +69,7 @@ class Point(complex):
 
     def cross_mul(self, other):
         """
-        @param b: Point
+        @param other: Point
         @rtype: float
         """
         return self.real * other.imag - self.imag * other.real
