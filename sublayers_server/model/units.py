@@ -23,21 +23,40 @@ class Unit(Observer):
         self.server.static_observers.append(self)
         self.owner = owner
 
-    def add_task(self, task):
-        if self.task:
-            self.task_list.append(task)
+    def set_tasklist(self, task_or_list, append=False):
+        if isinstance(task_or_list, tasks.Task):
+            task_or_list = [task_or_list]
+
+        if append:
+            self.task_list += list(task_or_list)
         else:
-            self.task = task
+            self.task_list = list(task_or_list)
+
+        if not self.task or not append:
+            self.next_task()
 
     def next_task(self):
+        old_task = self.task
+        if old_task:
+            if old_task.is_worked:
+                old_task.cancel()
+            self._task = None
+
         if self.task_list:
-            self.task_list.pop(0).start()
-            log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
+            self._task = self.task_list.pop(0)
+            self.task.start()
+            self.on_task_change(old_task, self.task)
+        elif old_task:
+            self.on_task_change(old_task, None)
+
+        log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
+
+    def on_task_change(self, old, new):
+        self.on_change()
 
     def clear_tasks(self):
         self.task_list = []
-        if self.task:
-            self.task.cancel()
+        self.next_task()
 
     def as_dict(self):
         d = super(Unit, self).as_dict()
@@ -111,13 +130,12 @@ class Bot(Unit):
             position,
         )
 
-        if not chain:
-            self.clear_tasks()
+        self.set_tasklist([
+            tasks.Goto(owner=self, target_point=segment['b'])
+            for segment in path
+        ], append=chain)
 
-        for segment in path:
-            self.add_task(tasks.Goto(self, segment['b']))
-
-        #self.add_task(tasks.Goto(self, position))  # todo: (!) Добавлять траекторию пути вместо хорды
+        #self.set_tasklist(tasks.Goto(owner=self, target_point=position), append=chain)  # Хорда вместо траектории
         return path
 
     @property
@@ -193,16 +211,19 @@ class Bot(Unit):
                     contacts.extend(found)
                     motion.owner.contacts.extend(found)
 
-    def set_task(self, task):
+    def on_task_change(self, old, new):
         """
-        @param task: model.tasks.Task | None
+        @param old: model.tasks.Task | None
+        @param new: model.tasks.Task | None
         """
         # todo: (!) Скрывать событие остановки если цепочка тасков перемещения не пуста
-        self.change_observer_state(False)
         old_motion = self.motion
+        new_motion = new if isinstance(new, tasks.Motion) else None
+
+        self.change_observer_state(False)
+
         if old_motion:
             self.server.motions.remove(old_motion)
-        new_motion = task if isinstance(task, tasks.Goto) else None
         self.motion = new_motion
         if new_motion:
             self.server.motions.append(new_motion)
@@ -213,8 +234,8 @@ class Bot(Unit):
 
         self.change_observer_state(True)
 
-        super(Bot, self).set_task(task)
+        super(Bot, self).on_task_change(old, new)
 
-    task = property(fget=Unit.get_task, fset=set_task)
+    task = property(fget=Unit.get_task)
 
     # todo: test motions deletion from server
