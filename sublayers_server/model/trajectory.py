@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from math import copysign, pi, sqrt, acos, ceil, degrees
+from math import copysign, pi, sqrt, acos, ceil
 
 from vectors import Point
 
@@ -32,7 +32,7 @@ def pfmt(x, indent=0, indent_filling='  '):
         return repr(x)
 
 
-def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **kw):
+def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **_):
     fi = beta - alpha
     if not ccw:
         fi = 2 * pi - fi
@@ -40,7 +40,7 @@ def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **kw):
     fi = abs(fi)
 
     count = int(ceil(abs(fi * accuracy / (2 * pi))))  # вычисляем количество сегментов интерполяции
-    psi = float(fi) / count * (1 if ccw else -1) # вычисляем угол дуги сегмента интерполяции
+    psi = float(fi) / count * (1 if ccw else -1)  # вычисляем угол дуги сегмента интерполяции
     rv = (Point(1) * r)
 
     segments = []
@@ -73,7 +73,8 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
     radius = rv_func(velocity)  # вычисляем радиус разворота на заданной скорости
     d = Point(1).rotate(direction_angle)  # получаем вектор направления
     turn_side_sign = copysign(1.0, d.cross_mul(t - p))  # получаем направление поворота: -1 по часовой, 1 - против
-    pc = d.rotate(turn_side_sign * pi / 2) * radius  # получаем вектор pc (к центру разворота) # todo: optimize rotation 90
+    pc = d.rotate(turn_side_sign * pi / 2) * radius  # получаем вектор pc (к центру разворота)
+    # todo: optimize rotation 90
     c = p + pc  # координаты центра поворота
     ct = t - c  # вектор из центра поворота к цели
     ct_size = abs(ct)
