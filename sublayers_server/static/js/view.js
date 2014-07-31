@@ -167,6 +167,10 @@ $(document).ready(function () {
         myMap.removeLayer(tileLayerShow);
     };
 
+    //Кнопка Debug
+    buttonDebugOnOff.onclick = DegugToggle;
+
+
     iconConnectServer.src = "img/connect.png";
 
 
@@ -210,6 +214,29 @@ $(document).ready(function () {
 
 
 
+function DegugToggle(){
+    if(flagDebug){
+        // Выключить всю Debug информацию
+        flagDebug=false;
+        // Очистиить debugMapList и удалить всё с карты
+        for(;debugMapList.length;)
+            myMap.removeLayer(debugMapList.pop());
+        // Включить dragging
+        myMap.dragging.disable();
+
+    }
+    else {
+        // Включить всю Debug информацию
+        flagDebug = true;
+        // Выключить dragging
+        myMap.dragging.enable();
+
+
+    }
+
+
+}
+
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
     var p = 0, m, t;
@@ -237,6 +264,7 @@ var rpcCallList;
 var tileLayerShow;
 var controllers;
 var flagDebug = true;
+var debugMapList = [];
 var ownerList;
 var backLight;
 
