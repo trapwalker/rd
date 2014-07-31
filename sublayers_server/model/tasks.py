@@ -259,6 +259,9 @@ class Goto(Motion):
         vb = motion.v
         tb = motion.start_time
 
+        tmin = max(ta, tb)
+        tmax = min(self.finish_time, motion.finish_time)
+
         # Use relative time for best accuracy
         t0 = ta
         ta = 0.0
@@ -274,8 +277,6 @@ class Goto(Motion):
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2  # -r**2
-        tmin = max(ta, tb)
-        tmax = min(self.finish_time, motion.finish_time)
 
         contacts = []
         self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)

@@ -32,7 +32,8 @@ def pfmt(x, indent=0, indent_filling='  '):
         return repr(x)
 
 
-def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **_):
+def circle_interpolate(r, c, alpha, beta, ccw, tags=(), accuracy=16, **_):
+    tags = tags + ('interpolate',)
     fi = beta - alpha
     if not ccw:
         fi = 2 * pi - fi
@@ -53,7 +54,7 @@ def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **_):
     for i in xrange(count):
         gamma += psi
         b = rv.rotate(gamma) + c
-        segments.append(dict(cls='Linear', a=a, b=b))
+        segments.append(dict(cls='Linear', a=a, b=b, tags=tags))
         a = b
 
     return segments
@@ -70,51 +71,49 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
     segments = []  # сегменты будущей траектории
     if p == t:
         return segments
-    radius = rv_func(velocity)  # вычисляем радиус разворота на заданной скорости
     d = Point(1).rotate(direction_angle)  # получаем вектор направления
-    turn_side_sign = copysign(1.0, d.cross_mul(t - p))  # получаем направление поворота: -1 по часовой, 1 - против
-    pc = d.rotate(turn_side_sign * pi / 2) * radius  # получаем вектор pc (к центру разворота)
-    # todo: optimize rotation 90
-    c = p + pc  # координаты центра поворота
-    ct = t - c  # вектор из центра поворота к цели
-    ct_size = abs(ct)
-    if ct_size < radius:  # если целевая точка внутри радиуса разворота
-        _ = ct.rotate(-direction_angle)  # поворачиваем локальную временную систему координат в направлении машины
-        l = (sqrt(pow(radius, 2) - pow(_.y, 2)) + _.x) * d  # вектор проезда до вывода целевой точки из радиуса поворота
-        segments.append(dict(cls='Linear', a=p, b=p + l))  # добавляем прямолинейный сегмент удаления от цели
-        p += l
-        c += l
-        ct = t - c
-        ct_size = radius
-        assert abs(ct_size - abs(ct)) < EPS, 'Turn circle escape failed: radius={radius}, /ct/={ct_size_new}'.format(
-            ct_size_new=abs(ct),
-            **locals()
-        )
-        log.error('Escape turn circle: accuracy=%(e)s, r=%(radius)s, /l/=%(l_size)s', dict(
-            l_size=abs(l),
-            e=ct_size - abs(ct),
-            **locals())
-        )
 
-    # todo: test to direct way
-    k = radius / ct_size
-    x = c + k * ct.rotate(-turn_side_sign * acos(k))
+    if not ((t - p).normalize() - d).is_zero(EPS):
+        radius = rv_func(velocity)  # вычисляем радиус разворота на заданной скорости
+        turn_side_sign = copysign(1.0, d.cross_mul(t - p))  # получаем направление поворота: -1 по часовой, 1 - против
+        pc = d.rotate(turn_side_sign * pi / 2) * radius  # получаем вектор pc (к центру разворота)
+        # todo: optimize rotation 90
+        c = p + pc  # координаты центра поворота
+        ct = t - c  # вектор из центра поворота к цели
+        ct_size = abs(ct)
+        if ct_size < radius:  # если целевая точка внутри радиуса разворота
+            _ = ct.rotate(-direction_angle)  # поворачиваем локальную временную систему координат в направлении машины
+            l = (sqrt(pow(radius, 2) - pow(_.y, 2)) + _.x) * d  # вектор предварительного проезда прямо
+            segments.append(dict(cls='Linear', a=p, b=p + l, tags=('radius_escape',)))
+            p += l
+            c += l
+            ct = t - c
+            ct_size = radius
+            assert abs(ct_size - abs(ct)) < EPS, 'Turn circle escape failed: r={radius}, /ct/={ct_size_new}'.format(
+                ct_size_new=abs(ct),
+                **locals()
+            )
 
-    arc = dict(
-        cls='Circular',
-        r=radius,
-        a=p,
-        b=x,
-        c=c,
-        alpha=(-pc).angle,
-        beta=(x - c).angle,
-        ccw=1 if turn_side_sign > 0 else 0,
-    )  # Формирование круговой сегмент траектории
-    # segments.append(arc)  # todo: реализовать круговые сегменты траекторий
-    segments += circle_interpolate(**arc)
+        k = radius / ct_size
+        x = c + k * ct.rotate(-turn_side_sign * acos(k))
 
-    if abs(x - t) > EPS:
-        segments.append(dict(cls='Linear', a=x, b=t))  # добавляем прямолинейный сегмент прибытия в целевую точку
+        arc = dict(
+            cls='Circular',
+            r=radius,
+            a=p,
+            b=x,
+            c=c,
+            alpha=(-pc).angle,
+            beta=(x - c).angle,
+            ccw=1 if turn_side_sign > 0 else 0,
+            tags=('turn',),
+        )  # Формирование круговой сегмент траектории
+        # segments.append(arc)  # todo: реализовать круговые сегменты траекторий
+        segments += circle_interpolate(**arc)
+        p = x
+
+    if not (p - t).is_zero(EPS):
+        segments.append(dict(cls='Linear', a=p, b=t, tags=('homestretch',)))  # добавляем сегмент финишной прямой
 
     #alpha_, beta_ = map(degrees, (arc['alpha'], arc['beta']))
     return segments

@@ -34,6 +34,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         log.info('Agent %r socket Closed', self)
         self.application.clients.remove(self)
         self.agent.connection = None
+        while self.agent.cars:
+            self.agent.cars.pop().delete()
 
     def on_message(self, message):
         log.debug("Got message from %s: %r", self.agent, message)
