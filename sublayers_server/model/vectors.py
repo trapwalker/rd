@@ -34,7 +34,7 @@ class Point(complex):
         @param eps: float
         @rtype: bool
         """
-        return self.x < eps and self.y < eps
+        return abs(self.x) < eps and abs(self.y) < eps
 
     @classmethod
     def random_gauss(cls, mu, sigma):
