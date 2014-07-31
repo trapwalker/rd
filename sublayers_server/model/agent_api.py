@@ -9,6 +9,7 @@ from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
 from messages import ChatMessage
+import tasks
 
 
 def make_push_package(events):
@@ -49,7 +50,12 @@ class AgentAPI(API):
 
     @public_method
     def set_speed(self, new_speed):
-        self.car.max_velocity = new_speed  # todo: check value
+        car = self.car
+        car.max_velocity = new_speed  # todo: check value
+        motions = filter(lambda task: isinstance(task, tasks.Motion), [car.task] + car.task_list)
+        if motions:
+            path = car.goto(motions[-1].target_point)
+            return dict(path=path)
 
     @public_method
     def chat_message(self, text):

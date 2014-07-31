@@ -7,7 +7,7 @@ from math import copysign, pi, sqrt, acos, ceil, degrees
 
 from vectors import Point
 
-EPS = 1e-10
+EPS = 1e-6
 
 
 def rv_relation(v):

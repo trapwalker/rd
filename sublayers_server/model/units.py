@@ -173,12 +173,7 @@ class Bot(Unit):
 
     @max_velocity.setter
     def max_velocity(self, value):
-        motion = self.motion
-        if motion:
-            self.stop()  # todo: change speed refactoring
         self._max_velocity = value
-        if motion:
-            self.goto(motion.target_point)
 
     def change_observer_state(self, new_state):
         """
