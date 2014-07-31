@@ -43,11 +43,19 @@ class Unit(Observer):
             self._task = None
 
         if self.task_list:
-            self._task = self.task_list.pop(0)
-            self.task.start()
+            while self.task_list:
+                self._task = self.task_list.pop(0)
+                try:
+                    self.task.start()
+                except tasks.ETaskParamsUnactual as e:
+                    log.warning('Skip unactual task: %s', e)
+                    self._task = None
+                    continue
+                else:
+                    break
+
+        if old_task != self.task:
             self.on_task_change(old_task, self.task)
-        elif old_task:
-            self.on_task_change(old_task, None)
 
     def on_task_change(self, old, new):
         self.on_change()

@@ -15,6 +15,10 @@ DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: server task list registration
 
 
+class ETaskParamsUnactual(Exception):
+    pass
+
+
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} in {self.start_time_str}'
@@ -181,8 +185,9 @@ class Goto(Motion):
         super(Goto, self).on_before_start(**kw)
         assert self.owner.max_velocity > 0
         self._duration = self.start_point.distance(self.target_point) / float(self.owner.max_velocity)
-        assert self.start_point != self.target_point  # todo: epsilon test to eq
         self.vector = self.target_point - self.start_point
+        if self.vector.is_zero():
+            raise ETaskParamsUnactual('Target point is same as start point or too close: %s' % self.vector)
         self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
 
     def as_dict(self):
