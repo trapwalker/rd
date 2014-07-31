@@ -49,8 +49,6 @@ class Unit(Observer):
         elif old_task:
             self.on_task_change(old_task, None)
 
-        log.debug('!!!!!!!!!!!!!!!!!!!!!!! NEXT TASK, %s, n=%s', self.task, len(self.task_list))
-
     def on_task_change(self, old, new):
         self.on_change()
 
