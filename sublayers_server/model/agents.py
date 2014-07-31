@@ -19,6 +19,7 @@ class Agent(Object, SubscriberTo__Observer):
         # todo: normalize and check login
         self.server.agents[login] = self
         self.cars = []  # specific
+        """@type: list[sublayers_server.model.units.Bot]"""
 
     def as_dict(self):
         d = super(Agent, self).as_dict()
