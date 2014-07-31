@@ -21,7 +21,7 @@ class Task(object):
 
     def __init__(self, owner):
         """
-        @param model.units.Unit owner: Owner of task
+        @param Unit owner: Owner of task
         """
         super(Task, self).__init__()
         self.owner = owner
@@ -111,7 +111,7 @@ class Determined(Task):
     @property
     def finish_time(self):
         """
-        @rtype: model.utils.TimeClass
+        @rtype: float
         """
         return self.start_time + self.duration
 
@@ -132,7 +132,7 @@ class Motion(Determined):
         # todo: GEO-index
         super(Motion, self).__init__(**kw)
         self.start_point = None
-        """@type: model.vectors.Point | None"""
+        """@type: sublayers_server.model.vectors.Point | None"""
         self.start_direction = None
         """@type: float | None"""
 
@@ -149,15 +149,15 @@ class Motion(Determined):
     @property
     def position(self, to_time=None):
         """
-        @param model.utils.TimeClass | None to_time: Time for getting position
-        @rtype: model.vectors.Point
+        @param float | None to_time: Time for getting position
+        @rtype: sublayers_server.model.vectors.Point
         """
         return self.start_point
 
     @property
     def direction(self, to_time=None):
         """
-        @param model.utils.TimeClass | None to_time: Time for getting direction
+        @param float | None to_time: Time for getting direction
         @rtype: float
         """
         return self.start_direction
@@ -167,15 +167,15 @@ class Goto(Motion):
 
     def __init__(self, target_point, **kw):
         """
-        @param model.vetors.Point target_point: Target point of motion
+        @param sublayers_server.model.vectors.Point target_point: Target point of motion
         """
         super(Goto, self).__init__(duration=None, **kw)
         self.target_point = target_point
-        """@type: model.vectors.Point"""
+        """@type: sublayers_server.model.vectors.Point"""
         self.vector = None
-        """@type: model.vectors.Point | None"""
+        """@type: sublayers_server.model.vectors.Point | None"""
         self.v = None
-        """@type: model.vectors.Point | None"""
+        """@type: sublayers_server.model.vectors.Point | None"""
 
     def on_before_start(self, **kw):
         super(Goto, self).on_before_start(**kw)
@@ -195,8 +195,8 @@ class Goto(Motion):
     @staticmethod
     def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0, contacts):
         """
-        @param model.base.Observer subj: Subject of potential contacts
-        @param model.base.VisibleObject obj: Object of potential contacts
+        @param sublayers_server.model.base.Observer subj: Subject of potential contacts
+        @param sublayers_server.model.base.VisibleObject obj: Object of potential contacts
         @param float tmin: Minimal possible time of potential contact
         @param float tmax: Maximal possible time of potential contact
         @param float a: First coefficient of polynome a*t^2+2*k*t+c=0
@@ -218,7 +218,7 @@ class Goto(Motion):
 
     def contacts_with_static(self, static):
         """
-        @param model.base.VisibleObject | model.units.Unit static: Static object
+        @param sublayers_server.model.base.VisibleObject | sublayers_server.model.units.Unit static: Static object
         """
         # P(t)=V(t)+P0  // t0 is start_time
         # |P(t)-Q|=R
@@ -226,7 +226,7 @@ class Goto(Motion):
         tmin = self.start_time
         tmax = self.finish_time
         v = self.v
-        """@type: model.vectors.Point"""
+        """@type: sublayers_server.model.vectors.Point"""
         q = static.position
         # |V*t+P0-Q|=R
         s = p0 - q  # S=P0-Q; |V*t+S|=R
@@ -244,7 +244,7 @@ class Goto(Motion):
 
     def contacts_with_dynamic(self, motion):
         """
-        @param model.tasks.Goto motion: Motion task of mobile unit
+        @param sublayers_server.model.tasks.Goto motion: Motion task of mobile unit
         """
         a0 = self.start_point
         va = self.v
@@ -261,10 +261,10 @@ class Goto(Motion):
 
         # | t*(va - vb) + vb*tb - va*ta + a0 - b0 | = r
         s = vb*tb - va*ta + a0 - b0  # todo: Remove multiplication by 0
-        """@type: Point"""
+        """@type: sublayers_server.model.vectors.Point"""
 
         v = va - vb  # | t*v + s | = r
-        """@type: Point"""
+        """@type: sublayers_server.model.vectors.Point"""
 
         a = v.x ** 2 + v.y ** 2
         k = v.x * s.x + v.y * s.y
@@ -281,8 +281,8 @@ class Goto(Motion):
     @property
     def position(self, to_time=None):
         """
-        @param model.utils.TimeClass | None to_time: Time for getting position
-        @rtype: model.vectors.Point
+        @param float | None to_time: Time for getting position
+        @rtype: sublayers_server.model.vectors.Point
         """
         to_time = to_time or self._get_time()
         return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
@@ -290,7 +290,7 @@ class Goto(Motion):
     @property
     def direction(self, to_time=None):
         """
-        @param model.utils.TimeClass | None to_time: Time for getting direction
+        @param float | None to_time: Time for getting direction
         @rtype: float
         """
         return self.vector.angle

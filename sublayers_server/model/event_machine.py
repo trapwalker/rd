@@ -59,13 +59,13 @@ class Server(object):
 
     def post_event(self, event):
         """
-        @param model.events.Event event: New event
+        @param sublayers_server.model.events.Event event: New event
         """
         self.timeline.put(event)
 
     def post_events(self, events_list):
         """
-        @param iterable[model.events.Event] events_list: New events iterator
+        @param iterable[sublayers_server.model.events.Event] events_list: New events iterator
         """
         for event in events_list:
             self.post_event(event)

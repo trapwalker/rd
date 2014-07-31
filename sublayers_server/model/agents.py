@@ -49,8 +49,8 @@ class Agent(Object, SubscriberTo__Observer):
 
     def on_event_from__Observer(self, emitter, message):
         """
-        @param model.units.Observer emitter: Message emitter
-        @param model.messages.UnitMessage message: Incoming message
+        @param sublayers_server.model.units.Observer emitter: Message emitter
+        @param sublayers_server.model.messages.UnitMessage message: Incoming message
         """
         if self.connection:
             package = make_push_package([message])

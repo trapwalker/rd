@@ -61,10 +61,10 @@ def circle_interpolate(r, c, alpha, beta, ccw, accuracy=16, **kw):
 
 def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
     """Calculate and return segmets of trajectory:
-    @param p: model.vectors.Point
+    @param p: sublayers_server.model.vectors.Point
     @param direction_angle: float
     @param velocity: float
-    @param t: model.vectors.Point
+    @param t: sublayers_server.model.vectors.Point
     @param rv_func callable
     """
     segments = []  # сегменты будущей траектории

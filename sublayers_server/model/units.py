@@ -16,9 +16,9 @@ class Unit(Observer):
     def __init__(self, owner=None, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
-        """@type: model.tasks.Task | None"""
+        """@type: sublayers_server.model.tasks.Task | None"""
         self.task_list = []
-        """@type: list[model.tasks.Task]"""
+        """@type: list[sublayers_server.model.tasks.Task]"""
         self.server.statics.append(self)
         self.server.static_observers.append(self)
         self.owner = owner
@@ -81,7 +81,7 @@ class Unit(Observer):
 
     def get_task(self):
         """
-        @rtype: model.tasks.Task | None
+        @rtype: sublayers_server.model.tasks.Task | None
         """
         return self._task
 
@@ -100,7 +100,7 @@ class Bot(Unit):
 
     def __init__(self, direction=-pi/2, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
-        """@type: model.tasks.Motion | None"""
+        """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
         self._direction = direction
@@ -119,7 +119,7 @@ class Bot(Unit):
 
     def goto(self, position, chain=False):
         """
-        @param position: model.vectors.Point
+        @param position: sublayers_server.model.vectors.Point
         """
         path = build_trajectory(
             self.position,
@@ -141,13 +141,13 @@ class Bot(Unit):
         """
         Velocity vector
 
-        @rtype: model.vectors.Point
+        @rtype: sublayers_server.model.vectors.Point
         """
         return self.motion.v if self.motion else None
 
     def get_position(self):
         """
-        @rtype: model.vectors.Point
+        @rtype: sublayers_server.model.vectors.Point
         """
         return self.motion.position if self.motion else self._position
 
@@ -206,8 +206,8 @@ class Bot(Unit):
 
     def on_task_change(self, old, new):
         """
-        @param old: model.tasks.Task | None
-        @param new: model.tasks.Task | None
+        @param old: sublayers_server.model.tasks.Task | None
+        @param new: sublayers_server.model.tasks.Task | None
         """
         # todo: (!) Скрывать событие остановки если цепочка тасков перемещения не пуста
         old_motion = self.motion

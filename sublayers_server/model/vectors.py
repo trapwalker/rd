@@ -69,7 +69,7 @@ class Point(complex):
 
     def cross_mul(self, other):
         """
-        @param b: Point
+        @param other: Point
         @rtype: float
         """
         return self.real * other.imag - self.imag * other.real

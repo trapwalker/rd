@@ -12,7 +12,7 @@ class Message(object):
 
     def __init__(self, time, comment=None):
         """
-        @param model.utils.TimeClass time: Time of message post
+        @param sublayers_server.model.utils.TimeClass time: Time of message post
         """
         super(Message, self).__init__()
         self.time = time
@@ -47,7 +47,7 @@ class InitMessage(Message):
 
     def __init__(self, agent, time=None, **kw):
         """
-        @param model.agents.Agent agent
+        @param sublayers_server.model.agents.Agent agent
         """
         if not time:
             time = agent.server.get_time()
@@ -68,7 +68,7 @@ class ChatMessage(Message):
 
     def __init__(self, author, text=None, client_id=None, time=None, **kw):
         """
-        @param model.agents.Agent author: Sender of message
+        @param sublayers_server.model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
         if not time:
@@ -93,7 +93,7 @@ class UnitMessage(Message):
 
     def __init__(self, subject, time=None, **kw):
         """
-        @param model.units.Unit subject: Sender of message
+        @param sublayers_server.model.units.Unit subject: Sender of message
         """
         if not time:
             time = subject.server.get_time()
@@ -111,7 +111,7 @@ class RangeViewMessage(UnitMessage):
 
     def __init__(self, obj, **kw):
         """
-        @param model.base.VisibleObject obj: Object
+        @param sublayers_server.model.base.VisibleObject obj: Object
         """
         super(RangeViewMessage, self).__init__(**kw)
         self.obj = obj
