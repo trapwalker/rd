@@ -236,6 +236,46 @@ function getTrack(data){
     var position;
     var direction;
 
+    if (data.motion) { // Если есть хоть какое-то движение
+        if (data.motion.position)
+            position = new Point(data.motion.position.x, data.motion.position.y);
+        else
+            position = new Point(0, 0);
+
+        direction = data.motion.direction ? data.motion.direction : 0; // TODO: сделать вылет с ошибкой
+
+        // motions
+        if (data.motion.cls == "Goto") {
+            // запустить функцию установки линейного движения
+            var velocity;
+            if (data.motion.v)
+                velocity = new Point(data.motion.v.x, data.motion.v.y);
+            else if (data.motion.velocity)
+                velocity = new Point(data.motion.velocity.x, data.motion.velocity.y);
+            else
+                velocity = new Point(0, 0);
+
+            var start_time = data.motion.time ? data.motion.time : (new Date().getTime());
+            chat.addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.time / 1000.);
+            chat.addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
+
+            aTrack = new MoveLine(
+                    start_time / 1000.,    //Время начала движения
+                fuelMaxProbka,         //Запас топлива
+                fuelDecrProbka,        //Расход топлива
+                direction,             //Направление
+                position,              //Начальная точка
+                velocity,              //Скорость
+                new Point(0, 0)        //Ускорение
+            );
+
+            return aTrack;
+        }
+    }
+
+
+    // TODO: привести всё к общему виду. При STOP должен присылаться STOP
+
     if (data.position)
         position = new Point(data.position.x, data.position.y);
     else
@@ -243,34 +283,7 @@ function getTrack(data){
 
     direction = data.direction ? data.direction : 0; // TODO: сделать вылет с ошибкой
 
-
-
-
-    if(data.motion) {
-        // motions
-        if (data.motion.cls == "Goto") {
-            // запустить функцию установки линейного движения
-            var velocity = new Point(data.motion.velocity.x,
-                data.motion.velocity.y);
-            var start_time = data.motion.start_time;
-            chat.addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.start_time/1000.);
-            chat.addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
-
-            aTrack = new MoveLine(
-                start_time/1000.,             //Время начала движения
-                fuelMaxProbka,                      //Запас топлива
-                fuelDecrProbka,                      //Расход топлива
-                direction,              //Направление
-                position,               //Начальная точка
-                velocity,               //Скорость
-                new Point(0, 0)         //Ускорение
-            );
-
-            return aTrack;
-        }
-    }
-
-    if(aTrack == null) {
+    if (aTrack == null) {
         aTrack = new MoveLine(
             clock.getCurrentTime(),     //Время начала движения
             fuelMaxProbka,                          //Запас топлива
@@ -282,6 +295,7 @@ function getTrack(data){
         );
     }
     return aTrack;
+
 }
 
 function getOwner(data) {
