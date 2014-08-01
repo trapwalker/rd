@@ -91,13 +91,11 @@ class ChatMessage(Message):
 class UnitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
 
-    def __init__(self, subject, time=None, **kw):
+    def __init__(self, subject, **kw):
         """
         @param sublayers_server.model.units.Unit subject: Sender of message
         """
-        if not time:
-            time = subject.server.get_time()
-        super(UnitMessage, self).__init__(time=time, **kw)
+        super(UnitMessage, self).__init__(**kw)
         self.subject = subject
 
     def as_dict(self):
@@ -118,6 +116,7 @@ class RangeViewMessage(UnitMessage):
 
 
 class Out(RangeViewMessage):
+
     def as_dict(self):
         d = super(Out, self).as_dict()
         d.update(object_id=self.obj.uid)
@@ -137,4 +136,10 @@ class Contact(See):
 
 
 class Update(See):
-    pass
+
+    def __init__(self, time=None, **kw):
+        subject = kw['subject']
+        if not time:
+            time = subject.server.get_time()
+            # todo: check time
+        super(Update, self).__init__(time=time, **kw)
