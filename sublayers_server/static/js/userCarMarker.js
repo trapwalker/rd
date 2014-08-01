@@ -218,8 +218,10 @@ var TrackView = (function (){
             this.map.unproject([obj.a.x, obj.a.y], 16),
             obj.bl
         ],{
-            stroke: 0.5,
-            color: '#00FF00'
+            stroke: true,
+            color: '#00FF00',
+            weight: '1px',
+            dashArray: "15, 10, 5, 10"
         }).addTo(this.map);
 
         this.trackes.push(obj);
@@ -337,7 +339,8 @@ var UserCarMarker = (function () {
         this.sectorsView.drawSectors(aNewPoint, aNewAngle);
 
         // Перерисовка траектории
-        //this.trackView.draw(aNewPoint);
+        if(! flagDebug)
+            this.trackView.draw(aNewPoint);
     }
 
     return UserCarMarker;
