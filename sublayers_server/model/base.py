@@ -56,14 +56,11 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
-    def as_dict(self):
+    def as_dict(self, to_time=None):
         return dict(
             cls=self.classname,
             uid=self.uid,
         )
-
-    def serialize(self):
-        return serialize(self.as_dict())
 
 
 class PointObject(Object):
@@ -77,8 +74,8 @@ class PointObject(Object):
         self._position = position
         """@type: sublayers_server.model.vectors.Point"""
 
-    def as_dict(self):
-        d = super(PointObject, self).as_dict()
+    def as_dict(self, to_time=None):
+        d = super(PointObject, self).as_dict(to_time)
         d.update(position=self.position)
         return d
 
@@ -205,7 +202,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника
 
-    def as_dict(self):
-        d = super(Observer, self).as_dict()
+    def as_dict(self, to_time=None):
+        d = super(Observer, self).as_dict(to_time)
         d.update(r=self.r)
         return d

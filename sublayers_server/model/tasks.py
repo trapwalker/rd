@@ -9,6 +9,7 @@ from abc import ABCMeta
 from events import ContactSee, ContactOut, TaskEnd
 from utils import time_log_format
 from base import Observer
+from vectors import Point
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -47,8 +48,13 @@ class Task(object):
         # todo: suspend store serialization
         return dict(
             cls=self.classname,
-            start_time=self.owner.server.get_time(),  # todo: Вынести публикацию времени для клиента из сериализации
-            # todo: check time
+            start_time=self.start_time,
+        )
+
+    def motion_info(self, to_time):
+        return dict(
+            cls=self.classname,
+            time=to_time,
         )
 
     def start(self, **kw):
@@ -141,6 +147,21 @@ class Motion(Determined):
         self.start_direction = None
         """@type: float | None"""
 
+    def motion_info(self, to_time):
+        d = super(Motion, self).motion_info(to_time)
+        d.update(
+            position=self.get_position(to_time),
+            direction=self.get_direction(to_time),
+            v=self.get_v(to_time),
+            velocity=self.get_v(to_time),  # todo: remove or replace to scalar
+            #direction_from_t='{k}*(t-{t0})+{d0}'.format(
+            #    k=(self.get_direction(self.finish_time) - self.get_direction(to_time)) / self.duration,
+            #    t0=to_time,
+            #    d0=self.get_direction(to_time),
+            #),
+        )
+        return d
+
     def on_before_start(self, **kw):
         super(Motion, self).on_before_start(**kw)
         self.start_point = self.owner.position
@@ -151,21 +172,38 @@ class Motion(Determined):
         self.owner.direction = self.direction
         super(Motion, self).on_after_end(**kw)
 
-    @property
-    def position(self, to_time=None):
+    def get_position(self, to_time=None):
         """
         @param float | None to_time: Time for getting position
         @rtype: sublayers_server.model.vectors.Point
         """
         return self.start_point
 
-    @property
-    def direction(self, to_time=None):
+    def get_direction(self, to_time=None):
         """
         @param float | None to_time: Time for getting direction
         @rtype: float
         """
         return self.start_direction
+
+    def get_velocity(self, to_time=None):
+        """
+        @param float | None to_time: Time for getting direction
+        @rtype: float
+        """
+        return self.owner.max_velocity  # todo: (!) Change to current bot velocity
+
+    def get_v(self, to_time=None):
+        """
+        @param float | None to_time: Time for getting direction
+        @rtype: sublayers_server.model.vectors.Point
+        """
+        return (Point(1) * self.get_velocity(to_time)).rotate(self.get_direction(to_time))
+
+    position = property(get_position)
+    direction = property(get_direction)
+    velocity = property(get_velocity)
+    v = property(get_v)
 
 
 class Goto(Motion):
@@ -179,7 +217,7 @@ class Goto(Motion):
         """@type: sublayers_server.model.vectors.Point"""
         self.vector = None
         """@type: sublayers_server.model.vectors.Point | None"""
-        self.v = None
+        self._v = None
         """@type: sublayers_server.model.vectors.Point | None"""
 
     def on_before_start(self, **kw):
@@ -189,7 +227,34 @@ class Goto(Motion):
         self.vector = self.target_point - self.start_point
         if self.vector.is_zero():
             raise ETaskParamsUnactual('Target point is same as start point or too close: %s' % self.vector)
-        self.v = self.vector.normalize() * self.owner.max_velocity  # Velocity
+        self._v = self.vector.normalize() * self.owner.max_velocity  # Velocity
+
+    def get_position(self, to_time=None):
+        """
+        @param float | None to_time: Time for getting position
+        @rtype: sublayers_server.model.vectors.Point
+        """
+        to_time = to_time or self._get_time()
+        return self.vector.normalize() * self.get_velocity(to_time) * (to_time - self.start_time) + self.start_point
+        # todo: (!) acceleration
+
+    def get_direction(self, to_time=None):
+        """
+        @param float | None to_time: Time for getting direction
+        @rtype: float
+        """
+        return self.vector.angle
+
+    def get_v(self, to_time=None):
+        """
+        @param float | None to_time: Time for getting direction
+        @rtype: sublayers_server.model.vectors.Point
+        """
+        return self._v
+
+    position = property(get_position)
+    direction = property(get_direction)
+    v = property(get_v)
 
     def as_dict(self):
         d = super(Goto, self).as_dict()
@@ -284,23 +349,6 @@ class Goto(Motion):
         self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
 
         return contacts
-
-    @property
-    def position(self, to_time=None):
-        """
-        @param float | None to_time: Time for getting position
-        @rtype: sublayers_server.model.vectors.Point
-        """
-        to_time = to_time or self._get_time()
-        return self.vector.normalize() * self.owner.max_velocity * (to_time - self.start_time) + self.start_point
-
-    @property
-    def direction(self, to_time=None):
-        """
-        @param float | None to_time: Time for getting direction
-        @rtype: float
-        """
-        return self.vector.angle
 
 
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)

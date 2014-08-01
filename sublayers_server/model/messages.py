@@ -38,9 +38,6 @@ class Message(object):
             comment=self.comment,
         )
 
-    def serialize(self):
-        return serialize(self.as_dict())
-
 
 class InitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
@@ -58,7 +55,7 @@ class InitMessage(Message):
         d = super(InitMessage, self).as_dict()
         d.update(
             agent=self.agent.as_dict(),
-            cars=[car.as_dict() for car in self.agent.cars],
+            cars=[car.as_dict(self.time) for car in self.agent.cars],
         )
         return d
 
@@ -127,7 +124,7 @@ class See(RangeViewMessage):
 
     def as_dict(self):
         d = super(See, self).as_dict()
-        d.update(object=self.obj.as_dict())  # todo: Serialize objects with private case
+        d.update(object=self.obj.as_dict(self.time))  # todo: Serialize objects with private case
         return d
 
 

@@ -64,8 +64,8 @@ class Unit(Observer):
         self.task_list = []
         self.next_task()
 
-    def as_dict(self):
-        d = super(Unit, self).as_dict()
+    def as_dict(self, to_time=None):
+        d = super(Unit, self).as_dict(to_time)
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
@@ -113,10 +113,12 @@ class Bot(Unit):
         self._max_velocity = BALANCE.Bot.velocity
         self._direction = direction
 
-    def as_dict(self):
-        d = super(Bot, self).as_dict()
+    def as_dict(self, to_time=None):
+        if not to_time:
+            to_time = self.server.get_time()
+        d = super(Bot, self).as_dict(to_time)
         d.update(
-            motion=self.motion.as_dict() if self.motion else None,
+            motion=self.motion.motion_info(to_time) if self.motion else None,
             direction=self.direction,
             max_velocity=self.max_velocity,
         )
