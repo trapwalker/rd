@@ -131,7 +131,6 @@ class VisibleObject(PointObject, EmitterFor__Observer):
                 self.init_contact_test(obj)
 
         self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
-        log.debug('INIT CONTACTS SEARCH %s: found %d contacts', self, len(contacts))
 
     def special_contacts_search(self):
         contacts = self.contacts

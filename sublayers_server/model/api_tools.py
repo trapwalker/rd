@@ -58,7 +58,6 @@ def public_method(func):
             # todo: detail logging unexpected errors
             raise EUnexpectedError(repr(e))
 
-        log.info('API result: %s --> %r', log_call, res)
         return res
 
     functools.update_wrapper(cover, func)

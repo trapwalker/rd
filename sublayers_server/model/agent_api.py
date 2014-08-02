@@ -70,5 +70,3 @@ class AgentAPI(API):
 
         for client_connection in app.clients:
             client_connection.write_message(push_data)
-
-        log.info('Broadcast send to %d clients DONE: %r', len(app.clients), msg)

@@ -55,7 +55,6 @@ class Agent(Object, SubscriberTo__Observer):
         """
         if self.connection:
             package = make_push_package([message])
-            log.debug('Send to agent %s: %r', self, package)
             self.connection.write_message(serialize(package))
 
 
