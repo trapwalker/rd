@@ -92,6 +92,8 @@ class Task(object):
 
     @property
     def start_time_str(self):
+        if self.start_time is None:
+            return "#N/A"
         return time_log_format(self.start_time)
 
     id = property(id)
@@ -112,6 +114,10 @@ class Determined(Task):
         self.end_task_event = TaskEnd(time=self.finish_time, task=self)
         self.owner.server.post_event(self.end_task_event)
 
+    def on_after_end(self, **kw):
+        self.end_task_event.actual = False
+        super(Determined, self).on_after_end(**kw)
+
     @property
     def duration(self):
         """
@@ -126,14 +132,11 @@ class Determined(Task):
         """
         return self.start_time + self.duration
 
-    def cancel(self):
-        self.end_task_event.actual = False
-
 
 class Motion(Determined):
     __str_template__ = (
         '<{self.__class__.__name__} {self.start_time_str}: '
-        '{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
+        #'{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
     )
 
     def __init__(self, **kw):
