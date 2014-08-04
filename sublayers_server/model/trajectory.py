@@ -67,6 +67,7 @@ def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
     @param velocity: float
     @param t: sublayers_server.model.vectors.Point
     @param rv_func callable
+    @rtype list]dict]
     """
     segments = []  # сегменты будущей траектории
     if p == t:
