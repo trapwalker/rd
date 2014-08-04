@@ -58,18 +58,21 @@ class Task(object):
         )
 
     def start(self, **kw):
+        log.debug('TASK start: %s', self)
         self.on_before_start(**kw)
         self.start_time = self._get_time()
         self.is_started = True
         self.on_after_start(**kw)
 
     def done(self, **kw):
+        log.debug('TASK done: %s', self)
         self.on_before_end(**kw)
         self.is_done = True
         self.on_after_end(**kw)
         self.owner.next_task()
 
     def cancel(self, **kw):
+        log.debug('TASK cancel: %s', self)
         self.on_before_end(**kw)
         self.is_cancelled = True
         self.on_after_end(**kw)
@@ -173,6 +176,7 @@ class Motion(Determined):
     def on_after_end(self, **kw):
         self.owner.position = self.position
         self.owner.direction = self.direction
+        log.info('OWNER Position UPDATE===============================')
         super(Motion, self).on_after_end(**kw)
 
     def get_position(self, to_time=None):
