@@ -8,7 +8,8 @@ var FireControl = (function () {
             diameter: 200,
             rotateAngle: 0,
             sectors: [],
-            sectorCallBack: null,   // CallBack для всех секторов, в него передастся объект FireSector
+            sectorCallBackShoot: null,   // CallBack для всех секторов, в него передастся объект FireSector
+            sectorCallBackRecharged: null,   // CallBack для всех секторов, в него передастся объект FireSector
             allCallBack: null       // CallBack для кнопки All
             //onFireAll: ''
         };
@@ -16,7 +17,8 @@ var FireControl = (function () {
         if (options) {
             if (options.parentDiv) this.options.parentDiv = options.parentDiv;
             if (options.diameter) this.options.diameter = options.diameter;
-            if (options.sectorCallBack) this.options.sectorCallBack = options.sectorCallBack;
+            if (options.sectorCallBackShoot) this.options.sectorCallBackShoot = options.sectorCallBackShoot;
+            if (options.sectorCallBackRecharged) this.options.sectorCallBackRecharged = options.sectorCallBackRecharged;
             if (options.allCallBack) this.options.allCallBack = options.allCallBack;
         }
 
@@ -45,7 +47,6 @@ var FireControl = (function () {
             for(var i = 0; i < options.sectors.length; i++) {
                 this.addSector(options.sectors[i]);
             }
-
     }
 
     FireControl.prototype.addSector = function(fireSector) {
@@ -80,6 +81,7 @@ var FireControl = (function () {
         p1in = summVector(p1in, rightVIn);
         p2in = summVector(p2in, leftVIn);
 
+        // TODO: Использовать Arc вместо кривых Безье
         // Подготовка командной строки для рисования сектора
         var pathstr = 'M'+ rightVIn.x + ',' + rightVIn.y +
             'L'+ rightVOut.x + ',' + rightVOut.y +
@@ -100,7 +102,8 @@ var FireControl = (function () {
         // Добавить в сектор ссылку на fireSector, чтобы при вызове коллбека передать первым параметром
         sector._fs = fireSector;
         // Добавить в сектор ссылку на свой собственный колл-бек
-        sector._cbSectorFunc = this.options.sectorCallBack;
+        sector._cbSectorShoot = this.options.sectorCallBackShoot;
+        sector._cbSectorRecharged = this.options.sectorCallBackRecharged;
         // устанавливаем флаг речарджа сектора в false
         sector.recharged = false;
         // Помещаем сектор в массив секторов данного объекта
@@ -163,10 +166,12 @@ function fireSectorEvent(event) {
         setTimeout(function () {
                 sector.recharged = false;
                 $(sector.node).attr('class', 'fire-control-sector sublayers-clickable');
+                if (typeof(sector._cbSectorRecharged) === 'function')
+                    sector._cbSectorRecharged(sector._fs);
             },
             sector._fs.recharge);
         // Вызвать свой коллБэк и передать туда fireSector
-        if (typeof(sector._cbSectorFunc) === 'function')
-            sector._cbSectorFunc(sector._fs);
+        if (typeof(sector._cbSectorShoot) === 'function')
+            sector._cbSectorShoot(sector._fs);
     }
 }
