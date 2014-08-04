@@ -1,0 +1,24 @@
+﻿
+Формула Эйлера: e^(i*x) = cos(x) + i*sin(x)
+
+CB0 --> C
+w * (t-t0) --> t[*]
+
+abs(C * e^(i*w*t) - A) = r
+abs(C * (cos(t) + i*sin(t)) - A) = r
+abs(C * cos(t) + C * i*sin(t) - A) = r
+abs((Cr+i*Ci) * cos(t) + (Cr+i*Ci) * i*sin(t) - (Ar+i*Ai)) = r
+abs(Cr * cos(t) + i*Ci * cos(t) + i*Cr * sin(t) - Ci * sin(t) - Ar - i*Ai) = r
+abs((Cr*cos(t) - Ci*sin(t) - Ar) + i*(Ci*cos(t) + Cr*sin(t) - Ai)) = r
+
+x ==> Cr*cos(t) - Ci*sin(t) - Ar
+y ==> Ci*cos(t) + Cr*sin(t) - Ai
+
+abs(x + i*y) = r
+x^2 + y^2 = r^2
+
+(Cr*cos(t) - Ci*sin(t) - Ar) ^ 2 + (Ci*cos(t) + Cr*sin(t) - Ai) ^ 2 = r ^ 2
+
+  Cr^2*cos(t)^2 - 2*Cr*Ci*sin(t)*cos(t) - Ar*Cr*cos(t) + 
+  Ci^2*sin(t)^2 + Ar*Ci*sin(t) +
+
