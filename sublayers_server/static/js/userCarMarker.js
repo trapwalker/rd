@@ -221,7 +221,7 @@ var TrackView = (function (){
             stroke: true,
             color: '#00FF00',
             weight: '1px',
-            dashArray: "15, 10, 5, 10"
+            dashArray: "5, 5"
         }).addTo(this.map);
 
         this.trackes.push(obj);
@@ -248,8 +248,8 @@ var TrackView = (function (){
         if(this.currentTrack){
             // перерисовываем текущую линию
             this.currentTrack.line.setLatLngs([
-                aPos,
-                this.currentTrack.bl
+                this.currentTrack.bl,
+                aPos
             ]);
         }
 

@@ -199,6 +199,7 @@ $(document).ready(function () {
     chat.addChat(-4, 'log-rpc');
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
+    chat.setVisible(false);
 
 
     backLight = new BackLight({
