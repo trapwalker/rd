@@ -152,10 +152,6 @@ var SectorsView = (function () {
 
     SectorsView.prototype.drawSectors = function (aNewPoint, aNewAngle) {
         this.options.sectors.forEach(function (sector) {
-            if (this.map.hasLayer(sector.polygon)) {
-                this.map.removeLayer(sector.polygon);
-            }
-
             var tempCenter = this.map.project(this.center, 16);
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
@@ -166,22 +162,25 @@ var SectorsView = (function () {
                 tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], 16));
             }
 
-            sector.polygon = L.polygon(tempPoints, {
+            if (this.map.hasLayer(sector.polygon)) {
+                sector.polygon.setLatLngs(tempPoints);
+            }
+            else {
+                sector.polygon = L.polygon(tempPoints, {
                     weight: 0,
                     fillColor: '#32cd32',
                     fillOpacity: 0.2,
                     clickable: false
                 });
 
-            this.map.addLayer(sector.polygon);
-
+                this.map.addLayer(sector.polygon);
+            }
         }, {center: aNewPoint, angle: aNewAngle, map: this.options._map});
 
     };
 
     return SectorsView;
 })();
-
 
 // Траектория движения (TrackView)
 var TrackView = (function (){
