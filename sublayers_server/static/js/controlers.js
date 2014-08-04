@@ -51,7 +51,8 @@ var Controllers = (function () {
             parentDiv: 'fireControlArea',
             diameter: 150,
             sectors: options.fireSectors,
-            sectorCallBack: cbForSectors,
+            sectorCallBackShoot: cbForSectorsShoot,
+            sectorCallBackRecharged: cbForSectorsRecharged,
             allCallBack: cbForAllBtn
         });
 
@@ -102,9 +103,17 @@ function changeZoomOnSlider(aSliderZoom) {
 }
 
 // колл бек для выстрела того или иного сектора
-function cbForSectors(aFireSector) {
+function cbForSectorsShoot(aFireSector) {
     //alert('Выстрел из сектора id = '+aFireSector.uid + '   Перезарядка = '+ aFireSector.recharge);
+    userCarMarker.sectorsView.setShootState(aFireSector);
 }
+
+// колл бек для окончания перезарядки того или иного сектора
+function cbForSectorsRecharged(aFireSector) {
+    //alert('Выстрел из сектора id = '+aFireSector.uid + '   Перезарядка = '+ aFireSector.recharge);
+    userCarMarker.sectorsView.setNormalState(aFireSector);
+}
+
 // коллбек для кнопки All
 function cbForAllBtn() {
     //alert('Дан залп из всех орудий своей машинки (user.userCar.id)');

@@ -108,12 +108,14 @@ var SectorsView = (function () {
             _map: null,
             rotateAngle: 0,
             sectors: [],
-            countPoints: 10
+            countPoints: 10,
+            shootDelay: 15    // количество "тиков" перерисовки состояния "выстрел" (до перезарядки)
         };
 
         if (options) {
             if (options._map) this.options._map = options._map;
             if (options.countPoints) this.options.countPoints = options.countPoints;
+            if (options.shootDelay) this.options.shootDelay = Math.round(options.shootDelay);
         }
 
         // Сделать addSector для каждого элемента массива options.sectors
@@ -146,6 +148,7 @@ var SectorsView = (function () {
             sector._points.push(new rotateVector(vertVIn, angle));
         }
 
+        sector.shootState = 0; // Состояние выстрела/перезарядки/нормальное
         sector._fireSector = fireSector;
         this.options.sectors.push(sector);
     }
@@ -164,6 +167,22 @@ var SectorsView = (function () {
 
             if (this.map.hasLayer(sector.polygon)) {
                 sector.polygon.setLatLngs(tempPoints);
+
+                if (sector.shootState > 0) { // Если был выстрел, т.е. сейчас жёлтый(оранжевый) сектор
+                    sector.shootState--;
+
+                    sector.polygon.setStyle({
+                        fillOpacity: (this.shootDelay - sector.shootState) / this.shootDelay * 0.8
+                    });
+
+                    if(sector.shootState == 0) { // "Анимация" выстрела прошла, началась перезарядка
+                        // Сделать серым - т.е. сектор перезаряжается
+                        sector.polygon.setStyle({
+                            fillColor: '#666666',
+                            fillOpacity: 0.4
+                        });
+                    }
+                }
             }
             else {
                 sector.polygon = L.polygon(tempPoints, {
@@ -172,11 +191,39 @@ var SectorsView = (function () {
                     fillOpacity: 0.2,
                     clickable: false
                 });
-
                 this.map.addLayer(sector.polygon);
             }
-        }, {center: aNewPoint, angle: aNewAngle, map: this.options._map});
+        }, {center: aNewPoint, angle: aNewAngle, map: this.options._map, shootDelay: this.options.shootDelay});
+    };
 
+    SectorsView.prototype.setNormalState = function (fireSector) {
+        var sector = this._getSectorByID(fireSector);
+        if (sector) {
+            // Установить нормальное состояние - сделать зелёным
+            sector.polygon.setStyle({
+                fillColor: '#32cd32',
+                fillOpacity: 0.2
+            });
+        }
+    };
+
+    SectorsView.prototype.setShootState = function (fireSector) {
+        var sector = this._getSectorByID(fireSector);
+        if (sector) {
+            // Установить состояние выстрела
+            sector.shootState = this.options.shootDelay;
+            sector.polygon.setStyle({
+                fillColor: '#9acd32',
+                fillOpacity: 0
+            });
+        }
+    };
+
+    SectorsView.prototype._getSectorByID = function(fireSector){
+        for (var i = 0; i < this.options.sectors.length; i++) {
+            if (this.options.sectors[i]._fireSector.uid == fireSector.uid)
+                return this.options.sectors[i];
+        }
     };
 
     return SectorsView;
