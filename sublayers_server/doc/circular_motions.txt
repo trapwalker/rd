@@ -19,6 +19,8 @@ x^2 + y^2 = r^2
 
 (Cr*cos(t) - Ci*sin(t) - Ar) ^ 2 + (Ci*cos(t) + Cr*sin(t) - Ai) ^ 2 = r ^ 2
 
-  Cr^2*cos(t)^2 - 2*Cr*Ci*sin(t)*cos(t) - Ar*Cr*cos(t) + 
-  Ci^2*sin(t)^2 + Ar*Ci*sin(t) +
+  Cr^2*cos(t)^2 - 2*Cr*Ci*sin(t)*cos(t) - 2*Ar*Cr*cos(t) + Ci^2*sin(t)^2 + 2*Ar*Ci*sin(t) + Ar^2 +
+
+  Ci^2*cos(t)^2 + 2*Cr*Ci*sin(t)*cos(t) - Ai*Ci*cos(t) + Cr^2*sin(t)^2
+
 
