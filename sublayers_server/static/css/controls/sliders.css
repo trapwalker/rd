@@ -156,17 +156,22 @@
 .slider-speed-stop-main {
     background-image: url('/static/img/CruiseControl/if_spd_stop_normal.png');
     background-repeat: no-repeat;
+    background-position: center;
     position: relative;
-    height: 42px;
-    width: 62px;
+    height: 34px;
+    width: 54px;
     margin-top: 6px;
-    margin-left: 3px;
+    margin-left: 7px;
     opacity: 0.8;
     pointer-events: auto;
 }
 
 .slider-speed-stop-main:hover {
     opacity: 1;
+    height: 36px;
+    width: 56px;
+    margin-top: 5px;
+    margin-left: 5.5px;
     background-image: url('/static/img/CruiseControl/if_spd_stop_over.png');
 }
 
