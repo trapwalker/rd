@@ -10,6 +10,14 @@
     pointer-events: auto;
 }
 
+.fire-control-sector-shadow {
+    fill: gray;
+    stroke: limegreen;
+    stroke-width: 2;
+    opacity: 0.2;
+    pointer-events: auto;
+}
+
 .fire-control-sector {
     fill: green;
     stroke: limegreen;
@@ -19,11 +27,11 @@
 }
 
 .fire-control-sector-recharge {
-    fill: gray;
+    fill: green;
     stroke: limegreen;
     stroke-width: 2;
-    opacity: 0.2;
-    pointer-events: auto;
+    opacity: 0.4;
+    pointer-events: none;
 }
 
 .fire-control-sector:hover {

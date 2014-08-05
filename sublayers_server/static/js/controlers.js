@@ -53,6 +53,7 @@ var Controllers = (function () {
             sectors: options.fireSectors,
             sectorCallBackShoot: cbForSectorsShoot,
             sectorCallBackRecharged: cbForSectorsRecharged,
+            sectorCallBackFireRequest: sendFire,
             allCallBack: cbForAllBtn
         });
 

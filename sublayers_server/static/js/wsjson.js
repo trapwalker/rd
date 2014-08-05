@@ -75,15 +75,27 @@ function sendStopCar() {
 }
 
 // fire
-function sendFire(aPoint, auid) {
+function sendFire(aUid) {
+    var id_rpc = rpcCallList.getID();
     var mes = {
         call: "fire",
-        rpc_call_id: rpcCallList.getID(),
-        params: {}
+        rpc_call_id: id_rpc,
+        params: {
+            uid: aUid // uid сектора, который совершил выстрел
+        }
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
     chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+
+
+    var zagl = JSON.stringify({
+        message_type: 'answer',
+        result: 'OK',
+        rpc_call_id: id_rpc,
+        error: null
+    });
+    receiveMesFromServ(zagl);
 }
 
 // setSpeed
