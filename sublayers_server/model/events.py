@@ -112,7 +112,11 @@ class ContactOut(Contact):
 
     def perform(self):
         super(ContactOut, self).perform()
-        self.subj.unsubscribe_from__VisibleObject(self.obj)
+        try:
+            self.subj.unsubscribe_from__VisibleObject(self.obj)
+        except ValueError:
+            log.exception('ContactOut unsubscribe_from__VisibleObject error: subj=%(subj)s, obj=%(obj)s',
+                          subj=self.subj, obj=self.obj)
         self.subj.emit_for__Agent(message=messages.Out(time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
 
 
