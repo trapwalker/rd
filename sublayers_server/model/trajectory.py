@@ -54,7 +54,7 @@ def circle_interpolate(r, c, alpha, beta, ccw, tags=(), accuracy=16, **_):
     for i in xrange(count):
         gamma += psi
         b = rv.rotate(gamma) + c
-        segments.append(dict(cls='Linear', a=a, b=b, tags=tags))
+        segments.append(dict(cls='Linear', a=a, b=b, tags=tags, r=r, c=c, alpha=gamma - psi, beta=gamma, ccw=ccw))
         a = b
 
     return segments
