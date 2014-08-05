@@ -1,0 +1,56 @@
+﻿
+# 1. Контакт кругового движения и статичного объекта #
+
+abs(CB0*e^(i*w*(t-t0)) - A) = r
+  A   - координаты статичного объекта;
+  B0  - начальная точка кругового маршрута;
+  С   - центр поворота;
+  CB0 - радиус-вектор из центра поворота в начальную точку кругового маршрута;
+  w   - угловая скорость кругового поворота;
+  t0  - начальное время кругового движения;
+  t   - искомый параметр: решений ожидается множество, но интересуют только два минимальных, но > t0
+
+Подстановки для краткости записи:
+  CB0        --> C
+  w * (t-t0) --> t
+
+Формула Эйлера: e^(i*x) = cos(x) + i*sin(x)
+
+abs(C * e^(i*w*t) - A) = r
+abs(C * (cos(t) + i*sin(t)) - A) = r
+abs(C * cos(t) + C * i*sin(t) - A) = r
+
+C = Cr+i*Ci
+A = Ar+i*Ai
+
+abs((Cr+i*Ci) * cos(t) + (Cr+i*Ci) * i*sin(t) - (Ar+i*Ai)) = r
+abs(Cr * cos(t) + i*Ci * cos(t) + i*Cr * sin(t) - Ci * sin(t) - Ar - i*Ai) = r
+abs((Cr*cos(t) - Ci*sin(t) - Ar) + i*(Ci*cos(t) + Cr*sin(t) - Ai)) = r
+
+x ==> Cr*cos(t) - Ci*sin(t) - Ar
+y ==> Ci*cos(t) + Cr*sin(t) - Ai
+
+abs(x + i*y) = r
+x^2 + y^2 = r^2
+
+(Cr*cos(t) - Ci*sin(t) - Ar)^2 + (Ci*cos(t) + Cr*sin(t) - Ai)^2 = r^2
+
+  Cr^2*cos(t)^2 - 2*Cr*Ci*sin(t)*cos(t) - 2*Ar*Cr*cos(t) + Ci^2*sin(t)^2 + 2*Ar*Ci*sin(t) + Ar^2 +
++ Ci^2*cos(t)^2 + 2*Cr*Ci*sin(t)*cos(t) - 2*Ai*Ci*cos(t) + Cr^2*sin(t)^2 - 2*Ai*Cr*sin(t) + Ai^2 = r^2
+
+(Cr^2+Ci^2)*cos(t)^2 + (Cr^2+Ci^2)*sin(t)^2 - (Ar*Cr+Ai*Ci)*2*cos(t) + (Ar*Ci-Ai*Cr)*2*sin(t) + Ar^2 + Ai^2 - r^2 = 0
+
+(Cr^2+Ci^2)*(sin(t)^2*cos(t)^2) - (Ar*Cr+Ai*Ci)*2*cos(t) + (Ar*Ci-Ai*Cr)*2*sin(t) + Ar^2 + Ai^2 - r^2 = 0
+
+(Ar*Ci-Ai*Cr)*2*sin(t) - (Ar*Cr+Ai*Ci)*2*cos(t) + Cr^2 + Ci^2 + Ar^2 + Ai^2 - r^2 = 0
+
+Подстановки:
+  a = (Ar*Ci-Ai*Cr)*2
+  b = (Ar*Cr+Ai*Ci)*2
+  c = Cr^2 + Ci^2 + Ar^2 + Ai^2 - r^2
+
+a*sin(t) - b*cos(t) + c = 0
+
+
+# 2. Контакт кругового линейного движения #
+

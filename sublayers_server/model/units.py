@@ -139,7 +139,10 @@ class Bot(Unit):
         )
 
         self.set_tasklist([
+            tasks.GotoArc(owner=self, target_point=segment['b'], arc_params=segment)
+            if 'r' in segment else
             tasks.Goto(owner=self, target_point=segment['b'])
+
             for segment in path
         ], append=chain)
 

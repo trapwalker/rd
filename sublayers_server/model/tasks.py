@@ -58,18 +58,21 @@ class Task(object):
         )
 
     def start(self, **kw):
+        log.debug('TASK start: %s', self)
         self.on_before_start(**kw)
         self.start_time = self._get_time()
         self.is_started = True
         self.on_after_start(**kw)
 
     def done(self, **kw):
+        log.debug('TASK done: %s', self)
         self.on_before_end(**kw)
         self.is_done = True
         self.on_after_end(**kw)
         self.owner.next_task()
 
     def cancel(self, **kw):
+        log.debug('TASK cancel: %s', self)
         self.on_before_end(**kw)
         self.is_cancelled = True
         self.on_after_end(**kw)
@@ -171,8 +174,9 @@ class Motion(Determined):
         self.start_direction = self.owner.direction
 
     def on_after_end(self, **kw):
-        self.owner.position = self.position
-        self.owner.direction = self.direction
+        self.owner.position = self.get_position(self.finish_time)
+        self.owner.direction = self.get_direction(self.finish_time)
+        log.info('OWNER Position UPDATE===============================')
         super(Motion, self).on_after_end(**kw)
 
     def get_position(self, to_time=None):
@@ -353,6 +357,27 @@ class Goto(Motion):
 
         return contacts
 
+
+class GotoArc(Goto):
+    def __init__(self, arc_params, **kw):
+        super(GotoArc, self).__init__(**kw)
+        self.arc_params = arc_params
+
+    def motion_info(self, to_time):
+        d = super(GotoArc, self).motion_info(to_time)
+        d.update(arc=self.arc_params, cls='Goto')  # todo: cls hack remove
+        return d
+
+    def get_direction(self, to_time=None):
+        """
+        @param float | None to_time: Time for getting direction
+        @rtype: float
+        """
+        if to_time is None:
+            to_time = self._get_time()
+        return self.vector.angle + (self.vector.angle - self.start_direction) * (to_time - self.start_time) / self.duration
+
+    direction = property(get_direction)
 
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
 # todo: Make "Scouting" task +modifiers (aggresive, sneaking, defending, ...)
