@@ -374,7 +374,12 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
     controllers = new Controllers({
         fuelMax: fuelMaxProbka,
         hpMax: hpMaxProbka,
-        fireSectors: fireSectorsProbka,
+        fireSectors: [
+            new FireSector(gradToRad(0), gradToRad(65), 400, 1, 6 * 1000),
+            new FireSector(gradToRad(180), gradToRad(65), 350, 2, 4 * 1000),
+            new FireSector(gradToRad(90), gradToRad(65), 300, 3, 2 * 1000),
+            new FireSector(gradToRad(-90), gradToRad(65), 300, 4, 2 * 1000)
+        ],
         max_velocity: amax_speed
     });
 

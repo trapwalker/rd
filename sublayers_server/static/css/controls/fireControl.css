@@ -2,8 +2,12 @@
     position: absolute;
     bottom: 30px;
     left: 50%;
-    margin-left: -75px;
     pointer-events: none;
+}
+
+.fire-control-background {
+    fill: transparent;
+    pointer-events: auto;
 }
 
 .fire-control-sector {
