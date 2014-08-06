@@ -13,7 +13,7 @@ from math import pi
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, owner=None, max_hp=None, direction=-pi/2, **kw):
+    def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: sublayers_server.model.tasks.Task | None"""
@@ -25,6 +25,13 @@ class Unit(Observer):
         self.max_hp = max_hp
         self._hp = max_hp
         self._direction = direction
+        self.defence = defence
+        if weapons:
+            for weapon in weapons:
+                weapon.owner = self
+        # todo: (!) attach/detach weapon and other stuff to/from unit (event)
+        self.weapons = weapons or []
+        """@type: list[sublayers_server.model.weapon.Weapon]"""
 
     @property
     def direction(self):
@@ -43,6 +50,11 @@ class Unit(Observer):
 
     def hit(self, hp):
         if self.max_hp is None:
+            return
+
+        hp *= self.defence
+
+        if not hp:
             return
 
         new_hp = self.hp
@@ -112,6 +124,7 @@ class Unit(Observer):
             direction=self.direction,
             hp=self.hp,
             max_hp=self.max_hp,
+            weapons=[weapon.as_dict(to_time=to_time) for weapon in self.weapons],
         )
         return d
 
