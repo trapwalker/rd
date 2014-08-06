@@ -286,8 +286,9 @@ var BackLightList = (function (){
 
     BackLightList.prototype.getListIDs = function() {
         var listIDs = [];
-        for(var i = 0; i < this.backLights.length; i++)
-            listIDs.push(this.backLights[i].marker.carID);
+        for (var i = 0; i < this.backLights.length; i++)
+            if (this.backLights[i].isActive)
+                listIDs.push(this.backLights[i].marker.carID);
         return listIDs;
     }
 
