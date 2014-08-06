@@ -76,26 +76,19 @@ function sendStopCar() {
 
 // fire
 function sendFire(aUid) {
-    var id_rpc = rpcCallList.getID();
     var mes = {
         call: "fire",
-        rpc_call_id: id_rpc,
+        rpc_call_id: rpcCallList.getID(),
         params: {
-            uid: aUid // uid сектора, который совершил выстрел
-        }
+            weapon_num: aUid, // uid сектора, который совершил выстрел
+            enemy_list: backLightList.getListIDs()
+        },
+        weapon_num: aUid, // uid сектора, который совершил выстрел
+        enemy_list: backLightList.getListIDs()
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
     chat.addMessageToLog(JSON.stringify(mes), 'rpc');
-
-
-    var zagl = JSON.stringify({
-        message_type: 'answer',
-        result: 'OK',
-        rpc_call_id: id_rpc,
-        error: null
-    });
-    receiveMesFromServ(zagl);
 }
 
 // setSpeed
@@ -191,7 +184,7 @@ function receiveMesFromServ(data){
                 var max_speed;
                 // Инициализация userCar
                 if(event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, Math.random() * hpMaxProbka, aTrack, max_speed);
+                initUserCar(event.cars[0].uid, 0, Math.random() * hpMaxProbka, aTrack, max_speed, event.cars[0].weapons);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
@@ -356,19 +349,28 @@ function updateCurrentCar(uid, aType, aHP, aTrack) {
 
 }
 
-function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
+
+function getWeapons(data) {
+    var sectors = [];
+    data.forEach(function (weapon, index) {
+            // FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge)
+            // TODO: ввести позже правильный uid сектора и правильный речардж, когда будет присылаться
+            var sector = new FireSector(weapon.direction, gradToRad(weapon.sector_width), weapon.r, index, 2000);
+            sector.damage = weapon.damage;
+            this.sectors.push(sector);
+        }, {sectors: sectors} );
+    return sectors;
+}
+
+function initUserCar(uid, aType, aHP, aTrack, amax_speed, aWeapons) {
     user.userCar = new UserCar(uid,       //ID машинки
         aType,       //Тип машинки
         aHP,      //HP машинки
         amax_speed,      //Максималка
         aTrack);   //Текущая траектория
 
-    var fireSectorsProbka = [
-        new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
-        new FireSector(gradToRad(180), gradToRad(50), 350, 2, 4 * 1000),
-        new FireSector(gradToRad(90), gradToRad(70), 300, 3, 2 * 1000),
-        new FireSector(gradToRad(-90), gradToRad(70), 300, 4, 2 * 1000)
-    ];
+
+    var fireSectors = getWeapons(aWeapons);
 
     // Инициализация маркера машинки
     userCarMarker = new UserCarMarker({
@@ -377,7 +379,7 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         _map: myMap,
         radiusView: 1000,
         carID: uid,
-        sectors: fireSectorsProbka,
+        sectors: fireSectors,
         countSectorPoints: 20
     });
 
@@ -386,12 +388,7 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
     controllers = new Controllers({
         fuelMax: fuelMaxProbka,
         hpMax: hpMaxProbka,
-        fireSectors: [
-            new FireSector(gradToRad(0), gradToRad(65), 400, 1, 6 * 1000),
-            new FireSector(gradToRad(180), gradToRad(65), 350, 2, 4 * 1000),
-            new FireSector(gradToRad(90), gradToRad(65), 300, 3, 2 * 1000),
-            new FireSector(gradToRad(-90), gradToRad(65), 300, 4, 2 * 1000)
-        ],
+        fireSectors: fireSectors,
         max_velocity: amax_speed
     });
 
