@@ -4,7 +4,8 @@ var ViewMessenger = (function () {
             parentDiv: '',
             height: 400,
             width: 300,
-            _visible: true
+            _visible: true,
+            mesCountInChat: 30
         };
 
         this.chats = [];
@@ -146,7 +147,8 @@ var ViewMessenger = (function () {
             id: aID,
             name: aName,
             textArea: $('<div id="textArea' + aID + '" class="textOutArea"></div>'),
-            pageButton: $('<div id="pageButton' + aID + '" class="pageButton sublayers-clickable">' + aName + '</div>')
+            pageButton: $('<div id="pageButton' + aID + '" class="pageButton sublayers-clickable">' + aName + '</div>'),
+            mesList: []
         }
 
         this.vMTA.append(chat.textArea);
@@ -226,6 +228,16 @@ var ViewMessenger = (function () {
             spanUser.addClass("view-messenger-text-my-user");
         // Показать сообщение, опустивскрол дива
         mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+
+        // Добавить mesDiv и spanUser в mesList для этого chat
+        chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
+
+        // Удалить старые сообщения, предварительно сняв с них
+        if(chat.mesList.length > this.options.mesCountInChat){
+            var dmessage = chat.mesList.shift();
+            dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
+            dmessage.mesDiv.remove();
+        }
 
     };
 

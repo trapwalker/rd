@@ -206,9 +206,7 @@ var SliderSpeed = (function () {
         this.setRealSpeed(0);
 
         // Создание кнопки стоп
-        var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main sublayers-clickable">' +
-            '<span>STOP</span>' +
-            '</div>';
+        var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main sublayers-clickable"></div>';
         // добавление дива кнопки стоп в правый див
         $('#sliderSpeedRight').append(nodeStopMain);
         $('#sliderSpeedStopButton').on('click', {id: this._id}, this._onStop);

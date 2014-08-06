@@ -15,7 +15,17 @@ var RPCCallList = ( function () {
 
     RPCCallList.prototype.execute = function (aCallID) {
         if(this.calls[aCallID]) {
-            //this.calls[aCallID]=null;
+            var rpc = this.calls[aCallID];
+
+            // Если был fire запрос
+            if(rpc.call === 'fire'){
+                // Выполнить стрельбу сектором
+                controllers.fireControl.shootSectorByID(rpc.params.uid);
+            }
+
+
+
+
             delete this.calls[aCallID];
         }
     }

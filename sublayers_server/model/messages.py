@@ -38,9 +38,6 @@ class Message(object):
             comment=self.comment,
         )
 
-    def serialize(self):
-        return serialize(self.as_dict())
-
 
 class InitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
@@ -58,7 +55,7 @@ class InitMessage(Message):
         d = super(InitMessage, self).as_dict()
         d.update(
             agent=self.agent.as_dict(),
-            cars=[car.as_dict() for car in self.agent.cars],
+            cars=[car.as_dict(self.time) for car in self.agent.cars],
         )
         return d
 
@@ -91,13 +88,11 @@ class ChatMessage(Message):
 class UnitMessage(Message):
     __str_template__ = '<{self.classname} #{self.id}[{self.time_str}] subj={self.subject}>'
 
-    def __init__(self, subject, time=None, **kw):
+    def __init__(self, subject, **kw):
         """
         @param sublayers_server.model.units.Unit subject: Sender of message
         """
-        if not time:
-            time = subject.server.get_time()
-        super(UnitMessage, self).__init__(time=time, **kw)
+        super(UnitMessage, self).__init__(**kw)
         self.subject = subject
 
     def as_dict(self):
@@ -118,6 +113,7 @@ class RangeViewMessage(UnitMessage):
 
 
 class Out(RangeViewMessage):
+
     def as_dict(self):
         d = super(Out, self).as_dict()
         d.update(object_id=self.obj.uid)
@@ -128,7 +124,7 @@ class See(RangeViewMessage):
 
     def as_dict(self):
         d = super(See, self).as_dict()
-        d.update(object=self.obj.as_dict())  # todo: Serialize objects with private case
+        d.update(object=self.obj.as_dict(self.time))  # todo: Serialize objects with private case
         return d
 
 
@@ -137,4 +133,10 @@ class Contact(See):
 
 
 class Update(See):
-    pass
+
+    def __init__(self, time=None, **kw):
+        subject = kw['subject']
+        if not time:
+            time = subject.server.get_time()
+            # todo: check time
+        super(Update, self).__init__(time=time, **kw)

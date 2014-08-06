@@ -154,22 +154,30 @@
 
 /* Настройки кнопки стоп! */
 .slider-speed-stop-main {
-    background-image: url('/static/img/CruiseControl/if_spd_digital_speed.png');
+    background-image: url('/static/img/CruiseControl/if_spd_stop_normal.png');
     background-repeat: no-repeat;
+    background-position: center;
     position: relative;
-    height: 39px;
-    width: 68px;
-    margin-top: 15.5px;
-    text-align: center;
-    font: bold 19px Arial;
-    color: #2dc34a;
-    padding-top: 8px;
+    height: 34px;
+    width: 54px;
+    margin-top: 6px;
+    margin-left: 7px;
     opacity: 0.8;
     pointer-events: auto;
 }
 
 .slider-speed-stop-main:hover {
     opacity: 1;
+    height: 36px;
+    width: 56px;
+    margin-top: 5px;
+    margin-left: 5.5px;
+    background-image: url('/static/img/CruiseControl/if_spd_stop_over.png');
+}
+
+.slider-speed-stop-main:active {
+    opacity: 1;
+    background-image: url('/static/img/CruiseControl/if_spd_stop_pressed.png');
 }
 
 /* Настройка кнопки стоп завершена */

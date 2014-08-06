@@ -108,12 +108,14 @@ var SectorsView = (function () {
             _map: null,
             rotateAngle: 0,
             sectors: [],
-            countPoints: 10
+            countPoints: 10,
+            shootDelay: 15    // количество "тиков" перерисовки состояния "выстрел" (до перезарядки)
         };
 
         if (options) {
             if (options._map) this.options._map = options._map;
             if (options.countPoints) this.options.countPoints = options.countPoints;
+            if (options.shootDelay) this.options.shootDelay = Math.round(options.shootDelay);
         }
 
         // Сделать addSector для каждого элемента массива options.sectors
@@ -146,16 +148,13 @@ var SectorsView = (function () {
             sector._points.push(new rotateVector(vertVIn, angle));
         }
 
+        sector.shootState = 0; // Состояние выстрела/перезарядки/нормальное
         sector._fireSector = fireSector;
         this.options.sectors.push(sector);
     }
 
     SectorsView.prototype.drawSectors = function (aNewPoint, aNewAngle) {
         this.options.sectors.forEach(function (sector) {
-            if (this.map.hasLayer(sector.polygon)) {
-                this.map.removeLayer(sector.polygon);
-            }
-
             var tempCenter = this.map.project(this.center, 16);
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
@@ -166,22 +165,69 @@ var SectorsView = (function () {
                 tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], 16));
             }
 
-            sector.polygon = L.polygon(tempPoints, {
+            if (this.map.hasLayer(sector.polygon)) {
+                sector.polygon.setLatLngs(tempPoints);
+
+                if (sector.shootState > 0) { // Если был выстрел, т.е. сейчас жёлтый(оранжевый) сектор
+                    sector.shootState--;
+
+                    sector.polygon.setStyle({
+                        fillOpacity: (this.shootDelay - sector.shootState) / this.shootDelay * 0.8
+                    });
+
+                    if(sector.shootState == 0) { // "Анимация" выстрела прошла, началась перезарядка
+                        // Сделать серым - т.е. сектор перезаряжается
+                        sector.polygon.setStyle({
+                            fillColor: '#666666',
+                            fillOpacity: 0.4
+                        });
+                    }
+                }
+            }
+            else {
+                sector.polygon = L.polygon(tempPoints, {
                     weight: 0,
                     fillColor: '#32cd32',
                     fillOpacity: 0.2,
                     clickable: false
                 });
+                this.map.addLayer(sector.polygon);
+            }
+        }, {center: aNewPoint, angle: aNewAngle, map: this.options._map, shootDelay: this.options.shootDelay});
+    };
 
-            this.map.addLayer(sector.polygon);
+    SectorsView.prototype.setNormalState = function (fireSector) {
+        var sector = this._getSectorByID(fireSector);
+        if (sector) {
+            // Установить нормальное состояние - сделать зелёным
+            sector.polygon.setStyle({
+                fillColor: '#32cd32',
+                fillOpacity: 0.2
+            });
+        }
+    };
 
-        }, {center: aNewPoint, angle: aNewAngle, map: this.options._map});
+    SectorsView.prototype.setShootState = function (fireSector) {
+        var sector = this._getSectorByID(fireSector);
+        if (sector) {
+            // Установить состояние выстрела
+            sector.shootState = this.options.shootDelay;
+            sector.polygon.setStyle({
+                fillColor: '#9acd32',
+                fillOpacity: 0
+            });
+        }
+    };
 
+    SectorsView.prototype._getSectorByID = function(fireSector){
+        for (var i = 0; i < this.options.sectors.length; i++) {
+            if (this.options.sectors[i]._fireSector.uid == fireSector.uid)
+                return this.options.sectors[i];
+        }
     };
 
     return SectorsView;
 })();
-
 
 // Траектория движения (TrackView)
 var TrackView = (function (){
@@ -218,8 +264,10 @@ var TrackView = (function (){
             this.map.unproject([obj.a.x, obj.a.y], 16),
             obj.bl
         ],{
-            stroke: 0.5,
-            color: '#00FF00'
+            stroke: true,
+            color: '#00FF00',
+            weight: '1px',
+            dashArray: "5, 5"
         }).addTo(this.map);
 
         this.trackes.push(obj);
@@ -246,8 +294,8 @@ var TrackView = (function (){
         if(this.currentTrack){
             // перерисовываем текущую линию
             this.currentTrack.line.setLatLngs([
-                aPos,
-                this.currentTrack.bl
+                this.currentTrack.bl,
+                aPos
             ]);
         }
 
@@ -337,7 +385,8 @@ var UserCarMarker = (function () {
         this.sectorsView.drawSectors(aNewPoint, aNewAngle);
 
         // Перерисовка траектории
-        //this.trackView.draw(aNewPoint);
+        if(! flagDebug)
+            this.trackView.draw(aNewPoint);
     }
 
     return UserCarMarker;

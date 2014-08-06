@@ -157,17 +157,10 @@ $(document).ready(function () {
         }
     };
 
-    //Включение отображения карты
-    buttonMapOn.onclick = function () {
-        tileLayerShow.addTo(myMap);
-    };
+    // Включение/Выключение отображения карты
+    buttonMapOnOffBtn.onclick = TileLayerToogle;
 
-    //Выключение отображения карты
-    buttonMapOff.onclick = function () {
-        myMap.removeLayer(tileLayerShow);
-    };
-
-    //Кнопка Debug
+    // Кнопка Debug
     buttonDebugOnOff.onclick = DegugToggle;
 
 
@@ -199,6 +192,7 @@ $(document).ready(function () {
     chat.addChat(-4, 'log-rpc');
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
+    chat.setVisible(false);
 
 
     backLight = new BackLight({
@@ -211,6 +205,23 @@ $(document).ready(function () {
     timer = setInterval(redrawMap, timerDelay);
 
 });
+
+
+
+
+function TileLayerToogle(){
+    var jSelector = $('#buttonMapOnOffStatus');
+    if(myMap.hasLayer(tileLayerShow)){
+        myMap.removeLayer(tileLayerShow);
+        jSelector.removeClass('buttonMapOnOffStatusOn');
+        jSelector.addClass('buttonMapOnOffStatusOff');
+    }
+    else {
+        tileLayerShow.addTo(myMap);
+        jSelector.removeClass('buttonMapOnOffStatusOff');
+        jSelector.addClass('buttonMapOnOffStatusOn');
+    }
+}
 
 
 

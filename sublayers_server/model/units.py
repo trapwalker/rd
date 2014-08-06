@@ -13,7 +13,7 @@ from math import pi
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, owner=None, **kw):
+    def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: sublayers_server.model.tasks.Task | None"""
@@ -22,6 +22,58 @@ class Unit(Observer):
         self.server.statics.append(self)
         self.server.static_observers.append(self)
         self.owner = owner
+        self.max_hp = max_hp
+        self._hp = max_hp
+        self._direction = direction
+        self.defence = defence
+        if weapons:
+            for weapon in weapons:
+                weapon.owner = self
+        # todo: (!) attach/detach weapon and other stuff to/from unit (event)
+        self.weapons = weapons or []
+        """@type: list[sublayers_server.model.weapon.Weapon]"""
+
+    @property
+    def direction(self):
+        """
+        @rtype: float
+        """
+        return self._direction
+
+    @property
+    def is_died(self):
+        return self.hp == 0
+
+    @property
+    def hp(self):
+        return self._hp
+
+    def hit(self, hp):
+        if self.max_hp is None:
+            return
+
+        hp *= self.defence
+
+        if not hp:
+            return
+
+        new_hp = self.hp
+        new_hp -= hp
+        if new_hp < 0:
+            new_hp = 0
+
+        if new_hp > self.max_hp:
+            new_hp = self.max_hp
+
+        if new_hp != self.hp:
+            self._hp = new_hp
+            if new_hp == 0:
+                self.on_die()  # todo: implementation
+            else:
+                self.on_change(comment='HP {}->{}'.format(self.hp, new_hp))
+
+    def on_die(self):
+        self.on_change(comment='RIP')
 
     def set_tasklist(self, task_or_list, append=False):
         if isinstance(task_or_list, tasks.Task):
@@ -64,11 +116,15 @@ class Unit(Observer):
         self.task_list = []
         self.next_task()
 
-    def as_dict(self):
-        d = super(Unit, self).as_dict()
+    def as_dict(self, to_time=None):
+        d = super(Unit, self).as_dict(to_time)
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
+            direction=self.direction,
+            hp=self.hp,
+            max_hp=self.max_hp,
+            weapons=[weapon.as_dict(to_time=to_time) for weapon in self.weapons],
         )
         return d
 
@@ -106,18 +162,18 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, direction=-pi/2, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
-        self._direction = direction
 
-    def as_dict(self):
-        d = super(Bot, self).as_dict()
+    def as_dict(self, to_time=None):
+        if not to_time:
+            to_time = self.server.get_time()
+        d = super(Bot, self).as_dict(to_time)
         d.update(
-            motion=self.motion.as_dict() if self.motion else None,
-            direction=self.direction,
+            motion=self.motion.motion_info(to_time) if self.motion else None,
             max_velocity=self.max_velocity,
         )
         return d
@@ -137,7 +193,10 @@ class Bot(Unit):
         )
 
         self.set_tasklist([
+            tasks.GotoArc(owner=self, target_point=segment['b'], arc_params=segment)
+            if 'r' in segment else
             tasks.Goto(owner=self, target_point=segment['b'])
+
             for segment in path
         ], append=chain)
 
@@ -166,7 +225,7 @@ class Bot(Unit):
         """
         @rtype: float
         """
-        return self.motion.direction if self.motion else self._direction
+        return self.motion.direction if self.motion else super(Bot, self).direction
 
     @direction.setter
     def direction(self, value):

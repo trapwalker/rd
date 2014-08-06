@@ -56,14 +56,11 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
-    def as_dict(self):
+    def as_dict(self, to_time=None):
         return dict(
             cls=self.classname,
             uid=self.uid,
         )
-
-    def serialize(self):
-        return serialize(self.as_dict())
 
 
 class PointObject(Object):
@@ -77,8 +74,8 @@ class PointObject(Object):
         self._position = position
         """@type: sublayers_server.model.vectors.Point"""
 
-    def as_dict(self):
-        d = super(PointObject, self).as_dict()
+    def as_dict(self, to_time=None):
+        d = super(PointObject, self).as_dict(to_time)
         d.update(position=self.position)
         return d
 
@@ -107,9 +104,9 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         super(VisibleObject, self).__init__(**kw)
         self.init_contacts_search()
 
-    def on_change(self):  # todo: privacy level index
+    def on_change(self, comment=None):  # todo: privacy level index
         # todo: emit update message
-        self.contacts_refresh()
+        self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         self.emit_for__Observer()  # todo: arguments?
 
     def contacts_refresh(self):
@@ -134,7 +131,6 @@ class VisibleObject(PointObject, EmitterFor__Observer):
                 self.init_contact_test(obj)
 
         self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
-        log.debug('INIT CONTACTS SEARCH %s: found %d contacts', self, len(contacts))
 
     def special_contacts_search(self):
         contacts = self.contacts
@@ -186,9 +182,11 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         if self.can_see(obj):
             self.contacts.append(ContactSee(time=self.server.get_time(), subj=self, obj=obj))  # todo: optimize
 
-    def on_change(self):
-        super(Observer, self).on_change()
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=self, comment='message for owner'))
+    def on_change(self, comment=None):
+        super(Observer, self).on_change(comment)
+        self.emit_for__Agent(
+            message=messages.Update(subject=self, obj=self, comment='message for owner: {}'.format(comment))
+        )
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
         self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
@@ -205,7 +203,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника
 
-    def as_dict(self):
-        d = super(Observer, self).as_dict()
+    def as_dict(self, to_time=None):
+        d = super(Observer, self).as_dict(to_time)
         d.update(r=self.r)
         return d
