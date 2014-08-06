@@ -61,7 +61,7 @@ class AgentAPI(API):
         if last_motion:
             car.stop()
             car.max_velocity = new_speed  # todo: check value
-            path = car.goto(last_motion.target_point)
+            path = car.goto(last_motion.target_point)  # todo: target point in abstract Motion is absent
             return dict(path=path)
         else:
             car.max_velocity = new_speed  # todo: check value
