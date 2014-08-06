@@ -51,11 +51,20 @@ class AgentAPI(API):
     @public_method
     def set_speed(self, new_speed):
         car = self.car
-        car.max_velocity = new_speed  # todo: check value
-        motions = filter(lambda task: isinstance(task, tasks.Motion), [car.task] + car.task_list)
-        if motions:
-            path = car.goto(motions[-1].target_point)
+        last_motion = None
+        for task in reversed(car.task_list):
+            if isinstance(task, tasks.Motion):
+                last_motion= task
+                break
+
+        last_motion = last_motion or isinstance(car.task, tasks.Motion) and car.task
+        if last_motion:
+            car.stop()
+            car.max_velocity = new_speed  # todo: check value
+            path = car.goto(last_motion.target_point)  # todo: target point in abstract Motion is absent
             return dict(path=path)
+        else:
+            car.max_velocity = new_speed  # todo: check value
 
     @public_method
     def chat_message(self, text):

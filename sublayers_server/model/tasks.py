@@ -174,8 +174,9 @@ class Motion(Determined):
         self.start_direction = self.owner.direction
 
     def on_after_end(self, **kw):
-        self.owner.position = self.get_position(self.finish_time)
-        self.owner.direction = self.get_direction(self.finish_time)
+        t = self.finish_time if self.is_done else self._get_time()
+        self.owner.position = self.get_position(t)
+        self.owner.direction = self.get_direction(t)
         log.info('OWNER Position UPDATE===============================')
         super(Motion, self).on_after_end(**kw)
 
