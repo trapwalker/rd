@@ -104,9 +104,9 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         super(VisibleObject, self).__init__(**kw)
         self.init_contacts_search()
 
-    def on_change(self):  # todo: privacy level index
+    def on_change(self, comment=None):  # todo: privacy level index
         # todo: emit update message
-        self.contacts_refresh()
+        self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         self.emit_for__Observer()  # todo: arguments?
 
     def contacts_refresh(self):
@@ -182,9 +182,11 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         if self.can_see(obj):
             self.contacts.append(ContactSee(time=self.server.get_time(), subj=self, obj=obj))  # todo: optimize
 
-    def on_change(self):
-        super(Observer, self).on_change()
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=self, comment='message for owner'))
+    def on_change(self, comment=None):
+        super(Observer, self).on_change(comment)
+        self.emit_for__Agent(
+            message=messages.Update(subject=self, obj=self, comment='message for owner: {}'.format(comment))
+        )
 
     def on_event_from__VisibleObject(self, emitter, *av, **kw):
         self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
