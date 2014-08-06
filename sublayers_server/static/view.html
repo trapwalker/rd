@@ -42,9 +42,11 @@
 <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
 <div id="divButtons">
     <input id="buttonFullScreen" type="image" src="img/button_fullscreen_unclicked.png">
-    <input id="buttonMapOn" type="image" src="img/button_map_on.png">
-    <input id="buttonMapOff" type="image" src="img/button_map_off.png">
-    <input id="buttonDebugOnOff" type="image" src="img/button_debug_on_off.png">
+    <div id="buttonMapOnOff" class="sublayers-unclickable">
+        <div id="buttonMapOnOffStatus"  class="buttonMapOnOffStatusOn"></div>
+        <div id="buttonMapOnOffBtn" class="sublayers-clickable"></div>
+    </div>
+    <div id="buttonDebugOnOff" class="sublayers-clickable"></div>
 </div>
 <div id="divScaleCarFuel"></div>
 <div id="divScaleCarHealth"></div>

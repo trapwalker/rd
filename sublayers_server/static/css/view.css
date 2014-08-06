@@ -77,23 +77,64 @@ body{
     right: 15px;
 }
 
-#buttonMapOn {
+#buttonMapOnOff {
     position: absolute;
-    top: 120px;
+    top: 110px;
     right: 15px;
+    width: 62px;
+    height: 62px;
 }
 
-#buttonMapOff {
+
+#buttonMapOnOffBtn {
     position: absolute;
-    top: 180px;
-    right: 15px;
+    background: transparent url('/static/img/misc_button/btn_drawmap_normal.png') 100% 100% no-repeat;
+    width: 62px;
+    height: 62px;
+}
+
+#buttonMapOnOffBtn:hover {
+    background: transparent url('/static/img/misc_button/btn_drawmap_over.png') 100% 100% no-repeat;
+}
+
+#buttonMapOnOffBtn:active {
+    background: transparent url('/static/img/misc_button/btn_drawmap_pressed.png') 100% 100% no-repeat;
+}
+
+.buttonMapOnOffStatusOn, .buttonMapOnOffStatusOff {
+    position: absolute;
+    left: -15px;
+    top: 5px;
+    width: 13px;
+    height: 13px;
+}
+
+
+.buttonMapOnOffStatusOn {
+    background: transparent url('/static/img/misc_button/ico_status_on.png') 100% 100% no-repeat;
+}
+
+.buttonMapOnOffStatusOff {
+    background: transparent url('/static/img/misc_button/ico_status_off.png') 100% 100% no-repeat;
 }
 
 #buttonDebugOnOff {
     position: absolute;
-    top: 240px;
+    top: 180px;
     right: 15px;
+    width: 62px;
+    height: 62px;
+    background: transparent url('/static/img/misc_button/btn_bug_normal.png') 100% 100% no-repeat;
 }
+
+#buttonDebugOnOff:hover {
+    background: transparent url('/static/img/misc_button/btn_bug_over.png') 100% 100% no-repeat;
+}
+
+#buttonDebugOnOff:active {
+    background: transparent url('/static/img/misc_button/btn_bug_pressed.png') 100% 100% no-repeat;
+}
+
 
 input:focus {
     outline: none;
