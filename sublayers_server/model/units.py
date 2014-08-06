@@ -13,7 +13,7 @@ from math import pi
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, owner=None, max_hp=None, **kw):
+    def __init__(self, owner=None, max_hp=None, direction=-pi/2, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: sublayers_server.model.tasks.Task | None"""
@@ -24,6 +24,14 @@ class Unit(Observer):
         self.owner = owner
         self.max_hp = max_hp
         self._hp = max_hp
+        self._direction = direction
+
+    @property
+    def direction(self):
+        """
+        @rtype: float
+        """
+        return self._direction
 
     @property
     def is_died(self):
@@ -101,6 +109,7 @@ class Unit(Observer):
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
+            direction=self.direction,
             hp=self.hp,
             max_hp=self.max_hp,
         )
@@ -140,12 +149,11 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, direction=-pi/2, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
-        self._direction = direction
 
     def as_dict(self, to_time=None):
         if not to_time:
@@ -153,7 +161,6 @@ class Bot(Unit):
         d = super(Bot, self).as_dict(to_time)
         d.update(
             motion=self.motion.motion_info(to_time) if self.motion else None,
-            direction=self.direction,
             max_velocity=self.max_velocity,
         )
         return d
@@ -205,7 +212,7 @@ class Bot(Unit):
         """
         @rtype: float
         """
-        return self.motion.direction if self.motion else self._direction
+        return self.motion.direction if self.motion else super(Bot, self).direction
 
     @direction.setter
     def direction(self, value):
