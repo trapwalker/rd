@@ -13,7 +13,7 @@ from math import pi
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, owner=None, **kw):
+    def __init__(self, owner=None, max_hp=None, **kw):
         super(Unit, self).__init__(**kw)
         self._task = None
         """@type: sublayers_server.model.tasks.Task | None"""
@@ -22,6 +22,38 @@ class Unit(Observer):
         self.server.statics.append(self)
         self.server.static_observers.append(self)
         self.owner = owner
+        self.max_hp = max_hp
+        self._hp = max_hp
+
+    @property
+    def is_died(self):
+        return self.hp == 0
+
+    @property
+    def hp(self):
+        return self._hp
+
+    def hit(self, hp):
+        if self.max_hp is None:
+            return
+
+        new_hp = self.hp
+        new_hp -= hp
+        if new_hp < 0:
+            new_hp = 0
+
+        if new_hp > self.max_hp:
+            new_hp = self.max_hp
+
+        if new_hp != self.hp:
+            self._hp = new_hp
+            if new_hp == 0:
+                self.on_die()  # todo: implementation
+            else:
+                self.on_change(comment='HP {}->{}'.format(self.hp, new_hp))
+
+    def on_die(self):
+        self.on_change(comment='RIP')
 
     def set_tasklist(self, task_or_list, append=False):
         if isinstance(task_or_list, tasks.Task):
@@ -69,6 +101,8 @@ class Unit(Observer):
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
+            hp=self.hp,
+            max_hp=self.max_hp,
         )
         return d
 
