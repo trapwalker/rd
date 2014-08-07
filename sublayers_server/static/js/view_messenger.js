@@ -78,7 +78,7 @@ var ViewMessenger = (function () {
         //добавление кнопки 'отправить соосбщение'
         this.vMEB = $("<div id='viewMessengerEnterButton' class='sublayers-clickable'></div>");
         this.vMFA.append(this.vMEB);
-        this.vMEB.on('click', this.viewMessngerSendMessage);
+        this.vMEB.on('click', this.viewMessengerSendMessage);
 
         //добавление дива с Input
         this.vMIA = $("<div id='viewMessengerInputArea'></div>");
@@ -93,7 +93,13 @@ var ViewMessenger = (function () {
 
         this.vMI.on('keydown', {self: this}, function (event) {
             if (event.keyCode == 13) {
-                event.data.self.viewMessngerSendMessage();
+                event.data.self.viewMessengerSendMessage();
+            }
+            if (event.keyCode == 38) { // стрелка вверх
+                event.data.self.setNextHistoryMessage();
+            }
+            if (event.keyCode == 40) { // стрелка вниз
+                event.data.self.setPrevHistoryMessage();
             }
         });
 
@@ -108,6 +114,9 @@ var ViewMessenger = (function () {
 
         // Установка активного чата по умолчанию
         this._activeChatID = 0;
+        // Инициализация истории сообщений
+        this._history = [];
+        this._historyIndex = -1;
     }
 
 
@@ -263,15 +272,67 @@ var ViewMessenger = (function () {
             this.addMessage(-1, this.pushID, new Date(), {login: 'Push от сервера #' + this.pushID}, '<pre>' + aText + '</pre>');
         }
 
+    };
+
+    ViewMessenger.prototype.addMessageToHistory = function(mes){
+        // Сверить с нулевый элементом истории, если совпадает, то не добавлять. Иначе добавить
+        if ( !(this._history.length > 0) || (!(mes === this._history[0]))) {
+            // Добавить в хистори
+            this._history.unshift(mes);
+            // Очистить старые сообщения хистори
+            if (this._history.length > this.options.mesCountInChat) {
+                this._history.pop();
+            }
+        }
+        // сбросить индекс в -1, так как было добавление
+        this._historyIndex = -1;
+    };
+
+    // Установить в инпут сообщение из истории под заданным индексом
+    // TODO: при установке сообщения переместить картеку в конец строки
+    ViewMessenger.prototype._setInputHistoryMessage = function () {
+        if ((this._historyIndex >= 0) && (this._history.length > 0)) {
+            chat.vMI.val(this._history[this._historyIndex]).focus();
+            // Установка каретки в конец сообщения
+            //var len = this._history[this._historyIndex].length;
+            //alert(len);
+            //chat.vMI[0].setSelectionRange(len,len);
+          //  chat.vMI.each(function () {
+          //      var len = $(this).val().length;
+          //      this.setSelectionRange(len, len);
+          //  });
+        }
+        else {
+            chat.vMI.val('').focus();
+        }
     }
 
+    // Установить следующее сообщение в инпут, более старое
+    ViewMessenger.prototype.setNextHistoryMessage = function () {
+        chat._historyIndex++;
+        if (chat._historyIndex >= chat._history.length)  // Если это последнее сообщение
+            chat._historyIndex = chat._history.length - 1;
+        // Установить сообщение
+        chat._setInputHistoryMessage();
+    };
 
-    ViewMessenger.prototype.addMessageToSystem = function(messID, aText) {
+
+    // Установить предыдущее сообщение в инпут, более новое!!!
+    ViewMessenger.prototype.setPrevHistoryMessage = function () {
+        chat._historyIndex--;
+        if (chat._historyIndex < -1) {  //
+            chat._historyIndex = -1;
+        }
+        // Установить сообщение
+        chat._setInputHistoryMessage();
+    };
+
+    ViewMessenger.prototype.addMessageToSystem = function (messID, aText) {
         this.addMessage(-2, messID, new Date(), {login: '#'}, aText);
     }
 
 
-    ViewMessenger.prototype.viewMessngerSendMessage = function() {
+    ViewMessenger.prototype.viewMessengerSendMessage = function() {
         var str = chat.vMI.val();
         if (str.length) {
             if (chat._activeChatID >= 0) {
@@ -280,6 +341,8 @@ var ViewMessenger = (function () {
                 sendServConsole(str);
             }
             chat.vMI.val('').focus();
+            // Добавление сообщения в историю
+            chat.addMessageToHistory(str);
         } else {
             chat.vMI.focus()
         }
