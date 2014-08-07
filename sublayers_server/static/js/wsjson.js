@@ -119,6 +119,20 @@ function sendChatMessage(atext, auid) {
     chat.addMessageToLog(JSON.stringify(mes), 'rpc');
 }
 
+// Консоль  для сервера, срабатывает при отправке сообщений из активных debug-чатов
+function sendServConsole(atext){
+    var mes = {
+        call: "console_cmd",
+        rpc_call_id: rpcCallList.getID(),
+        params: {
+            cmd: atext
+        }
+    };
+    rpcCallList.add(mes);
+    wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+}
+
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data){
 

@@ -145,7 +145,7 @@ var MoveCircle = (function (_super) {
 
     MoveCircle.prototype.getCurrentDirection = function (aClockTime) {
         // перпендикуляр текущего угла поворота радиус-Вектора
-        return this.angleStart + this._getCurrentRadiusAngle(aClockTime) + (this.CCW == 0 ? -1 : 1) * Math.PI / 2;
+        return this.angleStart + (this.CCW == 0 ? -1 : 1) * Math.PI / 2 + this._getCurrentRadiusAngle(aClockTime);
     };
 
     MoveCircle.prototype._getCurrentRadiusAngle = function (aClockTime) {
