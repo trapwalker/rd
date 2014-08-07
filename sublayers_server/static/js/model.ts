@@ -152,18 +152,19 @@ class MoveCircle extends MoveTrack {
     }
 
     getCurrentCoord(aClockTime:number):Point {
-        //return summVector(mulScalVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)), -(this.CCW == 0 ? -1 : 1)), this.centerCircle);
-        return this.centerCircle;
+        return summVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)),
+                          this.centerCircle);
     }
 
     getCurrentDirection(aClockTime:number):number {
         // перпендикуляр текущего угла поворота радиус-Вектора
-        return this._getCurrentRadiusAngle(aClockTime) + (this.CCW == 0 ? -1 : 1) * Math.PI / 2;
+        return this.angleStart + this._getCurrentRadiusAngle(aClockTime) + (this.CCW == 0 ? -1 : 1) * Math.PI / 2;
     }
 
     _getCurrentRadiusAngle(aClockTime:number):number {
         var t = this.getRelativelyTime(aClockTime);
-        return this.angleStart + this.speedA * t + this.accelerationA * t * t;
+        //return this.angleStart + this.speedA * t + this.accelerationA * t * t;
+        return this.speedA * t + this.accelerationA * t * t;
     }
 
     getCurrentSpeedAbs(aClockTime:number):number {

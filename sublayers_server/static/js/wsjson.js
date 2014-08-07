@@ -342,10 +342,10 @@ function getCircleMotion(motion){
     // Время, на преодоление прямого участка с текущей линейной скоростью
     var tLinear = distancePoints(a, b) / vLinear.abs();  // секунды
     // Расчёт длины по окружности
-    var lArc = (beta - alpha);
+    var lArc = beta - alpha;
     // Расчёт радиальной скорости - получаем изменение угла в секунду   = rad/s
     var w = lArc / tLinear;
-    // Радиус-вектор, который мы будем повораивать со скоростью w для вычисления позиции и направления машинки
+    // Радиус-вектор, который мы будем поворачивать со скоростью w для вычисления позиции и направления машинки
     var radiusV = subVector(a,c);
     // время начала движения
     var start_time = motion.time ? motion.time : (new Date().getTime());

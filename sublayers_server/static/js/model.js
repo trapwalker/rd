@@ -140,18 +140,19 @@ var MoveCircle = (function (_super) {
         this.CCW = aCCW;
     }
     MoveCircle.prototype.getCurrentCoord = function (aClockTime) {
-        //return summVector(mulScalVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)), -(this.CCW == 0 ? -1 : 1)), this.centerCircle);
-        return this.centerCircle;
+        return summVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)), this.centerCircle);
     };
 
     MoveCircle.prototype.getCurrentDirection = function (aClockTime) {
         // перпендикуляр текущего угла поворота радиус-Вектора
-        return this._getCurrentRadiusAngle(aClockTime) + (this.CCW == 0 ? -1 : 1) * Math.PI / 2;
+        return this.angleStart + this._getCurrentRadiusAngle(aClockTime) + (this.CCW == 0 ? -1 : 1) * Math.PI / 2;
     };
 
     MoveCircle.prototype._getCurrentRadiusAngle = function (aClockTime) {
         var t = this.getRelativelyTime(aClockTime);
-        return this.angleStart + this.speedA * t + this.accelerationA * t * t;
+
+        //return this.angleStart + this.speedA * t + this.accelerationA * t * t;
+        return this.speedA * t + this.accelerationA * t * t;
     };
 
     MoveCircle.prototype.getCurrentSpeedAbs = function (aClockTime) {
