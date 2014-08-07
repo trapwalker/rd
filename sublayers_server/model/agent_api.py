@@ -13,6 +13,8 @@ from utils import serialize
 from messages import ChatMessage
 import tasks
 from weapons import SectoralWeapon
+from console import Shell
+
 
 def make_push_package(events):
     events = [event.as_dict() for event in events]
@@ -42,6 +44,13 @@ class AgentAPI(API):
                 ],
             )
             self.agent.append_car(self.car)
+
+        self.shell = Shell(dict(
+            ME=self.agent,
+            API=self,
+            SRV=self.agent.server,
+            CAR=self.car,
+        ))
 
     @public_method
     def goto(self, x, y):
@@ -96,5 +105,4 @@ class AgentAPI(API):
     @public_method
     def console_cmd(self, cmd):
         log.info('Agent %s cmd: %r', self.agent.login, cmd)
-
-
+        self.shell.run(cmd)
