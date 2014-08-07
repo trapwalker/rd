@@ -6,12 +6,9 @@ log = logging.getLogger(__name__)
 from math import copysign, pi, sqrt, acos, ceil
 
 from vectors import Point
+from balance import BALANCE
 
 EPS = 1e-6
-
-
-def rv_relation(v):
-    return abs(v) + 5
 
 
 def pfmt(x, indent=0, indent_filling='  '):
@@ -60,7 +57,7 @@ def circle_interpolate(r, c, alpha, beta, ccw, tags=(), accuracy=16, **_):
     return segments
 
 
-def build_trajectory(p, direction_angle, velocity, t, rv_func=rv_relation):
+def build_trajectory(p, direction_angle, velocity, t, rv_func=BALANCE.Bot.rv_relation):
     """Calculate and return segmets of trajectory:
     @param p: sublayers_server.model.vectors.Point
     @param direction_angle: float

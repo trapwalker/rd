@@ -15,6 +15,10 @@ class BALANCE:
         velocity = 100.0  # m/s
         max_hp = 100.0
 
+        @staticmethod
+        def rv_relation(v):
+            return abs(v) + 5
+
     class Weapon:
         damage = 10.0
         r = 50.0
