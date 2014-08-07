@@ -158,7 +158,7 @@ class MoveCircle extends MoveTrack {
 
     getCurrentDirection(aClockTime:number):number {
         // перпендикуляр текущего угла поворота радиус-Вектора
-        return this.angleStart + this._getCurrentRadiusAngle(aClockTime) + (this.CCW == 0 ? -1 : 1) * Math.PI / 2;
+        return this.angleStart + (this.CCW == 0 ? -1 : 1) * Math.PI / 2 + this._getCurrentRadiusAngle(aClockTime) ;
     }
 
     _getCurrentRadiusAngle(aClockTime:number):number {
