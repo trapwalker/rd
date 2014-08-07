@@ -112,14 +112,14 @@ class Determined(Task):
         self._duration = duration
         self.end_task_event = None
 
+    def cancel(self, **kw):
+        super(Determined, self).cancel(**kw)
+        self.end_task_event.actual = False
+
     def on_after_start(self, **kw):
         super(Determined, self).on_after_start(**kw)
         self.end_task_event = TaskEnd(time=self.finish_time, task=self)
         self.owner.server.post_event(self.end_task_event)
-
-    def on_after_end(self, **kw):
-        self.end_task_event.actual = False
-        super(Determined, self).on_after_end(**kw)
 
     @property
     def duration(self):
