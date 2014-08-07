@@ -130,24 +130,33 @@ var MoveLine = (function (_super) {
 
 var MoveCircle = (function (_super) {
     __extends(MoveCircle, _super);
-    function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aAngleStart, aSpeedA, aAccelerationA, aRadius) {
+    function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aRadiusVector, aAngleStart, aSpeedA, aAccelerationA, aCCW) {
         _super.call(this, aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
         this.speedA = aSpeedA;
         this.accelerationA = aAccelerationA;
-        this.radius = aRadius;
+        this.radiusVector = aRadiusVector;
+        this.CCW = aCCW;
     }
     MoveCircle.prototype.getCurrentCoord = function (aClockTime) {
-        return null;
+        return summVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)), this.centerCircle);
     };
 
     MoveCircle.prototype.getCurrentDirection = function (aClockTime) {
-        return null;
+        // перпендикуляр текущего угла поворота радиус-Вектора
+        return this.angleStart + (this.CCW == 0 ? -1 : 1) * Math.PI / 2 + this._getCurrentRadiusAngle(aClockTime);
+    };
+
+    MoveCircle.prototype._getCurrentRadiusAngle = function (aClockTime) {
+        var t = this.getRelativelyTime(aClockTime);
+
+        //return this.angleStart + this.speedA * t + this.accelerationA * t * t;
+        return this.speedA * t + this.accelerationA * t * t;
     };
 
     MoveCircle.prototype.getCurrentSpeedAbs = function (aClockTime) {
-        return null;
+        return 0;
     };
     return MoveCircle;
 })(MoveTrack);

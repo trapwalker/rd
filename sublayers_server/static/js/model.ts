@@ -138,27 +138,37 @@ class MoveCircle extends MoveTrack {
     angleStart:number;
     speedA:number;
     accelerationA:number;
-    radius:number;
+    radiusVector: Point;
+    CCW: number; // По часовой стрелке движение или против неё
 
-    constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle:Point, aAngleStart, aSpeedA, aAccelerationA, aRadius:number) {
+    constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA, aCCW:number) {
         super(aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
         this.speedA = aSpeedA;
         this.accelerationA = aAccelerationA;
-        this.radius = aRadius;
+        this.radiusVector = aRadiusVector;
+        this.CCW = aCCW;
     }
 
     getCurrentCoord(aClockTime:number):Point {
-        return null;
+        return summVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)),
+                          this.centerCircle);
     }
 
     getCurrentDirection(aClockTime:number):number {
-        return null;
+        // перпендикуляр текущего угла поворота радиус-Вектора
+        return this.angleStart + (this.CCW == 0 ? -1 : 1) * Math.PI / 2 + this._getCurrentRadiusAngle(aClockTime) ;
+    }
+
+    _getCurrentRadiusAngle(aClockTime:number):number {
+        var t = this.getRelativelyTime(aClockTime);
+        //return this.angleStart + this.speedA * t + this.accelerationA * t * t;
+        return this.speedA * t + this.accelerationA * t * t;
     }
 
     getCurrentSpeedAbs(aClockTime:number):number {
-        return null;
+        return 0;
     }
 
 }

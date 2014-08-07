@@ -13,6 +13,8 @@ from utils import serialize
 from messages import ChatMessage
 import tasks
 from weapons import SectoralWeapon
+from console import Shell
+
 
 def make_push_package(events):
     events = [event.as_dict() for event in events]
@@ -35,13 +37,19 @@ class AgentAPI(API):
                 observing_range=1000,
                 owner=agent,
                 weapons=[
-                    SectoralWeapon(direction=0, sector_width=45, r=60),
-                    SectoralWeapon(direction=pi, sector_width=45, r=40),
-                    SectoralWeapon(direction=-pi/2, sector_width=45, r=40),
-                    SectoralWeapon(direction=pi/2, sector_width=45, r=40),
+                    SectoralWeapon(direction=0, sector_width=45, r=400),
+                    SectoralWeapon(direction=pi, sector_width=45, r=350),
+                    SectoralWeapon(direction=-pi/2, sector_width=60, r=300),
+                    SectoralWeapon(direction=pi/2, sector_width=60, r=300),
                 ],
             )
             self.agent.append_car(self.car)
+
+        self.shell = Shell(self.__dict__, dict(
+            SRV=self.agent.server,
+            PI=pi,
+            P=Point,
+        ))
 
     @public_method
     def goto(self, x, y):
@@ -92,3 +100,8 @@ class AgentAPI(API):
 
         for client_connection in app.clients:
             client_connection.write_message(push_data)
+
+    @public_method
+    def console_cmd(self, cmd):
+        log.info('Agent %s cmd: %r', self.agent.login, cmd)
+        self.shell.run(cmd)

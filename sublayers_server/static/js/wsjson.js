@@ -76,26 +76,19 @@ function sendStopCar() {
 
 // fire
 function sendFire(aUid) {
-    var id_rpc = rpcCallList.getID();
     var mes = {
         call: "fire",
-        rpc_call_id: id_rpc,
+        rpc_call_id: rpcCallList.getID(),
         params: {
-            uid: aUid // uid сектора, который совершил выстрел
-        }
+            weapon_num: aUid, // uid сектора, который совершил выстрел
+            enemy_list: backLightList.getListIDs()
+        },
+        weapon_num: aUid, // uid сектора, который совершил выстрел
+        enemy_list: backLightList.getListIDs()
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
     chat.addMessageToLog(JSON.stringify(mes), 'rpc');
-
-
-    var zagl = JSON.stringify({
-        message_type: 'answer',
-        result: 'OK',
-        rpc_call_id: id_rpc,
-        error: null
-    });
-    receiveMesFromServ(zagl);
 }
 
 // setSpeed
@@ -119,6 +112,20 @@ function sendChatMessage(atext, auid) {
         rpc_call_id: rpcCallList.getID(),
         params: {
             text: atext
+        }
+    };
+    rpcCallList.add(mes);
+    wsjson.socket.send(JSON.stringify(mes));
+    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+}
+
+// Консоль  для сервера, срабатывает при отправке сообщений из активных debug-чатов
+function sendServConsole(atext){
+    var mes = {
+        call: "console_cmd",
+        rpc_call_id: rpcCallList.getID(),
+        params: {
+            cmd: atext
         }
     };
     rpcCallList.add(mes);
@@ -166,15 +173,16 @@ function receiveMesFromServ(data){
                 // Update
                 var aTrack, aType, aHP, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
-                clock.setDt(servtime/1000.);
+                clock.setDt(servtime / 1000.);
+                if (event.object.hp)aHP = event.object.hp;
                 aTrack = getTrack(event.object);
                 owner = getOwner(event.object.owner);
-                updateCurrentCar(event.object.uid, aType, Math.random() * hpMaxProbka, aTrack);
+                updateCurrentCar(event.object.uid, aType, aHP, aTrack);
 
-                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     debugMapList.push(
-                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FF0000'})
+                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], 16), {color: '#FF0000'})
                             .setRadius(3)
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
@@ -189,9 +197,12 @@ function receiveMesFromServ(data){
                 // InitMessage
                 var aTrack = getTrack(event.cars[0]);
                 var max_speed;
+                var aHp = 0, aMaxHP = 30;
                 // Инициализация userCar
-                if(event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, Math.random() * hpMaxProbka, aTrack, max_speed);
+                if (event.cars[0].hp) aHP = event.cars[0].hp;
+                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
+                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
+                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
@@ -256,6 +267,13 @@ function getTrack(data){
 
         direction = data.motion.direction ? data.motion.direction : 0; // TODO: сделать вылет с ошибкой
 
+        // Если движение по дуге
+        if(data.motion.arc) {
+            aTrack = getCircleMotion(data.motion);
+            return aTrack;
+        }
+
+        else
         // motions
         if (data.motion.cls == "Goto") {
             // запустить функцию установки линейного движения
@@ -322,6 +340,46 @@ function getOwner(data) {
 }
 
 
+// Получение движения по кругу
+function getCircleMotion(motion){
+    var a = new Point(motion.arc.a.x, motion.arc.a.y);
+    var b = new Point(motion.arc.b.x, motion.arc.b.y);
+    var c = new Point(motion.arc.c.x, motion.arc.c.y);
+    var alpha = motion.arc.alpha;
+    var beta = motion.arc.beta;
+    var r = motion.arc.r;
+    var vLinear = new Point(motion.v.x, motion.v.y);
+
+    // Время, на преодоление прямого участка с текущей линейной скоростью
+    var tLinear = distancePoints(a, b) / vLinear.abs();  // секунды
+    // Расчёт длины по окружности
+    var lArc = beta - alpha;
+    // Расчёт радиальной скорости - получаем изменение угла в секунду   = rad/s
+    var w = lArc / tLinear;
+    // Радиус-вектор, который мы будем поворачивать со скоростью w для вычисления позиции и направления машинки
+    var radiusV = subVector(a,c);
+    // время начала движения
+    var start_time = motion.time ? motion.time : (new Date().getTime());
+    // движение по часовой стрелке или против часовой стрелки 1 = по часовой
+    var ccw = motion.arc.ccw;
+
+    //constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA:number)
+
+    return new MoveCircle(
+        start_time / 1000. , // Время начала движения
+        //clock.getCurrentTime(),
+        fuelMaxProbka,                          //Запас топлива
+        fuelDecrProbka,                          //Расход топлива
+        c,                  // центр поворота
+        radiusV,            // ралиус-вектор
+        alpha,              // начальный угол
+        w,                  // угловая скорость
+        0,                  // ускорение
+        ccw                 // По часовой стрелке или против неё
+    );
+
+}
+
 function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
@@ -356,19 +414,28 @@ function updateCurrentCar(uid, aType, aHP, aTrack) {
 
 }
 
-function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
+
+function getWeapons(data) {
+    var sectors = [];
+    data.forEach(function (weapon, index) {
+            // FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge)
+            // TODO: ввести позже правильный uid сектора и правильный речардж, когда будет присылаться
+            var sector = new FireSector(weapon.direction, gradToRad(weapon.sector_width), weapon.r, index, 2000);
+            sector.damage = weapon.damage;
+            this.sectors.push(sector);
+        }, {sectors: sectors} );
+    return sectors;
+}
+
+function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
     user.userCar = new UserCar(uid,       //ID машинки
         aType,       //Тип машинки
         aHP,      //HP машинки
         amax_speed,      //Максималка
         aTrack);   //Текущая траектория
 
-    var fireSectorsProbka = [
-        new FireSector(gradToRad(0), gradToRad(30), 400, 1, 6 * 1000),
-        new FireSector(gradToRad(180), gradToRad(50), 350, 2, 4 * 1000),
-        new FireSector(gradToRad(90), gradToRad(70), 300, 3, 2 * 1000),
-        new FireSector(gradToRad(-90), gradToRad(70), 300, 4, 2 * 1000)
-    ];
+
+    var fireSectors = getWeapons(aWeapons);
 
     // Инициализация маркера машинки
     userCarMarker = new UserCarMarker({
@@ -377,7 +444,7 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
         _map: myMap,
         radiusView: 1000,
         carID: uid,
-        sectors: fireSectorsProbka,
+        sectors: fireSectors,
         countSectorPoints: 20
     });
 
@@ -385,13 +452,8 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
     // controllers
     controllers = new Controllers({
         fuelMax: fuelMaxProbka,
-        hpMax: hpMaxProbka,
-        fireSectors: [
-            new FireSector(gradToRad(0), gradToRad(65), 400, 1, 6 * 1000),
-            new FireSector(gradToRad(180), gradToRad(65), 350, 2, 4 * 1000),
-            new FireSector(gradToRad(90), gradToRad(65), 300, 3, 2 * 1000),
-            new FireSector(gradToRad(-90), gradToRad(65), 300, 4, 2 * 1000)
-        ],
+        hpMax: aMaxHP,
+        fireSectors: fireSectors,
         max_velocity: amax_speed
     });
 
@@ -401,4 +463,3 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed) {
 
 var fuelMaxProbka = 500;
 var fuelDecrProbka = 1;
-var hpMaxProbka = 100;

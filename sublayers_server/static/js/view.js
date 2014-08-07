@@ -204,10 +204,19 @@ $(document).ready(function () {
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);
 
+
+    // location - Настройка параметров в URL#Hash
+   // urlHashSetup(window.location.toString().split('?')[1]);
+
 });
+/*
+function urlHashSetup(location){
+    // бьём location по признакам ',' и '='
+    var loc = location.split('=');
 
-
-
+    alert(loc.length);
+};
+*/
 
 function TileLayerToogle(){
     var jSelector = $('#buttonMapOnOffStatus');

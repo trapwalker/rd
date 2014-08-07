@@ -20,7 +20,7 @@ var RPCCallList = ( function () {
             // Если был fire запрос
             if(rpc.call === 'fire'){
                 // Выполнить стрельбу сектором
-                controllers.fireControl.shootSectorByID(rpc.params.uid);
+                controllers.fireControl.shootSectorByID(rpc.params.weapon_num);
             }
 
 
@@ -283,6 +283,14 @@ var BackLightList = (function (){
                 this._addMarker(marker);
         }
     };
+
+    BackLightList.prototype.getListIDs = function() {
+        var listIDs = [];
+        for (var i = 0; i < this.backLights.length; i++)
+            if (this.backLights[i].isActive)
+                listIDs.push(this.backLights[i].marker.carID);
+        return listIDs;
+    }
 
 
     return BackLightList;

@@ -155,17 +155,17 @@ class Unit(Observer):
 class Station(Unit):
     u"""Class of buildings"""
 
-    def __init__(self, observing_range=BALANCE.Station.observing_range, **kw):
-        super(Station, self).__init__(observing_range=observing_range, **kw)
+    def __init__(self, max_hp=BALANCE.Station.max_hp, observing_range=BALANCE.Station.observing_range, **kw):
+        super(Station, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
 
 
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self, max_hp=BALANCE.Bot.max_hp, observing_range=BALANCE.Bot.observing_range, **kw):
         self.motion = None
         """@type: sublayers_server.model.tasks.Motion | None"""
-        super(Bot, self).__init__(observing_range=observing_range, **kw)
+        super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = BALANCE.Bot.velocity
 
     def as_dict(self, to_time=None):

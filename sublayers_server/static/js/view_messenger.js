@@ -105,6 +105,9 @@ var ViewMessenger = (function () {
                                parseInt(this.vMFA.css('height')) -
                                parseInt(this.vMPC.css('height'))
         });
+
+        // Установка активного чата по умолчанию
+        this._activeChatID = 0;
     }
 
 
@@ -179,7 +182,9 @@ var ViewMessenger = (function () {
                     chat.pageButton.removeClass('pageButtonActive');
                 }
             },
-            {self: this, id: aID})
+            {self: this, id: aID});
+
+        this._activeChatID = aID;
     }
 
 
@@ -269,12 +274,16 @@ var ViewMessenger = (function () {
     ViewMessenger.prototype.viewMessngerSendMessage = function() {
         var str = chat.vMI.val();
         if (str.length) {
-            sendChatMessage(str);
+            if (chat._activeChatID >= 0) {
+                sendChatMessage(str);
+            } else {
+                sendServConsole(str);
+            }
             chat.vMI.val('').focus();
         } else {
             chat.vMI.focus()
         }
-    }
+    };
 
 
     ViewMessenger.prototype.clickForPageButton = function (event) {

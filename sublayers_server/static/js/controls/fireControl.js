@@ -84,7 +84,9 @@ var FireControl = (function () {
 
 
     FireControl.prototype._getSVGPathSector = function(fireSector, radiusPath) {
-        var tempWidth = fireSector.widthAngle / 2;
+        //var tempWidth = fireSector.widthAngle / 2;
+        // TODO: Забита жёсткая ширина сектора
+        var tempWidth = gradToRad(35);
         var radiusOut = this.radiusIn + ((this.radiusOut - this.radiusIn) * radiusPath);
         var vertVOut = new Point(radiusOut, 0);
         var vertVIn = new Point(this.radiusIn, 0);
