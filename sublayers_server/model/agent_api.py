@@ -92,3 +92,9 @@ class AgentAPI(API):
 
         for client_connection in app.clients:
             client_connection.write_message(push_data)
+
+    @public_method
+    def console_cmd(self, cmd):
+        log.info('Agent %s cmd: %r', self.agent.login, cmd)
+
+
