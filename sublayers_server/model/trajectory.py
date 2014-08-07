@@ -9,7 +9,7 @@ from vectors import Point
 from balance import BALANCE
 
 EPS = 1e-6
-
+CIRCLE_ACCURACY = 16
 
 def pfmt(x, indent=0, indent_filling='  '):
     if not x:
@@ -29,7 +29,7 @@ def pfmt(x, indent=0, indent_filling='  '):
         return repr(x)
 
 
-def circle_interpolate(r, c, alpha, beta, ccw, tags=(), accuracy=16, **_):
+def circle_interpolate(r, c, alpha, beta, ccw, tags=(), accuracy=CIRCLE_ACCURACY, **_):
     tags = tags + ('interpolate',)
     fi = beta - alpha
     if not ccw:
