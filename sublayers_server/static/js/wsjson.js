@@ -165,10 +165,10 @@ function receiveMesFromServ(data){
                 owner = getOwner(event.object.owner);
                 updateCurrentCar(event.object.uid, aType, aHP, aTrack);
 
-                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+                // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     debugMapList.push(
-                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FF0000'})
+                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], 16), {color: '#FF0000'})
                             .setRadius(3)
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
@@ -253,6 +253,13 @@ function getTrack(data){
 
         direction = data.motion.direction ? data.motion.direction : 0; // TODO: сделать вылет с ошибкой
 
+        // Если движение по дуге
+        if(data.motion.arc) {
+            aTrack = getCircleMotion(data.motion);
+            return aTrack;
+        }
+
+        else
         // motions
         if (data.motion.cls == "Goto") {
             // запустить функцию установки линейного движения
@@ -318,6 +325,46 @@ function getOwner(data) {
     return null;
 }
 
+
+// Получение движения по кругу
+function getCircleMotion(motion){
+    var a = new Point(motion.arc.a.x, motion.arc.a.y);
+    var b = new Point(motion.arc.b.x, motion.arc.b.y);
+    var c = new Point(motion.arc.c.x, motion.arc.c.y);
+    var alpha = motion.arc.alpha;
+    var beta = motion.arc.beta;
+    var r = motion.arc.r;
+    var vLinear = new Point(motion.v.x, motion.v.y);
+
+    // Время, на преодоление прямого участка с текущей линейной скоростью
+    var tLinear = distancePoints(a, b) / vLinear.abs();  // секунды
+    // Расчёт длины по окружности
+    var lArc = beta - alpha;
+    // Расчёт радиальной скорости - получаем изменение угла в секунду   = rad/s
+    var w = lArc / tLinear;
+    // Радиус-вектор, который мы будем поворачивать со скоростью w для вычисления позиции и направления машинки
+    var radiusV = subVector(a,c);
+    // время начала движения
+    var start_time = motion.time ? motion.time : (new Date().getTime());
+    // движение по часовой стрелке или против часовой стрелки 1 = по часовой
+    var ccw = motion.arc.ccw;
+
+    //constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA:number)
+
+    return new MoveCircle(
+        start_time / 1000. , // Время начала движения
+        //clock.getCurrentTime(),
+        fuelMaxProbka,                          //Запас топлива
+        fuelDecrProbka,                          //Расход топлива
+        c,                  // центр поворота
+        radiusV,            // ралиус-вектор
+        alpha,              // начальный угол
+        w,                  // угловая скорость
+        0,                  // ускорение
+        ccw                 // По часовой стрелке или против неё
+    );
+
+}
 
 function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     if (uid == user.userCar.ID) { // если машинка своя
