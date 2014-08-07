@@ -65,7 +65,7 @@ function carInfoClickEvent2(event){
 
 function carInfoClickEvent(event){
     var car = listMapObject.objects[event.target.id.split('_')[1]];
-    alert('Я машинка номер' + car.ID + '  Мой хозяин зовут '+ car.owner.login);
+    alert('Я машинка номер' + car.ID + '  HP '+ car.hp);
     //alert(car.owner.login);
 
     // остановка всплытия события, чтобы не считался клик на карте
