@@ -159,10 +159,11 @@ function receiveMesFromServ(data){
                 // Update
                 var aTrack, aType, aHP, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
-                clock.setDt(servtime/1000.);
+                clock.setDt(servtime / 1000.);
+                if (event.object.hp)aHP = event.object.hp;
                 aTrack = getTrack(event.object);
                 owner = getOwner(event.object.owner);
-                updateCurrentCar(event.object.uid, aType, Math.random() * hpMaxProbka, aTrack);
+                updateCurrentCar(event.object.uid, aType, aHP, aTrack);
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
@@ -182,9 +183,12 @@ function receiveMesFromServ(data){
                 // InitMessage
                 var aTrack = getTrack(event.cars[0]);
                 var max_speed;
+                var aHp = 0, aMaxHP = 30;
                 // Инициализация userCar
-                if(event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, Math.random() * hpMaxProbka, aTrack, max_speed, event.cars[0].weapons);
+                if (event.cars[0].hp) aHP = event.cars[0].hp;
+                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
+                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
+                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
@@ -362,7 +366,7 @@ function getWeapons(data) {
     return sectors;
 }
 
-function initUserCar(uid, aType, aHP, aTrack, amax_speed, aWeapons) {
+function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
     user.userCar = new UserCar(uid,       //ID машинки
         aType,       //Тип машинки
         aHP,      //HP машинки
@@ -387,7 +391,7 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed, aWeapons) {
     // controllers
     controllers = new Controllers({
         fuelMax: fuelMaxProbka,
-        hpMax: hpMaxProbka,
+        hpMax: aMaxHP,
         fireSectors: fireSectors,
         max_velocity: amax_speed
     });
@@ -398,4 +402,3 @@ function initUserCar(uid, aType, aHP, aTrack, amax_speed, aWeapons) {
 
 var fuelMaxProbka = 500;
 var fuelDecrProbka = 1;
-var hpMaxProbka = 100;
