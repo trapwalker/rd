@@ -45,11 +45,10 @@ class AgentAPI(API):
             )
             self.agent.append_car(self.car)
 
-        self.shell = Shell(dict(
-            ME=self.agent,
-            API=self,
+        self.shell = Shell(self.__dict__, dict(
             SRV=self.agent.server,
-            CAR=self.car,
+            PI=pi,
+            P=Point,
         ))
 
     @public_method
