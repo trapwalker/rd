@@ -47,7 +47,7 @@ class Weapon(object):
             else:
                 unit = srv.objects.get(u)
                 if unit:
-                    units.append(u)
+                    units.append(unit)
                 else:
                     log.warning('Unit with id=%s is not found.', u)
 
@@ -69,6 +69,7 @@ class Weapon(object):
     def fire(self, enemy_list=None):
         enemyes = filter(self.hit_test, self.hit_search(enemy_list))
         for enemy in enemyes:
+            log.debug('Hit unit %s', enemy)
             enemy.hit(self.damage)
 
 
