@@ -54,6 +54,13 @@ function angleVectorRad(aPoint1, aPoint2:Point):number {
     return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
 }
 
+// Возвращает угол против часовой стрелки от положительного направления оси X
+function angleVectorRadCCW(aPoint: Point):number {
+    var angle = angleVectorRad(aPoint, new Point(1, 0));
+    if (aPoint.y < 0) angle = 2 * Math.PI - angle
+    return angle;
+}
+
 function radToGrad(rad:number):number {
     return rad * 180 / Math.PI;
 }
@@ -248,10 +255,16 @@ class MapCar extends DynamicObject {
         super(aID, aTrack);
         this.type = aType;
         this.hp = aHP;
+        this.fireSectors = new Array<FireSector>();
     }
 
-    AddFireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
-        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
+    AddFireSector(aFireSector) {
+        this.fireSectors.push(aFireSector);
+    }
+
+    AddFireSectors(aSectors: Array<FireSector>) {
+        for(var i=0; i<aSectors.length; i++)
+            this.AddFireSector(aSectors[i]);
     }
 
     unbindOwner():MapCar {

@@ -29,7 +29,7 @@ var BackLight = (function () {
             .setRadius(this.options.radius)
             .addTo(this.options._map);
 
-        this.pathSVG = {};
+        this.pathSVG = null;
     }
 
 
@@ -92,7 +92,6 @@ var BackLightList = (function () {
     return BackLightList;
 })();
 
-
 // Общий класс для перерисовки всех машинок
 var CarMarkerList = (function () {
     function CarMarkerList(options){
@@ -148,24 +147,40 @@ var CarMarkerList = (function () {
                 // Отрисовка backLight
                 if (car.backLight){
                     car.backLight.draw(tempLatLng);
-                    // При каждой перерисовке проверить вхождение выбранной (заселекченой) машинки в сектор
-                    car.backLight.inSector();
-
+                    this.carInSector(car, tempPoint);
                 }
-
-
             }
         }
     };
 
 
+    CarMarkerList.prototype.carInSector = function(car, position) {
+        if (car.backLight.pathSVG) {
+            alert('TODO проверить не вышел ли он');
+            //TODO проверить не вышел ли он
+        }
+        else {
+            // Проверить на вхождение в сектора
+            var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
+            var targetAngle = angleVectorRadCCW(subVector(position, userCarMarker.currentUserCarPoint));
 
-    CarMarkerList.prototype.getListIDs = function() {
-        var listIDs = [];
-        for (var i = 0; i < this.backLights.length; i++)
-            if (this.backLights[i].isActive)
-                listIDs.push(this.backLights[i].marker.carID);
-        return listIDs;
+            chat.addMessageToSystem('distance', "distance = " + distance);
+            chat.addMessageToSystem('targetAngle', "targetAngle = " + targetAngle);
+
+            user.userCar.fireSectors.forEach(function (sector) {
+                if ((this.distance <= sector.radius) &&
+                    (Math.abs((this.userCarAngle + sector.directionAngle) - this.targetAngle) <
+                        (sector.widthAngle / 2))) {
+                    chat.addMessageToSystem(this.car.owner.login + (sector.uid+1), "car in sector" + (sector.uid+1) + " = " + this.car.owner.login);
+                }
+                else {
+                    chat.addMessageToSystem(this.car.owner.login + (sector.uid+1), "car in sector" + (sector.uid+1) + " = ");
+                }
+            }, {distance: distance,
+                targetAngle: targetAngle,
+                userCarAngle: userCarMarker.currentUserCarAngle,
+                car: car});
+        }
     }
 
 
@@ -173,10 +188,10 @@ var CarMarkerList = (function () {
         var listIDs = [];
         for (var i = 0; i < this.backLightList.length; i++)
         // TODO: Проверить: является ли это верным решением
-            if (this.backLightList[i]..backLight.pathSVG)
+            if (this.backLightList[i].backLight.pathSVG)
                 listIDs.push(this.backLightList[i].ID);
         return listIDs;
-    }
+    };
 
     return CarMarkerList;
 })();

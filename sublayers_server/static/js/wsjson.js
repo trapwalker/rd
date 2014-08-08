@@ -424,6 +424,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
 
     var fireSectors = getWeapons(aWeapons);
 
+    // Добавить сектора в userCar
+    user.userCar.AddFireSectors(fireSectors);
+
     // Инициализация маркера машинки
     userCarMarker = new UserCarMarker({
         position: myMap.unproject([aTrack.coord.x, aTrack.coord.y],16),
@@ -431,7 +434,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
         _map: myMap,
         radiusView: 1000,
         carID: uid,
-        sectors: fireSectors,
+        sectors: user.userCar.fireSectors,
         countSectorPoints: 20
     });
 
@@ -440,12 +443,13 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
     controllers = new Controllers({
         fuelMax: fuelMaxProbka,
         hpMax: aMaxHP,
-        fireSectors: fireSectors,
+        fireSectors: user.userCar.fireSectors,
         max_velocity: amax_speed
     });
 
     // CallBack неа получение InitMessage
     onGetInitMessage();
+
 }
 
 

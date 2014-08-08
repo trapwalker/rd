@@ -366,27 +366,42 @@ var UserCarMarker = (function () {
         this.trackView = new TrackView({
             map: this.options._map
         });
+
+
+        // Инициализация переменных
+        this.currentUserCarPoint = {};
+        this.currentUserCarAngle = 0;
+        this.currentUserCarLatLng = [];
     }
 
-    UserCarMarker.prototype.draw = function (aNewPoint, aNewAngle) {
+    UserCarMarker.prototype.draw = function (aClockTime) {
+
+        // TODO: Пересмотреть все функции в этом методе на их параметры, связанные с LatLng/project/unproject
+        this.currentUserCarPoint = user.userCar.getCurrentCoord(aClockTime);
+        this.currentUserCarAngle = user.userCar.getCurrentDirection(aClockTime);
+        this.currentUserCarLatLng = this.options._map.unproject([this.currentUserCarPoint.x, this.currentUserCarPoint.y],
+            this.options._map.getMaxZoom());
+
+
         // Перерисовка маркера
         // Установка угла в для поворота иконки маркера (в градусах)
-        this.marker.options.angle = aNewAngle;
+        this.marker.options.angle = this.currentUserCarAngle;
+
         // Установка новых координат маркера
-        this.marker.setLatLng(aNewPoint);
+        this.marker.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка шлейфа
-        this.tail.drawTail(aNewPoint); // только на максимальных приближениях будет рисоваться хвост
+        this.tail.drawTail(this.currentUserCarLatLng); // только на максимальных приближениях будет рисоваться хвост
 
         // Перерисовка круга обзора
-        this.circleView.setLatLng(aNewPoint);
+        this.circleView.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка секторов стрельбы
-        this.sectorsView.drawSectors(aNewPoint, aNewAngle);
+        this.sectorsView.drawSectors(this.currentUserCarLatLng, this.currentUserCarAngle);
 
         // Перерисовка траектории
         if(! flagDebug)
-            this.trackView.draw(aNewPoint);
+            this.trackView.draw(this.currentUserCarLatLng);
     }
 
     return UserCarMarker;

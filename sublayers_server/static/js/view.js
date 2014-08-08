@@ -4,14 +4,9 @@ function redrawMap() {
 
     // работа с юзеркаром
     if (user.userCar) {
-        tempPointMain = user.userCar.getCurrentCoord(clock.getCurrentTime());
-        tempAngleRad = user.userCar.getCurrentDirection(clock.getCurrentTime());
-        chat.addMessageToSystem("cn21", "Игрок: X = " + tempPointMain.x.toFixed(2));
-        chat.addMessageToSystem("cn22", "Игрок: Y = " + tempPointMain.y.toFixed(2));
-        // перерисовка машинки и её обвесов (окружения)
-        userCarMarker.draw(myMap.unproject([tempPointMain.x, tempPointMain.y], 16),tempAngleRad);
+        userCarMarker.draw(clock.getCurrentTime());
         // перерисовка всех контроллеров
-        controllers.draw(tempAngleRad, user.userCar);
+        controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
     }
 
     // работа со списком машинок

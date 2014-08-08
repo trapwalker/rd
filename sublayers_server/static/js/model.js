@@ -56,6 +56,14 @@ function angleVectorRad(aPoint1, aPoint2) {
     return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
 }
 
+// Возвращает угол против часовой стрелки от положительного направления оси X
+function angleVectorRadCCW(aPoint) {
+    var angle = angleVectorRad(aPoint, new Point(1, 0));
+    if (aPoint.y < 0)
+        angle = 2 * Math.PI - angle;
+    return angle;
+}
+
 function radToGrad(rad) {
     return rad * 180 / Math.PI;
 }
@@ -230,9 +238,15 @@ var MapCar = (function (_super) {
         _super.call(this, aID, aTrack);
         this.type = aType;
         this.hp = aHP;
+        this.fireSectors = new Array();
     }
-    MapCar.prototype.AddFireSector = function (aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
-        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
+    MapCar.prototype.AddFireSector = function (aFireSector) {
+        this.fireSectors.push(aFireSector);
+    };
+
+    MapCar.prototype.AddFireSectors = function (aSectors) {
+        for (var i = 0; i < aSectors.length; i++)
+            this.AddFireSector(aSectors[i]);
     };
 
     MapCar.prototype.unbindOwner = function () {
