@@ -138,7 +138,7 @@ var ViewMessenger = (function () {
 
 
     ViewMessenger.prototype.setVisible = function (aVisible) {
-        if (this.options._visible != aVisible) {
+        if (this.options._visible !== aVisible) {
             this.changeVisible({ data: {self: this}})
         }
     };

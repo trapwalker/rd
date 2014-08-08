@@ -277,11 +277,11 @@ function deleteCookie(name) {
 function setParamsFromCookie(){
     // Прочесть параметр flagDebug и установить его
     var cFlagDebug = getCookie('flagDebug');
-    if(cFlagDebug != undefined) flagDebug = (cFlagDebug == 1);
+    if(cFlagDebug !== undefined) flagDebug = (cFlagDebug == 1);
 
     // прочесть параметр Видимости чата и установить его
     var chatVisible = getCookie('chatVisible');
-    if (chatVisible != undefined)
+    if (chatVisible !== undefined)
         chat.setVisible((chatVisible == 1));
      //   if (chatVisible == 1) // Нужно показывать чат - пришлось делать так глупо, потому что там вверху стоит false по умолчанию
      //   {
@@ -292,7 +292,7 @@ function setParamsFromCookie(){
 
     // Прочесть параметр последнего активного чата
     var chatActiveID = getCookie('chatActiveID');
-    if(chatActiveID != undefined) chat.setActiveChat(chatActiveID);
+    if(chatActiveID !== undefined) chat.setActiveChat(chatActiveID);
 
 
     // Запомнить последний зум
@@ -312,7 +312,7 @@ function RunPrefixMethod(obj, method) {
         }
         m = pfx[p] + m;
         t = typeof obj[m];
-        if (t != "undefined") {
+        if (t) {
             pfx = [pfx[p]];
             return (t == "function" ? obj[m]() : obj[m]);
         }

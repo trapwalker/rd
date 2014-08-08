@@ -77,7 +77,8 @@ var FireControl = (function () {
 
     FireControl.prototype._getSectorByID = function(fireSectorID){
         for (var i = 0; i < this.sectors.length; i++) {
-            if (this.sectors[i]._fireSector.uid == fireSectorID)
+            // TODO не уверен, что === работает корректно в данном случае
+            if (this.sectors[i]._fireSector.uid === fireSectorID)
                 return this.sectors[i];
         }
     };
@@ -194,6 +195,7 @@ var FireControl = (function () {
     FireControl.prototype.clearSectors = function() {
         this.options.sectors.forEach(function(sector){
             // Снять клик с каждого сектора
+            //TODO: придумать способ удаления всех точек в секторе (точек радара)
             $(sector.SVGPath).off('click',this._fireSectorEvent);
             $(sector.SVGPath).remove();
             $(sector.SVGPathShadow).remove();
@@ -202,13 +204,14 @@ var FireControl = (function () {
         this.sectors = [];
     };
 
-    // Реализация радара
+    // Реализация радара - Вынесена сюда, т.к. только тут есть radiusIn и radiusOut
     // Добавление Точки в сектор
     FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle) {
         // Получить доступ к сектору в fireControl
         var sector = this._getSectorByID(aSector.uid);
         // Вычислить точку для отрисовки
-        var p = rotateVector(new Point(relativeRadius, 0), relativeAngle);
+        var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        var p = rotateVector(new Point(radius, 0), relativeAngle);
 
 
         // Нарисовать точку
@@ -226,7 +229,8 @@ var FireControl = (function () {
     // Обновление точки в секторе
     FireControl.prototype.updateCarInSector = function(pathSVG, relativeRadius, relativeAngle) {
         // Вычислить точку для отрисовки
-        var p = rotateVector(new Point(relativeRadius, 0), relativeAngle);
+        var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        var p = rotateVector(new Point(radius, 0), relativeAngle);
         // Обновить центр точки точку
         pathSVG.setAttribute('cx', p.x);
         pathSVG.setAttribute('cy', p.y);
@@ -236,13 +240,9 @@ var FireControl = (function () {
 
     // Обновление точки в секторе
     // TODO: доделать удаление!!!
-    FireControl.prototype.deleteCarInSector = function(pathSVG, relativeRadius, relativeAngle) {
-        // Вычислить точку для отрисовки
-        var p = rotateVector(new Point(relativeRadius, 0), relativeAngle);
-        // Обновить центр точки точку
-        pathSVG.setAttribute('cx', p.x);
-        pathSVG.setAttribute('cy', p.y);
-        return pathSVG;
+    FireControl.prototype.deleteCarInSector = function(pathSVG) {
+        $(pathSVG).remove();
+        return null;
     };
 
 
