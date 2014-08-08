@@ -79,15 +79,21 @@ function carInfoClickEvent(event){
 }
 
 function onMouseClickMarker(){
-    //alert('click '+this.carID);
-    backLightList.toggle(this);
-   // backLight.on(this);
 
+    if (listMapObject.exist(this.carID)) {
+        var car = listMapObject.objects[this.carID];
+        if(car.backLight)
+            carMarkerList.backLightList.add(car);
+        else
+            carMarkerList.backLightList.del(car);
 
-    // тест эффекта мигания маркера
-    this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
-    var self = this;
-    setTimeout(function(){self.setOpacity(1);}, 500);
+        // тест эффекта мигания маркера
+        this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
+        var self = this;
+        setTimeout(function () {
+            self.setOpacity(1);
+        }, 500);
+    }
 }
 
 

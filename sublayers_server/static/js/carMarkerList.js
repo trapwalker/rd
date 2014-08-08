@@ -52,21 +52,33 @@ var BackLight = (function () {
 
 // Подсветка выбранных маркеров
 var BackLightList = (function () {
-    function BackLightList() {
+    function BackLightList(options) {
+        this.options = {
+            _map: null
+        };
+        if(options)
+            if(options._map) this.options._map = options._map;
+
         this.backLightCars = [];
     };
 
 
-    // Добавление выделенной машинки
+    // Добавление машинки в список выделенных
     BackLightList.prototype.add = function (car) {
-        this.backLightCars.push(car);
+        if(! car.backLight) {
+            this.backLightCars.push(car);
+            car.backLight = new BackLight({_map: this.options._map});
+        }
     };
 
     // Удаление машинки из списка выделеннных
     BackLightList.prototype.del = function(car) {
         var index = this.getIndexCarByID(car.ID);
-        if (index)
+        if (index){
             this.backLightCars.splice(index, 1);
+            car.backLight.delete();
+            car.backLight = null;
+        }
     };
 
 
@@ -122,14 +134,9 @@ var CarMarkerList = (function () {
             var car = listMapObject.objects[uid];
             car.unbindOwner();
             this.options._map.removeLayer(car.marker);
-            if (car.backLight) {
-                car.backLight.delete();
-
-            }
 
             // TODO правильно выключить беклайты
-            //backLight.offMarker(car.marker);
-            //backLightList.offMarker(car.marker);
+            this.backLightList.del(car);
             delete car.marker;
             listMapObject.del(uid);
         }
@@ -155,6 +162,7 @@ var CarMarkerList = (function () {
             }
         }
     };
+
 
 
     return CarMarkerList;

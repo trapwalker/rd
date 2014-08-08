@@ -15,27 +15,12 @@ function redrawMap() {
     }
 
     // работа со списком машинок
-    for (var i in listMapObject.objects) {
-        if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
-            // пересчёт координат
-            var tempPoint = listMapObject.objects[i].getCurrentCoord(clock.getCurrentTime());
-            // пересчёт угла
-            var tempAngleRadCars = listMapObject.objects[i].getCurrentDirection(clock.getCurrentTime());
-            // Установка угла в для поворота иконки маркера (в градусах)
-            listMapObject.objects[i].marker.options.angle = tempAngleRadCars;
-            // Установка новых координат маркера);
-            listMapObject.objects[i].marker.setLatLng(myMap.unproject([tempPoint.x, tempPoint.y], 16));
-        }
-    }
+    carMarkerList.draw();
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
     if (!flagDebug)
         if (userCarMarker)
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
-
-    backLight.draw();
-    backLightList.draw();
-
 
 }
 
