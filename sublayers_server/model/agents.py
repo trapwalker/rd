@@ -42,6 +42,12 @@ class Agent(Object, SubscriberTo__Observer):
         car.agent = self
         self.subscribe_to__Observer(car)
 
+    def drop_car(self, car):
+        if car not in self.cars:
+            return
+        self.cars.remove(car)
+        self.unsubscribe_from__Observer(car)
+
     def on_message(self, connection, messahe):
         pass
 

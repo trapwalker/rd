@@ -10,7 +10,7 @@ from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
-from messages import ChatMessage
+from messages import ChatMessage, InitMessage
 import tasks
 from weapons import SectoralWeapon
 from console import Shell
@@ -31,25 +31,48 @@ class AgentAPI(API):
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
-            self.car = units.Bot(
-                server=agent.server,
-                position=Point.random_gauss(position or Point(10093693, 5646447), position_sigma),
-                observing_range=1000,
-                owner=agent,
-                weapons=[
-                    SectoralWeapon(direction=0, sector_width=45, r=400),
-                    SectoralWeapon(direction=pi, sector_width=45, r=350),
-                    SectoralWeapon(direction=-pi/2, sector_width=60, r=300),
-                    SectoralWeapon(direction=pi/2, sector_width=60, r=300),
-                ],
-            )
-            self.agent.append_car(self.car)
+            self.make_car()
 
-        self.shell = Shell(self.__dict__, dict(
-            SRV=self.agent.server,
-            PI=pi,
+        self.shell = Shell(self.cmd_line_context(), dict(
+            srv=self.agent.server,
+            pi=pi,
             P=Point,
+            log=log,
         ))
+        self.send_init_package()
+
+    def cmd_line_context(self):
+        ctx = {}
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, '_public_method') and attr._public_method:
+                ctx[attr_name] = attr
+        return ctx
+
+    def send_init_package(self):
+        if self.agent.connection:
+            self.agent.connection.write_message(serialize(make_push_package([InitMessage(agent=self.agent)])))
+
+    def make_car(self, position=None, position_sigma=Point(100, 100)):
+        self.car = units.Bot(
+            server=self.agent.server,
+            position=Point.random_gauss(position or Point(10093693, 5646447), position_sigma),
+            observing_range=1000,
+            owner=self.agent,
+            weapons=[
+                SectoralWeapon(direction=0, sector_width=45, r=400),
+                SectoralWeapon(direction=pi, sector_width=45, r=350),
+                SectoralWeapon(direction=-pi/2, sector_width=60, r=300),
+                SectoralWeapon(direction=pi/2, sector_width=60, r=300),
+            ],
+        )
+        self.agent.append_car(self.car)
+
+    @public_method
+    def change_car(self):
+        self.agent.drop_car(self.car)
+        self.make_car()
+        self.send_init_package()
 
     @public_method
     def goto(self, x, y):
