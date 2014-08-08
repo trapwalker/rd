@@ -458,6 +458,8 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
         max_velocity: amax_speed
     });
 
+    // CallBack неа получение InitMessage
+    onGetInitMessage();
 }
 
 
