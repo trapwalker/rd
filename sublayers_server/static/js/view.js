@@ -97,26 +97,21 @@ function onZoomEnd(event) {
 
 function createTileLayer(storage) {
     if (storage) {
-        tileLayerShow = new StorageTileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-            maxZoom: 16,
-            storage: storage,
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            id: 'examples.map-i86knfo3'});
+        tileLayerShow = new StorageTileLayer(mapBasePath, {
+            maxZoom: 8,
+            storage: storage});
     }
     else {
-        tileLayerShow = L.tileLayer('http://d.sm.mapstack.stamen.com/(watercolor,$fff[difference],$000[@65],$fff[hsl-saturation@20],$64c864[hsl-color])/{z}/{x}/{y}.png', {
-            maxZoom: 16,
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            id: 'examples.map-i86knfo3'});
+        tileLayerShow = L.tileLayer(mapBasePath, {
+            maxZoom: 8});
     }
     tileLayerShow.addTo(myMap);
 }
 
 $(document).ready(function () {
+    //Если есть файл map_base_local.js, то брать карту из локального каталога
+    if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
+
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
         alert('Storage not loading!');
@@ -129,8 +124,8 @@ $(document).ready(function () {
 
     myMap = L.map('map',
         {
-            minZoom: 10,
-            maxZoom: 16,
+            minZoom: 3,
+            maxZoom: 8,
             zoomControl: false,
             attributionControl: false,
             keyboard: false,
@@ -379,6 +374,12 @@ var flagDebug = true;
 var debugMapList = [];
 var ownerList;
 var backLight;
+
+//Путь к карте на сервере
+var mapBasePath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
+
+//Путь к карте в локальном каталоге
+var mapBasePathLocal = '';
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

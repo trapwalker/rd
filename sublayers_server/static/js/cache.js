@@ -92,7 +92,7 @@ var StorageTileLayer = L.TileLayer.extend({
         var context = canvas.getContext('2d');
         context.drawImage(image, 0, 0);
 
-        return canvas.toDataURL('image/png');
+        return canvas.toDataURL('image/jpg');
     },
 
     _tileOnLoadWithCache: function () {
