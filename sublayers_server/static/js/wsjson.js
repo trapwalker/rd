@@ -213,15 +213,7 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Out") {
                 // out
-                var uid = event.object_id;
-                if (listMapObject.exist(uid)) {
-                    unbindCar(listMapObject.objects[uid]);
-                    myMap.removeLayer(listMapObject.objects[uid].marker);
-                    backLight.offMarker(listMapObject.objects[uid].marker);
-                    backLightList.offMarker(listMapObject.objects[uid].marker);
-                    delete listMapObject.objects[uid].marker;
-                    listMapObject.del(uid);
-                }
+                carMarkerList.del(event.object_id);
             }
             if (event.cls === "ChatMessage") {
                 // chat_message
@@ -389,10 +381,7 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     else { // если не своя, то проверить есть ли такая в модели
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
             var car = new MapCar(uid, aType, aHP, aTrack);
-            bindOwnerCar(aOwner, car);
-            listMapObject.add(car);
-            // и сразу же добавить маркер
-            listMapObject.objects[uid].marker = getCarMarker(car, myMap);
+            carMarkerList.add(car, aOwner);
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);
@@ -414,7 +403,6 @@ function updateCurrentCar(uid, aType, aHP, aTrack) {
     }
 
 }
-
 
 function getWeapons(data) {
     var sectors = [];
