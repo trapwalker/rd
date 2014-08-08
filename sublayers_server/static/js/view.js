@@ -15,7 +15,7 @@ function redrawMap() {
     }
 
     // работа со списком машинок
-    carMarkerList.draw();
+    carMarkerList.draw(clock.getCurrentTime());
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
     if (!flagDebug)
@@ -27,32 +27,6 @@ function redrawMap() {
 function onMouseClickMap(mouseEventObject) {
     if(user.userCar)
         sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
-
-    backLight.off();
-
-    //myMap.panTo(mouseEventObject.latlng);
-/*
-    // Нарисовать здесь что-то!
-    // Попытка нарисовать что-нибудь в SVG в лефлете
-    // Координаты в лифлете считаются от изначального SetView - проверить, будут ли они меняться
-    //alert(L.Path.SVG_NS);
-    var NS="http://www.w3.org/2000/svg";
-    var svgPane = myMap.getPanes().overlayPane.childNodes[0];
-    var g = document.createElementNS(NS,"g");
-    var svgObj = document.createElementNS(NS,"circle");
-    //alert(mouseEventObject.originalEvent.clientX);
-    svgObj.setAttribute('fill-rule', 'evenodd');
-    //svgObj.setAttribute('d', 'M 300 300 L 200 200 L 200 300 z');
-    svgObj.setAttribute('r', 30);
-    var p = myMap.mouseEventToContainerPoint(mouseEventObject.originalEvent);
-    //var p = myMap.latLngToContainerPoint(mouseEventObject.latlng);
-    svgObj.setAttribute('cx', p.x);
-    svgObj.setAttribute('cy', p.y);
-    svgObj.style.fill = "blue";
-    svgPane.appendChild(g);
-    //svgPane.appendChild(svgObj);
-    g.appendChild(svgObj);
-*/
 }
 
 function onZoomStart(event) {
@@ -180,11 +154,10 @@ $(document).ready(function () {
     //chat.setVisible(false);
 
 
-    backLight = new BackLight({
-        _map: myMap
-    });
 
-    backLightList = new BackLightList();
+
+    carMarkerList = new CarMarkerList({_map: myMap});
+
 
     // Запуск тамера
     timer = setInterval(redrawMap, timerDelay);
@@ -218,7 +191,7 @@ $(document).ready(function () {
 
 
 function onGetInitMessage() {
-    setParamsFromCookie();
+  //  setParamsFromCookie();
 }
 
 
@@ -362,8 +335,8 @@ var tileLayerShow;
 var controllers;
 var flagDebug = true;
 var debugMapList = [];
-var ownerList;
-var backLight;
+var carMarkerList;
+
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

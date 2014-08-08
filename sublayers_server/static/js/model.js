@@ -234,6 +234,12 @@ var MapCar = (function (_super) {
     MapCar.prototype.AddFireSector = function (aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
         this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
     };
+
+    MapCar.prototype.unbindOwner = function () {
+        if (this.owner)
+            this.owner.unbindCar();
+        return this;
+    };
     return MapCar;
 })(DynamicObject);
 
@@ -320,5 +326,63 @@ var Clock = (function () {
         this.dt = aTimeServer - new Date().getTime() / 1000.;
     };
     return Clock;
+})();
+
+// Владелец машины
+var Owner = (function () {
+    function Owner(uid, login, car) {
+        this.uid = uid;
+        this.login = login;
+        this.car = null;
+    }
+    Owner.prototype.bindCar = function (car) {
+        this.unbindCar();
+        car.owner = this;
+        this.car = car;
+        return this;
+    };
+
+    Owner.prototype.unbindCar = function () {
+        if (this.car) {
+            this.car.owner = null;
+            this.car = null;
+        }
+        return this;
+    };
+    return Owner;
+})();
+
+// Список владельцев машин
+var OwnerList = (function () {
+    function OwnerList() {
+        this.owners = new Array();
+    }
+    OwnerList.prototype.add = function (owner) {
+        var exstOwner = this.getOwnerByUid(owner.uid);
+        if (!exstOwner) {
+            this.owners.push(owner);
+            return owner;
+        }
+        return exstOwner;
+    };
+
+    OwnerList.prototype.getOwnerByUid = function (uid) {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].uid === uid) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    };
+
+    OwnerList.prototype.getOwnerByLogin = function (login) {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].login === login) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    };
+    return OwnerList;
 })();
 //# sourceMappingURL=model.js.map

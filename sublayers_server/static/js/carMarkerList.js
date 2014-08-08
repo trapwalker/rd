@@ -3,10 +3,10 @@ var BackLight = (function () {
     function BackLight(options) {
         this.options = {
             _map: null,
-            color: '#ff0000',
+            color: '#ffff00',
             radius: 20,
-            weight: 5,
-            fillColor: '#AA0000',
+            weight: 2,
+            fillColor: '#ffff00',
             fillOpacity: 0.2
         };
 
@@ -66,15 +66,15 @@ var BackLightList = (function () {
     // Добавление машинки в список выделенных
     BackLightList.prototype.add = function (car) {
         if(! car.backLight) {
-            this.backLightCars.push(car);
             car.backLight = new BackLight({_map: this.options._map});
+            this.backLightCars.push(car);
         }
     };
 
     // Удаление машинки из списка выделеннных
     BackLightList.prototype.del = function(car) {
         var index = this.getIndexCarByID(car.ID);
-        if (index){
+        if (index >=0 ){
             this.backLightCars.splice(index, 1);
             car.backLight.delete();
             car.backLight = null;
@@ -89,17 +89,6 @@ var BackLightList = (function () {
         return null;
     };
 
-
-
-    BackLightList.prototype.getListIDs = function() {
-        var listIDs = [];
-        for (var i = 0; i < this.backLights.length; i++)
-            if (this.backLights[i].isActive)
-                listIDs.push(this.backLights[i].marker.carID);
-        return listIDs;
-    }
-
-
     return BackLightList;
 })();
 
@@ -112,10 +101,10 @@ var CarMarkerList = (function () {
         };
 
         if(options) {
-            if(options.map) this.options._map = options.map;
+            if(options._map) this.options._map = options._map;
         };
 
-        this.backLightList = new BackLightList();
+        this.backLightList = new BackLightList({_map: this.options._map});
     }
 
     // Добавление машинки
@@ -123,9 +112,9 @@ var CarMarkerList = (function () {
         // Бинд машинки и её хозяина
         aOwner.bindCar(aCar);
         // Добавление машинки в listMapObject
-        listMapObject.add(car);
+        listMapObject.add(aCar);
         // И сразу же добавить маркер
-        listMapObject.objects[uid].marker = getCarMarker(car, this.options._map);
+        aCar.marker = getCarMarker(aCar, this.options._map);
     };
 
     // Удаление машинки
@@ -135,7 +124,6 @@ var CarMarkerList = (function () {
             car.unbindOwner();
             this.options._map.removeLayer(car.marker);
 
-            // TODO правильно выключить беклайты
             this.backLightList.del(car);
             delete car.marker;
             listMapObject.del(uid);
@@ -143,27 +131,52 @@ var CarMarkerList = (function () {
     };
 
 
-    CarMarkerList.prototype.draw = function(currentTime) {
+    CarMarkerList.prototype.draw = function(aClockTime) {
         for (var i in listMapObject.objects) {
             if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
                 // пересчёт координат
                 var car = listMapObject.objects[i];
-                var tempPoint = car.getCurrentCoord(currentTime);
+                var tempPoint = car.getCurrentCoord(aClockTime);
                 var tempLatLng = this.options._map.unproject([tempPoint.x, tempPoint.y],
                                                              this.options._map.getMaxZoom());
                 // пересчёт угла
-                var tempAngleRadCars = car.getCurrentDirection(currentTime);
+                var tempAngleRadCars = car.getCurrentDirection(aClockTime);
                 // Установка угла в для поворота иконки маркера (в градусах)
                 car.marker.options.angle = tempAngleRadCars;
                 // Установка новых координат маркера);
                 car.marker.setLatLng(tempLatLng);
                 // Отрисовка backLight
-                if (car.backLight) car.backLight.draw(tempLatLng);
+                if (car.backLight){
+                    car.backLight.draw(tempLatLng);
+                    // При каждой перерисовке проверить вхождение выбранной (заселекченой) машинки в сектор
+                    car.backLight.inSector();
+
+                }
+
+
             }
         }
     };
 
 
+
+    CarMarkerList.prototype.getListIDs = function() {
+        var listIDs = [];
+        for (var i = 0; i < this.backLights.length; i++)
+            if (this.backLights[i].isActive)
+                listIDs.push(this.backLights[i].marker.carID);
+        return listIDs;
+    }
+
+
+    CarMarkerList.prototype.getListIDsForShoot = function () {
+        var listIDs = [];
+        for (var i = 0; i < this.backLightList.length; i++)
+        // TODO: Проверить: является ли это верным решением
+            if (this.backLightList[i]..backLight.pathSVG)
+                listIDs.push(this.backLightList[i].ID);
+        return listIDs;
+    }
 
     return CarMarkerList;
 })();

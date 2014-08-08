@@ -5,7 +5,6 @@ function ModelInit() {
         1000);  //Количество кредитов
 
     listMapObject = new ListMapObject();
-    carMarkerList = new CarMarkerList({map: myMap});
     ownerList = new OwnerList();
 }
 

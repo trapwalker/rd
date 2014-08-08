@@ -39,7 +39,6 @@ function getCarMarker(aCar, aMap) {
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
     newMarker.on('click', onMouseClickMarker);
-    //newMarker.bindPopup('popUp');
     newMarker.addTo(aMap);
     newMarker.carID = aCar.ID;
 
@@ -83,9 +82,9 @@ function onMouseClickMarker(){
     if (listMapObject.exist(this.carID)) {
         var car = listMapObject.objects[this.carID];
         if(car.backLight)
-            carMarkerList.backLightList.add(car);
-        else
             carMarkerList.backLightList.del(car);
+        else
+            carMarkerList.backLightList.add(car);
 
         // тест эффекта мигания маркера
         this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true

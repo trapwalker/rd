@@ -81,10 +81,8 @@ function sendFire(aUid) {
         rpc_call_id: rpcCallList.getID(),
         params: {
             weapon_num: aUid, // uid сектора, который совершил выстрел
-            enemy_list: backLightList.getListIDs()
-        },
-        weapon_num: aUid, // uid сектора, который совершил выстрел
-        enemy_list: backLightList.getListIDs()
+            enemy_list: carMarkerList.getListIDsForShoot()
+        }
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));

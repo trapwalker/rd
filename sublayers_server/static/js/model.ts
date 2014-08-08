@@ -242,6 +242,7 @@ class MapCar extends DynamicObject {
     type:number; // 1..5
     hp:number;
     fireSectors: Array<FireSector>;
+    owner: Owner;
 
     constructor(aID, aType, aHP:number, aTrack:MoveTrack) {
         super(aID, aTrack);
@@ -251,6 +252,12 @@ class MapCar extends DynamicObject {
 
     AddFireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
         this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
+    }
+
+    unbindOwner():MapCar {
+        if(this.owner)
+            this.owner.unbindCar();
+        return this;
     }
 }
 
@@ -354,4 +361,67 @@ class Clock {
 
 }
 
+// Владелец машины
+class Owner {
+    uid:number;
+    login:string;
+    car:MapCar;
+
+    constructor(uid:number, login:string, car:MapCar) {
+        this.uid = uid;
+        this.login = login;
+        this.car = null;
+    }
+
+    bindCar(car:MapCar):Owner {
+        this.unbindCar();
+        car.owner = this;
+        this.car = car;
+        return this;
+    }
+
+    unbindCar():Owner {
+        if (this.car) {
+            this.car.owner = null;
+            this.car = null;
+        }
+        return this;
+    }
+}
+
+// Список владельцев машин
+class OwnerList {
+    owners:Array<Owner>;
+
+    constructor() {
+        this.owners = new Array<Owner>();
+    }
+
+    add(owner:Owner):Owner {
+        var exstOwner = this.getOwnerByUid(owner.uid);
+        if (!exstOwner) {
+            this.owners.push(owner);
+            return owner;
+        }
+        return exstOwner;
+    }
+
+    getOwnerByUid(uid:number):Owner {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].uid === uid) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    }
+
+    getOwnerByLogin(login:string):Owner {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].login === login) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    }
+}
 
