@@ -202,6 +202,52 @@ var FireControl = (function () {
         this.sectors = [];
     };
 
+    // Реализация радара
+    // Добавление Точки в сектор
+    FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle) {
+        // Получить доступ к сектору в fireControl
+        var sector = this._getSectorByID(aSector.uid);
+        // Вычислить точку для отрисовки
+        var p = rotateVector(new Point(relativeRadius, 0), relativeAngle);
+
+
+        // Нарисовать точку
+        var pathSVG = document.createElementNS(this.NS, 'circle');
+        pathSVG.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
+        pathSVG.setAttribute('r', 3);
+        pathSVG.setAttribute('cx', p.x);
+        pathSVG.setAttribute('cy', p.y);
+
+        // Добавить точку в сектор
+        sector.SVGGroup.appendChild(pathSVG);
+        return pathSVG;
+    };
+
+    // Обновление точки в секторе
+    FireControl.prototype.updateCarInSector = function(pathSVG, relativeRadius, relativeAngle) {
+        // Вычислить точку для отрисовки
+        var p = rotateVector(new Point(relativeRadius, 0), relativeAngle);
+        // Обновить центр точки точку
+        pathSVG.setAttribute('cx', p.x);
+        pathSVG.setAttribute('cy', p.y);
+        return pathSVG;
+    };
+
+
+    // Обновление точки в секторе
+    // TODO: доделать удаление!!!
+    FireControl.prototype.deleteCarInSector = function(pathSVG, relativeRadius, relativeAngle) {
+        // Вычислить точку для отрисовки
+        var p = rotateVector(new Point(relativeRadius, 0), relativeAngle);
+        // Обновить центр точки точку
+        pathSVG.setAttribute('cx', p.x);
+        pathSVG.setAttribute('cy', p.y);
+        return pathSVG;
+    };
+
+
+
+
 
     FireControl.prototype._allFireEvent = function(event){
         var obj = event.data.self;

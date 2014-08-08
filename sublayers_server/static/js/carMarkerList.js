@@ -147,42 +147,61 @@ var CarMarkerList = (function () {
                 // Отрисовка backLight
                 if (car.backLight){
                     car.backLight.draw(tempLatLng);
-                    this.carInSector(car, tempPoint);
+                    this.drawCarInSector(car, tempPoint);
                 }
             }
         }
     };
 
-
-    CarMarkerList.prototype.carInSector = function(car, position) {
-        if (car.backLight.pathSVG) {
-            alert('TODO проверить не вышел ли он');
-            //TODO проверить не вышел ли он
-        }
-        else {
+    // Метод, который управляет добавлением/удалением/апдейтом машинок в секторах радара
+    // Сделано тут, т.к. для перерисовки нужны distance и угол fi - а они тут сразу и вычисляются
+    CarMarkerList.prototype.drawCarInSector = function(car, position) {
             // Проверить на вхождение в сектора
             var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
             var targetAngle = angleVectorRadCCW(subVector(position, userCarMarker.currentUserCarPoint));
 
-            chat.addMessageToSystem('distance', "distance = " + distance);
-            chat.addMessageToSystem('targetAngle', "targetAngle = " + targetAngle);
+            //chat.addMessageToSystem('distance', "distance = " + distance);
+            //chat.addMessageToSystem('targetAngle', "targetAngle = " + targetAngle);
 
-            user.userCar.fireSectors.forEach(function (sector) {
-                if ((this.distance <= sector.radius) &&
-                    (Math.abs((this.userCarAngle + sector.directionAngle) - this.targetAngle) <
-                        (sector.widthAngle / 2))) {
-                    chat.addMessageToSystem(this.car.owner.login + (sector.uid+1), "car in sector" + (sector.uid+1) + " = " + this.car.owner.login);
+            for (var i = 0; i < user.userCar.fireSectors.length; i++) {
+                var sector = user.userCar.fireSectors[i];
+
+                var fi = normalizeAngleRad(userCarMarker.currentUserCarAngle + sector.directionAngle - targetAngle);
+
+                //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'fi', "sector " + (sector.uid) + " fi= " + fi);
+                //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'fi2', "sector " + (sector.uid) + " sectA= " + (userCarMarker.currentUserCarAngle + sector.directionAngle));
+
+                var distBool = distance <= sector.radius;
+                var fiBool = Math.abs(fi) <= (sector.widthAngle / 2.);
+
+                //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'bool', "sector " + (sector.uid) + " distBool= " + distBool + '  fiBool=' + fiBool);
+
+                if (distBool && fiBool) {
+                    //chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=" + car.owner.login);
+                    // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
+                    if(! car.backLight.pathSVG) {
+                        // TODO: Сделать добавление SVG-path в fireControl
+                        car.backLight.pathSVG = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), fi);
+
+                    } else {
+                        // TODO: Отрисовать машинку в радаре с новыми относительными координатами
+                        controllers.fireControl.updateCarInSector(car.backLight.pathSVG, (distance / sector.radius), fi);
+                    }
                 }
                 else {
-                    chat.addMessageToSystem(this.car.owner.login + (sector.uid+1), "car in sector" + (sector.uid+1) + " = ");
-                }
-            }, {distance: distance,
-                targetAngle: targetAngle,
-                userCarAngle: userCarMarker.currentUserCarAngle,
-                car: car});
-        }
-    }
+                    //chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=");
+                    // Если машинка вне сектора, то если она там была, убрать её оттуда
+                    if(car.backLight.pathSVG) {
+                        // TODO: Сделать удаление SVG-path из fireControl
 
+                    }
+
+                }
+
+            }
+
+
+    }
 
     CarMarkerList.prototype.getListIDsForShoot = function () {
         var listIDs = [];

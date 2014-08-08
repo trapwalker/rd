@@ -152,6 +152,7 @@ function receiveMesFromServ(data){
                 // see || contact
                 var aTrack, aType, aHP;
                 aTrack = getTrack(event.object);
+                if (event.object.hp) aHP = event.object.hp;
                 setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом

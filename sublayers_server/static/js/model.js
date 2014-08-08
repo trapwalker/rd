@@ -61,6 +61,14 @@ function angleVectorRadCCW(aPoint) {
     var angle = angleVectorRad(aPoint, new Point(1, 0));
     if (aPoint.y < 0)
         angle = 2 * Math.PI - angle;
+    return normalizeAngleRad(angle);
+}
+
+function normalizeAngleRad(angle) {
+    var pi2 = Math.PI * 2;
+    var znak = (angle > 0) ? -1 : 1;
+    for (; Math.abs(angle) > pi2;)
+        angle += znak * pi2;
     return angle;
 }
 
