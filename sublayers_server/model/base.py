@@ -56,7 +56,7 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
-    def as_dict(self, to_time=None):
+    def as_dict(self):
         return dict(
             cls=self.classname,
             uid=self.uid,
@@ -74,8 +74,8 @@ class PointObject(Object):
         self._position = position
         """@type: sublayers_server.model.vectors.Point"""
 
-    def as_dict(self, to_time=None):
-        d = super(PointObject, self).as_dict(to_time)
+    def as_dict(self):
+        d = super(PointObject, self).as_dict()
         d.update(position=self.position)
         return d
 
@@ -125,7 +125,6 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def init_contacts_search(self):
         """Search init contacts"""
-        contacts = self.contacts
         for obj in self.server.filter_objects(None):  # todo: GEO-index clipping
             if isinstance(obj, Observer) and obj is not self:  # todo: optimize filtration observers
                 self.init_contact_test(obj)
@@ -203,7 +202,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника
 
-    def as_dict(self, to_time=None):
-        d = super(Observer, self).as_dict(to_time)
+    def as_dict(self):
+        d = super(Observer, self).as_dict()
         d.update(r=self.r)
         return d

@@ -121,7 +121,7 @@ class Unit(Observer):
         self.next_task()
 
     def as_dict(self, to_time=None):
-        d = super(Unit, self).as_dict(to_time)
+        d = super(Unit, self).as_dict()
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
