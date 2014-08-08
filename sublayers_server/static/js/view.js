@@ -141,7 +141,7 @@ $(document).ready(function () {
             //        [50.21, 35.42],
             //        [51.43, 39.44]
             //    ])
-        }).setView([50.6041, 36.5954], 13);
+        }).setView([50.595, 36.59], 16);
 
     //Переключение в полноэкранный режим и обратно по кнопке
     var html = document.documentElement;
@@ -158,7 +158,7 @@ $(document).ready(function () {
     };
 
     // Включение/Выключение отображения карты
-    buttonMapOnOffBtn.onclick = TileLayerToogle;
+    buttonMapOnOffBtn.onclick = TileLayerToggle;
 
     // Кнопка Debug
     buttonDebugOnOff.onclick = DegugToggle;
@@ -192,7 +192,7 @@ $(document).ready(function () {
     chat.addChat(-4, 'log-rpc');
     chat.addChat(-2, 'system');
     chat.setActiveChat(0);
-    chat.setVisible(false);
+    //chat.setVisible(false);
 
 
     backLight = new BackLight({
@@ -205,20 +205,39 @@ $(document).ready(function () {
     timer = setInterval(redrawMap, timerDelay);
 
 
-    // location - Настройка параметров в URL#Hash
-   // urlHashSetup(window.location.toString().split('?')[1]);
+
+
+
+    window.onbeforeunload = function (e) {
+        setCookie('flagDebug', (flagDebug ? 1 : 0));
+        setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
+        setCookie('chatActiveID', chat._activeChatID);
+        setCookie('zoom', myMap.getZoom());
+
+        // Ловим событие для Interner Explorer
+       // var e = e || window.event;
+       // var myMessage= "Вы действительно хотите покинуть страницу, не сохранив данные?";
+        // Для Internet Explorer и Firefox
+     //   if (e) {
+     //       e.returnValue = myMessage;
+     //   }
+        // Для Safari и Chrome
+        //return myMessage;
+    };
+
 
 });
-/*
-function urlHashSetup(location){
-    // бьём location по признакам ',' и '='
-    var loc = location.split('=');
 
-    alert(loc.length);
-};
-*/
 
-function TileLayerToogle(){
+
+
+
+function onGetInitMessage() {
+    setParamsFromCookie();
+}
+
+
+function TileLayerToggle(){
     var jSelector = $('#buttonMapOnOffStatus');
     if(myMap.hasLayer(tileLayerShow)){
         myMap.removeLayer(tileLayerShow);
@@ -231,7 +250,6 @@ function TileLayerToogle(){
         jSelector.addClass('buttonMapOnOffStatusOn');
     }
 }
-
 
 
 function DegugToggle(){
@@ -256,6 +274,80 @@ function DegugToggle(){
 
 
 }
+
+// Функции для работы с cookie
+// возвращает cookie с именем name, если есть, если нет, то undefined
+function getCookie(name) {
+    var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+// устанавливает cookie c именем name и значением value
+// options - объект с свойствами cookie (expires, path, domain, secure)
+function setCookie(name, value, options) {
+    options = options || {};
+
+    var expires = options.expires;
+
+    if (typeof expires == "number" && expires) {
+        var d = new Date();
+        d.setTime(d.getTime() + expires*1000);
+        expires = options.expires = d;
+    }
+    if (expires && expires.toUTCString) {
+        options.expires = expires.toUTCString();
+    }
+
+    value = encodeURIComponent(value);
+
+    var updatedCookie = name + "=" + value;
+
+    for(var propName in options) {
+        updatedCookie += "; " + propName;
+        var propValue = options[propName];
+        if (propValue !== true) {
+            updatedCookie += "=" + propValue;
+        }
+    }
+
+    document.cookie = updatedCookie;
+}
+
+// удаляет cookie с именем name
+function deleteCookie(name) {
+    setCookie(name, "", { expires: -1 })
+}
+
+// Читает Cookie, устанавливает параметры из неё
+function setParamsFromCookie(){
+    // Прочесть параметр flagDebug и установить его
+    var cFlagDebug = getCookie('flagDebug');
+    if(cFlagDebug != undefined) flagDebug = (cFlagDebug == 1);
+
+    // прочесть параметр Видимости чата и установить его
+    var chatVisible = getCookie('chatVisible');
+    if (chatVisible != undefined)
+        chat.setVisible((chatVisible == 1));
+     //   if (chatVisible == 1) // Нужно показывать чат - пришлось делать так глупо, потому что там вверху стоит false по умолчанию
+     //   {
+     //       alert('Показать!');
+     //       chat.setVisible(true);
+     //   }
+
+
+    // Прочесть параметр последнего активного чата
+    var chatActiveID = getCookie('chatActiveID');
+    if(chatActiveID != undefined) chat.setActiveChat(chatActiveID);
+
+
+    // Запомнить последний зум
+    var zoom = getCookie('zoom');
+    if (zoom)
+        if (zoom <= myMap.getMaxZoom() && zoom >= myMap.getMinZoom()) myMap.setZoom(zoom);
+}
+
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {

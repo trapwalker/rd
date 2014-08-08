@@ -40,6 +40,10 @@ class Unit(Observer):
         """
         return self._direction
 
+    @direction.setter
+    def direction(self, value):
+        self._direction = value
+
     @property
     def is_died(self):
         return self.hp == 0
@@ -143,13 +147,12 @@ class Unit(Observer):
         else:
             self.server.static_observers.remove(self)
 
-    def get_task(self):
+    @property
+    def task(self):
         """
         @rtype: sublayers_server.model.tasks.Task | None
         """
         return self._task
-
-    task = property(fget=get_task)
 
 
 class Station(Unit):
@@ -212,24 +215,19 @@ class Bot(Unit):
         """
         return self.motion.v if self.motion else None
 
-    def get_position(self):
+    @Unit.position.getter
+    def position(self):
         """
         @rtype: sublayers_server.model.vectors.Point
         """
         return self.motion.position if self.motion else self._position
 
-    position = property(fget=get_position, fset=Unit.set_position)
-
-    @property
+    @Unit.direction.getter
     def direction(self):
         """
         @rtype: float
         """
         return self.motion.direction if self.motion else super(Bot, self).direction
-
-    @direction.setter
-    def direction(self, value):
-        self._direction = value
 
     @property
     def max_velocity(self):  # m/s
@@ -295,7 +293,5 @@ class Bot(Unit):
         self.change_observer_state(True)
 
         super(Bot, self).on_task_change(old, new)
-
-    task = property(fget=Unit.get_task)
 
     # todo: test motions deletion from server

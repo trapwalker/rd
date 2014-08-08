@@ -79,19 +79,19 @@ class PointObject(Object):
         d.update(position=self.position)
         return d
 
-    def get_position(self):
+    @property
+    def position(self):
         """
         :rtype: model.vectors.Point
         """
         return self._position
 
-    def set_position(self, position):
+    @position.setter
+    def position(self, position):
         """
         @param sublayers_server.model.vectors.Point position: New position
         """
         self._position = position
-
-    position = property(fget=get_position, fset=set_position)
 
 
 class VisibleObject(PointObject, EmitterFor__Observer):

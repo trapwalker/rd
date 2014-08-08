@@ -187,7 +187,8 @@ function receiveMesFromServ(data){
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
                                 'Server-Time: ' + servtime / 1000. + '</br>' +
-                                'uid объекта: ' + event.object.uid + '</br>'
+                                'uid объекта: ' + event.object.uid + '</br>' +
+                                'comment: ' + event.comment + '</br>'
                         )
                             .addTo(myMap)
                     );
@@ -457,6 +458,8 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
         max_velocity: amax_speed
     });
 
+    // CallBack неа получение InitMessage
+    onGetInitMessage();
 }
 
 
