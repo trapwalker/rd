@@ -115,7 +115,7 @@ $(document).ready(function () {
     buttonMapOnOffBtn.onclick = TileLayerToggle;
 
     // Кнопка Debug
-    buttonDebugOnOff.onclick = DegugToggle;
+    buttonDebugOnOff.onclick = DebugToggle;
 
 
     iconConnectServer.src = "img/connect.png";
@@ -166,6 +166,7 @@ $(document).ready(function () {
         setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
         setCookie('chatActiveID', chat._activeChatID);
         setCookie('zoom', myMap.getZoom());
+        setCookie('chatHistory', JSON.stringify(chat._history));
 
         // Ловим событие для Interner Explorer
        // var e = e || window.event;
@@ -183,10 +184,8 @@ $(document).ready(function () {
 
 
 
-
-
 function onGetInitMessage() {
-  //  setParamsFromCookie();
+    setParamsFromCookie();
 }
 
 
@@ -205,7 +204,7 @@ function TileLayerToggle(){
 }
 
 
-function DegugToggle(){
+function DebugToggle(){
     if(flagDebug){
         // Выключить всю Debug информацию
         flagDebug=false;
@@ -224,9 +223,27 @@ function DegugToggle(){
 
 
     }
-
-
 }
+
+
+function setFlagDebug(flag){
+    flagDebug = flag;
+    if(flagDebug === false){
+        // Выключить всю Debug информацию
+        // Очистиить debugMapList и удалить всё с карты
+        for(;debugMapList.length;)
+            myMap.removeLayer(debugMapList.pop());
+        // Включить dragging
+        myMap.dragging.disable();
+
+    }
+    else {
+        // Включить всю Debug информацию
+          // Выключить dragging
+        myMap.dragging.enable();
+    }
+}
+
 
 // Функции для работы с cookie
 // возвращает cookie с именем name, если есть, если нет, то undefined
@@ -277,17 +294,13 @@ function deleteCookie(name) {
 function setParamsFromCookie(){
     // Прочесть параметр flagDebug и установить его
     var cFlagDebug = getCookie('flagDebug');
-    if(cFlagDebug !== undefined) flagDebug = (cFlagDebug == 1);
+    if (cFlagDebug !== undefined) setFlagDebug((cFlagDebug == 1));
+
 
     // прочесть параметр Видимости чата и установить его
     var chatVisible = getCookie('chatVisible');
     if (chatVisible !== undefined)
         chat.setVisible((chatVisible == 1));
-     //   if (chatVisible == 1) // Нужно показывать чат - пришлось делать так глупо, потому что там вверху стоит false по умолчанию
-     //   {
-     //       alert('Показать!');
-     //       chat.setVisible(true);
-     //   }
 
 
     // Прочесть параметр последнего активного чата
@@ -295,10 +308,16 @@ function setParamsFromCookie(){
     if(chatActiveID !== undefined) chat.setActiveChat(chatActiveID);
 
 
-    // Запомнить последний зум
+    // Установить последний зум
     var zoom = getCookie('zoom');
     if (zoom)
         if (zoom <= myMap.getMaxZoom() && zoom >= myMap.getMinZoom()) myMap.setZoom(zoom);
+
+    // Считать историю чата, установить её
+    var historyArray = JSON.parse(getCookie('chatHistory'));
+    if(historyArray){
+        chat.setMessagesHistory(historyArray);
+    }
 }
 
 

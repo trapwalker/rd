@@ -288,6 +288,15 @@ var ViewMessenger = (function () {
         this._historyIndex = -1;
     };
 
+    ViewMessenger.prototype.setMessagesHistory = function(mess){
+        // Добавить все элементы истории (при чтении из куки) в чат, читать массив с конца
+        for(;mess.length > 0;){
+            var mes = mess.pop();
+            this.addMessageToHistory(mes);
+        }
+    };
+
+
     // Установить в инпут сообщение из истории под заданным индексом
     // TODO: при установке сообщения переместить картеку в конец строки
     ViewMessenger.prototype._setInputHistoryMessage = function () {

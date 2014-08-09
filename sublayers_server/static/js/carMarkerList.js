@@ -76,7 +76,7 @@ var BackLightList = (function () {
     // Удаление машинки из списка выделеннных
     BackLightList.prototype.del = function(car) {
         var index = this.getIndexCarByID(car.ID);
-        if (index >=0 ){
+        if (index >= 0 ){
             this.backLightCars.splice(index, 1);
             car.backLight.delete();
             car.backLight = null;
@@ -88,7 +88,7 @@ var BackLightList = (function () {
         for (var i = 0; i < this.backLightCars.length; i++)
             if (this.backLightCars[i].ID == uID)
                 return i;
-        return null;
+        return -1;
     };
 
     return BackLightList;
