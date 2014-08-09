@@ -4,6 +4,7 @@ import logging
 from math import pi
 
 log = logging.getLogger(__name__)
+log.__class__.__call__ = log.__class__.info
 
 import units
 from datetime import datetime
@@ -34,7 +35,6 @@ class AgentAPI(API):
             self.make_car()
 
         self.shell = Shell(self.cmd_line_context(), dict(
-            srv=self.agent.server,
             pi=pi,
             P=Point,
             log=log,
@@ -42,7 +42,10 @@ class AgentAPI(API):
         self.send_init_package()
 
     def cmd_line_context(self):
-        ctx = {}
+        ctx = dict(
+            srv=self.agent.server,
+            car=self.car,
+        )
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
             if hasattr(attr, '_public_method') and attr._public_method:
