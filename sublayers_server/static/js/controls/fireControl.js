@@ -246,7 +246,7 @@ var FireControl = (function () {
     // Обновление точки в секторе
     // TODO: доделать удаление!!!
     FireControl.prototype.deleteCarInSector = function(pathSVG) {
-        alert('сработал deleteCarInSector в fireControl');
+        //alert('сработал deleteCarInSector в fireControl');
         $(pathSVG).remove();
         return null;
     };

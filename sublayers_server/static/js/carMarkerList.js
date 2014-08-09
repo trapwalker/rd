@@ -29,16 +29,17 @@ var BackLight = (function () {
             .setRadius(this.options.radius)
             .addTo(this.options._map);
 
-        this.pathSVG = null;
+        this.pathSVG = [];
     }
 
 
-    BackLight.prototype.delete = function () {
+    BackLight.prototype.del = function () {
         // TODO добавить удаление SVG
         alert('сработал delete у беклайта');
 
         if(this.pathSVG)
-            this.pathSVG = controllers.fireControl.deleteCarInSector(this.pathSVG);
+        for(var i in this.pathSVG)
+            this.pathSVG = controllers.fireControl.deleteCarInSector(this.pathSVG[i]);
 
         // Удаление кружка подсветки
         this.options._map.removeLayer(this.backCircle);
@@ -64,7 +65,7 @@ var BackLightList = (function () {
             if(options._map) this.options._map = options._map;
 
         this.backLightCars = [];
-    };
+    }
 
 
     // Добавление машинки в список выделенных
@@ -80,7 +81,7 @@ var BackLightList = (function () {
         var index = this.getIndexCarByID(car.ID);
         if (index >= 0 ){
             this.backLightCars.splice(index, 1);
-            car.backLight.delete();
+            car.backLight.del();
             car.backLight = null;
         }
     };
@@ -93,11 +94,11 @@ var BackLightList = (function () {
         return -1;
     };
 
-    BackLightList.prototype._getListIDsForShoot = function () {
+    BackLightList.prototype._getListIDsForShoot = function (sectorUid) {
         var listIDs = [];
         for (var i = 0; i < this.backLightCars.length; i++)
             // TODO: Проверить: является ли это верным решением
-            if (this.backLightCars[i].backLight.pathSVG)
+            if (this.backLightCars[i].backLight.pathSVG[sectorUid])
                 listIDs.push(this.backLightCars[i].ID);
         return listIDs;
     };
@@ -114,7 +115,7 @@ var CarMarkerList = (function () {
 
         if(options) {
             if(options._map) this.options._map = options._map;
-        };
+        }
 
         this.backLightList = new BackLightList({_map: this.options._map});
     }
@@ -145,16 +146,15 @@ var CarMarkerList = (function () {
 
     CarMarkerList.prototype.draw = function(aClockTime) {
         for (var i in listMapObject.objects) {
-            if (listMapObject.exist(i)) {//... сделать что-то с arr[i] ...
+            if (listMapObject.exist(i)) {
                 // пересчёт координат
                 var car = listMapObject.objects[i];
                 var tempPoint = car.getCurrentCoord(aClockTime);
                 var tempLatLng = this.options._map.unproject([tempPoint.x, tempPoint.y],
                                                              this.options._map.getMaxZoom());
                 // пересчёт угла
-                var tempAngleRadCars = car.getCurrentDirection(aClockTime);
                 // Установка угла в для поворота иконки маркера (в градусах)
-                car.marker.options.angle = tempAngleRadCars;
+                car.marker.options.angle = car.getCurrentDirection(aClockTime);
                 // Установка новых координат маркера);
                 car.marker.setLatLng(tempLatLng);
                 // Отрисовка backLight
@@ -169,8 +169,6 @@ var CarMarkerList = (function () {
     // Метод, который управляет добавлением/удалением/апдейтом машинок в секторах радара
     // Сделано тут, т.к. для перерисовки нужны distance и угол fi - а они тут сразу и вычисляются
     // TODO потестить попадание машинок в каждый из секторов, отключая сектора на сервере
-    // TODO Машинка быстро добавляется и удаляется из сектора, поэтому:
-    // TODO сделать так: сохранять сектор, в котором была машинка, проверять сначала его. Потом уже делать поиск новых
     CarMarkerList.prototype.drawCarInSector = function(car, position) {
             // Проверить на вхождение в сектора
             var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
@@ -195,25 +193,25 @@ var CarMarkerList = (function () {
                 if (distBool && fiBool) {
                     chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=" + car.owner.login);
                     // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
-                    if(! car.backLight.pathSVG) {
+                    if(! car.backLight.pathSVG[sector.uid]) {
                         // добавление SVG-path в fireControl
-                        car.backLight.pathSVG = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi);
+                        car.backLight.pathSVG[sector.uid] = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi);
                         //alert('добавили!');
                         return;
 
                     } else {
                         // Отрисовать машинку в радаре с новыми относительными координатами
-                        controllers.fireControl.updateCarInSector(sector, car.backLight.pathSVG, (distance / sector.radius), -fi);
+                        controllers.fireControl.updateCarInSector(sector, car.backLight.pathSVG[sector.uid], (distance / sector.radius), -fi);
                         return;
                     }
                 }
                 else {
                     chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=");
                     // Если машинка вне сектора, то если она там была, убрать её оттуда
-                    if(car.backLight.pathSVG != null) {
+                    if(car.backLight.pathSVG[sector.uid]) {
                         // удаление SVG-path из fireControl
                         alert('удалили ПОЧЕМУ-ТО!1');
-                        car.backLight.pathSVG = controllers.fireControl.deleteCarInSector(car.backLight.pathSVG);
+                        car.backLight.pathSVG[sector.uid] = controllers.fireControl.deleteCarInSector(car.backLight.pathSVG[sector.uid]);
                         return;
 
                     }
@@ -225,8 +223,8 @@ var CarMarkerList = (function () {
 
     }
 
-    CarMarkerList.prototype.getListIDsForShoot = function () {
-        return this.backLightList._getListIDsForShoot();
+    CarMarkerList.prototype.getListIDsForShoot = function (sectorUid) {
+        return this.backLightList._getListIDsForShoot(sectorUid);
     };
 
     return CarMarkerList;
