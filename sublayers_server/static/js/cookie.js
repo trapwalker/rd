@@ -114,42 +114,5 @@ var LocalCookieStorage = (function(){
     }
 
 
-
     return LocalCookieStorage;
 })();
-
-
-
-
-
-/*
-// Читает Cookie, устанавливает параметры из неё
-function setParamsFromCookie(){
-    // Прочесть параметр flagDebug и установить его
-    var cFlagDebug = getCookie('flagDebug');
-    if (cFlagDebug !== undefined) setFlagDebug((cFlagDebug == 1));
-
-
-    // прочесть параметр Видимости чата и установить его
-    var chatVisible = getCookie('chatVisible');
-    if (chatVisible !== undefined)
-        chat.setVisible((chatVisible == 1));
-
-
-    // Прочесть параметр последнего активного чата
-    var chatActiveID = getCookie('chatActiveID');
-    if(chatActiveID !== undefined) chat.setActiveChat(chatActiveID);
-
-
-    // Установить последний зум
-    var zoom = getCookie('zoom');
-    if (zoom)
-        if (zoom <= myMap.getMaxZoom() && zoom >= myMap.getMinZoom()) myMap.setZoom(zoom);
-
-    // Считать историю чата, установить её
-    var historyArray = JSON.parse(getCookie('chatHistory'));
-    if(historyArray){
-        chat.setMessagesHistory(historyArray);
-    }
-}
-*/

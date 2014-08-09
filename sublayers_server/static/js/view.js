@@ -77,7 +77,7 @@ $(document).ready(function () {
     }
 
     // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage({zoom: 12});
+    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: true, chatVisible: true, chatActiveID: -2});
 
     // Установка flagDebug из Cookie
     flagDebug = cookieStorage.flagDebug;
@@ -167,16 +167,6 @@ $(document).ready(function () {
 
     window.onbeforeunload = function (e) {
         cookieStorage.save();
-
-        // Ловим событие для Interner Explorer
-        // var e = e || window.event;
-        // var myMessage= "Вы действительно хотите покинуть страницу, не сохранив данные?";
-        // Для Internet Explorer и Firefox
-        //   if (e) {
-        //       e.returnValue = myMessage;
-        //   }
-        // Для Safari и Chrome
-        //return myMessage;
     };
 
 
@@ -218,26 +208,6 @@ function DebugToggle(){
 
     }
 }
-
-
-function setFlagDebug(flag){
-    flagDebug = flag;
-    if(flagDebug === false){
-        // Выключить всю Debug информацию
-        // Очистиить debugMapList и удалить всё с карты
-        for(;debugMapList.length;)
-            myMap.removeLayer(debugMapList.pop());
-        // Включить dragging
-        myMap.dragging.disable();
-
-    }
-    else {
-        // Включить всю Debug информацию
-          // Выключить dragging
-        myMap.dragging.enable();
-    }
-}
-
 
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
