@@ -11,8 +11,9 @@ var FireControl = (function () {
             sectorCallBackShoot: null,      // CallBack для всех секторов, в него передастся объект FireSector
             sectorCallBackRecharged: null,   // CallBack для всех секторов, в него передастся объект FireSector
             sectorCallBackFireRequest: null, // CallBack для запроса выстрела от сервера
-            allCallBack: null               // CallBack для кнопки All
+            allCallBack: null,               // CallBack для кнопки All
             //onFireAll: ''
+            halfSectorWidth: gradToRad(35) // Ширина сектора, которая будет отображаться в fireControl
         };
 
         if (options) {
@@ -78,7 +79,7 @@ var FireControl = (function () {
     FireControl.prototype._getSectorByID = function(fireSectorID){
         for (var i = 0; i < this.sectors.length; i++) {
             // TODO не уверен, что === работает корректно в данном случае
-            if (this.sectors[i]._fireSector.uid === fireSectorID)
+            if (this.sectors[i]._fireSector.uid == fireSectorID)
                 return this.sectors[i];
         }
     };
@@ -87,7 +88,7 @@ var FireControl = (function () {
     FireControl.prototype._getSVGPathSector = function(fireSector, radiusPath) {
         //var tempWidth = fireSector.widthAngle / 2;
         // TODO: Забита жёсткая ширина сектора
-        var tempWidth = gradToRad(35);
+        var tempWidth = this.options.halfSectorWidth;
         var radiusOut = this.radiusIn + ((this.radiusOut - this.radiusIn) * radiusPath);
         var vertVOut = new Point(radiusOut, 0);
         var vertVIn = new Point(this.radiusIn, 0);
@@ -206,11 +207,13 @@ var FireControl = (function () {
 
     // Реализация радара - Вынесена сюда, т.к. только тут есть radiusIn и radiusOut
     // Добавление Точки в сектор
+    // TODO Сделать, чтобы закомментированный p работал. Так правильнее. В апдейте тоже
     FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle) {
         // Получить доступ к сектору в fireControl
         var sector = this._getSectorByID(aSector.uid);
         // Вычислить точку для отрисовки
         var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        //var p = rotateVector(new Point(radius, 0), ((relativeAngle * this.options.halfSectorWidth) / sector.widthAngle));
         var p = rotateVector(new Point(radius, 0), relativeAngle);
 
 
@@ -227,10 +230,12 @@ var FireControl = (function () {
     };
 
     // Обновление точки в секторе
-    FireControl.prototype.updateCarInSector = function(pathSVG, relativeRadius, relativeAngle) {
+    FireControl.prototype.updateCarInSector = function(sector, pathSVG, relativeRadius, relativeAngle) {
         // Вычислить точку для отрисовки
         var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        //var p = rotateVector(new Point(radius, 0), ((relativeAngle * this.options.halfSectorWidth) / sector.widthAngle));
         var p = rotateVector(new Point(radius, 0), relativeAngle);
+
         // Обновить центр точки точку
         pathSVG.setAttribute('cx', p.x);
         pathSVG.setAttribute('cy', p.y);
@@ -241,6 +246,7 @@ var FireControl = (function () {
     // Обновление точки в секторе
     // TODO: доделать удаление!!!
     FireControl.prototype.deleteCarInSector = function(pathSVG) {
+        alert('сработал deleteCarInSector в fireControl');
         $(pathSVG).remove();
         return null;
     };

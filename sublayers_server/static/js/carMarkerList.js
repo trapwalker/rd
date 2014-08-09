@@ -35,6 +35,8 @@ var BackLight = (function () {
 
     BackLight.prototype.delete = function () {
         // TODO добавить удаление SVG
+        alert('сработал delete у беклайта');
+
         if(this.pathSVG)
             this.pathSVG = controllers.fireControl.deleteCarInSector(this.pathSVG);
 
@@ -89,6 +91,15 @@ var BackLightList = (function () {
             if (this.backLightCars[i].ID == uID)
                 return i;
         return -1;
+    };
+
+    BackLightList.prototype._getListIDsForShoot = function () {
+        var listIDs = [];
+        for (var i = 0; i < this.backLightCars.length; i++)
+            // TODO: Проверить: является ли это верным решением
+            if (this.backLightCars[i].backLight.pathSVG)
+                listIDs.push(this.backLightCars[i].ID);
+        return listIDs;
     };
 
     return BackLightList;
@@ -158,8 +169,8 @@ var CarMarkerList = (function () {
     // Метод, который управляет добавлением/удалением/апдейтом машинок в секторах радара
     // Сделано тут, т.к. для перерисовки нужны distance и угол fi - а они тут сразу и вычисляются
     // TODO потестить попадание машинок в каждый из секторов, отключая сектора на сервере
-    // TODO разобраться: Машинка быстро добавляется и удаляется из сектора, хотя она должна быть  в нём.
-    // Работает хорошо только сектор, который направлен на 90 градусов ПО часовой. Остальные поглючивают
+    // TODO Машинка быстро добавляется и удаляется из сектора, поэтому:
+    // TODO сделать так: сохранять сектор, в котором была машинка, проверять сначала его. Потом уже делать поиск новых
     CarMarkerList.prototype.drawCarInSector = function(car, position) {
             // Проверить на вхождение в сектора
             var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
@@ -188,18 +199,22 @@ var CarMarkerList = (function () {
                         // добавление SVG-path в fireControl
                         car.backLight.pathSVG = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi);
                         //alert('добавили!');
+                        return;
 
                     } else {
                         // Отрисовать машинку в радаре с новыми относительными координатами
-                        car.backLight.pathSVG = controllers.fireControl.updateCarInSector(car.backLight.pathSVG, (distance / sector.radius), -fi);
+                        controllers.fireControl.updateCarInSector(sector, car.backLight.pathSVG, (distance / sector.radius), -fi);
+                        return;
                     }
                 }
                 else {
                     chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=");
                     // Если машинка вне сектора, то если она там была, убрать её оттуда
-                    if(car.backLight.pathSVG) {
+                    if(car.backLight.pathSVG != null) {
                         // удаление SVG-path из fireControl
+                        alert('удалили ПОЧЕМУ-ТО!1');
                         car.backLight.pathSVG = controllers.fireControl.deleteCarInSector(car.backLight.pathSVG);
+                        return;
 
                     }
 
@@ -211,12 +226,7 @@ var CarMarkerList = (function () {
     }
 
     CarMarkerList.prototype.getListIDsForShoot = function () {
-        var listIDs = [];
-        for (var i = 0; i < this.backLightList.length; i++)
-        // TODO: Проверить: является ли это верным решением
-            if (this.backLightList[i].backLight.pathSVG)
-                listIDs.push(this.backLightList.backLightCars[i].ID);
-        return listIDs;
+        return this.backLightList._getListIDsForShoot();
     };
 
     return CarMarkerList;

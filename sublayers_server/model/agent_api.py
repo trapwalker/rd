@@ -63,8 +63,8 @@ class AgentAPI(API):
             observing_range=1000,
             owner=self.agent,
             weapons=[
-                SectoralWeapon(direction=0, sector_width=45, r=400),
-                SectoralWeapon(direction=pi, sector_width=45, r=350),
+                #SectoralWeapon(direction=0, sector_width=45, r=400),
+                #SectoralWeapon(direction=pi, sector_width=45, r=350),
                 SectoralWeapon(direction=pi * 1.5, sector_width=60, r=300),
                 SectoralWeapon(direction=pi/2, sector_width=60, r=300),
             ],

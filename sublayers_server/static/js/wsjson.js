@@ -150,7 +150,7 @@ function receiveMesFromServ(data){
            // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
-                var aTrack, aType, aHP;
+                var aTrack, aType, aHP=0;
                 aTrack = getTrack(event.object);
                 if (event.object.hp) aHP = event.object.hp;
                 setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
@@ -170,12 +170,11 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Update") {
                 // Update
-                var aTrack, aType, aHP, owner;
+                var aTrack, aType, aHP=0;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime / 1000.);
                 if (event.object.hp)aHP = event.object.hp;
                 aTrack = getTrack(event.object);
-                owner = getOwner(event.object.owner);
                 updateCurrentCar(event.object.uid, aType, aHP, aTrack);
 
                 // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -395,6 +394,7 @@ function updateCurrentCar(uid, aType, aHP, aTrack) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
+        // TODO: Если новое хп своей машинки равно 0, то запретить ездитьи стрелять.
     }
     else { // если не своя, то проверить есть ли такая в модели
         listMapObject.setCarHP(uid, aHP);
