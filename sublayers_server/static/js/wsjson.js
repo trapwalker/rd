@@ -58,7 +58,7 @@ function sendNewPoint(aPoint, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(JSON.parse(JSON.stringify(mes))), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
 
@@ -71,7 +71,7 @@ function sendStopCar() {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // fire
@@ -86,7 +86,7 @@ function sendFire(aUid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // setSpeed
@@ -100,7 +100,7 @@ function sendSetSpeed(newSpeed, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // send chat_message
@@ -114,7 +114,7 @@ function sendChatMessage(atext, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Консоль  для сервера, срабатывает при отправке сообщений из активных debug-чатов
@@ -128,7 +128,7 @@ function sendServConsole(atext){
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта

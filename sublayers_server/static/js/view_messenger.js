@@ -259,7 +259,7 @@ var ViewMessenger = (function () {
     ViewMessenger.prototype.addMessageToLog = function(aText, aLogType) {
         if (aLogType == "rpc") {
             this.rpcID++;
-            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID}, aText);
+            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID},  '<pre>' + aText + '</pre>');
         }
 
         if (aLogType == "answer") {
