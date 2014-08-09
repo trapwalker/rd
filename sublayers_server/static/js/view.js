@@ -76,6 +76,12 @@ $(document).ready(function () {
         alert('Storage not loading!');
     }
 
+    // Загрузка Cookie
+    cookieStorage = new LocalCookieStorage({zoom: 12});
+
+    // Установка flagDebug из Cookie
+    flagDebug = cookieStorage.flagDebug;
+
     // Инициализация.
     ModelInit();
     wsjson = new WSJSON();
@@ -95,7 +101,7 @@ $(document).ready(function () {
             //        [50.21, 35.42],
             //        [51.43, 39.44]
             //    ])
-        }).setView([50.595, 36.59], 16);
+        }).setView([50.595, 36.59], cookieStorage.zoom);
 
     //Переключение в полноэкранный режим и обратно по кнопке
     var html = document.documentElement;
@@ -145,8 +151,9 @@ $(document).ready(function () {
     chat.addChat(-3, 'log-answer');
     chat.addChat(-4, 'log-rpc');
     chat.addChat(-2, 'system');
-    chat.setActiveChat(0);
-    //chat.setVisible(false);
+    chat.setActiveChat(cookieStorage.chatActiveID);
+    chat.setVisible(cookieStorage.chatVisible);
+    chat.setMessagesHistory(cookieStorage.historyArray);
 
 
 
@@ -158,35 +165,22 @@ $(document).ready(function () {
     timer = setInterval(redrawMap, timerDelay);
 
 
-
-
-
     window.onbeforeunload = function (e) {
-        setCookie('flagDebug', (flagDebug ? 1 : 0));
-        setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
-        setCookie('chatActiveID', chat._activeChatID);
-        setCookie('zoom', myMap.getZoom());
-        setCookie('chatHistory', JSON.stringify(chat._history));
+        cookieStorage.save();
 
         // Ловим событие для Interner Explorer
-       // var e = e || window.event;
-       // var myMessage= "Вы действительно хотите покинуть страницу, не сохранив данные?";
+        // var e = e || window.event;
+        // var myMessage= "Вы действительно хотите покинуть страницу, не сохранив данные?";
         // Для Internet Explorer и Firefox
-     //   if (e) {
-     //       e.returnValue = myMessage;
-     //   }
+        //   if (e) {
+        //       e.returnValue = myMessage;
+        //   }
         // Для Safari и Chrome
         //return myMessage;
     };
 
 
 });
-
-
-
-function onGetInitMessage() {
-    setParamsFromCookie();
-}
 
 
 function TileLayerToggle(){
@@ -245,81 +239,6 @@ function setFlagDebug(flag){
 }
 
 
-// Функции для работы с cookie
-// возвращает cookie с именем name, если есть, если нет, то undefined
-function getCookie(name) {
-    var matches = document.cookie.match(new RegExp(
-            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    ));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
-// устанавливает cookie c именем name и значением value
-// options - объект с свойствами cookie (expires, path, domain, secure)
-function setCookie(name, value, options) {
-    options = options || {};
-
-    var expires = options.expires;
-
-    if (typeof expires == "number" && expires) {
-        var d = new Date();
-        d.setTime(d.getTime() + expires*1000);
-        expires = options.expires = d;
-    }
-    if (expires && expires.toUTCString) {
-        options.expires = expires.toUTCString();
-    }
-
-    value = encodeURIComponent(value);
-
-    var updatedCookie = name + "=" + value;
-
-    for(var propName in options) {
-        updatedCookie += "; " + propName;
-        var propValue = options[propName];
-        if (propValue !== true) {
-            updatedCookie += "=" + propValue;
-        }
-    }
-
-    document.cookie = updatedCookie;
-}
-
-// удаляет cookie с именем name
-function deleteCookie(name) {
-    setCookie(name, "", { expires: -1 })
-}
-
-// Читает Cookie, устанавливает параметры из неё
-function setParamsFromCookie(){
-    // Прочесть параметр flagDebug и установить его
-    var cFlagDebug = getCookie('flagDebug');
-    if (cFlagDebug !== undefined) setFlagDebug((cFlagDebug == 1));
-
-
-    // прочесть параметр Видимости чата и установить его
-    var chatVisible = getCookie('chatVisible');
-    if (chatVisible !== undefined)
-        chat.setVisible((chatVisible == 1));
-
-
-    // Прочесть параметр последнего активного чата
-    var chatActiveID = getCookie('chatActiveID');
-    if(chatActiveID !== undefined) chat.setActiveChat(chatActiveID);
-
-
-    // Установить последний зум
-    var zoom = getCookie('zoom');
-    if (zoom)
-        if (zoom <= myMap.getMaxZoom() && zoom >= myMap.getMinZoom()) myMap.setZoom(zoom);
-
-    // Считать историю чата, установить её
-    var historyArray = JSON.parse(getCookie('chatHistory'));
-    if(historyArray){
-        chat.setMessagesHistory(historyArray);
-    }
-}
-
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
@@ -350,6 +269,7 @@ var controllers;
 var flagDebug = true;
 var debugMapList = [];
 var carMarkerList;
+var cookieStorage;
 
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
