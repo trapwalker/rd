@@ -34,7 +34,10 @@ function getCarMarker(aCar, aMap) {
         iconUrl: 'img/car_20.png',
         iconSize: [20, 20]
     }));
-    newMarker.bindLabel(aCar.owner.login+test_html_str, {direction: 'right'});
+    if (aCar.owner)
+        newMarker.bindLabel(aCar.owner.login + test_html_str, {direction: 'right'});
+    else
+        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'});
     //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
@@ -78,7 +81,6 @@ function carInfoClickEvent(event){
 }
 
 function onMouseClickMarker(){
-
     if (listMapObject.exist(this.carID)) {
         var car = listMapObject.objects[this.carID];
         if(car.backLight)

@@ -351,6 +351,7 @@ var Clock = (function () {
 })();
 
 // Владелец машины
+// TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
 var Owner = (function () {
     function Owner(uid, login, car) {
         this.uid = uid;
@@ -404,6 +405,12 @@ var OwnerList = (function () {
             }
         }
         return null;
+    };
+
+    OwnerList.prototype.clearOwnerList = function () {
+        for (; this.owners.length > 0;) {
+            this.owners.pop().unbindCar();
+        }
     };
     return OwnerList;
 })();

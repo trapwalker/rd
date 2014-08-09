@@ -367,11 +367,14 @@ var ViewMessenger = (function () {
         var owner = event.data.owner;
         //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
 
-        if (owner.uid == user.ID)
-            backLight.on(userCarMarker.marker);
-        else
-        if(owner.car)
-            backLight.on(owner.car.marker);
+        if (owner.car)
+            if (listMapObject.exist(owner.car.ID)) {
+                var car = listMapObject.objects[owner.car.ID];
+                if (car.backLight)
+                    carMarkerList.backLightList.del(car);
+                else
+                    carMarkerList.backLightList.add(car);
+            }
     }
 
     return ViewMessenger;

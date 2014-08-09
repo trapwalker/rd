@@ -383,6 +383,7 @@ class Clock {
 }
 
 // Владелец машины
+// TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
 class Owner {
     uid:number;
     login:string;
@@ -443,6 +444,12 @@ class OwnerList {
             }
         }
         return null;
+    }
+
+    clearOwnerList() {
+        for(;this.owners.length > 0;){
+            this.owners.pop().unbindCar();
+        }
     }
 }
 

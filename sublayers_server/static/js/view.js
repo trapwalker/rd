@@ -242,5 +242,13 @@ var carMarkerList;
 var cookieStorage;
 
 
+var timerDelay = 20; //константа задающая временной интервал таймера (юзать по всему проекту только это)
+var user;
+var clock;
+var timer;
+var listMapObject;
+var ownerList;
+
+
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

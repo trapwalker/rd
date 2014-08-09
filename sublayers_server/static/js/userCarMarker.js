@@ -226,6 +226,18 @@ var SectorsView = (function () {
         }
     };
 
+    SectorsView.prototype.clearSectors = function(){
+        for(;this.options.sectors.length > 0;){
+            var sector = this.options.sectors.pop();
+            // Удалить сначала с карты
+            this.options._map.removeLayer(sector.polygon);
+            // Удалить присвоенные структуры
+            sector._points = null;
+            sector._fireSector = null;
+            sector.polygon = null;
+        }
+    }
+
     return SectorsView;
 })();
 
@@ -372,6 +384,36 @@ var UserCarMarker = (function () {
         this.currentUserCarPoint = {};
         this.currentUserCarAngle = 0;
         this.currentUserCarLatLng = [];
+    }
+
+    UserCarMarker.prototype.setNewParams = function(options){
+        // переопределение опций
+        if (options) {
+            if (options.position) this.options.position = options.position;
+            if (options.tailEnable) this.options.tailEnable = options.tailEnable;
+            if (options._map) this.options._map = options._map;
+            if (options.carID) this.options.carID = options.carID;
+            if (options.radiusView) this.options.radiusView = options.radiusView;
+            if (options.countSectorPoints) this.options.countSectorPoints = options.countSectorPoints;
+        }
+
+        // Создание Маркера не требуется, только установить ему новый carID
+        this.marker.carID = this.options.carID;
+
+        // Создание шлейфа не требуется, только обновить параметр отображения
+        this.tail.setActive(this.options.tailEnable);
+
+        // Создание круга обзора Не требуется. С кругом совсем ничего не нужно делать.
+
+        // Очистка секторов и добавление новых
+        this.sectorsView.clearSectors();
+        for(var i in options.sectors)
+            this.sectorsView.addSector(options.sectors[i]);
+
+
+        // TrackView убрать старую траекторию
+        this.trackView.empty();
+
     }
 
     UserCarMarker.prototype.draw = function (aClockTime) {

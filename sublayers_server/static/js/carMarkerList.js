@@ -35,7 +35,7 @@ var BackLight = (function () {
 
     BackLight.prototype.del = function () {
         // TODO добавить удаление SVG
-        alert('сработал delete у беклайта');
+        //alert('сработал delete у беклайта');
 
         if(this.pathSVG)
         for(var i in this.pathSVG)
@@ -103,6 +103,11 @@ var BackLightList = (function () {
         return listIDs;
     };
 
+    BackLightList.prototype.clearList = function () {
+        for (; this.backLightCars.length > 0;)
+            this.backLightCars.pop().backLight.del();
+    };
+
     return BackLightList;
 })();
 
@@ -118,6 +123,15 @@ var CarMarkerList = (function () {
         }
 
         this.backLightList = new BackLightList({_map: this.options._map});
+    }
+
+    CarMarkerList.prototype.clearList = function () {
+        // очистить backLightList
+        this.backLightList.clearList();
+        // очистить listMapObject
+        for(var i in listMapObject.objects){
+            this.del(listMapObject.objects[i].ID);
+        }
     }
 
     // Добавление машинки
@@ -189,7 +203,7 @@ var CarMarkerList = (function () {
                 var fiBool = Math.abs(fi) <= (sector.widthAngle / 2.);
 
                 //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'bool', "sector " + (sector.uid) + " distBool= " + distBool + '  fiBool=' + fiBool);
-
+                // TODO при частов change_car() на сервер car.owner.login начинает глючить
                 if (distBool && fiBool) {
                     chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=" + car.owner.login);
                     // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
@@ -210,7 +224,7 @@ var CarMarkerList = (function () {
                     // Если машинка вне сектора, то если она там была, убрать её оттуда
                     if(car.backLight.pathSVG[sector.uid]) {
                         // удаление SVG-path из fireControl
-                        alert('удалили ПОЧЕМУ-ТО!1');
+                        //alert('удалили ПОЧЕМУ-ТО!1');
                         car.backLight.pathSVG[sector.uid] = controllers.fireControl.deleteCarInSector(car.backLight.pathSVG[sector.uid]);
                         return;
 

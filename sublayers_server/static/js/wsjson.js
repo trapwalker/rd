@@ -170,12 +170,13 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Update") {
                 // Update
-                var aTrack, aType, aHP=0;
+                var aTrack, aType, aHP= 0, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime / 1000.);
                 if (event.object.hp)aHP = event.object.hp;
                 aTrack = getTrack(event.object);
-                updateCurrentCar(event.object.uid, aType, aHP, aTrack);
+                owner = getOwner(event.object);
+                updateCurrentCar(event.object.uid, aType, aHP, aTrack, owner);
 
                 // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
@@ -354,8 +355,6 @@ function getCircleMotion(motion){
     // движение по часовой стрелке или против часовой стрелки 1 = по часовой
     var ccw = motion.arc.ccw;
 
-    //constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA:number)
-
     return new MoveCircle(
         start_time / 1000. , // Время начала движения
         //clock.getCurrentTime(),
@@ -390,7 +389,7 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
 }
 
 
-function updateCurrentCar(uid, aType, aHP, aTrack) {
+function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
@@ -399,6 +398,8 @@ function updateCurrentCar(uid, aType, aHP, aTrack) {
     else { // если не своя, то проверить есть ли такая в модели
         listMapObject.setCarHP(uid, aHP);
         listMapObject.setTrack(uid, aTrack);
+
+        //if(! )
     }
 
 }
@@ -416,37 +417,78 @@ function getWeapons(data) {
 }
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
-    user.userCar = new UserCar(uid,       //ID машинки
-        aType,       //Тип машинки
-        aHP,      //HP машинки
-        amax_speed,      //Максималка
-        aTrack);   //Текущая траектория
+    if(! user.userCar) {
+        user.userCar = new UserCar(uid,       //ID машинки
+            aType,       //Тип машинки
+            aHP,      //HP машинки
+            amax_speed,      //Максималка
+            aTrack);   //Текущая траектория
 
 
-    var fireSectors = getWeapons(aWeapons);
+        var fireSectors = getWeapons(aWeapons);
 
-    // Добавить сектора в userCar
-    user.userCar.AddFireSectors(fireSectors);
+        // Добавить сектора в userCar
+        user.userCar.AddFireSectors(fireSectors);
 
-    // Инициализация маркера машинки
-    userCarMarker = new UserCarMarker({
-        position: myMap.unproject([aTrack.coord.x, aTrack.coord.y],16),
-        tailEnable: false,
-        _map: myMap,
-        radiusView: 1000,
-        carID: uid,
-        sectors: user.userCar.fireSectors,
-        countSectorPoints: 20
-    });
+        // Инициализация маркера машинки
+        userCarMarker = new UserCarMarker({
+            position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
+            tailEnable: false,
+            _map: myMap,
+            radiusView: 1000,
+            carID: uid,
+            sectors: user.userCar.fireSectors,
+            countSectorPoints: 20
+        });
 
-    // Инициализация контроллеров
-    // controllers
-    controllers = new Controllers({
-        fuelMax: fuelMaxProbka,
-        hpMax: aMaxHP,
-        fireSectors: user.userCar.fireSectors,
-        max_velocity: amax_speed
-    });
+        // Инициализация контроллеров
+        // controllers
+        controllers = new Controllers({
+            fuelMax: fuelMaxProbka,
+            hpMax: aMaxHP,
+            fireSectors: user.userCar.fireSectors,
+            max_velocity: amax_speed
+        });
+    }
+    else {
+        // значит пришёл второй initMessage, значит нужно переопределить все параметры
+
+        // TODO очистить все-все списки, которые хранятся на клиенте
+        carMarkerList.clearList();
+
+        //ownerList.clearOwnerList();
+
+        // Переопределение своей машинки
+        user.userCar = new UserCar(uid,       //ID машинки
+            aType,       //Тип машинки
+            aHP,      //HP машинки
+            amax_speed,      //Максималка
+            aTrack);   //Текущая траектория
+
+        // Добавить сектора в userCar
+        var fireSectors = getWeapons(aWeapons);
+        user.userCar.AddFireSectors(fireSectors);
+
+        // Переинициализация маркера машинки
+        userCarMarker.setNewParams({
+            position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
+            tailEnable: (myMap.getZoom() > 14),
+            _map: myMap,
+            radiusView: 1000,
+            carID: user.userCar.ID,
+            sectors: user.userCar.fireSectors,
+            countSectorPoints: 20
+        });
+
+        // установка новых параметров контроллеров
+        controllers.setNewParams({
+            fuelMax: fuelMaxProbka,
+            hpMax: aMaxHP,
+            sectors: user.userCar.fireSectors,
+            max_velocity: amax_speed
+        });
+
+    }
 
 }
 

@@ -194,7 +194,7 @@ var FireControl = (function () {
 
 
     FireControl.prototype.clearSectors = function() {
-        this.options.sectors.forEach(function(sector){
+        /*this.sectors.forEach(function(sector){
             // Снять клик с каждого сектора
             //TODO: придумать способ удаления всех точек в секторе (точек радара)
             $(sector.SVGPath).off('click',this._fireSectorEvent);
@@ -203,6 +203,18 @@ var FireControl = (function () {
             $(sector.SVGGroup).remove();
         });
         this.sectors = [];
+        */
+        for(;this.sectors.length > 0;){
+            var sector = this.sectors.pop();
+            // Снять клик с каждого сектора
+            // точки с радара удаляются раньше, очищая backLightList в carMarkerList
+            $(sector.SVGPath).off('click',this._fireSectorEvent);
+            $(sector.SVGPath).remove();
+            $(sector.SVGPathShadow).remove();
+            $(sector.SVGGroup).remove();
+        }
+        this.sectors = [];
+
     };
 
     // Реализация радара - Вынесена сюда, т.к. только тут есть radiusIn и radiusOut
