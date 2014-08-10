@@ -98,12 +98,12 @@ function onZoomEnd(event) {
 function createTileLayer(storage) {
     if (storage) {
         tileLayerShow = new StorageTileLayer(mapBasePath, {
-            maxZoom: 8,
+            maxZoom: 7,
             storage: storage});
     }
     else {
         tileLayerShow = L.tileLayer(mapBasePath, {
-            maxZoom: 8});
+            maxZoom: 7});
     }
     tileLayerShow.addTo(myMap);
 }
@@ -124,8 +124,8 @@ $(document).ready(function () {
 
     myMap = L.map('map',
         {
-            minZoom: 3,
-            maxZoom: 8,
+            minZoom: 0,
+            maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
             keyboard: false,
