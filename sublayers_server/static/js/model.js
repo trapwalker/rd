@@ -259,7 +259,7 @@ var MapCar = (function (_super) {
 
     MapCar.prototype.unbindOwner = function () {
         if (this.owner)
-            this.owner.unbindCar();
+            this.owner.unbindCar(this);
         return this;
     };
     return MapCar;
@@ -353,24 +353,41 @@ var Clock = (function () {
 // Владелец машины
 // TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
 var Owner = (function () {
-    function Owner(uid, login, car) {
+    function Owner(uid, login) {
         this.uid = uid;
         this.login = login;
-        this.car = null;
+        this.cars = new Array();
     }
-    Owner.prototype.bindCar = function (car) {
-        this.unbindCar();
-        car.owner = this;
-        this.car = car;
+    Owner.prototype.bindCar = function (aCar) {
+        if (!this.car(aCar.ID)) {
+            aCar.owner = this;
+            this.cars.push(aCar);
+        }
         return this;
     };
 
-    Owner.prototype.unbindCar = function () {
-        if (this.car) {
-            this.car.owner = null;
-            this.car = null;
+    Owner.prototype.unbindCar = function (aCar) {
+        for (var i = 0; i < this.cars.length; i++)
+            if (this.cars[i].ID == aCar.ID) {
+                this.cars.splice(i, 1); // TODO: проверить, ту ли машинку здесь мы удаляем
+                aCar.owner = null;
+            }
+        return this;
+    };
+
+    Owner.prototype.unbindAllCars = function () {
+        for (; this.cars.length > 0;) {
+            var tcar = this.cars.pop();
+            tcar.owner = null;
         }
         return this;
+    };
+
+    Owner.prototype.car = function (aID) {
+        for (var i = 0; i < this.cars.length; i++)
+            if (this.cars[i].ID === aID)
+                return this.cars[i];
+        return null;
     };
     return Owner;
 })();
@@ -408,9 +425,8 @@ var OwnerList = (function () {
     };
 
     OwnerList.prototype.clearOwnerList = function () {
-        for (; this.owners.length > 0;) {
-            this.owners.pop().unbindCar();
-        }
+        for (var i = 0; i < this.owners.length; i++)
+            this.owners[i].unbindAllCars();
     };
     return OwnerList;
 })();

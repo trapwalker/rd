@@ -367,14 +367,17 @@ var ViewMessenger = (function () {
         var owner = event.data.owner;
         //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
 
-        if (owner.car)
-            if (listMapObject.exist(owner.car.ID)) {
-                var car = listMapObject.objects[owner.car.ID];
+
+        // TODO подстветить все машинки данного пользователя
+        for(var i = 0; i < owner.cars.length; i++) {
+            if (listMapObject.exist(owner.cars[i].ID)) {
+                var car = listMapObject.objects[owner.cars[i].ID];
                 if (car.backLight)
                     carMarkerList.backLightList.del(car);
                 else
                     carMarkerList.backLightList.add(car);
             }
+        }
     }
 
     return ViewMessenger;

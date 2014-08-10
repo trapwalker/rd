@@ -277,7 +277,7 @@ class MapCar extends DynamicObject {
 
     unbindOwner():MapCar {
         if(this.owner)
-            this.owner.unbindCar();
+            this.owner.unbindCar(this);
         return this;
     }
 }
@@ -387,27 +387,45 @@ class Clock {
 class Owner {
     uid:number;
     login:string;
-    car:MapCar;
+    cars: Array <MapCar>;
 
-    constructor(uid:number, login:string, car:MapCar) {
+    constructor(uid:number, login:string) {
         this.uid = uid;
         this.login = login;
-        this.car = null;
+        this.cars = new Array<MapCar>();
     }
 
-    bindCar(car:MapCar):Owner {
-        this.unbindCar();
-        car.owner = this;
-        this.car = car;
-        return this;
-    }
-
-    unbindCar():Owner {
-        if (this.car) {
-            this.car.owner = null;
-            this.car = null;
+    bindCar(aCar:MapCar):Owner {
+        if(! this.car(aCar.ID)){
+            aCar.owner = this;
+            this.cars.push(aCar);
         }
         return this;
+    }
+
+    unbindCar(aCar):Owner {
+
+        for(var i=0 ;i < this.cars.length; i++)
+            if(this.cars[i].ID == aCar.ID){
+                this.cars.splice(i, 1); // TODO: проверить, ту ли машинку здесь мы удаляем
+                aCar.owner = null;
+            }
+        return this;
+    }
+
+    unbindAllCars():Owner {
+        for(;this.cars.length > 0;) {
+            var tcar = this.cars.pop();
+            tcar.owner = null;
+        }
+        return this;
+    }
+
+    car(aID: number): MapCar {
+        for(var i=0; i < this.cars.length; i++)
+        if(this.cars[i].ID === aID)
+            return this.cars[i];
+        return null;
     }
 }
 
@@ -447,9 +465,9 @@ class OwnerList {
     }
 
     clearOwnerList() {
-        for(;this.owners.length > 0;){
-            this.owners.pop().unbindCar();
-        }
+        //for(;this.owners.length > 0;) this.owners.pop().unbindAllCars();
+        for(var i=0; i < this.owners.length; i++) this.owners[i].unbindAllCars();
+
     }
 }
 

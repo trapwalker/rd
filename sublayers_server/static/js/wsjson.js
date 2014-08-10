@@ -455,8 +455,8 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
 
         // TODO очистить все-все списки, которые хранятся на клиенте
         carMarkerList.clearList();
-
-        //ownerList.clearOwnerList();
+        // Разбиндить все машинки для всех пользователей
+        ownerList.clearOwnerList();
 
         // Переопределение своей машинки
         user.userCar = new UserCar(uid,       //ID машинки
