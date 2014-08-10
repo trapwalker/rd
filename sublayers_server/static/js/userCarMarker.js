@@ -155,14 +155,14 @@ var SectorsView = (function () {
 
     SectorsView.prototype.drawSectors = function (aNewPoint, aNewAngle) {
         this.options.sectors.forEach(function (sector) {
-            var tempCenter = this.map.project(this.center, 16);
+            var tempCenter = this.map.project(this.center, this.map.getMaxZoom());
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
             var tempPoints = [];
 
             for(var i = 0; i < sector._points.length; i++) {
                 var tempPoint = summVector(tempCenter, rotateVector(sector._points[i], tempAngle));
-                tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], 16));
+                tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], this.map.getMaxZoom()));
             }
 
             if (this.map.hasLayer(sector.polygon)) {
@@ -269,11 +269,11 @@ var TrackView = (function (){
             a: aTrack.a,
             b: aTrack.b,
             dist: distancePoints(aTrack.a, aTrack.b),
-            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], 16)
+            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], this.map.getMaxZoom())
         };
 
         obj.line = L.polyline([
-            this.map.unproject([obj.a.x, obj.a.y], 16),
+            this.map.unproject([obj.a.x, obj.a.y], this.map.getMaxZoom()),
             obj.bl
         ],{
             stroke: true,
@@ -287,7 +287,7 @@ var TrackView = (function (){
 
 
     TrackView.prototype.draw  = function(aPos){
-        var tempPoint = this.map.project(aPos, 16);
+        var tempPoint = this.map.project(aPos, this.map.getMaxZoom());
         if (!this.currentTrack) {
             if (this.trackes.length >= 1) {
                 this.currentTrack = this.trackes.shift();

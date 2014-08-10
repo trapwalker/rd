@@ -21,7 +21,7 @@ function redrawMap() {
 
 function onMouseClickMap(mouseEventObject) {
     if(user.userCar)
-        sendNewPoint(myMap.project(mouseEventObject.latlng, 16), user.userCar.ID);
+        sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
 }
 
 function onZoomStart(event) {
@@ -138,7 +138,7 @@ $(document).ready(function () {
         iconSize: [50, 50]
     }));
 
-    testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], 16));
+    testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], myMap.getMaxZoom()));
     testTownMarker.bindPopup("Город Белгород!");
 
     // создание чата

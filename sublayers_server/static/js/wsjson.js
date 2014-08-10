@@ -158,7 +158,7 @@ function receiveMesFromServ(data){
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     debugMapList.push(
-                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
+                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()), {color: '#FFBA12'})
                             .setRadius(8)
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
@@ -181,7 +181,7 @@ function receiveMesFromServ(data){
                 // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     debugMapList.push(
-                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], 16), {color: '#FF0000'})
+                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], myMap.getMaxZoom()), {color: '#FF0000'})
                             .setRadius(3)
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
