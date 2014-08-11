@@ -56,6 +56,30 @@ function angleVectorRad(aPoint1, aPoint2) {
     return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
 }
 
+// Возвращает угол против часовой стрелки от положительного направления оси X
+function angleVectorRadCCW(aPoint) {
+    var angle = angleVectorRad(aPoint, new Point(1, 0));
+    if (aPoint.y < 0)
+        angle = 2 * Math.PI - angle;
+    return normalizeAngleRad(angle);
+}
+
+function normalizeAngleRad(angle) {
+    var pi2 = Math.PI * 2;
+    var znak = (angle > 0) ? -1 : 1;
+    for (; (angle > pi2) || (angle < 0);)
+        angle += znak * pi2;
+    return angle;
+}
+
+function getDiffAngle(angle1, angle2) {
+    var res = normalizeAngleRad(angle1) - normalizeAngleRad(angle2);
+    if (Math.abs(res) <= Math.PI)
+        return res;
+    else
+        return (2 * Math.PI - Math.abs(res)) * (res > 0 ? -1 : 1);
+}
+
 function radToGrad(rad) {
     return rad * 180 / Math.PI;
 }
@@ -230,9 +254,21 @@ var MapCar = (function (_super) {
         _super.call(this, aID, aTrack);
         this.type = aType;
         this.hp = aHP;
+        this.fireSectors = new Array();
     }
-    MapCar.prototype.AddFireSector = function (aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
-        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
+    MapCar.prototype.AddFireSector = function (aFireSector) {
+        this.fireSectors.push(aFireSector);
+    };
+
+    MapCar.prototype.AddFireSectors = function (aSectors) {
+        for (var i = 0; i < aSectors.length; i++)
+            this.AddFireSector(aSectors[i]);
+    };
+
+    MapCar.prototype.unbindOwner = function () {
+        if (this.owner)
+            this.owner.unbindCar(this);
+        return this;
     };
     return MapCar;
 })(DynamicObject);
@@ -320,5 +356,86 @@ var Clock = (function () {
         this.dt = aTimeServer - new Date().getTime() / 1000.;
     };
     return Clock;
+})();
+
+// Владелец машины
+// TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
+var Owner = (function () {
+    function Owner(uid, login) {
+        this.uid = uid;
+        this.login = login;
+        this.cars = new Array();
+    }
+    Owner.prototype.bindCar = function (aCar) {
+        if (!this.car(aCar.ID)) {
+            aCar.owner = this;
+            this.cars.push(aCar);
+        }
+        return this;
+    };
+
+    Owner.prototype.unbindCar = function (aCar) {
+        for (var i = 0; i < this.cars.length; i++)
+            if (this.cars[i].ID == aCar.ID) {
+                this.cars.splice(i, 1); // TODO: проверить, ту ли машинку здесь мы удаляем
+                aCar.owner = null;
+            }
+        return this;
+    };
+
+    Owner.prototype.unbindAllCars = function () {
+        for (; this.cars.length > 0;) {
+            var tcar = this.cars.pop();
+            tcar.owner = null;
+        }
+        return this;
+    };
+
+    Owner.prototype.car = function (aID) {
+        for (var i = 0; i < this.cars.length; i++)
+            if (this.cars[i].ID === aID)
+                return this.cars[i];
+        return null;
+    };
+    return Owner;
+})();
+
+// Список владельцев машин
+var OwnerList = (function () {
+    function OwnerList() {
+        this.owners = new Array();
+    }
+    OwnerList.prototype.add = function (owner) {
+        var exstOwner = this.getOwnerByUid(owner.uid);
+        if (!exstOwner) {
+            this.owners.push(owner);
+            return owner;
+        }
+        return exstOwner;
+    };
+
+    OwnerList.prototype.getOwnerByUid = function (uid) {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].uid === uid) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    };
+
+    OwnerList.prototype.getOwnerByLogin = function (login) {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].login === login) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    };
+
+    OwnerList.prototype.clearOwnerList = function () {
+        for (var i = 0; i < this.owners.length; i++)
+            this.owners[i].unbindAllCars();
+    };
+    return OwnerList;
 })();
 //# sourceMappingURL=model.js.map

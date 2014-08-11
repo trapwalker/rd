@@ -54,6 +54,27 @@ function angleVectorRad(aPoint1, aPoint2:Point):number {
     return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
 }
 
+// Возвращает угол против часовой стрелки от положительного направления оси X
+function angleVectorRadCCW(aPoint: Point):number {
+    var angle = angleVectorRad(aPoint, new Point(1, 0));
+    if (aPoint.y < 0) angle = 2 * Math.PI - angle;
+    return normalizeAngleRad(angle);
+}
+
+function normalizeAngleRad(angle: number): number{
+    var pi2 = Math.PI * 2;
+    var znak = (angle > 0) ? -1 : 1;
+    for(;(angle > pi2) || (angle < 0);)
+        angle += znak * pi2;
+    return angle;
+}
+
+function getDiffAngle(angle1, angle2: number): number {
+    var res = normalizeAngleRad(angle1) - normalizeAngleRad(angle2);
+    if (Math.abs(res) <= Math.PI) return res;
+    else return (2 * Math.PI - Math.abs(res)) * (res > 0 ? -1 : 1);
+}
+
 function radToGrad(rad:number):number {
     return rad * 180 / Math.PI;
 }
@@ -242,15 +263,28 @@ class MapCar extends DynamicObject {
     type:number; // 1..5
     hp:number;
     fireSectors: Array<FireSector>;
+    owner: Owner;
 
     constructor(aID, aType, aHP:number, aTrack:MoveTrack) {
         super(aID, aTrack);
         this.type = aType;
         this.hp = aHP;
+        this.fireSectors = new Array<FireSector>();
     }
 
-    AddFireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
-        this.fireSectors.push(new FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge));
+    AddFireSector(aFireSector) {
+        this.fireSectors.push(aFireSector);
+    }
+
+    AddFireSectors(aSectors: Array<FireSector>) {
+        for(var i=0; i<aSectors.length; i++)
+            this.AddFireSector(aSectors[i]);
+    }
+
+    unbindOwner():MapCar {
+        if(this.owner)
+            this.owner.unbindCar(this);
+        return this;
     }
 }
 
@@ -354,4 +388,92 @@ class Clock {
 
 }
 
+// Владелец машины
+// TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
+class Owner {
+    uid:number;
+    login:string;
+    cars: Array <MapCar>;
+
+    constructor(uid:number, login:string) {
+        this.uid = uid;
+        this.login = login;
+        this.cars = new Array<MapCar>();
+    }
+
+    bindCar(aCar:MapCar):Owner {
+        if(! this.car(aCar.ID)){
+            aCar.owner = this;
+            this.cars.push(aCar);
+        }
+        return this;
+    }
+
+    unbindCar(aCar):Owner {
+
+        for(var i=0 ;i < this.cars.length; i++)
+            if(this.cars[i].ID == aCar.ID){
+                this.cars.splice(i, 1); // TODO: проверить, ту ли машинку здесь мы удаляем
+                aCar.owner = null;
+            }
+        return this;
+    }
+
+    unbindAllCars():Owner {
+        for(;this.cars.length > 0;) {
+            var tcar = this.cars.pop();
+            tcar.owner = null;
+        }
+        return this;
+    }
+
+    car(aID: number): MapCar {
+        for(var i=0; i < this.cars.length; i++)
+        if(this.cars[i].ID === aID)
+            return this.cars[i];
+        return null;
+    }
+}
+
+// Список владельцев машин
+class OwnerList {
+    owners:Array<Owner>;
+
+    constructor() {
+        this.owners = new Array<Owner>();
+    }
+
+    add(owner:Owner):Owner {
+        var exstOwner = this.getOwnerByUid(owner.uid);
+        if (!exstOwner) {
+            this.owners.push(owner);
+            return owner;
+        }
+        return exstOwner;
+    }
+
+    getOwnerByUid(uid:number):Owner {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].uid === uid) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    }
+
+    getOwnerByLogin(login:string):Owner {
+        for (var i = 0; i < this.owners.length; i++) {
+            if (this.owners[i].login === login) {
+                return this.owners[i];
+            }
+        }
+        return null;
+    }
+
+    clearOwnerList() {
+        //for(;this.owners.length > 0;) this.owners.pop().unbindAllCars();
+        for(var i=0; i < this.owners.length; i++) this.owners[i].unbindAllCars();
+
+    }
+}
 

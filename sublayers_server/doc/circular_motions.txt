@@ -65,3 +65,125 @@ if D >= 0:
 
 A(t) = A0+V*(t-ta)
 B(t) = CB0*e^(i*w*(t-tb))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1.2. Контакт кругового движения и статичног о объекта #
+abs(A - B(t)) = r
+
+abs(A - Rotate(B, w*(t-t0))) = r  | t = w*(t-t0) // Угол, на который поворачивается вектор B
+
+A = {a.x; a.y}
+Rotate(B, t) = { b.x * cos(t) - b.y * sin(t) ; b.x * sin(t) + b.y * cos(t) } 
+
+abs({a.x; a.y} - { b.x * cos(t) - b.y * sin(t) ; b.x * sin(t) + b.y * cos(t) } ) = r
+
+abs({a.x - b.x * cos(t) + b.y * sin(t) ; a.y - b.x * sin(t) - b.y * cos(t)}) = r
+
+(a.x - b.x * cos(t) + b.y * sin(t))^2 + (a.y - b.x * sin(t) - b.y * cos(t))^2 = r^2
+
+(a.x - b.x * cos(t) + b.y * sin(t))^2 = a.x^2 + b.x^2 * cos(t)^2 + b.y^2 * sin(t)^2 +
+										- 2*(a.x * b.x * cos(t)) + 2*(a.x * b.y * sin(t)) - 2(b.x * b.y * cos(t) * sin(t)) 
+										
+(a.y - b.x * sin(t) - b.y * cos(t))^2 = a.y^2 + b.x^2 * sin(t)^2 + b.y^2 * cos(t)^2 +
+										- 2*(a.y * b.x * sin(t)) - 2*(a.y * b.y * cos(t)) + 2(b.x * b.y * cos(t) * sin(t)) 
+								
+В итоге:
+a.x^2 + b.x^2 * cos(t)^2 + b.y^2 * sin(t)^2 +
+a.y^2 + b.x^2 * sin(t)^2 + b.y^2 * cos(t)^2 +
+- 2*(a.x * b.x * cos(t)) + 2*(a.x * b.y * sin(t)) - 2(b.x * b.y * cos(t) * sin(t)) + 
+- 2*(a.y * b.x * sin(t)) - 2*(a.y * b.y * cos(t)) + 2(b.x * b.y * cos(t) * sin(t))  = r^2
+
+// - 2(b.x * b.y * cos(t) * sin(t)) + 2(b.x * b.y * cos(t) * sin(t)) = 0   => 
+a.x^2 + b.x^2 * cos(t)^2 + b.y^2 * sin(t)^2 +
+a.y^2 + b.x^2 * sin(t)^2 + b.y^2 * cos(t)^2 +
+- 2*(a.x * b.x * cos(t)) + 2*(a.x * b.y * sin(t)) +
+- 2*(a.y * b.x * sin(t)) - 2*(a.y * b.y * cos(t))   = r^2
+
+// Вынесение за скобки в последних двух строках
+a.x^2 + b.x^2 * cos(t)^2 + b.y^2 * sin(t)^2 +
+a.y^2 + b.x^2 * sin(t)^2 + b.y^2 * cos(t)^2 +
+-2*cos(t)*(a.x * b.x + a.y * b.y)
++2*sin(t)*(a.x * b.y - a.y * b.x) = r^2
+
+// Вынесение за скобки в первых двух строках
+a.x^2 + a.y^2 + b.x^2 * (cos(t)^2 + sin(t)^2) + b.y^2 * (sin(t)^2 + cos(t)^2)
+-2*cos(t)*(a.x * b.x + a.y * b.y)
++2*sin(t)*(a.x * b.y - a.y * b.x) = r^2
+
+// cos(t)^2 + sin(t)^2 = 1
+a.x^2 + a.y^2 + b.x^2 + b.y^2 
+-2*cos(t)*(a.x * b.x + a.y * b.y)
++2*sin(t)*(a.x * b.y - a.y * b.x) = r^2 	
+
+// Сделали подстановку 
+//  P1 = a.x^2 + a.y^2 + b.x^2 + b.y^2 
+//  P2 = a.x * b.x + a.y * b.y
+//  P3 = a.x * b.y - a.y * b.x																					
+P1 - 2*cos(t)*P2 + 2*sin(t)*P3 = r^2	
+
+// Сделали подстановку 
+// P4 = r^2	- P1   
+ 2*P3*sin(t) - 2*P2*cos(t) = P4
+ 
+// cos(t)^2 + sin(t)^2 = 1
+// cos(t) = x
+2*P3*sqrt(1 - x) - 2*P2*x = P4
+2*P3*sqrt(1 - x) = P4 + 2*P2*x;
+
+// Возводим все в квадрат
+4*P3^2*(1 - x) = P4^2 + 4*P2*P4*x + 4*P2^2*x^2;
+4*P3^2 - 4*P3^2*x = P4^2 + 4*P2*P4*x + 4*P2^2*x^2;
+
+4*P2^2*x^2 + 4 * x *(P2*P4 + P3^2) + P4^2 - 4*P3^2 = 0; 
+// Сделали подстановку 
+//  P5 = 4*P2^2 
+//  P6 = 4 * (P2*P4 + P3^2)
+//  P7 = P4^2 - 4*P3^2
+
+P5*x^2 + P6*x + P7 = 0		
+
+ 
+										
+										
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

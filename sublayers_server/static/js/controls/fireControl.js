@@ -11,8 +11,9 @@ var FireControl = (function () {
             sectorCallBackShoot: null,      // CallBack для всех секторов, в него передастся объект FireSector
             sectorCallBackRecharged: null,   // CallBack для всех секторов, в него передастся объект FireSector
             sectorCallBackFireRequest: null, // CallBack для запроса выстрела от сервера
-            allCallBack: null               // CallBack для кнопки All
+            allCallBack: null,               // CallBack для кнопки All
             //onFireAll: ''
+            halfSectorWidth: gradToRad(35) // Ширина сектора, которая будет отображаться в fireControl
         };
 
         if (options) {
@@ -77,6 +78,7 @@ var FireControl = (function () {
 
     FireControl.prototype._getSectorByID = function(fireSectorID){
         for (var i = 0; i < this.sectors.length; i++) {
+            // TODO не уверен, что === работает корректно в данном случае
             if (this.sectors[i]._fireSector.uid == fireSectorID)
                 return this.sectors[i];
         }
@@ -86,7 +88,7 @@ var FireControl = (function () {
     FireControl.prototype._getSVGPathSector = function(fireSector, radiusPath) {
         //var tempWidth = fireSector.widthAngle / 2;
         // TODO: Забита жёсткая ширина сектора
-        var tempWidth = gradToRad(35);
+        var tempWidth = this.options.halfSectorWidth;
         var radiusOut = this.radiusIn + ((this.radiusOut - this.radiusIn) * radiusPath);
         var vertVOut = new Point(radiusOut, 0);
         var vertVIn = new Point(this.radiusIn, 0);
@@ -192,15 +194,70 @@ var FireControl = (function () {
 
 
     FireControl.prototype.clearSectors = function() {
-        this.options.sectors.forEach(function(sector){
+        /*this.sectors.forEach(function(sector){
             // Снять клик с каждого сектора
+            //TODO: придумать способ удаления всех точек в секторе (точек радара)
             $(sector.SVGPath).off('click',this._fireSectorEvent);
             $(sector.SVGPath).remove();
             $(sector.SVGPathShadow).remove();
             $(sector.SVGGroup).remove();
         });
         this.sectors = [];
+        */
+        for(;this.sectors.length > 0;){
+            var sector = this.sectors.pop();
+            // Снять клик с каждого сектора
+            // точки с радара удаляются раньше, очищая backLightList в carMarkerList
+            $(sector.SVGPath).off('click',this._fireSectorEvent);
+            $(sector.SVGPath).remove();
+            $(sector.SVGPathShadow).remove();
+            $(sector.SVGGroup).remove();
+        }
+        this.sectors = [];
+
     };
+
+    // Реализация радара - вынесена сюда, т.к. только тут есть radiusIn и radiusOut
+    // Добавление Точки в сектор
+    FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle) {
+
+        // Вычислить точку для отрисовки
+        var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        var p = rotateVector(new Point(radius, 0),
+                             ((2 * relativeAngle * this.options.halfSectorWidth) / aSector.widthAngle));
+        // Нарисовать точку
+        var pathSVG = document.createElementNS(this.NS, 'circle');
+        // Добавить точку в сектор
+        pathSVG.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
+        pathSVG.setAttribute('r', 2);
+        pathSVG.setAttribute('cx', p.x);
+        pathSVG.setAttribute('cy', p.y);
+        this._getSectorByID(aSector.uid).SVGGroup.appendChild(pathSVG);
+        return pathSVG;
+    };
+
+    // Обновление точки в секторе
+    FireControl.prototype.updateCarInSector = function(sector, pathSVG, relativeRadius, relativeAngle) {
+        // Вычислить точку для отрисовки
+        var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        var p = rotateVector(new Point(radius, 0), ((2*relativeAngle * this.options.halfSectorWidth) / sector.widthAngle));
+        // Обновить центр точки точку
+        pathSVG.setAttribute('cx', p.x);
+        pathSVG.setAttribute('cy', p.y);
+        return pathSVG;
+    };
+
+
+    // Обновление точки в секторе
+    // TODO: доделать удаление!!!
+    FireControl.prototype.deleteCarInSector = function(pathSVG) {
+        //alert('сработал deleteCarInSector в fireControl');
+        $(pathSVG).remove();
+        return null;
+    };
+
+
+
 
 
     FireControl.prototype._allFireEvent = function(event){

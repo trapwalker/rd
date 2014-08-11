@@ -155,14 +155,14 @@ var SectorsView = (function () {
 
     SectorsView.prototype.drawSectors = function (aNewPoint, aNewAngle) {
         this.options.sectors.forEach(function (sector) {
-            var tempCenter = this.map.project(this.center, 16);
+            var tempCenter = this.map.project(this.center, this.map.getMaxZoom());
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
             var tempPoints = [];
 
             for(var i = 0; i < sector._points.length; i++) {
                 var tempPoint = summVector(tempCenter, rotateVector(sector._points[i], tempAngle));
-                tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], 16));
+                tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], this.map.getMaxZoom()));
             }
 
             if (this.map.hasLayer(sector.polygon)) {
@@ -226,6 +226,18 @@ var SectorsView = (function () {
         }
     };
 
+    SectorsView.prototype.clearSectors = function(){
+        for(;this.options.sectors.length > 0;){
+            var sector = this.options.sectors.pop();
+            // Удалить сначала с карты
+            this.options._map.removeLayer(sector.polygon);
+            // Удалить присвоенные структуры
+            sector._points = null;
+            sector._fireSector = null;
+            sector.polygon = null;
+        }
+    }
+
     return SectorsView;
 })();
 
@@ -257,11 +269,11 @@ var TrackView = (function (){
             a: aTrack.a,
             b: aTrack.b,
             dist: distancePoints(aTrack.a, aTrack.b),
-            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], 16)
+            bl: this.map.unproject([aTrack.b.x, aTrack.b.y], this.map.getMaxZoom())
         };
 
         obj.line = L.polyline([
-            this.map.unproject([obj.a.x, obj.a.y], 16),
+            this.map.unproject([obj.a.x, obj.a.y], this.map.getMaxZoom()),
             obj.bl
         ],{
             stroke: true,
@@ -275,7 +287,7 @@ var TrackView = (function (){
 
 
     TrackView.prototype.draw  = function(aPos){
-        var tempPoint = this.map.project(aPos, 16);
+        var tempPoint = this.map.project(aPos, this.map.getMaxZoom());
         if (!this.currentTrack) {
             if (this.trackes.length >= 1) {
                 this.currentTrack = this.trackes.shift();
@@ -346,7 +358,7 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(this.options.position, this.options.radiusView * 1.5,
+        this.circleView = L.circle(this.options.position, this.options.radiusView * 1130,
             {
                 weight: 0,
                 fillColor: '#32cd32',
@@ -366,27 +378,72 @@ var UserCarMarker = (function () {
         this.trackView = new TrackView({
             map: this.options._map
         });
+
+
+        // Инициализация переменных
+        this.currentUserCarPoint = {};
+        this.currentUserCarAngle = 0;
+        this.currentUserCarLatLng = [];
     }
 
-    UserCarMarker.prototype.draw = function (aNewPoint, aNewAngle) {
+    UserCarMarker.prototype.setNewParams = function(options){
+        // переопределение опций
+        if (options) {
+            if (options.position) this.options.position = options.position;
+            if (options.tailEnable) this.options.tailEnable = options.tailEnable;
+            if (options._map) this.options._map = options._map;
+            if (options.carID) this.options.carID = options.carID;
+            if (options.radiusView) this.options.radiusView = options.radiusView;
+            if (options.countSectorPoints) this.options.countSectorPoints = options.countSectorPoints;
+        }
+
+        // Создание Маркера не требуется, только установить ему новый carID
+        this.marker.carID = this.options.carID;
+
+        // Создание шлейфа не требуется, только обновить параметр отображения
+        this.tail.setActive(this.options.tailEnable);
+
+        // Создание круга обзора Не требуется. С кругом совсем ничего не нужно делать.
+
+        // Очистка секторов и добавление новых
+        this.sectorsView.clearSectors();
+        for(var i in options.sectors)
+            this.sectorsView.addSector(options.sectors[i]);
+
+
+        // TrackView убрать старую траекторию
+        this.trackView.empty();
+
+    }
+
+    UserCarMarker.prototype.draw = function (aClockTime) {
+
+        // TODO: Пересмотреть все функции в этом методе на их параметры, связанные с LatLng/project/unproject
+        this.currentUserCarPoint = user.userCar.getCurrentCoord(aClockTime);
+        this.currentUserCarAngle = user.userCar.getCurrentDirection(aClockTime);
+        this.currentUserCarLatLng = this.options._map.unproject([this.currentUserCarPoint.x, this.currentUserCarPoint.y],
+            this.options._map.getMaxZoom());
+
+
         // Перерисовка маркера
         // Установка угла в для поворота иконки маркера (в градусах)
-        this.marker.options.angle = aNewAngle;
+        this.marker.options.angle = this.currentUserCarAngle;
+
         // Установка новых координат маркера
-        this.marker.setLatLng(aNewPoint);
+        this.marker.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка шлейфа
-        this.tail.drawTail(aNewPoint); // только на максимальных приближениях будет рисоваться хвост
+        this.tail.drawTail(this.currentUserCarLatLng); // только на максимальных приближениях будет рисоваться хвост
 
         // Перерисовка круга обзора
-        this.circleView.setLatLng(aNewPoint);
+        this.circleView.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка секторов стрельбы
-        this.sectorsView.drawSectors(aNewPoint, aNewAngle);
+        this.sectorsView.drawSectors(this.currentUserCarLatLng, this.currentUserCarAngle);
 
         // Перерисовка траектории
         if(! flagDebug)
-            this.trackView.draw(aNewPoint);
+            this.trackView.draw(this.currentUserCarLatLng);
     }
 
     return UserCarMarker;

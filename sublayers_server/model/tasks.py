@@ -26,7 +26,7 @@ class Task(object):
 
     def __init__(self, owner):
         """
-        @param Unit owner: Owner of task
+        @param sublayers_server.model.units.Unit owner: Owner of task
         """
         super(Task, self).__init__()
         self.owner = owner

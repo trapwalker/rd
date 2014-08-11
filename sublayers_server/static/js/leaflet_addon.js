@@ -34,12 +34,14 @@ function getCarMarker(aCar, aMap) {
         iconUrl: 'img/car_20.png',
         iconSize: [20, 20]
     }));
-    newMarker.bindLabel(aCar.owner.login+test_html_str, {direction: 'right'});
+    if (aCar.owner)
+        newMarker.bindLabel(aCar.owner.login + test_html_str, {direction: 'right'});
+    else
+        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'});
     //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
     newMarker.on('click', onMouseClickMarker);
-    //newMarker.bindPopup('popUp');
     newMarker.addTo(aMap);
     newMarker.carID = aCar.ID;
 
@@ -53,7 +55,7 @@ function onMouseOverForLabels(){
 }
 
 function onMouseOutForLabels(){
-    this.setLabelNoHide(myMap.getZoom() > 14);
+    this.setLabelNoHide(myMap.getZoom() > levelZoomForVisible);
 }
 
 function carInfoClickEvent2(event){
@@ -79,15 +81,20 @@ function carInfoClickEvent(event){
 }
 
 function onMouseClickMarker(){
-    //alert('click '+this.carID);
-    backLightList.toggle(this);
-   // backLight.on(this);
+    if (listMapObject.exist(this.carID)) {
+        var car = listMapObject.objects[this.carID];
+        if(car.backLight)
+            carMarkerList.backLightList.del(car);
+        else
+            carMarkerList.backLightList.add(car);
 
-
-    // тест эффекта мигания маркера
-    this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
-    var self = this;
-    setTimeout(function(){self.setOpacity(1);}, 500);
+        // тест эффекта мигания маркера
+        this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
+        var self = this;
+        setTimeout(function () {
+            self.setOpacity(1);
+        }, 500);
+    }
 }
 
 
