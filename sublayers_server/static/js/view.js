@@ -107,6 +107,9 @@ $(document).ready(function () {
     // Кнопка Debug
     buttonDebugOnOff.onclick = DebugToggle;
 
+    // Кнопка подключения к серверу (пока просто перезагружает страницу)
+    buttonConnectServerBtn.onclick = ConnectServerToggle;
+
 
     myMap.on('click', onMouseClickMap);
     myMap.on('zoomstart', onZoomStart);
@@ -206,6 +209,10 @@ function DebugToggle(){
     }
 }
 
+//Подключение к серверу (пока просто перезагрузка страницы)
+function ConnectServerToggle() {
+    location.reload();
+}
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
