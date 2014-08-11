@@ -188,24 +188,13 @@ var CarMarkerList = (function () {
         var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
         var targetAngle = angleVectorRadCCW(subVector(position, userCarMarker.currentUserCarPoint));
 
-        //chat.addMessageToSystem('distance', "distance = " + distance);
-        //chat.addMessageToSystem('targetAngle', "targetAngle = " + radToGrad(targetAngle));
-        //chat.addMessageToSystem('currentUserCarAngle', "currentUserCarAngle = " + radToGrad(userCarMarker.currentUserCarAngle));
-
         for (var i = 0; i < user.userCar.fireSectors.length; i++) {
             var sector = user.userCar.fireSectors[i];
             var fi = getDiffAngle((userCarMarker.currentUserCarAngle + sector.directionAngle), targetAngle);
 
-            //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'fi',
-            //                        "sector " + (sector.uid) + " fi= " + radToGrad(fi));
-            //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'fi2',
-            //                        "sector " + (sector.uid) + " sectA= " +
-            //                        radToGrad(userCarMarker.currentUserCarAngle + sector.directionAngle));
-
             var distBool = distance <= sector.radius;
             var fiBool = Math.abs(fi) <= (sector.widthAngle / 2.);
 
-            //chat.addMessageToSystem(car.owner.login + (sector.uid) + 'bool', "sector " + (sector.uid) + " distBool= " + distBool + '  fiBool=' + fiBool);
             // TODO при частом change_car() на сервер car.owner.login начинает глючить
             if (distBool && fiBool) {
                 chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=" + car.owner.login);
@@ -213,9 +202,7 @@ var CarMarkerList = (function () {
                 if (!car.backLight.pathSVG[sector.uid]) {
                     // добавление SVG-path в fireControl
                     car.backLight.pathSVG[sector.uid] = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi);
-                    //alert('добавили!');
                     return;
-
                 } else {
                     // Отрисовать машинку в радаре с новыми относительными координатами
                     controllers.fireControl.updateCarInSector(sector, car.backLight.pathSVG[sector.uid], (distance / sector.radius), -fi);
@@ -223,11 +210,9 @@ var CarMarkerList = (function () {
                 }
             }
             else {
-                chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=");
                 // Если машинка вне сектора, то если она там была, убрать её оттуда
                 if (car.backLight.pathSVG[sector.uid]) {
                     // удаление SVG-path из fireControl
-                    //alert('удалили ПОЧЕМУ-ТО!1');
                     car.backLight.pathSVG[sector.uid] = controllers.fireControl.deleteCarInSector(car.backLight.pathSVG[sector.uid]);
                     return;
 
