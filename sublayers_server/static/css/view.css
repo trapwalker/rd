@@ -71,14 +71,17 @@ body{
     color: floralwhite;
 }
 
-.buttonFullScreenOn {
+#buttonFullScreen {
     position: absolute;
     top: 35px;
     right: 15px;
     width: 62px;
     height: 62px;
-    background: transparent url('/static/img/misc_button/btn_fullscreen_normal.png') 100% 100% no-repeat;
     cursor: pointer;
+}
+
+.buttonFullScreenOn {
+    background: transparent url('/static/img/misc_button/btn_fullscreen_normal.png') 100% 100% no-repeat;
 }
 
 .buttonFullScreenOn:hover {
@@ -90,13 +93,7 @@ body{
 }
 
 .buttonFullScreenOff {
-    position: absolute;
-    top: 35px;
-    right: 15px;
-    width: 62px;
-    height: 62px;
     background: transparent url('/static/img/misc_button/btn_no_fullscreen_normal.png') 100% 100% no-repeat;
-    cursor: pointer;
 }
 
 .buttonFullScreenOff:hover {
