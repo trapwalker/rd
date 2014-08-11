@@ -188,6 +188,7 @@ class Bot(Unit):
         """
         @param position: sublayers_server.model.vectors.Point
         """
+        self.clear_tasks()
         path = build_trajectory(
             self.position,
             self.direction,
