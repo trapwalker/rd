@@ -72,7 +72,7 @@ $(document).ready(function () {
     }
 
     // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: true, chatVisible: true, chatActiveID: -2});
+    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: flagDebug, chatVisible: true, chatActiveID: -2});
 
     // Установка flagDebug из Cookie
     flagDebug = cookieStorage.flagDebug;
