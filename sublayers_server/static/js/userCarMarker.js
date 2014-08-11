@@ -358,7 +358,7 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(this.options.position, this.options.radiusView * 1.5,
+        this.circleView = L.circle(this.options.position, this.options.radiusView * 1150,
             {
                 weight: 0,
                 fillColor: '#32cd32',

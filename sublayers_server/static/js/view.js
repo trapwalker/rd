@@ -34,7 +34,7 @@ function onZoomEnd(event) {
         controllers.zoomSetSlider.setZoom(myMap.getZoom());
 
     // если мы отдалились далеко, то скрыть все лейблы и показывать их только по наведению
-    var noHide = myMap.getZoom() > 14;
+    var noHide = myMap.getZoom() > levelZoomForVisible;
     for (var i in listMapObject.objects) {
         if (listMapObject.exist(i)) {
             listMapObject.objects[i].marker.setLabelNoHide(noHide);
@@ -243,6 +243,8 @@ var clock;
 var timer;
 var listMapObject;
 var ownerList;
+
+var levelZoomForVisible = 5;
 
 
 //Путь к карте на сервере

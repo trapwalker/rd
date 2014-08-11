@@ -39,7 +39,7 @@ var BackLight = (function () {
 
         if(this.pathSVG)
         for(var i in this.pathSVG)
-            this.pathSVG = controllers.fireControl.deleteCarInSector(this.pathSVG[i]);
+            controllers.fireControl.deleteCarInSector(this.pathSVG[i]);
 
         // Удаление кружка подсветки
         this.options._map.removeLayer(this.backCircle);

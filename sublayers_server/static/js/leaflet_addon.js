@@ -55,7 +55,7 @@ function onMouseOverForLabels(){
 }
 
 function onMouseOutForLabels(){
-    this.setLabelNoHide(myMap.getZoom() > 14);
+    this.setLabelNoHide(myMap.getZoom() > levelZoomForVisible);
 }
 
 function carInfoClickEvent2(event){
