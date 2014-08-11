@@ -63,6 +63,25 @@ var Controllers = (function () {
 
     }
 
+    Controllers.prototype.setNewParams = function(options){
+        //Шкала топлива машины игрока - установить новый максимальный параметр
+        this.fuelController.setMax(options.fuelMax ? options.fuelMax : 100);
+
+        //Шкала здоровья машины игрока - установить новый максимальный параметр
+        this.hpController.setMax(options.hpMax ? options.hpMax : 100);
+
+        // Слайдеры зума и скорости не трогаем
+
+        // Инициализация контролера стрельбы
+        this.fireControl.clearSectors();
+
+        for(var i in options.sectors)
+            this.fireControl.addSector(options.sectors[i]);
+
+        // Так как все контролеры проинициализированы, то сделать их активными
+        this.isActive = true;
+    }
+
     Controllers.prototype.draw = function (directionCar, uCar) {
         // Если контролеры не активны, то не перерисовывать
         if(! this.isActive) return;
@@ -100,7 +119,7 @@ function changeZoomOnSlider(aSliderZoom) {
     if(! (myMap.getZoom() == aSliderZoom.getZoom()))
         myMap.setZoom(aSliderZoom.getZoom());
     if(userCarMarker)
-        userCarMarker.tail.setActive(myMap.getZoom() > 14);
+        userCarMarker.tail.setActive(myMap.getZoom() > levelZoomForVisible);
 }
 
 // колл бек для выстрела того или иного сектора

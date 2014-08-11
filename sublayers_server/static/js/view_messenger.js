@@ -138,7 +138,7 @@ var ViewMessenger = (function () {
 
 
     ViewMessenger.prototype.setVisible = function (aVisible) {
-        if (this.options._visible != aVisible) {
+        if (this.options._visible !== aVisible) {
             this.changeVisible({ data: {self: this}})
         }
     };
@@ -259,7 +259,7 @@ var ViewMessenger = (function () {
     ViewMessenger.prototype.addMessageToLog = function(aText, aLogType) {
         if (aLogType == "rpc") {
             this.rpcID++;
-            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID}, aText);
+            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID},  '<pre>' + aText + '</pre>');
         }
 
         if (aLogType == "answer") {
@@ -287,6 +287,15 @@ var ViewMessenger = (function () {
         // сбросить индекс в -1, так как было добавление
         this._historyIndex = -1;
     };
+
+    ViewMessenger.prototype.setMessagesHistory = function(mess){
+        // Добавить все элементы истории (при чтении из куки) в чат, читать массив с конца
+        for(;mess.length > 0;){
+            var mes = mess.pop();
+            this.addMessageToHistory(mes);
+        }
+    };
+
 
     // Установить в инпут сообщение из истории под заданным индексом
     // TODO: при установке сообщения переместить картеку в конец строки
@@ -358,11 +367,17 @@ var ViewMessenger = (function () {
         var owner = event.data.owner;
         //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
 
-        if (owner.uid == user.ID)
-            backLight.on(userCarMarker.marker);
-        else
-        if(owner.car)
-            backLight.on(owner.car.marker);
+
+        // TODO подстветить все машинки данного пользователя
+        for(var i = 0; i < owner.cars.length; i++) {
+            if (listMapObject.exist(owner.cars[i].ID)) {
+                var car = listMapObject.objects[owner.cars[i].ID];
+                if (car.backLight)
+                    carMarkerList.backLightList.del(car);
+                else
+                    carMarkerList.backLightList.add(car);
+            }
+        }
     }
 
     return ViewMessenger;

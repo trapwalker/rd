@@ -59,13 +59,13 @@ class AgentAPI(API):
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = units.Bot(
             server=self.agent.server,
-            position=Point.random_gauss(position or Point(10093693, 5646447), position_sigma),
+            position=Point.random_gauss(position or Point(16000, 18000), position_sigma),
             observing_range=1000,
             owner=self.agent,
             weapons=[
                 SectoralWeapon(direction=0, sector_width=45, r=400),
                 SectoralWeapon(direction=pi, sector_width=45, r=350),
-                SectoralWeapon(direction=-pi/2, sector_width=60, r=300),
+                SectoralWeapon(direction=pi * 1.5, sector_width=60, r=300),
                 SectoralWeapon(direction=pi/2, sector_width=60, r=300),
             ],
         )

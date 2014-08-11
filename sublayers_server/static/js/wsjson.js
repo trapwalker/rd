@@ -58,7 +58,7 @@ function sendNewPoint(aPoint, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(JSON.parse(JSON.stringify(mes))), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
 
@@ -71,7 +71,7 @@ function sendStopCar() {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // fire
@@ -81,14 +81,12 @@ function sendFire(aUid) {
         rpc_call_id: rpcCallList.getID(),
         params: {
             weapon_num: aUid, // uid сектора, который совершил выстрел
-            enemy_list: backLightList.getListIDs()
-        },
-        weapon_num: aUid, // uid сектора, который совершил выстрел
-        enemy_list: backLightList.getListIDs()
+            enemy_list: carMarkerList.getListIDsForShoot(aUid)
+        }
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // setSpeed
@@ -102,7 +100,7 @@ function sendSetSpeed(newSpeed, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // send chat_message
@@ -116,7 +114,7 @@ function sendChatMessage(atext, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Консоль  для сервера, срабатывает при отправке сообщений из активных debug-чатов
@@ -130,7 +128,7 @@ function sendServConsole(atext){
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes), 'rpc');
+    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
@@ -147,19 +145,20 @@ function receiveMesFromServ(data){
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            chat.addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
+            //chat.addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
             // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
            // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
-                var aTrack, aType, aHP;
+                var aTrack, aType, aHP=0;
                 aTrack = getTrack(event.object);
+                if (event.object.hp) aHP = event.object.hp;
                 setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     debugMapList.push(
-                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], 16), {color: '#FFBA12'})
+                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()), {color: '#FFBA12'})
                             .setRadius(8)
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
@@ -171,18 +170,18 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Update") {
                 // Update
-                var aTrack, aType, aHP, owner;
+                var aTrack, aType, aHP= 0, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime / 1000.);
                 if (event.object.hp)aHP = event.object.hp;
                 aTrack = getTrack(event.object);
-                owner = getOwner(event.object.owner);
-                updateCurrentCar(event.object.uid, aType, aHP, aTrack);
+                owner = getOwner(event.object);
+                updateCurrentCar(event.object.uid, aType, aHP, aTrack, owner);
 
                 // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (flagDebug)
                     debugMapList.push(
-                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], 16), {color: '#FF0000'})
+                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], myMap.getMaxZoom()), {color: '#FF0000'})
                             .setRadius(3)
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
@@ -213,15 +212,7 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Out") {
                 // out
-                var uid = event.object_id;
-                if (listMapObject.exist(uid)) {
-                    unbindCar(listMapObject.objects[uid]);
-                    myMap.removeLayer(listMapObject.objects[uid].marker);
-                    backLight.offMarker(listMapObject.objects[uid].marker);
-                    backLightList.offMarker(listMapObject.objects[uid].marker);
-                    delete listMapObject.objects[uid].marker;
-                    listMapObject.del(uid);
-                }
+                carMarkerList.del(event.object_id);
             }
             if (event.cls === "ChatMessage") {
                 // chat_message
@@ -287,8 +278,8 @@ function getTrack(data){
                 velocity = new Point(0, 0);
 
             var start_time = data.motion.time ? data.motion.time : (new Date().getTime());
-            chat.addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.time / 1000.);
-            chat.addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
+            //chat.addMessageToSystem('start_time1', "lastTTrack  = " + data.motion.time / 1000.);
+            //chat.addMessageToSystem('start_time2', "my_time     = " + clock.getCurrentTime());
 
             aTrack = new MoveLine(
                     start_time / 1000.,    //Время начала движения
@@ -364,8 +355,6 @@ function getCircleMotion(motion){
     // движение по часовой стрелке или против часовой стрелки 1 = по часовой
     var ccw = motion.arc.ccw;
 
-    //constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA:number)
-
     return new MoveCircle(
         start_time / 1000. , // Время начала движения
         //clock.getCurrentTime(),
@@ -389,10 +378,7 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     else { // если не своя, то проверить есть ли такая в модели
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
             var car = new MapCar(uid, aType, aHP, aTrack);
-            bindOwnerCar(aOwner, car);
-            listMapObject.add(car);
-            // и сразу же добавить маркер
-            listMapObject.objects[uid].marker = getCarMarker(car, myMap);
+            carMarkerList.add(car, aOwner);
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);
@@ -403,18 +389,20 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
 }
 
 
-function updateCurrentCar(uid, aType, aHP, aTrack) {
+function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
+        // TODO: Если новое хп своей машинки равно 0, то запретить ездитьи стрелять.
     }
     else { // если не своя, то проверить есть ли такая в модели
         listMapObject.setCarHP(uid, aHP);
         listMapObject.setTrack(uid, aTrack);
+
+        //if(! )
     }
 
 }
-
 
 function getWeapons(data) {
     var sectors = [];
@@ -429,37 +417,79 @@ function getWeapons(data) {
 }
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
-    user.userCar = new UserCar(uid,       //ID машинки
-        aType,       //Тип машинки
-        aHP,      //HP машинки
-        amax_speed,      //Максималка
-        aTrack);   //Текущая траектория
+    if(! user.userCar) {
+        user.userCar = new UserCar(uid,       //ID машинки
+            aType,       //Тип машинки
+            aHP,      //HP машинки
+            amax_speed,      //Максималка
+            aTrack);   //Текущая траектория
 
 
-    var fireSectors = getWeapons(aWeapons);
+        var fireSectors = getWeapons(aWeapons);
 
-    // Инициализация маркера машинки
-    userCarMarker = new UserCarMarker({
-        position: myMap.unproject([aTrack.coord.x, aTrack.coord.y],16),
-        tailEnable: false,
-        _map: myMap,
-        radiusView: 1000,
-        carID: uid,
-        sectors: fireSectors,
-        countSectorPoints: 20
-    });
+        // Добавить сектора в userCar
+        user.userCar.AddFireSectors(fireSectors);
 
-    // Инициализация контроллеров
-    // controllers
-    controllers = new Controllers({
-        fuelMax: fuelMaxProbka,
-        hpMax: aMaxHP,
-        fireSectors: fireSectors,
-        max_velocity: amax_speed
-    });
+        // Инициализация маркера машинки
+        userCarMarker = new UserCarMarker({
+            position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
+            tailEnable: false,
+            _map: myMap,
+            radiusView: 1000,
+            carID: uid,
+            sectors: user.userCar.fireSectors,
+            countSectorPoints: 20
+        });
 
-    // CallBack неа получение InitMessage
-    onGetInitMessage();
+        // Инициализация контроллеров
+        // controllers
+        controllers = new Controllers({
+            fuelMax: fuelMaxProbka,
+            hpMax: aMaxHP,
+            fireSectors: user.userCar.fireSectors,
+            max_velocity: amax_speed
+        });
+    }
+    else {
+        // значит пришёл второй initMessage, значит нужно переопределить все параметры
+
+        // TODO очистить все-все списки, которые хранятся на клиенте
+        carMarkerList.clearList();
+        // Разбиндить все машинки для всех пользователей
+        ownerList.clearOwnerList();
+
+        // Переопределение своей машинки
+        user.userCar = new UserCar(uid,       //ID машинки
+            aType,       //Тип машинки
+            aHP,      //HP машинки
+            amax_speed,      //Максималка
+            aTrack);   //Текущая траектория
+
+        // Добавить сектора в userCar
+        var fireSectors = getWeapons(aWeapons);
+        user.userCar.AddFireSectors(fireSectors);
+
+        // Переинициализация маркера машинки
+        userCarMarker.setNewParams({
+            position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
+            tailEnable: (myMap.getZoom() > levelZoomForVisible),
+            _map: myMap,
+            radiusView: 1000,
+            carID: user.userCar.ID,
+            sectors: user.userCar.fireSectors,
+            countSectorPoints: 20
+        });
+
+        // установка новых параметров контроллеров
+        controllers.setNewParams({
+            fuelMax: fuelMaxProbka,
+            hpMax: aMaxHP,
+            sectors: user.userCar.fireSectors,
+            max_velocity: amax_speed
+        });
+
+    }
+
 }
 
 
