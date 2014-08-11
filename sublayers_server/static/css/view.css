@@ -71,15 +71,45 @@ body{
     color: floralwhite;
 }
 
-#buttonFullScreen {
+.buttonFullScreenOn {
     position: absolute;
     top: 35px;
     right: 15px;
+    width: 62px;
+    height: 62px;
+    background: transparent url('/static/img/misc_button/btn_fullscreen_normal.png') 100% 100% no-repeat;
+    cursor: pointer;
+}
+
+.buttonFullScreenOn:hover {
+    background: transparent url('/static/img/misc_button/btn_fullscreen_over.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOn:active {
+    background: transparent url('/static/img/misc_button/btn_fullscreen_pressed.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOff {
+    position: absolute;
+    top: 35px;
+    right: 15px;
+    width: 62px;
+    height: 62px;
+    background: transparent url('/static/img/misc_button/btn_no_fullscreen_normal.png') 100% 100% no-repeat;
+    cursor: pointer;
+}
+
+.buttonFullScreenOff:hover {
+    background: transparent url('/static/img/misc_button/btn_no_fullscreen_over.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOff:active {
+    background: transparent url('/static/img/misc_button/btn_no_fullscreen_pressed.png') 100% 100% no-repeat;
 }
 
 #buttonMapOnOff {
     position: absolute;
-    top: 110px;
+    top: 100px;
     right: 15px;
     width: 62px;
     height: 62px;
@@ -120,7 +150,7 @@ body{
 
 #buttonDebugOnOff {
     position: absolute;
-    top: 180px;
+    top: 165px;
     right: 15px;
     width: 62px;
     height: 62px;

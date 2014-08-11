@@ -98,19 +98,8 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
-    //Переключение в полноэкранный режим и обратно по кнопке
-    var html = document.documentElement;
-
-    buttonFullScreen.onclick = function () {
-        if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
-            RunPrefixMethod(document, "CancelFullScreen");
-            buttonFullScreen.src = "img/button_fullscreen_unclicked.png";
-        }
-        else {
-            RunPrefixMethod(html, "RequestFullScreen");
-            buttonFullScreen.src = "img/button_fullscreen_clicked.png";
-        }
-    };
+    // Включение/Выключение полноэранного режима
+    buttonFullScreen.onclick = FullScreenToggle;
 
     // Включение/Выключение отображения карты
     buttonMapOnOffBtn.onclick = TileLayerToggle;
@@ -167,6 +156,22 @@ $(document).ready(function () {
 
 });
 
+//Переключение в полноэкранный режим и обратно по кнопке
+function FullScreenToggle() {
+    var html = document.documentElement;
+    var jSelector = $('#buttonFullScreen');
+
+    if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
+        RunPrefixMethod(document, "CancelFullScreen");
+        jSelector.removeClass('buttonFullScreenOff');
+        jSelector.addClass('buttonFullScreenOn');
+    }
+    else {
+        RunPrefixMethod(html, "RequestFullScreen");
+        jSelector.removeClass('buttonFullScreenOn');
+        jSelector.addClass('buttonFullScreenOff');
+    }
+}
 
 function TileLayerToggle(){
     var jSelector = $('#buttonMapOnOffStatus');
