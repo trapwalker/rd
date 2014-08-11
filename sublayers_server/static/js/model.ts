@@ -64,9 +64,15 @@ function angleVectorRadCCW(aPoint: Point):number {
 function normalizeAngleRad(angle: number): number{
     var pi2 = Math.PI * 2;
     var znak = (angle > 0) ? -1 : 1;
-    for(;Math.abs(angle) > pi2;)
+    for(;(angle > pi2) || (angle < 0);)
         angle += znak * pi2;
     return angle;
+}
+
+function getDiffAngle(angle1, angle2: number): number {
+    var res = normalizeAngleRad(angle1) - normalizeAngleRad(angle2);
+    if (Math.abs(res) <= Math.PI) return res;
+    else return (2 * Math.PI - Math.abs(res)) * (res > 0 ? -1 : 1);
 }
 
 function radToGrad(rad:number):number {

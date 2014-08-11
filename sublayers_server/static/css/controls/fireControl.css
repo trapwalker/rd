@@ -57,8 +57,8 @@
 }
 
 .fire-control-radar-point {
-    fill: pink;
-    stroke: pink;
+    fill: lime;
+    stroke: lime;
     stroke-width: 2;
     opacity: 0.8;
 }

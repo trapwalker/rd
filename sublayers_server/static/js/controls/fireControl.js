@@ -217,27 +217,28 @@ var FireControl = (function () {
 
     };
 
-    // Реализация радара - Вынесена сюда, т.к. только тут есть radiusIn и radiusOut
+    // Реализация радара - вынесена сюда, т.к. только тут есть radiusIn и radiusOut
     // Добавление Точки в сектор
-    // TODO Сделать, чтобы закомментированный p работал. Так правильнее. В апдейте тоже
     FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle) {
         // Получить доступ к сектору в fireControl
         var sector = this._getSectorByID(aSector.uid);
         // Вычислить точку для отрисовки
         var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
-        //var p = rotateVector(new Point(radius, 0), ((relativeAngle * this.options.halfSectorWidth) / sector.widthAngle));
-        var p = rotateVector(new Point(radius, 0), relativeAngle);
+        var p = rotateVector(new Point(radius, 0), ((2 * relativeAngle * this.options.halfSectorWidth) / aSector.widthAngle));
 
+        chat.addMessageToSystem('sector.widthAngle', "sector.widthAngle = " + sector.widthAngle);
+
+        chat.addMessageToSystem('radius2', "p.y = " + p.y);
 
         // Нарисовать точку
         var pathSVG = document.createElementNS(this.NS, 'circle');
-        pathSVG.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
-        pathSVG.setAttribute('r', 3);
-        pathSVG.setAttribute('cx', p.x);
-        pathSVG.setAttribute('cy', p.y);
 
         // Добавить точку в сектор
         sector.SVGGroup.appendChild(pathSVG);
+        pathSVG.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
+        pathSVG.setAttribute('r', 2);
+        pathSVG.setAttribute('cx', p.x);
+        pathSVG.setAttribute('cy', p.y);
         return pathSVG;
     };
 
@@ -245,8 +246,8 @@ var FireControl = (function () {
     FireControl.prototype.updateCarInSector = function(sector, pathSVG, relativeRadius, relativeAngle) {
         // Вычислить точку для отрисовки
         var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
-        //var p = rotateVector(new Point(radius, 0), ((relativeAngle * this.options.halfSectorWidth) / sector.widthAngle));
-        var p = rotateVector(new Point(radius, 0), relativeAngle);
+        var p = rotateVector(new Point(radius, 0), ((2*relativeAngle * this.options.halfSectorWidth) / sector.widthAngle));
+        //var p = rotateVector(new Point(radius, 0), relativeAngle);
 
         // Обновить центр точки точку
         pathSVG.setAttribute('cx', p.x);
