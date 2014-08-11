@@ -108,9 +108,6 @@ $(document).ready(function () {
     buttonDebugOnOff.onclick = DebugToggle;
 
 
-    iconConnectServer.src = "img/connect.png";
-
-
     myMap.on('click', onMouseClickMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
