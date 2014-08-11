@@ -231,7 +231,7 @@ var wsjson;
 var rpcCallList;
 var tileLayerShow;
 var controllers;
-var flagDebug = true;
+var flagDebug = false;
 var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
