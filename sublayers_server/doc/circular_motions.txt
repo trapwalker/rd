@@ -16,7 +16,7 @@ abs(CB0*e^(i*w*(t-t0)) - A) = r
 
 Формула Эйлера: e^(i*x) = cos(x) + i*sin(x)
 
-abs(C * e^(i*w*t) - A) = r
+abs(C * e^(i*t) - A) = r
 abs(C * (cos(t) + i*sin(t)) - A) = r
 abs(C * cos(t) + C * i*sin(t) - A) = r
 
@@ -58,7 +58,7 @@ a*sin(t) - b*sqrt(1-sin(t)^2) + c = 0
 D/4 = a^2*c^2 - (a^2+b^2)*(c^2-b^2)
 
 if D >= 0:
-    t[1,2] = arcsin((a*c+-sqrt(D/4))/(a^2+b^2))
+    t[1,2] = arcsin((a*c+-sqrt(D/4))/(a^2+b^2))  # todo: +i*c
 
 
 # 2. Контакт кругового и линейного движения #
