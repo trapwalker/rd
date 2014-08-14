@@ -53,10 +53,12 @@ function createTileLayer(storage) {
     if (storage) {
         tileLayerShow = new StorageTileLayer(mapBasePath, {
             maxZoom: 7,
+            continuousWorld: true,
             storage: storage});
     }
     else {
         tileLayerShow = L.tileLayer(mapBasePath, {
+            continuousWorld: true,
             maxZoom: 7});
     }
     tileLayerShow.addTo(myMap);

@@ -362,8 +362,8 @@ var UserCarMarker = (function () {
         this.circleView = L.circle(this.options.position, this.options.radiusView * 1130,
             {
                 weight: 0,
-                fillColor: '#32cd32',
-                fillOpacity: 0.2,
+                fillColor: '#AAFFAA',
+                fillOpacity: 0.05,
                 clickable: false
             }
         ).addTo(this.options._map);
