@@ -28,10 +28,10 @@ var SliderZoom = (function () {
         }
 
         // создание 4 дивов
-        var nodePlus = '<input id="Zoom_btnPlus" type="image" src="img/control_zoom/ctrl_zm_plus.png" value="Приблизить">';
+        var nodePlus = '<div id="Zoom_btnPlus"></div>';
         var nodeBar = '<div id="Zoom_sliderBar"></div>';
         var nodeSlider = '<div id="Zoom_slider"></div>';
-        var nodeMinus = '<input id="Zoom_btnMinus" type="image" src="img/control_zoom/ctrl_zm_minus.png" value="Отдалить">';
+        var nodeMinus = '<div id="Zoom_btnMinus"></div>';
 
 
         // добавление дивов в родительский див
@@ -57,8 +57,8 @@ var SliderZoom = (function () {
         $('#Zoom_slider').removeClass('ui-widget-content');
         $('#Zoom_slider span:first-child').addClass('slider-zoom-carriage');
         $('#Zoom_slider span:first-child').css('width', '39px');
-        $('#Zoom_slider span:first-child').css('height', '20px');
-        $('#Zoom_slider span:first-child').css('background', 'green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat');
+        $('#Zoom_slider span:first-child').css('height', '21px');
+        //$('#Zoom_slider span:first-child').css('background', 'green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat');
         $('#Zoom_slider span:first-child').css('border', '0px');
         $('#Zoom_slider span:first-child').css('left', '-7px');
         $('#Zoom_slider span:first-child').css('margin-bottom', '-12.5px');
