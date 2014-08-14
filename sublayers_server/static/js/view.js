@@ -117,16 +117,6 @@ $(document).ready(function () {
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
 
-    // Добавление Города
-    var testTownMarker = L.marker([0, 0]).bindLabel("Belgorod City").addTo(myMap);
-    testTownMarker.setIcon(L.icon({
-        iconUrl: 'img/city.png',
-        iconSize: [50, 50]
-    }));
-
-    testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], myMap.getMaxZoom()));
-    testTownMarker.bindPopup("Город Белгород!");
-
     // создание чата
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
