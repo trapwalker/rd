@@ -30,10 +30,11 @@ function getCarMarker(aCar, aMap) {
     var test_html_str = '<div id="idCar_' + aCar.ID +
         '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
     var newMarker = L.rotatedMarker([0, 0]);
-    newMarker.setIcon(L.icon({
-        iconUrl: 'img/car_20.png',
-        iconSize: [20, 20]
-    }));
+    //newMarker.setIcon(L.icon({
+    //    iconUrl: 'img/car_20.png',
+    //    iconSize: [20, 20]
+    //}));
+    newMarker.setIcon(iconsLeaflet.icon_moving_V2);
     if (aCar.owner)
         newMarker.bindLabel(aCar.owner.login + test_html_str, {direction: 'right'});
     else
@@ -103,4 +104,68 @@ function onMarkerPopupOpen(e) {
         this.setPopupContent('My name is ' + user.login + '<br>' + 'My Car ID = '+ user.userCar.ID);
     else
         this.setPopupContent('My name is ' + listMapObject.objects[this.carID].owner.login+ '<br>' + 'My Car ID = '+ this.carID);
+}
+
+
+
+// Формирование списка Иконок для всех видов маркеров леафлета
+function iconLeafletInit(){
+    iconsLeaflet = {};
+
+    // Создание иконки города
+    iconsLeaflet.icon_city = new L.icon({
+        iconUrl: 'img/map_icons/map_ico_city.png',
+        iconSize: [26, 29]
+    });
+
+    // Создание иконки заправочной станции
+    iconsLeaflet.icon_station = new L.icon({
+        iconUrl: 'img/map_icons/map_ico_fuelstation.png',
+        iconSize: [26, 29]
+    });
+
+
+    // Создание иконки движущейся машинки V 1
+    iconsLeaflet.icon_moving_V1 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v1_moving.png',
+        iconSize: [51, 28]
+    });
+
+    // Создание иконки стоящей машинки V 1
+    iconsLeaflet.icon_stopped_V1 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v1_stopped.png',
+        iconSize: [51, 28]
+    });
+
+
+    // Создание иконки движущейся машинки V 2
+    iconsLeaflet.icon_moving_V2 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v2_moving_slow.png',
+        iconSize: [51, 28]
+    });
+
+    // Создание иконки БЫСТРО движущейся машинки V 2
+    iconsLeaflet.icon_moving_fast_V2 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v2_moving_fast.png',
+        iconSize: [51, 28]
+    });
+
+    // Создание иконки стоящей машинки V 2
+    iconsLeaflet.icon_stopped_V2 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v2_stopped.png',
+        iconSize: [51, 28]
+    });
+
+
+    // Создание иконки движущейся машинки V 3
+    iconsLeaflet.icon_moving_V3 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v3_moving.png',
+        iconSize: [51, 28]
+    });
+
+    // Создание иконки стоящей машинки V 3
+    iconsLeaflet.icon_stopped_V3 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v3_stopped.png',
+        iconSize: [51, 28]
+    });
 }

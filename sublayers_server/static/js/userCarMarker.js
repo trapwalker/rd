@@ -340,10 +340,11 @@ var UserCarMarker = (function () {
 
         // Создание Маркера
         this.marker = L.rotatedMarker(this.options.position).addTo(this.options._map);
-        this.marker.setIcon(L.icon({
-            iconUrl: 'img/car_user.png',
-            iconSize: [35, 35]
-        }));
+        this.marker.setIcon(iconsLeaflet.icon_moving_V1);
+        //this.marker.setIcon(L.icon({
+        //    iconUrl: 'img/car_user.png',
+        //    iconSize: [35, 35]
+        //}));
         this.marker.carID = this.options.carID;
 
         // Повесить PopUp и ивент на него

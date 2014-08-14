@@ -245,6 +245,9 @@ var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
 
+// Массив иконок
+var iconsLeaflet;
+
 
 var timerDelay = 20; //константа задающая временной интервал таймера (юзать по всему проекту только это)
 var user;
