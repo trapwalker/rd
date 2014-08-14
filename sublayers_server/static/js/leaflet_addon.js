@@ -36,9 +36,9 @@ function getCarMarker(aCar, aMap) {
     //}));
     newMarker.setIcon(iconsLeaflet.icon_moving_V2);
     if (aCar.owner)
-        newMarker.bindLabel(aCar.owner.login + test_html_str, {direction: 'right'});
+        newMarker.bindLabel(aCar.owner.login + test_html_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
     else
-        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'});
+        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
     //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
