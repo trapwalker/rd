@@ -137,6 +137,11 @@ function iconLeafletInit(){
         iconSize: [51, 28]
     });
 
+    // Создание иконки убитой машинки V 1
+    iconsLeaflet.icon_killed_V1 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v1_killed.png',
+        iconSize: [51, 28]
+    });
 
     // Создание иконки движущейся машинки V 2
     iconsLeaflet.icon_moving_V2 = new L.icon({
@@ -153,6 +158,12 @@ function iconLeafletInit(){
     // Создание иконки стоящей машинки V 2
     iconsLeaflet.icon_stopped_V2 = new L.icon({
         iconUrl: 'img/map_icons/map_icon_player_v2_stopped.png',
+        iconSize: [51, 28]
+    });
+
+    // Создание иконки убитой машинки V 2
+    iconsLeaflet.icon_killed_V2 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_player_v2_killed.png',
         iconSize: [51, 28]
     });
 

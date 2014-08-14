@@ -119,7 +119,7 @@ function changeZoomOnSlider(aSliderZoom) {
     if(! (myMap.getZoom() == aSliderZoom.getZoom()))
         myMap.setZoom(aSliderZoom.getZoom());
     if(userCarMarker)
-        userCarMarker.tail.setActive(myMap.getZoom() > levelZoomForVisible);
+        userCarMarker.tail.setActive(myMap.getZoom() > levelZoomForVisibleTail);
 }
 
 // колл бек для выстрела того или иного сектора

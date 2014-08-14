@@ -257,6 +257,7 @@ var listMapObject;
 var ownerList;
 
 var levelZoomForVisible = 5;
+var levelZoomForVisibleTail = 8;
 
 
 //Путь к карте на сервере
