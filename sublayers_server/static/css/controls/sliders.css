@@ -258,40 +258,38 @@
 
 .pbar-fuel-parent {
     position: absolute;
-    bottom: 25px;
-    right: 150px;
-    height: 50px;
-    width: 232px;
+    bottom: 80px;
+    right: 350px;
     pointer-events: none;
 }
 
 #pbarFuelLeft {
-    height: 30px;
-    width: 30px;
+    height: 17px;
+    width: 17px;
     position: absolute;
-    background: transparent url('/static/img/fuel/fuel_icon.png') 100% 100% no-repeat;
-    opacity: 0.8;
-    left: -10px;
-    top: 2px;
+    background: transparent url('/static/img/Health_Fuel/fuel_icon.png') 100% 100% no-repeat;
+    opacity: 1;
+    left: 0px;
+    top: 14px;
 }
 
 #pbarFuelRight {
     height: 50px;
-    width: 200px;
+    width: 155px;
     left: 30px;
     position: absolute;
 }
 
 #pbarFuelRightBar {
     height: 30px;
-    width: 202px;
+    width: 154px;
     position: absolute;
 }
 
 #pbarFuelBarFiller {
     position: absolute;
     height: 30px;
-    width: 200px;
+    width: 100%;
     overflow-x: hidden;
 }
 
@@ -299,28 +297,29 @@
     position: absolute;
     height: 30px;
     width: 100%;
-    background: transparent url('/static/img/fuel/fuel_filler.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_bg_tile.png') 100% 100% repeat-x;
     z-index: 1;
     opacity: 0.4;
+    overflow-x: visible;
 }
 
 #pbarFuelBarScale {
     position: absolute;
-    background: transparent url('/static/img/fuel/fuel_bar.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/scale_all.png') 100% 100% no-repeat;
     height: 100%;
-    width: 100%;
+    width: 155px;
     z-index: 2;
     opacity: 1;
 }
 
 #pbarFuelBarArrow {
     position: absolute;
-    background: transparent url('/static/img/fuel/fuel_arrow.png') 100% 100% no-repeat;
-    width: 9px;
-    height: 16px;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_arrow.png') 100% 100% no-repeat;
+    width: 7px;
+    height: 25px;
     right: 0%;
     bottom: 0px;
-    margin-right: -4.5px;
+    margin-right: -3.5px;
     z-index: 3;
     opacity: 1;
 }
@@ -329,13 +328,12 @@
 
 #pbarFuelRightDigits {
     height: 15px;
-    width: 200px;
+    width: 155px;
     position: absolute;
-    top: -20px;
+    top: -5px;
     font: bold 12px Arial;
     color: #2dc34a;
     text-align: center;
-    top: 3px;
 }
 
 .pbarRightsDigitsLeft {
@@ -349,13 +347,13 @@
 
 .pbarRightsDigitsRight {
     position: absolute;
-    right: -4px;
+    right: -3px;
 }
 
 #pbarFuelRightLabel {
     height: 20px;
-    width: 200px;
-    top: 30px;
+    width: 155px;
+    top: 34px;
     position: absolute;
     font: bold 12px Arial;
     color: #2dc34a;
@@ -368,12 +366,12 @@
 
 .pbarFuelRightLabelt2 {
     position: absolute;
-    left: 40px;
+    left: 35px;
 }
 
 .pbarFuelRightLabelt3 {
     position: absolute;
-    right: 55px;
+    left: 45%;
 }
 
 .pbarFuelRightLabelt4 {
@@ -387,40 +385,38 @@
 
 .pbar-hp-parent {
     position: absolute;
-    bottom: 75px;
-    right: 150px;
-    height: 50px;
-    width: 232px;
+    bottom: 140px;
+    right: 350px;
     pointer-events: none;
 }
 
 #pbarHPLeft {
-    height: 30px;
-    width: 30px;
+    height: 18px;
+    width: 25px;
     position: absolute;
-    background: transparent url('/static/img/health/health_icon.png') 100% 100% no-repeat;
-    opacity: 0.8;
-    left: -10px;
-    top: 2px;
+    background: transparent url('/static/img/Health_Fuel/health_icon.png') 100% 100% no-repeat;
+    opacity: 1;
+    left: -4px;
+    top: 14px;
 }
 
 #pbarHPRight {
     height: 50px;
-    width: 200px;
+    width: 155px;
     left: 30px;
     position: absolute;
 }
 
 #pbarHPRightBar {
     height: 30px;
-    width: 202px;
+    width: 154px;
     position: absolute;
 }
 
 #pbarHPBarFiller {
     position: absolute;
     height: 30px;
-    width: 200px;
+    width: 100%;
     overflow-x: hidden;
 
 }
@@ -429,28 +425,28 @@
     position: absolute;
     height: 30px;
     width: 100%;
-    background: transparent url('/static/img/health/health_filler.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_bg_tile.png') 100% 100% repeat-x;
     z-index: 1;
     opacity: 0.4;
 }
 
 #pbarHPBarScale {
     position: absolute;
-    background: transparent url('/static/img/health/health_bar.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/scale_all.png') 100% 100% no-repeat;
     height: 100%;
-    width: 100%;
+    width: 155px;
     z-index: 2;
     opacity: 1;
 }
 
 #pbarHPBarArrow {
     position: absolute;
-    background: transparent url('/static/img/health/health_arrow.png') 100% 100% no-repeat;
-    width: 9px;
-    height: 16px;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_arrow.png') 100% 100% no-repeat;
+    width: 7px;
+    height: 25px;
     right: 0%;
     bottom: 0px;
-    margin-right: -4.5px;
+    margin-right: -3.5px;
     z-index: 3;
     opacity: 1;
 }
@@ -459,9 +455,9 @@
 
 #pbarHPRightDigits {
     height: 15px;
-    width: 200px;
+    width: 155px;
     position: absolute;
-    top: 3px;
+    top: -5px;
     font: bold 12px Arial;
     color: #2dc34a;
     text-align: center;
@@ -469,8 +465,8 @@
 
 #pbarHPRightLabel {
     height: 20px;
-    width: 200px;
-    top: 30px;
+    width: 155px;
+    top: 34px;
     position: absolute;
     font: bold 12px Arial;
     color: #2dc34a;
@@ -487,7 +483,7 @@
 
 .pbarHPRightsDigitsRight {
     position: absolute;
-    right: -10.5px;
+    right: -8px;
 }
 
 .pbarHPRightLabelt1 {
@@ -497,6 +493,6 @@
 
 .pbarHPRightLabelt2 {
     position: absolute;
-    left: 95px;
+    left: 87px;
 }
 
