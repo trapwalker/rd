@@ -188,7 +188,7 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').addClass('slider-speed-carriage');
         $('#sliderSpeedSlider span:first-child').css('width', '39px');
         $('#sliderSpeedSlider span:first-child').css('height', '31px');
-        $('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
+        //$('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
         $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
         $('#sliderSpeedSlider span:first-child').css("z-index", '5');
@@ -239,7 +239,8 @@ var SliderSpeed = (function () {
         var prc = (newSpeed * 100) / this.options.max;
         if (prc > 99) prc = 99;
         if (prc < 0) prc = 0;
-        prc = 99 - prc;
+        // TODO: если сделать ниже не 99,5; а 100, то не видно стрелки при стоящей машине, если сделать 99, то она сливается со шкалой.
+        prc = 99.5 - prc;
         $('#slider-speed-filler-arrow').css('top', prc + '%');
         $('#slider-speed-filler').css('top', prc + '%');
         $('#speedRealValue').text(newSpeed.toFixed(1));

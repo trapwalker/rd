@@ -62,10 +62,18 @@
 .slider-speed-carriage {
     width: 39px;
     height: 31px;
-    background: green url('/static/img/CruiseControl/if_spd_slider.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_normal.png') 50% 50% no-repeat;
     font: bold 14px Arial;
     color: #2dc34a;
     text-align: center;
+}
+
+.slider-speed-carriage:hover {
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_over.png') 50% 50% no-repeat;
+}
+
+.slider-speed-carriage:active {
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_pressed.png') 50% 50% no-repeat;
 }
 
 .slider-speed-carriage-label {
