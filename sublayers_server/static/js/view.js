@@ -53,10 +53,14 @@ function createTileLayer(storage) {
     if (storage) {
         tileLayerShow = new StorageTileLayer(mapBasePath, {
             maxZoom: 7,
+            continuousWorld: true,
+            opacity: 0.5,
             storage: storage});
     }
     else {
         tileLayerShow = L.tileLayer(mapBasePath, {
+            continuousWorld: true,
+            opacity: 0.5,
             maxZoom: 7});
     }
     tileLayerShow.addTo(myMap);
@@ -84,7 +88,7 @@ $(document).ready(function () {
 
     myMap = L.map('map',
         {
-            minZoom: 0,
+            minZoom: 3,
             maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
@@ -98,19 +102,8 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
-    //Переключение в полноэкранный режим и обратно по кнопке
-    var html = document.documentElement;
-
-    buttonFullScreen.onclick = function () {
-        if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
-            RunPrefixMethod(document, "CancelFullScreen");
-            buttonFullScreen.src = "img/button_fullscreen_unclicked.png";
-        }
-        else {
-            RunPrefixMethod(html, "RequestFullScreen");
-            buttonFullScreen.src = "img/button_fullscreen_clicked.png";
-        }
-    };
+    // Включение/Выключение полноэранного режима
+    buttonFullScreen.onclick = FullScreenToggle;
 
     // Включение/Выключение отображения карты
     buttonMapOnOffBtn.onclick = TileLayerToggle;
@@ -118,23 +111,13 @@ $(document).ready(function () {
     // Кнопка Debug
     buttonDebugOnOff.onclick = DebugToggle;
 
-
-    iconConnectServer.src = "img/connect.png";
+    // Кнопка подключения к серверу (пока просто перезагружает страницу)
+    buttonConnectServerBtn.onclick = ConnectServerToggle;
 
 
     myMap.on('click', onMouseClickMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
-
-    // Добавление Города
-    var testTownMarker = L.marker([0, 0]).bindLabel("Belgorod City").addTo(myMap);
-    testTownMarker.setIcon(L.icon({
-        iconUrl: 'img/city.png',
-        iconSize: [50, 50]
-    }));
-
-    testTownMarker.setLatLng(myMap.unproject([10093715, 5646350], myMap.getMaxZoom()));
-    testTownMarker.bindPopup("Город Белгород!");
 
     // создание чата
     chat = new ViewMessenger({
@@ -167,6 +150,22 @@ $(document).ready(function () {
 
 });
 
+//Переключение в полноэкранный режим и обратно по кнопке
+function FullScreenToggle() {
+    var html = document.documentElement;
+    var jSelector = $('#buttonFullScreen');
+
+    if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
+        RunPrefixMethod(document, "CancelFullScreen");
+        jSelector.removeClass('buttonFullScreenOff');
+        jSelector.addClass('buttonFullScreenOn');
+    }
+    else {
+        RunPrefixMethod(html, "RequestFullScreen");
+        jSelector.removeClass('buttonFullScreenOn');
+        jSelector.addClass('buttonFullScreenOff');
+    }
+}
 
 function TileLayerToggle(){
     var jSelector = $('#buttonMapOnOffStatus');
@@ -204,6 +203,10 @@ function DebugToggle(){
     }
 }
 
+//Подключение к серверу (пока просто перезагрузка страницы)
+function ConnectServerToggle() {
+    location.reload();
+}
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
@@ -236,6 +239,9 @@ var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
 
+// Массив иконок
+var iconsLeaflet;
+
 
 var timerDelay = 20; //константа задающая временной интервал таймера (юзать по всему проекту только это)
 var user;
@@ -245,6 +251,7 @@ var listMapObject;
 var ownerList;
 
 var levelZoomForVisible = 5;
+var levelZoomForVisibleTail = 8;
 
 
 //Путь к карте на сервере

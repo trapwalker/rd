@@ -44,7 +44,7 @@
 <div id="map"></div>
 <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
 <div id="divButtons">
-    <input id="buttonFullScreen" type="image" src="img/button_fullscreen_unclicked.png">
+    <div id="buttonFullScreen" class="buttonFullScreenOn"></div>
     <div id="buttonMapOnOff" class="sublayers-unclickable">
         <div id="buttonMapOnOffStatus"  class="buttonMapOnOffStatusOn"></div>
         <div id="buttonMapOnOffBtn" class="sublayers-clickable"></div>
@@ -53,7 +53,10 @@
 </div>
 <div id="divScaleCarFuel"></div>
 <div id="divScaleCarHealth"></div>
-<div id="divIconConnectServer"><img id="iconConnectServer" src="img/disconnect.png"></div>
+<div id="buttonConnectServer" class="sublayers-unclickable">
+    <div id="buttonConnectServerBtn" class="sublayers-clickable"></div>
+    <div id="buttonConnectServerStatus" class="buttonConnectServerStatusOn"></div>
+</div>
 <div id="chatArea"></div>
 <div id="fireControlArea"></div>
 <div id="speedSetDivForSpeedSlider"></div>

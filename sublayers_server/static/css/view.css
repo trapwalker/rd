@@ -75,11 +75,38 @@ body{
     position: absolute;
     top: 35px;
     right: 15px;
+    width: 62px;
+    height: 62px;
+    cursor: pointer;
+}
+
+.buttonFullScreenOn {
+    background: transparent url('/static/img/misc_button/btn_fullscreen_normal.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOn:hover {
+    background: transparent url('/static/img/misc_button/btn_fullscreen_over.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOn:active {
+    background: transparent url('/static/img/misc_button/btn_fullscreen_pressed.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOff {
+    background: transparent url('/static/img/misc_button/btn_no_fullscreen_normal.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOff:hover {
+    background: transparent url('/static/img/misc_button/btn_no_fullscreen_over.png') 100% 100% no-repeat;
+}
+
+.buttonFullScreenOff:active {
+    background: transparent url('/static/img/misc_button/btn_no_fullscreen_pressed.png') 100% 100% no-repeat;
 }
 
 #buttonMapOnOff {
     position: absolute;
-    top: 110px;
+    top: 100px;
     right: 15px;
     width: 62px;
     height: 62px;
@@ -120,7 +147,7 @@ body{
 
 #buttonDebugOnOff {
     position: absolute;
-    top: 180px;
+    top: 165px;
     right: 15px;
     width: 62px;
     height: 62px;
@@ -148,12 +175,44 @@ input:focus {
     overflow: visible;
 }
 
-#divIconConnectServer {
+#buttonConnectServer {
     position: absolute;
-    top: 45px;
-    left: 32px;
+    top: 35px;
+    left: 15px;
+    width: 62px;
+    height: 62px;
 }
 
+#buttonConnectServerBtn {
+    position: absolute;
+    background: transparent url('/static/img/misc_button/btn_connection_normal.png') 100% 100% no-repeat;
+    width: 62px;
+    height: 62px;
+}
+
+#buttonConnectServerBtn:hover {
+    background: transparent url('/static/img/misc_button/btn_connection_over.png') 100% 100% no-repeat;
+}
+
+#buttonConnectServerBtn:active {
+    background: transparent url('/static/img/misc_button/btn_connection_pressed.png') 100% 100% no-repeat;
+}
+
+#buttonConnectServerStatus {
+    position: absolute;
+    left: 65px;
+    top: 5px;
+    width: 13px;
+    height: 13px;
+}
+
+.buttonConnectServerStatusOn {
+    background: transparent url('/static/img/misc_button/ico_status_on.png') 100% 100% no-repeat;
+}
+
+.buttonConnectServerStatusOff {
+    background: transparent url('/static/img/misc_button/ico_status_off.png') 100% 100% no-repeat;
+}
 
 .sublayers-clickable {
     cursor: pointer;

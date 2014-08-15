@@ -35,9 +35,18 @@ WSJSON = (function () {
                 //alert('Обрыв соединения'); // например, "убит" процесс сервера
             }
             //alert('Код: ' + event.code + ' причина: ' + event.reason);
-            iconConnectServer.src = "img/disconnect.png";
+            var jSelector = $('#buttonConnectServerStatus');
+            jSelector.removeClass('buttonConnectServerStatusOn');
+            jSelector.addClass('buttonConnectServerStatusOff');
         };
 
+    };
+
+    WSJSON.prototype.sendMess = function(aMess){
+        if(user.userCar.hp > 0)
+            this.socket.send(JSON.stringify(aMess));
+        else
+            alert('Вы не можете этого сделать, так как Ваша машина сломана.');
     };
 
     return WSJSON;
@@ -57,7 +66,8 @@ function sendNewPoint(aPoint, auid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.socket.send(JSON.stringify(mes));
+    //wsjson.socket.send(JSON.stringify(mes));
+    wsjson.sendMess(mes);
     chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
@@ -70,7 +80,8 @@ function sendStopCar() {
         params: { }
     };
     rpcCallList.add(mes);
-    wsjson.socket.send(JSON.stringify(mes));
+    //wsjson.socket.send(JSON.stringify(mes));
+    wsjson.sendMess(mes);
     chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -85,7 +96,8 @@ function sendFire(aUid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.socket.send(JSON.stringify(mes));
+    //wsjson.socket.send(JSON.stringify(mes));
+    wsjson.sendMess(mes);
     chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -99,11 +111,12 @@ function sendSetSpeed(newSpeed, auid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.socket.send(JSON.stringify(mes));
+    //wsjson.socket.send(JSON.stringify(mes));
+    wsjson.sendMess(mes);
     chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
-// send chat_message
+// send chat_message - отправляется, даже когда машинка мертва
 function sendChatMessage(atext, auid) {
     var mes = {
         call: "chat_message",
@@ -127,6 +140,7 @@ function sendServConsole(atext){
         }
     };
     rpcCallList.add(mes);
+    // Консоль отправляется на сервер всегда, вне зависимости от запретов клиента
     wsjson.socket.send(JSON.stringify(mes));
     chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
@@ -369,7 +383,9 @@ function getCircleMotion(motion){
     );
 
 }
-
+// TODO: продумать состояние машинки "убит".
+// Возможно сделать метод для машинки, который будет вызываться и переводить её в это состояние,
+// т.е. менять там иконку и возможно другие параметры.
 function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
@@ -384,6 +400,10 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
             listMapObject.setCarHP(uid, aHP);
             listMapObject.setTrack(uid, aTrack);
         }
+        // После добавления машинки или её апдейта, проверяем сколько у неё хп
+        if(listMapObject.objects[uid].hp == 0){
+            listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
+        }
     }
 
 }
@@ -393,13 +413,19 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
-        // TODO: Если новое хп своей машинки равно 0, то запретить ездитьи стрелять.
+        // TODO: Если новое хп своей машинки равно 0, то запретить ездитьи стрелять, а так же поменять иконку
+        if(user.userCar.hp == 0){
+            userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
+        }
     }
     else { // если не своя, то проверить есть ли такая в модели
         listMapObject.setCarHP(uid, aHP);
         listMapObject.setTrack(uid, aTrack);
 
-        //if(! )
+        // После добавления машинки или её апдейта, проверяем сколько у неё хп
+        if(listMapObject.objects[uid].hp == 0){
+            listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
+        }
     }
 
 }

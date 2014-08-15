@@ -1,0 +1,2 @@
+//Путь к карте в локальном каталоге
+mapBasePathLocal = 'http://localhost/static/map/{z}/{x}/{y}.jpg';

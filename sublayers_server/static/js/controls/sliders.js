@@ -28,10 +28,10 @@ var SliderZoom = (function () {
         }
 
         // создание 4 дивов
-        var nodePlus = '<input id="Zoom_btnPlus" type="image" src="img/control_zoom/ctrl_zm_plus.png" value="Приблизить">';
+        var nodePlus = '<div id="Zoom_btnPlus"></div>';
         var nodeBar = '<div id="Zoom_sliderBar"></div>';
         var nodeSlider = '<div id="Zoom_slider"></div>';
-        var nodeMinus = '<input id="Zoom_btnMinus" type="image" src="img/control_zoom/ctrl_zm_minus.png" value="Отдалить">';
+        var nodeMinus = '<div id="Zoom_btnMinus"></div>';
 
 
         // добавление дивов в родительский див
@@ -57,12 +57,17 @@ var SliderZoom = (function () {
         $('#Zoom_slider').removeClass('ui-widget-content');
         $('#Zoom_slider span:first-child').addClass('slider-zoom-carriage');
         $('#Zoom_slider span:first-child').css('width', '39px');
-        $('#Zoom_slider span:first-child').css('height', '20px');
-        $('#Zoom_slider span:first-child').css('background', 'green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat');
+        $('#Zoom_slider span:first-child').css('height', '21px');
+        //$('#Zoom_slider span:first-child').css('background', 'green url(./img/control_zoom/ctrl_zm_slider.png) 50% 50% no-repeat');
         $('#Zoom_slider span:first-child').css('border', '0px');
         $('#Zoom_slider span:first-child').css('left', '-7px');
         $('#Zoom_slider span:first-child').css('margin-bottom', '-12.5px');
         $('#Zoom_slider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
+
+        // Создание и добавление текста
+        var spanZoomZoomText = '<span id="spanZoomZoomText" class="control-zoom-speed-vertical-text sublayers-unclickable">' +
+            'Zoom</span>';
+        $('#'+parent).append(spanZoomZoomText);
 
     }
 
@@ -188,8 +193,9 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').addClass('slider-speed-carriage');
         $('#sliderSpeedSlider span:first-child').css('width', '39px');
         $('#sliderSpeedSlider span:first-child').css('height', '31px');
-        $('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
+        //$('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
+        $('#sliderSpeedSlider span:first-child').css('margin-left', '1px');
         $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
         $('#sliderSpeedSlider span:first-child').css("z-index", '5');
         $('#sliderSpeedSlider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
@@ -212,6 +218,12 @@ var SliderSpeed = (function () {
         $('#sliderSpeedStopButton').on('click', {id: this._id}, this._onStop);
 
         // создание и расстановка текста
+        var spanSpeedCruiseControlText = '<span id="spanSpeedCruiseControlText" class="control-zoom-speed-vertical-text">' +
+            'Cruise Control</span>';
+        var spanSpeedLimitsText = '<span id="spanSpeedLimitsText" class="control-zoom-speed-vertical-text">' +
+            'Limits</span>';
+        $('#' + this.options.parent).append(spanSpeedCruiseControlText);
+        $('#' + this.options.parent).append(spanSpeedLimitsText);
 
         // Вызвать _slide() для установки цифры внутри каретки
         this._slide({},{value: options.max_velocity});
@@ -239,7 +251,8 @@ var SliderSpeed = (function () {
         var prc = (newSpeed * 100) / this.options.max;
         if (prc > 99) prc = 99;
         if (prc < 0) prc = 0;
-        prc = 99 - prc;
+        // TODO: если сделать ниже не 99,5; а 100, то не видно стрелки при стоящей машине, если сделать 99, то она сливается со шкалой.
+        prc = 99.5 - prc;
         $('#slider-speed-filler-arrow').css('top', prc + '%');
         $('#slider-speed-filler').css('top', prc + '%');
         $('#speedRealValue').text(newSpeed.toFixed(1));

@@ -340,10 +340,11 @@ var UserCarMarker = (function () {
 
         // Создание Маркера
         this.marker = L.rotatedMarker(this.options.position).addTo(this.options._map);
-        this.marker.setIcon(L.icon({
-            iconUrl: 'img/car_user.png',
-            iconSize: [35, 35]
-        }));
+        this.marker.setIcon(iconsLeaflet.icon_moving_V1);
+        //this.marker.setIcon(L.icon({
+        //    iconUrl: 'img/car_user.png',
+        //    iconSize: [35, 35]
+        //}));
         this.marker.carID = this.options.carID;
 
         // Повесить PopUp и ивент на него
@@ -362,7 +363,7 @@ var UserCarMarker = (function () {
             {
                 weight: 0,
                 fillColor: '#32cd32',
-                fillOpacity: 0.2,
+                fillOpacity: 0.12,
                 clickable: false
             }
         ).addTo(this.options._map);
@@ -399,9 +400,12 @@ var UserCarMarker = (function () {
 
         // Создание Маркера не требуется, только установить ему новый carID
         this.marker.carID = this.options.carID;
+        this.marker.setIcon(iconsLeaflet.icon_moving_V1);
 
         // Создание шлейфа не требуется, только обновить параметр отображения
-        this.tail.setActive(this.options.tailEnable);
+        //TODO: Потом рзобраься с хвостиком.
+        //this.tail.setActive(this.options.tailEnable);
+        this.tail.setActive(false);
 
         // Создание круга обзора Не требуется. С кругом совсем ничего не нужно делать.
 
@@ -433,7 +437,8 @@ var UserCarMarker = (function () {
         this.marker.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка шлейфа
-        this.tail.drawTail(this.currentUserCarLatLng); // только на максимальных приближениях будет рисоваться хвост
+        // TODO Позже раскоментить, когда решим что с ним делать
+        //this.tail.drawTail(this.currentUserCarLatLng); // только на максимальных приближениях будет рисоваться хвост
 
         // Перерисовка круга обзора
         this.circleView.setLatLng(this.currentUserCarLatLng);

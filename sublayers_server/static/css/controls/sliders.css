@@ -62,10 +62,18 @@
 .slider-speed-carriage {
     width: 39px;
     height: 31px;
-    background: green url('/static/img/CruiseControl/if_spd_slider.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_normal.png') 50% 50% no-repeat;
     font: bold 14px Arial;
     color: #2dc34a;
     text-align: center;
+}
+
+.slider-speed-carriage:hover {
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_over.png') 50% 50% no-repeat;
+}
+
+.slider-speed-carriage:active {
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_pressed.png') 50% 50% no-repeat;
 }
 
 .slider-speed-carriage-label {
@@ -180,35 +188,64 @@
     background-image: url('/static/img/CruiseControl/if_spd_stop_pressed.png');
 }
 
+/* Настройка текста в слайдере скорости */
+.control-zoom-speed-vertical-text {
+    font: bold 12px Arial;
+    color: #2dc34a;
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+#spanSpeedCruiseControlText {
+    position: absolute;
+    top: 328.5px;
+    left: 44px;
+    white-space: nowrap;
+}
+
+#spanSpeedLimitsText {
+    position: absolute;
+    left: 10px;
+    top: 352px;
+}
+
 /* Настройка кнопки стоп завершена */
 
 /* Настройка слайдера зума */
 .slider-zoom-parent {
     left: 30px;
-    top: 90px;
+    top: 110px;
     position: absolute;
 }
 
 #Zoom_slider {
     border-radius: 0px;
-    height: 150px;
+    height: 100px;
     width: 25px;
     border: 0px;
     position: absolute;
-    top: 12px;
+    top: 10px;
 }
 
 .slider-zoom-carriage {
-    background: green url('/static/img/control_zoom/ctrl_zm_slider.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/control_zoom/zoom_btn_bar_center_normal.png') 50% 50% no-repeat;
     margin-left: -3px;
 }
 
+.slider-zoom-carriage:hover {
+    background: transparent url('/static/img/control_zoom/zoom_btn_bar_center_over.png') 50% 50% no-repeat;
+}
+
+.slider-zoom-carriage:active {
+    background: transparent url('/static/img/control_zoom/zoom_btn_bar_center_pressed.png') 50% 50% no-repeat;
+}
+
 #Zoom_sliderBar {
-    height: 180px;
+    height: 125px;
     width: 25px;
-    background: transparent url('/static/img/control_zoom/ctrl_zm_bar.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/control_zoom/zoom_bar_segment.png') 100% 100% repeat-y;
     position: absolute;
-    top: 27px;
+    top: 26px;
     left: 5px;
 }
 
@@ -216,13 +253,40 @@
     height: 27px;
     width: 35px;
     position: absolute;
+    background: transparent url('/static/img/control_zoom/zoom_btn_plus_normal.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnPlus:hover {
+    background: transparent url('/static/img/control_zoom/zoom_btn_plus_over.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnPlus:active {
+    background: transparent url('/static/img/control_zoom/zoom_btn_plus_pressed.png') 50% 50% no-repeat;
 }
 
 #Zoom_btnMinus {
     height: 27px;
     width: 35px;
     position: absolute;
-    top: 207px;
+    top: 150px;
+    background: transparent url('/static/img/control_zoom/zoom_btn_minus_normal.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnMinus:hover {
+    background: transparent url('/static/img/control_zoom/zoom_btn_minus_over.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnMinus:active {
+    background: transparent url('/static/img/control_zoom/zoom_btn_minus_pressed.png') 50% 50% no-repeat;
+}
+
+/* Текст Zoom В контроллере зума */
+#spanZoomZoomText {
+    position: absolute;
+    top: 122px;
+    left: -24px;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 /* Настройка слайдера зума завершена */
@@ -231,40 +295,38 @@
 
 .pbar-fuel-parent {
     position: absolute;
-    bottom: 25px;
-    right: 150px;
-    height: 50px;
-    width: 232px;
+    bottom: 80px;
+    right: 350px;
     pointer-events: none;
 }
 
 #pbarFuelLeft {
-    height: 30px;
-    width: 30px;
+    height: 17px;
+    width: 17px;
     position: absolute;
-    background: transparent url('/static/img/fuel/fuel_icon.png') 100% 100% no-repeat;
-    opacity: 0.8;
-    left: -10px;
-    top: 2px;
+    background: transparent url('/static/img/Health_Fuel/fuel_icon.png') 100% 100% no-repeat;
+    opacity: 1;
+    left: 0px;
+    top: 14px;
 }
 
 #pbarFuelRight {
     height: 50px;
-    width: 200px;
+    width: 155px;
     left: 30px;
     position: absolute;
 }
 
 #pbarFuelRightBar {
     height: 30px;
-    width: 202px;
+    width: 154px;
     position: absolute;
 }
 
 #pbarFuelBarFiller {
     position: absolute;
     height: 30px;
-    width: 200px;
+    width: 100%;
     overflow-x: hidden;
 }
 
@@ -272,28 +334,29 @@
     position: absolute;
     height: 30px;
     width: 100%;
-    background: transparent url('/static/img/fuel/fuel_filler.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_bg_tile.png') 100% 100% repeat-x;
     z-index: 1;
     opacity: 0.4;
+    overflow-x: visible;
 }
 
 #pbarFuelBarScale {
     position: absolute;
-    background: transparent url('/static/img/fuel/fuel_bar.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/scale_all.png') 100% 100% no-repeat;
     height: 100%;
-    width: 100%;
+    width: 155px;
     z-index: 2;
     opacity: 1;
 }
 
 #pbarFuelBarArrow {
     position: absolute;
-    background: transparent url('/static/img/fuel/fuel_arrow.png') 100% 100% no-repeat;
-    width: 9px;
-    height: 16px;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_arrow.png') 100% 100% no-repeat;
+    width: 7px;
+    height: 25px;
     right: 0%;
     bottom: 0px;
-    margin-right: -4.5px;
+    margin-right: -3.5px;
     z-index: 3;
     opacity: 1;
 }
@@ -302,13 +365,12 @@
 
 #pbarFuelRightDigits {
     height: 15px;
-    width: 200px;
+    width: 155px;
     position: absolute;
-    top: -20px;
+    top: -5px;
     font: bold 12px Arial;
     color: #2dc34a;
     text-align: center;
-    top: 3px;
 }
 
 .pbarRightsDigitsLeft {
@@ -322,13 +384,13 @@
 
 .pbarRightsDigitsRight {
     position: absolute;
-    right: -4px;
+    right: -3px;
 }
 
 #pbarFuelRightLabel {
     height: 20px;
-    width: 200px;
-    top: 30px;
+    width: 155px;
+    top: 34px;
     position: absolute;
     font: bold 12px Arial;
     color: #2dc34a;
@@ -341,12 +403,12 @@
 
 .pbarFuelRightLabelt2 {
     position: absolute;
-    left: 40px;
+    left: 35px;
 }
 
 .pbarFuelRightLabelt3 {
     position: absolute;
-    right: 55px;
+    left: 45%;
 }
 
 .pbarFuelRightLabelt4 {
@@ -360,40 +422,38 @@
 
 .pbar-hp-parent {
     position: absolute;
-    bottom: 75px;
-    right: 150px;
-    height: 50px;
-    width: 232px;
+    bottom: 140px;
+    right: 350px;
     pointer-events: none;
 }
 
 #pbarHPLeft {
-    height: 30px;
-    width: 30px;
+    height: 18px;
+    width: 25px;
     position: absolute;
-    background: transparent url('/static/img/health/health_icon.png') 100% 100% no-repeat;
-    opacity: 0.8;
-    left: -10px;
-    top: 2px;
+    background: transparent url('/static/img/Health_Fuel/health_icon.png') 100% 100% no-repeat;
+    opacity: 1;
+    left: -4px;
+    top: 14px;
 }
 
 #pbarHPRight {
     height: 50px;
-    width: 200px;
+    width: 155px;
     left: 30px;
     position: absolute;
 }
 
 #pbarHPRightBar {
     height: 30px;
-    width: 202px;
+    width: 154px;
     position: absolute;
 }
 
 #pbarHPBarFiller {
     position: absolute;
     height: 30px;
-    width: 200px;
+    width: 100%;
     overflow-x: hidden;
 
 }
@@ -402,28 +462,28 @@
     position: absolute;
     height: 30px;
     width: 100%;
-    background: transparent url('/static/img/health/health_filler.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_bg_tile.png') 100% 100% repeat-x;
     z-index: 1;
     opacity: 0.4;
 }
 
 #pbarHPBarScale {
     position: absolute;
-    background: transparent url('/static/img/health/health_bar.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/Health_Fuel/scale_all.png') 100% 100% no-repeat;
     height: 100%;
-    width: 100%;
+    width: 155px;
     z-index: 2;
     opacity: 1;
 }
 
 #pbarHPBarArrow {
     position: absolute;
-    background: transparent url('/static/img/health/health_arrow.png') 100% 100% no-repeat;
-    width: 9px;
-    height: 16px;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_arrow.png') 100% 100% no-repeat;
+    width: 7px;
+    height: 25px;
     right: 0%;
     bottom: 0px;
-    margin-right: -4.5px;
+    margin-right: -3.5px;
     z-index: 3;
     opacity: 1;
 }
@@ -432,9 +492,9 @@
 
 #pbarHPRightDigits {
     height: 15px;
-    width: 200px;
+    width: 155px;
     position: absolute;
-    top: 3px;
+    top: -5px;
     font: bold 12px Arial;
     color: #2dc34a;
     text-align: center;
@@ -442,8 +502,8 @@
 
 #pbarHPRightLabel {
     height: 20px;
-    width: 200px;
-    top: 30px;
+    width: 155px;
+    top: 34px;
     position: absolute;
     font: bold 12px Arial;
     color: #2dc34a;
@@ -460,7 +520,7 @@
 
 .pbarHPRightsDigitsRight {
     position: absolute;
-    right: -10.5px;
+    right: -8px;
 }
 
 .pbarHPRightLabelt1 {
@@ -470,6 +530,6 @@
 
 .pbarHPRightLabelt2 {
     position: absolute;
-    left: 95px;
+    left: 87px;
 }
 
