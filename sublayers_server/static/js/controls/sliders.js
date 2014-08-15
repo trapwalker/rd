@@ -64,6 +64,11 @@ var SliderZoom = (function () {
         $('#Zoom_slider span:first-child').css('margin-bottom', '-12.5px');
         $('#Zoom_slider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
 
+        // Создание и добавление текста
+        var spanZoomZoomText = '<span id="spanZoomZoomText" class="control-zoom-speed-vertical-text sublayers-unclickable">' +
+            'Zoom</span>';
+        $('#'+parent).append(spanZoomZoomText);
+
     }
 
 
@@ -190,6 +195,7 @@ var SliderSpeed = (function () {
         $('#sliderSpeedSlider span:first-child').css('height', '31px');
         //$('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
         $('#sliderSpeedSlider span:first-child').css('border', '0px');
+        $('#sliderSpeedSlider span:first-child').css('margin-left', '1px');
         $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
         $('#sliderSpeedSlider span:first-child').css("z-index", '5');
         $('#sliderSpeedSlider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
@@ -212,6 +218,12 @@ var SliderSpeed = (function () {
         $('#sliderSpeedStopButton').on('click', {id: this._id}, this._onStop);
 
         // создание и расстановка текста
+        var spanSpeedCruiseControlText = '<span id="spanSpeedCruiseControlText" class="control-zoom-speed-vertical-text">' +
+            'Cruise Control</span>';
+        var spanSpeedLimitsText = '<span id="spanSpeedLimitsText" class="control-zoom-speed-vertical-text">' +
+            'Limits</span>';
+        $('#' + this.options.parent).append(spanSpeedCruiseControlText);
+        $('#' + this.options.parent).append(spanSpeedLimitsText);
 
         // Вызвать _slide() для установки цифры внутри каретки
         this._slide({},{value: options.max_velocity});
