@@ -94,8 +94,8 @@ class Contact(Subjective):
             self.subj.contacts.remove(self)
             self.obj.contacts.remove(self)
         except:
-            import traceback
-            log.error(traceback.format_exc())
+            log.exception('Contact contacts.remove error: subj=%(subj)s, obj=%(obj)s, comment=%(comment)s',
+                          dict(subj=self.subj, obj=self.obj, comment=self.comment))
 
 
 class ContactSee(Contact):
