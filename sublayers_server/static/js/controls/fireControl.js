@@ -262,8 +262,19 @@ var FireControl = (function () {
 
     FireControl.prototype._allFireEvent = function(event){
         var obj = event.data.self;
-        if(typeof(obj.options.allCallBack) === 'function')
-            obj.options.allCallBack();
+        if(typeof(obj.options.allCallBack) === 'function'){
+            // obj.options.allCallBack();
+            // TODO продумать правильное поведение выстрела из всех орудий
+            // Выстрелить из всех секторов
+            for(var i in obj.sectors){
+                if(! obj.sectors[i].recharged){ // Если сектор не в перезарядке
+                    if (typeof(obj.sectors[i]._cbSectorShootRequest) === 'function')
+                        obj.sectors[i]._cbSectorShootRequest(obj.sectors[i]._fireSector.uid);
+                }
+            }
+
+        }
+
     };
 
 

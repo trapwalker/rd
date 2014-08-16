@@ -475,6 +475,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
             fireSectors: user.userCar.fireSectors,
             max_velocity: amax_speed
         });
+
+        // Инициализация радиального меню - установка правильных id секторов
+        radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
     }
     else {
         // значит пришёл второй initMessage, значит нужно переопределить все параметры
@@ -513,6 +516,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
             sectors: user.userCar.fireSectors,
             max_velocity: amax_speed
         });
+
+        // Инициализация радиального меню - установка правильных id секторов
+        radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
 
     }
 
