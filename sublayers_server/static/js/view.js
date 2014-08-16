@@ -46,7 +46,6 @@ function onMouseUpMap(mouseEventObject){
     if(radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
 
-    // TODO: сделать чтобы не срабатывало при кликах на маркеры
     // Если не вызывалось меню, то поехать в заданную точку
     if (! myMap._radialMenuOpened  && myMap._mouseDowned) {
         if (user.userCar)

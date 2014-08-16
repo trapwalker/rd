@@ -42,7 +42,8 @@ function getCarMarker(aCar, aMap) {
     //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
-    newMarker.on('click', onMouseClickMarker);
+    // TODO ради радиального меню здесь не клик, а маусдаун
+    newMarker.on('mousedown', onMouseClickMarker);
     newMarker.addTo(aMap);
     newMarker.carID = aCar.ID;
 
@@ -95,6 +96,14 @@ function onMouseClickMarker(event){
         setTimeout(function () {
             self.setOpacity(1);
         }, 500);
+    }
+
+    if (event.originalEvent.stopPropagation) {
+        // Вариант стандарта W3C:
+        event.originalEvent.stopPropagation()
+    } else {
+        // Вариант Internet Explorer:
+        event.originalEvent.cancelBubble = true
     }
 
 }
