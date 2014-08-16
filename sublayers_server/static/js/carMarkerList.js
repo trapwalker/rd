@@ -197,7 +197,7 @@ var CarMarkerList = (function () {
 
             // TODO при частом change_car() на сервер car.owner.login начинает глючить
             if (distBool && fiBool) {
-                chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=" + car.owner.login);
+                //chat.addMessageToSystem(car.owner.login + (sector.uid), "car in sector " + (sector.uid) + " login=" + car.owner.login);
                 // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
                 if (!car.backLight.pathSVG[sector.uid]) {
                     // добавление SVG-path в fireControl

@@ -24,10 +24,17 @@ var RadialMenu = (function(){
 
         this.parent = $('#'+this.options.parentDiv);
 
+        this.currAngle = 0; // текущий угол поворота
+        this.angleStep = gradToRad(360 / this.options.count); // шаг в радианах
+        this.currSectorAcnive = 0;
+
 
         this.sectors = [];    // ссылки на каждый элемент меню
         this.NS = "http://www.w3.org/2000/svg";
         this.SVG = document.getElementById(this.options.parentSVG);
+        this.SVG.setAttribute('height', this.options.radiusOut * 2);
+        this.SVG.setAttribute('width', this.options.radiusOut * 2);
+
         /*
          this.SVG=document.createElementNS(this.NS,"svg");
          var parent = document.getElementById('testRadMenu');
@@ -37,6 +44,7 @@ var RadialMenu = (function(){
     }
 
     RadialMenu.prototype.rotate = function (angle) {
+        this.currAngle = gradToRad(angle);
         this.groupRM.setAttribute('transform',
                 'rotate(' + angle + ', ' + this.options.radiusOut + ',' + this.options.radiusOut + ')');
     };
@@ -72,9 +80,7 @@ var RadialMenu = (function(){
 
 
         // TODO: Разобраться и сделать через <symbol id="symbID"> и <use xlink:href="symbID">
-
         // добавить в svg symbol, а в него path
-
         //this.symbolSector = document.createElementNS(this.NS, "symbol");
         //this.symbolSector.setAttribute('id', this.options.menuName+'SymbolSector');
         //var pathSector = document.createElementNS(this.NS,"path");
@@ -99,13 +105,16 @@ var RadialMenu = (function(){
             sector.setAttribute('transform', 'rotate(' + (i * 360 / this.options.count) + ')');
             */
 
-            var sector = document.createElementNS(this.NS,"path");
-            sector.setAttribute('class', 'radial-menu-sector-default');
-            sector.setAttribute('d', pathstr);
-            sector.setAttribute('transform', 'translate('+ this.options.radiusOut +', ' + this.options.radiusOut + ') '+
+            var sector = {};
+            sector.path = document.createElementNS(this.NS,"path");
+            sector.path.setAttribute('class', 'radial-menu-sector-default');
+            sector.path.setAttribute('d', pathstr);
+            sector.path.setAttribute('transform', 'translate('+ this.options.radiusOut +', ' + this.options.radiusOut + ') '+
                 'rotate(' + (i * 360 / this.options.count) +')');
-            //sector.setAttribute('transform', );
-            this.groupRM.appendChild(sector);
+            this.groupRM.appendChild(sector.path);
+            // установка дополнительных характеристик сектора
+            sector.angle = gradToRad(i * 360 / this.options.count);
+            sector.id = i;
             this.sectors.push(sector);
         }
 
@@ -114,22 +123,71 @@ var RadialMenu = (function(){
 
 
     RadialMenu.prototype.showMenu = function(aPoint, aAngle){
-        //alert('show');
+        // переместить меню в нужную позицию
+        this.parent.css('top', (aPoint.y - this.options.radiusOut) + 'px');
+        this.parent.css('left', (aPoint.x - this.options.radiusOut) + 'px');
+        // Повернуть на угол машинки в момент отображения меню
+        this.rotate(radToGrad(aAngle));
+
         this.parent.show();
-
-
         return this;
     };
 
 
-    RadialMenu.prototype.hideMenu = function(){
-        //alert('hide');
+    RadialMenu.prototype.hideMenu = function(isFire){
         this.parent.hide();
+         //если была стрельба
+        if(isFire){
+            // взять последний активный сектор и стрельнуть из него this.currSectorActive
+            if(this.currSectorActive){
+                var fs = controllers.fireControl._getSectorByID(this.currSectorActive.id);
+                controllers.fireControl._fireSectorEvent({data:{sector: fs}});
+            }
+        }
+
+        // обнулить выбранный сектор
+        if(this.currSectorActive) {
+            this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-default');
+            this.currSectorActive=0;
+        }
 
 
         return this;
     };
 
+    RadialMenu.prototype._getSectorByAngle = function(angle){
+        for(var i=0; i < this.sectors.length; i++){
+            // если разница углов между секторами меньше чем шаг, то это нужный сектор
+            if(Math.abs(getDiffAngle((this.sectors[i].angle + this.currAngle), angle)) < (this.angleStep/2)) {
+                chat.addMessageToSystem('angle_rm'+i, "diff_angle" + i + " = " + radToGrad(getDiffAngle(this.sectors[i].angle, angle)));
+                return this.sectors[i];
+            }
+        }
+    };
+
+
+    RadialMenu.prototype.setActiveSector = function(angle){
+        var nSector = this._getSectorByAngle(angle);
+        chat.addMessageToSystem('angle_rm', "a = " + radToGrad(angle));
+        if (!this.currSectorActive) {
+            this.currSectorActive = nSector;
+            this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
+        }
+        else {
+            if (this.currSectorActive.id != nSector.id) { // если новый сектор
+                this.currSectorActive = nSector;
+                // сбросить все сектора
+                for (var i = 0; i < this.sectors.length; i++) {
+                    this.sectors[i].path.setAttribute('class', 'radial-menu-sector-default');
+                }
+                this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
+                chat.addMessageToSystem('rm_new_sector', "Sector angle !!!!!!! = " + radToGrad(this.currSectorActive.angle));
+            }
+        }
+    };
+
+
+    // TODO: в wsjson вызвать функцию, которая по углам сделает соответствие айдишникам секторов
 
 
 
