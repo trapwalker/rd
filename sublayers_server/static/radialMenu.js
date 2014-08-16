@@ -9,7 +9,7 @@ var RadialMenu = (function(){
             menuName: 'radialMenuName',
             parentSVG: '',
             gradBetwElements: 5 // расстояние в градусах между элементами меню
-        }
+        };
 
         if(options){
             if(options.radiusOut) this.options.radiusOut = options.radiusOut;

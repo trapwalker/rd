@@ -20,9 +20,70 @@ function redrawMap() {
 }
 
 function onMouseClickMap(mouseEventObject) {
-    if(user.userCar)
-        sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
+   // if(user.userCar)
+   //     sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
 }
+
+
+
+function onMouseDownMap(mouseEventObject){
+    // Запомнить координаты начала нажатия и флаг нажатия = true
+    myMap._mouseDowned = true;
+    myMap._radialMenuOpened = false;
+    myMap.lastDownPoint = mouseEventObject.containerPoint;
+
+    // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
+    radialMenuTimeout = setTimeout(function(){
+        myMap._radialMenuOpened = true;
+        alert('вызвать меню по таймауту');
+    }, 400);
+}
+
+
+function onMouseUpMap(mouseEventObject){
+    // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
+    if(radialMenuTimeout)
+        clearTimeout(radialMenuTimeout);
+    // фолсим флаг нажатия
+    myMap._mouseDowned = false;
+
+    // Если не вызывалось меню, то поехать в заданную точку
+    if (! myMap._radialMenuOpened) {
+        if (user.userCar)
+            sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
+    } else {
+        // было вызвано меню, значит нужно обработать выход из меню и спрятать его
+
+        // Определить направление мыши от первой точки, до точки выхода - найти угол между
+        // myMap.lastDownPoint, mouseEventObject.containerPoint  --- по этому углу определить сектор в меню и выстрелить этим сектором
+
+        // Выход из меню
+        myMap._radialMenuOpened = false;
+    }
+
+
+}
+
+
+function onMouseMoveMap(mouseEventObject){
+    // Если флаг нажатия был установлен, то
+    if(myMap._mouseDowned && !(myMap._radialMenuOpened)){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
+        if(distancePoints(myMap.lastDownPoint, mouseEventObject.containerPoint) > 50){
+            // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
+            if(radialMenuTimeout)
+                clearTimeout(radialMenuTimeout);
+            // зафолсить флаг
+            myMap._radialMenuOpened = true;
+            // Вызвать меню
+            alert('вызвать меню по движению');
+        }
+    }
+
+    if(myMap._radialMenuOpened) { // Если меню уже открыто
+        // определяем угол и подсвечиваем выбранный сектор
+    }
+}
+
 
 function onZoomStart(event) {
     clearInterval(timer);
@@ -102,6 +163,14 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
+    //myMap.on('click', onMouseClickMap);
+    myMap.on('mousedown', onMouseDownMap);
+    myMap.on('mouseup', onMouseUpMap);
+    myMap.on('mousemove', onMouseMoveMap);
+    myMap.on('zoomstart', onZoomStart);
+    myMap.on('zoomend', onZoomEnd);
+
+
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
 
@@ -114,10 +183,6 @@ $(document).ready(function () {
     // Кнопка подключения к серверу (пока просто перезагружает страницу)
     buttonConnectServerBtn.onclick = ConnectServerToggle;
 
-
-    myMap.on('click', onMouseClickMap);
-    myMap.on('zoomstart', onZoomStart);
-    myMap.on('zoomend', onZoomEnd);
 
     // создание чата
     chat = new ViewMessenger({
@@ -252,6 +317,9 @@ var ownerList;
 
 var levelZoomForVisible = 5;
 var levelZoomForVisibleTail = 8;
+
+// Таймер радиального меню
+var radialMenuTimeout;
 
 
 //Путь к карте на сервере
