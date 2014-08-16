@@ -35,7 +35,8 @@ function onMouseDownMap(mouseEventObject){
     // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
     radialMenuTimeout = setTimeout(function(){
         myMap._radialMenuOpened = true;
-        alert('вызвать меню по таймауту');
+        //alert('вызвать меню по таймауту');
+        radialMenu.showMenu();
     }, 400);
 }
 
@@ -44,24 +45,26 @@ function onMouseUpMap(mouseEventObject){
     // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
     if(radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
-    // фолсим флаг нажатия
-    myMap._mouseDowned = false;
 
+    // TODO: сделать чтобы не срабатывало при кликах на маркеры
     // Если не вызывалось меню, то поехать в заданную точку
-    if (! myMap._radialMenuOpened) {
+    if (! myMap._radialMenuOpened  && myMap._mouseDowned) {
         if (user.userCar)
             sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
     } else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
 
-        // Определить направление мыши от первой точки, до точки выхода - найти угол между
-        // myMap.lastDownPoint, mouseEventObject.containerPoint  --- по этому углу определить сектор в меню и выстрелить этим сектором
+        // Определить направление мыши и дистанцию от первой точки, до точки выхода. Если дистанция позволяет попасть в сектор, то продолжить
 
+        //  - найти угол между
+        // myMap.lastDownPoint, mouseEventObject.containerPoint  --- по этому углу определить сектор в меню и выстрелить этим сектором
+        radialMenu.hideMenu();
         // Выход из меню
         myMap._radialMenuOpened = false;
     }
 
-
+    // фолсим флаг нажатия
+    myMap._mouseDowned = false;
 }
 
 
@@ -75,12 +78,26 @@ function onMouseMoveMap(mouseEventObject){
             // зафолсить флаг
             myMap._radialMenuOpened = true;
             // Вызвать меню
-            alert('вызвать меню по движению');
+            //alert('вызвать меню по движению');
+            radialMenu.showMenu();
         }
     }
 
     if(myMap._radialMenuOpened) { // Если меню уже открыто
         // определяем угол и подсвечиваем выбранный сектор
+    }
+}
+
+
+
+function onMouseOutMap(){
+    if(radialMenuTimeout)
+        clearTimeout(radialMenuTimeout);
+    // фолсим флаг нажатия
+    myMap._mouseDowned = false;
+    // если фокус ушёл с карты, то закрыть меню
+    if (myMap._radialMenuOpened) {
+        radialMenu.hideMenu();
     }
 }
 
@@ -167,6 +184,7 @@ $(document).ready(function () {
     myMap.on('mousedown', onMouseDownMap);
     myMap.on('mouseup', onMouseUpMap);
     myMap.on('mousemove', onMouseMoveMap);
+    myMap.on('mouseout', onMouseOutMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
 
@@ -318,8 +336,11 @@ var ownerList;
 var levelZoomForVisible = 5;
 var levelZoomForVisibleTail = 8;
 
-// Таймер радиального меню
+// радиальноe меню
+var radialMenu;
 var radialMenuTimeout;
+
+
 
 
 //Путь к карте на сервере

@@ -1,0 +1,13 @@
+.radial-menu-sector-default {
+    fill: lime;
+    stroke: green;
+    stroke-width: 2px;
+    opacity: 0.6;
+}
+
+.radial-menu-sector-active {
+    fill: lime;
+    stroke: green;
+    stroke-width: 2px;
+    opacity: 0.8;
+}

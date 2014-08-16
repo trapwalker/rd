@@ -81,7 +81,7 @@ function carInfoClickEvent(event){
     }
 }
 
-function onMouseClickMarker(){
+function onMouseClickMarker(event){
     if (listMapObject.exist(this.carID)) {
         var car = listMapObject.objects[this.carID];
         if(car.backLight)
@@ -96,6 +96,7 @@ function onMouseClickMarker(){
             self.setOpacity(1);
         }, 500);
     }
+
 }
 
 

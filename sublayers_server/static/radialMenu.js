@@ -8,7 +8,8 @@ var RadialMenu = (function(){
             count: 4,      // кол-во элементов меню
             menuName: 'radialMenuName',
             parentSVG: '',
-            gradBetwElements: 5 // расстояние в градусах между элементами меню
+            parentDiv: '',
+            gradBetwElements: 0 // расстояние в градусах между элементами меню
         };
 
         if(options){
@@ -17,8 +18,11 @@ var RadialMenu = (function(){
             if(options.count) this.options.count = options.count;
             if(options.menuName) this.options.menuName = options.menuName;
             if(options.parentSVG) this.options.parentSVG = options.parentSVG;
+            if(options.parentDiv) this.options.parentDiv = options.parentDiv;
             if(options.gradBetwElements) this.options.gradBetwElements = options.gradBetwElements;
         }
+
+        this.parent = $('#'+this.options.parentDiv);
 
 
         this.sectors = [];    // ссылки на каждый элемент меню
@@ -107,6 +111,26 @@ var RadialMenu = (function(){
 
 
     };
+
+
+    RadialMenu.prototype.showMenu = function(aPoint, aAngle){
+        //alert('show');
+        this.parent.show();
+
+
+        return this;
+    };
+
+
+    RadialMenu.prototype.hideMenu = function(){
+        //alert('hide');
+        this.parent.hide();
+
+
+        return this;
+    };
+
+
 
 
     return RadialMenu;
