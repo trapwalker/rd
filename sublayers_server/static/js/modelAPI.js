@@ -16,7 +16,7 @@ function ModelInit() {
         menuName: 'radialMenuName',
         parentSVG: 'radialMenuSVG',
         parentDiv: 'radialMenuDiv'
-    }).hideMenu();
+    }).hideMenu(false);
 
 
 }

@@ -7,12 +7,12 @@
     fill: lime;
     stroke: green;
     stroke-width: 2px;
-    opacity: 0.4;
+    opacity: 0.3;
 }
 
 .radial-menu-sector-active {
     fill: lime;
     stroke: green;
     stroke-width: 2px;
-    opacity: 0.8;
+    opacity: 0.7;
 }

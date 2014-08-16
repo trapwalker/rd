@@ -19,23 +19,20 @@ function redrawMap() {
 
 }
 
-function onMouseClickMap(mouseEventObject) {
+//function onMouseClickMap(mouseEventObject) {
    // if(user.userCar)
    //     sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
-}
+//}
 
 
 
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
     myMap._mouseDowned = true;
-    myMap._radialMenuOpened = false;
     myMap.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
 
     // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
     radialMenuTimeout = setTimeout(function(){
-        myMap._radialMenuOpened = true;
-        //alert('вызвать меню по таймауту');
         radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
     }, 400);
 }
@@ -47,21 +44,13 @@ function onMouseUpMap(mouseEventObject){
         clearTimeout(radialMenuTimeout);
 
     // Если не вызывалось меню, то поехать в заданную точку
-    if (! myMap._radialMenuOpened  && myMap._mouseDowned) {
+    if (radialMenu.isHide  && myMap._mouseDowned) {
         if (user.userCar)
             sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
     } else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
-
-        // Определить направление мыши и дистанцию от первой точки, до точки выхода. Если дистанция позволяет попасть в сектор, то продолжить
-
-        //  - найти угол между
-        // myMap.lastDownPoint, mouseEventObject.containerPoint  --- по этому углу определить сектор в меню и выстрелить этим сектором
         radialMenu.hideMenu(true);
-        // Выход из меню
-        myMap._radialMenuOpened = false;
     }
-
     // фолсим флаг нажатия
     myMap._mouseDowned = false;
 }
@@ -70,19 +59,17 @@ function onMouseUpMap(mouseEventObject){
 function onMouseMoveMap(mouseEventObject){
     var pointOfClick =  new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
     // Если флаг нажатия был установлен, то
-    if(myMap._mouseDowned && !(myMap._radialMenuOpened)){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
+    if(myMap._mouseDowned && radialMenu.isHide){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
         if(distancePoints(myMap.lastDownPoint, pointOfClick) > 50){
             // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
             if(radialMenuTimeout)
                 clearTimeout(radialMenuTimeout);
-            // зафолсить флаг
-            myMap._radialMenuOpened = true;
             // Вызвать меню
             radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
         }
     }
 
-    if(myMap._radialMenuOpened) { // Если меню уже открыто
+    if(! radialMenu.isHide) { // Если меню уже открыто
         // определяем угол и подсвечиваем выбранный сектор
         radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
     }
@@ -96,7 +83,7 @@ function onMouseOutMap(){
     // фолсим флаг нажатия
     myMap._mouseDowned = false;
     // если фокус ушёл с карты, то закрыть меню
-    if (myMap._radialMenuOpened) {
+    if (! radialMenu.isHide) {
         radialMenu.hideMenu(false);
     }
 }
