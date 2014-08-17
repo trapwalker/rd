@@ -19,10 +19,75 @@ function redrawMap() {
 
 }
 
-function onMouseClickMap(mouseEventObject) {
-    if(user.userCar)
-        sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
+//function onMouseClickMap(mouseEventObject) {
+   // if(user.userCar)
+   //     sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
+//}
+
+
+
+function onMouseDownMap(mouseEventObject){
+    // Запомнить координаты начала нажатия и флаг нажатия = true
+    myMap._mouseDowned = true;
+    myMap.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
+
+    // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
+    radialMenuTimeout = setTimeout(function(){
+        radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+    }, 400);
 }
+
+
+function onMouseUpMap(mouseEventObject){
+    // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
+    if(radialMenuTimeout)
+        clearTimeout(radialMenuTimeout);
+
+    // Если не вызывалось меню, то поехать в заданную точку
+    if (radialMenu.isHide  && myMap._mouseDowned) {
+        if (user.userCar)
+            sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
+    } else {
+        // было вызвано меню, значит нужно обработать выход из меню и спрятать его
+        radialMenu.hideMenu(true);
+    }
+    // фолсим флаг нажатия
+    myMap._mouseDowned = false;
+}
+
+
+function onMouseMoveMap(mouseEventObject){
+    var pointOfClick =  new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
+    // Если флаг нажатия был установлен, то
+    if(myMap._mouseDowned && radialMenu.isHide){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
+        if(distancePoints(myMap.lastDownPoint, pointOfClick) > 50){
+            // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
+            if(radialMenuTimeout)
+                clearTimeout(radialMenuTimeout);
+            // Вызвать меню
+            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+        }
+    }
+
+    if(! radialMenu.isHide) { // Если меню уже открыто
+        // определяем угол и подсвечиваем выбранный сектор
+        radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
+    }
+}
+
+
+
+function onMouseOutMap(){
+    if(radialMenuTimeout)
+        clearTimeout(radialMenuTimeout);
+    // фолсим флаг нажатия
+    myMap._mouseDowned = false;
+    // если фокус ушёл с карты, то закрыть меню
+    if (! radialMenu.isHide) {
+        radialMenu.hideMenu(false);
+    }
+}
+
 
 function onZoomStart(event) {
     clearInterval(timer);
@@ -102,6 +167,15 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
+    //myMap.on('click', onMouseClickMap);
+    myMap.on('mousedown', onMouseDownMap);
+    myMap.on('mouseup', onMouseUpMap);
+    myMap.on('mousemove', onMouseMoveMap);
+    myMap.on('mouseout', onMouseOutMap);
+    myMap.on('zoomstart', onZoomStart);
+    myMap.on('zoomend', onZoomEnd);
+
+
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
 
@@ -114,10 +188,6 @@ $(document).ready(function () {
     // Кнопка подключения к серверу (пока просто перезагружает страницу)
     buttonConnectServerBtn.onclick = ConnectServerToggle;
 
-
-    myMap.on('click', onMouseClickMap);
-    myMap.on('zoomstart', onZoomStart);
-    myMap.on('zoomend', onZoomEnd);
 
     // создание чата
     chat = new ViewMessenger({
@@ -252,6 +322,12 @@ var ownerList;
 
 var levelZoomForVisible = 5;
 var levelZoomForVisibleTail = 8;
+
+// радиальноe меню
+var radialMenu;
+var radialMenuTimeout;
+
+
 
 
 //Путь к карте на сервере
