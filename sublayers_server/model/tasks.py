@@ -114,12 +114,13 @@ class Determined(Task):
 
     def cancel(self, **kw):
         super(Determined, self).cancel(**kw)
-        self.end_task_event.actual = False
+        if self.end_task_event:
+            self.end_task_event.cancel()
 
     def on_after_start(self, **kw):
         super(Determined, self).on_after_start(**kw)
         self.end_task_event = TaskEnd(time=self.finish_time, task=self)
-        self.owner.server.post_event(self.end_task_event)
+        self.end_task_event.send()
 
     @property
     def duration(self):
@@ -272,7 +273,7 @@ class Goto(Motion):
         return d
 
     @staticmethod
-    def _append_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0, contacts):
+    def _detect_and_register_contacts(subj, obj, tmin, tmax, a, k, c_wo_r2, t0):
         """
         @param sublayers_server.model.base.Observer subj: Subject of potential contacts
         @param sublayers_server.model.base.VisibleObject obj: Object of potential contacts
@@ -282,20 +283,19 @@ class Goto(Motion):
         @param float k:
         @param float c_wo_r2:
         @param float t0: Common reference time point
-        @param list[ContactSee|ContactOut] contacts: Contact list
         """
         d4 = k ** 2 - a * (c_wo_r2 - subj.r ** 2)
         if d4 > 0:
             d4 = sqrt(d4)
             t1 = (-k - d4) / a + t0
             t2 = (-k + d4) / a + t0
-
+            log.debug('**********  %s < %s == %s', t1, t2, t1 < t2)
             if tmin <= t1 <= tmax:
-                contacts.append(ContactSee(time=t1, subj=subj, obj=obj))
+                ContactSee(time=t1, subj=subj, obj=obj).send()
             if tmin <= t2 <= tmax:
-                contacts.append(ContactOut(time=t2, subj=subj, obj=obj))
+                ContactOut(time=t2, subj=subj, obj=obj).send()
 
-    def contacts_with_static(self, static):
+    def detect_contacts_with_static(self, static):
         """
         @param sublayers_server.model.base.VisibleObject | sublayers_server.model.units.Unit static: Static object
         """
@@ -314,14 +314,12 @@ class Goto(Motion):
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2
 
-        contacts = []
-        self._append_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
+        self._detect_and_register_contacts(self.owner, static, tmin, tmax, a, k, c_wo_r2, tmin)
 
         if isinstance(static, Observer):
-            self._append_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, tmin, contacts)
-        return contacts
+            self._detect_and_register_contacts(static, self.owner, tmin, tmax, a, k, c_wo_r2, tmin)
 
-    def contacts_with_dynamic(self, motion):
+    def detect_contacts_with_dynamic(self, motion):
         """
         @param sublayers_server.model.tasks.Goto motion: Motion task of mobile unit
         """
@@ -352,11 +350,8 @@ class Goto(Motion):
         k = v.x * s.x + v.y * s.y
         c_wo_r2 = s.x ** 2 + s.y ** 2  # -r**2
 
-        contacts = []
-        self._append_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
-        self._append_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0, contacts)
-
-        return contacts
+        self._detect_and_register_contacts(self.owner, motion.owner, tmin, tmax, a, k, c_wo_r2, t0)
+        self._detect_and_register_contacts(motion.owner, self.owner, tmin, tmax, a, k, c_wo_r2, t0)
 
 
 class GotoArc(Goto):
@@ -376,7 +371,10 @@ class GotoArc(Goto):
         """
         if to_time is None:
             to_time = self._get_time()
-        return self.vector.angle + (self.vector.angle - self.start_direction) * (to_time - self.start_time) / self.duration
+        return (
+            self.vector.angle +
+            (self.vector.angle - self.start_direction) * (to_time - self.start_time) / self.duration
+        )
 
     direction = property(get_direction)
 

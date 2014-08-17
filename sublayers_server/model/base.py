@@ -114,14 +114,13 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts_search()
 
     def contacts_clear(self):
-        contacts = self.contacts
-        while contacts:
-            contacts.pop().actual = False
+        for event in self.contacts[:]:
+            event.cancel()
 
     def init_contact_test(self, obj):
         """Test to contacts between *self* and *obj*, append them if is."""
         if obj.can_see(self):
-            self.contacts.append(ContactSee(time=self.server.get_time(), subj=obj, obj=self))  # todo: optimize
+            ContactSee(time=self.server.get_time(), subj=obj, obj=self).send()
 
     def init_contacts_search(self):
         """Search init contacts"""
@@ -132,18 +131,12 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
 
     def special_contacts_search(self):
-        contacts = self.contacts
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
-            found = motion.contacts_with_static(self)
-            if found:
-                contacts.extend(found)
-                motion.owner.contacts.extend(found)
+            motion.detect_contacts_with_static(self)
 
     def contacts_search(self):
         # todo: rename methods (search->forecast)
         self.special_contacts_search()
-        self.server.post_events(self.contacts)
-        # todo: check for double including one contact into the servers timeline
 
     def delete(self):
         self.contacts_clear()
@@ -179,7 +172,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         """Override test to contacts between *self* and *obj*, append them if is."""
         super(Observer, self).init_contact_test(obj)
         if self.can_see(obj):
-            self.contacts.append(ContactSee(time=self.server.get_time(), subj=self, obj=obj))  # todo: optimize
+            ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
 
     def on_change(self, comment=None):
         super(Observer, self).on_change(comment)
