@@ -144,12 +144,13 @@ def main():
     from agents import User
     from vectors import Point
 
-    def inspect(event):
-        srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
-        log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
+    def inspect(event=None):
+        events.Callback(time=srv.get_time() + 1, func=inspect).send()
+        if event:
+            log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
 
     srv = LocalServer()
-    srv.post_event(events.Callback(time=srv.get_time() + 1, func=inspect))
+    inspect()
     user = User(login='user1', server=srv)
     station = Station(server=srv, position=Point(0, 0))
     user.subscribe_to__Observer(station)

@@ -253,22 +253,14 @@ class Bot(Unit):
         if self_motion is None:
             return super(Bot, self).special_contacts_search()
 
-        contacts = self.contacts
-
-        contacts_with_static = self_motion.contacts_with_static
+        detect_contacts_with_static = self_motion.detect_contacts_with_static
         for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
-            found = contacts_with_static(obj)
-            if found:
-                contacts.extend(found)
-                obj.contacts.extend(found)
+            detect_contacts_with_static(obj)
 
-        contacts_with_dynamic = self_motion.contacts_with_dynamic
+        detect_contacts_with_dynamic = self_motion.detect_contacts_with_dynamic
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
             if motion.owner != self:
-                found = contacts_with_dynamic(motion)
-                if found:
-                    contacts.extend(found)
-                    motion.owner.contacts.extend(found)
+                detect_contacts_with_dynamic(motion)
 
     def on_task_change(self, old, new):
         """

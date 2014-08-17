@@ -14,13 +14,20 @@ class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
 
-    def __init__(self, time, comment=None):
+    def __init__(self, server, time=None, comment=None):
         """
         @param float time: Time of event
         """
-        self.time = time
+        self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
+        self.time = time or server.get_time()
         self.actual = True
         self.comment = comment  # todo: Устранить отладочную информацию
+
+    def send(self):
+        self.server.post_event(self)  # todo: test to atomic construction
+
+    def cancel(self):
+        self.actual = False
 
     def __hash__(self):
         return hash((self.time,))
@@ -57,6 +64,7 @@ class Event(object):
         """
         Performing event logic.
         """
+        log.debug('EVENT %s perform', self)
         pass
 
 
@@ -70,7 +78,8 @@ class Subjective(Event):
         """
         @param sublayers_server.model.units.Unit subj: Subject of contact
         """
-        super(Subjective, self).__init__(**kw)
+        server = subj.server
+        super(Subjective, self).__init__(server=server, **kw)
         self.subj = subj  # todo: weakref?
 
 
@@ -85,18 +94,34 @@ class Contact(Subjective):
         """
         @param sublayers_server.model.base.VisibleObject obj: Object of contact
         """
-        super(Contact, self).__init__(**kw)
         self.obj = obj
+        super(Contact, self).__init__(**kw)
+        self.subj.contacts.append(self)
+        obj.contacts.append(self)
+        log.debug('EVENT %s add to %s and %s', self, self.subj, obj)
+
+    def cancel(self):
+        super(Subjective, self).cancel()
+        self.remove_links()
 
     def perform(self):
-        super(Contact, self).perform()
+        super(Subjective, self).perform()
+        self.remove_links()
+
+    def remove_links(self):
         try:  # todo: Устранить хак
+            log.debug('EVENT %s before remove from %s [%s]', self, self.subj, self.subj.contacts)
             self.subj.contacts.remove(self)
+        except:
+            log.exception('`Subjective contacts clearing: subj=%(subj)s, comment=%(comment)s',
+                          dict(subj=self.subj, comment=self.comment))
+
+        try:  # todo: Устранить хак
             self.obj.contacts.remove(self)
         except:
-            log.exception('Contact contacts.remove error: subj=%(subj)s, obj=%(obj)s, comment=%(comment)s',
-                          dict(subj=self.subj, obj=self.obj, comment=self.comment))
-
+            log.exception('Contact contacts clearing: obj=%(obj)s, comment=%(comment)s',
+                          dict(obj=self.obj, comment=self.comment))
+                          
 
 class ContactSee(Contact):
 
@@ -104,7 +129,8 @@ class ContactSee(Contact):
         super(ContactSee, self).perform()
         subj = self.subj
         subj.subscribe_to__VisibleObject(self.obj)
-        subj.emit_for__Agent(message=messages.Contact(time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
+        subj.emit_for__Agent(message=messages.Contact(
+            time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
         # todo: Make 'as_message' method of Event class
 
 
@@ -115,9 +141,11 @@ class ContactOut(Contact):
         try:
             self.subj.unsubscribe_from__VisibleObject(self.obj)
         except ValueError:
-            log.exception('ContactOut unsubscribe_from__VisibleObject error: subj=%(subj)s, obj=%(obj)s, comment=%(comment)s',
-                          dict(subj=self.subj, obj=self.obj, comment=self.comment))
-        self.subj.emit_for__Agent(message=messages.Out(time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
+            log.exception(
+                'ContactOut unsubscribe_from__VisibleObject error: subj=%(subj)s, obj=%(obj)s, comment=%(comment)s',
+                dict(subj=self.subj, obj=self.obj, comment=self.comment))
+        self.subj.emit_for__Agent(message=messages.Out(
+            time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
 
 
 class Callback(Event):
