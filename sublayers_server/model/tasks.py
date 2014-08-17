@@ -289,7 +289,6 @@ class Goto(Motion):
             d4 = sqrt(d4)
             t1 = (-k - d4) / a + t0
             t2 = (-k + d4) / a + t0
-            log.debug('**********  %s < %s == %s', t1, t2, t1 < t2)
             if tmin <= t1 <= tmax:
                 ContactSee(time=t1, subj=subj, obj=obj).send()
             if tmin <= t2 <= tmax:
