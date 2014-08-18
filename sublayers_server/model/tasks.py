@@ -171,15 +171,32 @@ class Motion(Determined):
 
     def on_before_start(self, **kw):
         super(Motion, self).on_before_start(**kw)
-        self.start_point = self.owner.position
+        self.start_point = self.owner.position  # todo: test variant
         self.start_direction = self.owner.direction
+
+        self.owner.server.motions.append(self)
+        self.owner.motion = self
+        self.owner.server.statics.remove(self.owner)  # todo: Устранить лишнее переключение в статик при смене таска
+        self.owner.server.static_observers.remove(self.owner)
+
+    def on_after_start(self, **kw):
+        super(Motion, self).on_after_start(**kw)
+        self.owner.on_change()
+
+    def on_before_end(self, **kw):
+        self.owner.server.motions.remove(self)
 
     def on_after_end(self, **kw):
         t = self.finish_time if self.is_done else self._get_time()
         self.owner.position = self.get_position(t)
         self.owner.direction = self.get_direction(t)
+        self.owner.motion = None
+
+        self.owner.server.statics.append(self.owner)  # todo: Устранить лишнее переключение в статик при смене таска
+        self.owner.server.static_observers.append(self.owner)
         log.info('OWNER Position UPDATE===============================')
         super(Motion, self).on_after_end(**kw)
+        self.owner.on_change()
 
     def get_position(self, to_time=None):
         """

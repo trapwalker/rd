@@ -110,12 +110,6 @@ class Unit(Observer):
                 else:
                     break
 
-        if old_task != self.task:
-            self.on_task_change(old_task, self.task)
-
-    def on_task_change(self, old, new):
-        self.on_change()
-
     def clear_tasks(self):
         self.task_list = []
         self.next_task()
@@ -138,15 +132,6 @@ class Unit(Observer):
         super(Unit, self).delete()
         # todo: check staticobservers deletion
 
-    def change_observer_state(self, new_state):
-        """
-        @param new_state: bool
-        """
-        if new_state:
-            self.server.static_observers.append(self)
-        else:
-            self.server.static_observers.remove(self)
-
     @property
     def task(self):
         """
@@ -166,6 +151,8 @@ class Bot(Unit):
     u"""Class of mobile units"""
 
     def __init__(self, max_hp=BALANCE.Bot.max_hp, observing_range=BALANCE.Bot.observing_range, **kw):
+        self.old_motion = None
+        """@type: sublayers_server.model.tasks.Motion | None"""
         self.motion = None
         """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
@@ -241,13 +228,6 @@ class Bot(Unit):
     def max_velocity(self, value):
         self._max_velocity = value
 
-    def change_observer_state(self, new_state):
-        """
-        @param new_state: bool
-        """
-        if self.motion is None:
-            super(Bot, self).change_observer_state(new_state)
-
     def special_contacts_search(self):
         self_motion = self.motion
         if self_motion is None:
@@ -261,30 +241,5 @@ class Bot(Unit):
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
             if motion.owner != self:
                 detect_contacts_with_dynamic(motion)
-
-    def on_task_change(self, old, new):
-        """
-        @param old: sublayers_server.model.tasks.Task | None
-        @param new: sublayers_server.model.tasks.Task | None
-        """
-        # todo: (!) Скрывать событие остановки если цепочка тасков перемещения не пуста
-        old_motion = self.motion
-        new_motion = new if isinstance(new, tasks.Motion) else None
-
-        self.change_observer_state(False)
-
-        if old_motion:
-            self.server.motions.remove(old_motion)
-        self.motion = new_motion
-        if new_motion:
-            self.server.motions.append(new_motion)
-            if not old_motion:
-                self.server.statics.remove(self)
-        else:
-            self.server.statics.append(self)
-
-        self.change_observer_state(True)
-
-        super(Bot, self).on_task_change(old, new)
 
     # todo: test motions deletion from server
