@@ -10,6 +10,7 @@ from events import ContactSee, ContactOut, TaskEnd
 from utils import time_log_format
 from base import Observer
 from vectors import Point
+from trajectory import build_trajectory
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review
@@ -81,6 +82,7 @@ class Task(object):
 
     def cancel(self, **kw):
         log.debug('TASK cancel: %s', self)
+        #raise Exception('#############')
         self.on_before_end(**kw)
         self.is_cancelled = True
         self.on_after_end(**kw)
@@ -237,9 +239,30 @@ class Motion(Determined):
     v = property(get_v)
 
 
+def goto(owner, target_point=None, path=None):
+    owner.clear_tasks()
+    if not path:
+        path = build_trajectory(
+            owner.position,
+            owner.direction,
+            owner.max_velocity,  # todo: current velocity fix
+            target_point,
+        )
+
+    if path:
+        segment = path.pop(0)
+        log.debug('goto set tl')
+        if 'r' in segment:
+            owner.set_tasklist([GotoArc(owner=owner, target_point=segment['b'], arc_params=segment, path=path)])
+        else:
+            owner.set_tasklist([Goto(owner=owner, target_point=segment['b'], path=path)])
+
+    return path
+
+
 class Goto(Motion):
 
-    def __init__(self, target_point, **kw):
+    def __init__(self, target_point, path=None, **kw):
         """
         @param sublayers_server.model.vectors.Point target_point: Target point of motion
         """
@@ -250,6 +273,7 @@ class Goto(Motion):
         """@type: sublayers_server.model.vectors.Point | None"""
         self._v = None
         """@type: sublayers_server.model.vectors.Point | None"""
+        self.path = path
 
     def on_before_start(self, **kw):
         super(Goto, self).on_before_start(**kw)
@@ -259,6 +283,19 @@ class Goto(Motion):
         if self.vector.is_zero():
             raise ETaskParamsUnactual('Target point is same as start point or too close: %s' % self.vector)
         self._v = self.vector.normalize() * self.owner.max_velocity  # Velocity
+
+    def on_after_end(self, **kw):
+        super(Goto, self).on_after_end(**kw)
+        path = self.path
+        if path and self.is_done:
+            segment = path.pop(0)
+            log.debug('Goto set tl')
+            if 'r' in segment:
+                next_task = GotoArc(owner=self.owner, target_point=segment['b'], arc_params=segment, path=path)
+            else:
+                next_task = Goto(owner=self.owner, target_point=segment['b'], path=path)
+            self.owner.set_tasklist([next_task], append=True)
+
 
     def get_position(self, to_time=None):
         """

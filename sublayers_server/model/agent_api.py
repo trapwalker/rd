@@ -79,7 +79,8 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y):
-        path = self.car.goto(Point(x, y))
+        #path = self.car.goto(Point(x, y))
+        path = tasks.goto(self.car, Point(x, y))
         return dict(path=path)
 
     @public_method
@@ -108,7 +109,8 @@ class AgentAPI(API):
         if last_motion:
             car.stop()
             car.max_velocity = new_speed  # todo: check value
-            path = car.goto(last_motion.target_point)  # todo: target point in abstract Motion is absent
+            target_point = last_motion.path[-1]['b'] if last_motion.path else last_motion.target_point
+            path = tasks.goto(owner=car, target_point=target_point)  # todo: target point in abstract Motion is absent
             return dict(path=path)
         else:
             car.max_velocity = new_speed  # todo: check value
