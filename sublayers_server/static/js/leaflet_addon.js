@@ -94,9 +94,9 @@ function onMouseClickMarker(event){
     if (listMapObject.exist(this.carID)) {
         var car = listMapObject.objects[this.carID];
         if(car.backLight)
-            carMarkerList.backLightList.del(car);
+            carMarkerList.delFromBackLight(car);
         else
-            carMarkerList.backLightList.add(car);
+            carMarkerList.addToBackLight(car);
 
         // тест эффекта мигания маркера
         this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true

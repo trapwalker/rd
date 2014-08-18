@@ -373,9 +373,9 @@ var ViewMessenger = (function () {
             if (listMapObject.exist(owner.cars[i].ID)) {
                 var car = listMapObject.objects[owner.cars[i].ID];
                 if (car.backLight)
-                    carMarkerList.backLightList.del(car);
+                    carMarkerList.delFromBackLight(car);
                 else
-                    carMarkerList.backLightList.add(car);
+                    carMarkerList.addToBackLight(car);
             }
         }
     }
