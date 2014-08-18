@@ -82,6 +82,14 @@ function carInfoClickEvent(event){
     }
 }
 
+// Мигание любого маркера
+function flashMarker(marker){
+    marker.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
+    setTimeout(function () {
+        marker.setOpacity(1);
+    }, 500);
+}
+
 function onMouseClickMarker(event){
     if (listMapObject.exist(this.carID)) {
         var car = listMapObject.objects[this.carID];
