@@ -22,7 +22,7 @@ class ETaskParamsUnactual(Exception):
 
 class Task(object):
     __metaclass__ = ABCMeta
-    __str_template__ = '<{self.__class__.__name__} in {self.start_time_str}'
+    __str_template__ = '<{self.__class__.__name__} in {self.start_time_str} [{self.status_str}]'
 
     def __init__(self, owner):
         """
@@ -35,6 +35,14 @@ class Task(object):
         self.is_started = False
         self.is_cancelled = False
         self.is_done = False
+
+    @property
+    def status_str(self):
+        return ''.join([
+            'S' if self.is_started else 's',
+            'C' if self.is_cancelled else 'c',
+            'D' if self.is_done else 'd',
+        ])
 
     @property
     def is_worked(self):
@@ -138,10 +146,8 @@ class Determined(Task):
 
 
 class Motion(Determined):
-    __str_template__ = (
-        '<{self.__class__.__name__} {self.start_time_str}: '
-        #'{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
-    )
+    #__str_template__ = '<{self.__class__.__name__} {self.start_time_str}: '
+    #'{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
 
     def __init__(self, **kw):
         """
@@ -194,7 +200,6 @@ class Motion(Determined):
 
         self.owner.server.statics.append(self.owner)  # todo: Устранить лишнее переключение в статик при смене таска
         self.owner.server.static_observers.append(self.owner)
-        log.info('OWNER Position UPDATE===============================')
         super(Motion, self).on_after_end(**kw)
         self.owner.on_change()
 
