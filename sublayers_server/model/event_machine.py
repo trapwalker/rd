@@ -109,7 +109,11 @@ class LocalServer(Server):
                 sleep(min(t1 - t, timeout))
                 continue
 
-            timeline.get().perform()
+            event = timeline.get()
+            try:
+                event.perform()
+            except:
+                log.exception('Event performing error %s', event)
 
         log.info('---- Event loop stop ' + '-' * 50 + '\n')
 
