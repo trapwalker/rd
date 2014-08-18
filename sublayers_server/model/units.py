@@ -175,6 +175,7 @@ class Bot(Unit):
         """
         @param position: sublayers_server.model.vectors.Point
         """
+        log.debug('======== GOTO ++++++')
         self.clear_tasks()
         assert self.motion is None, 'ATTENTION! If You see this text, please call server developer: %s' % self.motion
         path = build_trajectory(
@@ -193,6 +194,7 @@ class Bot(Unit):
         ], append=chain)
 
         #self.set_tasklist(tasks.Goto(owner=self, target_point=position), append=chain)  # Хорда вместо траектории
+        log.debug('======== GOTO ------')
         return path
 
     @property
