@@ -7,11 +7,11 @@ class BALANCE:
         defence = 1.0
 
     class Station(Unit):
-        observing_range = 500.0
+        observing_range = 5000.0
         max_hp = 1000.0
 
     class Bot(Unit):
-        observing_range = 100.0
+        observing_range = 2000.0
         velocity = 100.0  # m/s
         max_hp = 100.0
 
