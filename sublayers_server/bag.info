@@ -1,0 +1,19 @@
+
+\Projects\SubLayers\sublayers_server>python.bat server.py
+
+\Projects\SubLayers\sublayers_server>..\env\Scripts\python.exe server.py
+Exception in thread Thread-1:
+Traceback (most recent call last):
+ File "C:\Python27\Lib\threading.py", line 810, in __bootstrap_inner
+   self.run()
+ File "C:\Python27\Lib\threading.py", line 763, in run
+   self.__target(*self.__args, **self.__kwargs)
+ File "\Projects\SubLayers\sublayers_server\model\event_machine.py", line 112, in event_loop
+   timeline.get().perform()
+ File "\Projects\SubLayers\sublayers_server\model\events.py", line 176, in perform
+   self.task.done()
+ File "\Projects\SubLayers\sublayers_server\model\tasks.py", line 69, in done
+   self.on_before_end(**kw)
+ File "\Projects\SubLayers\sublayers_server\model\tasks.py", line 187, in on_before_end
+   self.owner.server.motions.remove(self)
+ValueError: list.remove(x): x not in list
