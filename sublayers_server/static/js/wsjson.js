@@ -61,14 +61,15 @@ function sendNewPoint(aPoint, auid) {
         call: "goto",
         rpc_call_id: rpcCallList.getID(),
         params: {
-                x: aPoint.x,
-                y: aPoint.y
+            x: aPoint.x,
+            y: aPoint.y
         }
     };
     rpcCallList.add(mes);
     //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
-    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    if (flagDebug)
+        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
 
@@ -82,7 +83,8 @@ function sendStopCar() {
     rpcCallList.add(mes);
     //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
-    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    if (flagDebug)
+        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // fire
@@ -98,7 +100,8 @@ function sendFire(aUid) {
     rpcCallList.add(mes);
     //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
-    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    if (flagDebug)
+        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // setSpeed
@@ -113,7 +116,8 @@ function sendSetSpeed(newSpeed, auid) {
     rpcCallList.add(mes);
     //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
-    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    if (flagDebug)
+        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // send chat_message - отправляется, даже когда машинка мертва
@@ -127,11 +131,12 @@ function sendChatMessage(atext, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    if (flagDebug)
+        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Консоль  для сервера, срабатывает при отправке сообщений из активных debug-чатов
-function sendServConsole(atext){
+function sendServConsole(atext) {
     var mes = {
         call: "console_cmd",
         rpc_call_id: rpcCallList.getID(),
@@ -142,7 +147,8 @@ function sendServConsole(atext){
     rpcCallList.add(mes);
     // Консоль отправляется на сервер всегда, вне зависимости от запретов клиента
     wsjson.socket.send(JSON.stringify(mes));
-    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    if (flagDebug)
+        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
@@ -154,7 +160,8 @@ function receiveMesFromServ(data){
     });
     // если message_type = push
     if (mes.message_type == "push") {
-        chat.addMessageToLog(data, 'push');
+        if (flagDebug)
+            chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
@@ -237,7 +244,8 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        chat.addMessageToLog(data, 'answer');
+        if (flagDebug)
+            chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
             if (mes.result)
