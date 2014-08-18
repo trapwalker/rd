@@ -418,21 +418,33 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
 
 
 function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
+    var oldHP;
     if (uid == user.userCar.ID) { // если машинка своя
+        // Установить новую траекторию
         user.userCar.track = aTrack;
+        // Сохранить старое хп и установить нвоое
+        oldHP = user.userCar.hp;
         user.userCar.hp = aHP;
-        // TODO: Если новое хп своей машинки равно 0, то запретить ездитьи стрелять, а так же поменять иконку
-        if(user.userCar.hp == 0){
+        if(user.userCar.hp <= 0){
             userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
+        }else{
+            if(oldHP != aHP) // Если хп изменилось, то мигнуть маркером
+                flashMarker(userCarMarker.marker);
         }
+
     }
     else { // если не своя, то проверить есть ли такая в модели
+        // Сохранить старое хп и установить нвоое
+        oldHP = listMapObject.objects[uid].hp;
         listMapObject.setCarHP(uid, aHP);
+        // Установить новую траекторию
         listMapObject.setTrack(uid, aTrack);
-
         // После добавления машинки или её апдейта, проверяем сколько у неё хп
-        if(listMapObject.objects[uid].hp == 0){
+        if(listMapObject.objects[uid].hp <= 0){
             listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
+        }else{
+            if(oldHP != aHP) // Если хп изменилось, то мигнуть маркером
+                flashMarker(listMapObject.objects[uid].marker);
         }
     }
 
