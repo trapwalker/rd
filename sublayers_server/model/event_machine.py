@@ -7,6 +7,7 @@ from server_api import ServerAPI
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
+from party import PartyDispatcher
 
 from time import sleep
 from threading import Thread
@@ -34,6 +35,7 @@ class Server(object):
         self.start_time = None
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
+        self.parties = PartyDispatcher()
 
     def filter_objects(self, quadrant):
         # todo: typehinting of quadrant
