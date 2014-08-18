@@ -127,26 +127,34 @@ var SectorsView = (function () {
 
     SectorsView.prototype.addSector = function (fireSector) {
         var sector = {};
-        var tempWidth = fireSector.widthAngle / 2;
-        var vertV = new Point(fireSector.radius, 0);
+        var tempWidthAll = fireSector.widthAngle / 2;
+        var tempWidthCrit = fireSector.widthAngle / 4;
+
+        var vertAll = new Point(fireSector.radius, 0);
+        var vertCrit = new Point(fireSector.radius * 0.75, 0);
         var vertVIn = new Point(25, 0);
 
-        //внесли центр сектора
-        sector._points = [];
-        //sector._points.push(new Point(0, 0));
+        var dAngleAll = fireSector.widthAngle / (this.options.countPoints - 1);
+        var dAngleCrit = tempWidthAll / (this.options.countPoints - 1);
+
+        sector._pointsAll = [];
+        sector._pointsCrit = [];
 
         //добавление точек сектора
-        for (var angle = -tempWidth; angle <= tempWidth;
-             angle += fireSector.widthAngle / (this.options.countPoints - 1)) {
-            sector._points.push(new rotateVector(vertV, angle));
-        }
-
+        //внешнии точки
+        for (var angle = -tempWidthAll; angle <= tempWidthAll; angle += dAngleAll)
+            sector._pointsAll.push(new rotateVector(vertAll, angle));
         //внутренние точки
-        //добавление точек сектора
-        for (var angle = tempWidth; angle >= -tempWidth;
-             angle -= fireSector.widthAngle / (this.options.countPoints - 1)) {
-            sector._points.push(new rotateVector(vertVIn, angle));
-        }
+        for (var angle = tempWidthAll; angle >= -tempWidthAll; angle -= dAngleAll)
+            sector._pointsAll.push(new rotateVector(vertVIn, angle));
+
+        //добавление точек области крита
+        //внешнии точки
+        for (var angle = -tempWidthCrit; angle <= tempWidthCrit; angle += dAngleCrit)
+            sector._pointsCrit.push(new rotateVector(vertCrit, angle));
+        //внутренние точки
+        for (var angle = tempWidthCrit; angle >= -tempWidthCrit; angle -= dAngleCrit)
+            sector._pointsCrit.push(new rotateVector(vertVIn, angle));
 
         sector.shootState = 0; // Состояние выстрела/перезарядки/нормальное
         sector._fireSector = fireSector;
@@ -158,26 +166,35 @@ var SectorsView = (function () {
             var tempCenter = this.map.project(this.center, this.map.getMaxZoom());
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
-            var tempPoints = [];
+            var tempPointsAll = [];
+            var tempPointsCrit = [];
 
-            for(var i = 0; i < sector._points.length; i++) {
-                var tempPoint = summVector(tempCenter, rotateVector(sector._points[i], tempAngle));
-                tempPoints.push(this.map.unproject([tempPoint.x, tempPoint.y], this.map.getMaxZoom()));
+            var tempPoint;
+
+            for(var i = 0; i < sector._pointsAll.length; i++) {
+                tempPoint = summVector(tempCenter, rotateVector(sector._pointsAll[i], tempAngle));
+                tempPointsAll.push(this.map.unproject([tempPoint.x, tempPoint.y], this.map.getMaxZoom()));
             }
 
-            if (this.map.hasLayer(sector.polygon)) {
-                sector.polygon.setLatLngs(tempPoints);
+            for(var i = 0; i < sector._pointsCrit.length; i++) {
+                tempPoint = summVector(tempCenter, rotateVector(sector._pointsCrit[i], tempAngle));
+                tempPointsCrit.push(this.map.unproject([tempPoint.x, tempPoint.y], this.map.getMaxZoom()));
+            }
+
+            if (this.map.hasLayer(sector.polygonAll)) {
+                sector.polygonAll.setLatLngs(tempPointsAll);
+                sector.polygonCrit.setLatLngs(tempPointsCrit);
 
                 if (sector.shootState > 0) { // Если был выстрел, т.е. сейчас жёлтый(оранжевый) сектор
                     sector.shootState--;
 
-                    sector.polygon.setStyle({
+                    sector.polygonAll.setStyle({
                         fillOpacity: (this.shootDelay - sector.shootState) / this.shootDelay * 0.8
                     });
 
                     if(sector.shootState == 0) { // "Анимация" выстрела прошла, началась перезарядка
                         // Сделать серым - т.е. сектор перезаряжается
-                        sector.polygon.setStyle({
+                        sector.polygonAll.setStyle({
                             fillColor: '#666666',
                             fillOpacity: 0.4
                         });
@@ -185,13 +202,20 @@ var SectorsView = (function () {
                 }
             }
             else {
-                sector.polygon = L.polygon(tempPoints, {
+                sector.polygonAll = L.polygon(tempPointsAll, {
                     weight: 0,
                     fillColor: '#32cd32',
                     fillOpacity: 0.2,
                     clickable: false
                 });
-                this.map.addLayer(sector.polygon);
+                sector.polygonCrit = L.polygon(tempPointsCrit, {
+                    weight: 0,
+                    fillColor: '#32cd32',
+                    fillOpacity: 0.08,
+                    clickable: false
+                });
+                this.map.addLayer(sector.polygonAll);
+                this.map.addLayer(sector.polygonCrit);
             }
         }, {center: aNewPoint, angle: aNewAngle, map: this.options._map, shootDelay: this.options.shootDelay});
     };
@@ -200,7 +224,7 @@ var SectorsView = (function () {
         var sector = this._getSectorByID(fireSector);
         if (sector) {
             // Установить нормальное состояние - сделать зелёным
-            sector.polygon.setStyle({
+            sector.polygonAll.setStyle({
                 fillColor: '#32cd32',
                 fillOpacity: 0.2
             });
@@ -212,7 +236,7 @@ var SectorsView = (function () {
         if (sector) {
             // Установить состояние выстрела
             sector.shootState = this.options.shootDelay;
-            sector.polygon.setStyle({
+            sector.polygonAll.setStyle({
                 fillColor: '#9acd32',
                 fillOpacity: 0
             });
@@ -230,11 +254,14 @@ var SectorsView = (function () {
         for(;this.options.sectors.length > 0;){
             var sector = this.options.sectors.pop();
             // Удалить сначала с карты
-            this.options._map.removeLayer(sector.polygon);
+            this.options._map.removeLayer(sector.polygonAll);
+            this.options._map.removeLayer(sector.polygonCrit);
             // Удалить присвоенные структуры
-            sector._points = null;
+            sector._pointsAll = null;
+            sector._pointsCrit = null;
             sector._fireSector = null;
-            sector.polygon = null;
+            sector.polygonAll = null;
+            sector.polygonCrit = null;
         }
     }
 
