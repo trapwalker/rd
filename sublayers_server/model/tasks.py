@@ -22,7 +22,7 @@ class ETaskParamsUnactual(Exception):
 
 class Task(object):
     __metaclass__ = ABCMeta
-    __str_template__ = '<{self.__class__.__name__} in {self.start_time_str}'
+    __str_template__ = '<{self.__class__.__name__} in {self.start_time_str} [{self.status_str}]'
 
     def __init__(self, owner):
         """
@@ -35,6 +35,14 @@ class Task(object):
         self.is_started = False
         self.is_cancelled = False
         self.is_done = False
+
+    @property
+    def status_str(self):
+        return ''.join([
+            'S' if self.is_started else 's',
+            'C' if self.is_cancelled else 'c',
+            'D' if self.is_done else 'd',
+        ])
 
     @property
     def is_worked(self):
@@ -138,10 +146,8 @@ class Determined(Task):
 
 
 class Motion(Determined):
-    __str_template__ = (
-        '<{self.__class__.__name__} {self.start_time_str}: '
-        #'{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
-    )
+    #__str_template__ = '<{self.__class__.__name__} {self.start_time_str}: '
+    #'{self.start_point} -> {self.position} -> {self.target_point}; dt={self.duration}>'
 
     def __init__(self, **kw):
         """
@@ -171,15 +177,31 @@ class Motion(Determined):
 
     def on_before_start(self, **kw):
         super(Motion, self).on_before_start(**kw)
-        self.start_point = self.owner.position
+        self.start_point = self.owner.position  # todo: test variant
         self.start_direction = self.owner.direction
+
+        self.owner.server.motions.append(self)
+        self.owner.motion = self
+        self.owner.server.statics.remove(self.owner)  # todo: Устранить лишнее переключение в статик при смене таска
+        self.owner.server.static_observers.remove(self.owner)
+
+    def on_after_start(self, **kw):
+        super(Motion, self).on_after_start(**kw)
+        self.owner.on_change()
+
+    def on_before_end(self, **kw):
+        self.owner.server.motions.remove(self)
 
     def on_after_end(self, **kw):
         t = self.finish_time if self.is_done else self._get_time()
         self.owner.position = self.get_position(t)
         self.owner.direction = self.get_direction(t)
-        log.info('OWNER Position UPDATE===============================')
+        self.owner.motion = None
+
+        self.owner.server.statics.append(self.owner)  # todo: Устранить лишнее переключение в статик при смене таска
+        self.owner.server.static_observers.append(self.owner)
         super(Motion, self).on_after_end(**kw)
+        self.owner.on_change()
 
     def get_position(self, to_time=None):
         """
