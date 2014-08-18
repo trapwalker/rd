@@ -60,7 +60,7 @@ class AgentAPI(API):
         self.car = units.Bot(
             server=self.agent.server,
             position=Point.random_gauss(position or Point(16000, 18000), position_sigma),
-            observing_range=1000,
+            #observing_range=1000,
             owner=self.agent,
             weapons=[
                 SectoralWeapon(direction=0, sector_width=45, r=400),
