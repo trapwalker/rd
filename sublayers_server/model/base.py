@@ -64,7 +64,7 @@ class Object(object):
 
 
 class PointObject(Object):
-    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id};{self.position}>'
+    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id}>'
 
     def __init__(self, position, **kw):
         """
