@@ -15,6 +15,7 @@ from messages import ChatMessage, InitMessage
 import tasks
 from weapons import SectoralWeapon
 from console import Shell
+import events
 
 
 def make_push_package(events):
@@ -79,9 +80,11 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y):
-        #path = self.car.goto(Point(x, y))
-        path = tasks.goto(self.car, Point(x, y))
-        return dict(path=path)
+        #path = tasks.goto(self.car, Point(x, y))
+        #return dict(path=path)
+        def f(event):
+            tasks.goto(self.car, Point(x, y))
+        events.Callback(server=self.agent.server, func=f).send()
 
     @public_method
     def stop(self):
