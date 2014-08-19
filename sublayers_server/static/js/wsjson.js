@@ -153,25 +153,21 @@ function sendServConsole(atext) {
 
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data){
-
     var mes = JSON.parse(data, function(key, value){
         if((key === 'time') || (key === 'start_time')) return new Date(value * 1000).getTime();
         return value;
     });
     // если message_type = push
     if (mes.message_type == "push") {
+        var aTrack, aType, aHP= 0, owner;
         if (flagDebug)
             chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            //chat.addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
-            // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
-           // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
-                var aTrack, aType, aHP=0;
                 aTrack = getTrack(event.object);
                 if (event.object.hp) aHP = event.object.hp;
                 setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
@@ -191,7 +187,6 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Update") {
                 // Update
-                var aTrack, aType, aHP= 0, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime / 1000.);
                 if (event.object.hp)aHP = event.object.hp;
@@ -216,14 +211,15 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "InitMessage") {
                 // InitMessage
-                var aTrack = getTrack(event.cars[0]);
+                aTrack = getTrack(event.cars[0]);
                 var max_speed;
-                var aHp = 0, aMaxHP = 30;
+                var aMaxHP = 30;
+                var radius_visible = event.cars[0].r;
                 // Инициализация userCar
                 if (event.cars[0].hp) aHP = event.cars[0].hp;
                 if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
                 if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons);
+                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
@@ -462,7 +458,7 @@ function getWeapons(data) {
     return sectors;
 }
 
-function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
+function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible) {
     if(! user.userCar) {
         user.userCar = new UserCar(uid,       //ID машинки
             aType,       //Тип машинки
@@ -481,7 +477,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
             position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
             tailEnable: false,
             _map: myMap,
-            radiusView: 1000,
+            radiusView: radius_visible,
             carID: uid,
             sectors: user.userCar.fireSectors,
             countSectorPoints: 20
@@ -523,7 +519,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
             position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
             tailEnable: (myMap.getZoom() > levelZoomForVisible),
             _map: myMap,
-            radiusView: 1000,
+            radiusView: radius_visible,
             carID: user.userCar.ID,
             sectors: user.userCar.fireSectors,
             countSectorPoints: 20
