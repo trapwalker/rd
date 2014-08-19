@@ -303,10 +303,12 @@ class User {
     credit:number;
     login: string;
     userCar:UserCar;
+    party: OwnerParty;
 
     constructor(aID, aCredit:number) {
         this.ID = aID;
         this.credit = aCredit;
+        this.party = new OwnerParty(0, "");
     }
 }
 
@@ -394,11 +396,13 @@ class Owner {
     uid:number;
     login:string;
     cars: Array <MapCar>;
+    party: OwnerParty;
 
-    constructor(uid:number, login:string) {
+    constructor(uid:number, login:string, aParty: OwnerParty) {
         this.uid = uid;
         this.login = login;
         this.cars = new Array<MapCar>();
+        this.party = aParty ? aParty : new OwnerParty(0, "");
     }
 
     bindCar(aCar:MapCar):Owner {
@@ -432,6 +436,11 @@ class Owner {
         if(this.cars[i].ID === aID)
             return this.cars[i];
         return null;
+    }
+
+    setParty(aParty: OwnerParty){
+        this.party = aParty;
+        return this;
     }
 }
 
@@ -477,3 +486,14 @@ class OwnerList {
     }
 }
 
+
+// Класс Party - добавляется в овнер, у любого пользователя будет своя пати
+class OwnerParty {
+    id: number;
+    name: string;
+
+    constructor(aID: number, aName: string){
+        this.id = aID;
+        this.name = aName;
+    }
+}

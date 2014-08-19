@@ -30,13 +30,12 @@ function getCarMarker(aCar, aMap) {
     var test_html_str = '<div id="idCar_' + aCar.ID +
         '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
     var newMarker = L.rotatedMarker([0, 0]);
-    //newMarker.setIcon(L.icon({
-    //    iconUrl: 'img/car_20.png',
-    //    iconSize: [20, 20]
-    //}));
     newMarker.setIcon(iconsLeaflet.icon_moving_V2);
-    if (aCar.owner)
-        newMarker.bindLabel(aCar.owner.login + test_html_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
+    if (aCar.owner) {
+        var party_str = "";
+        if (aCar.owner.party.name.length > 2)party_str = '[' + aCar.owner.party.name + ']';
+        newMarker.bindLabel(aCar.owner.login + test_html_str + party_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
+    }
     else
         newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
     //newMarker.on('popupopen', onMarkerPopupOpen);

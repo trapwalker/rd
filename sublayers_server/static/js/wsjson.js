@@ -94,7 +94,7 @@ function sendFire(aUid) {
         rpc_call_id: rpcCallList.getID(),
         params: {
             weapon_num: aUid, // uid сектора, который совершил выстрел
-            enemy_list: carMarkerList.getListIDsForShoot(aUid)
+            hit_list: carMarkerList.getListIDsForShoot(aUid)
         }
     };
     rpcCallList.add(mes);
@@ -153,25 +153,21 @@ function sendServConsole(atext) {
 
 // Приём сообщения от сервера. Разбор принятого объекта
 function receiveMesFromServ(data){
-
     var mes = JSON.parse(data, function(key, value){
         if((key === 'time') || (key === 'start_time')) return new Date(value * 1000).getTime();
         return value;
     });
     // если message_type = push
     if (mes.message_type == "push") {
-        if (flagDebug)
+        var aTrack, aType, aHP= 0, owner;
+      //  if (flagDebug)
             chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
             var servtime = event.time;
-            //chat.addMessageToSystem('start_time3',"servTime = " + servtime/1000.);
-            // Разобратся с часами - Сейчас сервер присылает очень странное время, когда есть две машинки
-           // clock.setDt(servtime/1000.);
             if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
-                var aTrack, aType, aHP=0;
                 aTrack = getTrack(event.object);
                 if (event.object.hp) aHP = event.object.hp;
                 setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
@@ -191,7 +187,6 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Update") {
                 // Update
-                var aTrack, aType, aHP= 0, owner;
                 // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
                 clock.setDt(servtime / 1000.);
                 if (event.object.hp)aHP = event.object.hp;
@@ -216,20 +211,24 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "InitMessage") {
                 // InitMessage
-                var aTrack = getTrack(event.cars[0]);
+                aTrack = getTrack(event.cars[0]);
                 var max_speed;
-                var aHp = 0, aMaxHP = 30;
-                // Инициализация userCar
-                if (event.cars[0].hp) aHP = event.cars[0].hp;
-                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
-                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons);
+                var aMaxHP = 30;
+                var radius_visible = event.cars[0].r;
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
                     user.login = event.agent.login;
                     user.ID = event.agent.uid;
+                    if (event.agent.party)
+                        user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 }
+
+                // Инициализация userCar
+                if (event.cars[0].hp) aHP = event.cars[0].hp;
+                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
+                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
+                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible);
             }
             if (event.cls === "Out") {
                 // out
@@ -244,26 +243,10 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        if (flagDebug)
+     //   if (flagDebug)
             chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
-            if (mes.result)
-                if (mes.result.path) {
-                    // Очистка текущей траектории движения
-                    userCarMarker.trackView.empty();
-                    // Для каждого отрезка
-                    mes.result.path.forEach(function (segment, index) {
-                        // Если линейное движение
-                        if (segment.cls === 'Linear') {
-                            userCarMarker.trackView.addLinear({
-                                a: segment.a,
-                                b: segment.b
-                            });
-                        }
-                    });
-
-                }
         }
     }
 }
@@ -278,6 +261,23 @@ function getTrack(data){
             position = new Point(data.motion.position.x, data.motion.position.y);
         else
             position = new Point(0, 0);
+
+        // Если в motion есть path, то задать траекторию движения
+        if (data.motion.path) {
+            // Очистка текущей траектории движения
+            userCarMarker.trackView.empty();
+            // Для каждого отрезка
+            data.motion.path.forEach(function (segment, index) {
+                // Если линейное движение
+                if (segment.cls === 'Linear') {
+                    userCarMarker.trackView.addLinear({
+                        a: segment.a,
+                        b: segment.b
+                    });
+                }
+            });
+        }
+
 
         direction = data.motion.direction ? data.motion.direction : 0; // TODO: сделать вылет с ошибкой
 
@@ -344,9 +344,17 @@ function getTrack(data){
 
 function getOwner(data) {
     if (data.cls === "User") {
-        var owner = new Owner(data.uid, data.login);
+        var party;
+        if (data.party)
+            party = new OwnerParty(data.party.id, data.party.name);
+        else
+            party = new OwnerParty(0, "");
+        var owner = new Owner(data.uid, data.login, party);
         if (owner) {
             owner = ownerList.add(owner);
+            // Если даже мы его не добавили, то обновить owner'у его пати
+            if(owner.party.id !== party.id) owner.party = party;
+            //
             return owner;
         }
     }
@@ -462,7 +470,7 @@ function getWeapons(data) {
     return sectors;
 }
 
-function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
+function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible) {
     if(! user.userCar) {
         user.userCar = new UserCar(uid,       //ID машинки
             aType,       //Тип машинки
@@ -481,7 +489,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
             position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
             tailEnable: false,
             _map: myMap,
-            radiusView: 1000,
+            radiusView: radius_visible,
             carID: uid,
             sectors: user.userCar.fireSectors,
             countSectorPoints: 20
@@ -523,7 +531,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
             position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
             tailEnable: (myMap.getZoom() > levelZoomForVisible),
             _map: myMap,
-            radiusView: 1000,
+            radiusView: radius_visible,
             carID: user.userCar.ID,
             sectors: user.userCar.fireSectors,
             countSectorPoints: 20
@@ -542,6 +550,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons) {
 
     }
 
+
+    // Установка текста в верху страницы - вывод своего ника и своей пати
+    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.party.name + ']');
 }
 
 

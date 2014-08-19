@@ -18,7 +18,7 @@ class Weapon(object):
 
     def __init__(self, owner=None, damage=BALANCE.Weapon.damage, r=BALANCE.Weapon.r):
         """
-        @type owner: sublayers_server.model.units.Unit | None
+        @param sublayers_server.model.units.Unit owner: owner of weapon
         """
         super(Weapon, self).__init__()
         self.owner = owner
@@ -31,46 +31,30 @@ class Weapon(object):
             r=self.r,
         )
 
-    def ids2units(self, ids):
+    def id2unit(self, id):
         """
-        @type ids: list[sublayers_server.model.units.Unit | int | str]
-        @rtype: list[sublayers_server.model.units.Unit]
-        # todo: declare ids UID type
+        @param sublayers_server.model.units.Unit | int | str id: unit or id of unit
         """
-        if not self.owner:
-            raise EWeaponIsNotAttached('Trying to resolve units id')
-        units = []
-        srv = self.owner.server
-        for u in ids:
-            if isinstance(u, Unit):
-                units.append(u)
-            else:
-                unit = srv.objects.get(u)
-                if unit:
-                    units.append(unit)
-                else:
-                    log.warning('Unit with id=%s is not found.', u)
+        if isinstance(id, Unit):
+            return id
+        else:
+            owner = self.owner
+            if not owner:
+                raise EWeaponIsNotAttached('Trying to resolve units id')
+            unit = owner.server.objects.get(id)
+            if unit is None:
+                log.warning('Unit with id=%s is not found.', id)
+            return unit
 
-        return units
+    def fire(self, hit_list=None):
+        if hit_list is None:
+            return
 
-    def hit_search(self, enemy_list=None):
-        """
-        @rtype: list[sublayers_server.model.units.Unit]
-        """
-        return self.ids2units(enemy_list)
-
-    def hit_test(self, unit):
-        """
-        @type unit: sublayers_server.model.units.Unit
-        @rtype: bool
-        """
-        return True
-
-    def fire(self, enemy_list=None):
-        enemyes = filter(self.hit_test, self.hit_search(enemy_list))
-        for enemy in enemyes:
-            log.debug('Hit unit %s', enemy)
-            enemy.hit(self.damage)
+        hits = [(self.id2unit(hit['carID']), hit['damage_factor']) for hit in hit_list]
+        for unit, factor in hits:
+            log.debug('Hit unit %s to %s*%s=%s', unit, factor, self.damage, self.damage * factor)
+            if unit:
+                unit.hit(self.damage * factor)
 
 
 class SectoralWeapon(Weapon):
