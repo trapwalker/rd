@@ -361,10 +361,11 @@ var Clock = (function () {
 // Владелец машины
 // TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
 var Owner = (function () {
-    function Owner(uid, login) {
+    function Owner(uid, login, aParty) {
         this.uid = uid;
         this.login = login;
         this.cars = new Array();
+        this.party = aParty ? aParty : new OwnerParty(0, "");
     }
     Owner.prototype.bindCar = function (aCar) {
         if (!this.car(aCar.ID)) {
@@ -396,6 +397,11 @@ var Owner = (function () {
             if (this.cars[i].ID === aID)
                 return this.cars[i];
         return null;
+    };
+
+    Owner.prototype.setParty = function (aParty) {
+        this.party = aParty;
+        return this;
     };
     return Owner;
 })();
@@ -437,5 +443,14 @@ var OwnerList = (function () {
             this.owners[i].unbindAllCars();
     };
     return OwnerList;
+})();
+
+// Класс Party - добавляется в овнер, у любого пользователя будет своя пати
+var OwnerParty = (function () {
+    function OwnerParty(aID, aName) {
+        this.id = aID;
+        this.name = aName;
+    }
+    return OwnerParty;
 })();
 //# sourceMappingURL=model.js.map

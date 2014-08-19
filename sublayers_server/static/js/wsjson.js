@@ -340,9 +340,17 @@ function getTrack(data){
 
 function getOwner(data) {
     if (data.cls === "User") {
-        var owner = new Owner(data.uid, data.login);
+        var party;
+        if (data.party)
+            party = new OwnerParty(data.party.id, data.party.name)
+        else
+            party = new OwnerParty(0, "");
+        var owner = new Owner(data.uid, data.login, party);
         if (owner) {
             owner = ownerList.add(owner);
+            // Если даже мы его не добавили, то обновить owner'у его пати
+            if(owner.party.id !== party.id) owner.party = party;
+            //
             return owner;
         }
     }
