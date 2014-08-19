@@ -91,13 +91,13 @@ class AgentAPI(API):
         self.car.stop()
 
     @public_method
-    def fire(self, weapon_num=None, enemy_list=None):
+    def fire(self, weapon_num=None, hit_list=None):
         # todo: move to Unit class
         if weapon_num is None:
             for weapon in self.car.weapons:
-                weapon.fire(enemy_list)
+                weapon.fire(hit_list)
         else:
-            self.car.weapons[weapon_num].fire(enemy_list)
+            self.car.weapons[weapon_num].fire(hit_list)
 
     @public_method
     def set_speed(self, new_speed):
