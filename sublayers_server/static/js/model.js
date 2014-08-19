@@ -286,6 +286,7 @@ var User = (function () {
     function User(aID, aCredit) {
         this.ID = aID;
         this.credit = aCredit;
+        this.party = new OwnerParty(0, "");
     }
     return User;
 })();

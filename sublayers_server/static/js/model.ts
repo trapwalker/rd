@@ -303,10 +303,12 @@ class User {
     credit:number;
     login: string;
     userCar:UserCar;
+    party: OwnerParty;
 
     constructor(aID, aCredit:number) {
         this.ID = aID;
         this.credit = aCredit;
+        this.party = new OwnerParty(0, "");
     }
 }
 

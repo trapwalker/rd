@@ -73,6 +73,10 @@ var CarMarkerList = (function () {
         // И сразу же добавить маркер
         aCar.marker = getCarMarker(aCar, this.options._map);
 
+        // Если Owner с User в одной пати, то подстветить машинку (чтобы потом её не дамажить)
+        if(aCar.owner.party.id == user.party.id)
+            this.addToBackLight(aCar);
+
         aCar.pathSVG = [];
     };
 

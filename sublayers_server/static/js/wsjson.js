@@ -160,7 +160,7 @@ function receiveMesFromServ(data){
     // если message_type = push
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
-        if (flagDebug)
+      //  if (flagDebug)
             chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
@@ -225,6 +225,10 @@ function receiveMesFromServ(data){
                 if(event.agent.cls == "User"){
                     user.login = event.agent.login;
                     user.ID = event.agent.uid;
+                    if (event.agent.party)
+                        user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
+
+
                 }
             }
             if (event.cls === "Out") {
@@ -240,7 +244,7 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        if (flagDebug)
+     //   if (flagDebug)
             chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
@@ -342,7 +346,7 @@ function getOwner(data) {
     if (data.cls === "User") {
         var party;
         if (data.party)
-            party = new OwnerParty(data.party.id, data.party.name)
+            party = new OwnerParty(data.party.id, data.party.name);
         else
             party = new OwnerParty(0, "");
         var owner = new Owner(data.uid, data.login, party);
