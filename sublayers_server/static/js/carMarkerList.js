@@ -101,6 +101,7 @@ var CarMarkerList = (function () {
             this.options._map.removeLayer(car.marker);
 
             this.delFromBackLight(car);
+            car.inSector = null;
             delete car.marker;
             listMapObject.del(uid);
         }
@@ -153,7 +154,14 @@ var CarMarkerList = (function () {
             var distBool = distance <= sector.radius;
             var fiBool = Math.abs(fi) <= (sector.widthAngle / 2.);
 
+
             if (distBool && fiBool) {
+                // Добавляем объект в car, чтобы быстро можно было посчитать его вхождение в сектор или крит-сектор
+                car.inSector = {
+                    dist: distance,
+                    fi: fi,
+                    sector: sector
+                };
                 // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
                 if (!car.pathSVG[sector.uid]) {
                     // добавление SVG-path в fireControl
@@ -170,6 +178,8 @@ var CarMarkerList = (function () {
                 if (car.pathSVG[sector.uid]) {
                     // удаление SVG-path из fireControl
                     car.pathSVG[sector.uid] = controllers.fireControl.deleteCarInSector(car.pathSVG[sector.uid]);
+                    // очищаем объект быстрого определения вхождения в сектор
+                    car.inSector = null;
                     return;
                 }
             }
@@ -179,12 +189,31 @@ var CarMarkerList = (function () {
     CarMarkerList.prototype.getListIDsForShoot = function (sectorUid) {
         //TODO: Переделать выстрел по Пати
         var listIDs = [];
+        // Для всех машинок
         for (var i in listMapObject.objects)
-            if (listMapObject.exist(i) &&  listMapObject.objects[i].backLight && listMapObject.objects[i].pathSVG[sectorUid])
-                listIDs.push(listMapObject.objects[i].ID);
+            // у которых нет backLight
+            if (listMapObject.exist(i) && !(listMapObject.objects[i].backLight)) {
+                var car = listMapObject.objects[i];
+                // которые находятся в каком-нибудь секторе
+                if (car.inSector)
+                // Которые находятся в нужном секторе
+                    if (car.inSector.sector.uid == sectorUid)
+                    // Если попадает в крит-зону
+                        if (this._inCritZoneOnSector(car.inSector.sector, car.inSector.dist, car.inSector.fi))
+                            listIDs.push({carID: car.ID, damage_factor: 1});
+                        else // если не попали в зону крита
+                            listIDs.push({carID: car.ID, damage_factor: 0.5});
+            }
        // {carID: car.ID,
        // damage_factor: 1 | 0.0}
         return listIDs;
+    };
+
+
+    CarMarkerList.prototype._inCritZoneOnSector = function (sector, distance, fi) {
+        var distBool = distance <= (sector.radius * 0.75);
+        var fiBool = Math.abs(fi) <= (sector.widthAngle / 4.);
+        return distBool && fiBool;
     };
 
     return CarMarkerList;
