@@ -161,6 +161,7 @@ class Motion(Determined):
         """@type: sublayers_server.model.vectors.Point | None"""
         self.start_direction = None
         """@type: float | None"""
+        self.path = None
 
     def motion_info(self, to_time):
         d = super(Motion, self).motion_info(to_time)
@@ -169,6 +170,7 @@ class Motion(Determined):
             direction=self.get_direction(to_time),
             v=self.get_v(to_time),
             velocity=self.get_v(to_time),  # todo: remove or replace to scalar
+            path=self.path,
             #direction_from_t='{k}*(t-{t0})+{d0}'.format(
             #    k=(self.get_direction(self.finish_time) - self.get_direction(to_time)) / self.duration,
             #    t0=to_time,
