@@ -11,7 +11,7 @@ from utils import serialize
 class Agent(Object, SubscriberTo__Observer):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 
-    def __init__(self, login, connection=None, **kw):
+    def __init__(self, login, connection=None, party=None, **kw):
         log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
         self.login = login
@@ -20,11 +20,16 @@ class Agent(Object, SubscriberTo__Observer):
         self.server.agents[login] = self
         self.cars = []  # specific
         """@type: list[sublayers_server.model.units.Bot]"""
+        self.party = None
+        if party is not None:
+            party.include(self)
+        log.debug('=========%s', self.party)
 
     def as_dict(self):
         d = super(Agent, self).as_dict()
         d.update(
             login=self.login,
+            party=self.party.as_dict(),
         )
         return d
 
