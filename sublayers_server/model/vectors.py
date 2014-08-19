@@ -3,7 +3,7 @@
 __all__ = ['Point']
 
 from random import gauss
-from math import atan2, e
+from math import atan2, e, cos, sin
 
 EPS = 1e-9
 
@@ -14,6 +14,11 @@ class Point(complex):
 
     x = complex.real
     y = complex.imag
+
+
+    @staticmethod
+    def polar(r, fi):
+        return Point(r * cos(fi), r * sin(fi))
 
     @property
     def angle(self):
