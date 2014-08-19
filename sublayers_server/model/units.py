@@ -77,6 +77,7 @@ class Unit(Observer):
                 self.on_change(comment='HP {}->{}'.format(self.hp, new_hp))
 
     def on_die(self):
+        self.stop()
         self.on_change(comment='RIP')
 
     def set_tasklist(self, task_or_list, append=False):
