@@ -84,23 +84,32 @@ class State(object):
         @param float e: angular acceleration (rad/s**2)
         """
         t = (self.t0 if t is None else t) + dt
-        if t != self.t0:
-            _p0 = self.p(t) if p is None else p
-            _fi0 = self.fi(t) if fi is None else fi
-            _v0 = self.v(t) if v is None else v
-            _w0 = self.w(t) if w is None else w
 
+        if t != self.t0:
+            self.p0 = self.p(t)
+            self.v0 = self.v(t)
+            self.fi0 = self.fi(t)
+            self.w0 = self.w(t)
+            self.t0 = t
+
+        if p is not None:
+            self.p0 = p
+
+        if fi is not None:
+            self.fi0 = fi
+            
+        if v is not None:
+            self.v0 = v
+            
+        if w is not None:
+            self.w0 = w
+            
         if a is not None:
             self.a = a
 
         if e is not None:
             self.e = e
 
-        self.t0 = t
-        self.p0 = _p0
-        self.v0 = _v0
-        self.w0 = _w0
-        
 
 if __name__ == '__main__':
     def u(*av, **kw):
