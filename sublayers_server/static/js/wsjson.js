@@ -215,11 +215,6 @@ function receiveMesFromServ(data){
                 var max_speed;
                 var aMaxHP = 30;
                 var radius_visible = event.cars[0].r;
-                // Инициализация userCar
-                if (event.cars[0].hp) aHP = event.cars[0].hp;
-                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
-                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
@@ -227,9 +222,13 @@ function receiveMesFromServ(data){
                     user.ID = event.agent.uid;
                     if (event.agent.party)
                         user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-
-
                 }
+
+                // Инициализация userCar
+                if (event.cars[0].hp) aHP = event.cars[0].hp;
+                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
+                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
+                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible);
             }
             if (event.cls === "Out") {
                 // out
@@ -550,6 +549,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
     }
 
+
+    // Установка текста в верху страницы - вывод своего ника и своей пати
+    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.party.name + ']');
 }
 
 
