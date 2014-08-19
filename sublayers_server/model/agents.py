@@ -21,7 +21,7 @@ class Agent(Object, SubscriberTo__Observer):
         self.cars = []  # specific
         """@type: list[sublayers_server.model.units.Bot]"""
         self.party = None
-        if party:
+        if party is not None:
             party.include(self)
         log.debug('=========%s', self.party)
 
@@ -29,7 +29,7 @@ class Agent(Object, SubscriberTo__Observer):
         d = super(Agent, self).as_dict()
         d.update(
             login=self.login,
-            party=self.party,
+            party=self.party.as_dict(),
         )
         return d
 
