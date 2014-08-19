@@ -50,6 +50,7 @@ function onMouseUpMap(mouseEventObject){
     } else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         radialMenu.hideMenu(true);
+        userCarMarker.sectorsView.setSelectedToNormalState();
     }
     // фолсим флаг нажатия
     myMap._mouseDowned = false;
@@ -71,7 +72,8 @@ function onMouseMoveMap(mouseEventObject){
 
     if(! radialMenu.isHide) { // Если меню уже открыто
         // определяем угол и подсвечиваем выбранный сектор
-        radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
+        var sectorUid = radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
+        userCarMarker.sectorsView.setSelectedState({uid: sectorUid});
     }
 }
 
@@ -85,6 +87,7 @@ function onMouseOutMap(){
     // если фокус ушёл с карты, то закрыть меню
     if (! radialMenu.isHide) {
         radialMenu.hideMenu(false);
+        userCarMarker.sectorsView.setSelectedToNormalState();
     }
 }
 
