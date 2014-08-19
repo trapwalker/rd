@@ -231,6 +231,16 @@ var SectorsView = (function () {
         }
     };
 
+    SectorsView.prototype.setAllNormalState = function () {
+        this.options.sectors.forEach(function (sector) {
+            // Установить нормальное состояние - сделать зелёным
+            sector.polygonAll.setStyle({
+                fillColor: '#32cd32',
+                fillOpacity: 0.2
+            });
+        });
+    };
+
     SectorsView.prototype.setShootState = function (fireSector) {
         var sector = this._getSectorByID(fireSector);
         if (sector) {
@@ -243,11 +253,37 @@ var SectorsView = (function () {
         }
     };
 
+    SectorsView.prototype.setSelectedState = function (fireSector) {
+        var sector = this._getSectorByID(fireSector);
+        if (sector)
+            if (!this.currSectorActive && sector) {
+                this.currSectorActive = sector;
+                // Установить заселекченное состояние
+                sector.polygonAll.setStyle({fillOpacity: 0.6});
+            }
+            else {
+                if (this.currSectorActive._fireSector.uid != fireSector.uid) { // если новый сектор
+                    // сначала сделать нормальным старый сектор
+                    this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
+                    // присвоить новый
+                    this.currSectorActive = sector;
+                    // сделать выделение
+                    this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.5});
+                }
+            }
+    };
+
+    SectorsView.prototype.setSelectedToNormalState = function () {
+        // сделать нормальным старый сектор
+        this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
+    };
+
     SectorsView.prototype._getSectorByID = function(fireSector){
         for (var i = 0; i < this.options.sectors.length; i++) {
             if (this.options.sectors[i]._fireSector.uid == fireSector.uid)
                 return this.options.sectors[i];
         }
+        return null;
     };
 
     SectorsView.prototype.clearSectors = function(){

@@ -173,22 +173,26 @@ var RadialMenu = (function(){
     };
 
 
-    RadialMenu.prototype.setActiveSector = function(angle){
+    RadialMenu.prototype.setActiveSector = function (angle) {
         var nSector = this._getSectorByAngle(angle);
-        if (!this.currSectorActive) {
-            this.currSectorActive = nSector;
-            this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
-        }
-        else {
-            if (this.currSectorActive.id != nSector.id) { // если новый сектор
+        if (nSector) {
+            if (!this.currSectorActive) {
                 this.currSectorActive = nSector;
-                // сбросить все сектора
-                for (var i = 0; i < this.sectors.length; i++) {
-                    this.sectors[i].path.setAttribute('class', 'radial-menu-sector-default');
-                }
                 this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
             }
-        }
+            else {
+                if (this.currSectorActive.id != nSector.id) { // если новый сектор
+                    this.currSectorActive = nSector;
+                    // сбросить все сектора
+                    for (var i = 0; i < this.sectors.length; i++) {
+                        this.sectors[i].path.setAttribute('class', 'radial-menu-sector-default');
+                    }
+                    this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
+                }
+            }
+            return this.currSectorActive.id;
+        } else
+            return null;
     };
 
 
