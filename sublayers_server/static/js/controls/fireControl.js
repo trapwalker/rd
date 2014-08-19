@@ -82,6 +82,7 @@ var FireControl = (function () {
             if (this.sectors[i]._fireSector.uid == fireSectorID)
                 return this.sectors[i];
         }
+        return null;
     };
 
 
