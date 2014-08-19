@@ -28,6 +28,13 @@ class State(object):
         self.w0 = w
         self.e = e
 
+    def as_dict(self):
+        return dict(
+            self.__dict__,
+            is_circular=self.is_circular,
+            r0=self.r(self.t0),
+        )
+
     def __str__(self):
         return (
             '<t={t0:.2f};'
@@ -36,14 +43,21 @@ class State(object):
             ' v={v0:.0f};'
             ' a={a:.0f};'
             ' w={w_deg:.0f};'
-            ' e={e_deg:.0f}>'
+            ' e={e_deg:.0f};'
+            ' r={r0}>'
         ).format(
-            p_str='',
             fi_deg=degrees(self.fi0),
             w_deg=degrees(self.w0),
             e_deg=degrees(self.e),
+            r0=self.r(self.t0),
             **self.__dict__
         )
+
+    def r(self, t):
+        w = self.w(t)
+        if w == 0:
+            return float('inf')
+        return self.v(t) / w
 
     def w(self, t):
         return self.w0 + self.e * (t - self.t0)
