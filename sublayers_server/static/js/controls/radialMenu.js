@@ -115,7 +115,7 @@ var RadialMenu = (function(){
             this.groupRM.appendChild(sector.path);
             // установка дополнительных характеристик сектора
             sector.angle = gradToRad(i * 360 / this.options.count);
-            sector.id = i;
+            sector.id = -1;
             this.sectors.push(sector);
         }
 
@@ -148,7 +148,8 @@ var RadialMenu = (function(){
                 // взять последний активный сектор и стрельнуть из него this.currSectorActive
                 if (this.currSectorActive) {
                     var fs = controllers.fireControl._getSectorByID(this.currSectorActive.id);
-                    controllers.fireControl._fireSectorEvent({data: {sector: fs}});
+                    if(fs)
+                        controllers.fireControl._fireSectorEvent({data: {sector: fs}});
                 }
             }
 

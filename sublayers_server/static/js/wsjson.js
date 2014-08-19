@@ -247,22 +247,6 @@ function receiveMesFromServ(data){
             chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
-            if (mes.result)
-                if (mes.result.path) {
-                    // Очистка текущей траектории движения
-                    userCarMarker.trackView.empty();
-                    // Для каждого отрезка
-                    mes.result.path.forEach(function (segment, index) {
-                        // Если линейное движение
-                        if (segment.cls === 'Linear') {
-                            userCarMarker.trackView.addLinear({
-                                a: segment.a,
-                                b: segment.b
-                            });
-                        }
-                    });
-
-                }
         }
     }
 }
@@ -277,6 +261,23 @@ function getTrack(data){
             position = new Point(data.motion.position.x, data.motion.position.y);
         else
             position = new Point(0, 0);
+
+        // Если в motion есть path, то задать траекторию движения
+        if (data.motion.path) {
+            // Очистка текущей траектории движения
+            userCarMarker.trackView.empty();
+            // Для каждого отрезка
+            data.motion.path.forEach(function (segment, index) {
+                // Если линейное движение
+                if (segment.cls === 'Linear') {
+                    userCarMarker.trackView.addLinear({
+                        a: segment.a,
+                        b: segment.b
+                    });
+                }
+            });
+        }
+
 
         direction = data.motion.direction ? data.motion.direction : 0; // TODO: сделать вылет с ошибкой
 
