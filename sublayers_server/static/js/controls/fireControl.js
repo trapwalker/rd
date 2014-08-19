@@ -220,7 +220,7 @@ var FireControl = (function () {
 
     // Реализация радара - вынесена сюда, т.к. только тут есть radiusIn и radiusOut
     // Добавление Точки в сектор
-    FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle) {
+    FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle, visibleMode) {
 
         // Вычислить точку для отрисовки
         var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
@@ -229,7 +229,13 @@ var FireControl = (function () {
         // Нарисовать точку
         var pathSVG = document.createElementNS(this.NS, 'circle');
         // Добавить точку в сектор
-        pathSVG.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
+        if (visibleMode === 'friend')
+            pathSVG.setAttribute('class', 'fire-control-radar-point-friend sublayers-unclickable');
+        if (visibleMode === 'party')
+            pathSVG.setAttribute('class', 'fire-control-radar-point-party sublayers-unclickable');
+        if (!visibleMode)
+            pathSVG.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
+
         pathSVG.setAttribute('r', 2);
         pathSVG.setAttribute('cx', p.x);
         pathSVG.setAttribute('cy', p.y);
