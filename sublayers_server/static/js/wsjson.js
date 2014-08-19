@@ -66,7 +66,6 @@ function sendNewPoint(aPoint, auid) {
         }
     };
     rpcCallList.add(mes);
-    //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
     if (flagDebug)
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
@@ -81,7 +80,6 @@ function sendStopCar() {
         params: { }
     };
     rpcCallList.add(mes);
-    //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
     if (flagDebug)
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
@@ -98,7 +96,6 @@ function sendFire(aUid) {
         }
     };
     rpcCallList.add(mes);
-    //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
     if (flagDebug)
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
@@ -114,7 +111,6 @@ function sendSetSpeed(newSpeed, auid) {
         }
     };
     rpcCallList.add(mes);
-    //wsjson.socket.send(JSON.stringify(mes));
     wsjson.sendMess(mes);
     if (flagDebug)
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
@@ -160,7 +156,7 @@ function receiveMesFromServ(data){
     // если message_type = push
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
-      //  if (flagDebug)
+        if (flagDebug)
             chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
@@ -243,7 +239,7 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-     //   if (flagDebug)
+        if (flagDebug)
             chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
@@ -262,10 +258,15 @@ function getTrack(data){
         else
             position = new Point(0, 0);
 
-        // Если в motion есть path, то задать траекторию движения
-        if (data.motion.path) {
+        // Если в motion есть path, то задать траекторию движения (но только для своей машинки)
+        if (data.motion.path && user.userCar.ID == data.uid) {
             // Очистка текущей траектории движения
             userCarMarker.trackView.empty();
+            // создать искуственно первый сегмент от текущей позиции до первой точки А
+           // userCarMarker.trackView.addLinear({
+           //     a: user.userCar.getCurrentCoord(clock.getCurrentTime()),
+           //     b: data.motion.path[0].a
+           // });
             // Для каждого отрезка
             data.motion.path.forEach(function (segment, index) {
                 // Если линейное движение
@@ -395,7 +396,8 @@ function getCircleMotion(motion){
         alpha,              // начальный угол
         w,                  // угловая скорость
         0,                  // ускорение
-        ccw                 // По часовой стрелке или против неё
+        ccw,                // По часовой стрелке или против неё
+        vLinear.abs()       // Линейная скорость, для отображения в спидометре
     );
 
 }

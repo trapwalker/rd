@@ -161,8 +161,9 @@ class MoveCircle extends MoveTrack {
     accelerationA:number;
     radiusVector: Point;
     CCW: number; // По часовой стрелке движение или против неё
+    linearSpeed: number;
 
-    constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA, aCCW:number) {
+    constructor(aTimeStart, aFuelStart, aFuelDec:number, aCenterCircle, aRadiusVector:Point, aAngleStart, aSpeedA, aAccelerationA, aCCW, aLinearSpeed:number) {
         super(aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
@@ -170,6 +171,7 @@ class MoveCircle extends MoveTrack {
         this.accelerationA = aAccelerationA;
         this.radiusVector = aRadiusVector;
         this.CCW = aCCW;
+        this.linearSpeed = aLinearSpeed;
     }
 
     getCurrentCoord(aClockTime:number):Point {
@@ -189,7 +191,7 @@ class MoveCircle extends MoveTrack {
     }
 
     getCurrentSpeedAbs(aClockTime:number):number {
-        return 0;
+        return this.linearSpeed;
     }
 
 }

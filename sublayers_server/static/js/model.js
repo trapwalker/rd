@@ -154,7 +154,7 @@ var MoveLine = (function (_super) {
 
 var MoveCircle = (function (_super) {
     __extends(MoveCircle, _super);
-    function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aRadiusVector, aAngleStart, aSpeedA, aAccelerationA, aCCW) {
+    function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aRadiusVector, aAngleStart, aSpeedA, aAccelerationA, aCCW, aLinearSpeed) {
         _super.call(this, aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
         this.angleStart = aAngleStart;
@@ -162,6 +162,7 @@ var MoveCircle = (function (_super) {
         this.accelerationA = aAccelerationA;
         this.radiusVector = aRadiusVector;
         this.CCW = aCCW;
+        this.linearSpeed = aLinearSpeed;
     }
     MoveCircle.prototype.getCurrentCoord = function (aClockTime) {
         return summVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)), this.centerCircle);
@@ -180,7 +181,7 @@ var MoveCircle = (function (_super) {
     };
 
     MoveCircle.prototype.getCurrentSpeedAbs = function (aClockTime) {
-        return 0;
+        return this.linearSpeed;
     };
     return MoveCircle;
 })(MoveTrack);

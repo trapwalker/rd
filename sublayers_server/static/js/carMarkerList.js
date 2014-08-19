@@ -164,8 +164,18 @@ var CarMarkerList = (function () {
                 };
                 // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
                 if (!car.pathSVG[sector.uid]) {
+                    // visibleMode - свой/чужой/пати
+                    var visibleMode;
+                    if(car.backLight){
+                        if (car.owner.party.id == user.party.id)
+                            visibleMode = 'party';
+                        else
+                            visibleMode = 'friend';
+                    }
+                    else
+                        visibleMode = null;
                     // добавление SVG-path в fireControl
-                    car.pathSVG[sector.uid] = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi);
+                    car.pathSVG[sector.uid] = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi, visibleMode);
                     return;
                 } else {
                     // Отрисовать машинку в радаре с новыми относительными координатами
@@ -204,8 +214,6 @@ var CarMarkerList = (function () {
                         else // если не попали в зону крита
                             listIDs.push({carID: car.ID, damage_factor: 0.5});
             }
-       // {carID: car.ID,
-       // damage_factor: 1 | 0.0}
         return listIDs;
     };
 
