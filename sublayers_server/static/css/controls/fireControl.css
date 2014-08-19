@@ -62,3 +62,18 @@
     stroke-width: 2;
     opacity: 0.8;
 }
+
+.fire-control-radar-point-friend {
+    fill: lime;
+    stroke: lime;
+    stroke-width: 2;
+    opacity: 0.3;
+}
+
+.fire-control-radar-point-party {
+    fill: #ffd961;
+    stroke: #ffd961;
+    stroke-width: 2;
+    opacity: 0.4;
+}
+
