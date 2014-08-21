@@ -14,7 +14,8 @@ var LocalCookieStorage = (function(){
             optionsMarkerUpdate: true,
             optionsMapTileVisible: true,
             optionsFCRotate: true,
-            optionsRMVisible: true
+            optionsRMVisible: true,
+            optionsSelectAnybody: true
         };
 
         if(options){
@@ -40,6 +41,7 @@ var LocalCookieStorage = (function(){
         this.optionsMapTileVisible = defOptions.optionsMapTileVisible;
         this.optionsFCRotate = defOptions.optionsFCRotate;
         this.optionsRMVisible = defOptions.optionsRMVisible;
+        this.optionsSelectAnybody = defOptions.optionsSelectAnybody;
 
 
         this.load();
@@ -63,6 +65,8 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsMapTileVisible', (this.optionsMapTileVisible ? 1 : 0));
         this.setCookie('optionsFCRotate', (this.optionsFCRotate ? 1 : 0));
         this.setCookie('optionsRMVisible', (this.optionsRMVisible ? 1 : 0));
+        this.setCookie('optionsSelectAnybody', (this.optionsSelectAnybody ? 1 : 0));
+
     };
 
 
@@ -136,6 +140,10 @@ var LocalCookieStorage = (function(){
         var optionsRMVisible = this.getCookie('optionsRMVisible');
         if (optionsRMVisible !== undefined)
             this.optionsRMVisible = (optionsRMVisible == 1);
+        // optionsSelectAnybody
+        var optionsSelectAnybody = this.getCookie('optionsSelectAnybody');
+        if (optionsSelectAnybody !== undefined)
+            this.optionsSelectAnybody = (optionsSelectAnybody == 1);
 
     };
 

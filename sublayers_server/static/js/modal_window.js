@@ -94,6 +94,7 @@ var ModalWindow = (function () {
         optionsMapTileVisible.checked = cookieStorage.optionsMapTileVisible ? true : false;
         optionsFCRotate.checked = cookieStorage.optionsFCRotate ? true : false;
         optionsRMVisible.checked = cookieStorage.optionsRMVisible ? true : false;
+        optionsSelectAnybody.checked = cookieStorage.optionsSelectAnybody ? true: false;
     };
 
     ModalWindow.prototype.modalOptionsHide = function(){
@@ -109,6 +110,7 @@ var ModalWindow = (function () {
         cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
         cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
         cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
+        cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;
 
         // Опции чата. Нужно присваивать и потом удалять или добавлять чат
         cookieStorage.optionsChatPush = optionsChatPush.checked ? true : false;
@@ -134,7 +136,7 @@ var ModalWindow = (function () {
             // Назначить кнопку закрытия окна
             $('#optionsPageCloseButton').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
-                alert('Вы закрыли окно настроек. Ну как хотите...');
+                //alert('Вы закрыли окно настроек. Ну как хотите...');
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalOptionsHide();
             });

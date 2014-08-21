@@ -146,6 +146,16 @@ $(document).ready(function () {
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: flagDebug, chatVisible: true, chatActiveID: -2});
 
+    // инициализация и показ модальных окон
+    modalWindow = new ModalWindow({
+        parent: 'modalDiv',
+        back: 'modalBack',
+        modalWelcome: 'modalWelcome',
+        modalOptions: 'modalOptions',
+        modalDeath: 'modalDeath'
+    });
+
+
     // Установка flagDebug из Cookie
     flagDebug = cookieStorage.flagDebug;
 
@@ -183,7 +193,7 @@ $(document).ready(function () {
     buttonFullScreen.onclick = FullScreenToggle;
 
     // Включение/Выключение отображения карты
-    buttonMapOnOffBtn.onclick = TileLayerToggle;
+    buttonMapOnOffBtn.onclick = funcModalOptionsShow;
 
     // Кнопка Debug
     buttonDebugOnOff.onclick = DebugToggle;
@@ -223,14 +233,6 @@ $(document).ready(function () {
 
     //alert(window.location);
 
-    // инициализация и показ модальных окон
-    modalWindow = new ModalWindow({
-        parent: 'modalDiv',
-        back: 'modalBack',
-        modalWelcome: 'modalWelcome',
-        modalOptions: 'modalOptions',
-        modalDeath: 'modalDeath'
-    });
 
     modalWindow.modalWelcomeShow();
 
@@ -258,6 +260,11 @@ function FullScreenToggle() {
         jSelector.removeClass('buttonFullScreenOn');
         jSelector.addClass('buttonFullScreenOff');
     }
+}
+
+
+function funcModalOptionsShow(){
+    modalWindow.modalOptionsShow();
 }
 
 function TileLayerToggle(){
