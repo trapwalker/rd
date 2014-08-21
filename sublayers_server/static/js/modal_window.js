@@ -62,7 +62,11 @@ var ModalWindow = (function () {
             // Назначить кнопку закрытия окна
             $('#welcomePageCloseButton').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
+               // $('testCheckBox').checked;
+                if(testCheckBox.checked)
                 alert('Вы закрыли окно приветствия. Ну как хотите...');
+                else
+                alert('fail');
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalWelcomeHide();
             });
@@ -81,7 +85,15 @@ var ModalWindow = (function () {
         this.modalOptions.removeClass('modal-window-hide');
         this.modalOptions.addClass('modal-window-options-show');
         // считать все данные из CookieStorage и занести галочками сюда
-
+        optionsChatPush.checked = cookieStorage.optionsChatPush ? true : false;
+        optionsChatRPC.checked = cookieStorage.optionsChatRPC ? true : false;
+        optionsChatAnswer.checked = cookieStorage.optionsChatAnswer ? true : false;
+        optionsChatSystemLog.checked = cookieStorage.optionsChatSystemLog ? true : false;
+        optionsMarkerContact.checked = cookieStorage.optionsMarkerContact ? true : false;
+        optionsMarkerUpdate.checked = cookieStorage.optionsMarkerUpdate ? true : false;
+        optionsMapTileVisible.checked = cookieStorage.optionsMapTileVisible ? true : false;
+        optionsFCRotate.checked = cookieStorage.optionsFCRotate ? true : false;
+        optionsRMVisible.checked = cookieStorage.optionsRMVisible ? true : false;
     };
 
     ModalWindow.prototype.modalOptionsHide = function(){
@@ -90,6 +102,16 @@ var ModalWindow = (function () {
         // выключить модальное окно Welcome
         this.modalOptions.removeClass('modal-window-options-show');
         this.modalOptions.addClass('modal-window-hide');
+        // Загрузить данные в куки сторадж
+        cookieStorage.optionsChatPush = optionsChatPush.checked ? true : false;
+        cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
+        cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
+        cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
+        cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
+        cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
+        cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
+        cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
+        cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
 
     };
 
