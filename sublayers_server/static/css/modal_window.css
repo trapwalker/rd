@@ -1,0 +1,35 @@
+.modal-window-parent{
+
+}
+
+.modal-window-hide {
+    display: none;
+    height: 0%;
+    width: 0%;
+}
+
+.modal-window-back-show{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #000000;
+    opacity: 0.6;
+    left: 0px;
+    top: 0px;
+    z-index: 20;
+}
+
+.modal-window-back-hide{
+
+}
+
+.modal-window-welcome-show {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-height: 100px;
+    min-width: 100px;
+    border: solid 4px darkgreen;
+    z-index: 21;
+    background-color: white;
+}

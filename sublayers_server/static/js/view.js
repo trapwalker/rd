@@ -221,6 +221,18 @@ $(document).ready(function () {
     };
 
 
+    //alert(window.location);
+
+    // инициализация и показ модальных окон
+    modalWindow = new ModalWindow({
+        parent: 'modalDiv',
+        back: 'modalBack',
+        modalWelcome: 'modalWelcome'
+    });
+
+    modalWindow.modalWelcomeShow();
+
+
 });
 
 //Переключение в полноэкранный режим и обратно по кнопке
@@ -329,6 +341,9 @@ var levelZoomForVisibleTail = 8;
 // радиальноe меню
 var radialMenu;
 var radialMenuTimeout;
+
+// модальное окно
+var modalWindow;
 
 
 
