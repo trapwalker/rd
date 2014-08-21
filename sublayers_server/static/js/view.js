@@ -274,6 +274,16 @@ function TileLayerToggle(){
     }
 }
 
+function TileLaterSet() {
+    if (cookieStorage.optionsMapTileVisible) {
+        // Если нужно отображать
+        if (!myMap.hasLayer(tileLayerShow))tileLayerShow.addTo(myMap);
+    }
+    else {
+        if (myMap.hasLayer(tileLayerShow))myMap.removeLayer(tileLayerShow);
+    }
+}
+
 
 function DebugToggle(){
     if(flagDebug){

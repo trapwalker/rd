@@ -103,15 +103,27 @@ var ModalWindow = (function () {
         this.modalOptions.removeClass('modal-window-options-show');
         this.modalOptions.addClass('modal-window-hide');
         // Загрузить данные в куки сторадж
+        // TODO: если новая настройка отличается от старой, сначала сохранить, затем обработать
+        // Опции, не требующие действий
+        cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
+        cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
+        cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
+        cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
+
+        // Опции чата. Нужно присваивать и потом удалять или добавлять чат
         cookieStorage.optionsChatPush = optionsChatPush.checked ? true : false;
         cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
         cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
         cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
-        cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
-        cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
+
+
+        // Скрыть или показать тайловый уровень в зависимости от настроек опций
         cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
+        TileLaterSet();
+
+        // TODO просто повернуть на 0 (или 90, или минус 90 - узнать!) и присвоить
         cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
-        cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
+
 
     };
 
