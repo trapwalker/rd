@@ -260,23 +260,26 @@ function getTrack(data){
 
         // Если в motion есть path, то задать траекторию движения (но только для своей машинки)
         if (data.motion.path && user.userCar.ID == data.uid) {
-            // Очистка текущей траектории движения
-            userCarMarker.trackView.empty();
-            // создать искуственно первый сегмент от текущей позиции до первой точки А
-           // userCarMarker.trackView.addLinear({
-           //     a: user.userCar.getCurrentCoord(clock.getCurrentTime()),
-           //     b: data.motion.path[0].a
-           // });
-            // Для каждого отрезка
-            data.motion.path.forEach(function (segment, index) {
-                // Если линейное движение
-                if (segment.cls === 'Linear') {
+            if (data.motion.path[0]) {
+                // Очистка текущей траектории движения
+                userCarMarker.trackView.empty();
+                // создать искуственно первый сегмент от текущей позиции до первой точки А
+                if (data.motion.path[0].cls === 'Linear')
                     userCarMarker.trackView.addLinear({
-                        a: segment.a,
-                        b: segment.b
+                        a: position,
+                        b: data.motion.path[0].a
                     });
-                }
-            });
+                // Для каждого отрезка
+                data.motion.path.forEach(function (segment, index) {
+                    // Если линейное движение
+                    if (segment.cls === 'Linear') {
+                        userCarMarker.trackView.addLinear({
+                            a: segment.a,
+                            b: segment.b
+                        });
+                    }
+                });
+            }
         }
 
 
