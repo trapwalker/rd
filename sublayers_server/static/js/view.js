@@ -224,13 +224,21 @@ $(document).ready(function () {
     //alert(window.location);
 
     // инициализация и показ модальных окон
-    modalWindow = new ModalWindow({
-        parent: 'modalDiv',
-        back: 'modalBack',
-        modalWelcome: 'modalWelcome'
-    });
+    //modalWindow = new ModalWindow({
+    //    parent: 'modalDiv',
+    //    back: 'modalBack',
+    //    modalWelcome: 'modalWelcome',
+    //    modalOptions: 'modalOptions',
+    //    modalDeath: 'modalDeath'
+    //});
 
-    modalWindow.modalWelcomeShow();
+    //modalWindow.modalWelcomeShow();
+
+
+    // показать ещё раз!
+    //setTimeout(function(){
+    //    modalWindow.modalWelcomeShow();
+    //},10000)
 
 
 });
