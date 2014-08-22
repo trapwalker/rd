@@ -189,7 +189,7 @@ $(document).ready(function () {
     buttonDebugOnOff.onclick = DebugToggle;
 
     // Кнопка подключения к серверу (пока просто перезагружает страницу)
-    buttonConnectServerBtn.onclick = ConnectServerToggle;
+    buttonConnectServer.onclick = ConnectServerToggle;
 
 
     // создание чата

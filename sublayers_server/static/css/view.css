@@ -181,37 +181,15 @@ input:focus {
     left: 15px;
     width: 62px;
     height: 62px;
+    background: transparent url('/static/img/misc_button/btn_connection2_normal.png') 100% 100% no-repeat;
 }
 
-#buttonConnectServerBtn {
-    position: absolute;
-    background: transparent url('/static/img/misc_button/btn_connection_normal.png') 100% 100% no-repeat;
-    width: 62px;
-    height: 62px;
+#buttonConnectServer:hover {
+    background: transparent url('/static/img/misc_button/btn_connection2_over.png') 100% 100% no-repeat;
 }
 
-#buttonConnectServerBtn:hover {
-    background: transparent url('/static/img/misc_button/btn_connection_over.png') 100% 100% no-repeat;
-}
-
-#buttonConnectServerBtn:active {
-    background: transparent url('/static/img/misc_button/btn_connection_pressed.png') 100% 100% no-repeat;
-}
-
-#buttonConnectServerStatus {
-    position: absolute;
-    left: 65px;
-    top: 5px;
-    width: 13px;
-    height: 13px;
-}
-
-.buttonConnectServerStatusOn {
-    background: transparent url('/static/img/misc_button/ico_status_on.png') 100% 100% no-repeat;
-}
-
-.buttonConnectServerStatusOff {
-    background: transparent url('/static/img/misc_button/ico_status_off.png') 100% 100% no-repeat;
+#buttonConnectServer:active {
+    background: transparent url('/static/img/misc_button/btn_connection2_pressed.png') 100% 100% no-repeat;
 }
 
 .sublayers-clickable {

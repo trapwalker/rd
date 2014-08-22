@@ -35,9 +35,6 @@ WSJSON = (function () {
                 //alert('Обрыв соединения'); // например, "убит" процесс сервера
             }
             //alert('Код: ' + event.code + ' причина: ' + event.reason);
-            var jSelector = $('#buttonConnectServerStatus');
-            jSelector.removeClass('buttonConnectServerStatusOn');
-            jSelector.addClass('buttonConnectServerStatusOff');
         };
 
     };
