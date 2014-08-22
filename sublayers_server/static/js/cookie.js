@@ -1,10 +1,10 @@
 var LocalCookieStorage = (function(){
-    function LocalCookieStorage(options){
+    function LocalCookieStorage(){
         var defOptions = {
             flagDebug: false,
-            chatVisible: false,
+            chatVisible: true,
             chatActiveID: 0,
-            zoom: 13,
+            zoom: 6,
             // Новые опции
             optionsChatPush: false,
             optionsChatRPC: false,
@@ -15,15 +15,9 @@ var LocalCookieStorage = (function(){
             optionsMapTileVisible: true,
             optionsFCRotate: true,
             optionsRMVisible: true,
-            optionsSelectAnybody: true
+            optionsSelectAnybody: false
         };
 
-        if(options){
-            if(options.flagDebug) defOptions.flagDebug = options.flagDebug;
-            if(options.chatVisible) defOptions.chatVisible = options.chatVisible;
-            if(options.chatActiveID) defOptions.chatActiveID = options.chatActiveID;
-            if(options.zoom) defOptions.zoom = options.zoom;
-        }
 
         this.flagDebug = defOptions.flagDebug;
         this.chatVisible = defOptions.chatVisible;

@@ -133,7 +133,8 @@ function createTileLayer(storage) {
             opacity: 0.5,
             maxZoom: 7});
     }
-    tileLayerShow.addTo(myMap);
+    if(cookieStorage.optionsMapTileVisible)
+        tileLayerShow.addTo(myMap);
 }
 
 $(document).ready(function () {
@@ -146,7 +147,7 @@ $(document).ready(function () {
     }
 
     // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: false, chatVisible: true, chatActiveID: -2});
+    cookieStorage = new LocalCookieStorage();
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -227,7 +228,9 @@ $(document).ready(function () {
 
 
     window.onbeforeunload = function (e) {
+        alert('do');
         cookieStorage.save();
+        alert('posle');
     };
 
 
@@ -279,7 +282,7 @@ function TileLaterSet() {
 
 //Подключение к серверу (пока просто перезагрузка страницы)
 function ConnectServerToggle() {
-    location.reload();
+    window.location.reload();
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
