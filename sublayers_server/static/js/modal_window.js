@@ -117,7 +117,7 @@ var ModalWindow = (function () {
         cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
         cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
         cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
-
+        chat.manageSystemChats(cookieStorage);
 
         // Скрыть или показать тайловый уровень в зависимости от настроек опций
         cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;

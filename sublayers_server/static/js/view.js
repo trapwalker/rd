@@ -207,11 +207,15 @@ $(document).ready(function () {
             parentDiv: 'chatArea',
             height: 550,
             width: 400});
-    chat.addChat(0, 'broadcast');
-    chat.addChat(-1, 'log-push');
-    chat.addChat(-3, 'log-answer');
-    chat.addChat(-4, 'log-rpc');
-    chat.addChat(-2, 'system');
+    chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
+    if (cookieStorage.optionsChatPush)
+        chat.addChat(chat.systemsChats.push.id, chat.systemsChats.push.name);
+    if (cookieStorage.optionsChatSystemLog)
+        chat.addChat(chat.systemsChats.system.id, chat.systemsChats.system.name);
+    if (cookieStorage.optionsChatAnswer)
+        chat.addChat(chat.systemsChats.answer.id, chat.systemsChats.answer.name);
+    if (cookieStorage.optionsChatRPC)
+        chat.addChat(chat.systemsChats.rpc.id, chat.systemsChats.rpc.name);
     chat.setActiveChat(cookieStorage.chatActiveID);
     chat.setVisible(cookieStorage.chatVisible);
     chat.setMessagesHistory(cookieStorage.historyArray);
@@ -234,7 +238,7 @@ $(document).ready(function () {
     //alert(window.location);
 
 
-    modalWindow.modalWelcomeShow();
+    //modalWindow.modalWelcomeShow();
 
 
     // показать ещё раз!
