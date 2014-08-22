@@ -4,6 +4,8 @@
 var FireControl = (function () {
     function FireControl(options) {
         this.options = {
+            _visible: true,
+            _rotated: true,
             parentDiv: '',
             diameter: 200,
             rotateAngle: 0,
@@ -29,7 +31,20 @@ var FireControl = (function () {
         this.sectors = [];
 
         $('#' + this.options.parentDiv).addClass('fire-control-parent');
-        $('#' + this.options.parentDiv).css('margin-left', - this.options.diameter / 2);
+        //$('#' + this.options.parentDiv).css('margin-left', - this.options.diameter / 2);
+
+        // Добавление верхнего дива
+        this.fCT = $("<div id='fireControlTop'></div>");
+        $("#" + this.options.parentDiv).append(this.fCT);
+
+        // Добавление нижнего дива
+        this.fCB = $("<div id='fireControlBottom'></div>");
+        $("#" + this.options.parentDiv).append(this.fCB);
+
+        // Добавление дива с кнопкой
+        this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show'></div>");
+        this.fCB.append(this.fCSB);
+        this.fCSB.on('click', {self: this}, this.changeVisible);
 
         this.radiusOut = this.options.diameter / 2 - 1;
         this.radiusIn = this.options.diameter / 6 + 5;
@@ -43,9 +58,10 @@ var FireControl = (function () {
         // Создание SVG полотна
         this.NS = 'http://www.w3.org/2000/svg';
         this.SVG = document.createElementNS(this.NS, 'svg');
+        this.SVG.setAttribute('class', 'fire-control-svg');
         this.SVG.setAttribute('height', this.options.diameter);
         this.SVG.setAttribute('width', this.options.diameter);
-        document.getElementById(this.options.parentDiv).appendChild(this.SVG);
+        this.fCT.append(this.SVG);
 
         // Создание unclickable фона для контроллера (прозрачного круга)
         this.backgroundCircle = document.createElementNS(this.NS, 'circle');
@@ -73,6 +89,53 @@ var FireControl = (function () {
             for (var i = 0; i < options.sectors.length; i++) {
                 this.addSector(options.sectors[i]);
             }
+    };
+
+
+    FireControl.prototype.changeVisible = function (event) {
+        var self = event.data.self;
+        if (self.options._visible) self.SVG.setAttribute('display', 'none');
+        self.fCT.slideToggle("slow", function () {
+            if (self.options._visible) {
+                self.options._visible = false;
+                self.SVG.setAttribute('display', 'none');
+                self.fCSB.removeClass('fire-control-slide-button-show');
+                self.fCSB.addClass('fire-control-slide-button-hide');
+            }
+            else {
+                self.options._visible = true;
+                self.fCSB.removeClass('fire-control-slide-button-hide');
+                self.fCSB.addClass('fire-control-slide-button-show');
+                self.SVG.setAttribute('display', 'block');
+                self._setRotate(self.options.rotateAngle);
+            }
+        });
+    };
+
+
+    FireControl.prototype.setVisible = function (aVisible) {
+        if (this.options._visible !== aVisible) {
+            this.changeVisible({data: {self: this}})
+        }
+    };
+
+
+    FireControl.prototype.getVisible = function () {
+        return this.options._visible;
+    };
+
+
+    FireControl.prototype.setRotated = function (aRotated) {
+        if (this.options._rotated !== aRotated) {
+            this.options._rotated = aRotated;
+            if (this.options._rotated) this._setRotate(this.options.rotateAngle);
+            else this._setRotate(- Math.PI / 2);
+        }
+    };
+
+
+    FireControl.prototype.getVisible = function () {
+        return this.options._rotated;
     };
 
 
@@ -187,10 +250,17 @@ var FireControl = (function () {
     };
 
 
-    FireControl.prototype.setRotate = function(angle) {
+    FireControl.prototype._setRotate = function (angle) {
         this.SVGSectorsGroup.setAttribute('transform', 'rotate(' +
-            radToGrad(angle) + ', ' + this.center.x + ', ' + this.center.y + ')'
+                radToGrad(angle) + ', ' + this.center.x + ', ' + this.center.y + ')'
         );
+    };
+
+
+    FireControl.prototype.setRotate = function (angle) {
+        if (Math.abs(this.options.rotateAngle - angle) < 0.03) return;
+        this.options.rotateAngle = angle;
+        if (this.options._visible && this.options._rotated) this._setRotate(angle);
     };
 
 
@@ -254,7 +324,6 @@ var FireControl = (function () {
         return pathSVG;
     };
 
-
     // Обновление точки в секторе
     // TODO: доделать удаление!!!
     FireControl.prototype.deleteCarInSector = function(pathSVG) {
@@ -262,9 +331,6 @@ var FireControl = (function () {
         $(pathSVG).remove();
         return null;
     };
-
-
-
 
 
     FireControl.prototype._allFireEvent = function(event){

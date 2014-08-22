@@ -134,7 +134,8 @@ var CarMarkerList = (function () {
                     car.backLight.draw(tempLatLng);
                 }
                 // Отрисовка радара
-                this.drawCarInSector(car, tempPoint);
+                //if (controllers.fireControl.getVisible())
+                    this.drawCarInSector(car, tempPoint);
             }
         }
     };

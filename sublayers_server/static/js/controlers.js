@@ -98,8 +98,7 @@ var Controllers = (function () {
         // Отрисовка контроллера стрельбы
         if (!(directionCar == 0)) // Пока присылаются два стопа, нужно это условие
             if (this.fireControl)
-                if (Math.abs(this.fireControl.options.rotateAngle - directionCar) > 0.1)
-                    this.fireControl.setRotate(directionCar);
+                this.fireControl.setRotate(directionCar);
     };
 
     return Controllers;

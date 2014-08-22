@@ -132,6 +132,7 @@ var ModalWindow = (function () {
 
         // TODO просто повернуть на 0 (или 90, или минус 90 - узнать!) и присвоить
         cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
+        controllers.fireControl.setRotated(cookieStorage.optionsFCRotate);
 
         // TODO считать данные о масштабе для отображения лейблов маркера
 
