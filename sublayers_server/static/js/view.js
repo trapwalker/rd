@@ -13,7 +13,7 @@ function redrawMap() {
     carMarkerList.draw(clock.getCurrentTime());
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
-    if (!flagDebug)
+    if (!cookieStorage.flagDebug)
         if (userCarMarker)
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
@@ -146,7 +146,7 @@ $(document).ready(function () {
     }
 
     // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: flagDebug, chatVisible: true, chatActiveID: -2});
+    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: false, chatVisible: true, chatActiveID: -2});
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -156,10 +156,6 @@ $(document).ready(function () {
         modalOptions: 'modalOptions',
         modalDeath: 'modalDeath'
     });
-
-
-    // Установка flagDebug из Cookie
-    flagDebug = cookieStorage.flagDebug;
 
     // Инициализация.
     ModelInit();
@@ -194,11 +190,8 @@ $(document).ready(function () {
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
 
-    // Включение/Выключение отображения карты
-    buttonMapOnOffBtn.onclick = funcModalOptionsShow;
-
-    // Кнопка Debug
-    buttonDebugOnOff.onclick = DebugToggle;
+    // Включение/Выключение отображения настроек игры
+    buttonOptions.onclick = funcModalOptionsShow;
 
     // Кнопка подключения к серверу (пока просто перезагружает страницу)
     buttonConnectServer.onclick = ConnectServerToggle;
@@ -207,8 +200,9 @@ $(document).ready(function () {
     // создание чата
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
-            height: 550,
-            width: 400});
+            height: (cookieStorage.flagDebug ? 550 : 250),
+            width: (cookieStorage.flagDebug ? 400 : 400)
+    });
     chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
     if (cookieStorage.optionsChatPush)
         chat.addChat(chat.systemsChats.push.id, chat.systemsChats.push.name);
@@ -273,20 +267,6 @@ function funcModalOptionsShow(){
     modalWindow.modalOptionsShow();
 }
 
-function TileLayerToggle(){
-    var jSelector = $('#buttonMapOnOffStatus');
-    if(myMap.hasLayer(tileLayerShow)){
-        myMap.removeLayer(tileLayerShow);
-        jSelector.removeClass('buttonMapOnOffStatusOn');
-        jSelector.addClass('buttonMapOnOffStatusOff');
-    }
-    else {
-        tileLayerShow.addTo(myMap);
-        jSelector.removeClass('buttonMapOnOffStatusOff');
-        jSelector.addClass('buttonMapOnOffStatusOn');
-    }
-}
-
 function TileLaterSet() {
     if (cookieStorage.optionsMapTileVisible) {
         // Если нужно отображать
@@ -294,28 +274,6 @@ function TileLaterSet() {
     }
     else {
         if (myMap.hasLayer(tileLayerShow))myMap.removeLayer(tileLayerShow);
-    }
-}
-
-
-function DebugToggle(){
-    if(flagDebug){
-        // Выключить всю Debug информацию
-        flagDebug=false;
-        // Очистиить debugMapList и удалить всё с карты
-        for(;debugMapList.length;)
-            myMap.removeLayer(debugMapList.pop());
-        // Включить dragging
-        myMap.dragging.disable();
-
-    }
-    else {
-        // Включить всю Debug информацию
-        flagDebug = true;
-        // Выключить dragging
-        myMap.dragging.enable();
-
-
     }
 }
 
@@ -350,7 +308,6 @@ var wsjson;
 var rpcCallList;
 var tileLayerShow;
 var controllers;
-var flagDebug = false;
 var debugMapList = [];
 var carMarkerList;
 var cookieStorage;

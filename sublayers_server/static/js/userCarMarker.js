@@ -510,7 +510,7 @@ var UserCarMarker = (function () {
         this.sectorsView.drawSectors(this.currentUserCarLatLng, this.currentUserCarAngle);
 
         // Перерисовка траектории
-        if(! flagDebug)
+        if(! cookieStorage.flagDebug)
             this.trackView.draw(this.currentUserCarLatLng);
     }
 
