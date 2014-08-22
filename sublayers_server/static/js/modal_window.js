@@ -104,12 +104,19 @@ var ModalWindow = (function () {
         this.modalOptions.removeClass('modal-window-options-show');
         this.modalOptions.addClass('modal-window-hide');
         // Загрузить данные в куки сторадж
-        // TODO: если новая настройка отличается от старой, сначала сохранить, затем обработать
+
         // Опции, не требующие действий
         cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
         cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
         cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
+
+        // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
         cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
+        if (!cookieStorage.flagDebug)
+            for (; debugMapList.length;) // Очистиить debugMapList и удалить всё с карты
+                myMap.removeLayer(debugMapList.pop());
+
+        // TODO Развыделить все машинки и снова выделить только партийные
         cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;
 
         // Опции чата. Нужно присваивать и потом удалять или добавлять чат
@@ -125,6 +132,8 @@ var ModalWindow = (function () {
 
         // TODO просто повернуть на 0 (или 90, или минус 90 - узнать!) и присвоить
         cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
+
+        // TODO считать данные о масштабе для отображения лейблов маркера
 
 
     };

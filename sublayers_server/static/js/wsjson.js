@@ -67,7 +67,7 @@ function sendNewPoint(aPoint, auid) {
     };
     rpcCallList.add(mes);
     wsjson.sendMess(mes);
-    if (flagDebug)
+    if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
@@ -81,7 +81,7 @@ function sendStopCar() {
     };
     rpcCallList.add(mes);
     wsjson.sendMess(mes);
-    if (flagDebug)
+    if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -97,7 +97,7 @@ function sendFire(aUid) {
     };
     rpcCallList.add(mes);
     wsjson.sendMess(mes);
-    if (flagDebug)
+    if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -112,7 +112,7 @@ function sendSetSpeed(newSpeed, auid) {
     };
     rpcCallList.add(mes);
     wsjson.sendMess(mes);
-    if (flagDebug)
+    if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -127,7 +127,7 @@ function sendChatMessage(atext, auid) {
     };
     rpcCallList.add(mes);
     wsjson.socket.send(JSON.stringify(mes));
-    if (flagDebug)
+    if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -143,7 +143,7 @@ function sendServConsole(atext) {
     rpcCallList.add(mes);
     // Консоль отправляется на сервер всегда, вне зависимости от запретов клиента
     wsjson.socket.send(JSON.stringify(mes));
-    if (flagDebug)
+    if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
@@ -156,7 +156,7 @@ function receiveMesFromServ(data){
     // если message_type = push
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
-        if (flagDebug)
+        if (cookieStorage.enableLogPushMessage())
             chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
@@ -169,7 +169,7 @@ function receiveMesFromServ(data){
                 setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-                if (flagDebug)
+                if (cookieStorage.enableMarkerContact())
                     debugMapList.push(
                         L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()), {color: '#FFBA12'})
                             .setRadius(8)
@@ -191,7 +191,7 @@ function receiveMesFromServ(data){
                 updateCurrentCar(event.object.uid, aType, aHP, aTrack, owner);
 
                 // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-                if (flagDebug)
+                if (cookieStorage.enableMarkerUpdate())
                     debugMapList.push(
                         L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], myMap.getMaxZoom()), {color: '#FF0000'})
                             .setRadius(3)
@@ -239,7 +239,7 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        if (flagDebug)
+        if (cookieStorage.enableLogAnswerMessage())
             chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);

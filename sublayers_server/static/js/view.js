@@ -32,19 +32,20 @@ function onMouseDownMap(mouseEventObject){
     myMap.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
 
     // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
-    radialMenuTimeout = setTimeout(function(){
-        radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+    radialMenuTimeout = setTimeout(function () {
+        if (cookieStorage.enableRadialMenu())
+            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
     }, 400);
 }
 
 
-function onMouseUpMap(mouseEventObject){
+function onMouseUpMap(mouseEventObject) {
     // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
-    if(radialMenuTimeout)
+    if (radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
 
     // Если не вызывалось меню, то поехать в заданную точку
-    if (radialMenu.isHide  && myMap._mouseDowned) {
+    if (radialMenu.isHide && myMap._mouseDowned) {
         if (user.userCar)
             sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
     } else {
@@ -57,16 +58,17 @@ function onMouseUpMap(mouseEventObject){
 }
 
 
-function onMouseMoveMap(mouseEventObject){
-    var pointOfClick =  new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
+function onMouseMoveMap(mouseEventObject) {
+    var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
     // Если флаг нажатия был установлен, то
-    if(myMap._mouseDowned && radialMenu.isHide){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
-        if(distancePoints(myMap.lastDownPoint, pointOfClick) > 50){
+    if (myMap._mouseDowned && radialMenu.isHide) { // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
+        if (distancePoints(myMap.lastDownPoint, pointOfClick) > 50) {
             // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
-            if(radialMenuTimeout)
+            if (radialMenuTimeout)
                 clearTimeout(radialMenuTimeout);
             // Вызвать меню
-            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+            if (cookieStorage.enableRadialMenu())
+                radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
         }
     }
 
@@ -172,7 +174,7 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-            dragging: flagDebug,
+            dragging: false,
             doubleClickZoom: false
             //    maxBounds: ([
             //        [50.21, 35.42],

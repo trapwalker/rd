@@ -90,21 +90,22 @@ function flashMarker(marker){
 }
 
 function onMouseClickMarker(event){
-    if (listMapObject.exist(this.carID)) {
-        var car = listMapObject.objects[this.carID];
-        if(car.backLight)
-            carMarkerList.delFromBackLight(car);
-        else
-            carMarkerList.addToBackLight(car);
+    if(cookieStorage.optionsSelectAnybody) {
+        if (listMapObject.exist(this.carID)) {
+            var car = listMapObject.objects[this.carID];
+            if (car.backLight)
+                carMarkerList.delFromBackLight(car);
+            else
+                carMarkerList.addToBackLight(car);
 
-        // тест эффекта мигания маркера
-        this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
-        var self = this;
-        setTimeout(function () {
-            self.setOpacity(1);
-        }, 500);
+            // тест эффекта мигания маркера
+            this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
+            var self = this;
+            setTimeout(function () {
+                self.setOpacity(1);
+            }, 500);
+        }
     }
-
     if (event.originalEvent.stopPropagation) {
         // Вариант стандарта W3C:
         event.originalEvent.stopPropagation()
