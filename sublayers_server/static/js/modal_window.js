@@ -85,6 +85,7 @@ var ModalWindow = (function () {
         this.modalOptions.removeClass('modal-window-hide');
         this.modalOptions.addClass('modal-window-options-show');
         // считать все данные из CookieStorage и занести галочками сюда
+        optionsFlagDebug.checked = cookieStorage.flagDebug ? true : false;
         optionsChatPush.checked = cookieStorage.optionsChatPush ? true : false;
         optionsChatRPC.checked = cookieStorage.optionsChatRPC ? true : false;
         optionsChatAnswer.checked = cookieStorage.optionsChatAnswer ? true : false;

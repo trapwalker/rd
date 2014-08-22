@@ -43,7 +43,7 @@ var LocalCookieStorage = (function(){
 
     // Сохранение всех параметров в Cookie
     LocalCookieStorage.prototype.save = function(){
-        this.setCookie('flagDebug', (flagDebug ? 1 : 0));
+        this.setCookie('flagDebug', (this.flagDebug ? 1 : 0));
         this.setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
         this.setCookie('chatActiveID', chat._activeChatID);
         this.setCookie('zoom', myMap.getZoom());
