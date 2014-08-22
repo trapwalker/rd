@@ -10,6 +10,30 @@ var ViewMessenger = (function () {
 
         this.chats = [];
 
+        // TODO: сделать функции для добавления системных чатов
+        this.systemsChats = {
+            broadcast: {
+                id: 0,
+                name: 'broadcast'
+            },
+            push: {
+                id: -1,
+                name: 'log-push'
+            },
+            system: {
+                id: -2,
+                name: 'system'
+            },
+            answer: {
+                id: -3,
+                name: 'log-answer'
+            },
+            rpc: {
+                id: -4,
+                name: 'log-rpc'
+            }
+        };
+
         if (options) {
             if (options.parentDiv) this.options.parentDiv = options.parentDiv;
             if (options.height) this.options.height = options.height;
@@ -154,7 +178,7 @@ var ViewMessenger = (function () {
     };
 
 
-    ViewMessenger.prototype.addChat = function (aID, aName){
+    ViewMessenger.prototype.addChat = function (aID, aName, setAct){
         var chat = {
             id: aID,
             name: aName,
@@ -174,17 +198,73 @@ var ViewMessenger = (function () {
                                2 * parseInt(this.vMTA.css('border-image-width'))});
 
         this.chats.push(chat);
-        this.setActiveChat(chat.id);
+        if (setAct)
+            this.setActiveChat(chat.id);
         return chat;
     }
 
+    ViewMessenger.prototype.removeChat = function(chatID){
+        // Если этот чат активный, то сделать активным броадкаст
+        if (this._activeChatID == chatID) this.setActiveChat(0);
+        // получить чат
+        var chat = this._getChat(chatID);
+        if(! chat) return;
+        // удалить все сообщения у чата
+        this._removeAllMessagesInChat(chat);
+        // удалить область сообщений
+        chat.textArea.remove();
+        // отключить клик, удалить вкладку
+        chat.pageButton.off('click', this.clickForPageButton);
+        chat.pageButton.remove();
+        // Сделать сплайс по данному chat.id
+        var index = 0;
+        for(var i=0; i < this.chats.length; i++){
+            if(this.chats[i].id == chat.id)
+                index = i;
+        }
+        this.chats.splice(index, 1);
+    };
+
+    ViewMessenger.prototype.manageSystemChats = function(localSet){
+        // Настройка optionsChatPush
+        if (localSet.optionsChatPush) {
+            if (!this._getChat(this.systemsChats.push.id))
+                this.addChat(this.systemsChats.push.id, this.systemsChats.push.name);
+        }
+        else
+            this.removeChat(this.systemsChats.push.id);
+
+        // Настройка optionsChatRPC
+        if (localSet.optionsChatRPC) {
+            if (!this._getChat(this.systemsChats.rpc.id))
+                this.addChat(this.systemsChats.rpc.id, this.systemsChats.rpc.name);
+        }
+        else
+            this.removeChat(this.systemsChats.rpc.id);
+
+        // Настройка optionsChatAnswer
+        if (localSet.optionsChatAnswer) {
+            if (!this._getChat(this.systemsChats.answer.id))
+                this.addChat(this.systemsChats.answer.id, this.systemsChats.answer.name);
+        }
+        else
+            this.removeChat(this.systemsChats.answer.id);
+
+        // Настройка optionsChatSystemLog
+        if (localSet.optionsChatSystemLog) {
+            if (!this._getChat(this.systemsChats.system.id))
+                this.addChat(this.systemsChats.system.id, this.systemsChats.system.name);
+        }
+        else
+            this.removeChat(this.systemsChats.system.id);
+    };
 
     ViewMessenger.prototype.setActiveChat = function(aID){
-        this.chats.forEach(function(chat){
-                if(chat.id == this.id){
+        this.chats.forEach(function (chat) {
+                if (chat.id == this.id) {
                     chat.textArea.addClass('textOutAreaActive');
                     chat.pageButton.addClass('pageButtonActive');
-                    this.self.vMHTS.text('['+chat.name+']');
+                    this.self.vMHTS.text('[' + chat.name + ']');
                 }
                 else {
                     chat.textArea.removeClass('textOutAreaActive');
@@ -197,21 +277,35 @@ var ViewMessenger = (function () {
     }
 
 
-    ViewMessenger.prototype._getChat = function(chatID) {
+    ViewMessenger.prototype._getChat = function (chatID) {
         // Найти чат
-        for(var i in this.chats){
-            if(this.chats[i])
-                if(this.chats[i].id == chatID)
-                   return this.chats[i];
+        for (var i in this.chats) {
+            if (this.chats[i])
+                if (this.chats[i].id == chatID)
+                    return this.chats[i];
         }
         // Если чата нет, то создать новый и его же вернуть
         // return this.addChat(chatID, 'какой-то текст или логин');
+        return null;
+    }
+
+    ViewMessenger.prototype._getChatByName = function (chatName) {
+        // Найти чат
+        for (var i in this.chats) {
+            if (this.chats[i])
+                if (this.chats[i].name === chatName)
+                    return this.chats[i];
+        }
+        // Если чата нет, то создать новый и его же вернуть
+        // return this.addChat(chatID, 'какой-то текст или логин');
+        return null;
     }
 
 
-    ViewMessenger.prototype.addMessage = function(chatID, messageID, aTime, aUser, aText) {
+    ViewMessenger.prototype.addMessage = function (chatID, messageID, aTime, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
+        if(! chat) return;
         // Отформатировать время
         var tempTime = aTime.toTimeString().split(' ')[0];
         // создать див сообщения и спаны
@@ -253,6 +347,14 @@ var ViewMessenger = (function () {
             dmessage.mesDiv.remove();
         }
 
+    };
+
+    ViewMessenger.prototype._removeAllMessagesInChat = function(chat){
+        for(;chat.mesList.length;){
+            var dmessage = chat.mesList.pop();
+            dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
+            dmessage.mesDiv.remove();
+        }
     };
 
 

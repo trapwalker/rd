@@ -32,19 +32,20 @@ function onMouseDownMap(mouseEventObject){
     myMap.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
 
     // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
-    radialMenuTimeout = setTimeout(function(){
-        radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+    radialMenuTimeout = setTimeout(function () {
+        if (cookieStorage.enableRadialMenu())
+            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
     }, 400);
 }
 
 
-function onMouseUpMap(mouseEventObject){
+function onMouseUpMap(mouseEventObject) {
     // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
-    if(radialMenuTimeout)
+    if (radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
 
     // Если не вызывалось меню, то поехать в заданную точку
-    if (radialMenu.isHide  && myMap._mouseDowned) {
+    if (radialMenu.isHide && myMap._mouseDowned) {
         if (user.userCar)
             sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
     } else {
@@ -57,16 +58,17 @@ function onMouseUpMap(mouseEventObject){
 }
 
 
-function onMouseMoveMap(mouseEventObject){
-    var pointOfClick =  new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
+function onMouseMoveMap(mouseEventObject) {
+    var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
     // Если флаг нажатия был установлен, то
-    if(myMap._mouseDowned && radialMenu.isHide){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
-        if(distancePoints(myMap.lastDownPoint, pointOfClick) > 50){
+    if (myMap._mouseDowned && radialMenu.isHide) { // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
+        if (distancePoints(myMap.lastDownPoint, pointOfClick) > 50) {
             // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
-            if(radialMenuTimeout)
+            if (radialMenuTimeout)
                 clearTimeout(radialMenuTimeout);
             // Вызвать меню
-            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+            if (cookieStorage.enableRadialMenu())
+                radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
         }
     }
 
@@ -146,6 +148,16 @@ $(document).ready(function () {
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: flagDebug, chatVisible: true, chatActiveID: -2});
 
+    // инициализация и показ модальных окон
+    modalWindow = new ModalWindow({
+        parent: 'modalDiv',
+        back: 'modalBack',
+        modalWelcome: 'modalWelcome',
+        modalOptions: 'modalOptions',
+        modalDeath: 'modalDeath'
+    });
+
+
     // Установка flagDebug из Cookie
     flagDebug = cookieStorage.flagDebug;
 
@@ -162,7 +174,7 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-            dragging: flagDebug,
+            dragging: false,
             doubleClickZoom: false
             //    maxBounds: ([
             //        [50.21, 35.42],
@@ -183,7 +195,7 @@ $(document).ready(function () {
     buttonFullScreen.onclick = FullScreenToggle;
 
     // Включение/Выключение отображения карты
-    buttonMapOnOffBtn.onclick = TileLayerToggle;
+    buttonMapOnOffBtn.onclick = funcModalOptionsShow;
 
     // Кнопка Debug
     buttonDebugOnOff.onclick = DebugToggle;
@@ -197,11 +209,15 @@ $(document).ready(function () {
             parentDiv: 'chatArea',
             height: 550,
             width: 400});
-    chat.addChat(0, 'broadcast');
-    chat.addChat(-1, 'log-push');
-    chat.addChat(-3, 'log-answer');
-    chat.addChat(-4, 'log-rpc');
-    chat.addChat(-2, 'system');
+    chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
+    if (cookieStorage.optionsChatPush)
+        chat.addChat(chat.systemsChats.push.id, chat.systemsChats.push.name);
+    if (cookieStorage.optionsChatSystemLog)
+        chat.addChat(chat.systemsChats.system.id, chat.systemsChats.system.name);
+    if (cookieStorage.optionsChatAnswer)
+        chat.addChat(chat.systemsChats.answer.id, chat.systemsChats.answer.name);
+    if (cookieStorage.optionsChatRPC)
+        chat.addChat(chat.systemsChats.rpc.id, chat.systemsChats.rpc.name);
     chat.setActiveChat(cookieStorage.chatActiveID);
     chat.setVisible(cookieStorage.chatVisible);
     chat.setMessagesHistory(cookieStorage.historyArray);
@@ -223,14 +239,6 @@ $(document).ready(function () {
 
     //alert(window.location);
 
-    // инициализация и показ модальных окон
-    //modalWindow = new ModalWindow({
-    //    parent: 'modalDiv',
-    //    back: 'modalBack',
-    //    modalWelcome: 'modalWelcome',
-    //    modalOptions: 'modalOptions',
-    //    modalDeath: 'modalDeath'
-    //});
 
     //modalWindow.modalWelcomeShow();
 
@@ -260,6 +268,11 @@ function FullScreenToggle() {
     }
 }
 
+
+function funcModalOptionsShow(){
+    modalWindow.modalOptionsShow();
+}
+
 function TileLayerToggle(){
     var jSelector = $('#buttonMapOnOffStatus');
     if(myMap.hasLayer(tileLayerShow)){
@@ -271,6 +284,16 @@ function TileLayerToggle(){
         tileLayerShow.addTo(myMap);
         jSelector.removeClass('buttonMapOnOffStatusOff');
         jSelector.addClass('buttonMapOnOffStatusOn');
+    }
+}
+
+function TileLaterSet() {
+    if (cookieStorage.optionsMapTileVisible) {
+        // Если нужно отображать
+        if (!myMap.hasLayer(tileLayerShow))tileLayerShow.addTo(myMap);
+    }
+    else {
+        if (myMap.hasLayer(tileLayerShow))myMap.removeLayer(tileLayerShow);
     }
 }
 
