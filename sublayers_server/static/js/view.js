@@ -200,8 +200,9 @@ $(document).ready(function () {
     // создание чата
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
-            height: 550,
-            width: 400});
+            height: (cookieStorage.flagDebug ? 550 : 250),
+            width: (cookieStorage.flagDebug ? 400 : 400)
+    });
     chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
     if (cookieStorage.optionsChatPush)
         chat.addChat(chat.systemsChats.push.id, chat.systemsChats.push.name);
