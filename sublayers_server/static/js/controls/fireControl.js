@@ -26,6 +26,8 @@ var FireControl = (function () {
             if (options.allCallBack) this.options.allCallBack = options.allCallBack;
             if (options.intervalRecharge) this.options.intervalRecharge = options.intervalRecharge;
             if (options.sectorCallBackFireRequest) this.options.sectorCallBackFireRequest = options.sectorCallBackFireRequest;
+            if (options._visible !== undefined) this.options._visible = options._visible;
+            if (options._rotated !== undefined) this.options._rotated = options._rotated;
         }
 
         this.sectors = [];
@@ -107,7 +109,7 @@ var FireControl = (function () {
                 self.fCSB.removeClass('fire-control-slide-button-hide');
                 self.fCSB.addClass('fire-control-slide-button-show');
                 self.SVG.setAttribute('display', 'block');
-                self._setRotate(self.options.rotateAngle);
+                self._setRotate((self.getRotate() ? self.options.rotateAngle : (- Math.PI / 2)));
             }
         });
     };
@@ -134,7 +136,7 @@ var FireControl = (function () {
     };
 
 
-    FireControl.prototype.getVisible = function () {
+    FireControl.prototype.getRotate = function () {
         return this.options._rotated;
     };
 

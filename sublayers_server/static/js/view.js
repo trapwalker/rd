@@ -13,7 +13,7 @@ function redrawMap() {
     carMarkerList.draw(clock.getCurrentTime());
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
-    if (!cookieStorage.flagDebug)
+
         if (userCarMarker)
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 

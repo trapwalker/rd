@@ -1,5 +1,4 @@
 .modal-window-parent{
-
 }
 
 .modal-window-hide {
@@ -48,7 +47,7 @@
     overflow-y: auto;
     border: solid 4px darkgreen;
     z-index: 21;
-    background-color: white;
+    background-color: #000000;
 }
 
 
@@ -66,3 +65,63 @@
     background-color: white;
 }
 
+
+
+
+/* Все css стили всех модальных оконо в этой месте!*/
+
+/* css стили для окна приветствия */
+/* конец css стили для окна приветствия*/
+
+
+/* css стили для окна настроек */
+#optionsPageDiv {
+    position: absolute;
+    background-color: black;
+    color: lime;
+    font: bold 12px Arial;
+    padding-left:25px;
+}
+
+#optionsPageDiv p{
+    font-size: 14px;
+    margin-left: 15px;
+}
+
+#optionsPageDiv input {
+    cursor: pointer;
+}
+
+#optionsPageDiv li{
+    list-style: none;
+    margin-bottom: 0.4em;
+}
+
+#optionsPageDiv ul{
+    margin-bottom: 2em;
+}
+
+
+.optionsPageButton {
+    cursor: pointer;
+    opacity: 0.7;
+    position: relative;
+    color: lime;
+    border: solid lime 1px;
+    border-radius: 3px;
+    margin: 3px;
+    float: right;
+    padding: 3px 5px 3px 5px;
+    font: bold 14px Arial;
+}
+
+.optionsPageButton:hover {
+    opacity: 0.95;
+}
+
+
+/* конец стилей настроек */
+
+
+/* css стили для окна смерти */
+/* конец стилей для окна смерти*/

@@ -54,7 +54,8 @@ var Controllers = (function () {
             sectorCallBackShoot: cbForSectorsShoot,
             sectorCallBackRecharged: cbForSectorsRecharged,
             sectorCallBackFireRequest: sendFire,
-            allCallBack: cbForAllBtn
+            allCallBack: cbForAllBtn,
+            _rotated: cookieStorage.optionsFCRotate
         });
 
 

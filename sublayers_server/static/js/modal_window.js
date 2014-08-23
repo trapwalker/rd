@@ -58,7 +58,7 @@ var ModalWindow = (function () {
     ModalWindow.prototype.modalWelcomeLoad = function () {
         // Загрузить информацию из документа в див
         var self = this;
-        this.modalWelcome.load('/static/welcomePage.html', function(){
+        this.modalWelcome.load('/static/modal_window/welcomePage.html', function(){
             // Назначить кнопку закрытия окна
             $('#welcomePageCloseButton').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
@@ -98,64 +98,58 @@ var ModalWindow = (function () {
         optionsSelectAnybody.checked = cookieStorage.optionsSelectAnybody ? true: false;
     };
 
-    ModalWindow.prototype.modalOptionsHide = function(){
+    ModalWindow.prototype.modalOptionsHide = function(saveOptions){
         // выключить фон
         this._modalBackHide();
         // выключить модальное окно Welcome
         this.modalOptions.removeClass('modal-window-options-show');
         this.modalOptions.addClass('modal-window-hide');
-        // Загрузить данные в куки сторадж
+        // Загрузить данные в куки сторадж, если saveOptions == true
+        if(saveOptions) {
+            // Опции, не требующие действий
+            cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
+            cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
+            cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
 
-        // Опции, не требующие действий
-        cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
-        cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
-        cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
+            // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
+            cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
+            if (!cookieStorage.flagDebug)
+                for (; debugMapList.length;) // Очистиить debugMapList и удалить всё с карты
+                    myMap.removeLayer(debugMapList.pop());
 
-        // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
-        cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
-        if (!cookieStorage.flagDebug)
-            for (; debugMapList.length;) // Очистиить debugMapList и удалить всё с карты
-                myMap.removeLayer(debugMapList.pop());
+            // TODO Развыделить все машинки и снова выделить только партийные
+            cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;
 
-        // TODO Развыделить все машинки и снова выделить только партийные
-        cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;
+            // Опции чата. Нужно присваивать и потом удалять или добавлять чат
+            cookieStorage.optionsChatPush = optionsChatPush.checked ? true : false;
+            cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
+            cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
+            cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
+            chat.manageSystemChats(cookieStorage);
 
-        // Опции чата. Нужно присваивать и потом удалять или добавлять чат
-        cookieStorage.optionsChatPush = optionsChatPush.checked ? true : false;
-        cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
-        cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
-        cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
-        chat.manageSystemChats(cookieStorage);
+            // Скрыть или показать тайловый уровень в зависимости от настроек опций
+            cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
+            TileLaterSet();
 
-        // Скрыть или показать тайловый уровень в зависимости от настроек опций
-        cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
-        TileLaterSet();
+            // TODO просто повернуть на 0 (или 90, или минус 90 - узнать!) и присвоить
+            cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
+            controllers.fireControl.setRotated(cookieStorage.optionsFCRotate);
 
-        // TODO просто повернуть на 0 (или 90, или минус 90 - узнать!) и присвоить
-        cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
-        controllers.fireControl.setRotated(cookieStorage.optionsFCRotate);
+            // TODO считать данные о масштабе для отображения лейблов маркера
 
-        // TODO считать данные о масштабе для отображения лейблов маркера
-
-
+        }
     };
 
     ModalWindow.prototype.modalOptionsLoad = function () {
         // Загрузить информацию из документа в див
         var self = this;
-        this.modalOptions.load('/static/optionsPage.html', function(){
+        this.modalOptions.load('/static/modal_window/optionsPage.html', function(){
             // Назначить кнопку закрытия окна
             $('#optionsPageCloseButton').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                //alert('Вы закрыли окно настроек. Ну как хотите...');
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalOptionsHide();
+                event.data.modal.modalOptionsHide(true);
             });
 
             $('#optionsPageCancelButton').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                alert('Вы закрыли окно настроек. Ну как хотите...');
-                // Затем закрыть текущее модельное окно
                 event.data.modal.modalOptionsHide();
             });
 
@@ -188,7 +182,7 @@ var ModalWindow = (function () {
     ModalWindow.prototype.modalDeathLoad = function () {
         // Загрузить информацию из документа в див
         var self = this;
-        this.modalOptions.load('/static/deathPage.html', function(){
+        this.modalOptions.load('/static/modal_window/deathPage.html', function(){
             // Назначить кнопки закрытия окна
             $('#deathPageButtonYes').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
