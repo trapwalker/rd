@@ -62,11 +62,6 @@ var ModalWindow = (function () {
             // Назначить кнопку закрытия окна
             $('#welcomePageCloseButton').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
-               // $('testCheckBox').checked;
-                if(testCheckBox.checked)
-                alert('Вы закрыли окно приветствия. Ну как хотите...');
-                else
-                alert('fail');
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalWelcomeHide();
             });
