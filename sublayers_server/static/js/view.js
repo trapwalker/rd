@@ -236,15 +236,10 @@ $(document).ready(function () {
 
     //alert(window.location);
 
+    // Не показывать окно приветствия в debug режиме
+    if (!cookieStorage.debugMode())
+        modalWindow.modalWelcomeShow();
 
-    //modalWindow.modalWelcomeShow();
-    //modalWindow.modalDeathShow();
-
-
-    // показать ещё раз!
-    //setTimeout(function(){
-    //    modalWindow.modalWelcomeShow();
-    //},10000)
 
 
 });
