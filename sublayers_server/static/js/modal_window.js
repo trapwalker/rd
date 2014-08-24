@@ -163,19 +163,17 @@ var ModalWindow = (function () {
 
 
     ModalWindow.prototype.modalDeathShow = function () {
-        // включить фон
-        this._modalBackShow();
+        // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
+        //this._modalBackShow();
         // включить модальное окно modalOptions
         this.modalDeath.removeClass('modal-window-hide');
         this.modalDeath.addClass('modal-window-death-show');
-        // считать все данные из CookieStorage и занести галочками сюда
-
     };
 
     ModalWindow.prototype.modalDeathHide = function(){
         // выключить фон
-        this._modalBackHide();
-        // выключить модальное окно Welcome
+        //this._modalBackHide();
+        // выключить модальное окно Death
         this.modalDeath.removeClass('modal-window-death-show');
         this.modalDeath.addClass('modal-window-hide');
 
@@ -184,17 +182,11 @@ var ModalWindow = (function () {
     ModalWindow.prototype.modalDeathLoad = function () {
         // Загрузить информацию из документа в див
         var self = this;
-        this.modalOptions.load('/static/modal_window/deathPage.html', function(){
+        this.modalDeath.load('/static/modal_window/deathPage.html', function(){
             // Назначить кнопки закрытия окна
-            $('#deathPageButtonYes').on('click', {modal: self}, function(event){
+            $('#deathPageButtonResp').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
-                alert('Вы закрыли окно настроек. Ну как хотите...');
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalDeathHide();
-            });
-            $('#deathPageButtonNo').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                alert('Вы закрыли окно настроек. Ну как хотите...');
+                sendServConsole('change_car()');
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalDeathHide();
             });

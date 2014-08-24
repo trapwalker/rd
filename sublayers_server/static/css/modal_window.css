@@ -53,16 +53,14 @@
 
 .modal-window-death-show {
     position: absolute;
-    top: 50%;
+    top: 80px;
     left: 50%;
-    height: 400px;
-    width: 600px;
-    margin-left: -300px;
-    margin-top: -200px;
-    overflow-y: auto;
+    height: 80px;
+    width: 300px;
+    margin-left: -150px;
     border: solid 4px darkgreen;
     z-index: 21;
-    background-color: white;
+    background-color: #ffffff;
 }
 
 
@@ -123,5 +121,52 @@
 /* конец стилей настроек */
 
 
+
+
 /* css стили для окна смерти */
+#deathPageDiv {
+    position: absolute;
+    background-color: black;
+    color: lime;
+    font: bold 12px Arial;
+    min-height: 80px;
+    min-width: 300px;
+}
+
+#deathPageImageDeath {
+    position: absolute;
+    left: 0;
+    background: transparent url('/static/img/modal_window_image/mes_win_death_icon.png');
+    height: 70px;
+    width: 70px;
+}
+
+#deathPageRight {
+    right: 0;
+    margin-left: 75px;
+    height: 100%;
+    position: absolute;
+}
+
+#deathPageRightText {
+    margin-top: 10px;
+
+    }
+
+#deathPageButtonResp {
+    cursor: pointer;
+    opacity: 0.7;
+    position: absolute;
+    left: 50%;
+    margin-left: -60px;
+    border: solid lime 1px;
+    border-radius: 3px;
+    padding: 3px 5px 3px 5px;
+    font: bold 14px Arial;
+    bottom: 10px;
+}
+
+#deathPageButtonResp:hover {
+    opacity: 0.95;
+}
 /* конец стилей для окна смерти*/

@@ -13,7 +13,7 @@ function redrawMap() {
     carMarkerList.draw(clock.getCurrentTime());
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
-
+    if(! cookieStorage.optionsDraggingMap) // Если нельзя таскать карту, то переносить. А можно таскать только когда машинка мертва
         if (userCarMarker)
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
@@ -238,6 +238,7 @@ $(document).ready(function () {
 
 
     //modalWindow.modalWelcomeShow();
+    //modalWindow.modalDeathShow();
 
 
     // показать ещё раз!
@@ -283,6 +284,21 @@ function TileLaterSet() {
 //Подключение к серверу (пока просто перезагрузка страницы)
 function ConnectServerToggle() {
     window.location.reload();
+}
+
+
+function setClientState(state){
+    if(state === 'death_car'){
+        // Перевести клиент в состояние, пока машинка мертва
+        cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
+        myMap.dragging.enable(); // разрешить тягать карту
+        return true;
+    }
+    // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
+    cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
+    myMap.dragging.disable(); // запретить двигать карту
+
+
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах

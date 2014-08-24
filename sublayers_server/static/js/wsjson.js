@@ -42,8 +42,8 @@ WSJSON = (function () {
     WSJSON.prototype.sendMess = function(aMess){
         if(user.userCar.hp > 0)
             this.socket.send(JSON.stringify(aMess));
-        else
-            alert('Вы не можете этого сделать, так как Ваша машина сломана.');
+        //else
+            //alert('Вы не можете этого сделать, так как Ваша машина сломана.');
     };
 
     return WSJSON;
@@ -437,6 +437,8 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
         user.userCar.hp = aHP;
         if(user.userCar.hp <= 0){
             userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
+            setClientState('death_car');
+            modalWindow.modalDeathShow();
         }else{
             if(oldHP != aHP) // Если хп изменилось, то мигнуть маркером
                 flashMarker(userCarMarker.marker);
@@ -473,6 +475,7 @@ function getWeapons(data) {
 }
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible) {
+    var fireSectors;
     if(! user.userCar) {
         user.userCar = new UserCar(uid,       //ID машинки
             aType,       //Тип машинки
@@ -481,7 +484,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
             aTrack);   //Текущая траектория
 
 
-        var fireSectors = getWeapons(aWeapons);
+        fireSectors = getWeapons(aWeapons);
 
         // Добавить сектора в userCar
         user.userCar.AddFireSectors(fireSectors);
@@ -511,8 +514,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
     }
     else {
         // значит пришёл второй initMessage, значит нужно переопределить все параметры
-
-        // TODO очистить все-все списки, которые хранятся на клиенте
+        // Переопределение параметров клиента
+        setClientState();
+        // очистить все-все списки, которые хранятся на клиенте
         carMarkerList.clearList();
         // Разбиндить все машинки для всех пользователей
         ownerList.clearOwnerList();
@@ -525,7 +529,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
             aTrack);   //Текущая траектория
 
         // Добавить сектора в userCar
-        var fireSectors = getWeapons(aWeapons);
+        fireSectors = getWeapons(aWeapons);
         user.userCar.AddFireSectors(fireSectors);
 
         // Переинициализация маркера машинки

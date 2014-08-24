@@ -275,7 +275,8 @@ var SectorsView = (function () {
 
     SectorsView.prototype.setSelectedToNormalState = function () {
         // сделать нормальным старый сектор
-        this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
+        if (this.currSectorActive)
+            this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
     };
 
     SectorsView.prototype._getSectorByID = function(fireSector){

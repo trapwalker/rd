@@ -39,6 +39,9 @@ var LocalCookieStorage = (function(){
         this.optionsSelectAnybody = defOptions.optionsSelectAnybody;
         this.levelZoomForVisibleLabel = defOptions.levelZoomForVisibleLabel;
 
+        // Состояние тягания карты. dragging можно делать только когда машинка мертва
+        this.optionsDraggingMap = false;
+
 
         this.load();
     }
@@ -244,7 +247,7 @@ var LocalCookieStorage = (function(){
 
     // optionsRMVisible
     LocalCookieStorage.prototype.enableRadialMenu = function(){
-        return this.optionsRMVisible;
+        return this.optionsRMVisible && (!this.optionsDraggingMap);
     };
 
     // levelZoomForVisibleLabel
