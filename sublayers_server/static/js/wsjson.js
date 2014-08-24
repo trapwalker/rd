@@ -531,7 +531,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
         // Переинициализация маркера машинки
         userCarMarker.setNewParams({
             position: myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()),
-            tailEnable: (myMap.getZoom() > levelZoomForVisible),
+            tailEnable: (cookieStorage.visibleLabel()),
             _map: myMap,
             radiusView: radius_visible,
             carID: user.userCar.ID,

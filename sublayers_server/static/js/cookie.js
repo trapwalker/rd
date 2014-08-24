@@ -15,7 +15,8 @@ var LocalCookieStorage = (function(){
             optionsMapTileVisible: true,
             optionsFCRotate: true,
             optionsRMVisible: true,
-            optionsSelectAnybody: false
+            optionsSelectAnybody: false,
+            levelZoomForVisibleLabel: 6
         };
 
 
@@ -36,6 +37,7 @@ var LocalCookieStorage = (function(){
         this.optionsFCRotate = defOptions.optionsFCRotate;
         this.optionsRMVisible = defOptions.optionsRMVisible;
         this.optionsSelectAnybody = defOptions.optionsSelectAnybody;
+        this.levelZoomForVisibleLabel = defOptions.levelZoomForVisibleLabel;
 
 
         this.load();
@@ -60,6 +62,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsFCRotate', (this.optionsFCRotate ? 1 : 0));
         this.setCookie('optionsRMVisible', (this.optionsRMVisible ? 1 : 0));
         this.setCookie('optionsSelectAnybody', (this.optionsSelectAnybody ? 1 : 0));
+        this.setCookie('levelZoomForVisibleLabel', this.levelZoomForVisibleLabel);
 
     };
 
@@ -138,6 +141,11 @@ var LocalCookieStorage = (function(){
         var optionsSelectAnybody = this.getCookie('optionsSelectAnybody');
         if (optionsSelectAnybody !== undefined)
             this.optionsSelectAnybody = (optionsSelectAnybody == 1);
+
+        // levelZoomForVisibleLabel
+        var levelZoomForVisibleLabel = this.getCookie('levelZoomForVisibleLabel');
+        if (levelZoomForVisibleLabel !== undefined)
+            this.levelZoomForVisibleLabel = levelZoomForVisibleLabel;
 
     };
 
@@ -237,6 +245,11 @@ var LocalCookieStorage = (function(){
     // optionsRMVisible
     LocalCookieStorage.prototype.enableRadialMenu = function(){
         return this.optionsRMVisible;
+    };
+
+    // levelZoomForVisibleLabel
+    LocalCookieStorage.prototype.visibleLabel = function(){
+        return (myMap.getZoom() > this.levelZoomForVisibleLabel);
     };
 
 

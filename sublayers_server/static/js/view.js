@@ -104,7 +104,7 @@ function onZoomEnd(event) {
         controllers.zoomSetSlider.setZoom(myMap.getZoom());
 
     // если мы отдалились далеко, то скрыть все лейблы и показывать их только по наведению
-    var noHide = myMap.getZoom() > levelZoomForVisible;
+    var noHide = cookieStorage.visibleLabel();
     for (var i in listMapObject.objects) {
         if (listMapObject.exist(i)) {
             listMapObject.objects[i].marker.setLabelNoHide(noHide);
@@ -326,7 +326,6 @@ var timer;
 var listMapObject;
 var ownerList;
 
-var levelZoomForVisible = 5;
 var levelZoomForVisibleTail = 8;
 
 // радиальноe меню

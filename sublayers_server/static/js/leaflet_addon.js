@@ -35,10 +35,10 @@ function getCarMarker(aCar, aMap) {
     if (aCar.owner) {
         var party_str = "";
         if (aCar.owner.party.name.length > 2)party_str = '[' + aCar.owner.party.name + ']';
-        newMarker.bindLabel(aCar.owner.login + test_html_str + party_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
+        newMarker.bindLabel(aCar.owner.login + test_html_str + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
     }
     else
-        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
+        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
     //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
@@ -57,7 +57,7 @@ function onMouseOverForLabels(){
 }
 
 function onMouseOutForLabels(){
-    this.setLabelNoHide(myMap.getZoom() > levelZoomForVisible);
+    this.setLabelNoHide(cookieStorage.visibleLabel());
 }
 
 function carInfoClickEvent(event){
