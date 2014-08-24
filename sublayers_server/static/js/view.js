@@ -13,7 +13,7 @@ function redrawMap() {
     carMarkerList.draw(clock.getCurrentTime());
 
     // Перенос центра карты в центр маркера-спектракуса - выбранный маркер - по умолчанию - userCarMarker.marker
-    if (!flagDebug)
+    if(! cookieStorage.optionsDraggingMap) // Если нельзя таскать карту, то переносить. А можно таскать только когда машинка мертва
         if (userCarMarker)
             myMap.panTo(userCarMarker.marker.getLatLng(), {animate: false});
 
@@ -32,46 +32,50 @@ function onMouseDownMap(mouseEventObject){
     myMap.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
 
     // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
-    radialMenuTimeout = setTimeout(function(){
-        radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+    radialMenuTimeout = setTimeout(function () {
+        if (cookieStorage.enableRadialMenu())
+            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
     }, 400);
 }
 
 
-function onMouseUpMap(mouseEventObject){
+function onMouseUpMap(mouseEventObject) {
     // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
-    if(radialMenuTimeout)
+    if (radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
 
     // Если не вызывалось меню, то поехать в заданную точку
-    if (radialMenu.isHide  && myMap._mouseDowned) {
+    if (radialMenu.isHide && myMap._mouseDowned) {
         if (user.userCar)
             sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
     } else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         radialMenu.hideMenu(true);
+        userCarMarker.sectorsView.setSelectedToNormalState();
     }
     // фолсим флаг нажатия
     myMap._mouseDowned = false;
 }
 
 
-function onMouseMoveMap(mouseEventObject){
-    var pointOfClick =  new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
+function onMouseMoveMap(mouseEventObject) {
+    var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
     // Если флаг нажатия был установлен, то
-    if(myMap._mouseDowned && radialMenu.isHide){ // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
-        if(distancePoints(myMap.lastDownPoint, pointOfClick) > 50){
+    if (myMap._mouseDowned && radialMenu.isHide) { // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
+        if (distancePoints(myMap.lastDownPoint, pointOfClick) > 50) {
             // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
-            if(radialMenuTimeout)
+            if (radialMenuTimeout)
                 clearTimeout(radialMenuTimeout);
             // Вызвать меню
-            radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
+            if (cookieStorage.enableRadialMenu())
+                radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
         }
     }
 
     if(! radialMenu.isHide) { // Если меню уже открыто
         // определяем угол и подсвечиваем выбранный сектор
-        radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
+        var sectorUid = radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
+        userCarMarker.sectorsView.setSelectedState({uid: sectorUid});
     }
 }
 
@@ -85,6 +89,7 @@ function onMouseOutMap(){
     // если фокус ушёл с карты, то закрыть меню
     if (! radialMenu.isHide) {
         radialMenu.hideMenu(false);
+        userCarMarker.sectorsView.setSelectedToNormalState();
     }
 }
 
@@ -99,7 +104,7 @@ function onZoomEnd(event) {
         controllers.zoomSetSlider.setZoom(myMap.getZoom());
 
     // если мы отдалились далеко, то скрыть все лейблы и показывать их только по наведению
-    var noHide = myMap.getZoom() > levelZoomForVisible;
+    var noHide = cookieStorage.visibleLabel();
     for (var i in listMapObject.objects) {
         if (listMapObject.exist(i)) {
             listMapObject.objects[i].marker.setLabelNoHide(noHide);
@@ -128,7 +133,8 @@ function createTileLayer(storage) {
             opacity: 0.5,
             maxZoom: 7});
     }
-    tileLayerShow.addTo(myMap);
+    if(cookieStorage.optionsMapTileVisible)
+        tileLayerShow.addTo(myMap);
 }
 
 $(document).ready(function () {
@@ -141,10 +147,16 @@ $(document).ready(function () {
     }
 
     // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage({zoom: 15, flagDebug: flagDebug, chatVisible: true, chatActiveID: -2});
+    cookieStorage = new LocalCookieStorage();
 
-    // Установка flagDebug из Cookie
-    flagDebug = cookieStorage.flagDebug;
+    // инициализация и показ модальных окон
+    modalWindow = new ModalWindow({
+        parent: 'modalDiv',
+        back: 'modalBack',
+        modalWelcome: 'modalWelcome',
+        modalOptions: 'modalOptions',
+        modalDeath: 'modalDeath'
+    });
 
     // Инициализация.
     ModelInit();
@@ -159,7 +171,7 @@ $(document).ready(function () {
             attributionControl: false,
             keyboard: false,
             scrollWheelZoom: "center",
-            dragging: flagDebug,
+            dragging: false,
             doubleClickZoom: false
             //    maxBounds: ([
             //        [50.21, 35.42],
@@ -179,26 +191,28 @@ $(document).ready(function () {
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
 
-    // Включение/Выключение отображения карты
-    buttonMapOnOffBtn.onclick = TileLayerToggle;
-
-    // Кнопка Debug
-    buttonDebugOnOff.onclick = DebugToggle;
+    // Включение/Выключение отображения настроек игры
+    buttonOptions.onclick = funcModalOptionsShow;
 
     // Кнопка подключения к серверу (пока просто перезагружает страницу)
-    buttonConnectServerBtn.onclick = ConnectServerToggle;
+    buttonConnectServer.onclick = ConnectServerToggle;
 
 
     // создание чата
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
-            height: 550,
-            width: 400});
-    chat.addChat(0, 'broadcast');
-    chat.addChat(-1, 'log-push');
-    chat.addChat(-3, 'log-answer');
-    chat.addChat(-4, 'log-rpc');
-    chat.addChat(-2, 'system');
+            height: (cookieStorage.flagDebug ? 550 : 250),
+            width: (cookieStorage.flagDebug ? 400 : 400)
+    });
+    chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
+    if (cookieStorage.optionsChatPush)
+        chat.addChat(chat.systemsChats.push.id, chat.systemsChats.push.name);
+    if (cookieStorage.optionsChatSystemLog)
+        chat.addChat(chat.systemsChats.system.id, chat.systemsChats.system.name);
+    if (cookieStorage.optionsChatAnswer)
+        chat.addChat(chat.systemsChats.answer.id, chat.systemsChats.answer.name);
+    if (cookieStorage.optionsChatRPC)
+        chat.addChat(chat.systemsChats.rpc.id, chat.systemsChats.rpc.name);
     chat.setActiveChat(cookieStorage.chatActiveID);
     chat.setVisible(cookieStorage.chatVisible);
     chat.setMessagesHistory(cookieStorage.historyArray);
@@ -214,8 +228,18 @@ $(document).ready(function () {
 
 
     window.onbeforeunload = function (e) {
+        alert('do');
         cookieStorage.save();
+        alert('posle');
     };
+
+
+    //alert(window.location);
+
+    // Не показывать окно приветствия в debug режиме
+    if (!cookieStorage.debugMode())
+        modalWindow.modalWelcomeShow();
+
 
 
 });
@@ -237,45 +261,39 @@ function FullScreenToggle() {
     }
 }
 
-function TileLayerToggle(){
-    var jSelector = $('#buttonMapOnOffStatus');
-    if(myMap.hasLayer(tileLayerShow)){
-        myMap.removeLayer(tileLayerShow);
-        jSelector.removeClass('buttonMapOnOffStatusOn');
-        jSelector.addClass('buttonMapOnOffStatusOff');
-    }
-    else {
-        tileLayerShow.addTo(myMap);
-        jSelector.removeClass('buttonMapOnOffStatusOff');
-        jSelector.addClass('buttonMapOnOffStatusOn');
-    }
+
+function funcModalOptionsShow(){
+    modalWindow.modalOptionsShow();
 }
 
-
-function DebugToggle(){
-    if(flagDebug){
-        // Выключить всю Debug информацию
-        flagDebug=false;
-        // Очистиить debugMapList и удалить всё с карты
-        for(;debugMapList.length;)
-            myMap.removeLayer(debugMapList.pop());
-        // Включить dragging
-        myMap.dragging.disable();
-
+function TileLaterSet() {
+    if (cookieStorage.optionsMapTileVisible) {
+        // Если нужно отображать
+        if (!myMap.hasLayer(tileLayerShow))tileLayerShow.addTo(myMap);
     }
     else {
-        // Включить всю Debug информацию
-        flagDebug = true;
-        // Выключить dragging
-        myMap.dragging.enable();
-
-
+        if (myMap.hasLayer(tileLayerShow))myMap.removeLayer(tileLayerShow);
     }
 }
 
 //Подключение к серверу (пока просто перезагрузка страницы)
 function ConnectServerToggle() {
-    location.reload();
+    window.location.reload();
+}
+
+
+function setClientState(state){
+    if(state === 'death_car'){
+        // Перевести клиент в состояние, пока машинка мертва
+        cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
+        myMap.dragging.enable(); // разрешить тягать карту
+        return true;
+    }
+    // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
+    cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
+    myMap.dragging.disable(); // запретить двигать карту
+
+
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
@@ -304,7 +322,6 @@ var wsjson;
 var rpcCallList;
 var tileLayerShow;
 var controllers;
-var flagDebug = false;
 var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
@@ -320,12 +337,14 @@ var timer;
 var listMapObject;
 var ownerList;
 
-var levelZoomForVisible = 5;
 var levelZoomForVisibleTail = 8;
 
 // радиальноe меню
 var radialMenu;
 var radialMenuTimeout;
+
+// модальное окно
+var modalWindow;
 
 
 

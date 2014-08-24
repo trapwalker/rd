@@ -1,8 +1,69 @@
+/* Все размеры и отступы взяты от растровой картинки
+   и забиты руками (быдло верстка форевер) */
+
 .fire-control-parent {
     position: absolute;
-    bottom: 30px;
+    bottom: 233px;
     left: 50%;
     pointer-events: none;
+    margin-left: -175px;
+}
+
+#fireControlTop {
+    position: absolute;
+    margin-left: 57px;
+    height: 190px;
+    width: 237px;
+    background: transparent url('/static/img/fire_control/battle_hud_glass.png') 100% 100% no-repeat;
+    background-position: top left;
+    bottom: -208px;
+}
+
+#fireControlBottom {
+    position: absolute;
+    height: 48px;
+    width: 351px;
+    background: transparent url('/static/img/fire_control/battle_hud_base.png') 100% 100% no-repeat;
+    top: 185px;
+    pointer-events: auto;
+}
+
+#fireControlSlideButton {
+    position: absolute;
+    height: 27px;
+    width: 36px;
+    top: 17px;
+    left: 277px;
+}
+
+.fire-control-slide-button-show {
+     background: transparent url('/static/img/fire_control/battle_hud_btn_down_normal.png') 100% 100% no-repeat;
+ }
+
+.fire-control-slide-button-show:hover {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_down_over.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-show:active {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_down_pressed.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-hide {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_normal.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-hide:hover {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_over.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-hide:active {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_pressed.png') 100% 100% no-repeat;
+}
+
+.fire-control-svg {
+    position: absolute;
+    top: 22px;
+    left: 44px;
 }
 
 .fire-control-background {

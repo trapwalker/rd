@@ -132,6 +132,11 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def special_contacts_search(self):
         for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
+            assert (
+                motion.start_time is not None
+                and motion.duration is not None
+                and motion.is_started
+            )
             motion.detect_contacts_with_static(self)
 
     def contacts_search(self):

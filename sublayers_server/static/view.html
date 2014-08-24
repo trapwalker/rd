@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="css/controls/fireControl.css"/>
     <link rel="stylesheet" href="css/third_party/leadlet_label.css"/>
     <link rel="stylesheet" href="css/controls/radialMenu.css"/>
+    <link rel="stylesheet" href="css/modal_window.css"/>
 
     <script src="js/third_party/leaflet-src.js"></script>
     <script src="js/third_party/jquery.min.js"></script>
@@ -40,6 +41,7 @@
     <script src="js/map_base_local.js"></script>
     <script src="js/cookie.js"></script>
     <script src="js/controls/radialMenu.js"></script>
+    <script src="js/modal_window.js"></script>
 
 </head>
 <body>
@@ -47,18 +49,11 @@
 <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
 <div id="divButtons">
     <div id="buttonFullScreen" class="buttonFullScreenOn"></div>
-    <div id="buttonMapOnOff" class="sublayers-unclickable">
-        <div id="buttonMapOnOffStatus"  class="buttonMapOnOffStatusOn"></div>
-        <div id="buttonMapOnOffBtn" class="sublayers-clickable"></div>
-    </div>
-    <div id="buttonDebugOnOff" class="sublayers-clickable"></div>
+    <div id="buttonOptions" class="sublayers-clickable"></div>
 </div>
 <div id="divScaleCarFuel"></div>
 <div id="divScaleCarHealth"></div>
-<div id="buttonConnectServer" class="sublayers-unclickable">
-    <div id="buttonConnectServerBtn" class="sublayers-clickable"></div>
-    <div id="buttonConnectServerStatus" class="buttonConnectServerStatusOn"></div>
-</div>
+<div id="buttonConnectServer" class="sublayers-clickable"></div>
 <div id="chatArea"></div>
 <div id="fireControlArea"></div>
 <div id="speedSetDivForSpeedSlider"></div>
@@ -66,6 +61,12 @@
 <div id="radialMenuDiv" style="position:absolute;">
     <svg id="radialMenuSVG">
     </svg>
+</div>
+<div id="modalDiv">
+    <div id="modalBack"></div>
+    <div id="modalWelcome"></div>
+    <div id="modalOptions"></div>
+    <div id="modalDeath"></div>
 </div>
 </body>
 </html>

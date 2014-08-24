@@ -27,17 +27,18 @@ L.rotatedMarker = function (pos, options) {
 
 // создание маркера
 function getCarMarker(aCar, aMap) {
-    var test_html_str = '<div id="idCar_' + aCar.ID +
-        '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
+    //var test_html_str = '<div id="idCar_' + aCar.ID +
+    //    '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
+    var test_html_str = "";
     var newMarker = L.rotatedMarker([0, 0]);
     newMarker.setIcon(iconsLeaflet.icon_moving_V2);
     if (aCar.owner) {
         var party_str = "";
         if (aCar.owner.party.name.length > 2)party_str = '[' + aCar.owner.party.name + ']';
-        newMarker.bindLabel(aCar.owner.login + test_html_str + party_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
+        newMarker.bindLabel(aCar.owner.login + test_html_str + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
     }
     else
-        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'}).setLabelNoHide(aMap.getZoom() > levelZoomForVisible);
+        newMarker.bindLabel(aCar.ID + test_html_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
     //newMarker.on('popupopen', onMarkerPopupOpen);
     newMarker.on('mouseover', onMouseOverForLabels);
     newMarker.on('mouseout', onMouseOutForLabels);
@@ -56,14 +57,7 @@ function onMouseOverForLabels(){
 }
 
 function onMouseOutForLabels(){
-    this.setLabelNoHide(myMap.getZoom() > levelZoomForVisible);
-}
-
-function carInfoClickEvent2(event){
-    var car = event.data.car;
-    //alert('Я машинка номер' + car.ID + '   Мой хозяин зовут '+ car.owner.login);
-    //alert('aaaaaaaaaaaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeeeeeee');
-    return false;
+    this.setLabelNoHide(cookieStorage.visibleLabel());
 }
 
 function carInfoClickEvent(event){
@@ -90,21 +84,22 @@ function flashMarker(marker){
 }
 
 function onMouseClickMarker(event){
-    if (listMapObject.exist(this.carID)) {
-        var car = listMapObject.objects[this.carID];
-        if(car.backLight)
-            carMarkerList.delFromBackLight(car);
-        else
-            carMarkerList.addToBackLight(car);
+    if(cookieStorage.optionsSelectAnybody) {
+        if (listMapObject.exist(this.carID)) {
+            var car = listMapObject.objects[this.carID];
+            if (car.backLight)
+                carMarkerList.delFromBackLight(car);
+            else
+                carMarkerList.addToBackLight(car);
 
-        // тест эффекта мигания маркера
-        this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
-        var self = this;
-        setTimeout(function () {
-            self.setOpacity(1);
-        }, 500);
+            // тест эффекта мигания маркера
+            this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
+            var self = this;
+            setTimeout(function () {
+                self.setOpacity(1);
+            }, 500);
+        }
     }
-
     if (event.originalEvent.stopPropagation) {
         // Вариант стандарта W3C:
         event.originalEvent.stopPropagation()

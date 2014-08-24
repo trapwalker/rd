@@ -104,64 +104,22 @@ body{
     background: transparent url('/static/img/misc_button/btn_no_fullscreen_pressed.png') 100% 100% no-repeat;
 }
 
-#buttonMapOnOff {
+#buttonOptions {
     position: absolute;
     top: 100px;
     right: 15px;
     width: 62px;
     height: 62px;
+    background: transparent url('/static/img/misc_button/btn_options_normal.png') 100% 100% no-repeat;
 }
 
-
-#buttonMapOnOffBtn {
-    position: absolute;
-    background: transparent url('/static/img/misc_button/btn_drawmap_normal.png') 100% 100% no-repeat;
-    width: 62px;
-    height: 62px;
+#buttonOptions:hover {
+    background: transparent url('/static/img/misc_button/btn_options_over.png') 100% 100% no-repeat;
 }
 
-#buttonMapOnOffBtn:hover {
-    background: transparent url('/static/img/misc_button/btn_drawmap_over.png') 100% 100% no-repeat;
+#buttonOptions:active {
+    background: transparent url('/static/img/misc_button/btn_options_pressed.png') 100% 100% no-repeat;
 }
-
-#buttonMapOnOffBtn:active {
-    background: transparent url('/static/img/misc_button/btn_drawmap_pressed.png') 100% 100% no-repeat;
-}
-
-.buttonMapOnOffStatusOn, .buttonMapOnOffStatusOff {
-    position: absolute;
-    left: -15px;
-    top: 5px;
-    width: 13px;
-    height: 13px;
-}
-
-
-.buttonMapOnOffStatusOn {
-    background: transparent url('/static/img/misc_button/ico_status_on.png') 100% 100% no-repeat;
-}
-
-.buttonMapOnOffStatusOff {
-    background: transparent url('/static/img/misc_button/ico_status_off.png') 100% 100% no-repeat;
-}
-
-#buttonDebugOnOff {
-    position: absolute;
-    top: 165px;
-    right: 15px;
-    width: 62px;
-    height: 62px;
-    background: transparent url('/static/img/misc_button/btn_bug_normal.png') 100% 100% no-repeat;
-}
-
-#buttonDebugOnOff:hover {
-    background: transparent url('/static/img/misc_button/btn_bug_over.png') 100% 100% no-repeat;
-}
-
-#buttonDebugOnOff:active {
-    background: transparent url('/static/img/misc_button/btn_bug_pressed.png') 100% 100% no-repeat;
-}
-
 
 input:focus {
     outline: none;
@@ -181,37 +139,15 @@ input:focus {
     left: 15px;
     width: 62px;
     height: 62px;
+    background: transparent url('/static/img/misc_button/btn_connection2_normal.png') 100% 100% no-repeat;
 }
 
-#buttonConnectServerBtn {
-    position: absolute;
-    background: transparent url('/static/img/misc_button/btn_connection_normal.png') 100% 100% no-repeat;
-    width: 62px;
-    height: 62px;
+#buttonConnectServer:hover {
+    background: transparent url('/static/img/misc_button/btn_connection2_over.png') 100% 100% no-repeat;
 }
 
-#buttonConnectServerBtn:hover {
-    background: transparent url('/static/img/misc_button/btn_connection_over.png') 100% 100% no-repeat;
-}
-
-#buttonConnectServerBtn:active {
-    background: transparent url('/static/img/misc_button/btn_connection_pressed.png') 100% 100% no-repeat;
-}
-
-#buttonConnectServerStatus {
-    position: absolute;
-    left: 65px;
-    top: 5px;
-    width: 13px;
-    height: 13px;
-}
-
-.buttonConnectServerStatusOn {
-    background: transparent url('/static/img/misc_button/ico_status_on.png') 100% 100% no-repeat;
-}
-
-.buttonConnectServerStatusOff {
-    background: transparent url('/static/img/misc_button/ico_status_off.png') 100% 100% no-repeat;
+#buttonConnectServer:active {
+    background: transparent url('/static/img/misc_button/btn_connection2_pressed.png') 100% 100% no-repeat;
 }
 
 .sublayers-clickable {
