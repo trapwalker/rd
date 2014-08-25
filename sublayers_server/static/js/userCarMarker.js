@@ -163,7 +163,7 @@ var SectorsView = (function () {
 
     SectorsView.prototype.drawSectors = function (aNewPoint, aNewAngle) {
         this.options.sectors.forEach(function (sector) {
-            var tempCenter = this.map.project(this.center, this.map.getMaxZoom());
+            var tempCenter = this.center;
             var tempAngle = this.angle + sector._fireSector.directionAngle;
 
             var tempPointsAll = [];
@@ -468,7 +468,7 @@ var UserCarMarker = (function () {
         this.marker.setIcon(iconsLeaflet.icon_moving_V1);
 
         // Создание шлейфа не требуется, только обновить параметр отображения
-        //TODO: Потом рзобраься с хвостиком.
+        //TODO: Хвостик. Потом рзобраься с хвостиком: переделать или удалить. Вынесено на обсуждение после демоверсии
         //this.tail.setActive(this.options.tailEnable);
         this.tail.setActive(false);
 
@@ -486,8 +486,6 @@ var UserCarMarker = (function () {
     }
 
     UserCarMarker.prototype.draw = function (aClockTime) {
-
-        // TODO: Пересмотреть все функции в этом методе на их параметры, связанные с LatLng/project/unproject
         this.currentUserCarPoint = user.userCar.getCurrentCoord(aClockTime);
         this.currentUserCarAngle = user.userCar.getCurrentDirection(aClockTime);
         this.currentUserCarLatLng = this.options._map.unproject([this.currentUserCarPoint.x, this.currentUserCarPoint.y],
@@ -502,17 +500,17 @@ var UserCarMarker = (function () {
         this.marker.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка шлейфа
-        // TODO Позже раскоментить, когда решим что с ним делать
+        // TODO: Хвостик. Позже раскоментить, когда решим что с ним делать
         //this.tail.drawTail(this.currentUserCarLatLng); // только на максимальных приближениях будет рисоваться хвост
 
         // Перерисовка круга обзора
         this.circleView.setLatLng(this.currentUserCarLatLng);
 
         // Перерисовка секторов стрельбы
-        this.sectorsView.drawSectors(this.currentUserCarLatLng, this.currentUserCarAngle);
+        this.sectorsView.drawSectors(this.currentUserCarPoint, this.currentUserCarAngle);
 
         // Перерисовка траектории
-        if(! cookieStorage.flagDebug)
+        if(! cookieStorage.debugMode())
             this.trackView.draw(this.currentUserCarLatLng);
     }
 

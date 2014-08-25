@@ -142,7 +142,6 @@ var CarMarkerList = (function () {
 
     // Метод, который управляет добавлением/удалением/апдейтом машинок в секторах радара
     // Сделано тут, т.к. для перерисовки нужны distance и угол fi - а они тут сразу и вычисляются
-    // TODO потестить попадание машинок в каждый из секторов, отключая сектора на сервере
     CarMarkerList.prototype.drawCarInSector = function(car, position) {
         // Проверить на вхождение в сектора
         var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
@@ -198,7 +197,6 @@ var CarMarkerList = (function () {
     }
 
     CarMarkerList.prototype.getListIDsForShoot = function (sectorUid) {
-        //TODO: Переделать выстрел по Пати
         var listIDs = [];
         // Для всех машинок
         for (var i in listMapObject.objects)

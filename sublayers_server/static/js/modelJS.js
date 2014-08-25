@@ -296,7 +296,6 @@ var Clock = (function () {
 })();
 
 // Владелец машины
-// TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
 var Owner = (function () {
     function Owner(uid, login, aParty) {
         this.uid = uid;
@@ -315,7 +314,7 @@ var Owner = (function () {
     Owner.prototype.unbindCar = function (aCar) {
         for (var i = 0; i < this.cars.length; i++)
             if (this.cars[i].ID == aCar.ID) {
-                this.cars.splice(i, 1); // TODO: проверить, ту ли машинку здесь мы удаляем
+                this.cars.splice(i, 1);
                 aCar.owner = null;
             }
         return this;

@@ -280,7 +280,7 @@ function getTrack(data){
         }
 
 
-        direction = data.motion.direction ? data.motion.direction : 0; // TODO: сделать вылет с ошибкой
+        direction = data.motion.direction ? data.motion.direction : 0;
 
         // Если движение по дуге
         if(data.motion.arc) {
@@ -318,15 +318,12 @@ function getTrack(data){
         }
     }
 
-
-    // TODO: привести всё к общему виду. При STOP должен присылаться STOP
-
     if (data.position)
         position = new Point(data.position.x, data.position.y);
     else
         position = new Point(0, 0);
 
-    direction = data.direction ? data.direction : 0; // TODO: сделать вылет с ошибкой
+    direction = data.direction ? data.direction : 0;
 
     if (aTrack == null) {
         aTrack = new MoveLine(
@@ -401,7 +398,7 @@ function getCircleMotion(motion){
     );
 
 }
-// TODO: продумать состояние машинки "убит".
+// Сделано состояние клиента "убит", значит машинка юзера убита.
 // Возможно сделать метод для машинки, который будет вызываться и переводить её в это состояние,
 // т.е. менять там иконку и возможно другие параметры.
 function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
@@ -465,8 +462,7 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
 function getWeapons(data) {
     var sectors = [];
     data.forEach(function (weapon, index) {
-            // FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge)
-            // TODO: ввести позже правильный uid сектора и правильный речардж, когда будет присылаться
+            // TODO: ввести позже речардж сектора, когда будет присылаться
             var sector = new FireSector(weapon.direction, gradToRad(weapon.sector_width), weapon.r, index, 2000);
             sector.damage = weapon.damage;
             this.sectors.push(sector);

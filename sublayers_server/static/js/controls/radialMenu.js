@@ -196,7 +196,7 @@ var RadialMenu = (function(){
     };
 
 
-    // TODO: в wsjson вызвать функцию, которая по углам сделает соответствие айдишникам секторов
+    // Устанавливает правильные id секторов в радиальном меню. Вызывается при инициализации машинки
     RadialMenu.prototype.setIDSectorsWithAngle = function(sectors){
         this.sectors.forEach(function (sector) {
             for (var j = 0; j < this.sectors.length; j++)
