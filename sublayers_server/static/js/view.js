@@ -165,7 +165,7 @@ $(document).ready(function () {
 
     myMap = L.map('map',
         {
-            minZoom: 3,
+            minZoom: 2,
             maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
