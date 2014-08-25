@@ -255,7 +255,7 @@ var SectorsView = (function () {
 
     SectorsView.prototype.setSelectedState = function (fireSector) {
         var sector = this._getSectorByID(fireSector);
-        if (sector)
+        if (sector) {
             if (!this.currSectorActive && sector) {
                 this.currSectorActive = sector;
                 // Установить заселекченное состояние
@@ -271,6 +271,7 @@ var SectorsView = (function () {
                     this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.5});
                 }
             }
+        }
     };
 
     SectorsView.prototype.setSelectedToNormalState = function () {
