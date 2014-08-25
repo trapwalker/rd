@@ -57,10 +57,14 @@ class AgentAPI(API):
         if self.agent.connection:
             self.agent.connection.write_message(serialize(make_push_package([InitMessage(agent=self.agent)])))
 
-    def make_car(self, position=None, position_sigma=Point(100, 100)):
+    def make_car(self, position=None, position_sigma=Point(100, 100)): 
+        if self.agent.party.name == 'Band':
+            pointForStart = Point(16800, 19000)
+        else:
+            pointForStart = Point(8170, 21200)
         self.car = units.Bot(
             server=self.agent.server,
-            position=Point.random_gauss(position or Point(16000, 18000), position_sigma),
+            position=Point.random_gauss(position or pointForStart, position_sigma),
             #observing_range=1000,
             owner=self.agent,
             weapons=[

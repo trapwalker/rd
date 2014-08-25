@@ -47,7 +47,7 @@ class PartyDispatcher(dict):
 
     def __init__(self, parties=None):
         if parties is None:
-            parties = [Party(u'Good'), Party(u'Bad')]
+            parties = [Party(u'Corp'), Party(u'Band')]
 
         self.update({party.name: party for party in parties})
 
