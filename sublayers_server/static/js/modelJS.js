@@ -6,14 +6,67 @@ var __extends = this.__extends || function (d, b) {
 };
 
 
+var ListMapObject = (function () {
+    function ListMapObject() {
+        this.objects = new Array();
+    }
+
+
+    ListMapObject.prototype.add = function (aObject) {
+        this.objects[aObject.ID] = aObject;
+    };
+
+
+    ListMapObject.prototype.del = function (aID) {
+        delete this.objects[aID];
+    };
+
+
+    ListMapObject.prototype.exist = function (aID) {
+        if (this.objects[aID] != null) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+
+    ListMapObject.prototype.setCarHP = function (aID, aHP) {
+        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
+            this.objects[aID].hp = aHP;
+        }
+    };
+
+
+    ListMapObject.prototype.getCarHP = function (aID) {
+        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
+            return this.objects[aID].hp;
+        }
+        return -1;
+    };
+
+
+    ListMapObject.prototype.setTrack = function (aID, aTrack) {
+        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))) {
+            this.objects[aID].track = aTrack;
+        }
+    };
+
+
+    return ListMapObject;
+})();
+
+
 var MapObject = (function () {
     function MapObject(aID) {
         this.ID = aID;
     }
 
+
     MapObject.prototype.getCurrentCoord = function (aClockTime) {
         return null;
     };
+
 
     return MapObject;
 })();
@@ -22,14 +75,17 @@ var MapObject = (function () {
 var StaticObject = (function (_super) {
     __extends(StaticObject, _super);
 
+
     function StaticObject(aID, aCoord) {
         _super.call(this, aID);
         this.coord = aCoord;
     }
 
+
     StaticObject.prototype.getCurrentCoord = function (aClockTime) {
         return this.coord;
     };
+
 
     return StaticObject;
 })(MapObject);
@@ -38,10 +94,12 @@ var StaticObject = (function (_super) {
 var MapTown = (function (_super) {
     __extends(MapTown, _super);
 
+
     function MapTown(aID, aCoord, aSize) {
         _super.call(this, aID, aCoord);
         this.size = aSize;
     }
+
 
     return MapTown;
 })(StaticObject);
@@ -49,9 +107,13 @@ var MapTown = (function (_super) {
 
 var MapGasStation = (function (_super) {
     __extends(MapGasStation, _super);
+
+
     function MapGasStation(aID, aCoord) {
         _super.call(this, aID, aCoord);
     }
+
+
     return MapGasStation;
 })(StaticObject);
 
@@ -59,26 +121,32 @@ var MapGasStation = (function (_super) {
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
+
     function DynamicObject(aID, aTrack) {
         _super.call(this, aID);
         this.track = aTrack;
     }
 
+
     DynamicObject.prototype.getCurrentDirection = function (aClockTime) {
         return this.track.getCurrentDirection(aClockTime);
     };
+
 
     DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
         return this.track.getCurrentCoord(aClockTime);
     };
 
+
     DynamicObject.prototype.getCurrentFuel = function (aClockTime) {
         return this.track.getCurrentFuel(aClockTime);
     };
 
+
     DynamicObject.prototype.getCurrentSpeedAbs = function (aClockTime) {
         return this.track.getCurrentSpeedAbs(aClockTime);
     };
+
 
     return DynamicObject;
 })(MapObject);
@@ -87,6 +155,7 @@ var DynamicObject = (function (_super) {
 var MapCar = (function (_super) {
     __extends(MapCar, _super);
 
+
     function MapCar(aID, aType, aHP, aTrack) {
         _super.call(this, aID, aTrack);
         this.type = aType;
@@ -94,14 +163,17 @@ var MapCar = (function (_super) {
         this.fireSectors = new Array();
     }
 
+
     MapCar.prototype.AddFireSector = function (aFireSector) {
         this.fireSectors.push(aFireSector);
     };
+
 
     MapCar.prototype.AddFireSectors = function (aSectors) {
         for (var i = 0; i < aSectors.length; i++)
             this.AddFireSector(aSectors[i]);
     };
+
 
     MapCar.prototype.unbindOwner = function () {
         if (this.owner)
@@ -109,18 +181,37 @@ var MapCar = (function (_super) {
         return this;
     };
 
+
     return MapCar;
 })(DynamicObject);
 
 
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
+
+
     function UserCar(aID, aType, aHP, aMaxSpeed, aTrack) {
         _super.call(this, aID, aType, aHP, aTrack);
         this.maxSpeed = aMaxSpeed;
     }
+
+
     return UserCar;
 })(MapCar);
+
+
+var FireSector = (function () {
+    function FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
+        this.directionAngle = aDirectionAngle;
+        this.widthAngle = aWidthAngle;
+        this.radius = aRadius;
+        this.uid = aUid;
+        this.recharge = aRecharge;
+    }
+
+
+    return FireSector;
+})();
 
 
 var MoveTrack = (function () {
@@ -131,36 +222,48 @@ var MoveTrack = (function () {
         this.direction = aDirection;
     }
 
+
     MoveTrack.prototype.getCurrentFuel = function (aCurrentTime) {
         return this.fuelStart - this.fuelDec * ((aCurrentTime - this.timeStart));
     };
+
 
     MoveTrack.prototype.getCurrentCoord = function (aClockTime) {
         return null;
     };
 
+
     MoveTrack.prototype.getCurrentDirection = function (aClockTime) {
         return null;
     };
+
 
     MoveTrack.prototype.getRelativelyTime = function (aClockTime) {
         return aClockTime - this.timeStart;
     };
 
+
     MoveTrack.prototype.getCurrentSpeedAbs = function (aClockTime) {
         return null;
     };
+
+
     return MoveTrack;
 })();
 
+
 var MoveLine = (function (_super) {
     __extends(MoveLine, _super);
+
+
     function MoveLine(aTimeStart, aFuelStart, aFuelDec, aDirection, aCoord, aSpeedV, aAcceleration) {
         _super.call(this, aTimeStart, aFuelStart, aFuelDec, aDirection);
         this.coord = aCoord;
         this.speedV = aSpeedV;
         this.acceleration = aAcceleration;
     }
+
+
     MoveLine.prototype.getCurrentCoord = function (aClockTime) {
         // Pv = Av * t2 + Vv * t + S   =  acceleration * t * t    +   speedV * t   +   coord ;
         var t = this.getRelativelyTime(aClockTime);
@@ -170,10 +273,12 @@ var MoveLine = (function (_super) {
         return summVector(sum, this.coord);
     };
 
+
     MoveLine.prototype.getCurrentDirection = function (aClockTime) {
         // возвращает угол относительно севера и не разворачивает машинку
         return this.direction;
     };
+
 
     MoveLine.prototype.getCurrentSpeedAbs = function (aClockTime) {
         var t = this.getRelativelyTime(aClockTime);
@@ -181,11 +286,16 @@ var MoveLine = (function (_super) {
         // Вычисляем текущую скорость Vt = A*t + V
         return summVector(mulScalVector(this.acceleration, t), this.speedV).abs();
     };
+
+
     return MoveLine;
 })(MoveTrack);
 
+
 var MoveCircle = (function (_super) {
     __extends(MoveCircle, _super);
+
+
     function MoveCircle(aTimeStart, aFuelStart, aFuelDec, aCenterCircle, aRadiusVector, aAngleStart, aSpeedA, aAccelerationA, aCCW, aLinearSpeed) {
         _super.call(this, aTimeStart, aFuelStart, aFuelDec, 0);
         this.centerCircle = aCenterCircle;
@@ -196,14 +306,18 @@ var MoveCircle = (function (_super) {
         this.CCW = aCCW;
         this.linearSpeed = aLinearSpeed;
     }
+
+
     MoveCircle.prototype.getCurrentCoord = function (aClockTime) {
         return summVector(rotateVector(this.radiusVector, this._getCurrentRadiusAngle(aClockTime)), this.centerCircle);
     };
+
 
     MoveCircle.prototype.getCurrentDirection = function (aClockTime) {
         // перпендикуляр текущего угла поворота радиус-Вектора
         return this.angleStart + (this.CCW == 0 ? -1 : 1) * Math.PI / 2 + this._getCurrentRadiusAngle(aClockTime);
     };
+
 
     MoveCircle.prototype._getCurrentRadiusAngle = function (aClockTime) {
         var t = this.getRelativelyTime(aClockTime);
@@ -212,11 +326,15 @@ var MoveCircle = (function (_super) {
         return this.speedA * t + this.accelerationA * t * t;
     };
 
+
     MoveCircle.prototype.getCurrentSpeedAbs = function (aClockTime) {
         return this.linearSpeed;
     };
+
+
     return MoveCircle;
 })(MoveTrack);
+
 
 var User = (function () {
     function User(aID, aCredit) {
@@ -224,66 +342,18 @@ var User = (function () {
         this.credit = aCredit;
         this.party = new OwnerParty(0, "");
     }
+
+
     return User;
 })();
 
-var FireSector = (function () {
-    function FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
-        this.directionAngle = aDirectionAngle;
-        this.widthAngle = aWidthAngle;
-        this.radius = aRadius;
-        this.uid = aUid;
-        this.recharge = aRecharge;
-    }
-    return FireSector;
-})();
-
-var ListMapObject = (function () {
-    function ListMapObject() {
-        this.objects = new Array();
-    }
-    ListMapObject.prototype.add = function (aObject) {
-        this.objects[aObject.ID] = aObject;
-    };
-
-    ListMapObject.prototype.del = function (aID) {
-        delete this.objects[aID];
-        //this.objects[aID] = null;
-    };
-
-    ListMapObject.prototype.exist = function (aID) {
-        if (this.objects[aID] != null) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-
-    ListMapObject.prototype.setCarHP = function (aID, aHP) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
-            this.objects[aID].hp = aHP;
-        }
-    };
-
-    ListMapObject.prototype.getCarHP = function (aID, aHP) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
-            return this.objects[aID].hp;
-        }
-        return -1;
-    };
-
-    ListMapObject.prototype.setTrack = function (aID, aTrack) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("track"))) {
-            this.objects[aID].track = aTrack;
-        }
-    };
-    return ListMapObject;
-})();
 
 var Clock = (function () {
     function Clock() {
         this.dt = 0;
     }
+
+
     Clock.prototype.getCurrentTime = function () {
         return new Date().getTime() / 1000. + this.dt;
     };
@@ -292,11 +362,12 @@ var Clock = (function () {
     Clock.prototype.setDt = function (aTimeServer) {
         this.dt = aTimeServer - new Date().getTime() / 1000.;
     };
+
+
     return Clock;
 })();
 
 // Владелец машины
-// TODO переписать так, чтобы у одного овнера был список его машин и при клике на Owner в чате они все подсвечивались
 var Owner = (function () {
     function Owner(uid, login, aParty) {
         this.uid = uid;
@@ -304,6 +375,8 @@ var Owner = (function () {
         this.cars = new Array();
         this.party = aParty ? aParty : new OwnerParty(0, "");
     }
+
+
     Owner.prototype.bindCar = function (aCar) {
         if (!this.car(aCar.ID)) {
             aCar.owner = this;
@@ -311,6 +384,7 @@ var Owner = (function () {
         }
         return this;
     };
+
 
     Owner.prototype.unbindCar = function (aCar) {
         for (var i = 0; i < this.cars.length; i++)
@@ -321,6 +395,7 @@ var Owner = (function () {
         return this;
     };
 
+
     Owner.prototype.unbindAllCars = function () {
         for (; this.cars.length > 0;) {
             var tcar = this.cars.pop();
@@ -329,6 +404,7 @@ var Owner = (function () {
         return this;
     };
 
+
     Owner.prototype.car = function (aID) {
         for (var i = 0; i < this.cars.length; i++)
             if (this.cars[i].ID === aID)
@@ -336,10 +412,13 @@ var Owner = (function () {
         return null;
     };
 
+
     Owner.prototype.setParty = function (aParty) {
         this.party = aParty;
         return this;
     };
+
+
     return Owner;
 })();
 
@@ -348,6 +427,8 @@ var OwnerList = (function () {
     function OwnerList() {
         this.owners = new Array();
     }
+
+
     OwnerList.prototype.add = function (owner) {
         var exstOwner = this.getOwnerByUid(owner.uid);
         if (!exstOwner) {
@@ -356,6 +437,7 @@ var OwnerList = (function () {
         }
         return exstOwner;
     };
+
 
     OwnerList.prototype.getOwnerByUid = function (uid) {
         for (var i = 0; i < this.owners.length; i++) {
@@ -366,6 +448,7 @@ var OwnerList = (function () {
         return null;
     };
 
+
     OwnerList.prototype.getOwnerByLogin = function (login) {
         for (var i = 0; i < this.owners.length; i++) {
             if (this.owners[i].login === login) {
@@ -375,10 +458,13 @@ var OwnerList = (function () {
         return null;
     };
 
+
     OwnerList.prototype.clearOwnerList = function () {
         for (var i = 0; i < this.owners.length; i++)
             this.owners[i].unbindAllCars();
     };
+
+
     return OwnerList;
 })();
 
@@ -388,6 +474,7 @@ var OwnerParty = (function () {
         this.id = aID;
         this.name = aName;
     }
+
+
     return OwnerParty;
 })();
-//# sourceMappingURL=model.js.map
