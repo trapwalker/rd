@@ -389,7 +389,7 @@ var Owner = (function () {
     Owner.prototype.unbindCar = function (aCar) {
         for (var i = 0; i < this.cars.length; i++)
             if (this.cars[i].ID == aCar.ID) {
-                this.cars.splice(i, 1); // TODO: проверить, ту ли машинку здесь мы удаляем
+                this.cars.splice(i, 1);
                 aCar.owner = null;
             }
         return this;
