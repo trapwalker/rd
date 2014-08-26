@@ -102,3 +102,8 @@ function gradToRad(grad) {
 function distancePoints(aPoint1, aPoint2) {
     return subVector(aPoint1, aPoint2).abs();
 }
+
+// Получение вектора по полярным координатам
+function polarPoint(modul, direction){
+    return rotateVector(new Point(modul, 0), direction);
+}

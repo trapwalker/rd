@@ -425,7 +425,7 @@ var Owner = (function () {
 // Список владельцев машин
 var OwnerList = (function () {
     function OwnerList() {
-        this.owners = new Array();
+        this.owners = [];
     }
 
 
@@ -477,4 +477,90 @@ var OwnerParty = (function () {
 
 
     return OwnerParty;
+})();
+
+
+
+// Класс State - станет заменой MoveTrack
+var State = (function () {
+    function State(t, position, direct, velocity, acceleration, rad_velocity, rad_acceleration){
+        this.t0 = t;                // Время начала движения (состояния)
+        this.p0 = position;         // Начальная позиция - вектор!
+        this.fi0 = direct;          // Начальный угол
+        this.v0 = velocity;         // Начальная скорость - число, а не вектор
+        this.a = acceleration;      // Начальное ускорение - число!
+        this.w0 = rad_velocity;     // Начальная угловая скорость - число
+        this.e = rad_acceleration;  // Начальное угловое ускорение - число
+        return this;
+    }
+
+    State.prototype.getCurrentCoord = function(t){
+        return subVector(this.p0, polarPoint(this.getCurrentSpeed(t) * (t - this.t0), this.getCurrentDirection(t)));
+    };
+
+
+    State.prototype.getCurrentDirection = function(t){
+        return this.fi0 + this.getCurrentRadSpeed(t) * (t - this.t0);
+    };
+
+
+    State.prototype.getCurrentSpeed = function(t){
+        return this.v0 + this.a * (t - this.t0);
+    };
+
+
+    State.prototype.getCurrentRadSpeed = function(t){
+        return this.w0 + this.e * (t - this.t0);
+    };
+
+
+    State.prototype.is_circular = function(){
+        return (this.w0 != 0.0) || (this.e != 0.0);
+    };
+
+    State.prototype.update = function(t, position, direct, velocity, acceleration, rad_velocity, rad_acceleration){
+        // Если передано другое время, то пересчитать все значимые поля от нового времени
+        if(t != this.t0) {
+            this.p0 = this.getCurrentCoord(t);
+            this.v0 = this.getCurrentSpeed(t);
+            this.fi0 = this.getCurrentDirection(t);
+            this.w0 = this.getCurrentRadSpeed(t);
+            this.t0 = t;
+        }
+
+        if(position != undefined)
+            this.p0 = position;
+
+        if(direct != undefined)
+            this.fi0 = direct;
+
+        if(velocity != undefined)
+            this.v0 = velocity;
+
+        if(acceleration != undefined)
+            this.a = acceleration;
+
+        if(rad_velocity != undefined)
+            this.w0 = rad_velocity;
+
+        if(rad_acceleration != undefined)
+            this.e = rad_acceleration;
+
+        return this;
+    };
+
+    State.prototype.to_time = function(t){
+        return new State(
+            t,
+            this.getCurrentCoord(t),
+            this.getCurrentDirection(t),
+            this.getCurrentSpeed(t),
+            this.a,
+            this.getCurrentRadSpeed(t),
+            this.e
+        );
+    };
+
+
+    return State;
 })();
