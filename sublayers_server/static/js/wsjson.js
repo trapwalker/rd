@@ -340,6 +340,19 @@ function getTrack(data){
 
 }
 
+// Считывает параметры для состояния и устанавливает их. Предварительно нужно передать туда состояние машинки. 
+function setState(data, state){
+    state.update(
+        (data.t ? data.t : state.t0),
+        (data.p ? data.p : state.p0),
+        (data.fi ? data.fi : state.fi0),
+        (data.v ? data.v : state.v0),
+        (data.a ? data.a : state.a),
+        (data.w ? data.w : state.w0),
+        (data.e ? data.e : state.e)
+    );
+}
+
 function getOwner(data) {
     if (data.cls === "User") {
         var party;
