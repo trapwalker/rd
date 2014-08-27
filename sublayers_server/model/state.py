@@ -74,10 +74,10 @@ class State(object):
         return self.w0 != 0.0 or self.e != 0.0
 
     def p_linear(self, t):
-        return self.p0 + Point.polar(self.v(t) * t, self.fi(t))
+        return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
 
     def p_circular(self, t):
-        return self.p0 + Point.polar(self.v(t) * t, self.fi(t))
+        return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
 
     def to_time(self, t):
         return self.__class__(
