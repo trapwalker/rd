@@ -155,7 +155,9 @@ $(document).ready(function () {
         back: 'modalBack',
         modalWelcome: 'modalWelcome',
         modalOptions: 'modalOptions',
-        modalDeath: 'modalDeath'
+        modalDeath: 'modalDeath',
+        modalWin: 'modalWin',
+        modalLose: 'modalLose'
     });
 
     // Инициализация.
