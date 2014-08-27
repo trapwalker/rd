@@ -99,6 +99,8 @@
     font: bold 12px Arial;
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
+    padding: 0 10px 0 10px;
 }
 
 #welcomePageDiv p{
@@ -106,7 +108,7 @@
      margin-left: 15px;
  }
 #welcomePageDiv span{
-    font-size: 14px;
+    font-size: 12px;
     margin-left: 15px;
 }
 
