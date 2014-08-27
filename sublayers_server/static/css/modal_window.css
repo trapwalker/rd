@@ -124,7 +124,21 @@
     background-color: black;
     color: lime;
     font: bold 12px Arial;
-    padding-left:25px;
+    width: 100%;
+    height: 100%;
+}
+
+#optionsPageDivContent {
+    width: 100%;
+    height: 370px;
+    position: absolute;
+    overflow: auto;
+}
+
+#optionsDivButtons {
+    bottom: 0;
+    right: 8px;
+    position: absolute;
 }
 
 #optionsPageDiv p{
