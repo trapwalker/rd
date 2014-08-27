@@ -155,7 +155,9 @@ $(document).ready(function () {
         back: 'modalBack',
         modalWelcome: 'modalWelcome',
         modalOptions: 'modalOptions',
-        modalDeath: 'modalDeath'
+        modalDeath: 'modalDeath',
+        modalWin: 'modalWin',
+        modalLose: 'modalLose'
     });
 
     // Инициализация.
@@ -165,7 +167,7 @@ $(document).ready(function () {
 
     myMap = L.map('map',
         {
-            minZoom: 3,
+            minZoom: 2,
             maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
@@ -217,6 +219,15 @@ $(document).ready(function () {
     chat.setVisible(cookieStorage.chatVisible);
     chat.setMessagesHistory(cookieStorage.historyArray);
 
+
+    // Добавление городов
+    getTownMarker(new MapTown(1, new Point(7738, 21894), 'Город #1', 20), myMap);
+    var town2 = getTownMarker(new MapTown(2, new Point(26235, 15049), 'Город #2', 20), myMap);
+
+    if (user.party.name === 'Corp')
+        town2.bindPopup('Ваша задача доставить груз к этому городу.');
+    else
+        town2.bindPopup('Ваша задача не допустить доставку груза к этому городу.');
 
 
 

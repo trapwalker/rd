@@ -12,6 +12,8 @@ var ModalWindow = (function () {
         this.modalWelcome = $('#' + divs.modalWelcome);
         this.modalOptions = $('#' + divs.modalOptions);
         this.modalDeath = $('#' + divs.modalDeath);
+        this.modalWin = $('#' + divs.modalWin);
+        this.modalLose = $('#' + divs.modalLose);
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -19,11 +21,15 @@ var ModalWindow = (function () {
         this.modalWelcome.addClass('modal-window-hide');
         this.modalOptions.addClass('modal-window-hide');
         this.modalDeath.addClass('modal-window-hide');
+        this.modalWin.addClass('modal-window-hide');
+        this.modalLose.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
         this.modalOptionsLoad();
         this.modalDeathLoad();
+        this.modalWinLoad();
+        this.modalLoseLoad();
     }
 
     ModalWindow.prototype._modalBackShow = function () {
@@ -190,6 +196,73 @@ var ModalWindow = (function () {
 
     };
 
+
+
+    ModalWindow.prototype.modalWinShow = function () {
+        // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
+        //this._modalBackShow();
+        // включить модальное окно modalOptions
+        this.modalWin.removeClass('modal-window-hide');
+        this.modalWin.addClass('modal-window-win-show');
+    };
+
+    ModalWindow.prototype.modalWinHide = function(){
+        // выключить фон
+        //this._modalBackHide();
+        // выключить модальное окно Death
+        this.modalWin.removeClass('modal-window-win-show');
+        this.modalWin.addClass('modal-window-hide');
+
+    };
+
+    ModalWindow.prototype.modalWinLoad = function () {
+        // Загрузить информацию из документа в див
+        var self = this;
+        this.modalWin.load('/static/modal_window/winPage.html', function(){
+            // Назначить кнопки закрытия окна
+            $('#winPageButtonResp').on('click', {modal: self}, function(event){
+                // сначала обработать все необходимые данные
+                // Затем закрыть текущее модельное окно
+                event.data.modal.modalWinHide();
+            });
+
+        });
+
+    };
+
+
+
+    ModalWindow.prototype.modalLoseShow = function () {
+        // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
+        //this._modalBackShow();
+        // включить модальное окно modalOptions
+        this.modalLose.removeClass('modal-window-hide');
+        this.modalLose.addClass('modal-window-lose-show');
+    };
+
+    ModalWindow.prototype.modalLoseHide = function(){
+        // выключить фон
+        //this._modalBackHide();
+        // выключить модальное окно Death
+        this.modalLose.removeClass('modal-window-lose-show');
+        this.modalLose.addClass('modal-window-hide');
+
+    };
+
+    ModalWindow.prototype.modalLoseLoad = function () {
+        // Загрузить информацию из документа в див
+        var self = this;
+        this.modalLose.load('/static/modal_window/losePage.html', function(){
+            // Назначить кнопки закрытия окна
+            $('#losePageButtonResp').on('click', {modal: self}, function(event){
+                // сначала обработать все необходимые данные
+                // Затем закрыть текущее модельное окно
+                event.data.modal.modalLoseHide();
+            });
+
+        });
+
+    };
 
 
 

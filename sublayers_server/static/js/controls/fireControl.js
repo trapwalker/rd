@@ -44,7 +44,7 @@ var FireControl = (function () {
         $("#" + this.options.parentDiv).append(this.fCB);
 
         // Добавление дива с кнопкой
-        this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show'></div>");
+        this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show sublayers-clickable'></div>");
         this.fCB.append(this.fCSB);
         this.fCSB.on('click', {self: this}, this.changeVisible);
 
@@ -143,7 +143,6 @@ var FireControl = (function () {
 
     FireControl.prototype._getSectorByID = function(fireSectorID){
         for (var i = 0; i < this.sectors.length; i++) {
-            // TODO не уверен, что === работает корректно в данном случае
             if (this.sectors[i]._fireSector.uid == fireSectorID)
                 return this.sectors[i];
         }
@@ -153,7 +152,7 @@ var FireControl = (function () {
 
     FireControl.prototype._getSVGPathSector = function(fireSector, radiusPath) {
         //var tempWidth = fireSector.widthAngle / 2;
-        // TODO: Забита жёсткая ширина сектора
+        // Забита жёсткая ширина сектора, так как сейчас решили максимум 4 сектора
         var tempWidth = this.options.halfSectorWidth;
         var radiusOut = this.radiusIn + ((this.radiusOut - this.radiusIn) * radiusPath);
         var vertVOut = new Point(radiusOut, 0);
@@ -267,16 +266,6 @@ var FireControl = (function () {
 
 
     FireControl.prototype.clearSectors = function() {
-        /*this.sectors.forEach(function(sector){
-            // Снять клик с каждого сектора
-            //TODO: придумать способ удаления всех точек в секторе (точек радара)
-            $(sector.SVGPath).off('click',this._fireSectorEvent);
-            $(sector.SVGPath).remove();
-            $(sector.SVGPathShadow).remove();
-            $(sector.SVGGroup).remove();
-        });
-        this.sectors = [];
-        */
         for(;this.sectors.length > 0;){
             var sector = this.sectors.pop();
             // Снять клик с каждого сектора
@@ -326,10 +315,8 @@ var FireControl = (function () {
         return pathSVG;
     };
 
-    // Обновление точки в секторе
-    // TODO: доделать удаление!!!
+    // Удаление точки из секутора
     FireControl.prototype.deleteCarInSector = function(pathSVG) {
-        //alert('сработал deleteCarInSector в fireControl');
         $(pathSVG).remove();
         return null;
     };
@@ -339,7 +326,7 @@ var FireControl = (function () {
         var obj = event.data.self;
         if(typeof(obj.options.allCallBack) === 'function'){
             // obj.options.allCallBack();
-            // TODO продумать правильное поведение выстрела из всех орудий
+            // TODO выстрел из всех орудий: когда будет проверяться на сервере, просто передать null в качестве id сектора
             // Выстрелить из всех секторов
             for(var i in obj.sectors){
                 if(! obj.sectors[i].recharged){ // Если сектор не в перезарядке

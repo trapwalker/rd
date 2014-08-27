@@ -17,7 +17,7 @@ class BALANCE:
 
         @staticmethod
         def rv_relation(v):
-            return abs(v) + 5
+            return (0.015 * abs(v) ** 1.9) + 5
 
         @staticmethod
         def get_contact_distance(subj, obj):

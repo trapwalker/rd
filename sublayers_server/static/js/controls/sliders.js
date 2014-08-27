@@ -251,7 +251,7 @@ var SliderSpeed = (function () {
         var prc = (newSpeed * 100) / this.options.max;
         if (prc > 99) prc = 99;
         if (prc < 0) prc = 0;
-        // TODO: если сделать ниже не 99,5; а 100, то не видно стрелки при стоящей машине, если сделать 99, то она сливается со шкалой.
+        // если сделать ниже не 99,5; а 100, то не видно стрелки при стоящей машине, если сделать 99, то она сливается со шкалой.
         prc = 99.5 - prc;
         $('#slider-speed-filler-arrow').css('top', prc + '%');
         $('#slider-speed-filler').css('top', prc + '%');

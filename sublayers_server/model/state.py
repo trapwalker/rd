@@ -27,6 +27,7 @@ class State(object):
         self.a = a
         self.w0 = w
         self.e = e
+        self.p = self.p_circular if self.is_circular else self.p_linear
 
     def as_dict(self):
         return dict(
@@ -72,8 +73,11 @@ class State(object):
     def is_circular(self):
         return self.w0 != 0.0 or self.e != 0.0
 
-    def p(self, t):
-        return self.p0 + Point.polar(self.v(t) * t, self.fi(t))
+    def p_linear(self, t):
+        return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
+
+    def p_circular(self, t):
+        return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
 
     def to_time(self, t):
         return self.__class__(
@@ -123,6 +127,8 @@ class State(object):
 
         if e is not None:
             self.e = e
+
+        self.p = self.p_circular if self.is_circular else self.p_linear
 
 
 if __name__ == '__main__':

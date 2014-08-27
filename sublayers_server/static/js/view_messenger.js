@@ -467,20 +467,19 @@ var ViewMessenger = (function () {
 
     ViewMessenger.prototype.viewMessengerClickSpanUser = function (event) {
         var owner = event.data.owner;
-        //alert("I\'m " + owner.login + "\nMy ID = " + owner.uid + (owner.car ? "\nMy Car ID = " + owner.car.ID : ""));
-
-
-        // TODO подстветить все машинки данного пользователя
-        for(var i = 0; i < owner.cars.length; i++) {
-            if (listMapObject.exist(owner.cars[i].ID)) {
-                var car = listMapObject.objects[owner.cars[i].ID];
-                if (car.backLight)
-                    carMarkerList.delFromBackLight(car);
-                else
-                    carMarkerList.addToBackLight(car);
+        // подстветить все машинки данного пользователя
+        // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
+        if (cookieStorage.optionsSelectAnybody)
+            for (var i = 0; i < owner.cars.length; i++) {
+                if (listMapObject.exist(owner.cars[i].ID)) {
+                    var car = listMapObject.objects[owner.cars[i].ID];
+                    if (car.backLight)
+                        carMarkerList.delFromBackLight(car);
+                    else
+                        carMarkerList.addToBackLight(car);
+                }
             }
-        }
-    }
+    };
 
     return ViewMessenger;
 })();

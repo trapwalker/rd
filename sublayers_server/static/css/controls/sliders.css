@@ -220,7 +220,7 @@
 
 #Zoom_slider {
     border-radius: 0px;
-    height: 100px;
+    height: 125px; /* на каждый масштаб +25px, но начинать считать с НУЛЯ!*/
     width: 25px;
     border: 0px;
     position: absolute;
@@ -241,7 +241,7 @@
 }
 
 #Zoom_sliderBar {
-    height: 125px;
+    height: 150px; /* на каждый масштаб +25px, но начинать считать с ЕДИНИЦЫ!*/
     width: 25px;
     background: transparent url('/static/img/control_zoom/zoom_bar_segment.png') 100% 100% repeat-y;
     position: absolute;
@@ -268,7 +268,7 @@
     height: 27px;
     width: 35px;
     position: absolute;
-    top: 150px;
+    top: 175px;
     background: transparent url('/static/img/control_zoom/zoom_btn_minus_normal.png') 50% 50% no-repeat;
 }
 
@@ -283,7 +283,7 @@
 /* Текст Zoom В контроллере зума */
 #spanZoomZoomText {
     position: absolute;
-    top: 122px;
+    top: 147px;
     left: -24px;
     white-space: nowrap;
     pointer-events: none;

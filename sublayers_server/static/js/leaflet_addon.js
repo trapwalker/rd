@@ -25,7 +25,7 @@ L.rotatedMarker = function (pos, options) {
 };
 
 
-// создание маркера
+// создание маркера Машинки
 function getCarMarker(aCar, aMap) {
     //var test_html_str = '<div id="idCar_' + aCar.ID +
     //    '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
@@ -46,6 +46,23 @@ function getCarMarker(aCar, aMap) {
     newMarker.on('mousedown', onMouseClickMarker);
     newMarker.addTo(aMap);
     newMarker.carID = aCar.ID;
+
+    return newMarker;
+}
+
+
+// создание маркера
+function getTownMarker(aTown, aMap) {
+    var newMarker = L.marker(aMap.unproject([aTown.coord.x, aTown.coord.y], aMap.getMaxZoom()));
+    newMarker.setIcon(iconsLeaflet.icon_city);
+    // Лейбл города всегда видим
+    newMarker.bindLabel(aTown.name, {direction: 'right'});
+    // Здесь будут висеть обработчики кликов
+
+    // Добавляем город на карту
+    newMarker.addTo(aMap);
+    // Помещаем id города в newMarker. Пока город нигде не хранится, есть только его ID
+    newMarker.townID = aTown.ID;
 
     return newMarker;
 }
