@@ -13,8 +13,11 @@ from math import pi
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None, **kw):
+    def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None,
+                 role=None,
+                 **kw):
         super(Unit, self).__init__(**kw)
+        self.role = role
         self._task = None
         """@type: sublayers_server.model.tasks.Task | None"""
         self.task_list = []
@@ -124,6 +127,7 @@ class Unit(Observer):
             hp=self.hp,
             max_hp=self.max_hp,
             weapons=[weapon.as_dict(to_time=to_time) for weapon in self.weapons],
+            role=None if self.role is None else self.role.name,
         )
         return d
 
@@ -151,13 +155,17 @@ class Station(Unit):
 class Bot(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self, max_hp=BALANCE.Bot.max_hp, observing_range=BALANCE.Bot.observing_range, **kw):
+    def __init__(self,
+                 max_hp=BALANCE.Bot.max_hp,
+                 observing_range=BALANCE.Bot.observing_range,
+                 max_velocity=BALANCE.Bot.velocity,
+                 **kw):
         self.old_motion = None
         """@type: sublayers_server.model.tasks.Motion | None"""
         self.motion = None
         """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
-        self._max_velocity = BALANCE.Bot.velocity
+        self._max_velocity = max_velocity
 
     def as_dict(self, to_time=None):
         if not to_time:

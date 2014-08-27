@@ -57,24 +57,12 @@ class AgentAPI(API):
         if self.agent.connection:
             self.agent.connection.write_message(serialize(make_push_package([InitMessage(agent=self.agent)])))
 
-    def make_car(self, position=None, position_sigma=Point(100, 100)): 
-        if self.agent.party.name == 'Band':
-            pointForStart = Point(17030, 19600)
-        else:
-            pointForStart = Point(4835, 23000)
-        self.car = units.Bot(
-            server=self.agent.server,
-            position=Point.random_gauss(position or pointForStart, position_sigma),
-            #observing_range=1000,
-            owner=self.agent,
-            weapons=[
-                SectoralWeapon(direction=0, sector_width=45, r=400),
-                SectoralWeapon(direction=pi, sector_width=45, r=350),
-                SectoralWeapon(direction=pi * 1.5, sector_width=60, r=300),
-                SectoralWeapon(direction=pi/2, sector_width=60, r=300),
-            ],
+    def make_car(self, position=None, position_sigma=Point(100, 100)):
+        self.car = self.agent.party.init_car(
+            agent=self.agent,
+            cls=units.Bot,
+            override_params=dict(position=Point.random_gauss(position, position_sigma)) if position else None,
         )
-        self.agent.append_car(self.car)
 
     @public_method
     def change_car(self):
