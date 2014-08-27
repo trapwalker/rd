@@ -8,7 +8,7 @@ var __extends = this.__extends || function (d, b) {
 
 var ListMapObject = (function () {
     function ListMapObject() {
-        this.objects = new Array();
+        this.objects = [];
     }
 
 
@@ -95,9 +95,10 @@ var MapTown = (function (_super) {
     __extends(MapTown, _super);
 
 
-    function MapTown(aID, aCoord, aSize) {
+    function MapTown(aID, aCoord, aName, aSize) {
         _super.call(this, aID, aCoord);
         this.size = aSize;
+        this.name = aName;
     }
 
 
@@ -491,7 +492,6 @@ var State = (function () {
         this.a = acceleration;      // Начальное ускорение - число!
         this.w0 = rad_velocity;     // Начальная угловая скорость - число
         this.e = rad_acceleration;  // Начальное угловое ускорение - число
-        return this;
     }
 
     State.prototype.getCurrentCoord = function(t){
