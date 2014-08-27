@@ -221,8 +221,8 @@ $(document).ready(function () {
 
 
     // Добавление городов
-    getTownMarker(new MapTown(1, new Point(7738, 21894), 'Город #1', 20), myMap);
-    var town2 = getTownMarker(new MapTown(2, new Point(26235, 15049), 'Город #2', 20), myMap);
+    getTownMarker(new MapTown(1, new Point(4835, 23804), 'Город #1', 20), myMap);
+    var town2 = getTownMarker(new MapTown(2, new Point(29527, 14612), 'Город #2', 20), myMap);
 
     if (user.party.name === 'Corp')
         town2.bindPopup('Ваша задача доставить груз к этому городу.');
