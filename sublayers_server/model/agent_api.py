@@ -59,9 +59,9 @@ class AgentAPI(API):
 
     def make_car(self, position=None, position_sigma=Point(100, 100)): 
         if self.agent.party.name == 'Band':
-            pointForStart = Point(16800, 19000)
+            pointForStart = Point(17030, 19600)
         else:
-            pointForStart = Point(8170, 21200)
+            pointForStart = Point(4835, 23000)
         self.car = units.Bot(
             server=self.agent.server,
             position=Point.random_gauss(position or pointForStart, position_sigma),
