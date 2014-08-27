@@ -44,7 +44,7 @@ var FireControl = (function () {
         $("#" + this.options.parentDiv).append(this.fCB);
 
         // Добавление дива с кнопкой
-        this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show'></div>");
+        this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show sublayers-clickable'></div>");
         this.fCB.append(this.fCSB);
         this.fCSB.on('click', {self: this}, this.changeVisible);
 
