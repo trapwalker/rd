@@ -139,6 +139,9 @@ class Unit(Observer):
         return d
 
     def delete(self):
+        if self.role:
+            self.role.remove_car(self)
+            # todo: rename
         self.clear_tasks()
         self.server.statics.remove(self)
         super(Unit, self).delete()

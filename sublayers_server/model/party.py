@@ -101,6 +101,13 @@ class Role(object):
     def __str__(self):
         return '<Role {self.name}/{n}>'.format(self=self, n=len(self))
 
+    def remove_car(self, car):
+        # todo: rename
+        try:
+            self.cars.remove(car)
+        except ValueError:
+            pass
+
     def clear_dead(self):
         self.cars = [car for car in self.cars if car.hp > 0]
 
