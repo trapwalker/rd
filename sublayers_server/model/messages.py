@@ -124,7 +124,7 @@ class See(RangeViewMessage):
 
     def as_dict(self):
         d = super(See, self).as_dict()
-        d.update(object=self.obj.as_dict(self.time))  # todo: Serialize objects with private case
+        d.update(object=self.obj.as_dict(to_time=self.time))  # todo: Serialize objects with private case
         return d
 
 

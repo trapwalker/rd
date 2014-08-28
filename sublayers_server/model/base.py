@@ -56,7 +56,7 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
-    def as_dict(self):
+    def as_dict(self, to_time=None):
         return dict(
             cls=self.classname,
             uid=self.uid,
@@ -74,8 +74,8 @@ class PointObject(Object):
         self._position = position
         """@type: sublayers_server.model.vectors.Point"""
 
-    def as_dict(self):
-        d = super(PointObject, self).as_dict()
+    def as_dict(self, **kw):
+        d = super(PointObject, self).as_dict(**kw)
         d.update(position=self.position)
         return d
 
@@ -171,7 +171,8 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     def __init__(self, observing_range=0.0, **kw):
         self._r = observing_range
         super(Observer, self).__init__(**kw)
-        # todo: Нужно увидеть соседние объекты при инициализации
+        self.server.statics.append(self)
+        self.server.static_observers.append(self)
 
     def init_contact_test(self, obj):
         """Override test to contacts between *self* and *obj*, append them if is."""
@@ -206,7 +207,7 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника
 
-    def as_dict(self):
-        d = super(Observer, self).as_dict()
+    def as_dict(self, **kw):
+        d = super(Observer, self).as_dict(**kw)
         d.update(r=self.r)
         return d

@@ -29,8 +29,6 @@ class Unit(Observer):
         """@type: sublayers_server.model.tasks.Task | None"""
         self.task_list = []
         """@type: list[sublayers_server.model.tasks.Task]"""
-        self.server.statics.append(self)
-        self.server.static_observers.append(self)
         log.debug('BEFORE owner set')
         self.owner = owner
         log.debug('AFTER owner set')
@@ -128,8 +126,7 @@ class Unit(Observer):
         self.next_task()
 
     def as_dict(self, to_time=None):
-        log.debug('Unit as_dict')
-        d = super(Unit, self).as_dict()
+        d = super(Unit, self).as_dict(to_time=to_time)
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
@@ -180,7 +177,7 @@ class Bot(Unit):
     def as_dict(self, to_time=None):
         if not to_time:
             to_time = self.server.get_time()
-        d = super(Bot, self).as_dict(to_time)
+        d = super(Bot, self).as_dict(to_time=to_time)
         d.update(
             motion=self.motion.motion_info(to_time) if self.motion else None,
             max_velocity=self.max_velocity,
