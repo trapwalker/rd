@@ -162,7 +162,7 @@ class Heap(VisibleObject):
 
     def delete(self):
         self.server.statics.remove(self)
-        del self.inventory
+        self.inventory = None
         super(Heap, self).delete()
 
 

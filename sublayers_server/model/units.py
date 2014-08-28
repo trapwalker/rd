@@ -24,7 +24,9 @@ class Unit(Observer):
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.server.statics.append(self)
         self.server.static_observers.append(self)
+        log.debug('BEFORE owner set')
         self.owner = owner
+        log.debug('AFTER owner set')
         self.max_hp = max_hp
         self._hp = max_hp
         self._direction = direction
@@ -119,6 +121,7 @@ class Unit(Observer):
         self.next_task()
 
     def as_dict(self, to_time=None):
+        log.debug('Unit as_dict')
         d = super(Unit, self).as_dict()
         owner = self.owner
         d.update(
@@ -220,7 +223,9 @@ class Bot(Unit):
         """
         @rtype: sublayers_server.model.vectors.Point
         """
-        return self.motion.position if self.motion else self._position
+        if self.motion and (isinstance(self.motion, tasks.Goto) and self.motion.vector is None or not self.motion.is_started):
+            log.warning('Wrong motion state: {!r} (started={})', self.motion, self.motion.is_started)
+        return self.motion.position if self.motion and self.motion.is_started else self._position
 
     @Unit.direction.getter
     def direction(self):

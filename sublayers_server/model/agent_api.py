@@ -93,6 +93,7 @@ class AgentAPI(API):
 
     @public_method
     def set_speed(self, new_speed):
+        assert new_speed > 0, 'Cruise control speed must be > 0'
         car = self.car
         last_motion = None
         for task in reversed(car.task_list):
