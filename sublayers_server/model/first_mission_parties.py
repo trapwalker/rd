@@ -32,7 +32,7 @@ class WinMessage(Message):
 class WinEvent(Event):
     def __init__(self, winner_unit, **kw):
         """
-        @param sublayers_server.model.unit.Unit winner_unit: Winner
+        @param sublayers_server.model.units.Unit winner_unit: Winner
         """
         super(WinEvent, self).__init__(**kw)
         self.unit = winner_unit
