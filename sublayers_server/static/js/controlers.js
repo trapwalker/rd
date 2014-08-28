@@ -71,7 +71,12 @@ var Controllers = (function () {
         //Шкала здоровья машины игрока - установить новый максимальный параметр
         this.hpController.setMax(options.hpMax ? options.hpMax : 100);
 
-        // Слайдеры зума и скорости не трогаем
+        // Слайдер зума не трогаем
+
+        // Меняем максимальную и установленную скорости
+        this.speedSetSlider.setMaxSpeed(options.max_velocity);
+        this.speedSetSlider._slide({},{value: options.set_velocity});
+        this.speedSetSlider.setSpeed(options.set_velocity);
 
         // Инициализация контролера стрельбы
         this.fireControl.clearSectors();

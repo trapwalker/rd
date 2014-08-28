@@ -575,8 +575,12 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
             fuelMax: fuelMaxProbka,
             hpMax: aMaxHP,
             sectors: user.userCar.fireSectors,
-            max_velocity: amax_speed
+            max_velocity: amax_speed,
+            set_velocity: speed_to_set
         });
+
+        // Обновление скорости
+        changeSpeedOnSlider();
 
         // Инициализация радиального меню - установка правильных id секторов
         radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
