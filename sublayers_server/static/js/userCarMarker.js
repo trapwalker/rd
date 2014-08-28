@@ -433,7 +433,7 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(this.options.position, this.options.radiusView * 1150,
+        this.circleView = L.circleMarker(this.options.position, this.options.radiusView,
             {
                 weight: 0,
                 fillColor: '#32cd32',
@@ -459,6 +459,9 @@ var UserCarMarker = (function () {
         this.currentUserCarPoint = {};
         this.currentUserCarAngle = 0;
         this.currentUserCarLatLng = [];
+
+        //
+        this.setNewZoom();
     }
 
     UserCarMarker.prototype.setNewParams = function(options){
@@ -522,6 +525,14 @@ var UserCarMarker = (function () {
         if(! cookieStorage.debugMode())
             this.trackView.draw(this.currentUserCarLatLng);
     }
+
+    UserCarMarker.prototype.setNewZoom = function(){
+        // Изменение радиуса viewCircle
+        if(this.options._map){
+            var koeff = 1 / (Math.pow(2, (this.options._map.getMaxZoom() - this.options._map.getZoom())));
+            this.circleView.setRadius(this.options.radiusView * koeff);
+        }
+    };
 
     return UserCarMarker;
 })();
