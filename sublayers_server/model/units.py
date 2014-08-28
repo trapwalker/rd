@@ -16,6 +16,13 @@ class Unit(Observer):
     def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None,
                  role=None,
                  **kw):
+        """
+        @param sublayers_server.model.agents.Agent owner: Object owner
+        @param float max_hp: Maximum health level
+        @param float direction: Direction angle of unit
+        @param list[sublayers_server.model.weapons.weapon] weapons: Set of weapon
+        @param sublayers_server.model.party.Role role: role of unit into the party of agent
+        """
         super(Unit, self).__init__(**kw)
         self.role = role
         self._task = None
