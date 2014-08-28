@@ -231,6 +231,17 @@ function receiveMesFromServ(data){
                 // chat_message
                 chat.addMessage(0, event.id, new Date(servtime), getOwner(event.author), event.text);
             }
+            if (event.cls === "WinMessage") {
+                if(event.winner){
+                    if(event.winner.role === "Cargo"){
+                        showWinLoseMessage('Corp');
+                    }else{
+                        showWinLoseMessage('Band');
+                    }
+                }else{
+                    showWinLoseMessage('Band');
+                }
+            }
         });
     }
 
