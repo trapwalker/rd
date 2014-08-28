@@ -163,7 +163,7 @@ function receiveMesFromServ(data){
                 // see || contact
                 aTrack = getTrack(event.object);
                 if (event.object.hp) aHP = event.object.hp;
-                setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner));
+                setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner), event.object.role);
 
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (cookieStorage.enableMarkerContact())
@@ -221,7 +221,7 @@ function receiveMesFromServ(data){
                 if (event.cars[0].hp) aHP = event.cars[0].hp;
                 if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
                 if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible);
+                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible, event.cars[0].role);
             }
             if (event.cls === "Out") {
                 // out
@@ -414,7 +414,7 @@ function getCircleMotion(motion){
 // Сделано состояние клиента "убит", значит машинка юзера убита.
 // Возможно сделать метод для машинки, который будет вызываться и переводить её в это состояние,
 // т.е. менять там иконку и возможно другие параметры.
-function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
+function setCurrentCar(uid, aType, aHP, aTrack, aOwner, role) {
     if (uid == user.userCar.ID) { // если машинка своя
         user.userCar.track = aTrack;
         user.userCar.hp = aHP;
@@ -422,6 +422,9 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner) {
     else { // если не своя, то проверить есть ли такая в модели
         if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
             var car = new MapCar(uid, aType, aHP, aTrack);
+            // установить роль
+            car.role = role;
+
             carMarkerList.add(car, aOwner);
         } else { // Если такая машинка уже есть, то
             // установить все переменные
@@ -483,7 +486,7 @@ function getWeapons(data) {
     return sectors;
 }
 
-function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible) {
+function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible, role) {
     var fireSectors;
     var speed_to_set = (amax_speed*0.75).toFixed(0); // Сразу будет выставлена такая скорость, чтобы оно норамльно игралось
     if(! user.userCar) {
@@ -589,7 +592,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
 
     // Установка текста в верху страницы - вывод своего ника и своей пати
-    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.party.name + ']');
+    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + role + '@' + user.party.name +']');
 }
 
 
