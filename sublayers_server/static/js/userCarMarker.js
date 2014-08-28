@@ -433,12 +433,13 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circleMarker(this.options.position, this.options.radiusView,
+        this.circleView = L.circleMarker(this.options.position,
             {
                 weight: 0,
-                fillColor: '#32cd32',
+                color: '#32cd32',
                 fillOpacity: 0.12,
-                clickable: false
+                clickable: false,
+                className: 'sublayers_unclickable'
             }
         ).addTo(this.options._map);
 
@@ -485,7 +486,7 @@ var UserCarMarker = (function () {
         this.tail.setActive(false);
 
         // Изменение радиуса круга обзора
-        this.circleView.setRadius(this.options.radiusView * 1150);
+        this.setNewZoom();
 
         // Очистка секторов и добавление новых
         this.sectorsView.clearSectors();
