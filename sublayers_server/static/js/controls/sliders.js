@@ -269,6 +269,11 @@ var SliderSpeed = (function () {
         return $('#sliderSpeedSlider').slider("value");
     }
 
+    SliderSpeed.prototype.setMaxSpeed = function (max_speed) {
+        $('#sliderSpeedSlider').slider("option", "max", max_speed);
+        return this;
+    };
+
 
     return SliderSpeed;
 })();

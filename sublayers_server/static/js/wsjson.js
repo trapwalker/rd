@@ -485,6 +485,7 @@ function getWeapons(data) {
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible) {
     var fireSectors;
+    var speed_to_set = (amax_speed*0.75).toFixed(0); // Сразу будет выставлена такая скорость, чтобы оно норамльно игралось
     if(! user.userCar) {
         user.userCar = new UserCar(uid,       //ID машинки
             aType,       //Тип машинки
@@ -515,7 +516,8 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
             fuelMax: fuelMaxProbka,
             hpMax: aMaxHP,
             fireSectors: user.userCar.fireSectors,
-            max_velocity: amax_speed
+            max_velocity: amax_speed,
+            set_velocity: speed_to_set
         });
 
         // Инициализация радиального меню - установка правильных id секторов
@@ -530,6 +532,11 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
             town2.bindPopup('Ваша задача доставить груз к этому городу.');
         else
             town2.bindPopup('Ваша задача не допустить доставку груза к этому городу.');
+
+
+        // Выставление скорости на сервере
+        changeSpeedOnSlider();
+
 
     }
     else {

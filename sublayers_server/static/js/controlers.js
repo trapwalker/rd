@@ -36,12 +36,12 @@ var Controllers = (function () {
             parent: "speedSetDivForSpeedSlider",
             height: 320,
             parentCss: 'slider-speed-main',
-            max: 125,
-            min: 0,
+            max: options.max_velocity,
+            min: 1,
             step: 1,
             onChange: changeSpeedOnSlider,
             onStop: stopSpeedOnSlider,
-            max_velocity: options.max_velocity
+            max_velocity: options.set_velocity
         });
 
 
