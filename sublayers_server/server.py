@@ -52,7 +52,7 @@ class Application(tornado.web.Application):
         from model.units import Bot
         from model.vectors import Point
         from model.first_mission_parties import WinTrigger
-        wt = WinTrigger(server=self.srv, position=Point(9811.52, 20571.84))
+        wt = WinTrigger(server=self.srv, position=Point(7646,21858))
 
         #b = Bot(server=self.srv, position=Point(0, 0))
         #b.goto(Point(1000, 1500))

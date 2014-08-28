@@ -34,11 +34,11 @@ class WinEvent(Event):
         """
         @param sublayers_server.model.units.Unit winner_unit: Winner
         """
-        super(WinEvent, self).__init__(**kw)
         self.unit = winner_unit
+        super(WinEvent, self).__init__(server=self.unit.server, **kw)
 
     def perform(self):
-        for agent in self.server.agents:
+        for agent in self.server.agents.values():
             agent.send_message_to_client(WinMessage(time=self.time, winner_unit=self.unit))
 
 
@@ -50,7 +50,7 @@ class WinTrigger(Trigger):
         log.debug('Win trigger tested: %s', obj)
         if isinstance(obj, Bot) and obj.owner and obj.role and obj.role.name == 'Cargo':
             log.debug('Win trigger accepted!: %s', obj)
-            self.server.post_event(WinEvent(obj))
+            self.server.post_event(WinEvent(winner_unit=obj))
 
 
 class Corp(RoleParty):
