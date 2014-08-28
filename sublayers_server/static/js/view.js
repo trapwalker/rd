@@ -229,9 +229,7 @@ $(document).ready(function () {
 
 
     window.onbeforeunload = function (e) {
-        alert('do');
         cookieStorage.save();
-        alert('posle');
     };
 
 
