@@ -481,7 +481,8 @@ var UserCarMarker = (function () {
         //this.tail.setActive(this.options.tailEnable);
         this.tail.setActive(false);
 
-        // Создание круга обзора Не требуется. С кругом совсем ничего не нужно делать.
+        // Изменение радиуса круга обзора
+        this.circleView.setRadius(this.options.radiusView * 1150);
 
         // Очистка секторов и добавление новых
         this.sectorsView.clearSectors();
