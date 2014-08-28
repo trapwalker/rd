@@ -9,5 +9,5 @@ echo Unpacking map...
 7z x map.7z
 echo Unpacking map end
 echo Deleting temp files...
-del 7z.exe 7z.dll map.7z
+del 7z.exe 7z.dll
 echo Deleting temp files end
