@@ -191,7 +191,7 @@ class Bot(Unit):
         """
         @param position: sublayers_server.model.vectors.Point
         """
-        log.debug('======== GOTO ++++++')
+        #log.debug('======== GOTO ++++++')
         self.clear_tasks()
         assert self.motion is None, 'ATTENTION! If You see this text, please call server developer: %s' % self.motion
         path = build_trajectory(

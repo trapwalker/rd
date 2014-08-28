@@ -60,8 +60,8 @@ class AgentAPI(API):
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
             agent=self.agent,
-            cls=units.Bot,
             override_params=dict(position=Point.random_gauss(position, position_sigma)) if position else None,
+            default_params=dict(cls=units.Bot),
         )
 
     @public_method
