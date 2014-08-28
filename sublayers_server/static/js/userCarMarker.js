@@ -126,6 +126,7 @@ var SectorsView = (function () {
     }
 
     SectorsView.prototype.addSector = function (fireSector) {
+        var angle;
         var sector = {};
         var tempWidthAll = fireSector.widthAngle / 2;
         var tempWidthCrit = fireSector.widthAngle / 4;
@@ -142,19 +143,19 @@ var SectorsView = (function () {
 
         //добавление точек сектора
         //внешнии точки
-        for (var angle = -tempWidthAll; angle <= tempWidthAll; angle += dAngleAll)
-            sector._pointsAll.push(new rotateVector(vertAll, angle));
+        for (angle = -tempWidthAll; angle <= tempWidthAll; angle += dAngleAll)
+            sector._pointsAll.push(rotateVector(vertAll, angle));
         //внутренние точки
-        for (var angle = tempWidthAll; angle >= -tempWidthAll; angle -= dAngleAll)
-            sector._pointsAll.push(new rotateVector(vertVIn, angle));
+        for (angle = tempWidthAll; angle >= -tempWidthAll; angle -= dAngleAll)
+            sector._pointsAll.push(rotateVector(vertVIn, angle));
 
         //добавление точек области крита
         //внешнии точки
-        for (var angle = -tempWidthCrit; angle <= tempWidthCrit; angle += dAngleCrit)
-            sector._pointsCrit.push(new rotateVector(vertCrit, angle));
+        for (angle = -tempWidthCrit; angle <= tempWidthCrit; angle += dAngleCrit)
+            sector._pointsCrit.push(rotateVector(vertCrit, angle));
         //внутренние точки
-        for (var angle = tempWidthCrit; angle >= -tempWidthCrit; angle -= dAngleCrit)
-            sector._pointsCrit.push(new rotateVector(vertVIn, angle));
+        for (angle = tempWidthCrit; angle >= -tempWidthCrit; angle -= dAngleCrit)
+            sector._pointsCrit.push(rotateVector(vertVIn, angle));
 
         sector.shootState = 0; // Состояние выстрела/перезарядки/нормальное
         sector._fireSector = fireSector;
@@ -255,14 +256,18 @@ var SectorsView = (function () {
 
     SectorsView.prototype.setSelectedState = function (fireSector) {
         var sector = this._getSectorByID(fireSector);
-        if (sector) {
+        if(sector == null) return;
+
+        if (sector != null) {
             if (!this.currSectorActive && sector) {
                 this.currSectorActive = sector;
                 // Установить заселекченное состояние
                 sector.polygonAll.setStyle({fillOpacity: 0.6});
             }
             else {
-                if (this.currSectorActive._fireSector.uid != fireSector.uid) { // если новый сектор
+                var uid1 = this.currSectorActive._fireSector.uid;
+                var uid2 = fireSector.uid;
+                if (uid1 != uid2) { // если новый сектор
                     // сначала сделать нормальным старый сектор
                     this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
                     // присвоить новый
@@ -277,11 +282,14 @@ var SectorsView = (function () {
     SectorsView.prototype.setSelectedToNormalState = function () {
         // сделать нормальным старый сектор
         if (this.currSectorActive)
-            this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
+            if (this.currSectorActive.polygonAll) {
+                this.currSectorActive.polygonAll.setStyle({fillOpacity: 0.2});
+                this.currSectorActive = null;
+            }
     };
 
     SectorsView.prototype._getSectorByID = function(fireSector){
-        for (var i = 0; i < this.options.sectors.length; i++) {
+        for(var i in this.options.sectors){
             if (this.options.sectors[i]._fireSector.uid == fireSector.uid)
                 return this.options.sectors[i];
         }
@@ -301,7 +309,8 @@ var SectorsView = (function () {
             sector.polygonAll = null;
             sector.polygonCrit = null;
         }
-    }
+        this.options.sectors = [];
+    };
 
     return SectorsView;
 })();
@@ -478,7 +487,6 @@ var UserCarMarker = (function () {
         this.sectorsView.clearSectors();
         for(var i in options.sectors)
             this.sectorsView.addSector(options.sectors[i]);
-
 
         // TrackView убрать старую траекторию
         this.trackView.empty();

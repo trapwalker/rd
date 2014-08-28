@@ -176,17 +176,23 @@ var RadialMenu = (function(){
     RadialMenu.prototype.setActiveSector = function (angle) {
         var nSector = this._getSectorByAngle(angle);
         if (nSector) {
+            if(nSector.id == -1) return null;
             if (!this.currSectorActive) {
                 this.currSectorActive = nSector;
                 this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
             }
             else {
                 if (this.currSectorActive.id != nSector.id) { // если новый сектор
+                    // Сбросить старый выбранный
+                    this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-default');
+
+                    // Присвоить новый
                     this.currSectorActive = nSector;
                     // сбросить все сектора
-                    for (var i = 0; i < this.sectors.length; i++) {
-                        this.sectors[i].path.setAttribute('class', 'radial-menu-sector-default');
-                    }
+                //    for (var i = 0; i < this.sectors.length; i++) {
+                //        if (this.sectors[i].id != -1) // сбрасывать сектор, если его впринципе могли выбрать
+                //            this.sectors[i].path.setAttribute('class', 'radial-menu-sector-default');
+                //    }
                     this.currSectorActive.path.setAttribute('class', 'radial-menu-sector-active');
                 }
             }
@@ -198,11 +204,22 @@ var RadialMenu = (function(){
 
     // Устанавливает правильные id секторов в радиальном меню. Вызывается при инициализации машинки
     RadialMenu.prototype.setIDSectorsWithAngle = function(sectors){
+        // Сначала сделать все сектора неактивными
+        this.sectors.forEach(function (sector) {
+            sector.path.setAttribute('class', 'radial-menu-sector-undefined');
+            sector.id = -1;
+        });
+
+
+        // установка правильных айдишников
         this.sectors.forEach(function (sector) {
             for (var j = 0; j < this.sectors.length; j++)
                 if (Math.abs(getDiffAngle(sector.angle, this.sectors[j].directionAngle)) < 0.1) {
                     // Если углы почти равны, то присвоить правильный id и перейти к поиску id для следующего сектора
                     sector.id = this.sectors[j].uid;
+                    // Сделать выбранный сектор активным
+                    sector.path.setAttribute('class', 'radial-menu-sector-default');
+
                     return;
                 }
         }, {sectors: sectors});
