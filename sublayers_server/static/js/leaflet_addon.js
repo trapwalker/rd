@@ -34,7 +34,7 @@ function getCarMarker(aCar, aMap) {
     newMarker.setIcon(iconsLeaflet.icon_moving_V2);
     if (aCar.owner) {
         var party_str = "";
-        if (aCar.owner.party.name.length > 2)party_str = '[' + aCar.owner.party.name + ']';
+        if (aCar.owner.party.name.length > 2)party_str = '[' + aCar.role + '@' + aCar.owner.party.name + ']';
         newMarker.bindLabel(aCar.owner.login + test_html_str + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
     }
     else

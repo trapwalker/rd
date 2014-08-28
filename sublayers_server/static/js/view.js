@@ -75,7 +75,8 @@ function onMouseMoveMap(mouseEventObject) {
     if(! radialMenu.isHide) { // Если меню уже открыто
         // определяем угол и подсвечиваем выбранный сектор
         var sectorUid = radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
-        userCarMarker.sectorsView.setSelectedState({uid: sectorUid});
+        if(sectorUid != null)
+            userCarMarker.sectorsView.setSelectedState({uid: sectorUid});
     }
 }
 
@@ -228,9 +229,7 @@ $(document).ready(function () {
 
 
     window.onbeforeunload = function (e) {
-        alert('do');
         cookieStorage.save();
-        alert('posle');
     };
 
 
