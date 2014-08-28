@@ -292,6 +292,14 @@ function setClientState(state){
 
 }
 
+
+function showWinLoseMessage(winner){
+    if(user.party.name === winner)
+        modalWindow.modalWinShow();
+    else
+        modalWindow.modalLoseShow();
+}
+
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
     var p = 0, m, t;
