@@ -167,7 +167,7 @@ $(document).ready(function () {
 
     myMap = L.map('map',
         {
-            minZoom: 2,
+            minZoom: 1,
             maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
@@ -218,17 +218,6 @@ $(document).ready(function () {
     chat.setActiveChat(cookieStorage.chatActiveID);
     chat.setVisible(cookieStorage.chatVisible);
     chat.setMessagesHistory(cookieStorage.historyArray);
-
-
-    // Добавление городов
-    getTownMarker(new MapTown(1, new Point(4835, 23804), 'Город #1', 20), myMap);
-    var town2 = getTownMarker(new MapTown(2, new Point(29527, 14612), 'Город #2', 20), myMap);
-
-    if (user.party.name === 'Corp')
-        town2.bindPopup('Ваша задача доставить груз к этому городу.');
-    else
-        town2.bindPopup('Ваша задача не допустить доставку груза к этому городу.');
-
 
 
     carMarkerList = new CarMarkerList({_map: myMap});

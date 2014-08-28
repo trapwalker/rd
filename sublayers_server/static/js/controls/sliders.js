@@ -113,7 +113,7 @@ var SliderSpeed = (function () {
             parentCss: '',
             orientation: 'vertical',
             max: 100,
-            min: 0,
+            min: 1,
             step: 1,
             height: 100, // px
             onChange: '',
