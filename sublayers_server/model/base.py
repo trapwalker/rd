@@ -179,6 +179,12 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         if self.can_see(obj):
             ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
 
+    def on_contact_in(self, obj):
+        pass
+
+    def on_contact_out(self, obj):
+        pass
+
     def on_change(self, comment=None):
         super(Observer, self).on_change(comment)
         self.emit_for__Agent(

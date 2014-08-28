@@ -131,6 +131,7 @@ class ContactSee(Contact):
         subj.subscribe_to__VisibleObject(self.obj)
         subj.emit_for__Agent(message=messages.Contact(
             time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
+        subj.on_contact_in(self.obj)
         # todo: Make 'as_message' method of Event class
 
 
@@ -146,6 +147,7 @@ class ContactOut(Contact):
                 dict(subj=self.subj, obj=self.obj, comment=self.comment))
         self.subj.emit_for__Agent(message=messages.Out(
             time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
+        self.subj.on_contact_out(self.obj)
 
 
 class Callback(Event):
