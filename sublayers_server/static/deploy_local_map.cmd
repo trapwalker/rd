@@ -3,7 +3,7 @@ cls
 echo --- Script for creating local copy map ---
 set /P answer="You have installed on your system program Wget? (y/n) "
 echo Downloading map...
-if "%answer%"=="y" (get_map_wget.cmd) else (get_map.wsf)
+if "%answer%"=="y" (call get_map_wget.cmd) else (get_map.wsf)
 echo Downloading map end
 echo Unpacking map...
 7z x map.7z
