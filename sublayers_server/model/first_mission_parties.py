@@ -14,6 +14,14 @@ from messages import Message
 from math import pi
 
 
+class CargoBot(Bot):
+
+    def on_die(self):
+        super(CargoBot, self).on_die()
+        log.debug('Cargo is DIE!')
+        self.server.post_event(WinEvent(server=self.server, winner_unit=None))
+
+
 class WinMessage(Message):
     # todo: may be Message made mixin to Event?
     def __init__(self, winner_unit, **kw):
@@ -25,7 +33,9 @@ class WinMessage(Message):
 
     def as_dict(self):
         d = super(WinMessage, self).as_dict()
-        d.update(winner=self.unit.as_dict(to_time=self.time))
+        d.update(
+            winner=self.unit.as_dict(to_time=self.time) if self.unit else None,
+        )
         return d
 
 
@@ -34,8 +44,8 @@ class WinEvent(Event):
         """
         @param sublayers_server.model.units.Unit winner_unit: Winner
         """
+        super(WinEvent, self).__init__(**kw)
         self.unit = winner_unit
-        super(WinEvent, self).__init__(server=self.unit.server, **kw)
 
     def perform(self):
         for agent in self.server.agents.values():
@@ -50,7 +60,7 @@ class WinTrigger(Trigger):
         log.debug('Win trigger tested: %s', obj)
         if isinstance(obj, Bot) and obj.owner and obj.role and obj.role.name == 'Cargo':
             log.debug('Win trigger accepted!: %s', obj)
-            self.server.post_event(WinEvent(winner_unit=obj))
+            self.server.post_event(WinEvent(server=self.server, winner_unit=obj))
 
 
 class Corp(RoleParty):
@@ -61,6 +71,7 @@ class Corp(RoleParty):
             roles=[
                 Role('Cargo',
                     car_params=dict(
+                        cls=CargoBot,
                         max_hp=300,
                         max_velocity=40,
                         observing_range=1500,
