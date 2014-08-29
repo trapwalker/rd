@@ -300,6 +300,21 @@ function showWinLoseMessage(winner){
         modalWindow.modalLoseShow();
 }
 
+
+// Реализация выстрелов при crazy режиме
+function crazyShooting(){
+    var sectors = controllers.fireControl.sectors;
+    var crazyInterval = setInterval(function () {
+        // Пытать стрелять каждым сектором, но при условии, что он отречарджился
+        for (var i in sectors)
+            if (!sectors[i].recharged) { // Если сектор не в перезарядке
+                // То стрельнуть этим сектором
+                sendFireCrazy(sectors[i]._fireSector.uid, carMarkerList.getListIDsForShoot(sectors[i]._fireSector.uid))
+            }
+        if(user.userCar.hp <= 0) clearInterval(crazyInterval);
+    }, 1500);
+}
+
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
     var p = 0, m, t;

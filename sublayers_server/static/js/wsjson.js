@@ -99,6 +99,24 @@ function sendFire(aUid) {
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
+// fire Crazy
+function sendFireCrazy(aUid, listForShoot) {
+    if(listForShoot.length > 0) {
+        var mes = {
+            call: "fire",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                weapon_num: aUid, // uid сектора, который совершил выстрел
+                hit_list: listForShoot
+            }
+        };
+        rpcCallList.add(mes);
+        wsjson.sendMess(mes);
+        if (cookieStorage.enableLogRPCMessage())
+            chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    }
+}
+
 // setSpeed
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
