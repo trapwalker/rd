@@ -433,12 +433,13 @@ var UserCarMarker = (function () {
         });
 
         // Создание круга обзора
-        this.circleView = L.circle(this.options.position, this.options.radiusView * 1150,
+        this.circleView = L.circleMarker(this.options.position,
             {
                 weight: 0,
-                fillColor: '#32cd32',
+                color: '#32cd32',
                 fillOpacity: 0.12,
-                clickable: false
+                clickable: false,
+                className: 'sublayers_unclickable'
             }
         ).addTo(this.options._map);
 
@@ -459,6 +460,9 @@ var UserCarMarker = (function () {
         this.currentUserCarPoint = {};
         this.currentUserCarAngle = 0;
         this.currentUserCarLatLng = [];
+
+        //
+        this.setNewZoom();
     }
 
     UserCarMarker.prototype.setNewParams = function(options){
@@ -481,7 +485,8 @@ var UserCarMarker = (function () {
         //this.tail.setActive(this.options.tailEnable);
         this.tail.setActive(false);
 
-        // Создание круга обзора Не требуется. С кругом совсем ничего не нужно делать.
+        // Изменение радиуса круга обзора
+        this.setNewZoom();
 
         // Очистка секторов и добавление новых
         this.sectorsView.clearSectors();
@@ -521,6 +526,14 @@ var UserCarMarker = (function () {
         if(! cookieStorage.debugMode())
             this.trackView.draw(this.currentUserCarLatLng);
     }
+
+    UserCarMarker.prototype.setNewZoom = function(){
+        // Изменение радиуса viewCircle
+        if(this.options._map){
+            var koeff = 1 / (Math.pow(2, (this.options._map.getMaxZoom() - this.options._map.getZoom())));
+            this.circleView.setRadius(this.options.radiusView * koeff);
+        }
+    };
 
     return UserCarMarker;
 })();

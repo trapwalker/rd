@@ -64,6 +64,12 @@ class Agent(Object, SubscriberTo__Observer):
         @param sublayers_server.model.units.Observer emitter: Message emitter
         @param sublayers_server.model.messages.UnitMessage message: Incoming message
         """
+        self.send_message_to_client(message)
+
+    def send_message_to_client(self, message):
+        """
+        @param sublayers_server.model.messages.UnitMessage message: Incoming message
+        """
         if self.connection:
             package = make_push_package([message])
             self.connection.write_message(serialize(package))

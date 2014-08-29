@@ -109,15 +109,11 @@ function onZoomEnd(event) {
     for (var i in listMapObject.objects) {
         if (listMapObject.exist(i)) {
             listMapObject.objects[i].marker.setLabelNoHide(noHide);
-/*
-            if(noHide)
-            // повесить клик на кнопочку инфо
-                $('#idCar'+listMapObject.objects[i].ID).on('click', {car: listMapObject.objects[i]}, carInfoClickEvent);
-            else
-                $('#idCar'+listMapObject.objects[i].ID).off('click', carInfoClickEvent);
-*/
         }
     }
+
+    // Изменение радиуса круга обзора
+    userCarMarker.setNewZoom();
 }
 
 function createTileLayer(storage) {
@@ -175,6 +171,7 @@ $(document).ready(function () {
             keyboard: false,
             scrollWheelZoom: "center",
             dragging: false,
+            crs: L.CRS.Simple,
             doubleClickZoom: false
             //    maxBounds: ([
             //        [50.21, 35.42],
@@ -293,6 +290,14 @@ function setClientState(state){
     myMap.dragging.disable(); // запретить двигать карту
 
 
+}
+
+
+function showWinLoseMessage(winner){
+    if(user.party.name === winner)
+        modalWindow.modalWinShow();
+    else
+        modalWindow.modalLoseShow();
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах

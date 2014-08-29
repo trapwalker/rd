@@ -6,17 +6,72 @@ log = logging.getLogger(__name__)
 from party import RoleParty, Role
 from weapons import SectoralWeapon
 from vectors import Point
+from units import Bot
+from events import Event
+from trigger import Trigger
+from messages import Message
 
 from math import pi
 
 
+class CargoBot(Bot):
+
+    def on_die(self):
+        super(CargoBot, self).on_die()
+        log.debug('Cargo is DIE!')
+        self.server.post_event(WinEvent(server=self.server, winner_unit=None))
+
+
+class WinMessage(Message):
+    # todo: may be Message made mixin to Event?
+    def __init__(self, winner_unit, **kw):
+        """
+        @param sublayers_server.model.units.Unit winner_unit: Winner
+        """
+        super(WinMessage, self).__init__(**kw)
+        self.unit = winner_unit
+
+    def as_dict(self):
+        d = super(WinMessage, self).as_dict()
+        d.update(
+            winner=self.unit.as_dict(to_time=self.time) if self.unit else None,
+        )
+        return d
+
+
+class WinEvent(Event):
+    def __init__(self, winner_unit, **kw):
+        """
+        @param sublayers_server.model.units.Unit winner_unit: Winner
+        """
+        super(WinEvent, self).__init__(**kw)
+        self.unit = winner_unit
+
+    def perform(self):
+        for agent in self.server.agents.values():
+            agent.send_message_to_client(WinMessage(time=self.time, winner_unit=self.unit))
+
+
+class WinTrigger(Trigger):
+    def on_contact_in(self, obj):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Object of contact
+        """
+        log.debug('Win trigger tested: %s', obj)
+        if isinstance(obj, Bot) and obj.owner and obj.role and obj.role.name == 'Cargo':
+            log.debug('Win trigger accepted!: %s', obj)
+            self.server.post_event(WinEvent(server=self.server, winner_unit=obj))
+
+
 class Corp(RoleParty):
     def __init__(self):
+        # todo: add role unit class to params
         super(Corp, self).__init__(
             base_point=Point(4835, 23804),  # Девый город
             roles=[
                 Role('Cargo',
                     car_params=dict(
+                        cls=CargoBot,
                         max_hp=300,
                         max_velocity=40,
                         observing_range=1500,

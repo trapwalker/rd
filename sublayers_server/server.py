@@ -51,6 +51,9 @@ class Application(tornado.web.Application):
     def init_scene(self):
         from model.units import Bot
         from model.vectors import Point
+        from model.first_mission_parties import WinTrigger
+        wt = WinTrigger(server=self.srv, position=Point(29527, 14612), observing_range=600)
+
         #b = Bot(server=self.srv, position=Point(0, 0))
         #b.goto(Point(1000, 1500))
         

@@ -17,6 +17,8 @@ from weapons import SectoralWeapon
 from console import Shell
 import events
 
+import random
+
 
 def make_push_package(events):
     events = [event.as_dict() for event in events]
@@ -60,8 +62,8 @@ class AgentAPI(API):
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
             agent=self.agent,
-            cls=units.Bot,
             override_params=dict(position=Point.random_gauss(position, position_sigma)) if position else None,
+            default_params=dict(cls=units.Bot),
         )
 
     @public_method
@@ -90,6 +92,19 @@ class AgentAPI(API):
                 weapon.fire(hit_list)
         else:
             self.car.weapons[weapon_num].fire(hit_list)
+
+    @public_method
+    def crazy(self):
+        server = self.agent.server
+        def crazy_func(event=None):
+            log.debug('Run crazy func')
+            dt = abs(random.gauss(0, 5)) + 0.5  # sec
+            events.Callback(server=server, time=server.get_time() + dt, func=crazy_func, comment="I'm crazy").send()
+            if self.agent.cars:
+                car = self.agent.cars[0]
+                tasks.goto(self.car, Point.random_gauss(car.position, Point(1000, 1000)))
+
+        crazy_func()
 
     @public_method
     def set_speed(self, new_speed):

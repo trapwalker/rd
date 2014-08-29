@@ -64,7 +64,8 @@ class Event(object):
         """
         Performing event logic.
         """
-        log.debug('EVENT %s perform', self)
+        #log.debug('EVENT %s perform', self)
+        # todo: extract events log
         pass
 
 
@@ -98,7 +99,7 @@ class Contact(Subjective):
         super(Contact, self).__init__(**kw)
         self.subj.contacts.append(self)
         obj.contacts.append(self)
-        log.debug('EVENT %s add to %s and %s', self, self.subj, obj)
+        #log.debug('EVENT %s add to %s and %s', self, self.subj, obj)
 
     def cancel(self):
         super(Subjective, self).cancel()
@@ -109,14 +110,14 @@ class Contact(Subjective):
         self.remove_links()
 
     def remove_links(self):
-        try:  # todo: Устранить хак
-            log.debug('EVENT %s before remove from %s [%s]', self, self.subj, self.subj.contacts)
+        try:
+            #log.debug('EVENT %s before remove from %s [%s]', self, self.subj, self.subj.contacts)
             self.subj.contacts.remove(self)
         except:
             log.exception('`Subjective contacts clearing: subj=%(subj)s, comment=%(comment)s',
                           dict(subj=self.subj, comment=self.comment))
 
-        try:  # todo: Устранить хак
+        try:
             self.obj.contacts.remove(self)
         except:
             log.exception('Contact contacts clearing: obj=%(obj)s, comment=%(comment)s',
@@ -131,6 +132,7 @@ class ContactSee(Contact):
         subj.subscribe_to__VisibleObject(self.obj)
         subj.emit_for__Agent(message=messages.Contact(
             time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
+        subj.on_contact_in(self.obj)
         # todo: Make 'as_message' method of Event class
 
 
@@ -146,6 +148,7 @@ class ContactOut(Contact):
                 dict(subj=self.subj, obj=self.obj, comment=self.comment))
         self.subj.emit_for__Agent(message=messages.Out(
             time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
+        self.subj.on_contact_out(self.obj)
 
 
 class Callback(Event):

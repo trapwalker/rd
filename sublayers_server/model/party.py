@@ -101,14 +101,23 @@ class Role(object):
     def __str__(self):
         return '<Role {self.name}/{n}>'.format(self=self, n=len(self))
 
+    def remove_car(self, car):
+        # todo: rename
+        try:
+            self.cars.remove(car)
+        except ValueError:
+            pass
+
     def clear_dead(self):
         self.cars = [car for car in self.cars if car.hp > 0]
 
-    def init_car(self, agent, cls, default_params=None, override_params=None):
+    def init_car(self, agent, default_params=None, override_params=None):
         params = dict(default_params) if default_params else {}
         params.update(self.car_params)
         if override_params:
             params.update(override_params)
+
+        cls = params.pop('cls')
 
         car = cls(
             server=agent.server,
@@ -149,13 +158,13 @@ class RoleParty(Party):
         for role in self.roles:
             role.clear_dead()
 
-    def init_car(self, agent, cls, default_params=None, override_params=None):
+    def init_car(self, agent, default_params=None, override_params=None):
         self.clear_dead()
         role = max(self.roles, key=lambda r: r.k)
         pos = Point.random_gauss(self.base_point, self.respawn_sigma)
 
         params = dict(default_params) if default_params else {}
         params.update(self.car_base_params(), position=pos)
-        car = role.init_car(agent=agent, cls=cls, default_params=params, override_params=override_params)
+        car = role.init_car(agent=agent, default_params=params, override_params=override_params)
         agent.append_car(car)
         return car

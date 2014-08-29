@@ -67,21 +67,21 @@ class Task(object):
         )
 
     def start(self, **kw):
-        log.debug('TASK start: %s', self)
+        #log.debug('TASK start: %s', self)
         self.on_before_start(**kw)
         self.start_time = self._get_time()
         self.is_started = True
         self.on_after_start(**kw)
 
     def done(self, **kw):
-        log.debug('TASK done: %s', self)
+        #log.debug('TASK done: %s', self)
         self.on_before_end(**kw)
         self.is_done = True
         self.on_after_end(**kw)
         self.owner.next_task()
 
     def cancel(self, **kw):
-        log.debug('TASK cancel: %s', self)
+        #log.debug('TASK cancel: %s', self)
         #raise Exception('#############')
         self.on_before_end(**kw)
         self.is_cancelled = True
@@ -253,7 +253,6 @@ def goto(owner, target_point=None, path=None):
 
     if path:
         segment = path.pop(0)
-        log.debug('goto set tl')
         if 'r' in segment:
             owner.set_tasklist([GotoArc(owner=owner, target_point=segment['b'], arc_params=segment, path=path)])
         else:
@@ -291,13 +290,11 @@ class Goto(Motion):
         path = self.path
         if path and self.is_done:
             segment = path.pop(0)
-            log.debug('Goto set tl')
             if 'r' in segment:
                 next_task = GotoArc(owner=self.owner, target_point=segment['b'], arc_params=segment, path=path)
             else:
                 next_task = Goto(owner=self.owner, target_point=segment['b'], path=path)
             self.owner.set_tasklist([next_task], append=True)
-
 
     def get_position(self, to_time=None):
         """

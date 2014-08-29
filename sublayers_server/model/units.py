@@ -16,14 +16,19 @@ class Unit(Observer):
     def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None,
                  role=None,
                  **kw):
+        """
+        @param sublayers_server.model.agents.Agent owner: Object owner
+        @param float max_hp: Maximum health level
+        @param float direction: Direction angle of unit
+        @param list[sublayers_server.model.weapons.weapon] weapons: Set of weapon
+        @param sublayers_server.model.party.Role role: role of unit into the party of agent
+        """
         super(Unit, self).__init__(**kw)
         self.role = role
         self._task = None
         """@type: sublayers_server.model.tasks.Task | None"""
         self.task_list = []
         """@type: list[sublayers_server.model.tasks.Task]"""
-        self.server.statics.append(self)
-        self.server.static_observers.append(self)
         log.debug('BEFORE owner set')
         self.owner = owner
         log.debug('AFTER owner set')
@@ -121,8 +126,7 @@ class Unit(Observer):
         self.next_task()
 
     def as_dict(self, to_time=None):
-        log.debug('Unit as_dict')
-        d = super(Unit, self).as_dict()
+        d = super(Unit, self).as_dict(to_time=to_time)
         owner = self.owner
         d.update(
             owner=owner and owner.as_dict(),
@@ -135,6 +139,9 @@ class Unit(Observer):
         return d
 
     def delete(self):
+        if self.role:
+            self.role.remove_car(self)
+            # todo: rename
         self.clear_tasks()
         self.server.statics.remove(self)
         super(Unit, self).delete()
@@ -173,7 +180,7 @@ class Bot(Unit):
     def as_dict(self, to_time=None):
         if not to_time:
             to_time = self.server.get_time()
-        d = super(Bot, self).as_dict(to_time)
+        d = super(Bot, self).as_dict(to_time=to_time)
         d.update(
             motion=self.motion.motion_info(to_time) if self.motion else None,
             max_velocity=self.max_velocity,
@@ -187,7 +194,7 @@ class Bot(Unit):
         """
         @param position: sublayers_server.model.vectors.Point
         """
-        log.debug('======== GOTO ++++++')
+        #log.debug('======== GOTO ++++++')
         self.clear_tasks()
         assert self.motion is None, 'ATTENTION! If You see this text, please call server developer: %s' % self.motion
         path = build_trajectory(
