@@ -459,6 +459,10 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner, role) {
             car.role = role;
 
             carMarkerList.add(car, aOwner);
+
+            if(aHP == 0)// поставить стоп-трек
+                car.track.speedV = new Point(0, 0);
+
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);
@@ -477,10 +481,11 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
     var oldHP;
     if (uid == user.userCar.ID) { // если машинка своя
         // Установить новую траекторию
-        user.userCar.track = aTrack;
         // Сохранить старое хп и установить нвоое
         oldHP = user.userCar.hp;
         user.userCar.hp = aHP;
+        if(oldHP > 0) // Устанавливается траектория, только если машинка жива
+            user.userCar.track = aTrack;
         if(user.userCar.hp <= 0){
             userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
             setClientState('death_car');
@@ -496,6 +501,7 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
         oldHP = listMapObject.objects[uid].hp;
         listMapObject.setCarHP(uid, aHP);
         // Установить новую траекторию
+        if(oldHP > 0) // Устанавливается траектория, только если машинка жива
         listMapObject.setTrack(uid, aTrack);
         // После добавления машинки или её апдейта, проверяем сколько у неё хп
         if(listMapObject.objects[uid].hp <= 0){
@@ -622,7 +628,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
     // Присвоение роли
     user.role = role;
-    
+
     // Установка текста в верху страницы - вывод своего ника и своей пати
     setTitleOnPage();
 }
