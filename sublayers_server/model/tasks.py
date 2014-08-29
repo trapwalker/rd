@@ -254,7 +254,9 @@ def goto(owner, target_point=None, path=None):
     if path:
         segment = path.pop(0)
         if 'r' in segment:
-            owner.set_tasklist([GotoArc(owner=owner, target_point=segment['b'], arc_params=segment, path=path)])
+            owner.set_tasklist([
+                GotoArc(owner=owner, target_point=segment['b'], arc_params=segment, path=path),
+            ])
         else:
             owner.set_tasklist([Goto(owner=owner, target_point=segment['b'], path=path)])
 

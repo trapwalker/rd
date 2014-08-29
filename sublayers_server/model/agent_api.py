@@ -94,15 +94,28 @@ class AgentAPI(API):
             self.car.weapons[weapon_num].fire(hit_list)
 
     @public_method
-    def crazy(self):
+    def crazy(self, target_id=None):
         server = self.agent.server
         def crazy_func(event=None):
             log.debug('Run crazy func')
             dt = abs(random.gauss(0, 5)) + 0.5  # sec
             events.Callback(server=server, time=server.get_time() + dt, func=crazy_func, comment="I'm crazy").send()
             if self.agent.cars:
+                p = None
+                target = None
                 car = self.agent.cars[0]
-                tasks.goto(self.car, Point.random_gauss(car.position, Point(1000, 1000)))
+
+                if target_id:
+                    target = server.objects.get(target_id)
+                if not target and hasattr(server, 'mission_cargo'):
+                    target = server.mission_cargo
+
+                if target and hasattr(target, 'position'):
+                    p = Point.random_gauss(target.position, Point(1000, 1000))
+
+                p = p or Point.random_gauss(car.position, Point(1000, 1000))
+                log.debug('%s crazy go to %s position', car, target or p)
+                tasks.goto(self.car, p)
 
         crazy_func()
 

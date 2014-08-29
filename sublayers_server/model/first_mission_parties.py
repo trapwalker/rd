@@ -15,6 +15,9 @@ from math import pi
 
 
 class CargoBot(Bot):
+    def __init__(self, *av, **kw):
+        super(CargoBot, self).__init__(*av, **kw)
+        self.server.mission_cargo = self
 
     def on_die(self):
         super(CargoBot, self).on_die()
