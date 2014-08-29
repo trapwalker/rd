@@ -236,7 +236,8 @@ $(document).ready(function () {
     if (!cookieStorage.debugMode())
         modalWindow.modalWelcomeShow();
 
-
+    // Запустить отчёт времени до рестарта сервера
+    showTimeToResetServer()
 
 });
 
@@ -298,6 +299,51 @@ function showWinLoseMessage(winner){
         modalWindow.modalWinShow();
     else
         modalWindow.modalLoseShow();
+}
+
+
+// Реализация выстрелов при crazy режиме
+function crazyShooting(){
+    var sectors = controllers.fireControl.sectors;
+    var crazyInterval = setInterval(function () {
+        // Пытать стрелять каждым сектором, но при условии, что он отречарджился
+        for (var i in sectors)
+            if (!sectors[i].recharged) { // Если сектор не в перезарядке
+                // То стрельнуть этим сектором
+                sendFireCrazy(sectors[i]._fireSector.uid, carMarkerList.getListIDsForShoot(sectors[i]._fireSector.uid))
+            }
+        if(user.userCar.hp <= 0) clearInterval(crazyInterval);
+    }, 1500);
+}
+
+// Установка текста в верху страницы - вывод своего ника и своей пати
+function setTitleOnPage(){
+    if (cookieStorage.optionsShowID)
+        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + '] ' + user.userCar.ID);
+    else
+        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
+}
+
+
+// Функция показа кол-ва минут до следующих 15-ти минут
+function showTimeToResetServer(){
+    var minut15 = 15 * 60 * 1000;
+    var fullPart = (new Date().getTime()) / minut15;
+    fullPart = Math.floor(fullPart) + 1;
+    var timeToReset = new Date(0);
+    timeToReset.setUTCMilliseconds(fullPart * minut15);
+    var selectorTimeText = $('#timeToResetTime');
+
+    var intervalForTimerReset = setInterval(function () {
+        var textTime = timeToReset - new Date();
+        if(textTime > minut15 ) {textTime = 0; clearInterval(intervalForTimerReset)};
+        var newDate = new Date(0);
+        newDate.setUTCMilliseconds(textTime);
+        selectorTimeText.text(newDate.getMinutes() + ' : ' + newDate.getSeconds());
+
+    }, 1000);
+
+
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах

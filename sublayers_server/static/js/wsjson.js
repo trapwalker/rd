@@ -32,7 +32,8 @@ WSJSON = (function () {
             if (event.wasClean) {
                 alert('Соединение закрыто чисто');
             } else {
-                //alert('Обрыв соединения'); // например, "убит" процесс сервера
+                alert('Обрыв соединения. Переподключитесь к серверу.'); // например, "убит" процесс сервера
+                window.location.reload();
             }
             //alert('Код: ' + event.code + ' причина: ' + event.reason);
         };
@@ -98,6 +99,24 @@ function sendFire(aUid) {
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
+// fire Crazy
+function sendFireCrazy(aUid, listForShoot) {
+    if(listForShoot.length > 0) {
+        var mes = {
+            call: "fire",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                weapon_num: aUid, // uid сектора, который совершил выстрел
+                hit_list: listForShoot
+            }
+        };
+        rpcCallList.add(mes);
+        wsjson.sendMess(mes);
+        if (cookieStorage.enableLogRPCMessage())
+            chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    }
+}
+
 // setSpeed
 function sendSetSpeed(newSpeed, auid) {
     var mes = {
@@ -142,6 +161,9 @@ function sendServConsole(atext) {
     wsjson.socket.send(JSON.stringify(mes));
     if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+
+    if(atext.split('(')[0] === 'crazy')// Если отправили команду crazy на сервер, то пусть и сам стреляет
+        crazyShooting();
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
@@ -437,6 +459,10 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner, role) {
             car.role = role;
 
             carMarkerList.add(car, aOwner);
+
+            if(aHP == 0)// поставить стоп-трек
+                car.track.speedV = new Point(0, 0);
+
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);
@@ -455,10 +481,11 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
     var oldHP;
     if (uid == user.userCar.ID) { // если машинка своя
         // Установить новую траекторию
-        user.userCar.track = aTrack;
         // Сохранить старое хп и установить нвоое
         oldHP = user.userCar.hp;
         user.userCar.hp = aHP;
+        if(oldHP > 0) // Устанавливается траектория, только если машинка жива
+            user.userCar.track = aTrack;
         if(user.userCar.hp <= 0){
             userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
             setClientState('death_car');
@@ -474,6 +501,7 @@ function updateCurrentCar(uid, aType, aHP, aTrack, owner) {
         oldHP = listMapObject.objects[uid].hp;
         listMapObject.setCarHP(uid, aHP);
         // Установить новую траекторию
+        if(oldHP > 0) // Устанавливается траектория, только если машинка жива
         listMapObject.setTrack(uid, aTrack);
         // После добавления машинки или её апдейта, проверяем сколько у неё хп
         if(listMapObject.objects[uid].hp <= 0){
@@ -550,8 +578,6 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
         // Выставление скорости на сервере
         changeSpeedOnSlider();
-
-
     }
     else {
         // значит пришёл второй initMessage, значит нужно переопределить все параметры
@@ -598,12 +624,13 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
         // Инициализация радиального меню - установка правильных id секторов
         radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
-
     }
 
+    // Присвоение роли
+    user.role = role;
 
     // Установка текста в верху страницы - вывод своего ника и своей пати
-    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + role + '@' + user.party.name +']');
+    setTitleOnPage();
 }
 
 

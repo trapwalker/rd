@@ -16,7 +16,8 @@ var LocalCookieStorage = (function(){
             optionsFCRotate: true,
             optionsRMVisible: true,
             optionsSelectAnybody: false,
-            levelZoomForVisibleLabel: 5
+            levelZoomForVisibleLabel: 5,
+            optionsShowID: false
         };
 
 
@@ -38,6 +39,7 @@ var LocalCookieStorage = (function(){
         this.optionsRMVisible = defOptions.optionsRMVisible;
         this.optionsSelectAnybody = defOptions.optionsSelectAnybody;
         this.levelZoomForVisibleLabel = defOptions.levelZoomForVisibleLabel;
+        this.optionsShowID = defOptions.optionsShowID;
 
         // Состояние тягания карты. dragging можно делать только когда машинка мертва
         this.optionsDraggingMap = false;
@@ -66,7 +68,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsRMVisible', (this.optionsRMVisible ? 1 : 0));
         this.setCookie('optionsSelectAnybody', (this.optionsSelectAnybody ? 1 : 0));
         this.setCookie('levelZoomForVisibleLabel', this.levelZoomForVisibleLabel);
-
+        this.setCookie('optionsShowID', (this.optionsShowID ? 1 : 0));
     };
 
 
@@ -149,6 +151,11 @@ var LocalCookieStorage = (function(){
         var levelZoomForVisibleLabel = this.getCookie('levelZoomForVisibleLabel');
         if (levelZoomForVisibleLabel !== undefined)
             this.levelZoomForVisibleLabel = levelZoomForVisibleLabel;
+
+        // optionsSelectAnybody
+        var optionsShowID = this.getCookie('optionsShowID');
+        if (optionsShowID !== undefined)
+            this.optionsShowID = (optionsShowID == 1);
 
     };
 

@@ -161,6 +161,20 @@ input:focus {
     cursor: default;
 }
 
+#timeToResetDiv {
+    position: absolute;
+    z-index: 10;
+    right: 170px;
+    top: 30px;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Arial;
+    color: lime;
+    cursor: default;
+    pointer-event: none;
+
+}
+
 ::-webkit-scrollbar {
     width: 16px;
 }

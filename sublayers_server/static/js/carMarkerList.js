@@ -203,15 +203,15 @@ var CarMarkerList = (function () {
             // у которых нет backLight
             if (listMapObject.exist(i) && !(listMapObject.objects[i].backLight)) {
                 var car = listMapObject.objects[i];
-                // которые находятся в каком-нибудь секторе
-                if (car.inSector)
-                // Которые находятся в нужном секторе
-                    if (car.inSector.sector.uid == sectorUid)
-                    // Если попадает в крит-зону
-                        if (this._inCritZoneOnSector(car.inSector.sector, car.inSector.dist, car.inSector.fi))
-                            listIDs.push({carID: car.ID, damage_factor: 1});
-                        else // если не попали в зону крита
-                            listIDs.push({carID: car.ID, damage_factor: 0.5});
+                if (car.hp > 0) // Которые живы
+                    if (car.inSector) // которые находятся в каком-нибудь секторе
+                    // Которые находятся в нужном секторе
+                        if (car.inSector.sector.uid == sectorUid)
+                        // Если попадает в крит-зону
+                            if (this._inCritZoneOnSector(car.inSector.sector, car.inSector.dist, car.inSector.fi))
+                                listIDs.push({carID: car.ID, damage_factor: 1});
+                            else // если не попали в зону крита
+                                listIDs.push({carID: car.ID, damage_factor: 0.5});
             }
         return listIDs;
     };
