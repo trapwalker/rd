@@ -236,7 +236,8 @@ $(document).ready(function () {
     if (!cookieStorage.debugMode())
         modalWindow.modalWelcomeShow();
 
-
+    // Запустить отчёт времени до рестарта сервера
+    showTimeToResetServer()
 
 });
 
@@ -321,6 +322,28 @@ function setTitleOnPage(){
         $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + '] ' + user.userCar.ID);
     else
         $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
+}
+
+
+// Функция показа кол-ва минут до следующих 15-ти минут
+function showTimeToResetServer(){
+    var minut15 = 15 * 60 * 1000;
+    var fullPart = (new Date().getTime()) / minut15;
+    fullPart = Math.floor(fullPart) + 1;
+    var timeToReset = new Date(0);
+    timeToReset.setUTCMilliseconds(fullPart * minut15);
+    var selectorTimeText = $('#timeToResetTime');
+
+    var intervalForTimerReset = setInterval(function () {
+        var textTime = timeToReset - new Date();
+        if(textTime > minut15 ) {textTime = 0; clearInterval(intervalForTimerReset)};
+        var newDate = new Date(0);
+        newDate.setUTCMilliseconds(textTime);
+        selectorTimeText.text(newDate.getMinutes() + ' : ' + newDate.getSeconds());
+
+    }, 1000);
+
+
 }
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
