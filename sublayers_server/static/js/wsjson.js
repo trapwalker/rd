@@ -161,6 +161,9 @@ function sendServConsole(atext) {
     wsjson.socket.send(JSON.stringify(mes));
     if (cookieStorage.enableLogRPCMessage())
         chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+
+    if(atext.split('(')[0] === 'crazy')// Если отправили команду crazy на сервер, то пусть и сам стреляет
+        crazyShooting();
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
