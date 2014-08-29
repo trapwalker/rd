@@ -572,8 +572,6 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
         // Выставление скорости на сервере
         changeSpeedOnSlider();
-
-
     }
     else {
         // значит пришёл второй initMessage, значит нужно переопределить все параметры
@@ -620,12 +618,13 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
         // Инициализация радиального меню - установка правильных id секторов
         radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
-
     }
 
-
+    // Присвоение роли
+    user.role = role;
+    
     // Установка текста в верху страницы - вывод своего ника и своей пати
-    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + role + '@' + user.party.name +']');
+    setTitleOnPage();
 }
 
 

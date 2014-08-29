@@ -98,6 +98,7 @@ var ModalWindow = (function () {
         optionsRMVisible.checked = cookieStorage.optionsRMVisible ? true : false;
         optionsSelectAnybody.checked = cookieStorage.optionsSelectAnybody ? true: false;
         optionsLevelForVisibleLabel.value = cookieStorage.levelZoomForVisibleLabel;
+        optionsShowID.value = cookieStorage.optionsShowID;
     };
 
     ModalWindow.prototype.modalOptionsHide = function(saveOptions){
@@ -139,6 +140,11 @@ var ModalWindow = (function () {
 
             // считать данные о масштабе для отображения лейблов маркера
             cookieStorage.levelZoomForVisibleLabel = optionsLevelForVisibleLabel.value;
+
+            // optionsShowID переделать шапку, в зависимости от результата
+            cookieStorage.optionsShowID = optionsShowID.checked ? true : false;
+            setTitleOnPage();
+
 
         }
     };

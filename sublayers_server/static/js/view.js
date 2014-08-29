@@ -315,6 +315,14 @@ function crazyShooting(){
     }, 1500);
 }
 
+// Установка текста в верху страницы - вывод своего ника и своей пати
+function setTitleOnPage(){
+    if (cookieStorage.optionsShowID)
+        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + '] ' + user.userCar.ID);
+    else
+        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
+}
+
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
     var p = 0, m, t;
