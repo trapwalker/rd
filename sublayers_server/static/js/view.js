@@ -139,11 +139,6 @@ $(document).ready(function () {
     //Если есть файл map_base_local.js, то брать карту из локального каталога
     if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
 
-    var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
-    if (!storage) {
-        alert('Storage not loading!');
-    }
-
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 
@@ -189,6 +184,10 @@ $(document).ready(function () {
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
 
+    var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
+    if (!storage) {
+        alert('Storage not loading!');
+    }
 
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
