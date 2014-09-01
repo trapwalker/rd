@@ -331,16 +331,15 @@ function showTimeToResetServer(servTime){
     var minut15 = 15 * 60 * 1000;
     if(dt > minut15) dt = 0;
 
-    var fullPart = (new Date().getTime()) / minut15;
+    var fullPart = servTime / minut15;
     fullPart = Math.floor(fullPart) + 1;
-    var timeToReset = new Date(0);
-    timeToReset.setUTCMilliseconds(fullPart * minut15 - dt);
+    var timeToReset = fullPart * minut15 + dt;
     var selectorTimeText = $('#timeToResetTime');
 
 
     var intervalForTimerReset = setInterval(function () {
         var textTime = timeToReset - new Date().getTime();
-        if(textTime < minut15 ) {
+        if(textTime < minut15 && textTime >= 0) {
             var newDate = new Date(0);
             newDate.setUTCMilliseconds(textTime);
             selectorTimeText.text(newDate.getMinutes() + ' : ' + newDate.getSeconds());
