@@ -6,7 +6,8 @@ function redrawMap() {
     if (user.userCar) {
         userCarMarker.draw(clock.getCurrentTime());
         // перерисовка всех контроллеров
-        controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
+        if (controllers)
+            controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
     }
 
     // работа со списком машинок
@@ -138,11 +139,6 @@ $(document).ready(function () {
     //Если есть файл map_base_local.js, то брать карту из локального каталога
     if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
 
-    var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
-    if (!storage) {
-        alert('Storage not loading!');
-    }
-
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 
@@ -188,6 +184,10 @@ $(document).ready(function () {
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
 
+    var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
+    if (!storage) {
+        alert('Storage not loading!');
+    }
 
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
@@ -325,20 +325,21 @@ function setTitleOnPage(){
 
 // Функция показа кол-ва минут до следующих 15-ти минут
 function showTimeToResetServer(servTime){
-    var minut15 = 15 * 60 * 1000;
-    var fullPart = (new Date().getTime()) / minut15;
-    fullPart = Math.floor(fullPart) + 1;
-    var timeToReset = new Date(0);
-    timeToReset.setUTCMilliseconds(fullPart * minut15);
-    var selectorTimeText = $('#timeToResetTime');
-
     var dt = 0;
     if(servTime)
         dt = (new Date().getTime()) - servTime;
+    var minut15 = 15 * 60 * 1000;
+    if(dt > minut15) dt = 0;
+
+    var fullPart = (new Date().getTime()) / minut15;
+    fullPart = Math.floor(fullPart) + 1;
+    var timeToReset = new Date(0);
+    timeToReset.setUTCMilliseconds(fullPart * minut15 - dt);
+    var selectorTimeText = $('#timeToResetTime');
 
 
     var intervalForTimerReset = setInterval(function () {
-        var textTime = timeToReset - (new Date().getTime() - dt);
+        var textTime = timeToReset - new Date().getTime();
         if(textTime < minut15 ) {
             var newDate = new Date(0);
             newDate.setUTCMilliseconds(textTime);
