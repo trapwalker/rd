@@ -236,9 +236,6 @@ $(document).ready(function () {
     if (!cookieStorage.debugMode())
         modalWindow.modalWelcomeShow();
 
-    // Запустить отчёт времени до рестарта сервера
-    showTimeToResetServer()
-
 });
 
 //Переключение в полноэкранный режим и обратно по кнопке
@@ -326,7 +323,7 @@ function setTitleOnPage(){
 
 
 // Функция показа кол-ва минут до следующих 15-ти минут
-function showTimeToResetServer(){
+function showTimeToResetServer(servTime){
     var minut15 = 15 * 60 * 1000;
     var fullPart = (new Date().getTime()) / minut15;
     fullPart = Math.floor(fullPart) + 1;
@@ -334,13 +331,18 @@ function showTimeToResetServer(){
     timeToReset.setUTCMilliseconds(fullPart * minut15);
     var selectorTimeText = $('#timeToResetTime');
 
-    var intervalForTimerReset = setInterval(function () {
-        var textTime = timeToReset - new Date();
-        if(textTime > minut15 ) {textTime = 0; clearInterval(intervalForTimerReset)};
-        var newDate = new Date(0);
-        newDate.setUTCMilliseconds(textTime);
-        selectorTimeText.text(newDate.getMinutes() + ' : ' + newDate.getSeconds());
+    var dt = 0;
+    if(servTime)
+        dt = (new Date().getTime()) - servTime;
 
+
+    var intervalForTimerReset = setInterval(function () {
+        var textTime = timeToReset - (new Date().getTime() - dt);
+        if(textTime < minut15 ) {
+            var newDate = new Date(0);
+            newDate.setUTCMilliseconds(textTime);
+            selectorTimeText.text(newDate.getMinutes() + ' : ' + newDate.getSeconds());
+        }
     }, 1000);
 
 

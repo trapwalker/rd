@@ -231,6 +231,9 @@ function receiveMesFromServ(data){
                 var aMaxHP = 30;
                 var radius_visible = event.cars[0].r;
 
+                // Запустить отчёт времени до рестарта сервера
+                showTimeToResetServer(servtime);
+
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
                     user.login = event.agent.login;
