@@ -14,6 +14,7 @@ var ModalWindow = (function () {
         this.modalDeath = $('#' + divs.modalDeath);
         this.modalWin = $('#' + divs.modalWin);
         this.modalLose = $('#' + divs.modalLose);
+        this.modalRestart = $('#' + divs.modalRestart);
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -23,6 +24,7 @@ var ModalWindow = (function () {
         this.modalDeath.addClass('modal-window-hide');
         this.modalWin.addClass('modal-window-hide');
         this.modalLose.addClass('modal-window-hide');
+        this.modalRestart.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
@@ -30,6 +32,7 @@ var ModalWindow = (function () {
         this.modalDeathLoad();
         this.modalWinLoad();
         this.modalLoseLoad();
+        this.modalRestartLoad();
     }
 
     ModalWindow.prototype._modalBackShow = function () {
@@ -272,8 +275,39 @@ var ModalWindow = (function () {
 
 
 
+    ModalWindow.prototype.modalRestartShow = function () {
+        // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
+        this._modalBackShow();
+        // включить модальное окно modalOptions
+        this.modalRestart.removeClass('modal-window-hide');
+        this.modalRestart.addClass('modal-window-restart-show');
+    };
 
+    ModalWindow.prototype.modalRestartHide = function(){
+        // выключить фон
+        this._modalBackHide();
+        // выключить модальное окно Death
+        this.modalRestart.removeClass('modal-window-restart-show');
+        this.modalRestart.addClass('modal-window-hide');
 
+    };
+
+    ModalWindow.prototype.modalRestartLoad = function () {
+        // Загрузить информацию из документа в див
+        var self = this;
+        this.modalRestart.load('/static/modal_window/restartWindow.html', function(){
+            // Назначить кнопки закрытия окна
+            $('#restartPageButton').on('click', {modal: self}, function(event){
+                // сначала обработать все необходимые данные
+                // Затем закрыть текущее модельное окно
+                event.data.modal.modalRestartHide();
+                // И теперь сделать рестарт
+                window.location.reload();
+            });
+
+        });
+
+    };
 
 
 

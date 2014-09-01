@@ -87,6 +87,17 @@
     background-color: #ffffff;
 }
 
+.modal-window-restart-show {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    height: 75px;
+    width: 300px;
+    margin-left: -150px;
+    border: solid 4px darkgreen;
+    z-index: 21;
+    background-color: #000000;
+}
 
 
 /* Все css стили всех модальных оконо в этой месте!*/
@@ -354,3 +365,43 @@
     opacity: 0.95;
 }
 /* конец стилей для окна поражения */
+
+
+/* css стили для окна дисконнекта */
+#restartPageDiv {
+    position: absolute;
+    background-color: black;
+    color: lime;
+    font: bold 12px Arial;
+    min-height: 75px;
+    min-width: 300px;
+}
+
+#restartPageRight {
+    margin-left: 15px;
+    height: 100%;
+    position: absolute;
+}
+
+#restartPageRightText {
+    margin-top: 10px;
+    text-align: center;
+}
+
+#restartPageButton {
+    cursor: pointer;
+    opacity: 0.7;
+    position: absolute;
+    left: 50%;
+    margin-left: -10px;
+    border: solid lime 1px;
+    border-radius: 3px;
+    padding: 3px 5px 3px 5px;
+    font: bold 14px Arial;
+    bottom: 10px;
+}
+
+#restartPageButton:hover {
+    opacity: 0.95;
+}
+/* конец стилей для окна дисконнекта */

@@ -32,8 +32,9 @@ WSJSON = (function () {
             if (event.wasClean) {
                 alert('Соединение закрыто чисто');
             } else {
-                alert('Обрыв соединения. Переподключитесь к серверу.'); // например, "убит" процесс сервера
-                window.location.reload();
+                //alert('Обрыв соединения. Переподключитесь к серверу.'); // например, "убит" процесс сервера
+                //window.location.reload();
+                modalWindow.modalRestartShow();
             }
             //alert('Код: ' + event.code + ' причина: ' + event.reason);
         };
@@ -230,6 +231,9 @@ function receiveMesFromServ(data){
                 var max_speed;
                 var aMaxHP = 30;
                 var radius_visible = event.cars[0].r;
+
+                // Запустить отчёт времени до рестарта сервера
+                showTimeToResetServer(servtime);
 
                 // Инициализация Юзера
                 if(event.agent.cls == "User"){
