@@ -32,8 +32,9 @@ WSJSON = (function () {
             if (event.wasClean) {
                 alert('Соединение закрыто чисто');
             } else {
-                alert('Обрыв соединения. Переподключитесь к серверу.'); // например, "убит" процесс сервера
-                window.location.reload();
+                //alert('Обрыв соединения. Переподключитесь к серверу.'); // например, "убит" процесс сервера
+                //window.location.reload();
+                modalWindow.modalRestartShow();
             }
             //alert('Код: ' + event.code + ' причина: ' + event.reason);
         };

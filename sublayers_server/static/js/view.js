@@ -154,7 +154,8 @@ $(document).ready(function () {
         modalOptions: 'modalOptions',
         modalDeath: 'modalDeath',
         modalWin: 'modalWin',
-        modalLose: 'modalLose'
+        modalLose: 'modalLose',
+        modalRestart: 'modalRestart'
     });
 
     // Инициализация.
