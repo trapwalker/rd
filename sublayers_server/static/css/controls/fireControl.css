@@ -14,16 +14,21 @@
     margin-left: 57px;
     height: 190px;
     width: 237px;
-    //background: transparent url('/static/img/fire_control/battle_hud_glass.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_glass.png') 100% 100% no-repeat;
     background-position: top left;
     bottom: -208px;
+}
+
+#divForSVG {
+    margin-left: 44px;
+    margin-top: 22px;
 }
 
 #fireControlBottom {
     position: absolute;
     height: 48px;
     width: 351px;
-    //background: transparent url('/static/img/fire_control/battle_hud_base.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_base.png') 100% 100% no-repeat;
     top: 185px;
     pointer-events: auto;
 }
@@ -37,27 +42,27 @@
 }
 
 .fire-control-slide-button-show {
-     //background: transparent url('/static/img/fire_control/battle_hud_btn_down_normal.png') 100% 100% no-repeat;
+     background: transparent url('/static/img/fire_control/battle_hud_btn_down_normal.png') 100% 100% no-repeat;
  }
 
 .fire-control-slide-button-show:hover {
-    //background: transparent url('/static/img/fire_control/battle_hud_btn_down_over.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_btn_down_over.png') 100% 100% no-repeat;
 }
 
 .fire-control-slide-button-show:active {
-    //background: transparent url('/static/img/fire_control/battle_hud_btn_down_pressed.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_btn_down_pressed.png') 100% 100% no-repeat;
 }
 
 .fire-control-slide-button-hide {
-    //background: transparent url('/static/img/fire_control/battle_hud_btn_up_normal.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_normal.png') 100% 100% no-repeat;
 }
 
 .fire-control-slide-button-hide:hover {
-    //background: transparent url('/static/img/fire_control/battle_hud_btn_up_over.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_over.png') 100% 100% no-repeat;
 }
 
 .fire-control-slide-button-hide:active {
-    //background: transparent url('/static/img/fire_control/battle_hud_btn_up_pressed.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_pressed.png') 100% 100% no-repeat;
 }
 
 .fire-control-svg {

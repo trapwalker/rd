@@ -34,7 +34,6 @@ var FireControl = (function () {
 
         $('#' + this.options.parentDiv).addClass('fire-control-parent');
 
-        /*
         // Добавление верхнего дива
         this.fCT = $("<div id='fireControlTop'></div>");
         $("#" + this.options.parentDiv).append(this.fCT);
@@ -47,7 +46,7 @@ var FireControl = (function () {
         this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show sublayers-clickable'></div>");
         this.fCB.append(this.fCSB);
         this.fCSB.on('click', {self: this}, this.changeVisible);
-        */
+
         this.radiusOut = this.options.diameter / 2 - 1;
         this.radiusIn = this.options.diameter / 6 + 5;
         this.radiusAll = this.options.diameter / 6;
@@ -57,14 +56,17 @@ var FireControl = (function () {
             y: this.options.diameter / 2
         };
 
+        // Создание дива под SVG полотно
+        this.dFSVG = $("<div id='divForSVG'></div>");
+        this.fCT.append(this.dFSVG);
+
         // Создание SVG полотна
         this.NS = 'http://www.w3.org/2000/svg';
         this.SVG = document.createElementNS(this.NS, 'svg');
-        this.SVG.setAttribute('class', 'fire-control-svg');
+        //this.SVG.setAttribute('class', 'fire-control-svg');
         this.SVG.setAttribute('height', this.options.diameter);
         this.SVG.setAttribute('width', this.options.diameter);
-        //this.fCT.append(this.SVG);
-        $('#' + this.options.parentDiv).append(this.SVG);
+        this.dFSVG.append(this.SVG);
 
         // Создание unclickable фона для контроллера (прозрачного круга)
         this.backgroundCircle = document.createElementNS(this.NS, 'circle');
