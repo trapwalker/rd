@@ -91,7 +91,7 @@ function sendFire(aUid) {
         rpc_call_id: rpcCallList.getID(),
         params: {
             weapon_num: aUid, // uid сектора, который совершил выстрел
-            hit_list: carMarkerList.getListIDsForShoot(aUid)
+            hit_list: (cookieStorage.optionsFriendlyFireEnabled ? carMarkerList.getListIDsForShootAll(aUid) : carMarkerList.getListIDsForShoot(aUid))
         }
     };
     rpcCallList.add(mes);
