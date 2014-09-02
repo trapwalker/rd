@@ -19,6 +19,11 @@
     bottom: -208px;
 }
 
+#divForSVG {
+    margin-left: 44px;
+    margin-top: 22px;
+}
+
 #fireControlBottom {
     position: absolute;
     height: 48px;
