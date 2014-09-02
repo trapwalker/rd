@@ -17,7 +17,8 @@ var LocalCookieStorage = (function(){
             optionsRMVisible: true,
             optionsSelectAnybody: false,
             levelZoomForVisibleLabel: 5,
-            optionsShowID: false
+            optionsShowID: false,
+            optionsFriendlyFireEnabled: true
         };
 
 
@@ -40,6 +41,7 @@ var LocalCookieStorage = (function(){
         this.optionsSelectAnybody = defOptions.optionsSelectAnybody;
         this.levelZoomForVisibleLabel = defOptions.levelZoomForVisibleLabel;
         this.optionsShowID = defOptions.optionsShowID;
+        this.optionsFriendlyFireEnabled = defOptions.optionsFriendlyFireEnabled;
 
         // Состояние тягания карты. dragging можно делать только когда машинка мертва
         this.optionsDraggingMap = false;
@@ -69,6 +71,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsSelectAnybody', (this.optionsSelectAnybody ? 1 : 0));
         this.setCookie('levelZoomForVisibleLabel', this.levelZoomForVisibleLabel);
         this.setCookie('optionsShowID', (this.optionsShowID ? 1 : 0));
+        this.setCookie('optionsFriendlyFireEnabled', (this.optionsFriendlyFireEnabled ? 1 : 0));
     };
 
 
@@ -157,6 +160,10 @@ var LocalCookieStorage = (function(){
         if (optionsShowID !== undefined)
             this.optionsShowID = (optionsShowID == 1);
 
+        // optionsFriendlyFireEnabled
+        var optionsFriendlyFireEnabled = this.getCookie('optionsFriendlyFireEnabled');
+        if (optionsFriendlyFireEnabled !== undefined)
+            this.optionsFriendlyFireEnabled = (optionsFriendlyFireEnabled == 1);
     };
 
 // Функции для работы с cookie

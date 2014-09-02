@@ -101,7 +101,8 @@ var ModalWindow = (function () {
         optionsRMVisible.checked = cookieStorage.optionsRMVisible ? true : false;
         optionsSelectAnybody.checked = cookieStorage.optionsSelectAnybody ? true: false;
         optionsLevelForVisibleLabel.value = cookieStorage.levelZoomForVisibleLabel;
-        optionsShowID.value = cookieStorage.optionsShowID;
+        optionsShowID.checked = cookieStorage.optionsShowID;
+        optionsFriendlyFireEnabled.checked = cookieStorage.optionsFriendlyFireEnabled;
     };
 
     ModalWindow.prototype.modalOptionsHide = function(saveOptions){
@@ -116,6 +117,7 @@ var ModalWindow = (function () {
             cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
             cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
             cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
+            cookieStorage.optionsFriendlyFireEnabled = optionsFriendlyFireEnabled.checked ? true : false;
 
             // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
             cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
