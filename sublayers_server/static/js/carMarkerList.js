@@ -217,6 +217,25 @@ var CarMarkerList = (function () {
     };
 
 
+    CarMarkerList.prototype.getListIDsForShootAll = function (sectorUid) {
+        var listIDs = [];
+        // Для всех машинок
+        for (var i in listMapObject.objects)
+            if (listMapObject.exist(i)) {
+                var car = listMapObject.objects[i];
+                if (car.hp > 0) // Которые живы
+                    if (car.inSector) // которые находятся в каком-нибудь секторе
+                    // Которые находятся в нужном секторе
+                        if (car.inSector.sector.uid == sectorUid)
+                        // Если попадает в крит-зону
+                            if (this._inCritZoneOnSector(car.inSector.sector, car.inSector.dist, car.inSector.fi))
+                                listIDs.push({carID: car.ID, damage_factor: 1});
+                            else // если не попали в зону крита
+                                listIDs.push({carID: car.ID, damage_factor: 0.5});
+            }
+        return listIDs;
+    };
+
     CarMarkerList.prototype._inCritZoneOnSector = function (sector, distance, fi) {
         var distBool = distance <= (sector.radius * 0.75);
         var fiBool = Math.abs(fi) <= (sector.widthAngle / 4.);
