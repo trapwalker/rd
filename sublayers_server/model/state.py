@@ -20,6 +20,8 @@ class State(object):
         @param float w: angular velocity (rad/s)
         @param float e: angular acceleration (rad/s**2)
         """
+        self.ac_max = 10  # m/s^2 ~ 1g
+        self.turn_factor = 0  # 0 - forward; 1 - CCW; -1 - CCW
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
