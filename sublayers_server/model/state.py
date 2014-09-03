@@ -10,7 +10,7 @@ from math import degrees, radians
 
 class State(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, w=0.0, e=0.0):
+    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, w=0.0, v_max=28.0, a_accelerate=5.0, a_braking=-10.0): 
         """
         @param float t: time (sec)
         @param Point p: position (m)
@@ -20,6 +20,10 @@ class State(object):
         @param float w: angular velocity (rad/s)
         @param float e: angular acceleration (rad/s**2)
         """
+        self.a_accelerate = a_accelerate
+        self.a_braking = a_braking
+        self.v_max = v_max
+
         self.ac_max = 10  # m/s^2 ~ 1g
         self.turn_factor = 0  # 0 - forward; 1 - CCW; -1 - CCW
         self.t0 = t
@@ -28,7 +32,7 @@ class State(object):
         self.v0 = v
         self.a = a
         self.w0 = w
-        self.e = e
+        self.e = 0.0
         self.p = self.p_circular if self.is_circular else self.p_linear
 
     def as_dict(self):
