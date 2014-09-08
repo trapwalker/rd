@@ -10,36 +10,49 @@ from math import degrees, radians
 
 class State(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, w=0.0, v_max=28.0, a_accelerate=5.0, a_braking=-10.0): 
+    def __init__(
+        self, t, p,
+        fi=0.0,
+        v=0.0,
+        r_min=5.0,    # m
+        v_max=28.0,   # m/s ~ 100km/h
+        ac_max=10.0,  # m/s^2 ~ 1g
+        a_accelerate=5.0,
+        a_braking=-10.0,
+    ):
         """
         @param float t: time (sec)
         @param Point p: position (m)
         @param float fi: direction (rad)
         @param float v: velocity (m/s)
         @param float a: linear acceleration (m/s**2)
-        @param float w: angular velocity (rad/s)
-        @param float e: angular acceleration (rad/s**2)
+        @param float r_min: minimal turning radius (m)
+        @param float v_max: maximal possible velocity (m/s)
+        @param float ac_max: maximal centripetal acceleration (m/s**2)
+        @param float a_accelerate: typical acceleration (m/s**2)
+        @param float a_braking: typical braking (m/s**2)
         """
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.v_max = v_max
+        self.r_min = r_min
+        self.ac_max = ac_max
+        assert ac_max > 0
 
-        self.ac_max = 10  # m/s^2 ~ 1g
         self.turn_factor = 0  # 0 - forward; 1 - CCW; -1 - CCW
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
         self.v0 = v
-        self.a = a
-        self.w0 = w
+        self.a = 0.0
+        self.w0 = 0.0
         self.e = 0.0
-        self.p = self.p_circular if self.is_circular else self.p_linear
+        self.p = self.p_circular if self.turn_factor else self.p_linear
+        self.r = None
 
     def as_dict(self):
         return dict(
             self.__dict__,
-            is_circular=self.is_circular,
-            r0=self.r(self.t0),
         )
 
     def __str__(self):
@@ -51,29 +64,28 @@ class State(object):
             ' a={a:.0f};'
             ' w={w_deg:.0f};'
             ' e={e_deg:.0f};'
-            ' r={r0}>'
+            ' turn={turn_factor}>'
         ).format(
             fi_deg=degrees(self.fi0),
             w_deg=degrees(self.w0),
             e_deg=degrees(self.e),
-            r0=self.r(self.t0),
             **self.__dict__
         )
 
-    def r(self, t):
-        w = self.w(t)
-        if w == 0:
-            return float('inf')
-        return self.v(t) / w
+    def v(self, t):
+        if self.turn_factor == 0:
+            return self.v0 + self.a * (t - self.t0)
+
+
 
     def w(self, t):
-        return self.w0 + self.e * (t - self.t0)
+        return (self.v(t) / self.r) if self.r else 0.0
 
     def fi(self, t):
-        return self.fi0 + self.w(t) * (t - self.t0)
+        if self.turn_factor == 0:
+            return self.fi0
 
-    def v(self, t):
-        return self.v0 + self.a * (t - self.t0)
+        return self.fi0 + self.w(t) * (t - self.t0)
 
     @property
     def is_circular(self):
