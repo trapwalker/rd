@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from vectors import Point
+from si import kmh
 
 from math import degrees, radians
 
@@ -19,18 +20,19 @@ class State(object):
         ac_max=10.0,  # m/s^2 ~ 1g
         a_accelerate=5.0,
         a_braking=-10.0,
+        cruise_control=0.8,
     ):
         """
         @param float t: time (sec)
         @param Point p: position (m)
         @param float fi: direction (rad)
         @param float v: velocity (m/s)
-        @param float a: linear acceleration (m/s**2)
         @param float r_min: minimal turning radius (m)
         @param float v_max: maximal possible velocity (m/s)
         @param float ac_max: maximal centripetal acceleration (m/s**2)
         @param float a_accelerate: typical acceleration (m/s**2)
         @param float a_braking: typical braking (m/s**2)
+        @param float cruise_control: Cruise speed ratio
         """
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
@@ -39,11 +41,14 @@ class State(object):
         self.ac_max = ac_max
         assert ac_max > 0
 
+        self.cruise_control = cruise_control
         self.turn_factor = 0  # 0 - forward; 1 - CCW; -1 - CCW
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
         self.v0 = v
+        assert v >= 0.0
+
         self.a = 0.0
         self.w0 = 0.0
         self.e = 0.0
@@ -64,19 +69,19 @@ class State(object):
             ' a={a:.0f};'
             ' w={w_deg:.0f};'
             ' e={e_deg:.0f};'
-            ' turn={turn_factor}>'
+            ' turn={turn_factor};'
+            ' cc={cc:.0f}% ({ccv:.0f}m/s)>'
         ).format(
             fi_deg=degrees(self.fi0),
             w_deg=degrees(self.w0),
             e_deg=degrees(self.e),
+            cc=self.cruise_control * 100,
+            ccv=self.v_max * self.cruise_control,
             **self.__dict__
         )
 
     def v(self, t):
-        if self.turn_factor == 0:
-            return self.v0 + self.a * (t - self.t0)
-
-
+        return self.v0 + self.a * (t - self.t0)
 
     def w(self, t):
         return (self.v(t) / self.r) if self.r else 0.0
@@ -85,14 +90,13 @@ class State(object):
         if self.turn_factor == 0:
             return self.fi0
 
-        return self.fi0 + self.w(t) * (t - self.t0)
-
-    @property
-    def is_circular(self):
-        return self.w0 != 0.0 or self.e != 0.0
+        dt = t - self.t0
+        return self.fi0 + (0.5 * self.a * dt ** 2 + self.v0 * dt) / self.r
 
     def p_linear(self, t):
-        return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
+        dt = t - self.t0
+        # todo: fixit
+        return self.p0 + Point.polar(self.v(t) * dt, self.fi(t))
 
     def p_circular(self, t):
         return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
