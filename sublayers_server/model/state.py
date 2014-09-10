@@ -6,8 +6,10 @@ log = logging.getLogger(__name__)
 from vectors import Point
 from si import kmh
 
-from math import degrees, radians
+from math import degrees, radians, pi
 
+
+EPS = 1e-5
 
 class State(object):
 
@@ -20,7 +22,8 @@ class State(object):
         ac_max=10.0,  # m/s^2 ~ 1g
         a_accelerate=5.0,
         a_braking=-10.0,
-        cruise_control=0.8,
+        cruise_control=0.0,
+        turn_fctor=0,
     ):
         """
         @param float t: time (sec)
@@ -33,6 +36,7 @@ class State(object):
         @param float a_accelerate: typical acceleration (m/s**2)
         @param float a_braking: typical braking (m/s**2)
         @param float cruise_control: Cruise speed ratio
+        @param int turn_fctor: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CCW
         """
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
@@ -42,18 +46,24 @@ class State(object):
         assert ac_max > 0
 
         self.cruise_control = cruise_control
-        self.turn_factor = 0  # 0 - forward; 1 - CCW; -1 - CCW
+        self.turn_factor = turn_fctor
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
         self.v0 = v
         assert v >= 0.0
 
-        self.a = 0.0
-        self.w0 = 0.0
-        self.e = 0.0
+        self.r = self.r_min if self.turn_factor else None
+        self.c = (self.p0 + Point.polar(self.r, self.fi0 + self.turn_factor * pi / 2.0)) if self.turn_factor else None
+        self.w0 = self.v0 / self.r if self.r else 0.0
+        self.v_cc = self.v_max * self.cruise_control
+        self.a = self.a_accelerate if self.v0 + EPS < self.v_cc else (
+            self.a_braking if self.v0 - EPS > self.v_cc else 0.0
+        )
+        self.e = self.a / self.r
+        self.t_max = None
+        # todo: t_max calculation
         self.p = self.p_circular if self.turn_factor else self.p_linear
-        self.r = None
 
     def as_dict(self):
         return dict(
@@ -95,33 +105,17 @@ class State(object):
 
     def p_linear(self, t):
         dt = t - self.t0
-        # todo: fixit
-        return self.p0 + Point.polar(self.v(t) * dt, self.fi(t))
+        return self.p0 + Point.polar(0.5 * self.a * dt ** 2 + self.v0 * dt, self.fi0)
 
     def p_circular(self, t):
-        return self.p0 + Point.polar(self.v(t) * (t - self.t0), self.fi(t))
+        return self.c + Point.polar(self.r, self.fi(t))
 
-    def to_time(self, t):
-        return self.__class__(
-            t=t,
-            p=self.p(t),
-            fi=self.fi(t),
-            v=self.v(t),
-            a=self.a,
-            w=self.w(t),
-            e=self.e,
-        )
-
-    def update(self, t=None, dt=0.0, p=None, fi=None, v=None, a=None, w=None, e=None):
+    def update(self, t=None, dt=0.0, cruise_control=None, turn_factor=None):
         """
         @param float t: time (sec)
         @param float dt: delta time (sec)
-        @param Point p: position (m)
-        @param float fi: direction (rad)
-        @param float v: velocity (m/s)
-        @param float a: linear acceleration (m/s**2)
-        @param float w: angular velocity (rad/s)
-        @param float e: angular acceleration (rad/s**2)
+        @param float cruise_control: Cruise speed ratio
+        @param int turn_fctor: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CCW
         """
         t = (self.t0 if t is None else t) + dt
 
@@ -132,25 +126,7 @@ class State(object):
             self.w0 = self.w(t)
             self.t0 = t
 
-        if p is not None:
-            self.p0 = p
-
-        if fi is not None:
-            self.fi0 = fi
-            
-        if v is not None:
-            self.v0 = v
-            
-        if w is not None:
-            self.w0 = w
-            
-        if a is not None:
-            self.a = a
-
-        if e is not None:
-            self.e = e
-
-        self.p = self.p_circular if self.is_circular else self.p_linear
+        self.p = self.p_circular if self.turn_factor else self.p_linear
 
 
 if __name__ == '__main__':
