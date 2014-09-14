@@ -105,11 +105,14 @@ class State(object):
         self.v_cc = self.v_max * self.cc
         self.t_max = None
 
+        dv = self.v_cc - self.v0
         # todo: target velocity fix
-        if self.v0 + EPS < self.v_cc:
+        if dv > EPS:
             self.a = self.a_accelerate
-        elif self.v0 - EPS > self.v_cc:
+        elif dv < -EPS:
             self.a = self.a_braking
+        else:
+            self.a = 0.0
 
         if self.turn:
             self.p = self.p_circular
