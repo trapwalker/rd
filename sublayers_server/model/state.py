@@ -16,7 +16,6 @@ class ETimeIsNotInState(Exception):
     pass
 
 
-
 def assert_time_in_state(f):
     # todo: make metadata covering
     def cover(self, t=None, *av, **kw):
@@ -116,6 +115,11 @@ class State(object):
                 target_v = min(target_v, sqrt(self.r * self.ac_max))
             else:
                 target_v = min(target_v, self.v0)
+        else:
+            self.p = self.p_linear
+            self.r = None
+            self.c = None
+            self.w0 = 0
 
         dv = target_v - self.v0
         if dv > EPS:
@@ -138,7 +142,7 @@ class State(object):
 
     def __str__(self):
         return (
-            '<t={t0:.2f};'
+            '<t=[{t0:.2f}-{t_max_str}];'
             ' p=[{p0.x:.1f}, {p0.y:.1f}];'
             ' fi={fi_deg:.0f};'
             ' v={v0:.0f};'
@@ -152,6 +156,7 @@ class State(object):
             w_deg=degrees(self.w0),
             e_deg=degrees(self.e),
             cc_percent=self.cc * 100,
+            t_max_str='{:.2f}'.format(self.t_max) if self.t_max is not None else '',
             **self.__dict__
         )
 
@@ -182,6 +187,22 @@ class State(object):
 
 
 if __name__ == '__main__':
+    import thread
+    g = 1
+    def lookup(state):
+        from sys import stderr
+        from time import sleep
+        global g
+        g = 1
+        while g:
+            try:
+                state.update(dt=1.0)
+            except ETimeIsNotInState as e:                
+                print >>stderr, e.message
+                state.update(t=state.t_max)
+            print >>stderr, state
+            sleep(1)
+
     def u(*av, **kw):
         if 'fi' in kw:
             kw['fi'] = radians(kw['fi'])
@@ -193,4 +214,6 @@ if __name__ == '__main__':
         print s
     
     s = State(0.0, Point(0))
-    print s
+    print 'START:', s
+    thread.start_new(lookup, (s,))
+
