@@ -104,9 +104,20 @@ class State(object):
 
         self.v_cc = self.v_max * self.cc
         self.t_max = None
+        target_v = self.v_cc
 
-        dv = self.v_cc - self.v0
-        # todo: target velocity fix
+        if self.turn:
+            self.p = self.p_circular
+            self.r = self.v0 ** 2 / self.ac_max
+            self.c = (self.p0 + Point.polar(self.r, self.fi0 + self.turn * pi / 2.0))
+            self.w0 = self.v0 / self.r
+            if self.r < self.r_min:
+                self.r = self.r_min
+                target_v = min(target_v, sqrt(self.r * self.ac_max))
+            else:
+                target_v = min(target_v, self.v0)
+
+        dv = target_v - self.v0
         if dv > EPS:
             self.a = self.a_accelerate
         elif dv < -EPS:
@@ -114,25 +125,11 @@ class State(object):
         else:
             self.a = 0.0
 
-        if self.turn:
-            self.p = self.p_circular
-            self.r = self.v0 ** 2 / self.ac_max
-            if self.r < self.r_min:
-                self.r = self.r_min
-                if self.a:
-                    self.t_max = self.t0 + (sqrt(self.r * self.ac_max) - self.v0) / self.a
-            else:
-                self.a = 0.0
+        if self.a:
+            self.t_max = self.t0 + dv / self.a
 
-            self.c = (self.p0 + Point.polar(self.r, self.fi0 + self.turn * pi / 2.0))
-            self.w0 = self.v0 / self.r
+        if self.turn:
             self.e = self.a / self.r
-        else:
-            if self.v0 < self.v_cc and self.a:
-                self.t_max = self.t0 + (self.v_cc - self.v0) / self.a
-                # todo: decrease velocity
-            else:
-                self.a = 0.0
 
     def as_dict(self):
         return dict(
