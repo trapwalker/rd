@@ -15,7 +15,6 @@ class Point(complex):
     x = complex.real
     y = complex.imag
 
-
     @staticmethod
     def polar(r, fi):
         return Point(r * cos(fi), r * sin(fi))
