@@ -17,13 +17,14 @@ class ETimeIsNotInState(Exception):
 
 
 def assert_time_in_state(f):
-    # todo: make metadata covering
+    from functools import update_wrapper
+    # todo: make metadata coveringx
     def cover(self, t=None, *av, **kw):
         if self.t_max is not None and t is not None and t > self.t_max:
             raise ETimeIsNotInState('Time {} given, but {} is last in this state'.format(t, self.t_max))
         return f(self, t=t, *av, **kw)
 
-    return cover
+    return update_wrapper(cover, f)
 
 
 class State(object):
