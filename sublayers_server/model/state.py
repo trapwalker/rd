@@ -85,7 +85,7 @@ class State(object):
         @param float t: time (sec)
         @param float dt: delta time (sec)
         @param float cc: Cruise speed ratio
-        @param int turn: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CCW
+        @param int turn: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CW
         """
         t = (self.t0 if t is None else t) + dt
 
