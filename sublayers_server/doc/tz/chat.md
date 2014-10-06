@@ -1,5 +1,5 @@
 ﻿
-# Chat # (abbir, menkent)
+# Чат #
 
 Chat 
 	-- history (30-50 сообщений) [todo: обсудить механику работы]
