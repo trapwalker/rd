@@ -1,5 +1,5 @@
 ﻿
-# NPC #  (menkent, abbir)
+# NPC #
 
 // Пострелиз
 
