@@ -221,7 +221,7 @@ X+Y = 	a.x^2 + v.x^2 * ta^2 + b.x^2 * cos(tb)^2 + b.y^2 * sin(tb)^2
 		- 2 * v.y * ta * b.y * cos(tb) +
 		2 * b.x * b.y * sin(tb) * cos(tb)	
 
-//Сокращение первый 2 строк
+//Сокращение первых 2 строк
 		a.x^2 + a.y^2 + ta^2(v.x^2 + v.y^2) + b.x^2 + b.y^2  
 		2 * a.x * v.x * ta 
 		- 2 * a.x * b.x * cos(tb)
@@ -236,7 +236,7 @@ X+Y = 	a.x^2 + v.x^2 * ta^2 + b.x^2 * cos(tb)^2 + b.y^2 * sin(tb)^2
 		- 2 * v.y * ta * b.y * cos(tb) +
 		2 * b.x * b.y * sin(tb) * cos(tb)	
 
-//Сокращение кратных слогаемых
+//Сокращение кратных слагаемых
 		a.x^2 + a.y^2 + ta^2(v.x^2 + v.y^2) + b.x^2 + b.y^2  
 		ta * (2 * a.x * v.x + 2 * a.y * v.y)
 		- cos(tb) * (2 * a.x * b.x + 2 * a.y * b.y)
