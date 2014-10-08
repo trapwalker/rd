@@ -40,6 +40,7 @@ class State(object):
         a_braking=-10.0,
         cc=0.0,
         turn=0,
+        target_point=None,
     ):
         """
         @param float t: time (sec)
@@ -53,6 +54,7 @@ class State(object):
         @param float a_braking: typical braking (m/s**2)
         @param float cc: Cruise speed ratio
         @param int turn: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CCW
+        @param Point target_point: target position
         """
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
