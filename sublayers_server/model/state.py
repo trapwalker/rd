@@ -19,6 +19,7 @@ class ETimeIsNotInState(Exception):
 def assert_time_in_state(f):
     from functools import update_wrapper
     # todo: make metadata coveringx
+
     def cover(self, t=None, *av, **kw):
         if self.t_max is not None and t is not None and t > self.t_max:
             raise ETimeIsNotInState('Time {} given, but {} is last in this state'.format(t, self.t_max))
@@ -56,6 +57,7 @@ class State(object):
         @param int turn: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CCW
         @param Point target_point: target position
         """
+        self.target_point = None
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.v_max = v_max
@@ -79,10 +81,10 @@ class State(object):
         self.w0 = 0.0
         self.e = 0.0
         self.a = 0.0
-        self.update(cc=cc, turn=turn)
+        self.update(cc=cc, turn=turn, target_point=target_point)
 
     @assert_time_in_state
-    def update(self, t=None, dt=0.0, cc=None, turn=None):
+    def update(self, t=None, dt=0.0, cc=None, turn=None, target_point=None):
         """
         @param float t: time (sec)
         @param float dt: delta time (sec)
@@ -93,20 +95,42 @@ class State(object):
 
         if t != self.t0:
             self.p0 = self.p(t)
+            """@type: Point"""
             self.v0 = self.v(t)
             self.fi0 = self.fi(t)
             self.w0 = self.w(t)
             self.t0 = t
 
+        self.t_max = None
+
         if cc is not None:
             self.cc = cc
 
-        if turn is not None:
-            self.turn = turn
+        if target_point is not None:
+            # calculation a first segment of trajectory to target_point
+            assert turn, 'Turn factor and target_point declared both in state update.'
+            braking_dist = -0.5 * self.v0 ** 2 / self.a_braking
+            target_distance = self.p0.distance(target_point)
+            target_direction = self.p0.direction(target_point)
+
+            # todo: normalize angles before compare (!)
+            if abs(target_distance - braking_dist) <= EPS and (self.v0 <= EPS or target_direction == self.fi0):
+                # we have arrived or we must brake to a stop
+                self.cc = 0.0
+                target_point = None
+            elif target_distance > braking_dist and target_direction == self.fi0:
+                if self.cc < EPS:
+                    self.cc = 1.0
+                # todo: accelerate
+
 
         self.v_cc = self.v_max * self.cc
-        self.t_max = None
         target_v = self.v_cc
+
+        # todo: self.target_point = target_point
+
+        if turn is not None:
+            self.turn = turn
 
         if self.turn:
             self.p = self.p_circular
@@ -181,17 +205,26 @@ class State(object):
 
     @assert_time_in_state
     def p_linear(self, t):
+        """
+        @param float t: time
+        @rtype: Point
+        """
         dt = t - self.t0
         return self.p0 + Point.polar(0.5 * self.a * dt ** 2 + self.v0 * dt, self.fi0)
 
     @assert_time_in_state
     def p_circular(self, t):
+        """
+        @param float t: time
+        @rtype: Point
+        """
         return self.c + Point.polar(self.r, self.fi(t) + self.turn * pi * 0.5)
 
 
 if __name__ == '__main__':
     import thread
     g = 1
+
     def lookup(state):
         from sys import stderr
         from time import sleep
@@ -219,4 +252,3 @@ if __name__ == '__main__':
     s = State(0.0, Point(0))
     print 'START:', s
     thread.start_new(lookup, (s,))
-
