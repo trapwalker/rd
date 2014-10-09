@@ -58,12 +58,19 @@ class Point(complex):
         """
         return self * e ** (1j * fi)
 
-    def distance(self, p):
+    def distance(self, target):
         """
-        @param p: Point
+        @param target: Point
         @rtype: float
         """
-        return abs(self - p)
+        return abs(target - self)
+
+    def direction(self, target):
+        """
+        @param target: Point
+        @rtype: float
+        """
+        return (target - self).angle
 
     def normalize(self):
         """
@@ -198,4 +205,5 @@ class Point(complex):
         return Point(complex.__truediv__(self, p))
 
 if __name__ == '__main__':
+    from math import degrees as deg, radians as rad
     P = Point
