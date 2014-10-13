@@ -97,11 +97,6 @@ class BaseState(object):
         else:
             return self.c + Point.polar(self._r, self.fi(t) - self._turn_sign * pi * 0.5)
 
-    def as_dict(self):
-        return dict(
-            self.__dict__,
-        )
-
     def export(self):
         u"""
         Представление параметров состояния для клиента.
