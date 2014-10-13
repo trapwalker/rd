@@ -159,6 +159,8 @@ class State(BaseState):
         self._v_cc = None
         self.target_point = None
 
+        self.update(cc=cc, turn=turn, target_point=target_point)
+
     def _update_by_target(self, target_point):
         """
         Select instruction and update State for first segment of trajectory to target_point
