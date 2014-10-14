@@ -119,8 +119,12 @@ class State(object):
                 self.cc = 0.0
                 target_point = None
             elif target_distance > braking_dist and target_direction == self.fi0:
+                # we must accelerate first
                 if self.cc < EPS:
                     self.cc = 1.0
+
+                # b=-0.5*v**2/ab
+                # v=v0+a*t
                 # todo: accelerate
 
 
