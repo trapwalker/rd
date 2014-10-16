@@ -3,10 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
+from state import State
 from base import Observer
-import tasks
 from balance import BALANCE
-from trajectory import build_trajectory
 from math import pi
 
 
@@ -25,10 +24,6 @@ class Unit(Observer):
         """
         super(Unit, self).__init__(**kw)
         self.role = role
-        self._task = None
-        """@type: sublayers_server.model.tasks.Task | None"""
-        self.task_list = []
-        """@type: list[sublayers_server.model.tasks.Task]"""
         log.debug('BEFORE owner set')
         self.owner = owner
         log.debug('AFTER owner set')
@@ -90,41 +85,6 @@ class Unit(Observer):
         self.stop()
         self.on_change(comment='RIP')
 
-    def set_tasklist(self, task_or_list, append=False):
-        if isinstance(task_or_list, tasks.Task):
-            task_or_list = [task_or_list]
-
-        if append:
-            self.task_list += list(task_or_list)
-        else:
-            self.task_list = list(task_or_list)
-
-        if not self.task or not append:
-            self.next_task()
-
-    def next_task(self):
-        old_task = self.task
-        if old_task:
-            if old_task.is_worked:
-                old_task.cancel()
-            self._task = None
-
-        if self.task_list:
-            while self.task_list:
-                self._task = self.task_list.pop(0)
-                try:
-                    self.task.start()
-                except tasks.ETaskParamsUnactual as e:
-                    log.warning('Skip unactual task: %s', e)
-                    self._task = None
-                    continue
-                else:
-                    break
-
-    def clear_tasks(self):
-        self.task_list = []
-        self.next_task()
-
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
         owner = self.owner
@@ -142,17 +102,9 @@ class Unit(Observer):
         if self.role:
             self.role.remove_car(self)
             # todo: rename
-        self.clear_tasks()
         self.server.statics.remove(self)
         super(Unit, self).delete()
         # todo: check staticobservers deletion
-
-    @property
-    def task(self):
-        """
-        @rtype: sublayers_server.model.tasks.Task | None
-        """
-        return self._task
 
 
 class Station(Unit):
@@ -170,51 +122,43 @@ class Bot(Unit):
                  observing_range=BALANCE.Bot.observing_range,
                  max_velocity=BALANCE.Bot.velocity,
                  **kw):
-        self.old_motion = None
-        """@type: sublayers_server.model.tasks.Motion | None"""
-        self.motion = None
-        """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
+        self.state = State(
+            t=self.server.get_time(),
+            p=self._position,
+            fi=self._direction,
+            # todo: acc and velociti constrains and params
+        )
 
     def as_dict(self, to_time=None):
         if not to_time:
             to_time = self.server.get_time()
         d = super(Bot, self).as_dict(to_time=to_time)
         d.update(
-            motion=self.motion.motion_info(to_time) if self.motion else None,
+            state=self.state.export(),
             max_velocity=self.max_velocity,
         )
         return d
 
     def stop(self):
-        self.clear_tasks()
+        self.state.update(t=self.server.get_time(), cc=0)
 
     def goto(self, position, chain=False):
         """
         @param position: sublayers_server.model.vectors.Point
         """
-        #log.debug('======== GOTO ++++++')
-        self.clear_tasks()
-        assert self.motion is None, 'ATTENTION! If You see this text, please call server developer: %s' % self.motion
-        path = build_trajectory(
-            self.position,
-            self.direction,
-            self.max_velocity,  # todo: current velocity fix
-            position,
-        )
+        # todo: chaining
+        self.state.update(t=self.server.get_time(), target_point=position)
+        return None
 
-        self.set_tasklist([
-            tasks.GotoArc(owner=self, target_point=segment['b'], arc_params=segment)
-            if 'r' in segment else
-            tasks.Goto(owner=self, target_point=segment['b'])
+    def set_cc(self, value):
+        # todo: docstring
+        self.state.update(t=self.server.get_time(), cc=value)
 
-            for segment in path
-        ], append=chain)
-
-        #self.set_tasklist(tasks.Goto(owner=self, target_point=position), append=chain)  # Хорда вместо траектории
-        log.debug('======== GOTO ------')
-        return path
+    def set_turn(self, way=0):
+        # todo: docstring
+        self.state.update(t=self.server.get_time(), turn=way)
 
     @property
     def v(self):
@@ -223,23 +167,21 @@ class Bot(Unit):
 
         @rtype: sublayers_server.model.vectors.Point
         """
-        return self.motion.v if self.motion else None
+        return self.state.v(t=self.server.get_time())
 
     @Unit.position.getter
     def position(self):
         """
         @rtype: sublayers_server.model.vectors.Point
         """
-        if self.motion and (isinstance(self.motion, tasks.Goto) and self.motion.vector is None or not self.motion.is_started):
-            log.warning('Wrong motion state: {!r} (started={})', self.motion, self.motion.is_started)
-        return self.motion.position if self.motion and self.motion.is_started else self._position
+        return self.state.p(t=self.server.get_time())
 
     @Unit.direction.getter
     def direction(self):
         """
         @rtype: float
         """
-        return self.motion.direction if self.motion else super(Bot, self).direction
+        return self.state.fi(t=self.server.get_time())
 
     @property
     def max_velocity(self):  # m/s
