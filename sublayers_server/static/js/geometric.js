@@ -107,3 +107,9 @@ function distancePoints(aPoint1, aPoint2) {
 function polarPoint(modul, direction){
     return rotateVector(new Point(modul, 0), direction);
 }
+
+// Векторное произведение векторов - упрощённое
+function mulVectVectors2D(a, b) {
+    //a × b = {aybz - azby; azbx - axbz; axby - aybx}
+    return a.x * b.y - a.y * b.x;
+}

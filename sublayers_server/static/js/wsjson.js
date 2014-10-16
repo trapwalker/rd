@@ -377,16 +377,15 @@ function getTrack(data){
 
 }
 
-// Считывает параметры для состояния и устанавливает их. Предварительно нужно передать туда состояние машинки. 
-function setState(data, state){
-    state.update(
-        (data.t ? data.t : state.t0),
-        (data.p ? data.p : state.p0),
-        (data.fi ? data.fi : state.fi0),
-        (data.v ? data.v : state.v0),
-        (data.a ? data.a : state.a),
-        (data.w ? data.w : state.w0),
-        (data.e ? data.e : state.e)
+// Считывает параметры для создания состояние и возвращает его.
+function getState(data) {
+    return new State(
+        data.t,                                 // Время
+        new Point(data.p.x, data.p.y),          // Позиция
+        data.fi,                                // Направление
+        data,v,                                 // Скорость - число
+        data.a,                                 // Ускорение - число
+        data.c ? (new Point(data.c.x, data.c.y)) : null     // Центр поворота, которого может не быть
     );
 }
 
