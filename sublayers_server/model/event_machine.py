@@ -26,8 +26,8 @@ class Server(object):
         self.uid = uid or get_uid()
         # todo: GEO-indexing collections
         self.objects = {}  # Total GEO-objects in game by uid
-        self.statics = []  # Stationary objects (stations, heaps, standing robots)  # todo: GEO-index
-        self.motions = []  # Active motion tasks  # todo: GEO-index
+        self.static_objects = []  # todo: GEO-index
+        self.moving_objects = []  # todo: GEO-index
         self.static_observers = []  # todo: GEO-index
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
         self.agents = {}  # Agents dictionary
@@ -40,17 +40,17 @@ class Server(object):
     def filter_objects(self, quadrant):
         # todo: typehinting of quadrant
         return chain(
-            self.filter_statics(quadrant),
-            (motion.owner for motion in self.filter_motions(quadrant)),  # todo: optimize
+            self.filter_static(quadrant),
+            self.filter_moving(quadrant),  # todo: optimize
         )
 
-    def filter_motions(self, quadrant):
+    def filter_moving(self, quadrant):
         # todo: typehinting of quadrant
-        return self.motions  # todo: filter collection by quadrant
+        return self.moving_objects  # todo: filter collection by quadrant
 
-    def filter_statics(self, quadrant):
+    def filter_static(self, quadrant):
         # todo: typehinting of quadrant
-        return self.statics  # todo: filter collection by quadrant
+        return self.static_objects  # todo: filter collection by quadrant
 
     def filter_static_observers(self, quadrant):
         return self.static_observers  # todo: filter collection by quadrant

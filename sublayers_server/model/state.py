@@ -57,7 +57,7 @@ class BaseState(object):
             self._r = abs(pc)
             _turn_sign = Point.polar(1, fi).cross_mul(pc)
             assert _turn_sign
-            self._turn_sign = 1 if _turn_sign > 0 else -1
+            self._turn_sign = 1 if _turn_sign > 0.0 else -1
 
     def fix(self, t=None, dt=0.0):
         """
@@ -113,11 +113,16 @@ class BaseState(object):
             #_turn=self._turn_sign,
         )
 
+    @property
+    def is_moving(self):
+        return self.v0 > 0.0 or self.a > 0.0
+
 
 class State(BaseState):
 
     def __init__(
         self,
+        owner,
         t, p, fi=0.0, v=0.0, a=0.0, c=None,
         cc=0.0, turn=0, target_point=None,
 
@@ -128,6 +133,7 @@ class State(BaseState):
         a_braking=-10.0,
     ):
         """
+        @param sublayers_server.model.units.Bot owner: owner of the state
         @param float t: time (sec)
         @param Point p: position (m)
         @param float fi: direction (rad)
@@ -146,11 +152,12 @@ class State(BaseState):
         @param float a_braking: typical braking (m/s**2)
         """
         super(State, self).__init__(t, p, fi, v, a, c)
+        
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.v_max = v_max
         self.r_min = r_min
-        assert ac_max > 0
+        assert ac_max > 0.0
         self.ac_max = ac_max
 
         # just declare
@@ -274,6 +281,6 @@ if __name__ == '__main__':
         s.update(*av, **kw)
         print s
     
-    s = State(0.0, Point(0))
+    s = State(0.0, Point(0.0))
     print 'START:', s
     thread.start_new(lookup, (s,))

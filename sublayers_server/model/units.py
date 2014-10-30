@@ -102,7 +102,6 @@ class Unit(Observer):
         if self.role:
             self.role.remove_car(self)
             # todo: rename
-        self.server.statics.remove(self)
         super(Unit, self).delete()
         # todo: check staticobservers deletion
 
@@ -200,11 +199,11 @@ class Bot(Unit):
             return super(Bot, self).special_contacts_search()
 
         detect_contacts_with_static = self_motion.detect_contacts_with_static
-        for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
+        for obj in self.server.filter_static(None):  # todo: GEO-index clipping
             detect_contacts_with_static(obj)
 
         detect_contacts_with_dynamic = self_motion.detect_contacts_with_dynamic
-        for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
+        for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
             if motion.owner != self:
                 detect_contacts_with_dynamic(motion)
 

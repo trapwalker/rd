@@ -102,6 +102,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
+        self.server.static_objects.append(self)
         self.init_contacts_search()
 
     def on_change(self, comment=None):  # todo: privacy level index
@@ -131,7 +132,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
 
     def special_contacts_search(self):
-        for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
+        for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
             assert (
                 motion.start_time is not None
                 and motion.duration is not None
@@ -144,6 +145,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.special_contacts_search()
 
     def delete(self):
+        self.server.static_objects.remove(self)
         self.contacts_clear()
         super(VisibleObject, self).delete()
 
@@ -158,10 +160,8 @@ class Heap(VisibleObject):
         super(Heap, self).__init__(**kw)
         self.inventory = Inventory(things=items)
         """@type: Inventory"""
-        self.server.statics.append(self)
 
     def delete(self):
-        self.server.statics.remove(self)
         self.inventory = None
         super(Heap, self).delete()
 
@@ -171,7 +171,6 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     def __init__(self, observing_range=0.0, **kw):
         self._r = observing_range
         super(Observer, self).__init__(**kw)
-        self.server.statics.append(self)
         self.server.static_observers.append(self)
 
     def init_contact_test(self, obj):
