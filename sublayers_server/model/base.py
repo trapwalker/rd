@@ -105,7 +105,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        self._observers = set()
+        self.v_channels = set()
         self.init_contacts_search()
 
     def on_change(self, comment=None):  # todo: privacy level index
@@ -175,7 +175,6 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
     def __init__(self, observing_range=0.0, **kw):
         self._r = observing_range
         super(Observer, self).__init__(**kw)
-        self._watching = set()
         self.server.statics.append(self)
         self.server.static_observers.append(self)
 

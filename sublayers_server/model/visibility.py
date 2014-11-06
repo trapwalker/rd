@@ -3,42 +3,46 @@
 from base import Object
 from collections import Counter
 
-class ManagerVisibility(Object):
-    def __init__(self, **kw):
-        super(ManagerVisibility, self).__init__(**kw)
-        self._visibleObjects = Counter()
-        self._observers = set()
 
-    def add_visibleObject(self, visibleObject):
-        self._visibleObjects[visibleObject] += 1
-        visibleObject._observers.add(self)
+class VChannel(Object):
+    # todo: docstring
 
-    def del_visibleObject(self, visibleObject):
-        if self._visibleObjects[visibleObject] >= 0:
-            self._visibleObjects[visibleObject] -= 1
-            if self._visibleObjects[visibleObject] == 0:
-                visibleObject._observers.discard(self)
+    def __init__(self, agents=None):
+        super(ManagerVisibility, self).__init__()
+        self._objects = Counter()
+        self._agents = set(agents)
 
-    def add_observers(self, observer):
-        self._observers.add(observer)
-        observer._watching.add(self)
+    def add_object(self, obj):
+        self._objects[obj] += 1
+        obj.v_channels.add(self)
 
-    def del_observers(self, observer):
-        self._observers.discard(observer)
-        observer._watching.discard(self)
+    def remove_object(self, obj):
+        self._objects[obj] -= 1
+        cnt = self._objects[obj]
+        assert cnt >= 0
+        if cnt == 0:
+            obj.v_channels.discard(self)
+
+    def add_agent(self, agent):
+        self._agents.add(agent)
+        agent.v_channel = self
+
+    def remove_agent(self, agent):
+        self._agents.discard(agent)
+        agent._watching.discard(self)
 
     def merge_visibility(self, managerVisibility):
-        for observ in managerVisibility._observers:
-            self.add_observers(observ)
-        for visObj in managerVisibility._visibleObjects:
-            self.add_visibleObject(visObj)
+        for agent in managerVisibility._agents:
+            self.add_agent(agent)
+        for obj in managerVisibility._objects:
+            self.add_object(obj)
 
     def unit_update(self, update):
         #
         pass
 
     def delete(self):
-        for observ in self._observers:
-            self.del_observers(observ)
-        for visObj in self._visibleObjects:
-            self.del_visibleObject(visObj)
+        for agent in self._agents:
+            self.remove_agent(agent)
+        for obj in self._objects:
+            self.remove_object(obj)
