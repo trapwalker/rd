@@ -1,20 +1,31 @@
 var EditorBase = (function () {
     function EditorBase(initEditor) {
+        this.toolButtons = [];
+        this.activateButton = null;
         initEditor(this);
     }
 
     EditorBase.prototype.turnOn = function () {
-        if (typeof(this._onMouseDown) === 'function') return this._onMouseDown()
+        for (var i in this.toolButtons)
+            this.toolButtons[i].addTo(myMap);
+        if (typeof(this._turnOn) === 'function') return this._turnOn()
         else return null;
     };
 
     EditorBase.prototype.turnOff = function () {
-        if (typeof(this._onMouseDown) === 'function') return this._onMouseDown()
+        for (var i in this.toolButtons)
+            this.toolButtons[i].removeFrom(myMap);
+        if (typeof(this._turnOff) === 'function') return this._turnOff()
         else return null;
     };
 
     EditorBase.prototype.onMouseDown = function () {
         if (typeof(this._onMouseDown) === 'function') return this._onMouseDown()
+        else return null;
+    };
+
+    EditorBase.prototype.onMouseMove = function () {
+        if (typeof(this._onMouseMove) === 'function') return this._onMouseMove()
         else return null;
     };
 
@@ -33,8 +44,9 @@ var EditorBase = (function () {
 
 
 function initEditors(){
-    editorFreeCam = new WorkEditor(initFreeCam);
-    editorRoad = new WorkEditor(initRoad);
+    editorFreeCam = new EditorBase(initFreeCam);
+    editorRoad = new EditorBase(initRoad);
+    return editorFreeCam;
 }
 
 var editorFreeCam;

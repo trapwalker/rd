@@ -1,9 +1,23 @@
-
-function mapClick(){
-    currWorkMode.onClick()
+// Включение режима свободной камеры
+function onClickFreeCam() {
+    if (currentEditor != editorFreeCam)
+        changeCurrentEditor(editorFreeCam);
 }
 
+// Включение режима редактирования дорог
+function onClickRoad() {
+    if (currentEditor === editorRoad)
+        changeCurrentEditor(editorFreeCam);
+    else
+        changeCurrentEditor(editorRoad)
+}
 
+// Изменение текущего режима работы редактора
+function changeCurrentEditor(newEditor) {
+    currentEditor.turnOff();
+    currentEditor = newEditor;
+    currentEditor.turnOn();
+}
 
 $(document).ready(function () {
     // инициализация карты
@@ -11,38 +25,23 @@ $(document).ready(function () {
         zoomControl: true
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
-    myMap.on('click', mapClick);
 
 
+    // инициализация редакторов
+    currentEditor = initEditors();
+    editorFreeCam.activateButton = L.easyButton({
+        btnFunct: onClickFreeCam,
+        btnTitle: 'Свободная камера',
+        btnMap: myMap});
 
+    editorRoad.activateButton = L.easyButton({
+        btnFunct: onClickRoad,
+        btnTitle:  'Редактор дорог',
+        btnMap: myMap});
 });
 
-
-function changeWorkMode(mode){
-    // Отключить старый режим
-
-    // Веключить новый режим
-    mode();
-}
-
-
-
-
-function setRoadMode(){
-
-}
-
-
-
-
-
-
-
-
-
-
 var myMap;
-var currWorkMode;
+var currentEditor;
 
 //Путь к карте на сервере
 var mapBasePath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
