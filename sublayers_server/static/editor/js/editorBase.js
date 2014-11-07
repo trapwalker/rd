@@ -6,7 +6,7 @@ var EditorBase = (function () {
     }
 
     EditorBase.prototype.turnOn = function () {
-        for (var i in this.toolButtons)
+        for (var i = 0; i < this.toolButtons.length; i++)
             this.toolButtons[i].addTo(myMap);
         this.activateButton.setChecked(true);
         if (typeof(this._turnOn) === 'function') return this._turnOn()
@@ -14,7 +14,7 @@ var EditorBase = (function () {
     };
 
     EditorBase.prototype.turnOff = function () {
-        for (var i in this.toolButtons)
+        for (var i = 0; i < this.toolButtons.length; i++)
             this.toolButtons[i].removeFrom(myMap);
         this.activateButton.setChecked(false);
         if (typeof(this._turnOff) === 'function') return this._turnOff()
