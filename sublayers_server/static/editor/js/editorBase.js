@@ -47,8 +47,8 @@ var EditorBase = (function () {
 
 function initEditors(){
     editorFreeCam = new EditorBase(initFreeCam);
-    editorRoad = new EditorBase(initRoad);
+    editorMapObjects = new EditorBase(initMapObjects);
 }
 
 var editorFreeCam;
-var editorRoad;
+var editorMapObjects;

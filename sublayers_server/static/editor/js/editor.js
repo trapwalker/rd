@@ -6,10 +6,10 @@ function onClickFreeCam() {
 
 // Включение режима редактирования дорог
 function onClickRoad() {
-    if (currentEditor === editorRoad)
+    if (currentEditor === editorMapObjects)
         changeCurrentEditor(editorFreeCam);
     else
-        changeCurrentEditor(editorRoad)
+        changeCurrentEditor(editorMapObjects)
 }
 
 // Изменение текущего режима работы редактора
@@ -32,14 +32,14 @@ $(document).ready(function () {
     editorFreeCam.activateButton = L.easyButton({
         btnFunct: onClickFreeCam,
         btnTitle: 'Свободная камера',
-        btnIcon: 'freeCamEditor-icon',
+        btnIcon: 'editorFreeCam-icon',
         btnEnbChckd: true,
         btnMap: myMap});
 
-    editorRoad.activateButton = L.easyButton({
+    editorMapObjects.activateButton = L.easyButton({
         btnFunct: onClickRoad,
-        btnTitle:  'Редактор дорог',
-        btnIcon: 'roadEditor-icon',
+        btnTitle:  'Редактор картографии',
+        btnIcon: 'editorMapObjects-icon',
         btnEnbChckd: true,
         btnMap: myMap});
     changeCurrentEditor(editorFreeCam);

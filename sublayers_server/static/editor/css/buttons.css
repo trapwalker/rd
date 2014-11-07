@@ -45,10 +45,30 @@
 
 
 /* Иконки кнопок */
-.freeCamEditor-icon {
+.editorFreeCam-icon {
     background: transparent url('/static/editor/img/globe.png') 100% 100% no-repeat;
 }
 
-.roadEditor-icon {
+.editorMapObjects-icon {
+    background: transparent url('/static/editor/img/map.png') 100% 100% no-repeat;
+}
+
+.toolSelect-icon {
+    background: transparent url('/static/editor/img/select.png') 100% 100% no-repeat;
+}
+
+.toolRoad-icon {
     background: transparent url('/static/editor/img/road.png') 100% 100% no-repeat;
+}
+
+.toolTown-icon {
+    background: transparent url('/static/editor/img/town.png') 100% 100% no-repeat;
+}
+
+.toolGas-icon {
+    background: transparent url('/static/editor/img/gas.png') 100% 100% no-repeat;
+}
+
+.toolDel-icon {
+    background: transparent url('/static/editor/img/delete.png') 100% 100% no-repeat;
 }
