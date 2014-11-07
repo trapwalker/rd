@@ -1,8 +1,4 @@
 
-
-
-
-
 function mapClick(){
     currWorkMode.onClick()
 }
@@ -16,6 +12,9 @@ $(document).ready(function () {
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
     myMap.on('click', mapClick);
+
+
+
 });
 
 
