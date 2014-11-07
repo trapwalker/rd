@@ -14,7 +14,7 @@ function onClickRoad() {
 
 // Изменение текущего режима работы редактора
 function changeCurrentEditor(newEditor) {
-    currentEditor.turnOff();
+    if (currentEditor) currentEditor.turnOff();
     currentEditor = newEditor;
     currentEditor.turnOn();
 }
@@ -28,16 +28,21 @@ $(document).ready(function () {
 
 
     // инициализация редакторов
-    currentEditor = initEditors();
+    initEditors();
     editorFreeCam.activateButton = L.easyButton({
         btnFunct: onClickFreeCam,
         btnTitle: 'Свободная камера',
+        btnIcon: 'freeCamEditor-icon',
+        btnEnbChckd: true,
         btnMap: myMap});
 
     editorRoad.activateButton = L.easyButton({
         btnFunct: onClickRoad,
         btnTitle:  'Редактор дорог',
+        btnIcon: 'roadEditor-icon',
+        btnEnbChckd: true,
         btnMap: myMap});
+    changeCurrentEditor(editorFreeCam);
 });
 
 var myMap;

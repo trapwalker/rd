@@ -1,51 +1,47 @@
-
-// кнопка
 L.Control.EasyButtons = L.Control.extend({
     options: {
         position: 'topleft',
         title: '',
         intentedIcon: '',
         checked: false,
+        enabled: true,
         enabledChecked: false
     },
 
     onAdd: function () {
-        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-
-        this.link = L.DomUtil.create('a', 'leaflet-bar-part ' + this.options.intentedIcon, container); // Сюда вешается правильная картинка!
+        this.div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        this.link = L.DomUtil.create('a', this.options.intentedIcon, this.div);
         this.link.href = '#';
 
         L.DomEvent.on(this.link, 'click', this._click, this);
         this.link.title = this.options.title;
 
-        return container;
+        return this.div;
     },
 
     intendedFunction: function () {
         alert('no function selected');
     },
 
-   /* setChecked: function (ch) {
+    setChecked: function (ch) {
         this.options.checked = ch;
-        if (ch) {
-            $(this.link).css('backgroud-color','red');
-            alert(this.link)
+        if (ch){
+            L.DomUtil.removeClass(this.div, 'leaflet-bar');
+            L.DomUtil.addClass(this.div, 'leaflet-bar-checked');
         }
-        else
-        {
-            $(this.link).css('backgroud-color','blue');
-            alert(this.link);
+        else {
+            L.DomUtil.removeClass(this.div, 'leaflet-bar-checked');
+            L.DomUtil.addClass(this.div, 'leaflet-bar');
         }
     },
-*/
+
+    setEnabled: function (eb) {
+    },
+
     _click: function (e) {
         L.DomEvent.stopPropagation(e);
         L.DomEvent.preventDefault(e);
         this.intendedFunction();
-
-        // Механизм залипания кнопки после нажатия и отжатия после повторого клика
- //       if(this.options.enabledChecked)
- //           this.setChecked(!this.options.checked);
     }
 });
 
@@ -57,6 +53,7 @@ L.easyButton = function (options) {
         if ((options.btnFunct) && (typeof options.btnFunct === 'function'))
             newControl.intendedFunction = options.btnFunct;
         if (options.btnTitle) newControl.options.title = options.btnTitle;
+        if (options.btnEnbChckd) newControl.options.enabledChecked = options.btnEnbChckd;
         if (options.btnMap) newControl.addTo(options.btnMap);
         }
     return newControl;
