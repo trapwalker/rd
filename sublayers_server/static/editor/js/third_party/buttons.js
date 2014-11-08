@@ -24,6 +24,7 @@ L.Control.EasyButtons = L.Control.extend({
     },
 
     setChecked: function (ch) {
+        if (!this.options.enabledChecked) return;
         this.options.checked = ch;
         if (ch){
             L.DomUtil.removeClass(this.div, 'leaflet-bar');

@@ -6,7 +6,7 @@ var EditorBase = (function () {
     }
 
     EditorBase.prototype.turnOn = function () {
-        for (var i = 0; i < this.toolButtons.length; i++)
+        for (var i in this.toolButtons)
             this.toolButtons[i].addTo(myMap);
         this.activateButton.setChecked(true);
         if (typeof(this._turnOn) === 'function') return this._turnOn()
@@ -14,31 +14,16 @@ var EditorBase = (function () {
     };
 
     EditorBase.prototype.turnOff = function () {
-        for (var i = 0; i < this.toolButtons.length; i++)
+        for (var i in this.toolButtons)
             this.toolButtons[i].removeFrom(myMap);
         this.activateButton.setChecked(false);
         if (typeof(this._turnOff) === 'function') return this._turnOff()
         else return null;
     };
 
-    EditorBase.prototype.onMouseDown = function () {
-        if (typeof(this._onMouseDown) === 'function') return this._onMouseDown()
-        else return null;
-    };
-
-    EditorBase.prototype.onMouseMove = function () {
-        if (typeof(this._onMouseMove) === 'function') return this._onMouseMove()
-        else return null;
-    };
-
-    EditorBase.prototype.onMouseUp = function () {
-        if (typeof(this._onMouseUp) === 'function') return this._onMouseUp()
-        else return null;
-    };
-
-    EditorBase.prototype.onKeyPressFreeCam = function () {
-        if (typeof(this._keyPressFreeCam) === 'function') return this._keyPressFreeCam()
-        else return null;
+    EditorBase.prototype.unCheckAllToolButtons = function () {
+        for (var i in this.toolButtons)
+            this.toolButtons[i].setChecked(false);
     };
 
     return EditorBase;

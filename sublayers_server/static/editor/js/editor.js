@@ -26,7 +26,6 @@ $(document).ready(function () {
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
 
-
     // инициализация редакторов
     initEditors();
     editorFreeCam.activateButton = L.easyButton({
@@ -43,10 +42,16 @@ $(document).ready(function () {
         btnEnbChckd: true,
         btnMap: myMap});
     changeCurrentEditor(editorFreeCam);
+
+    // создание репазиториев (пока он один)
+    repositoryMO = new MapObjectsRepository();
 });
 
 var myMap;
 var currentEditor;
 
-//Путь к карте на сервере
+// Репозитории я решил выносить сюда
+var repositoryMO;
+
+// Путь к карте на сервере
 var mapBasePath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
