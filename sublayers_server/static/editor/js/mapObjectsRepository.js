@@ -39,6 +39,8 @@ MapObjectsRepository = (function () {
         return this._tempID++;
     };
 
+    // Механизм выбора объектов
+
     MapObjectsRepository.prototype.onObjectsSelected = function () {
         //alert('onObjectsSelected');
         for (var id in this.towns)
@@ -55,10 +57,36 @@ MapObjectsRepository = (function () {
             this.gasStations[id].marker.off('click', markerClick);
     };
 
+    MapObjectsRepository.prototype.clearSelection = function () {
+        //alert('clearSelection');
+        for (var id in this.towns) {
+            this.towns[id].marker.isSelect = false;
+            this.towns[id].marker.setIcon(repositoryMO.townIcon);
+            }
+        for (var id in this.gasStations) {
+            this.gasStations[id].marker.isSelect = false;
+            this.gasStations[id].marker.setIcon(repositoryMO.gasStationIcon);
+        }
+    };
+
     MapObjectsRepository.prototype.delAllSelectedObjects = function () {
         //alert('delAllSelectedTowns');
         this.delAllSelectedTowns();
         this.delAllSelectedGasStations();
+    };
+
+    MapObjectsRepository.prototype.selectByRect = function (boundsRect) {
+        //alert('onObjectsSelected');
+        for (var id in this.towns)
+            if (boundsRect.contains(this.towns[id].coord)) {
+                this.towns[id].marker.isSelect = true;
+                this.towns[id].marker.setIcon(repositoryMO.selectTownIcon);
+            }
+        for (var id in this.gasStations)
+            if (boundsRect.contains(this.gasStations[id].coord)) {
+                this.gasStations[id].marker.isSelect = true;
+                this.gasStations[id].marker.setIcon(repositoryMO.selectGasStationIcon);
+            }
     };
 
     /*  Андрюха,
@@ -98,7 +126,7 @@ MapObjectsRepository = (function () {
         if (!((object) && (object.id) && (object.coord))) return;
 
         // создать маркер города и добавить его на карту
-        object.marker = L.marker([object.coord.x, object.coord.y], {
+        object.marker = L.marker(object.coord, {
             icon: this.townIcon,
             clickable: true,
             keyboard: false}).addTo(myMap);
@@ -154,7 +182,7 @@ MapObjectsRepository = (function () {
         // если входные данные не корректны то выйти
         if (!((object) && (object.id) && (object.coord))) return;
         // создать маркер заправки и добавить его на карту
-        object.marker = L.marker([object.coord.x, object.coord.y], {
+        object.marker = L.marker(object.coord, {
             icon: this.gasStationIcon,
             clickable: true,
             keyboard: false}).addTo(myMap);

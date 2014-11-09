@@ -22,7 +22,8 @@ function changeCurrentEditor(newEditor) {
 $(document).ready(function () {
     // инициализация карты
     myMap = L.map('map', {
-        zoomControl: true
+        zoomControl: true,      // добавить стандартные кнопки изменения масштаба
+        boxZoom: false          // отключить зумирование через прямоугольник
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
 
@@ -49,9 +50,7 @@ $(document).ready(function () {
 
 var myMap;
 var currentEditor;
-
 // Репозитории я решил выносить сюда
 var repositoryMO;
-
 // Путь к карте на сервере
 var mapBasePath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
