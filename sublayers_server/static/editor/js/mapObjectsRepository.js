@@ -8,6 +8,7 @@ MapObjectsRepository = (function () {
         this.towns = [];
         this.gasStations = [];
         this.rollBackProtocol = [];
+        this.markerDragging = false;
 
         // создание иконок маркеров
         this.townIcon = L.icon({
@@ -39,34 +40,103 @@ MapObjectsRepository = (function () {
         return this._tempID++;
     };
 
-    // Механизм выбора объектов
+    // Добавление/удаление событий для маркеров городов и заправок
 
-    MapObjectsRepository.prototype.onObjectsSelected = function () {
-        //alert('onObjectsSelected');
+    MapObjectsRepository.prototype.onObjectMarkerEvent = function (eventName, eventFunction) {
+        //alert('onObjectMarkerEvent');
         for (var id in this.towns)
-            this.towns[id].marker.on('click', markerClick);
+            this.towns[id].on(eventName, eventFunction);
         for (var id in this.gasStations)
-            this.gasStations[id].marker.on('click', markerClick);
+            this.gasStations[id].on(eventName, eventFunction);
     };
 
-    MapObjectsRepository.prototype.offObjectsSelected = function () {
-        //alert('offObjectsSelected');
+    MapObjectsRepository.prototype.offObjectMarkerEvent = function (eventName, eventFunction) {
+        //alert('offObjectMarkerEvent');
         for (var id in this.towns)
-            this.towns[id].marker.off('click', markerClick);
+            this.towns[id].off(eventName, eventFunction);
         for (var id in this.gasStations)
-            this.gasStations[id].marker.off('click', markerClick);
+            this.gasStations[id].off(eventName, eventFunction);
+    };
+
+    // Включение / выключение возможности перетаскивания маркеров городов и заправок
+
+    MapObjectsRepository.prototype.onObjectMarkerDragging = function () {
+        //alert('onObjectMarkerDragging');
+        this.markerDragging = true;
+        for (var id in this.towns)
+            this.towns[id].dragging.enable();
+        for (var id in this.gasStations)
+            this.gasStations[id].dragging.enable();
+    };
+
+    MapObjectsRepository.prototype.offObjectMarkerDragging = function () {
+        //alert('offObjectMarkerDragging');
+        this.markerDragging = false;
+        for (var id in this.towns)
+            this.towns[id].dragging.disable();
+        for (var id in this.gasStations)
+            this.gasStations[id].dragging.disable();
+    };
+
+    // Механизм выбора объектов
+
+    MapObjectsRepository.prototype.selectObject = function (type, id) {
+        //alert('selectObject');
+        switch (type) {
+            case 'town':
+                if (id in this.towns) {
+                    this.towns[id].isSelect = true;
+                    this.towns[id].setIcon(repositoryMO.selectTownIcon);
+                }
+                break;
+            case 'gasStation':
+                if (id in this.gasStations) {
+                    this.gasStations[id].isSelect = true;
+                    this.gasStations[id].setIcon(repositoryMO.selectGasStationIcon);
+                }
+                break;
+        };
+    };
+
+    MapObjectsRepository.prototype.unSelectObject = function (type, id) {
+        //alert('unSelectObject');
+        switch (type) {
+            case 'town':
+                if (id in this.towns) {
+                    this.towns[id].isSelect = false;
+                    this.towns[id].setIcon(repositoryMO.townIcon);
+                }
+                break;
+            case 'gasStation':
+                if (id in this.gasStations) {
+                    this.gasStations[id].isSelect = false;
+                    this.gasStations[id].setIcon(repositoryMO.gasStationIcon);
+                }
+                break;
+        };
+    };
+
+    MapObjectsRepository.prototype.changeSelectObject = function (type, id) {
+        //alert('changeSelectObject');
+        switch (type) {
+            case 'town':
+
+                if (id in this.towns)
+                    if (this.towns[id].isSelect) this.unSelectObject(type, id);
+                    else this.selectObject(type, id);
+                break;
+            case 'gasStation':
+                if (id in this.gasStations)
+                    if (this.gasStations[id].isSelect) this.unSelectObject(type, id);
+                    else this.selectObject(type, id);
+                break;
+        };
     };
 
     MapObjectsRepository.prototype.clearSelection = function () {
         //alert('clearSelection');
-        for (var id in this.towns) {
-            this.towns[id].marker.isSelect = false;
-            this.towns[id].marker.setIcon(repositoryMO.townIcon);
-            }
-        for (var id in this.gasStations) {
-            this.gasStations[id].marker.isSelect = false;
-            this.gasStations[id].marker.setIcon(repositoryMO.gasStationIcon);
-        }
+        for (var id in this.towns) this.unSelectObject('town', id);
+        for (var id in this.gasStations) this.unSelectObject('gasStation', id)
     };
 
     MapObjectsRepository.prototype.delAllSelectedObjects = function () {
@@ -76,27 +146,14 @@ MapObjectsRepository = (function () {
     };
 
     MapObjectsRepository.prototype.selectByRect = function (boundsRect) {
-        //alert('onObjectsSelected');
+        //alert('selectByRect');
         for (var id in this.towns)
-            if (boundsRect.contains(this.towns[id].coord)) {
-                this.towns[id].marker.isSelect = true;
-                this.towns[id].marker.setIcon(repositoryMO.selectTownIcon);
-            }
+            if (boundsRect.contains(this.towns[id].objectCoord))
+                this.selectObject('town', id);
         for (var id in this.gasStations)
-            if (boundsRect.contains(this.gasStations[id].coord)) {
-                this.gasStations[id].marker.isSelect = true;
-                this.gasStations[id].marker.setIcon(repositoryMO.selectGasStationIcon);
-            }
+            if (boundsRect.contains(this.gasStations[id].objectCoord))
+                this.selectObject('gasStation', id);
     };
-
-    /*  Андрюха,
-     Во все методы от сервера я добавил withRollBack затем чтоб определить нужно ли добавлять отмену действия
-     или нет. Я предпологаю что если мы получим от сервера ансвер, то тогда withRollBack = true, если же от
-     сервера пришол пуш, то withRollBack = false (исключением является ансвер на сам ролбэк, если ты понял
-     о чем я))) ).
-     в массив роллбеков таким образом всегда нужно заносить object и тот метод который должен быть вызвван
-     (addTown, delTown, changeTown). Както так. Все, я пошел спать)))
-     */
 
     // Города
 
@@ -109,7 +166,7 @@ MapObjectsRepository = (function () {
     MapObjectsRepository.prototype.delAllSelectedTowns = function () {
         //alert('delAllSelectedTowns');
         for (var id in this.towns)
-            if (this.towns[id].marker.isSelect) this.delTown(id);
+            if (this.towns[id].isSelect) this.delTown(id);
     };
 
     MapObjectsRepository.prototype.delTown = function (id) {
@@ -118,7 +175,9 @@ MapObjectsRepository = (function () {
         this.delTownFromServer(id, false);
     };
 
-    MapObjectsRepository.prototype.changeTown = function () {
+    MapObjectsRepository.prototype.changeTown = function (object) {
+        // временная заглушка: города изменяются в обход сервера
+        this.changeTownFromServer(object, false);
     };
 
     MapObjectsRepository.prototype.addTownFromServer = function (object, withRollBack) {
@@ -126,31 +185,35 @@ MapObjectsRepository = (function () {
         if (!((object) && (object.id) && (object.coord))) return;
 
         // создать маркер города и добавить его на карту
-        object.marker = L.marker(object.coord, {
+        this.towns[object.id] = L.marker(object.coord, {
             icon: this.townIcon,
             clickable: true,
+            draggable: true,
             keyboard: false}).addTo(myMap);
-        object.marker.isSelect = false;
-        object.marker.type = 1;
+        if (!this.markerDragging) this.towns[object.id].dragging.disable();
 
-        // сохранить запись о городе
-        this.towns[object.id] = object;
+        // сохраняем в маркере дополнительные параметры из object
+        this.towns[object.id].isSelect = false;
+        this.towns[object.id].type = 'town';
+        this.towns[object.id].objectCoord = object.coord;
+        this.towns[object.id].objectID = object.id;
     };
 
     MapObjectsRepository.prototype.delTownFromServer = function (id, withRollBack) {
         //alert('delTownFromServer');
 
-        // если города нет то вывалиться отсюда
+        // если города нет то выйти
         if (!(id in this.towns)) return;
 
         // удаляем маркер
-        myMap.removeLayer(this.towns[id].marker);
+        myMap.removeLayer(this.towns[id]);
 
         // удаляем запись о городе
         delete this.towns[id];
     };
 
     MapObjectsRepository.prototype.changeTownFromServer = function (object, withRollBack) {
+        //alert('changeTownFromServer');
         // если входные данные не корректны то вывалиться отсюда
         if (!((object) && (object.id) && (object.coord))) return;
         this.delTownFromServer(object.id);
@@ -167,7 +230,7 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.delAllSelectedGasStations = function () {
         for (var id in this.gasStations)
-            if (this.gasStations[id].marker.isSelect) this.delGasStation(id);
+            if (this.gasStations[id].isSelect) this.delGasStation(id);
     };
 
     MapObjectsRepository.prototype.delGasStation = function (id) {
@@ -175,52 +238,47 @@ MapObjectsRepository = (function () {
         this.delGasStationFromServer(id, false);
     };
 
-    MapObjectsRepository.prototype.changeGasStation = function () {
+    MapObjectsRepository.prototype.changeGasStation = function (object) {
+        // временная заглушка: заправки изменяются в обход сервера
+        this.changeGasStationFromServer(object, false);
     };
 
     MapObjectsRepository.prototype.addGasStationFromServer = function (object, withRollBack) {
         // если входные данные не корректны то выйти
         if (!((object) && (object.id) && (object.coord))) return;
+
         // создать маркер заправки и добавить его на карту
-        object.marker = L.marker(object.coord, {
+        this.gasStations[object.id] = L.marker(object.coord, {
             icon: this.gasStationIcon,
             clickable: true,
+            draggable: true,
             keyboard: false}).addTo(myMap);
-        object.marker.isSelect = false;
-        object.marker.type = 2;
+        if (!this.markerDragging) this.gasStations[object.id].dragging.disable();
 
-        // сохранить запись о городе
-        this.gasStations[object.id] = object;
+        // сохраняем в маркере дополнительные параметры из object
+        this.gasStations[object.id].isSelect = false;
+        this.gasStations[object.id].type = 'gasStation';
+        this.gasStations[object.id].objectCoord = object.coord;
+        this.gasStations[object.id].objectID = object.id;
     };
 
     MapObjectsRepository.prototype.delGasStationFromServer = function (id, withRollBack) {
+        // если заправки нет то выйти
         if (!(id in this.gasStations)) return;
+
         // удаляем маркер
-        myMap.removeLayer(this.gasStations[id].marker);
+        myMap.removeLayer(this.gasStations[id]);
+
         // удаляем запись о городе
         delete this.gasStations[id];
     };
 
     MapObjectsRepository.prototype.changeGasStationFromServer = function (object, withRollBack) {
+        //alert('changeGasStationFromServer');
         if (!((object) && (object.id) && (object.coord))) return;
-        this.delGasStationFromServer(object.id);
-        this.addGasStationFromServer(object);
+        this.delGasStationFromServer(object.id, false);
+        this.addGasStationFromServer(object, false);
     };
 
     return MapObjectsRepository;
 })();
-
-function markerClick(e) {
-    //alert('markerClick');
-    e.target.isSelect = !e.target.isSelect;
-    switch (e.target.type) {
-        case 1:
-            if (e.target.isSelect) e.target.setIcon(repositoryMO.selectTownIcon);
-            else e.target.setIcon(repositoryMO.townIcon);
-            break;
-        case 2:
-            if (e.target.isSelect) e.target.setIcon(repositoryMO.selectGasStationIcon);
-            else e.target.setIcon(repositoryMO.gasStationIcon);
-            break;
-    }
-}

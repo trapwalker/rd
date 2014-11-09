@@ -43,8 +43,7 @@ function initMapObjects(editor) {
 }
 
 function turnOnMapObjects() {
-    /* при запускке картографического редактора по умолчанию
-       включается режим выбора и перемещения объектов */
+    // перехватчики Shift
     document.getElementById('map').onkeydown = onKeyDown;
     document.getElementById('map').onkeyup = onKeyUp;
     selectToolButtonClick();
@@ -52,26 +51,60 @@ function turnOnMapObjects() {
 
 function turnOffMapObjects() {
     // тут должна быть проверка на предмет не сохраненных данных
-    dropAllEventsEditorMapObjects();
+    clearEditorMapObjects();
     document.getElementById('map').onkeydown = null;
     document.getElementById('map').onkeyup = null;
     return null;
 }
 
-// Сброс всех ивентов повешенных на карту в этом редакторе (как сделать красивее я не придумал)
-// + очищение результата выбора и сброс прямоугнольника выбора
-function dropAllEventsEditorMapObjects() {
-    //alert('dropAllEventsEditorMapObjects');
-    editorMapObjects.unCheckAllToolButtons();
+/* Очищение редактора (как сделать красивее я не придумал):
+    + сброс прямоугнольника выбора;
+    + сброс все ивенто повешенных на маркера репозитория;
+    + очищение результата выбора;
+    + сброс всех ивентов повешенных на карту;
+ */
+function clearEditorMapObjects() {
+    //alert('clearEditorMapObjects');
     if (isKeyDown) onKeyUp();
-    repositoryMO.offObjectsSelected();
+    editorMapObjects.unCheckAllToolButtons();
+    repositoryMO.offObjectMarkerEvent('click', markerClick);
+    repositoryMO.offObjectMarkerEvent('dragend', markerDragEnd);
+    repositoryMO.offObjectMarkerDragging();
     repositoryMO.clearSelection();
     myMap.off('click', selectMapClick);
     myMap.off('click', addTownMapClick);
     myMap.off('click', addGasStationMapClick);
 }
 
+
+
 // Режим выбора и перемещения объектов
+
+function markerClick(event) {
+    //alert('markerClick');
+    repositoryMO.changeSelectObject(event.target.type, event.target.objectID);
+}
+
+function markerDragEnd(event) {
+    //alert('markerDragEnd');
+    var newCoord = event.target.getLatLng();
+    switch (event.target.type) {
+        case 'town':
+            event.target.setLatLng(repositoryMO.towns[event.target.objectID].objectCoord);
+            repositoryMO.changeTown({coord: newCoord, id: event.target.objectID});
+
+            break;
+        case 'gasStation':
+            event.target.setLatLng(repositoryMO.gasStations[event.target.objectID].objectCoord);
+            repositoryMO.changeGasStation({coord: newCoord, id: event.target.objectID});
+            break;
+    }
+    repositoryMO.offObjectMarkerEvent('click', markerClick);
+    repositoryMO.offObjectMarkerEvent('dragend', markerDragEnd);
+    repositoryMO.onObjectMarkerEvent('click', markerClick);
+    repositoryMO.onObjectMarkerEvent('dragend', markerDragEnd);
+    repositoryMO.onObjectMarkerDragging();
+}
 
 // Обработчик Shift
 var isKeyDown = false;
@@ -131,46 +164,51 @@ function drawSelectRectMouseUp(event) {
     }
 }
 
-function selectMapClick(e) {
+function selectMapClick(event) {
     //alert('selectMapClick');
     repositoryMO.clearSelection();
 }
 
 function selectToolButtonClick() {
     //alert('selectToolButtonClick');
-    dropAllEventsEditorMapObjects();
-    repositoryMO.onObjectsSelected();
+    clearEditorMapObjects();
+    repositoryMO.onObjectMarkerEvent('click', markerClick);
+    repositoryMO.onObjectMarkerEvent('dragend', markerDragEnd);
+    repositoryMO.onObjectMarkerDragging();
     editorMapObjects.toolButtons['tbSelect'].setChecked(true);
     myMap.on('click', selectMapClick);
 }
 
 
+
 // Добавление городов
-function addTownMapClick(e) {
+function addTownMapClick(event) {
     //alert('addTownMapClick');
-    repositoryMO.addTown({coord: e.latlng});
+    repositoryMO.addTown({coord: event.latlng});
 }
 
 function addTownToolButtonClick() {
     //alert('addTownToolButtonClick');
-    dropAllEventsEditorMapObjects();
+    clearEditorMapObjects();
     editorMapObjects.toolButtons['tbTown'].setChecked(true);
     myMap.on('click', addTownMapClick);
 }
 
 
+
 // Добавление заправок
-function addGasStationMapClick(e) {
+function addGasStationMapClick(event) {
     //alert('addGasStationMapClick');
-    repositoryMO.addGasStation({coord: e.latlng});
+    repositoryMO.addGasStation({coord: event.latlng});
 }
 
 function addGasStationToolButtonClick() {
     //alert('addGasStationToolButtonClick');
-    dropAllEventsEditorMapObjects();
+    clearEditorMapObjects();
     editorMapObjects.toolButtons['tbGasStation'].setChecked(true);
     myMap.on('click', addGasStationMapClick);
 }
+
 
 
 // Удаление выбранных объектов
