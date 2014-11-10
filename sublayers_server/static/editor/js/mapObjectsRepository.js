@@ -5,6 +5,10 @@ MapObjectsRepository = (function () {
         // Временный счетчик ID объектов, нужен для добавления объектов в обход сервера (см. getTempID)
         this._tempID = 0;
 
+        // Парапметры рисования дорог
+        this.roadStepsMax = 500;
+        this.roadStepsMin = 200;
+
         this.roads = [];
         this.towns = [];
         this.gasStations = [];
@@ -46,7 +50,6 @@ MapObjectsRepository = (function () {
             iconSize: [35, 50],
             iconAnchor: [18, 50]
         });
-
     };
 
     MapObjectsRepository.prototype.getTempID = function () {
@@ -233,7 +236,6 @@ MapObjectsRepository = (function () {
         // если входные данные не корректны то вывалиться отсюда
         if (!((object) && (object.id) && (object.coord))) return;
         var marker = L.marker(object.coord, {
-            icon: this.townIcon,
             clickable: true,
             keyboard: false}).addTo(myMap);
         // сохраняем в маркере дополнительные параметры из object
@@ -303,6 +305,15 @@ MapObjectsRepository = (function () {
         list[object.id].setLatLng(object.coord);
     };
 
+    // Стили дорог
+
+    MapObjectsRepository.prototype.setRoadStepsMax = function (value) {
+        if (value > this.roadStepsMin) this.roadStepsMax = value;
+    };
+
+    MapObjectsRepository.prototype.setRoadStepsMin = function (value) {
+        if (value < this.roadStepsMax) this.roadStepsMin = value;
+    };
 
     return MapObjectsRepository;
 })();

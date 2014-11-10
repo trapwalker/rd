@@ -74,6 +74,8 @@ function clearEditorMapObjects() {
     myMap.off('click', addTownMapClick);
     myMap.off('click', addGasStationMapClick);
     myMap.off('click', addRoadMapClick);
+    myMap.off('mousemove', addRoadMapMouseMove);
+    clearRoad();
 }
 
 
@@ -198,9 +200,67 @@ function addGasStationToolButtonClick() {
 
 
 // Добавление дорог
+var startPoint = null;
+var trajectory = null;
+var tempMarkers = [];
+
+function clearRoad() {
+    if (trajectory) myMap.removeLayer(trajectory);
+    trajectory = null;
+    for (var i = 0; i < tempMarkers.length; i++)
+        myMap.removeLayer(tempMarkers[i]);
+    tempMarkers = [];
+    startPoint = null;
+}
+
 function addRoadMapClick(event) {
     //alert('addRoadMapClick');
+    if (startPoint) {
+
+        if (tempMarkers.length > 0) {
+            var point1 = myMap.project(tempMarkers[tempMarkers.length - 1].getLatLng(), myMap.getMaxZoom());
+            var point2 = myMap.project(event.latlng, myMap.getMaxZoom());
+            if (distancePoints(point1, point2) < repositoryMO.roadStepsMin) {
+                myMap.removeLayer(tempMarkers[tempMarkers.length - 1]);
+                tempMarkers.pop();
+            }
+            // Очистка tempMarkers без удаления с карты
+            for (var i = 0; i < tempMarkers.length; i++)
+                repositoryMO.addObject('road', {coord: tempMarkers[i].getLatLng()});
+        }
+        // очистка
+        myMap.removeLayer(trajectory);
+        for (var i = 0; i < tempMarkers.length; i++)
+            myMap.removeLayer(tempMarkers[i]);
+        tempMarkers = [];
+    }
+    startPoint = event.latlng;
     repositoryMO.addObject('road', {coord: event.latlng});
+    trajectory = L.polyline([startPoint, startPoint], {color: '#333333', weight: 1}).addTo(myMap);
+}
+
+function addRoadMapMouseMove(event) {
+    //alert('addRoadMapMouseMove');
+    if (startPoint) {
+        trajectory.setLatLngs([startPoint, event.latlng]);
+        for (var i = 0; i < tempMarkers.length; i++)
+            myMap.removeLayer(tempMarkers[i]);
+        tempMarkers = [];
+        var projStartPoint = myMap.project(startPoint, myMap.getMaxZoom());
+        var projEndPoint = myMap.project(event.latlng, myMap.getMaxZoom());
+        var vector = subVector(projEndPoint, projStartPoint);
+        var length = vector.abs();
+        vector = normVector(vector);
+        var shift = repositoryMO.roadStepsMax;
+        while (shift < length) {
+            var coord = summVector(projStartPoint, mulScalVector(vector, shift));
+            tempMarkers.push(L.marker(myMap.unproject([coord.x, coord.y], myMap.getMaxZoom()), {
+                icon: repositoryMO.roadIcon,
+                clickable: true,
+                keyboard: false}).addTo(myMap));
+            shift += repositoryMO.roadStepsMax;
+        }
+    }
 }
 
 function addRoadToolButtonClick() {
@@ -208,6 +268,7 @@ function addRoadToolButtonClick() {
     clearEditorMapObjects();
     editorMapObjects.toolButtons['tbRoad'].setChecked(true);
     myMap.on('click', addRoadMapClick);
+    myMap.on('mousemove', addRoadMapMouseMove);
 }
 
 
