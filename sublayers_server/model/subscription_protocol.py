@@ -8,6 +8,27 @@ class EventHandlerIsNotImplemented(Exception):
     pass
 
 
+def subscriber(dest_class):
+    if isinstance(dest_class, type):
+        dest_class = dest_class.__name__
+
+    emitter_name = dest_class
+
+    attr_name__count_of = 'count_of__{}'.format(emitter_name)
+    attr_name__subscribe_to = 'subscribe_to__{}'.format(emitter_name)
+    attr_name__unsubscribe_from = 'unsubscribe_from__{}'.format(emitter_name)
+    attr_name__unsubscribe_from_all = 'unsubscribe_from_all__{}'.format(emitter_name)
+    attr_name__on_event = 'on_event_from__{}'.format(emitter_name)
+
+    attr_name__emitters_list = '_{}__list'.format(emitter_name)
+    attr_getter__emitters_list = attrgetter(attr_name__emitters_list)
+
+    attr_getter__unsubscribe_from = attrgetter(attr_name__unsubscribe_from)
+
+    attr_getter__on_event = attrgetter(attr_name__on_event)
+
+
+
 def make_subscriber_emitter_classes(subscriber_name, emitter_name):
     subscriber_classname = 'SubscriberTo__{}'.format(emitter_name)
     emitter_classname = 'EmitterFor__{}'.format(subscriber_name)

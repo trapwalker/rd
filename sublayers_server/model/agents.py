@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import Object, SubscriberTo__Observer
-from visibility import VChannel
 from agent_api import make_push_package
 from utils import serialize
 
@@ -25,7 +24,8 @@ class Agent(Object, SubscriberTo__Observer):
         if party is not None:
             party.include(self)
         log.debug('=========%s', self.party)
-        self.v_channel = VChannel(agents=[self])        
+
+    
 
     def as_dict(self):
         d = super(Agent, self).as_dict()

@@ -10,6 +10,7 @@ import messages
 from events import ContactSee
 
 from abc import ABCMeta
+from collections import Counter
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -105,7 +106,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        self.v_channels = set()
+        self.agents = Counter()  # Subscribed agents
         self.init_contacts_search()
 
     def on_change(self, comment=None):  # todo: privacy level index
