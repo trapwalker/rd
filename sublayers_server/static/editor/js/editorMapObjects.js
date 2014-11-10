@@ -12,8 +12,8 @@ function initMapObjects(editor) {
     });
 
     editor.toolButtons['tbRoad'] = L.easyButton({
+        btnFunct: addRoadToolButtonClick,
         btnPos: 'topright',
-        btnFunct: null,
         btnTitle: 'Ввод дорог',
         btnIcon: 'toolRoad-icon',
         btnEnbChckd: true});
@@ -74,6 +74,7 @@ function clearEditorMapObjects() {
     myMap.off('click', selectMapClick);
     myMap.off('click', addTownMapClick);
     myMap.off('click', addGasStationMapClick);
+    myMap.off('click', addRoadMapClick);
 }
 
 
@@ -88,22 +89,9 @@ function markerClick(event) {
 function markerDragEnd(event) {
     //alert('markerDragEnd');
     var newCoord = event.target.getLatLng();
-    switch (event.target.type) {
-        case 'town':
-            event.target.setLatLng(repositoryMO.towns[event.target.objectID].objectCoord);
-            repositoryMO.changeTown({coord: newCoord, id: event.target.objectID});
-
-            break;
-        case 'gasStation':
-            event.target.setLatLng(repositoryMO.gasStations[event.target.objectID].objectCoord);
-            repositoryMO.changeGasStation({coord: newCoord, id: event.target.objectID});
-            break;
-    }
-    repositoryMO.offObjectMarkerEvent('click', markerClick);
-    repositoryMO.offObjectMarkerEvent('dragend', markerDragEnd);
-    repositoryMO.onObjectMarkerEvent('click', markerClick);
-    repositoryMO.onObjectMarkerEvent('dragend', markerDragEnd);
-    repositoryMO.onObjectMarkerDragging();
+    event.target.setLatLng(event.target.objectCoord);
+    repositoryMO.changeObject(event.target.type, {coord: newCoord, id: event.target.objectID});
+    repositoryMO.clearSelection();
 }
 
 // Обработчик Shift
@@ -184,7 +172,7 @@ function selectToolButtonClick() {
 // Добавление городов
 function addTownMapClick(event) {
     //alert('addTownMapClick');
-    repositoryMO.addTown({coord: event.latlng});
+    repositoryMO.addObject('town', {coord: event.latlng});
 }
 
 function addTownToolButtonClick() {
@@ -199,7 +187,7 @@ function addTownToolButtonClick() {
 // Добавление заправок
 function addGasStationMapClick(event) {
     //alert('addGasStationMapClick');
-    repositoryMO.addGasStation({coord: event.latlng});
+    repositoryMO.addObject('gasStation', {coord: event.latlng});
 }
 
 function addGasStationToolButtonClick() {
@@ -207,6 +195,21 @@ function addGasStationToolButtonClick() {
     clearEditorMapObjects();
     editorMapObjects.toolButtons['tbGasStation'].setChecked(true);
     myMap.on('click', addGasStationMapClick);
+}
+
+
+
+// Добавление дорог
+function addRoadMapClick(event) {
+    //alert('addRoadMapClick');
+    repositoryMO.addObject('road', {coord: event.latlng});
+}
+
+function addRoadToolButtonClick() {
+    //alert('addRoadToolButtonClick');
+    clearEditorMapObjects();
+    editorMapObjects.toolButtons['tbRoad'].setChecked(true);
+    myMap.on('click', addRoadMapClick);
 }
 
 

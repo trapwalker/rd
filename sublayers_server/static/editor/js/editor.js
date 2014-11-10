@@ -1,3 +1,5 @@
+// TODO: переименовать onClickRoad
+
 // Включение режима свободной камеры
 function onClickFreeCam() {
     if (currentEditor != editorFreeCam)
