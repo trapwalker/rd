@@ -68,7 +68,6 @@ function clearEditorMapObjects() {
     if (isKeyDown) onKeyUp();
     editorMapObjects.unCheckAllToolButtons();
     repositoryMO.offObjectMarkerEvent('click', markerClick);
-    repositoryMO.offObjectMarkerEvent('dragend', markerDragEnd);
     repositoryMO.offObjectMarkerDragging();
     repositoryMO.clearSelection();
     myMap.off('click', selectMapClick);
@@ -88,10 +87,10 @@ function markerClick(event) {
 
 function markerDragEnd(event) {
     //alert('markerDragEnd');
+    repositoryMO.clearSelection();
     var newCoord = event.target.getLatLng();
     event.target.setLatLng(event.target.objectCoord);
     repositoryMO.changeObject(event.target.type, {coord: newCoord, id: event.target.objectID});
-    repositoryMO.clearSelection();
 }
 
 // Обработчик Shift
@@ -161,8 +160,7 @@ function selectToolButtonClick() {
     //alert('selectToolButtonClick');
     clearEditorMapObjects();
     repositoryMO.onObjectMarkerEvent('click', markerClick);
-    repositoryMO.onObjectMarkerEvent('dragend', markerDragEnd);
-    repositoryMO.onObjectMarkerDragging();
+    repositoryMO.onObjectMarkerDragging(markerDragEnd);
     editorMapObjects.toolButtons['tbSelect'].setChecked(true);
     myMap.on('click', selectMapClick);
 }

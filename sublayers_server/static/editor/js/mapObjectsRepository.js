@@ -1,5 +1,4 @@
 //TODO: перевести добавление объектов на пуши
-//TODO: переписать change
 
 MapObjectsRepository = (function () {
     function MapObjectsRepository() {
@@ -14,38 +13,38 @@ MapObjectsRepository = (function () {
         // создание иконок маркеров
         this.townIcon = L.icon({
             iconUrl: '/static/editor/img/city.png',
-            iconSize: [26, 29],
-            iconAnchor: [14, 29]
+            iconSize: [35, 50],
+            iconAnchor: [18, 50]
         });
 
         this.selectTownIcon = L.icon({
             iconUrl: '/static/editor/img/city_select.png',
-            iconSize: [26, 29],
-            iconAnchor: [14, 29]
+            iconSize: [35, 50],
+            iconAnchor: [18, 50]
         });
 
         this.gasStationIcon = L.icon({
             iconUrl: '/static/editor/img/gasstation.png',
-            iconSize: [26, 29],
-            iconAnchor: [14, 29]
+            iconSize: [35, 50],
+            iconAnchor: [18, 50]
         });
 
         this.selectGasStationIcon = L.icon({
             iconUrl: '/static/editor/img/gasstation_select.png',
-            iconSize: [26, 29],
-            iconAnchor: [14, 29]
+            iconSize: [35, 50],
+            iconAnchor: [18, 50]
         });
 
         this.roadIcon = L.icon({
-            iconUrl: '/static/editor/img/city.png',
-            iconSize: [26, 29],
-            iconAnchor: [14, 29]
+            iconUrl: '/static/editor/img/roadpoint.png',
+            iconSize: [35, 50],
+            iconAnchor: [18, 50]
         });
 
         this.selectRoadIcon = L.icon({
-            iconUrl: '/static/editor/img/city_select.png',
-            iconSize: [26, 29],
-            iconAnchor: [14, 29]
+            iconUrl: '/static/editor/img/roadpoint_select.png',
+            iconSize: [35, 50],
+            iconAnchor: [18, 50]
         });
 
     };
@@ -54,7 +53,14 @@ MapObjectsRepository = (function () {
         return this._tempID++;
     };
 
-    // Добавление/удаление событий для маркеров городов и заправок
+    // Добавление/удаление событий для маркеров
+
+    MapObjectsRepository.prototype.setupMarkerIcon = function (marker, icon) {
+        //alert('setupMarkerIcon');
+        var dragging = marker.dragging.enabled();
+        marker.setIcon(icon);
+        if (dragging) marker.dragging.enable();
+    }
 
     MapObjectsRepository.prototype.onObjectMarkerEvent = function (eventName, eventFunction) {
         //alert('onObjectMarkerEvent');
@@ -78,9 +84,11 @@ MapObjectsRepository = (function () {
 
     // Включение / выключение возможности перетаскивания маркеров городов и заправок
 
-    MapObjectsRepository.prototype.onObjectMarkerDragging = function () {
+    MapObjectsRepository.prototype.onObjectMarkerDragging = function (eventFunction) {
         //alert('onObjectMarkerDragging');
         this.markerDragging = true;
+        this.markerDraggingEvent = eventFunction;
+        this.onObjectMarkerEvent('dragend', eventFunction);
         for (var id in this.towns)
             this.towns[id].dragging.enable();
         for (var id in this.gasStations)
@@ -92,6 +100,8 @@ MapObjectsRepository = (function () {
     MapObjectsRepository.prototype.offObjectMarkerDragging = function () {
         //alert('offObjectMarkerDragging');
         this.markerDragging = false;
+        this.offObjectMarkerEvent('dragend', this.markerDraggingEvent);
+        this.markerDraggingEvent = null;
         for (var id in this.towns)
             this.towns[id].dragging.disable();
         for (var id in this.gasStations)
@@ -108,43 +118,43 @@ MapObjectsRepository = (function () {
             case 'town':
                 if (id in this.towns) {
                     this.towns[id].isSelect = true;
-                    this.towns[id].setIcon(this.selectTownIcon);
+                    this.setupMarkerIcon(this.towns[id], this.selectTownIcon);
                 }
                 break;
             case 'gasStation':
                 if (id in this.gasStations) {
                     this.gasStations[id].isSelect = true;
-                    this.gasStations[id].setIcon(this.selectGasStationIcon);
+                    this.setupMarkerIcon(this.gasStations[id], this.selectGasStationIcon);
                 }
                 break;
             case 'road':
                 if (id in this.roads) {
                     this.roads[id].isSelect = true;
-                    this.roads[id].setIcon(this.selectRoadIcon);
+                    this.setupMarkerIcon(this.roads[id], this.selectRoadIcon);
                 }
                 break;
         };
     };
 
     MapObjectsRepository.prototype.unSelectObject = function (type, id) {
-       // alert('unSelectObject');
+        //alert('unSelectObject');
         switch (type) {
             case 'town':
                 if (id in this.towns) {
                     this.towns[id].isSelect = false;
-                    this.towns[id].setIcon(this.townIcon);
+                    this.setupMarkerIcon(this.towns[id], this.townIcon);
                 }
                 break;
             case 'gasStation':
                 if (id in this.gasStations) {
                     this.gasStations[id].isSelect = false;
-                    this.gasStations[id].setIcon(this.gasStationIcon);
+                    this.setupMarkerIcon(this.gasStations[id], this.gasStationIcon);
                 }
                 break;
             case 'road':
                 if (id in this.roads) {
                     this.roads[id].isSelect = false;
-                    this.roads[id].setIcon(this.roadIcon);
+                    this.setupMarkerIcon(this.roads[id], this.roadIcon);
                 }
                 break;
         };
@@ -223,6 +233,7 @@ MapObjectsRepository = (function () {
         // если входные данные не корректны то вывалиться отсюда
         if (!((object) && (object.id) && (object.coord))) return;
         var marker = L.marker(object.coord, {
+            icon: this.townIcon,
             clickable: true,
             keyboard: false}).addTo(myMap);
         // сохраняем в маркере дополнительные параметры из object
@@ -230,19 +241,21 @@ MapObjectsRepository = (function () {
         marker.objectCoord = object.coord;
         marker.objectID = object.id;
         marker.type = type;
-        if (!this.markerDragging) marker.dragging.disable();
-
+        if ((this.markerDragging)&&(this.markerDraggingEvent)) {
+            marker.on('');
+            marker.dragging.enable('dragend', markerDraggingEvent);
+        }
         switch (type) {
             case 'town':
-                marker.setIcon(this.townIcon);
+                this.setupMarkerIcon(marker, this.townIcon);
                 this.towns[object.id] = marker;
                 break;
             case 'gasStation':
-                marker.setIcon(this.gasStationIcon);
+                this.setupMarkerIcon(marker, this.gasStationIcon);
                 this.gasStations[object.id] = marker;
                 break;
             case 'road':
-                marker.setIcon(this.roadIcon);
+                this.setupMarkerIcon(marker, this.roadIcon);
                 this.roads[object.id] = marker;
                 break;
         }
@@ -271,7 +284,7 @@ MapObjectsRepository = (function () {
     };
 
     MapObjectsRepository.prototype.changeObjectFromServer = function (type, object) {
-        alert('changeObjectFromServer');
+        //alert('changeObjectFromServer');
         if (!((object) && (object.id) && (object.coord))) return;
         var list;
         switch (type) {
@@ -286,7 +299,6 @@ MapObjectsRepository = (function () {
                 break;
         }
         if (!list[object.id]) return;
-
         list[object.id].objectCoord = object.coord;
         list[object.id].setLatLng(object.coord);
     };
