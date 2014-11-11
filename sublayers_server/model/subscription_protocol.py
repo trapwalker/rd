@@ -45,30 +45,16 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         return len(attr_getter__subscribers_list(self))
 
     def subscribe_to(self, emitter):
-        on_before = getattr(self, attr_name__on_before_subscribe_to, None)
-        on_after = getattr(self, attr_name__on_after_subscribe_to, None)
-
-        if on_before is not None:
-            on_before(emitter)
-
+        getattr(self, attr_name__on_before_subscribe_to)(emitter)
         attr_getter__emitters_list(self).append(emitter)
         attr_getter__subscribers_list(emitter).append(self)
-
-        if on_after is not None:
-            on_after(emitter)
+        getattr(self, attr_name__on_after_subscribe_to)(emitter)
 
     def unsubscribe_from(self, emitter):
-        on_before = getattr(self, attr_name__on_before_unsubscribe_from, None)
-        on_after = getattr(self, attr_name__on_after_unsubscribe_from, None)
-
-        if on_before is not None:
-            on_before(emitter)
-
+        getattr(self, attr_name__on_before_unsubscribe_from)(emitter)
         attr_getter__subscribers_list(emitter).remove(self)
         attr_getter__emitters_list(self).remove(emitter)
-
-        if on_after is not None:
-            on_after(emitter)
+        getattr(self, attr_name__on_after_unsubscribe_from)(emitter)
 
     def unsubscribe_all(self):
         unsubscribe = attr_getter__unsubscribe_from(self)
