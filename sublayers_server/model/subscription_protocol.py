@@ -8,48 +8,6 @@ class EventHandlerIsNotImplemented(Exception):
     pass
 
 
-class Subscriber(type):
-
-    def __new__(mcls, emitter_class):
-        emitter_name = emitter_class.__name__ if isinstance(emitter_class, type) else dest_class
-
-        attr_name__count_of = 'count_of__{}'.format(emitter_name)
-        attr_name__subscribe_to = 'subscribe_to__{}'.format(emitter_name)
-        attr_name__unsubscribe_from_all = 'unsubscribe_from_all__{}'.format(emitter_name)
-        attr_name__unsubscribe_from = 'unsubscribe_from__{}'.format(emitter_name)
-        attr_name__on_event = 'on_event_from__{}'.format(emitter_name)
-        attr_name__emitters_list = '_{}__list'.format(emitter_name)
-
-        attr_getter__unsubscribe_from = attrgetter(attr_name__unsubscribe_from)
-        attr_getter__on_event = attrgetter(attr_name__on_event)
-        attr_getter__emitters_list = attrgetter(attr_name__emitters_list)
-
-        cls = super(M, mcls).__new__(
-            mcls,
-            'Subscriber_to__{}'.format(emitter_name),
-            (object,),
-            dict(
-                '__init__': subscriber__init__,
-                attr_name__count_of:
-                attr_name__subscribe_to:
-                attr_name__unsubscribe_from_all:
-                attr_name__unsubscribe_from:
-                attr_name__on_event:
-                attr_name__emitters_list:
-                
-            )
-        )
-        return cls
-
-
-    @staticmethod
-    def __init__(self):
-        super(emitter_class, self).__init__()
-        setattr(self, attr_name__emitters_list, [])
-                            
-                                     
-
-
 def make_subscriber_emitter_classes(subscriber_name, emitter_name):
     subscriber_classname = 'SubscriberTo__{}'.format(emitter_name)
     emitter_classname = 'EmitterFor__{}'.format(subscriber_name)
@@ -66,6 +24,12 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
     attr_name__subscribers_list = '_{}__list'.format(subscriber_name)
     attr_getter__subscribers_list = attrgetter(attr_name__subscribers_list)
 
+    attr_name__on_before_subscribe_to = 'on_before_subscribe_to__{}'.format(emitter_name)
+    attr_name__on_after_subscribe_to = 'on_after_subscribe_to__{}'.format(emitter_name)
+
+    attr_name__on_before_unsubscribe_from = 'on_before_unsubscribe_from__{}'.format(emitter_name)
+    attr_name__on_after_unsubscribe_from = 'on_after_unsubscribe_from__{}'.format(emitter_name)
+
     def subscriber__init__(self):
         super(subscriber_class, self).__init__()
         setattr(self, attr_name__emitters_list, [])
@@ -81,12 +45,30 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         return len(attr_getter__subscribers_list(self))
 
     def subscribe_to(self, emitter):
+        on_before = getattr(self, attr_name__on_before_subscribe_to, None)
+        on_after = getattr(self, attr_name__on_after_subscribe_to, None)
+
+        if on_before is not None:
+            on_before(emitter)
+
         attr_getter__emitters_list(self).append(emitter)
         attr_getter__subscribers_list(emitter).append(self)
 
+        if on_after is not None:
+            on_after(emitter)
+
     def unsubscribe_from(self, emitter):
+        on_before = getattr(self, attr_name__on_before_unsubscribe_from, None)
+        on_after = getattr(self, attr_name__on_after_unsubscribe_from, None)
+
+        if on_before is not None:
+            on_before(emitter)
+
         attr_getter__subscribers_list(emitter).remove(self)
         attr_getter__emitters_list(self).remove(emitter)
+
+        if on_after is not None:
+            on_after(emitter)
 
     def unsubscribe_all(self):
         unsubscribe = attr_getter__unsubscribe_from(self)
@@ -97,6 +79,10 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         raise EventHandlerIsNotImplemented('Method `{}` is not implemented in class `{}` for object {!r}.'.format(
             attr_name__on_event, subscriber_classname, self))
 
+    def on_subscribe_dummy_handler(self, emitter):
+        #print 'on_subscribe_dummy_handler({}, {})'.format(self, emitter)
+        pass
+
     subscriber_dict = {
         '__init__': subscriber__init__,
         'count_of__{}'.format(emitter_name): property(get_emitters_count),
@@ -104,6 +90,11 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         attr_name__unsubscribe_from: unsubscribe_from,
         'unsubscribe_from_all__{}'.format(emitter_name): unsubscribe_all,
         attr_name__on_event: event_handler_dummy,
+
+        attr_name__on_before_subscribe_to: on_subscribe_dummy_handler,
+        attr_name__on_after_subscribe_to: on_subscribe_dummy_handler,
+        attr_name__on_before_unsubscribe_from: on_subscribe_dummy_handler,
+        attr_name__on_after_unsubscribe_from: on_subscribe_dummy_handler,
     }
 
     def emit(self, *av, **kw):
@@ -124,3 +115,61 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
     subscriber_class = type(subscriber_classname, (object,), subscriber_dict)
     emitter_class = type(emitter_classname, (object,), emitter_dict)
     return subscriber_class, emitter_class
+
+
+if __name__ == '__main__':
+    print 'Test'
+    SU, EM = make_subscriber_emitter_classes('Su', 'Em')
+
+    class Base(object):
+        def __init__(self):
+            print 'Base.__init__({})'.format(self)
+            super(Base, self).__init__()
+
+        #def on_before_subscribe_to__Em(self, emitter):
+        #    super(Base, self).on_before_subscribe_to__Em(emitter)
+        #    print 'Base.on_before_subscribe_to__Em({}, {})'.format(self, emitter)
+    
+    class Em(Base, EM):
+        def __init__(self):
+            print 'Em.__init__({})'.format(self)
+            super(Em, self).__init__()
+
+    class Su(Em, SU):
+        def __init__(self):
+            print 'Su.__init__({})'.format(self)
+            super(Su, self).__init__()
+
+        def on_before_subscribe_to__Em(self, emitter):
+            super(Su, self).on_before_subscribe_to__Em(emitter)
+            print 'Su.on_before_subscribe_to__Em({}, {})'.format(self, emitter)
+
+        def on_after_subscribe_to__Em(self, emitter):
+            print 'Su.on_after_subscribe_to__Em({}, {})'.format(self, emitter)
+            super(Su, self).on_after_subscribe_to__Em(emitter)
+
+        def on_before_unsubscribe_from__Em(self, emitter):
+            print 'Su.on_before_unsubscribe_from__Em({}, {})'.format(self, emitter)
+
+        def on_after_unsubscribe_from__Em(self, emitter):
+            print 'Su.on_after_unsubscribe_from__Em({}, {})'.format(self, emitter)
+
+
+    print '\nMake Em instances:'
+    print 1; em1 = Em()
+    print 2; em2 = Em()
+
+    print '\nMake Su instances:'
+    print 1; su1 = Su()
+    print 2; su2 = Su()
+    print 3; su3 = Su()
+
+    print '\nSubscribe:'
+    print 1, 1; su1.subscribe_to__Em(em1)
+    print 2, 2; su2.subscribe_to__Em(em2)
+    print 3, 1; su3.subscribe_to__Em(em1)
+    print 3, 2; su3.subscribe_to__Em(em2)
+    
+
+    print '\nFull reject:'
+    em2.reject_subscribes_from_all__Su()
