@@ -61,9 +61,10 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         for emitter in attr_getter__emitters_list(self)[:]:
             unsubscribe(emitter)
 
-    def event_handler_dummy(self, emitter, *av, **kw):
-        raise EventHandlerIsNotImplemented('Method `{}` is not implemented in class `{}` for object {!r}.'.format(
-            attr_name__on_event, subscriber_classname, self))
+    def event_handler_dummy(self, emitter):
+        raise EventHandlerIsNotImplemented(
+            'Emitter `{!r}` message fail: method `{}` is not implemented in class `{}` for object {!r}.'.format(
+                emitter, attr_name__on_event, subscriber_classname, self))
 
     def on_subscribe_dummy_handler(self, emitter):
         #print 'on_subscribe_dummy_handler({}, {})'.format(self, emitter)
