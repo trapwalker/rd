@@ -25,7 +25,13 @@ class Agent(Object, SubscriberTo__Observer):
             party.include(self)
         log.debug('=========%s', self.party)
 
-    
+    def on_before_subscribe_to__Observer(self, observer):
+        pass
+        # todo: add _self_ into to the all _visible objects_ by _observer_
+
+    def on_after_unsubscribe_from__Observer(self, observer):
+        pass
+        # todo: remove _self_ from all _visible objects_ by _observer_
 
     def as_dict(self):
         d = super(Agent, self).as_dict()
