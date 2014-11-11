@@ -69,6 +69,12 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         #print 'on_subscribe_dummy_handler({}, {})'.format(self, emitter)
         pass
 
+    def iter_by_subscribers(self):
+        return iter(attr_getter__subscribers_list(self))
+
+    def iter_by_emitters(self):
+        return iter(attr_getter__emitters_list(self))
+
     subscriber_dict = {
         '__init__': subscriber__init__,
         'count_of__{}'.format(emitter_name): property(get_emitters_count),
@@ -76,6 +82,7 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         attr_name__unsubscribe_from: unsubscribe_from,
         'unsubscribe_from_all__{}'.format(emitter_name): unsubscribe_all,
         attr_name__on_event: event_handler_dummy,
+        'iter_by__{}'.format(emitter_name): iter_by_emitters,
 
         attr_name__on_before_subscribe_to: on_subscribe_dummy_handler,
         attr_name__on_after_subscribe_to: on_subscribe_dummy_handler,
@@ -96,6 +103,7 @@ def make_subscriber_emitter_classes(subscriber_name, emitter_name):
         'count_of__{}'.format(subscriber_name): property(get_subscribers_count),
         'emit_for__{}'.format(subscriber_name): emit,
         'reject_subscribes_from_all__{}'.format(subscriber_name): reject_subscribers,
+        'iter_by__{}'.format(subscriber_name): iter_by_subscribers,
     }
 
     subscriber_class = type(subscriber_classname, (object,), subscriber_dict)
@@ -156,6 +164,11 @@ if __name__ == '__main__':
     print 3, 1; su3.subscribe_to__Em(em1)
     print 3, 2; su3.subscribe_to__Em(em2)
     
+    print '\nIter by em2 subscribers:'
+    print list(em2.iter_by__Su())
+
+    print '\nIter by su3 emitters:'
+    print list(su3.iter_by__Em())
 
     print '\nFull reject:'
     em2.reject_subscribes_from_all__Su()
