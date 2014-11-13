@@ -48,6 +48,14 @@ $(document).ready(function () {
 
     // создание репазиториев (пока он один)
     repositoryMO = new MapObjectsRepository();
+
+
+    // Попытка создания тулбара
+    bar = L.control.toolbar({
+        closeButton: true,
+        position: 'bottomleft'
+    });
+    myMap.addControl(bar);
 });
 
 var myMap;
