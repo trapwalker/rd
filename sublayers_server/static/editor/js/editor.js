@@ -56,6 +56,24 @@ $(document).ready(function () {
         position: 'bottomleft'
     });
     myMap.addControl(bar);
+
+
+    // Тест окон
+
+    window1 = new Window({
+        parentDiv: 'desktopDiv',
+        name: 'test1',
+        isModal: true,
+        mainDivCSSClass: 'modal-window-welcome'
+    });
+
+    window1.setupDragElement(window1.mainDiv);
+    window1.loadHTML('/static/modal_window/welcomePage.html', function(event) {
+        $('#welcomePageCloseButton').on('click', {modal: window1}, function (event) {
+            event.data.modal.hideWindow();
+        });
+    });
+    window1.showWindow();
 });
 
 var myMap;

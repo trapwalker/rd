@@ -10,10 +10,17 @@ body{
     background-color: black;
     min-width: 1024px;
     min-height: 600px;
+    margin: 0px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+#desktopDiv {
+    position: absolute;
+    height: 100%;
+    width: 100%;
 }
 
 #map {

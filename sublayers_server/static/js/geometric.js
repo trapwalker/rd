@@ -113,3 +113,16 @@ function mulVectVectors2D(a, b) {
     //a × b = {aybz - azby; azbx - axbz; axby - aybx}
     return a.x * b.y - a.y * b.x;
 }
+
+// Установка опций при создании объектов
+function setOptions(src, dest) {
+    for (var key in src) dest[key] = src[key];
+}
+
+// Остановка "всплытия" событий
+function stopEvent(event) {
+    if (event.stopPropagation) // Вариант стандарта W3C:
+        event.stopPropagation();
+    else // Вариант Internet Explorer:
+        event.cancelBubble = true
+}
