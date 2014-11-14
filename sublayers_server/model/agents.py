@@ -26,15 +26,17 @@ class Agent(Object, SubscriberTo__Observer):
         log.debug('=========%s', self.party)
 
     def on_before_subscribe_to__Observer(self, observer):
-        pass
-        # todo: add _self_ into to the all _visible objects_ by _observer_
+        # add _self_ into to the all _visible objects_ by _observer_
+        for vo in observer.iter_by__VisibleObject():
+            vo.agents[self] += 1
 
     def on_after_unsubscribe_from__Observer(self, observer):
-        pass
-        # todo: remove _self_ from all _visible objects_ by _observer_
+        # remove _self_ from all _visible objects_ by _observer_
+        for vo in observer.iter_by__VisibleObject():
+            vo.agents[self] -= 1
 
-    def as_dict(self):
-        d = super(Agent, self).as_dict()
+    def as_dict(self, *av, **kw):
+        d = super(Agent, self).as_dict(*av, **kw)
         d.update(
             login=self.login,
             party=self.party.as_dict(),

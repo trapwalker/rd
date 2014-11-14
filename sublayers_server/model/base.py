@@ -179,13 +179,15 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         self.server.statics.append(self)
         self.server.static_observers.append(self)
 
-    def on_before_subscribe_to__VisibleObject(self, observer):
-        pass
-        # todo: add all subscribed _agents_ into to the all _visible objects_
+    def on_before_subscribe_to__VisibleObject(self, vo):
+        # add all subscribed _agents_ into to the _visible object_
+        for agent in self.iter_by__Agent():
+            vo.agents[agent] += 1
 
-    def on_after_unsubscribe_from__VisibleObject(self, observer):
-        pass
-        # todo: remove all subscribed _agents_ from all _visible objects_
+    def on_after_unsubscribe_from__VisibleObject(self, vo):
+        # remove all subscribed _agents_ from _visible object_
+        for agent in self.iter_by__Agent():
+            vo.agents[agent] -= 1
 
     def init_contact_test(self, obj):
         """Override test to contacts between *self* and *obj*, append them if is."""
