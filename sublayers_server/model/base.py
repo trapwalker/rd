@@ -10,6 +10,7 @@ import messages
 from events import ContactSee
 
 from abc import ABCMeta
+from collections import Counter
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -38,6 +39,9 @@ class Object(object):
         self.uid = id(self)
         self.server.objects[self.uid] = self
         self.is_alive = True
+
+    def __hash__(self):
+        return self.uid
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -102,6 +106,7 @@ class VisibleObject(PointObject, EmitterFor__Observer):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
+        self.agents = Counter()  # Subscribed agents
         self.init_contacts_search()
 
     def on_change(self, comment=None):  # todo: privacy level index
@@ -173,6 +178,16 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         super(Observer, self).__init__(**kw)
         self.server.statics.append(self)
         self.server.static_observers.append(self)
+
+    def on_before_subscribe_to__VisibleObject(self, vo):
+        # add all subscribed _agents_ into to the _visible object_
+        for agent in self.iter_by__Agent():
+            vo.agents[agent] += 1
+
+    def on_after_unsubscribe_from__VisibleObject(self, vo):
+        # remove all subscribed _agents_ from _visible object_
+        for agent in self.iter_by__Agent():
+            vo.agents[agent] -= 1
 
     def init_contact_test(self, obj):
         """Override test to contacts between *self* and *obj*, append them if is."""
