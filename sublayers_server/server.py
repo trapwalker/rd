@@ -33,6 +33,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             #(r"/", MainHandler),
+            (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html"}),
             (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/ws", AgentSocketHandler),
         ]
