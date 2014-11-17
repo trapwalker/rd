@@ -32,7 +32,7 @@ var Window = (function () {
     // Установка DOM-элемента в качестве таскателя для данного окна
     Window.prototype.setupDragElement = function (element) {
         this.mainDiv.draggable({
-            handle: element == this.mainDiv ? null : elemnt,
+            handle: element == this.mainDiv ? null : element,
             containment: "parent",
             snap: true,
             snapMode: 'outer'

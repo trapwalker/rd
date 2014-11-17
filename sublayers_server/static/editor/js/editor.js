@@ -51,15 +51,15 @@ $(document).ready(function () {
 
 
     // Попытка создания тулбара
-    bar = L.control.toolbar({
-        closeButton: true,
-        position: 'bottomleft'
-    });
-    myMap.addControl(bar);
+  //  bar = L.control.toolbar({
+  //      closeButton: true,
+  //      position: 'bottomleft'
+  //  });
+  //  myMap.addControl(bar);
 
 
     // Тест окон
-
+/*
     window1 = new Window({
         parentDiv: 'desktopDiv',
         name: 'test1',
@@ -74,6 +74,25 @@ $(document).ready(function () {
         });
     });
     window1.showWindow();
+*/
+
+    // Тест окон
+
+    window2 = new Window({
+        parentDiv: 'desktopDiv',
+        name: 'editor_toolbar',
+        isModal: false,
+        mainDivCSSClass: 'modal-window-editor-toolbar'
+    });
+
+    window2.loadHTML('/static/modal_window/editorToolbar.html', function(event) {
+        window2.setupDragElement($('#editorToolbarMoveDiv'));
+    });
+
+
+    window2.showWindow();
+
+
 });
 
 var myMap;
