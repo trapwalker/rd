@@ -59,11 +59,11 @@ $(document).ready(function () {
 
 
     // Тест окон
-/*
-    window1 = new Window({
+
+   /* window1 = new Window({
         parentDiv: 'desktopDiv',
         name: 'test1',
-        isModal: true,
+        isModal: false,
         mainDivCSSClass: 'modal-window-welcome'
     });
 
@@ -78,7 +78,7 @@ $(document).ready(function () {
 
     // Тест окон
 
-    window2 = new Window({
+    var window2 = new Window({
         parentDiv: 'desktopDiv',
         name: 'editor_toolbar',
         isModal: false,
@@ -89,8 +89,12 @@ $(document).ready(function () {
         window2.setupDragElement($('#editorToolbarMoveDiv'));
     });
 
-
     window2.showWindow();
+
+    var tb1 = new Toolbar({
+        contentDiv: 'editorToolbarContentDiv',
+        checkTypeMarkers: true
+    });
 
 
 });

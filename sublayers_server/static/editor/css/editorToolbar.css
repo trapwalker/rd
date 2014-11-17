@@ -28,6 +28,8 @@
     height: 15px;
     top: 0px;
 
+    cursor: default;
+
 }
 
 #editorToolbarContentDiv {
