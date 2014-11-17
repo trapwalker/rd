@@ -78,6 +78,11 @@ var CarMarkerList = (function () {
             this.addToBackLight(aCar);
 
         aCar.pathSVG = [];
+
+        // Линия от машинки к юзерКар
+        aCar.debugLine = L.polyline([aCar.marker.getLatLng(),userCarMarker.marker.getLatLng()], {color: 'red'});
+        if(cookieStorage.optionsShowDebugLine)// если рисовать линию
+           aCar.debugLine.addTo(this.options._map);
     };
 
     // Добавление машинки в список выделенных
@@ -96,6 +101,10 @@ var CarMarkerList = (function () {
             if (car.pathSVG)
                 for(var i in car.pathSVG)
                     controllers.fireControl.deleteCarInSector(car.pathSVG[i]);
+
+            // Удаление линии машинки с карты
+            if(this.options._map.hasLayer(car.debugLine))
+                this.options._map.removeLayer(car.debugLine);
 
             car.unbindOwner();
             this.options._map.removeLayer(car.marker);
@@ -136,6 +145,11 @@ var CarMarkerList = (function () {
                 // Отрисовка радара
                 //if (controllers.fireControl.getVisible())
                     this.drawCarInSector(car, tempPoint);
+
+                // отрисовка линий
+                if(cookieStorage.optionsShowDebugLine) {// если нужно рисовать
+                    car.debugLine.setLatLngs([car.marker.getLatLng(), userCarMarker.marker.getLatLng()]);
+                }
             }
         }
     };

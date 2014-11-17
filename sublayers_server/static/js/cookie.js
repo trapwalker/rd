@@ -18,6 +18,7 @@ var LocalCookieStorage = (function(){
             optionsSelectAnybody: false,
             levelZoomForVisibleLabel: 5,
             optionsShowID: false,
+            optionsShowDebugLine: true,
             optionsFriendlyFireEnabled: true
         };
 
@@ -42,6 +43,7 @@ var LocalCookieStorage = (function(){
         this.levelZoomForVisibleLabel = defOptions.levelZoomForVisibleLabel;
         this.optionsShowID = defOptions.optionsShowID;
         this.optionsFriendlyFireEnabled = defOptions.optionsFriendlyFireEnabled;
+        this.optionsShowDebugLine = defOptions.optionsShowDebugLine;
 
         // Состояние тягания карты. dragging можно делать только когда машинка мертва
         this.optionsDraggingMap = false;
@@ -72,6 +74,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('levelZoomForVisibleLabel', this.levelZoomForVisibleLabel);
         this.setCookie('optionsShowID', (this.optionsShowID ? 1 : 0));
         this.setCookie('optionsFriendlyFireEnabled', (this.optionsFriendlyFireEnabled ? 1 : 0));
+        this.setCookie('optionsShowDebugLine', (this.optionsShowDebugLine ? 1 : 0));
     };
 
 
@@ -159,6 +162,11 @@ var LocalCookieStorage = (function(){
         var optionsShowID = this.getCookie('optionsShowID');
         if (optionsShowID !== undefined)
             this.optionsShowID = (optionsShowID == 1);
+
+        // optionsShowDebugLine
+        var optionsShowDebugLine = this.getCookie('optionsShowDebugLine');
+        if (optionsShowDebugLine !== undefined)
+            this.optionsShowDebugLine = (optionsShowDebugLine == 1);
 
         // optionsFriendlyFireEnabled
         var optionsFriendlyFireEnabled = this.getCookie('optionsFriendlyFireEnabled');
@@ -269,6 +277,10 @@ var LocalCookieStorage = (function(){
         return (myMap.getZoom() > this.levelZoomForVisibleLabel);
     };
 
+    // optionsShowDebugLine
+    LocalCookieStorage.prototype.optionsShowDebugLine = function(){
+        return this.optionsShowDebugLine;
+    };
 
     return LocalCookieStorage;
 })();

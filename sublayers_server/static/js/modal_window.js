@@ -103,6 +103,7 @@ var ModalWindow = (function () {
         optionsLevelForVisibleLabel.value = cookieStorage.levelZoomForVisibleLabel;
         optionsShowID.checked = cookieStorage.optionsShowID;
         optionsFriendlyFireEnabled.checked = cookieStorage.optionsFriendlyFireEnabled;
+        optionsShowDebugLine.checked = cookieStorage.optionsShowDebugLine;
     };
 
     ModalWindow.prototype.modalOptionsHide = function(saveOptions){
@@ -149,6 +150,24 @@ var ModalWindow = (function () {
             // optionsShowID переделать шапку, в зависимости от результата
             cookieStorage.optionsShowID = optionsShowID.checked ? true : false;
             setTitleOnPage();
+
+            // optionsShowDebugLine - выключить все линии всех машинок
+            if (optionsShowDebugLine.checked != cookieStorage.optionsShowDebugLine) {
+                for (var i in listMapObject.objects)
+                    if (listMapObject.exist(i)) {
+                        // пересчёт координат
+                        var car = listMapObject.objects[i];
+                        if(car.debugLine)
+                        {
+                            if(optionsShowDebugLine.checked) // добавить линию на карту
+                                car.debugLine.addTo(myMap);
+                            else
+                                myMap.removeLayer(car.debugLine);
+                        }
+
+                    }
+            }
+            cookieStorage.optionsShowDebugLine = optionsShowDebugLine.checked ? true : false;
 
 
         }
