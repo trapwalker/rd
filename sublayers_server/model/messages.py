@@ -132,6 +132,8 @@ class Contact(See):
     pass
 
 
+# todo: add PassAway contact class
+
 class Update(See):
 
     def __init__(self, time=None, **kw):
