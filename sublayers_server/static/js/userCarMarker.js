@@ -531,8 +531,8 @@ var UserCarMarker = (function () {
         // отрисовка линий
         if (cookieStorage.optionsShowDebugLine) {// если нужно рисовать
             if (user.userCar.debugLines)
-                for (var line in user.userCar.debugLines) {
-                    if(line.plln)
+                for (var i=0; i < user.userCar.debugLines.length; i++) {
+                    var line = user.userCar.debugLines[i];
                     line.plln.setLatLngs([line.m1.getLatLng(), line.m2.getLatLng()]);
                 }
         }
@@ -543,7 +543,7 @@ var UserCarMarker = (function () {
         var carO;
         var m1, m2;
         if(listMapObject.exist(objID))
-            carO= listMapObject.objects[objID];
+            carO = listMapObject.objects[objID];
         else {
             alert('Ошибка! Объект контакта не найден!');
             return;
@@ -551,13 +551,13 @@ var UserCarMarker = (function () {
         m1 = this.marker;
         m2 = carO.marker;
 
-        var plln = L.polyline([m1.getLatLng(),m2.getLatLng()], {color: 'red'});
+        var plln = L.polyline([m1.getLatLng(), m2.getLatLng()], {color: 'red'});
 
-        user.userCar.debugLines[objID] = {
+        user.userCar.debugLines.push({
             m1: m1,
             m2: m2,
             plln: plln
-        };
+        });
         if(cookieStorage.optionsShowDebugLine)// если рисовать линию
             plln.addTo(myMap);
 

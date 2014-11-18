@@ -126,31 +126,31 @@ var CarMarkerList = (function () {
         }
         m2 = carO.marker;
 
-
-        // добавление линии в субъект
-
         var plln = L.polyline([m1.getLatLng(),m2.getLatLng()], {color: 'red'});
 
-        carS.debugLines[objID] = ({
+        // добавление линии в субъект
+        carS.debugLines.push({
             m1: m1,
             m2: m2,
             plln: plln
         });
+
         if(cookieStorage.optionsShowDebugLine)// если рисовать линию
             plln.addTo(this.options._map);
-
 
     };
 
     CarMarkerList.prototype.delContactLine = function(subjID, objID){
-        var carS;
+        var lines; // список линий, полученный из какого либо источника
+        var objM;
+
         if (user.userCar.ID == subjID) {
             //userCarMarker.delContactLine(objID);
-            carS = user.userCar;
+            lines = user.userCar.debugLines;
         }
         else {
             if (listMapObject.exist(subjID)) {
-                carS = listMapObject.objects[subjID];
+                lines = listMapObject.objects[subjID].debugLines;
             }
             else {
                 alert('Ошибка! Субъект контакта не найден!');
@@ -158,14 +158,25 @@ var CarMarkerList = (function () {
             }
         }
 
-        if (carS.debugLines[objID] != null) {
-            var line = carS.debugLines[objID];
-            line.m1 = null;
-            line.m1 = null;
-            if (myMap.hasLayer(line.plln))
-                myMap.removeLayer(line.plln);
-            delete line.plln;
-            carS.debugLines[objID] = null;
+        if(listMapObject.exist(objID))
+            objM = listMapObject.objects[objID].marker;
+        else {
+            alert('Ошибка! Объект выхода из контакта не найден!');
+            return;
+        }
+
+        for(var i = 0; i< lines.length; i++){
+            var line = lines[i];
+            if(line.m2 == objM){
+                // удалить линию
+                line.m1 = null;
+                line.m1 = null;
+                if (myMap.hasLayer(line.plln))
+                    myMap.removeLayer(line.plln);
+                delete line.plln;
+                // сделать сплайс в массиве
+                lines.splice(i, 1);
+            }
         }
 
 
@@ -236,7 +247,8 @@ var CarMarkerList = (function () {
 
                 // отрисовка линий
                 if (cookieStorage.optionsShowDebugLine) {// если нужно рисовать
-                    for (var line in car.debugLines) {
+                    for (var j = 0; j < car.debugLines.length; j++) {
+                        var line = car.debugLines[j];
                         line.plln.setLatLngs([line.m1.getLatLng(), line.m2.getLatLng()]);
                     }
 

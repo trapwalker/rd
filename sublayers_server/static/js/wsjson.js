@@ -202,7 +202,11 @@ function receiveMesFromServ(data){
                     );
 
                 // отрисовка линии от объекта к субъекту
-                carMarkerList.addContactLine(event.subject_id, event.object.uid);
+                // TODO: сделано специально, иначе нужно пересматривать ВСЮ архитектуру клиента
+                setTimeout(function () {
+                    carMarkerList.addContactLine(event.subject_id, event.object.uid);
+                }, 500);
+
             }
             if (event.cls === "Update") {
                 // Update
@@ -253,7 +257,10 @@ function receiveMesFromServ(data){
                 initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible, event.cars[0].role);
             }
             if (event.cls === "Out") {
-                // out
+                // TODO: не удалять машинку сразу, так как её может видеть участник пати
+                // стирание линий
+                carMarkerList.delContactLine(event.subject_id, event.object_id);
+                // удаление машинки
                 carMarkerList.del(event.object_id);
             }
             if (event.cls === "ChatMessage") {

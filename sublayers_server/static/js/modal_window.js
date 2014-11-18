@@ -153,11 +153,22 @@ var ModalWindow = (function () {
 
             // optionsShowDebugLine - выключить все линии всех машинок
             if (optionsShowDebugLine.checked != cookieStorage.optionsShowDebugLine) {
+                // включить все линии на своей машинке
+                for(var k = 0; k < user.userCar.debugLines.length; k++){
+                    var uline = user.userCar.debugLines[k];
+                    if (optionsShowDebugLine.checked) // добавить линию на карту
+                        uline.plln.addTo(myMap);
+                    else
+                        uline.plln.removeLayer(car.debugLine);
+                }
+                // TODO: Тут возможна ошибка с перебором
+                // включить линии для не своей машинки
                 for (var i in listMapObject.objects)
                     if (listMapObject.exist(i)) {
                         // пересчёт координат
                         var car = listMapObject.objects[i];
-                        for (var line in car.debugLines) {
+                        for (var j = 0; j < car.debugLines.length; j++) {
+                            var line = car.debugLines[j];
                             if (optionsShowDebugLine.checked) // добавить линию на карту
                                 line.plln.addTo(myMap);
                             else
