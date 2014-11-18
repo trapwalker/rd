@@ -3,18 +3,19 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import Object, SubscriberTo__Observer
+from base import Object
 from agent_api import make_push_package
 from utils import serialize
+from collections import Counter
 
 
-class Agent(Object, SubscriberTo__Observer):
+class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 
     def __init__(self, login, connection=None, party=None, **kw):
         log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
-        self.observers = []
+        self.observers = Counter()
         self.login = login
         self._connection = connection
         # todo: normalize and check login
@@ -30,17 +31,19 @@ class Agent(Object, SubscriberTo__Observer):
         # add _self_ into to the all _visible objects_ by _observer_
         # todo: send contact (with observer) message to agent
         # todo: send contacts (with observed VO) messages to agent
-        observer.agents[self] += 1
-        for vo in observer.iter_by__VisibleObject():
-            vo.agents[self] += 1
+        self.observers[observer] += 1
+        observer.watched_agents[self] += 1
+        observer.subscribed_agents[self] += 1
+        for vo in observer.visible_objects:
+            vo.subscribed_agents[self] += 1
 
-
-    def on_after_unsubscribe_from__Observer(self, observer):
+    def drop_observer(self, observer):
         # remove _self_ from all _visible objects_ by _observer_
-        for vo in observer.iter_by__VisibleObject():
-            vo.agents[self] -= 1
-
-        observer.agents[self] -= 1
+        for vo in observer.visible_objects:
+            vo.subscribed_agents[self] -= 1
+        observer.subscribed_agents[self] -= 1
+        observer.watched_agents[self] -= 1
+        self.observers[observer] -= 1
         # todo: send contacts-off (with observed VO) messages to agent
         # todo: send contact-off (with observer) message to agent
 
@@ -63,27 +66,31 @@ class Agent(Object, SubscriberTo__Observer):
     def append_car(self, car):  # specific
         if car not in self.cars:
             self.cars.append(car)
-        car.agent = self
-        self.subscribe_to__Observer(car)
+            car.agent = self
+            self.add_observer(car)
 
     def drop_car(self, car):
-        if car not in self.cars:
-            return
-        self.cars.remove(car)
-        self.unsubscribe_from__Observer(car)
+        if car in self.cars:
+            self.drop_observer(car)
+            car.agent = None
+            self.cars.remove(car)
 
-    def on_message(self, connection, messahe):
+    def on_message(self, connection, message):
         pass
 
     def on_disconnect(self, connection):
         pass
 
-    def on_event_from__Observer(self, emitter, message):
+    def send_update(self, message):
         """
-        @param sublayers_server.model.units.Observer emitter: Message emitter
         @param sublayers_server.model.messages.UnitMessage message: Incoming message
         """
         self.send_message_to_client(message)
+        # todo: optimize
+
+    def send_contact(self, message):
+        self.send_message_to_client(message)
+        # todo: optimize
 
     def send_message_to_client(self, message):
         """

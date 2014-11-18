@@ -3,26 +3,16 @@
 import logging
 log = logging.getLogger(__name__)
 
-from subscription_protocol import make_subscriber_emitter_classes
-from utils import get_uid, serialize
+#from utils import get_uid, serialize
 from inventory import Inventory
 import messages
 from events import ContactSee
 
 from abc import ABCMeta
-from collections import Counter
+from counterset import CounterSet
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
-
-
-SubscriberTo__VisibleObject, EmitterFor__Observer = make_subscriber_emitter_classes(
-    subscriber_name='Observer',
-    emitter_name='VisibleObject')
-
-SubscriberTo__Observer, EmitterFor__Agent = make_subscriber_emitter_classes(
-    subscriber_name='Agent',
-    emitter_name='Observer')
 
 
 class Object(object):
@@ -98,24 +88,24 @@ class PointObject(Object):
         self._position = position
 
 
-class VisibleObject(PointObject, EmitterFor__Observer):
+class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-
     def __init__(self, **kw):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        self.agents = Counter()  # Subscribed agents
+        self.subscribed_agents = CounterSet()
+        self.subscribed_observers = CounterSet()
         self.init_contacts_search()
 
-    def on_change(self, comment=None):  # todo: privacy level index
-        # todo: emit update message
+    def on_update(self, comment=None):  # todo: privacy level index
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
-        for agent in self.agents.keys():
-            pass
-            #self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
-
+        for agent in self.subscribed_agents:
+            agent.send_update(messages.Update(
+                subject=self, obj=self,
+                comment='message for subscriber: {}'.format(comment)
+            ))
 
     def contacts_refresh(self):
         self.contacts_clear()
@@ -153,6 +143,8 @@ class VisibleObject(PointObject, EmitterFor__Observer):
 
     def delete(self):
         self.contacts_clear()
+        # todo: send 'out' message for all subscribers
+        # todo: test to subscription leaks
         super(VisibleObject, self).delete()
 
 
@@ -174,23 +166,14 @@ class Heap(VisibleObject):
         super(Heap, self).delete()
 
 
-class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
+class Observer(VisibleObject):
 
     def __init__(self, observing_range=0.0, **kw):
         self._r = observing_range
         super(Observer, self).__init__(**kw)
+        self.watched_agents = CounterSet()
         self.server.statics.append(self)
         self.server.static_observers.append(self)
-
-    def on_before_subscribe_to__VisibleObject(self, vo):
-        # add all subscribed _agents_ into to the _visible object_
-        for agent in self.iter_by__Agent():
-            vo.agents[agent] += 1
-
-    def on_after_unsubscribe_from__VisibleObject(self, vo):
-        # remove all subscribed _agents_ from _visible object_
-        for agent in self.iter_by__Agent():
-            vo.agents[agent] -= 1
 
     def init_contact_test(self, obj):
         """Override test to contacts between *self* and *obj*, append them if is."""
@@ -198,17 +181,26 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         if self.can_see(obj):
             ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
 
-    def on_contact_in(self, obj):
-        pass
+    def on_contact_in(self, vo):
+        """
+        @param VisibleObject vo: object of contact
+        """
+        # todo: on_contact_in/out: add 'event' param
+        # add all subscribed _agents_ into to the _visible object_
+        vo.subscribed_agents.update(self.watched_agents)
+        for agent in self.watched_agents:
+            # todo: Event.as_message() method add
+            agent.send_contact(messages.Contact(subject=self, obj=vo,))
 
-    def on_contact_out(self, obj):
-        pass
+        # todo: send 'contact' messages
 
-    def on_change(self, comment=None):
-        super(Observer, self).on_change(comment)
-        self.emit_for__Agent(
-            message=messages.Update(subject=self, obj=self, comment='message for owner: {}'.format(comment))
-        )
+    def on_contact_out(self, vo):
+        """
+        @param VisibleObject vo: object of closed contact
+        """
+        # remove all subscribed _agents_ from _visible object_
+        vo.subscribed_agents.subtract(self.watched_agents)
+        # todo: send 'contact-out' messages
 
     @property
     def r(self):
