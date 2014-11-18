@@ -27,13 +27,21 @@ class Agent(Object, SubscriberTo__Observer):
 
     def on_before_subscribe_to__Observer(self, observer):
         # add _self_ into to the all _visible objects_ by _observer_
+        # todo: send contact (with observer) message to agent
+        # todo: send contacts (with observed VO) messages to agent
+        observer.agents[self] += 1
         for vo in observer.iter_by__VisibleObject():
             vo.agents[self] += 1
+
 
     def on_after_unsubscribe_from__Observer(self, observer):
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.iter_by__VisibleObject():
             vo.agents[self] -= 1
+
+        observer.agents[self] -= 1
+        # todo: send contacts-off (with observed VO) messages to agent
+        # todo: send contact-off (with observer) message to agent
 
     def as_dict(self, *av, **kw):
         d = super(Agent, self).as_dict(*av, **kw)

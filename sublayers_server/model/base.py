@@ -112,7 +112,10 @@ class VisibleObject(PointObject, EmitterFor__Observer):
     def on_change(self, comment=None):  # todo: privacy level index
         # todo: emit update message
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
-        self.emit_for__Observer()  # todo: arguments?
+        for agent in self.agents.keys():
+            pass
+            #self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
+
 
     def contacts_refresh(self):
         self.contacts_clear()
@@ -206,9 +209,6 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         self.emit_for__Agent(
             message=messages.Update(subject=self, obj=self, comment='message for owner: {}'.format(comment))
         )
-
-    def on_event_from__VisibleObject(self, emitter, *av, **kw):
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
 
     @property
     def r(self):
