@@ -14,6 +14,7 @@ class Agent(Object, SubscriberTo__Observer):
     def __init__(self, login, connection=None, party=None, **kw):
         log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
+        self.observers = []
         self.login = login
         self._connection = connection
         # todo: normalize and check login
@@ -25,7 +26,7 @@ class Agent(Object, SubscriberTo__Observer):
             party.include(self)
         log.debug('=========%s', self.party)
 
-    def on_before_subscribe_to__Observer(self, observer):
+    def add_observer(self, observer):
         # add _self_ into to the all _visible objects_ by _observer_
         # todo: send contact (with observer) message to agent
         # todo: send contacts (with observed VO) messages to agent
