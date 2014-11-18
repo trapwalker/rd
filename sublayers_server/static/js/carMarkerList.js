@@ -79,10 +79,15 @@ var CarMarkerList = (function () {
 
         aCar.pathSVG = [];
 
-        // Линия от машинки к юзерКар
+        // Линии от машинки к юзер Кар
+
+        /*
         aCar.debugLine = L.polyline([aCar.marker.getLatLng(),userCarMarker.marker.getLatLng()], {color: 'red'});
         if(cookieStorage.optionsShowDebugLine)// если рисовать линию
            aCar.debugLine.addTo(this.options._map);
+           */
+        // Инициализация списка отладочных линий
+        aCar.debugLines = [];
     };
 
     // Добавление машинки в список выделенных
@@ -90,6 +95,80 @@ var CarMarkerList = (function () {
         if (!car.backLight) {
             car.backLight = new BackLight({_map: this.options._map});
         }
+    };
+
+    CarMarkerList.prototype.addContactLine = function(subjID, objID){
+        var carS;
+        var m1, m2;
+        if(user.userCar.ID == subjID) {
+            userCarMarker.addContactLine(objID);
+            //carS = user.userCar;
+            //m1 = userCarMarker.marker;
+            return;
+        }
+        else {
+            if (listMapObject.exist(subjID)) {
+                carS = listMapObject.objects[subjID];
+                m1 = carS.marker;
+            }
+            else {
+                alert('Ошибка! Субъект контакта не найден!');
+                return;
+            }
+        }
+
+        var carO;
+        if(listMapObject.exist(objID))
+            carO= listMapObject.objects[objID];
+        else {
+            alert('Ошибка! Объект контакта не найден!');
+            return;
+        }
+        m2 = carO.marker;
+
+
+        // добавление линии в субъект
+
+        var plln = L.polyline([m1.getLatLng(),m2.getLatLng()], {color: 'red'});
+
+        carS.debugLines[objID] = ({
+            m1: m1,
+            m2: m2,
+            plln: plln
+        });
+        if(cookieStorage.optionsShowDebugLine)// если рисовать линию
+            plln.addTo(this.options._map);
+
+
+    };
+
+    CarMarkerList.prototype.delContactLine = function(subjID, objID){
+        var carS;
+        if (user.userCar.ID == subjID) {
+            //userCarMarker.delContactLine(objID);
+            carS = user.userCar;
+        }
+        else {
+            if (listMapObject.exist(subjID)) {
+                carS = listMapObject.objects[subjID];
+            }
+            else {
+                alert('Ошибка! Субъект контакта не найден!');
+                return;
+            }
+        }
+
+        if (carS.debugLines[objID] != null) {
+            var line = carS.debugLines[objID];
+            line.m1 = null;
+            line.m1 = null;
+            if (myMap.hasLayer(line.plln))
+                myMap.removeLayer(line.plln);
+            delete line.plln;
+            carS.debugLines[objID] = null;
+        }
+
+
     };
 
     // Удаление машинки
@@ -103,8 +182,17 @@ var CarMarkerList = (function () {
                     controllers.fireControl.deleteCarInSector(car.pathSVG[i]);
 
             // Удаление линии машинки с карты
-            if(this.options._map.hasLayer(car.debugLine))
-                this.options._map.removeLayer(car.debugLine);
+            //if(this.options._map.hasLayer(car.debugLine))
+            //    this.options._map.removeLayer(car.debugLine);
+            // Удаление всех линий машинки с карты
+
+            for(var line in car.debugLines){
+                if(this.options._map.hasLayer(line.plln))
+                    this.options._map.removeLayer(line.plln);
+                line.m1 = null;
+                line.m2 = null;
+            }
+
 
             car.unbindOwner();
             this.options._map.removeLayer(car.marker);
@@ -147,8 +235,11 @@ var CarMarkerList = (function () {
                     this.drawCarInSector(car, tempPoint);
 
                 // отрисовка линий
-                if(cookieStorage.optionsShowDebugLine) {// если нужно рисовать
-                    car.debugLine.setLatLngs([car.marker.getLatLng(), userCarMarker.marker.getLatLng()]);
+                if (cookieStorage.optionsShowDebugLine) {// если нужно рисовать
+                    for (var line in car.debugLines) {
+                        line.plln.setLatLngs([line.m1.getLatLng(), line.m2.getLatLng()]);
+                    }
+
                 }
             }
         }

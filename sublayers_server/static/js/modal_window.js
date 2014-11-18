@@ -157,14 +157,12 @@ var ModalWindow = (function () {
                     if (listMapObject.exist(i)) {
                         // пересчёт координат
                         var car = listMapObject.objects[i];
-                        if(car.debugLine)
-                        {
-                            if(optionsShowDebugLine.checked) // добавить линию на карту
-                                car.debugLine.addTo(myMap);
+                        for (var line in car.debugLines) {
+                            if (optionsShowDebugLine.checked) // добавить линию на карту
+                                line.plln.addTo(myMap);
                             else
-                                myMap.removeLayer(car.debugLine);
+                                line.plln.removeLayer(car.debugLine);
                         }
-
                     }
             }
             cookieStorage.optionsShowDebugLine = optionsShowDebugLine.checked ? true : false;

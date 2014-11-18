@@ -200,6 +200,9 @@ function receiveMesFromServ(data){
                         )
                             .addTo(myMap)
                     );
+
+                // отрисовка линии от объекта к субъекту
+                carMarkerList.addContactLine(event.subject_id, event.object.uid);
             }
             if (event.cls === "Update") {
                 // Update
@@ -634,6 +637,9 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
     // Установка текста в верху страницы - вывод своего ника и своей пати
     setTitleOnPage();
+
+    // Установка своих линий
+    user.userCar.debugLines = [];
 }
 
 
