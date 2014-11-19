@@ -103,7 +103,7 @@ class VisibleObject(PointObject):
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             agent.send_update(messages.Update(
-                subject=self, obj=self,
+                subj=self,
                 comment='message for subscriber: {}'.format(comment)
             ))
 
@@ -187,20 +187,22 @@ class Observer(VisibleObject):
         """
         # todo: on_contact_in/out: add 'event' param
         # add all subscribed _agents_ into to the _visible object_
-        vo.subscribed_agents.update(self.watched_agents)
+        # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
+            is_first = vo.subscribed_agents.inc(agent) == 1
+            agent.send_contact(messages.See(subj=self, obj=vo, is_boundary=True, is_first=is_first))
             # todo: Event.as_message() method add
-            agent.send_contact(messages.Contact(subject=self, obj=vo,))
-
-        # todo: send 'contact' messages
 
     def on_contact_out(self, vo):
         """
         @param VisibleObject vo: object of closed contact
         """
         # remove all subscribed _agents_ from _visible object_
-        vo.subscribed_agents.subtract(self.watched_agents)
-        # todo: send 'contact-out' messages
+        # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
+        for agent in self.watched_agents:
+            is_last = vo.subscribed_agents.dec(agent) == 0
+            agent.send_contact(messages.Out(subj=self, obj=vo, is_boundary=True, is_last=is_last))
+            # todo: Event.as_message() method add
 
     @property
     def r(self):

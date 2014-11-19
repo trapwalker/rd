@@ -11,7 +11,7 @@ from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
 from utils import serialize
-from messages import ChatMessage, InitMessage
+import messages
 import tasks
 from weapons import SectoralWeapon
 from console import Shell
@@ -57,7 +57,7 @@ class AgentAPI(API):
 
     def send_init_package(self):
         if self.agent.connection:
-            self.agent.connection.write_message(serialize(make_push_package([InitMessage(agent=self.agent)])))
+            self.agent.connection.write_message(serialize(make_push_package([messages.Init(agent=self.agent)])))
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
@@ -145,7 +145,7 @@ class AgentAPI(API):
         app = self.agent.connection.application
         chat = app.chat
         msg_id = len(chat)  # todo: get "client_id" from client message info
-        msg = ChatMessage(author=self.agent, text=text, client_id=msg_id)
+        msg = messages.Chat(author=self.agent, text=text, client_id=msg_id)
         chat.append(msg)
 
         push_data = serialize(make_push_package([msg]))
