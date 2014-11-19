@@ -19,3 +19,13 @@ class CounterSet(Counter):
             del self[k]
         else:
             super(CounterSet, self).__setitem__(k, v)
+
+    def inc(self, key, step=1):
+        v = self[key] + step
+        self[key] = v
+        return v
+
+    def dec(self, key, step=1):
+        v = self[key] - step
+        self[key] = v
+        return v
