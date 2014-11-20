@@ -99,11 +99,12 @@ class VisibleObject(PointObject):
         self.subscribed_observers = CounterSet()
         self.init_contacts_search()
 
-    def on_update(self, comment=None):  # todo: privacy level index
+    def on_update(self, time, comment=None):  # todo: privacy level index
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             agent.send_update(messages.Update(
-                subj=self,
+                time=time,
+                obj=self,
                 comment='message for subscriber: {}'.format(comment)
             ))
 
@@ -181,28 +182,32 @@ class Observer(VisibleObject):
         if self.can_see(obj):
             ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
 
-    def on_contact_in(self, vo):
+    def on_contact_in(self, time, obj, is_boundary, comment=None):
         """
-        @param VisibleObject vo: object of contact
+        @param float time: contact time
+        @param VisibleObject obj: contacted object
+        @param bool is_boundary: True if this contact is visible range penetration
+        @param str comment: debug comment
         """
         # todo: on_contact_in/out: add 'event' param
         # add all subscribed _agents_ into to the _visible object_
         # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
-            is_first = vo.subscribed_agents.inc(agent) == 1
-            agent.send_contact(messages.See(subj=self, obj=vo, is_boundary=True, is_first=is_first))
-            # todo: Event.as_message() method add
+            is_first = obj.subscribed_agents.inc(agent) == 1
+            agent.send_contact(messages.See(time=time, subj=self, obj=obj, is_boundary=is_boundary, is_first=is_first))
 
-    def on_contact_out(self, vo):
+    def on_contact_out(self, time, obj, is_boundary, comment=None):
         """
-        @param VisibleObject vo: object of closed contact
+        @param float time: contact time
+        @param VisibleObject obj: contacted object
+        @param bool is_boundary: True if this contact is visible range penetration
+        @param str comment: debug comment
         """
         # remove all subscribed _agents_ from _visible object_
         # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
-            is_last = vo.subscribed_agents.dec(agent) == 0
-            agent.send_contact(messages.Out(subj=self, obj=vo, is_boundary=True, is_last=is_last))
-            # todo: Event.as_message() method add
+            is_last = obj.subscribed_agents.dec(agent) == 0
+            agent.send_contact(messages.Out(time=time, subj=self, obj=obj, is_boundary=is_boundary, is_last=is_last))
 
     @property
     def r(self):

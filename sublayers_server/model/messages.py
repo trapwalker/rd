@@ -42,11 +42,11 @@ class Message(object):
 class Init(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
 
-    def __init__(self, agent, time=None, **kw):
+    def __init__(self, agent, time, **kw):
         """
         @param sublayers_server.model.agents.Agent agent
         """
-        if not time:
+        if time is None:
             time = agent.server.get_time()
         super(Init, self).__init__(time=time, **kw)
         self.agent = agent
@@ -68,7 +68,7 @@ class Chat(Message):
         @param sublayers_server.model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
-        if not time:
+        if time is None:
             time = author.server.get_time()
         super(Chat, self).__init__(time=time, **kw)
         self.author = author
@@ -88,11 +88,11 @@ class Chat(Message):
 class Subjective(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}>'
 
-    def __init__(self, subj, time=None, **kw):
+    def __init__(self, subj, time, **kw):
         """
         @param sublayers_server.model.units.Unit subj: Sender of message
         """
-        if not time:
+        if time is None:
             time = subj.server.get_time()
             # todo: check time
         super(Subjective, self).__init__(time=time, **kw)
@@ -104,8 +104,18 @@ class Subjective(Message):
         return d
 
 
-class Update(Subjective):
-    pass
+class Update(Message):
+    def __init__(self, obj, **kw):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        """
+        super(Update, self).__init__(**kw)
+        self.obj = obj
+
+    def as_dict(self):
+        d = super(Update, self).as_dict()
+        d.update(object=self.obj.as_dict())
+        return d
 
 
 class Contact(Subjective):

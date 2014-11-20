@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 from functools import total_ordering
 
 from utils import time_log_format
-import messages
 
 
 @total_ordering
@@ -113,13 +112,13 @@ class Contact(Subjective):
         try:
             #log.debug('EVENT %s before remove from %s [%s]', self, self.subj, self.subj.contacts)
             self.subj.contacts.remove(self)
-        except:
-            log.exception('`Subjective contacts clearing: subj=%(subj)s, comment=%(comment)s',
+        except ValueError:
+            log.exception('Subjective contacts clearing: subj=%(subj)s, comment=%(comment)s',
                           dict(subj=self.subj, comment=self.comment))
 
         try:
             self.obj.contacts.remove(self)
-        except:
+        except ValueError:
             log.exception('Contact contacts clearing: obj=%(obj)s, comment=%(comment)s',
                           dict(obj=self.obj, comment=self.comment))
                           
@@ -128,27 +127,14 @@ class ContactSee(Contact):
 
     def perform(self):
         super(ContactSee, self).perform()
-        subj = self.subj
-        subj.subscribe_to__VisibleObject(self.obj)
-        subj.emit_for__Agent(message=messages.Contact(
-            time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
-        subj.on_contact_in(self.obj)
-        # todo: Make 'as_message' method of Event class
+        self.subj.on_contact_in(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
 
 
 class ContactOut(Contact):
 
     def perform(self):
         super(ContactOut, self).perform()
-        try:
-            self.subj.unsubscribe_from__VisibleObject(self.obj)
-        except ValueError:
-            log.exception(
-                'ContactOut unsubscribe_from__VisibleObject error: subj=%(subj)s, obj=%(obj)s, comment=%(comment)s',
-                dict(subj=self.subj, obj=self.obj, comment=self.comment))
-        self.subj.emit_for__Agent(message=messages.Out(
-            time=self.time, subject=self.subj, obj=self.obj, comment=self.comment))
-        self.subj.on_contact_out(self.obj)
+        self.subj.on_contact_out(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
 
 
 class Callback(Event):
