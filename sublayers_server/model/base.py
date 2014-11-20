@@ -96,7 +96,8 @@ class VisibleObject(PointObject):
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
         self.subscribed_agents = CounterSet()
-        self.subscribed_observers = CounterSet()
+        self.subscribed_observers = []
+        # todo: 'delete' method fix
         self.init_contacts_search()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
@@ -173,6 +174,7 @@ class Observer(VisibleObject):
         self._r = observing_range
         super(Observer, self).__init__(**kw)
         self.watched_agents = CounterSet()
+        self.visible_objects = []
         self.server.statics.append(self)
         self.server.static_observers.append(self)
 
@@ -189,7 +191,8 @@ class Observer(VisibleObject):
         @param bool is_boundary: True if this contact is visible range penetration
         @param str comment: debug comment
         """
-        # todo: on_contact_in/out: add 'event' param
+        self.visible_objects.append(obj)
+        obj.subscribed_observers.append(self)
         # add all subscribed _agents_ into to the _visible object_
         # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
@@ -208,6 +211,9 @@ class Observer(VisibleObject):
         for agent in self.watched_agents:
             is_last = obj.subscribed_agents.dec(agent) == 0
             agent.send_contact(messages.Out(time=time, subj=self, obj=obj, is_boundary=is_boundary, is_last=is_last))
+
+        self.visible_objects.remove(obj)
+        obj.subscribed_observers.remove(self)
 
     @property
     def r(self):
