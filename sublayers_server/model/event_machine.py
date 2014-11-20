@@ -13,6 +13,7 @@ from time import sleep
 from threading import Thread
 from pprint import pprint as pp
 from itertools import chain
+from collections import deque
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -30,6 +31,7 @@ class Server(object):
         self.motions = []  # Active motion tasks  # todo: GEO-index
         self.static_observers = []  # todo: GEO-index
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
+        self.message_queue = deque()
         self.agents = {}  # Agents dictionary
         # todo: Typehinting
         self.start_time = None
@@ -58,6 +60,12 @@ class Server(object):
     @staticmethod
     def get_time():
         return get_time()
+
+    def post_message(self, message):
+        """
+        @param sublayers_server.model.messages.Message message: message to sent
+        """
+        self.message_queue.append(message)
 
     def post_event(self, event):
         """
@@ -93,8 +101,12 @@ class LocalServer(Server):
         log.info('---- Event loop start')
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
+        message_queue = self.message_queue
 
         while not self.is_terminated:
+            while message_queue:
+                message_queue.popleft().send()
+
             if not timeline:
                 sleep(timeout)
                 continue
