@@ -8,6 +8,7 @@ from agent_api import make_push_package
 from utils import serialize
 from collections import Counter
 
+# todo: make agent offline status possible
 
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
