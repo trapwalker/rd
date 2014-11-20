@@ -234,8 +234,8 @@ $(document).ready(function () {
     //alert(window.location);
 
     // Не показывать окно приветствия в debug режиме
-    if (!cookieStorage.debugMode())
-        modalWindow.modalWelcomeShow();
+   // if (!cookieStorage.debugMode())
+   //     modalWindow.modalWelcomeShow();
 
 });
 

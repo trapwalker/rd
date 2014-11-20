@@ -525,7 +525,48 @@ var UserCarMarker = (function () {
         // Перерисовка траектории
         if(! cookieStorage.debugMode())
             this.trackView.draw(this.currentUserCarLatLng);
+
+
+        // TODO: Отрисовать свои дебаг линии
+        // отрисовка линий
+        if (cookieStorage.optionsShowDebugLine) {// если нужно рисовать
+            if (user.userCar.debugLines)
+                for (var i=0; i < user.userCar.debugLines.length; i++) {
+                    var line = user.userCar.debugLines[i];
+                    line.plln.setLatLngs([line.m1.getLatLng(), line.m2.getLatLng()]);
+                }
+        }
     }
+
+    UserCarMarker.prototype.addContactLine = function(objID){
+        // TODO: разобраться почему не обновляет линии и насколько правилно он их добавляет
+        var carO;
+        var m1, m2;
+        if(listMapObject.exist(objID))
+            carO = listMapObject.objects[objID];
+        else {
+            alert('Ошибка! Объект контакта не найден!');
+            return;
+        }
+        m1 = this.marker;
+        m2 = carO.marker;
+
+        var plln = L.polyline([m1.getLatLng(), m2.getLatLng()], {color: 'red'});
+
+        user.userCar.debugLines.push({
+            m1: m1,
+            m2: m2,
+            plln: plln
+        });
+        if(cookieStorage.optionsShowDebugLine)// если рисовать линию
+            plln.addTo(myMap);
+
+
+    };
+
+    UserCarMarker.prototype.delContactLine = function(){
+
+    };
 
     UserCarMarker.prototype.setNewZoom = function(){
         // Изменение радиуса viewCircle
