@@ -57,7 +57,9 @@ class AgentAPI(API):
 
     def send_init_package(self):
         if self.agent.connection:
-            self.agent.connection.write_message(serialize(make_push_package([messages.Init(agent=self.agent)])))
+            self.agent.connection.write_message(serialize(make_push_package([
+                messages.Init(time=None, agent=self.agent),
+            ])))
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
@@ -77,6 +79,7 @@ class AgentAPI(API):
         #path = tasks.goto(self.car, Point(x, y))
         #return dict(path=path)
         def f(event):
+            # todo: update state
             tasks.goto(self.car, Point(x, y))
         events.Callback(server=self.agent.server, func=f).send()
 
@@ -96,6 +99,7 @@ class AgentAPI(API):
     @public_method
     def crazy(self, target_id=None):
         server = self.agent.server
+
         def crazy_func(event=None):
             log.debug('Run crazy func')
             dt = abs(random.gauss(0, 5)) + 0.5  # sec
@@ -126,7 +130,7 @@ class AgentAPI(API):
         last_motion = None
         for task in reversed(car.task_list):
             if isinstance(task, tasks.Motion):
-                last_motion= task
+                last_motion = task
                 break
 
         last_motion = last_motion or isinstance(car.task, tasks.Motion) and car.task
