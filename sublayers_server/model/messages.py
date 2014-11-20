@@ -18,6 +18,10 @@ class Message(object):
         self.time = time
         self.comment = comment
 
+    def send(self):
+        # todo: realization
+        pass
+
     def __str__(self):
         return self.__str_template__.format(self=self)
 
