@@ -20,14 +20,6 @@ import events
 import random
 
 
-def make_push_package(events):
-    events = [event.as_dict() for event in events]
-    return dict(
-        message_type='push',
-        events=events,
-    )
-
-
 class AgentAPI(API):
     def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
         super(AgentAPI, self).__init__()
@@ -56,10 +48,8 @@ class AgentAPI(API):
         return ctx
 
     def send_init_package(self):
-        if self.agent.connection:
-            self.agent.connection.write_message(serialize(make_push_package([
-                messages.Init(time=None, agent=self.agent),
-            ])))
+        agent = self.agent
+        agent.server.post_message(messages.Init(agent=agent, time=None, agent=self.agent))
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
@@ -147,15 +137,16 @@ class AgentAPI(API):
     def chat_message(self, text):
         log.info('Agent %s say: %r', self.agent.login, text)
         app = self.agent.connection.application
+        me = self.agent
+        srv = me.server
         chat = app.chat
         msg_id = len(chat)  # todo: get "client_id" from client message info
-        msg = messages.Chat(author=self.agent, text=text, client_id=msg_id)
-        chat.append(msg)
-
-        push_data = serialize(make_push_package([msg]))
 
         for client_connection in app.clients:
-            client_connection.write_message(push_data)
+            srv.post_message(messages.Chat(agent=client_connection.agent, author=me, text=text, client_id=msg_id))
+
+        chat.append(msg)
+
 
     @public_method
     def console_cmd(self, cmd):

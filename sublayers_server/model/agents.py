@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import Object
-from agent_api import make_push_package
 from utils import serialize
 from collections import Counter
 
@@ -89,10 +88,12 @@ class Agent(Object):
         self.send_message_to_client(message)
         # todo: optimize
 
+    # todo: delete
     def send_contact(self, message):
         self.send_message_to_client(message)
         # todo: optimize
 
+    # todo: delete
     def send_message_to_client(self, message):
         """
         @param sublayers_server.model.messages.UnitMessage message: Incoming message

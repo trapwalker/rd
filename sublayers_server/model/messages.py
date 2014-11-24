@@ -4,22 +4,36 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from utils import time_log_format
+from utils import time_log_format, serialize
+
+
+def make_push_package(events):
+    events = [event.as_dict() for event in events]
+    return dict(
+        message_type='push',
+        events=events,
+    )
 
 
 class Message(object):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, time, comment=None):
+    def __init__(self, agent, time=None, comment=None):
         """
         @param sublayers_server.model.utils.TimeClass time: Time of message post
         """
+        if time is None:
+            time = agent.server.get_time()
         super(Message, self).__init__()
+        self.agent = agent
         self.time = time
         self.comment = comment
 
     def send(self):
         # todo: realization
+        connection = self.agent.connection
+        if connection:
+            connection.write_message(serialize(make_push_package([self])))
         pass
 
     def __str__(self):
@@ -46,15 +60,6 @@ class Message(object):
 class Init(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
 
-    def __init__(self, agent, time, **kw):
-        """
-        @param sublayers_server.model.agents.Agent agent
-        """
-        if time is None:
-            time = agent.server.get_time()
-        super(Init, self).__init__(time=time, **kw)
-        self.agent = agent
-
     def as_dict(self):
         d = super(Init, self).as_dict()
         d.update(
@@ -67,14 +72,12 @@ class Init(Message):
 class Chat(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
 
-    def __init__(self, author, text=None, client_id=None, time=None, **kw):
+    def __init__(self, author, text=None, client_id=None, **kw):
         """
         @param sublayers_server.model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
-        if time is None:
-            time = author.server.get_time()
-        super(Chat, self).__init__(time=time, **kw)
+        super(Chat, self).__init__(**kw)
         self.author = author
         self.text = text
         self.client_id = client_id
@@ -92,14 +95,11 @@ class Chat(Message):
 class Subjective(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}>'
 
-    def __init__(self, subj, time, **kw):
+    def __init__(self, subj, **kw):
         """
         @param sublayers_server.model.units.Unit subj: Sender of message
         """
-        if time is None:
-            time = subj.server.get_time()
-            # todo: check time
-        super(Subjective, self).__init__(time=time, **kw)
+        super(Subjective, self).__init__(**kw)
         self.subj = subj
 
     def as_dict(self):

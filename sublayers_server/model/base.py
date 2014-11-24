@@ -103,7 +103,8 @@ class VisibleObject(PointObject):
     def on_update(self, time, comment=None):  # todo: privacy level index
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
-            agent.send_update(messages.Update(
+            agent.server.post_message(messages.Update(
+                agent=agent,
                 time=time,
                 obj=self,
                 comment='message for subscriber: {}'.format(comment)
