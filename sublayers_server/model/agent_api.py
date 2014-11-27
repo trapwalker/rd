@@ -20,6 +20,7 @@ import random
 
 class AgentAPI(API):
     def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
+        # todo: use init position or remove that params
         super(AgentAPI, self).__init__()
         self.agent = agent
         if self.agent.cars:
@@ -41,6 +42,7 @@ class AgentAPI(API):
         )
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
+            # todo: do not use protected methods outside
             if hasattr(attr, '_public_method') and attr._public_method:
                 ctx[attr_name] = attr
         return ctx
