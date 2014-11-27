@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-from model.agent_api import AgentAPI, make_push_package
-from model.utils import serialize
+from model.agent_api import AgentAPI
+from model import messages
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
@@ -17,10 +17,12 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.user_id = self.get_secure_cookie("user")
         log.info('!!! Open User connection: %s', self.user_id)
-        self.agent = self.application.srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
-        self.agent.connection = self
+        srv = self.application.srv
+        agent = srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
+        self.agent = agent
+        agent.connection = self
         self.application.clients.append(self)
-        self.api = AgentAPI(agent=self.agent)
+        self.api = AgentAPI(agent=agent)
 
         for message_params in self.application.chat:
             srv.post_message(messages.Chat(agent=agent, **message_params))
