@@ -47,7 +47,7 @@ class AgentAPI(API):
 
     def send_init_package(self):
         agent = self.agent
-        agent.server.post_message(messages.Init(agent=agent, time=None, agent=self.agent))
+        agent.server.post_message(messages.Init(agent=agent, time=None))
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
