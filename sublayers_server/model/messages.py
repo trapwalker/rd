@@ -57,7 +57,7 @@ class Message(object):
 
 
 class Init(Message):
-    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}}>'
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
     def as_dict(self):
         d = super(Init, self).as_dict()
@@ -69,7 +69,7 @@ class Init(Message):
 
 
 class Chat(Message):
-    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text"}>'
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text">'
 
     def __init__(self, author, text=None, client_id=None, **kw):
         """
