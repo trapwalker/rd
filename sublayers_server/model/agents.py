@@ -86,30 +86,6 @@ class Agent(Object):
     def on_disconnect(self, connection):
         pass
 
-    def send_update(self, message):
-        """
-        @param sublayers_server.model.messages.UnitMessage message: Incoming message
-        """
-        # todo: remove this method
-        self.send_message_to_client(message)
-        # todo: optimize
-
-    # todo: delete
-    def send_contact(self, message):
-        # todo: remove this method
-        self.send_message_to_client(message)
-        # todo: optimize
-
-    # todo: delete
-    def send_message_to_client(self, message):
-        """
-        @param sublayers_server.model.messages.UnitMessage message: Incoming message
-        """
-        # todo: remove this method
-        if self.connection:
-            package = make_push_package([message])
-            self.connection.write_message(serialize(package))
-
 
 class User(Agent):
     # todo: realize
