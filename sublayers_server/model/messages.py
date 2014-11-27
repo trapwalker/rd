@@ -32,6 +32,7 @@ class Message(object):
     def send(self):
         # todo: online status optimization
         connection = self.agent.connection
+        log.debug('\n\ntry_to_send message: %s by connection %s', self, connection)
         if connection:
             connection.send(serialize(make_push_package([self])))
 
