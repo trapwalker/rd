@@ -142,11 +142,11 @@ class AgentAPI(API):
         chat = app.chat
         msg_id = len(chat)  # todo: get "client_id" from client message info
 
+        message_params = dict(author=me, text=text, client_id=msg_id)
         for client_connection in app.clients:
-            srv.post_message(messages.Chat(agent=client_connection.agent, author=me, text=text, client_id=msg_id))
+            srv.post_message(messages.Chat(agent=client_connection.agent, **message_params))
 
-        chat.append(msg)
-
+        chat.append(message_params)
 
     @public_method
     def console_cmd(self, cmd):
