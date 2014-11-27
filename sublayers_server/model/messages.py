@@ -33,7 +33,7 @@ class Message(object):
         # todo: online status optimization
         connection = self.agent.connection
         if connection:
-            connection.write_message(serialize(make_push_package([self])))
+            connection.send(serialize(make_push_package([self])))
 
     def __str__(self):
         return self.__str_template__.format(self=self)

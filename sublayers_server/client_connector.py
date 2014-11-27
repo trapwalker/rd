@@ -37,4 +37,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         log.debug("Got message from %s: %r", self.agent, message)
         result = self.api.__rpc_call__(message)
-        self.write_message(result)
+        self.send(result)
+
+    def send(self, data):
+        log.debug('\n\nconnection.send(%s)', data)
+        self.write_message(data)
