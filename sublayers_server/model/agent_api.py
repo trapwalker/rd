@@ -7,13 +7,11 @@ log = logging.getLogger(__name__)
 log.__class__.__call__ = log.__class__.info
 
 import units
-from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
-from utils import serialize
 import messages
 import tasks
-from weapons import SectoralWeapon
+#from weapons import SectoralWeapon
 from console import Shell
 import events
 
