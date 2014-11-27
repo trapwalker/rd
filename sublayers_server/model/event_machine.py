@@ -106,6 +106,7 @@ class LocalServer(Server):
         while not self.is_terminated:
             while message_queue:
                 message_queue.popleft().send()
+                # todo: mass sending optimizations over separated chat server
 
             if not timeline:
                 sleep(timeout)

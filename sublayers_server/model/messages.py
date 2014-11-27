@@ -30,11 +30,10 @@ class Message(object):
         self.comment = comment
 
     def send(self):
-        # todo: realization
+        # todo: online status optimization
         connection = self.agent.connection
         if connection:
             connection.write_message(serialize(make_push_package([self])))
-        pass
 
     def __str__(self):
         return self.__str_template__.format(self=self)

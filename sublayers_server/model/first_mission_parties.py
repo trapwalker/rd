@@ -52,7 +52,7 @@ class WinEvent(Event):
 
     def perform(self):
         for agent in self.server.agents.values():
-            agent.send_message_to_client(WinMessage(time=self.time, winner_unit=self.unit))
+            self.server.post_message(WinMessage(agent=agent, time=self.time, winner_unit=self.unit))
 
 
 class WinTrigger(Trigger):

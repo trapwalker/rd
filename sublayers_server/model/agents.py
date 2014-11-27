@@ -9,6 +9,7 @@ from collections import Counter
 
 # todo: make agent offline status possible
 
+
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 
@@ -26,6 +27,10 @@ class Agent(Object):
         if party is not None:
             party.include(self)
         log.debug('=========%s', self.party)
+
+    @property
+    def is_online(self):
+        return self._connection is not None
 
     def add_observer(self, observer):
         # add _self_ into to the all _visible objects_ by _observer_
@@ -85,11 +90,13 @@ class Agent(Object):
         """
         @param sublayers_server.model.messages.UnitMessage message: Incoming message
         """
+        # todo: remove this method
         self.send_message_to_client(message)
         # todo: optimize
 
     # todo: delete
     def send_contact(self, message):
+        # todo: remove this method
         self.send_message_to_client(message)
         # todo: optimize
 
@@ -98,6 +105,7 @@ class Agent(Object):
         """
         @param sublayers_server.model.messages.UnitMessage message: Incoming message
         """
+        # todo: remove this method
         if self.connection:
             package = make_push_package([message])
             self.connection.write_message(serialize(package))

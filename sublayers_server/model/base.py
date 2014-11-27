@@ -185,6 +185,7 @@ class Observer(VisibleObject):
         if self.can_see(obj):
             ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
 
+    # todo: check calls
     def on_contact_in(self, time, obj, is_boundary, comment=None):
         """
         @param float time: contact time
@@ -198,8 +199,9 @@ class Observer(VisibleObject):
         # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
             is_first = obj.subscribed_agents.inc(agent) == 1
-            agent.send_contact(messages.See(time=time, subj=self, obj=obj, is_boundary=is_boundary, is_first=is_first))
+            self.server.post_message(messages.See(agent=agent, time=time, subj=self, obj=obj, is_boundary=is_boundary, is_first=is_first))
 
+    # todo: check calls
     def on_contact_out(self, time, obj, is_boundary, comment=None):
         """
         @param float time: contact time
@@ -211,7 +213,7 @@ class Observer(VisibleObject):
         # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
             is_last = obj.subscribed_agents.dec(agent) == 0
-            agent.send_contact(messages.Out(time=time, subj=self, obj=obj, is_boundary=is_boundary, is_last=is_last))
+            self.server.post_message(messages.Out(agent=agent, time=time, subj=self, obj=obj, is_boundary=is_boundary, is_last=is_last))
 
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)
