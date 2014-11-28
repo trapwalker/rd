@@ -177,7 +177,8 @@ function receiveMesFromServ(data){
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
         if (cookieStorage.enableLogPushMessage())
-            chat.addMessageToLog(data, 'push');
+            if (mes.events[0].cls !== "Update")
+                chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
@@ -232,7 +233,7 @@ function receiveMesFromServ(data){
                     );
 
             }
-            if (event.cls === "InitMessage") {
+            if (event.cls === "InitMessage" || event.cls === "Init") {
                 // InitMessage
                 aTrack = getTrack(event.cars[0]);
                 var max_speed;
@@ -263,7 +264,7 @@ function receiveMesFromServ(data){
                 // удаление машинки
                 carMarkerList.del(event.object_id);
             }
-            if (event.cls === "ChatMessage") {
+            if (event.cls === "ChatMessage" || event.cls === "Chat") {
                 // chat_message
                 chat.addMessage(0, event.id, new Date(servtime), getOwner(event.author), event.text);
             }

@@ -1,15 +1,15 @@
 var LocalCookieStorage = (function(){
     function LocalCookieStorage(){
         var defOptions = {
-            flagDebug: false,
+            flagDebug: true,
             chatVisible: true,
             chatActiveID: 0,
             zoom: 6,
             // Новые опции
-            optionsChatPush: false,
-            optionsChatRPC: false,
-            optionsChatAnswer: false,
-            optionsChatSystemLog: false,
+            optionsChatPush: true,
+            optionsChatRPC: true,
+            optionsChatAnswer: true,
+            optionsChatSystemLog: true,
             optionsMarkerContact: true,
             optionsMarkerUpdate: true,
             optionsMapTileVisible: true,

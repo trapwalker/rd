@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-from model.agent_api import AgentAPI, make_push_package
-from model.utils import serialize
+from model.agent_api import AgentAPI
+from model import messages
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
@@ -17,15 +17,16 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.user_id = self.get_secure_cookie("user")
         log.info('!!! Open User connection: %s', self.user_id)
-        self.agent = self.application.srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
-        self.agent.connection = self
+        srv = self.application.srv
+        agent = srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
+        self.agent = agent
+        agent.connection = self
         self.application.clients.append(self)
-        self.api = AgentAPI(agent=self.agent)
+        self.api = AgentAPI(agent=agent)
 
-        if self.application.chat:
-            package = make_push_package(self.application.chat)  # todo: slice to chunks
-            log.debug('Send to agent %s: %r', self.agent, package)
-            self.write_message(serialize(package))
+        for message_params in self.application.chat:
+            srv.post_message(messages.Chat(agent=agent, **message_params))
+            # todo: otimize - slice and send chat history by chunks
 
     def on_close(self):
         log.info('Agent %r socket Closed', self)
@@ -37,4 +38,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         log.debug("Got message from %s: %r", self.agent, message)
         result = self.api.__rpc_call__(message)
-        self.write_message(result)
+        self.send(result)
+
+    def send(self, data):
+        #log.debug('\n\nconnection.send(%s)', data)
+        self.write_message(data)

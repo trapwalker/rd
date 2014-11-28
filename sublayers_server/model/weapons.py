@@ -55,6 +55,7 @@ class Weapon(object):
             log.debug('Hit unit %s to %s*%s=%s', unit, factor, self.damage, self.damage * factor)
             if unit:
                 unit.hit(self.damage * factor)
+                # todo: make 'hit' or 'fire' event or message
 
 
 class SectoralWeapon(Weapon):

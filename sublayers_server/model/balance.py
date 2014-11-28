@@ -1,9 +1,15 @@
 ﻿# -*- coding: utf-8 -*-
 
-class BALANCE:
-    u'''Gameplay balancing settings'''
 
-    class Unit:
+class BalanceSettingsABS:
+    def __init__(self):
+        raise NotImplementedError
+
+
+class BALANCE(BalanceSettingsABS):
+    """Gameplay balancing settings"""
+
+    class Unit(BalanceSettingsABS):
         defence = 1.0
 
     class Station(Unit):
@@ -44,9 +50,8 @@ class BALANCE:
             # радиус, на котором субьект заметит объекта
             r = subj_range_view * (1 - obj_obscurity * (1 - subj_vigilance))
 
-            return
+            return r
 
-
-    class Weapon:
+    class Weapon(BalanceSettingsABS):
         damage = 10.0
         r = 50.0

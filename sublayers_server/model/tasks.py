@@ -68,8 +68,8 @@ class Task(object):
 
     def start(self, **kw):
         #log.debug('TASK start: %s', self)
-        self.on_before_start(**kw)
         self.start_time = self._get_time()
+        self.on_before_start(**kw)
         self.is_started = True
         self.on_after_start(**kw)
 
@@ -191,7 +191,7 @@ class Motion(Determined):
 
     def on_after_start(self, **kw):
         super(Motion, self).on_after_start(**kw)
-        self.owner.on_change()
+        self.owner.on_update(time=self.start_time)
 
     def on_before_end(self, **kw):
         self.owner.server.motions.remove(self)
@@ -205,7 +205,7 @@ class Motion(Determined):
         self.owner.server.statics.append(self.owner)  # todo: Устранить лишнее переключение в статик при смене таска
         self.owner.server.static_observers.append(self.owner)
         super(Motion, self).on_after_end(**kw)
-        self.owner.on_change()
+        self.owner.on_update(self.finish_time)
 
     def get_position(self, to_time=None):
         """
