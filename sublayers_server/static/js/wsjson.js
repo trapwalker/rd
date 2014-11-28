@@ -177,7 +177,8 @@ function receiveMesFromServ(data){
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
         if (cookieStorage.enableLogPushMessage())
-            chat.addMessageToLog(data, 'push');
+            if (mes.events[0].cls !== "Update")
+                chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
