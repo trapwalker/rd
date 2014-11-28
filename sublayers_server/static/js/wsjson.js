@@ -225,7 +225,7 @@ function receiveMesFromServ(data){
                     );
 
             }
-            if (event.cls === "InitMessage") {
+            if (event.cls === "InitMessage" || event.cls === "Init") {
                 // InitMessage
                 aTrack = getTrack(event.cars[0]);
                 var max_speed;
@@ -253,7 +253,7 @@ function receiveMesFromServ(data){
                 // out
                 carMarkerList.del(event.object_id);
             }
-            if (event.cls === "ChatMessage") {
+            if (event.cls === "ChatMessage" || event.cls === "Chat") {
                 // chat_message
                 chat.addMessage(0, event.id, new Date(servtime), getOwner(event.author), event.text);
             }
