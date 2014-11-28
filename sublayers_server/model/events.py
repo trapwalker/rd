@@ -98,7 +98,7 @@ class Contact(Subjective):
         super(Contact, self).__init__(**kw)
         self.subj.contacts.append(self)
         obj.contacts.append(self)
-        #log.debug('EVENT %s add to %s and %s', self, self.subj, obj)
+        log.debug('EVENT %s add to %s and %s', self, self.subj, obj)
 
     def cancel(self):
         super(Subjective, self).cancel()

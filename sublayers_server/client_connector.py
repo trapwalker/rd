@@ -41,5 +41,5 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.send(result)
 
     def send(self, data):
-        log.debug('\n\nconnection.send(%s)', data)
+        #log.debug('\n\nconnection.send(%s)', data)
         self.write_message(data)

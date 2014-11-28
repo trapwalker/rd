@@ -149,7 +149,7 @@ class See(Contact):
         """
         @param bool is_first: True if this contact is first for that agent
         """
-        super(Contact, self).__init__(**kw)
+        super(See, self).__init__(**kw)
         self.is_first = is_first
 
     def as_dict(self):
@@ -167,7 +167,7 @@ class Out(Contact):
         """
         @param bool is_last: True if this contact is last for that agent
         """
-        super(Contact, self).__init__(**kw)
+        super(Out, self).__init__(**kw)
         self.is_last = is_last
 
     def as_dict(self):
