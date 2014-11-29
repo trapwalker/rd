@@ -185,10 +185,11 @@ function receiveMesFromServ(data){
             var servtime = event.time;
             if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
-                aTrack = getTrack(event.object);
-                if (event.object.hp) aHP = event.object.hp;
-                setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner), event.object.role);
-
+                if(event.is_first) { // Только если первый раз добавляется машинка
+                    aTrack = getTrack(event.object);
+                    if (event.object.hp) aHP = event.object.hp;
+                    setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner), event.object.role);
+                }
                 // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
                 if (cookieStorage.enableMarkerContact())
                     debugMapList.push(
@@ -197,7 +198,8 @@ function receiveMesFromServ(data){
                             .bindPopup(
                                 'Тип сообщения: ' + event.cls + '</br>' +
                                 'Server-Time: ' + servtime / 1000. + '</br>' +
-                                'uid объекта: ' + event.object.uid + '</br>'
+                                'uid объекта: ' + event.object.uid + '</br>' +
+                                'subject_id: ' + event.subject_id + '</br>'
                         )
                             .addTo(myMap)
                     );
@@ -259,10 +261,12 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "Out") {
                 // TODO: не удалять машинку сразу, так как её может видеть участник пати
-                // стирание линий
-                carMarkerList.delContactLine(event.subject_id, event.object_id);
-                // удаление машинки
-                carMarkerList.del(event.object_id);
+                if(event.is_last) { // Только если машинку нужно совсем убирать
+                    // стирание линий
+                    carMarkerList.delContactLine(event.subject_id, event.object_id);
+                    // удаление машинки
+                    carMarkerList.del(event.object_id);
+                }
             }
             if (event.cls === "ChatMessage" || event.cls === "Chat") {
                 // chat_message
