@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NUKE Navigator v5.51</title>
+
+    <link rel="stylesheet" href="css/view.css"/>
+
+    <link rel="stylesheet" href="css/third_party/jquery-ui.css"/>
+    <link rel="stylesheet" href="css/view_messenger.css"/>
+
+    <script src="js/third_party/jquery.min.js"></script>
+    <script src="js/third_party/jquery-ui.min.js"></script>
+    <script src="js/wsjson.js"></script>
+    <script src="js/view_messenger.js"></script>
+    <script src="js/geometric.js"></script>
+</head>
+<body>
+<div id="test_chat">
+</div>
+
+<script>
+    $(document).ready(function () {
+        // создание чата
+        chat = new ViewMessenger({
+            parentDiv: 'test_chat',
+            height: 550,
+            width: 600
+        });
+        chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
+        chat.addChat("idshnik", "nameOfChat");
+        chat.setActiveChat(chat.systemsChats.broadcast.id);
+
+        // Инициализация коннекта чата
+        //wsjson = new WSJSON();
+    });
+
+    var chat;
+</script>
+
+</body>
+</html>

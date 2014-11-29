@@ -5,7 +5,8 @@ var ViewMessenger = (function () {
             height: 400,
             width: 300,
             _visible: true,
-            mesCountInChat: 30
+            mesCountInChat: 30,
+            connectionType: 'ws' // or jabber
         };
 
         this.chats = [];
@@ -34,10 +35,13 @@ var ViewMessenger = (function () {
             }
         };
 
+
+        // todo: переделано на правильную установку опций
         if (options) {
-            if (options.parentDiv) this.options.parentDiv = options.parentDiv;
-            if (options.height) this.options.height = options.height;
-            if (options.width) this.options.width = options.width;
+            setOptions(options, this.options);
+            //if (options.parentDiv) this.options.parentDiv = options.parentDiv;
+            //if (options.height) this.options.height = options.height;
+            //if (options.width) this.options.width = options.width;
         }
 
         // Счётчик сообщений лога.
@@ -141,6 +145,21 @@ var ViewMessenger = (function () {
         // Инициализация истории сообщений
         this._history = [];
         this._historyIndex = -1;
+
+
+        // Настройка коннектора
+        if (this.options.connectionType == 'ws')
+            // todo: сделать правильный коннектор для WS
+            this._connector = {
+                sendChatMessage: sendChatMessage,
+                sendServConsole: sendServConsole
+            };
+        if (this.options.connectionType == 'jabber')
+            // todo сделать коннектор для jabber соединения
+            this._connector = null;
+
+        if (! this._connector)
+            alert('Error!!! Connector не присвоен. Чат не может работать!');
     }
 
 
@@ -205,6 +224,7 @@ var ViewMessenger = (function () {
 
     ViewMessenger.prototype.removeChat = function(chatID){
         // Если этот чат активный, то сделать активным броадкаст
+        // todo: переделать... так как возможно удаление нулевого чата
         if (this._activeChatID == chatID) this.setActiveChat(0);
         // получить чат
         var chat = this._getChat(chatID);
@@ -260,20 +280,23 @@ var ViewMessenger = (function () {
     };
 
     ViewMessenger.prototype.setActiveChat = function(aID){
-        this.chats.forEach(function (chat) {
-                if (chat.id == this.id) {
-                    chat.textArea.addClass('textOutAreaActive');
-                    chat.pageButton.addClass('pageButtonActive');
-                    this.self.vMHTS.text('[' + chat.name + ']');
-                }
-                else {
-                    chat.textArea.removeClass('textOutAreaActive');
-                    chat.pageButton.removeClass('pageButtonActive');
-                }
-            },
-            {self: this, id: aID});
+        // если чата с таким aID не существует, то ничего не делать
+        if(this._getChat(aID)) {
+            this.chats.forEach(function (chat) {
+                    if (chat.id == this.id) {
+                        chat.textArea.addClass('textOutAreaActive');
+                        chat.pageButton.addClass('pageButtonActive');
+                        this.self.vMHTS.text('[' + chat.name + ']');
+                    }
+                    else {
+                        chat.textArea.removeClass('textOutAreaActive');
+                        chat.pageButton.removeClass('pageButtonActive');
+                    }
+                },
+                {self: this, id: aID});
 
-        this._activeChatID = aID;
+            this._activeChatID = aID;
+        }
     }
 
 
@@ -315,8 +338,9 @@ var ViewMessenger = (function () {
         var spanText = $('<span class="view-messenger-text-text">' + ': ' + aText + '</span>');
 
         // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
-        if ($("#" + chat.name+chatID+messageID + ' span:last-child').length) {
-            $("#" + chat.name+chatID+messageID + ' span:last-child').text(aText);
+        var mes = $("#" + chat.name+chatID+messageID + ' span:last-child');
+        if (mes.length) {
+            mes.text(aText);
             return;
         }
 
@@ -444,12 +468,13 @@ var ViewMessenger = (function () {
 
 
     ViewMessenger.prototype.viewMessengerSendMessage = function() {
+        // todo: переделать на отправку сообщения через объект-интерфейс и передавать туда ссылку на активный чат
         var str = chat.vMI.val();
         if (str.length) {
             if (chat._activeChatID >= 0) {
-                sendChatMessage(str);
+                this._connector.sendChatMessage(str);
             } else {
-                sendServConsole(str);
+                this._connector.sendServConsole(str);
             }
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
