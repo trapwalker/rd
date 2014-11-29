@@ -156,7 +156,9 @@ var ViewMessenger = (function () {
             };
         if (this.options.connectionType == 'jabber')
             // todo сделать коннектор для jabber соединения
-            this._connector = null;
+            this._connector = new JabberChatConnector({
+                messenger: this
+            });
 
         if (! this._connector)
             alert('Error!!! Connector не присвоен. Чат не может работать!');

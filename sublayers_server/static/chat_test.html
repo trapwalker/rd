@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="css/view_messenger.css"/>
 
     <script src="js/third_party/jquery.min.js"></script>
+    <script src="js/third_party/strophe.js"></script>
     <script src="js/third_party/jquery-ui.min.js"></script>
+    <script src="js/jabber_chat_connector.js"></script>
     <script src="js/wsjson.js"></script>
     <script src="js/view_messenger.js"></script>
     <script src="js/geometric.js"></script>
@@ -25,7 +27,8 @@
         chat = new ViewMessenger({
             parentDiv: 'test_chat',
             height: 550,
-            width: 600
+            width: 600,
+            connectionType: 'jabber'
         });
         chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
         chat.addChat("idshnik", "nameOfChat");
