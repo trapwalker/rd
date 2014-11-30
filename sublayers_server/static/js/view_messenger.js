@@ -28,42 +28,12 @@ var ViewMessenger = (function (_super) {
 
         this.chats = [];
 
-        // TODO: сделать функции для добавления системных чатов
-        this.systemsChats = {
-            broadcast: {
-                id: 0,
-                name: 'broadcast'
-            },
-            push: {
-                id: -1,
-                name: 'log-push'
-            },
-            system: {
-                id: -2,
-                name: 'system'
-            },
-            answer: {
-                id: -3,
-                name: 'log-answer'
-            },
-            rpc: {
-                id: -4,
-                name: 'log-rpc'
-            }
-        };
-
-        // Счётчик сообщений лога.
-        this.pushID = 0;
-        this.rpcID = 0;
-        this.ansID = 0;
-
         //добавление основного дива
         this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
         this.vMA.css({width: this.options.width});
         //$("#" + this.options.parentDiv).append(this.vMA);
         this.mainDiv.append(this.vMA);
 
-        //создание заголовка
         //добавление верхнего дива с заголовком и кнопками
         this.vMHA = $("<div id='viewMessengerHeaderArea'></div>");
         this.vMA.append(this.vMHA);
@@ -150,38 +120,23 @@ var ViewMessenger = (function (_super) {
         });
 
         // Установка активного чата по умолчанию
-        this._activeChatID = 0;
+        this._activeChatID = null;
         // Инициализация истории сообщений
         this._history = [];
         this._historyIndex = -1;
 
-
-        // todo: убрать this.options.connectionType, т.к. чату должно быть пофиг через что он коннектится
-        if (this.options.connectionType == 'ws')
-            // todo: сделать правильный коннектор для WS
-            this._connector = {
-                sendChatMessage: sendChatMessage,
-                sendServConsole: sendServConsole
-            };
-        if (this.options.connectionType == 'jabber')
-            // todo сделать коннектор для jabber соединения
-            this._connector = new JabberChatConnector({
-                messenger: this
-            });
-
         
         // повесить хендлеры на разные эвенты
-      //  var connector = this.options.connector;
-       // connector.handlers = {
-       //     onMessage:
-       // }
+        var connector = this.options.connector;
+    /*
+        connector.addEvent1({
+            key: 'message',
+            cbFunc: this.receiveMessage,
+            subject: this
+        });
+*/
 
 
-
-
-
-        if (! this._connector)
-            alert('Error!!! Connector не присвоен. Чат не может работать!');
     }
 
 
@@ -258,9 +213,8 @@ var ViewMessenger = (function (_super) {
 
 
     ViewMessenger.prototype.removeChat = function(chatID){
-        // Если этот чат активный, то сделать активным броадкаст
-        // todo: переделать... так как возможно удаление нулевого чата
-        if (this._activeChatID == chatID) this.setActiveChat(0);
+        // Если этот чат активный, то сделать активным нулевой
+        var setNewActive = (this._activeChatID == chatID);
         // получить чат
         var chat = this._getChat(chatID);
         if(! chat) return;
@@ -278,41 +232,12 @@ var ViewMessenger = (function (_super) {
                 index = i;
         }
         this.chats.splice(index, 1);
-    };
-
-
-    ViewMessenger.prototype.manageSystemChats = function(localSet){
-        // Настройка optionsChatPush
-        if (localSet.optionsChatPush) {
-            if (!this._getChat(this.systemsChats.push.id))
-                this.addChat(this.systemsChats.push.id, this.systemsChats.push.name);
+        if (setNewActive) {
+            if (this.chats.length > 0)
+                this.setActiveChat(this.chats[0].id);
+            else
+                this._activeChatID = null
         }
-        else
-            this.removeChat(this.systemsChats.push.id);
-
-        // Настройка optionsChatRPC
-        if (localSet.optionsChatRPC) {
-            if (!this._getChat(this.systemsChats.rpc.id))
-                this.addChat(this.systemsChats.rpc.id, this.systemsChats.rpc.name);
-        }
-        else
-            this.removeChat(this.systemsChats.rpc.id);
-
-        // Настройка optionsChatAnswer
-        if (localSet.optionsChatAnswer) {
-            if (!this._getChat(this.systemsChats.answer.id))
-                this.addChat(this.systemsChats.answer.id, this.systemsChats.answer.name);
-        }
-        else
-            this.removeChat(this.systemsChats.answer.id);
-
-        // Настройка optionsChatSystemLog
-        if (localSet.optionsChatSystemLog) {
-            if (!this._getChat(this.systemsChats.system.id))
-                this.addChat(this.systemsChats.system.id, this.systemsChats.system.name);
-        }
-        else
-            this.removeChat(this.systemsChats.system.id);
     };
 
 
@@ -348,39 +273,27 @@ var ViewMessenger = (function (_super) {
 
 
     ViewMessenger.prototype._getChatByName = function (chatName) {
-        // Найти чат
         for (var i in this.chats) {
             if (this.chats[i])
                 if (this.chats[i].name === chatName)
                     return this.chats[i];
         }
-        // Если чата нет, то создать новый и его же вернуть
-        // return this.addChat(chatID, 'какой-то текст или логин');
         return null;
-    }
+    };
 
 
-    ViewMessenger.prototype.addMessage = function (chatID, messageID, aTime, aUser, aText) {
+    ViewMessenger.prototype.addMessage = function (chatID, chatName, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
-        // todo: если чат не найден, то создать его, задав ему какое-то имя
-        // return this.addChat(chatID, 'какой-то текст или логин');
-        if(! chat) return;
-        // если какие-то переменные Null
-        messageID = chat.mesCount++;
-        // Отформатировать время
-        var tempTime = aTime.toTimeString().split(' ')[0];
+        if(! chat) chat = this.addChat(chatID, chatName, false);
+        var messageID = chat.mesCount++;
+        // получить локальное время
+        var tempTime = new Date().toLocaleTimeString();
         // создать див сообщения и спаны
         var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="view-messenger-message"></div>');
         var spanTime = $('<span class="view-messenger-text-time">' + '[' + tempTime + '] ' + '</span>');
         var spanUser = $('<span class="view-messenger-text-user sublayers-clickable">' + aUser.login + '</span>');
         var spanText = $('<span class="view-messenger-text-text">' + ': ' + aText + '</span>');
-        // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
-        var mes = $("#" + chat.name+chatID+messageID + ' span:last-child');
-        if (mes.length) {
-            mes.text(aText);
-            return;
-        }
         // Добавить, предварительно скрыв
         mesDiv.hide();
         chat.textArea.append(mesDiv);
@@ -388,16 +301,15 @@ var ViewMessenger = (function (_super) {
         mesDiv.append(spanUser);
         mesDiv.append(spanText);
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
-        if (chat.id >= 0)
-            spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
+        spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if(aUser.login == user.login)
             spanUser.addClass("view-messenger-text-my-user");
-        // Показать сообщение, опустивскрол дива
+        // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
-        // Удалить старые сообщения, предварительно сняв с них
+        // Удалить старые сообщения, предварительно сняв с них всё
         if(chat.mesList.length > this.options.mesCountInChat){
             var dmessage = chat.mesList.shift();
             dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
@@ -413,25 +325,6 @@ var ViewMessenger = (function (_super) {
             dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
             dmessage.mesDiv.remove();
         }
-    };
-
-
-    ViewMessenger.prototype.addMessageToLog = function(aText, aLogType) {
-        if (aLogType == "rpc") {
-            this.rpcID++;
-            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID},  '<pre>' + aText + '</pre>');
-        }
-
-        if (aLogType == "answer") {
-            this.ansID++;
-            this.addMessage(-3, this.ansID, new Date(), {login: 'Answer от сервера #' + this.ansID}, '<pre>' + aText + '</pre>');
-        }
-
-        if (aLogType == "push") {
-            this.pushID++;
-            this.addMessage(-1, this.pushID, new Date(), {login: 'Push от сервера #' + this.pushID}, '<pre>' + aText + '</pre>');
-        }
-
     };
 
 
@@ -497,20 +390,11 @@ var ViewMessenger = (function (_super) {
     };
 
 
-    ViewMessenger.prototype.addMessageToSystem = function (messID, aText) {
-        this.addMessage(-2, messID, new Date(), {login: '#'}, aText);
-    }
-
-
     ViewMessenger.prototype.viewMessengerSendMessage = function() {
         // todo: переделать на отправку сообщения через объект-интерфейс и передавать туда ссылку на активный чат
         var str = chat.vMI.val();
         if (str.length) {
-            if (chat._activeChatID >= 0) {
-                chat._connector.sendChatMessage('menkent2@menkent-desktop',str);
-            } else {
-                sendServConsole(str);
-            }
+            chat._connector.sendChatMessage('menkent2@menkent-desktop', str);
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);
@@ -526,10 +410,10 @@ var ViewMessenger = (function (_super) {
 
 
     ViewMessenger.prototype.viewMessengerClickSpanUser = function (event) {
-        var owner = event.data.owner;
         // подстветить все машинки данного пользователя
+        var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
-        if (cookieStorage.optionsSelectAnybody)
+        if (cookieStorage.optionsSelectAnybody && owner.cars)
             for (var i = 0; i < owner.cars.length; i++) {
                 if (listMapObject.exist(owner.cars[i].ID)) {
                     var car = listMapObject.objects[owner.cars[i].ID];
@@ -541,6 +425,10 @@ var ViewMessenger = (function (_super) {
             }
     };
 
+
+    ViewMessenger.prototype.receiveMessage = function (self, params) {
+        self.addMessage(params.chatID, params.chatName, params.user, params.text)
+    };
 
     return ViewMessenger;
 })(Window);

@@ -26,23 +26,30 @@
     $(document).ready(function () {
         // создание чата
         chat_connector = JabberChatConnector({
-            jid: 'abbir@menkent-desktop/subclient',
-            password: '12345',
-            adress_server: 'http://95.71.87.90:5280/http-bind'
+            jid: 'menkent@menkent-desktop/subclient',
+            password: '1',
+            adress_server: 'http://localhost:5280/http-bind'
         });
 
-        chat = new ViewMessenger({
-            parentDiv: 'test_chat',
-            height: 400,
-            width: 400,
-            connector: chat_connector
-        });
-        chat.showChatWindow();
-        chat.setupDragElement(chat.vMHA);
 
-        chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
-        chat.addChat("idshnik", "nameOfChat");
-        chat.setActiveChat(chat.systemsChats.broadcast.id);
+
+        setTimeout(function () {
+            alert(chat_connector);
+            chat = new ViewMessenger({
+                parentDiv: 'test_chat',
+                height: 400,
+                width: 400,
+                connector: chat_connector
+            });
+            chat.showChatWindow();
+            chat.setupDragElement(chat.vMHA);
+        }, 3000);
+
+
+
+        //chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
+        //chat.addChat("idshnik", "nameOfChat");
+        //chat.setActiveChat(chat.systemsChats.broadcast.id);
 
         // Инициализация коннекта чата
         //wsjson = new WSJSON();

@@ -1,3 +1,12 @@
+/*
+ login = abbir
+ jid = abbir@sublayers.net
+ abbir
+ private from = abbir@sublayers.net/sublayers
+ group from = city1@conference.sublayers.net/abbir
+
+ */
+
 var JabberChatConnector = (function () {
     function JabberChatConnector(options) {
         this.options = {
@@ -29,11 +38,15 @@ var JabberChatConnector = (function () {
                 else if (status == Strophe.Status.CONNECTED) {
                     alert('Strophe is connected, ' + self.connection.jid);
                     //addHandler: function (handler, ns, name, type, id, from, options) // в type нужно указать chat и groupchat, если захотим различать
-                    self.connection.addHandler(self.onMessage, null, 'message', null, null, null, null);
+                    self.connection.addHandler(self.onMessage, null, 'message', null, null, null); // обработка приватных сообщений
                     self.connection.send($pres().tree());
                 }
             }
         );
+
+        // Эвенты от чата: инициализация
+        this.eventList = [];
+
     }
 
 
@@ -42,16 +55,19 @@ var JabberChatConnector = (function () {
         var from = msg.getAttribute('from');
         var type = msg.getAttribute('type');
         var elems = msg.getElementsByTagName('body');
-
+        //from = from.split('@')[0];
         if (type == "chat" && elems.length > 0) {
             var body = elems[0];
-            // todo имя чата = jid from
+            alert(body);
             // значит сделать добавления сообщения в чат и автоматическое создание чата по JIDу, обрубив сервер (всё что после собаки)
-
-            //alert(from +'    say:   '+Strophe.getText(body));
-
             // todo подумать как тут лучше образаться к чату, чтоб не через глобальную переменную
-            chat.addMessage(0, null, new Date(new Date().getTime()), {login:from.split('@')[0]}, Strophe.getText(body));
+            /*chat_connector.runEvents('message', {
+                chatID: from,
+                chatName: from,
+                user: {login: from},
+                text: body
+            });
+            */
         }
         // we must return true to keep the handler alive.
         // returning false would remove it after it finishes.
@@ -66,6 +82,21 @@ var JabberChatConnector = (function () {
         var msg = $msg({to: mto, from: this.connection.jid, type: 'chat'}).c('body').t(mbody);
         this.connection.send(msg.tree());
     };
+
+    JabberChatConnector.prototype.addEvent1 = function(event){
+        // event = {key: message | invite_room | leave_room | ... ,
+        //          cbFunc: func
+        //          subject: chat | другой объект, повесивший евент }
+        if (event.key && (type(event.cbFunc) === 'function'))
+            this.eventList.push(event);
+    };
+
+    JabberChatConnector.prototype.runEvents = function(key, params){
+        for(var event in this.eventList)
+            if(event.key === key)
+                event.cbFunc(event.subject, params);
+    };
+
 
 
         return JabberChatConnector;
