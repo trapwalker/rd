@@ -82,7 +82,7 @@ var JabberChatConnector = (function () {
     };
 
 
-    JabberChatConnector.prototype.sendMessage = function(mto, mbody){
+    JabberChatConnector.prototype.sendChatMessage = function(mto, mbody){
         // todo: сформироать XML для отправки
         var msg = $msg({to: mto, from: this.connection.jid, type: 'chat'}).c('body').t(mbody);
         this.connection.send(msg.tree());

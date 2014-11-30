@@ -327,14 +327,11 @@ var ViewMessenger = (function (_super) {
 
 
     ViewMessenger.prototype._getChat = function (chatID) {
-        // Найти чат
         for (var i in this.chats) {
             if (this.chats[i])
                 if (this.chats[i].id == chatID)
                     return this.chats[i];
         }
-        // Если чата нет, то создать новый и его же вернуть
-        // return this.addChat(chatID, 'какой-то текст или логин');
         return null;
     }
 
@@ -355,6 +352,8 @@ var ViewMessenger = (function (_super) {
     ViewMessenger.prototype.addMessage = function (chatID, messageID, aTime, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
+        // todo: если чат не найден, то создать его, задав ему какое-то имя
+        // return this.addChat(chatID, 'какой-то текст или логин');
         if(! chat) return;
         // если какие-то переменные Null
         messageID = chat.mesCount++;
@@ -497,9 +496,9 @@ var ViewMessenger = (function (_super) {
         var str = chat.vMI.val();
         if (str.length) {
             if (chat._activeChatID >= 0) {
-                this._connector.sendChatMessage(str);
+                chat._connector.sendChatMessage('menkent2@menkent-desktop',str);
             } else {
-                this._connector.sendServConsole(str);
+                chat._connector.sendServConsole(str);
             }
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
