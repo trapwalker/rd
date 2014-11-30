@@ -17,7 +17,7 @@ var ViewMessenger = (function (_super) {
             width: 300,
             _visible: true,
             mesCountInChat: 30,
-            connectionType: 'ws'}, this.options);
+            connector: null}, this.options);
         if (options) setOptions(options, this.options);
 
         // Запихиваем чат в отдельное окно
@@ -168,6 +168,17 @@ var ViewMessenger = (function (_super) {
             this._connector = new JabberChatConnector({
                 messenger: this
             });
+
+        
+        // повесить хендлеры на разные эвенты
+      //  var connector = this.options.connector;
+       // connector.handlers = {
+       //     onMessage:
+       // }
+
+
+
+
 
         if (! this._connector)
             alert('Error!!! Connector не присвоен. Чат не может работать!');
@@ -498,7 +509,7 @@ var ViewMessenger = (function (_super) {
             if (chat._activeChatID >= 0) {
                 chat._connector.sendChatMessage('menkent2@menkent-desktop',str);
             } else {
-                chat._connector.sendServConsole(str);
+                sendServConsole(str);
             }
             chat.vMI.val('').focus();
             // Добавление сообщения в историю

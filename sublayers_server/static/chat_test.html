@@ -25,11 +25,17 @@
 <script>
     $(document).ready(function () {
         // создание чата
+        chat_connector = JabberChatConnector({
+            jid: 'abbir@menkent-desktop/subclient',
+            password: '12345',
+            adress_server: 'http://95.71.87.90:5280/http-bind'
+        });
+
         chat = new ViewMessenger({
             parentDiv: 'test_chat',
             height: 400,
             width: 400,
-            connectionType: 'jabber'
+            connector: chat_connector
         });
         chat.showChatWindow();
         chat.setupDragElement(chat.vMHA);
@@ -43,6 +49,7 @@
     });
 
     var chat;
+    var chat_connector;
     var user = {login: '123131'}; // нужен, чтобы хоть что-то работало в чате
 </script>
 
