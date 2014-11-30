@@ -1,6 +1,3 @@
-
-
-
 var JabberChatConnector = (function () {
     function JabberChatConnector(options) {
         this.options = {
@@ -9,13 +6,15 @@ var JabberChatConnector = (function () {
             adress_server: 'localhost',
             messenger: null  // объект чата, в который будут кидаться сообщения
         };
-        setOptions(options, this.options);
+
+        if (options)
+            setOptions(options, this.options);
 
         // создание коннекта и обвешивание евентами
         var self = this;
 
         // todo не работает из-за этого адреса. на рабочем компе есть правильный вариант!!!!
-        this.connection = new Strophe.Connection('http://menkent-desktop:5280/http-bind');
+        this.connection = new Strophe.Connection('http://95.71.87.90:5280/http-bind');
 
         this.connection.connect('menkent@menkent-desktop/subclient', '1', function (status) {
                 // иначе нельзя, так как нужно использовать self
@@ -33,7 +32,7 @@ var JabberChatConnector = (function () {
                 }
                 else if (status == Strophe.Status.CONNECTED) {
                     alert('Strophe is connected, ' + self.connection.jid);
-                    // addHandler: function (handler, ns, name, type, id, from, options) // в type нужно указать chat и groupchat, если захотим различать
+                    //addHandler: function (handler, ns, name, type, id, from, options) // в type нужно указать chat и groupchat, если захотим различать
                     //self.connection.addHandler(self.onMessageMeNkent, null, 'message', null, 'menkent2@menkent-desktop', {matchBare: true});
                     self.connection.addHandler(self.onMessage, null, 'message', null, null, null);
                     //self.connection.addHandler(self.onMessageMeNkent, null, 'message', null, 'menkent2@menkent-desktop/Пандион', null);
@@ -41,8 +40,6 @@ var JabberChatConnector = (function () {
                 }
             }
         );
-
-
     }
 
 
@@ -77,7 +74,6 @@ var JabberChatConnector = (function () {
 
         if (type == "chat" && elems.length > 0) {
             var body = elems[0];
-
             alert(Strophe.getText(body), 'in');
         }
         // we must return true to keep the handler alive.
@@ -91,9 +87,6 @@ var JabberChatConnector = (function () {
         var msg = $msg({to: mto, from: this.connection.jid, type: 'chat'}).c('body').t(mbody);
         this.connection.send(msg.tree());
     };
-
-
-
 
 
         return JabberChatConnector;

@@ -1,13 +1,30 @@
-var ViewMessenger = (function () {
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+
+
+var ViewMessenger = (function (_super) {
+    __extends(ViewMessenger, _super);
+
     function ViewMessenger(options) {
-        this.options = {
+        if (!this.options) this.options = {};
+        setOptions({
             parentDiv: '',
             height: 400,
             width: 300,
             _visible: true,
             mesCountInChat: 30,
-            connectionType: 'ws' // or jabber
-        };
+            connectionType: 'ws'}, this.options);
+        if (options) setOptions(options, this.options);
+
+        // Запихиваем чат в отдельное окно
+        _super.call(this, {
+            name: 'ChatWindow',
+            parentDiv: this.options.parentDiv
+        });
 
         this.chats = [];
 
@@ -35,15 +52,6 @@ var ViewMessenger = (function () {
             }
         };
 
-
-        // todo: переделано на правильную установку опций
-        if (options) {
-            setOptions(options, this.options);
-            //if (options.parentDiv) this.options.parentDiv = options.parentDiv;
-            //if (options.height) this.options.height = options.height;
-            //if (options.width) this.options.width = options.width;
-        }
-
         // Счётчик сообщений лога.
         this.pushID = 0;
         this.rpcID = 0;
@@ -52,7 +60,8 @@ var ViewMessenger = (function () {
         //добавление основного дива
         this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
         this.vMA.css({width: this.options.width});
-        $("#" + this.options.parentDiv).append(this.vMA);
+        //$("#" + this.options.parentDiv).append(this.vMA);
+        this.mainDiv.append(this.vMA);
 
         //создание заголовка
         //добавление верхнего дива с заголовком и кнопками
@@ -147,7 +156,7 @@ var ViewMessenger = (function () {
         this._historyIndex = -1;
 
 
-        // Настройка коннектора
+        // todo: убрать this.options.connectionType, т.к. чату должно быть пофиг через что он коннектится
         if (this.options.connectionType == 'ws')
             // todo: сделать правильный коннектор для WS
             this._connector = {
@@ -165,6 +174,13 @@ var ViewMessenger = (function () {
     }
 
 
+    ViewMessenger.prototype.showChatWindow = function () {
+        this.showWindow();
+        // todo: придумать как учесть размеры границ (box-sizing)
+        this.setNewSize(this.vMA.height() + 4, this.vMA.width() + 4);
+    };
+
+
     ViewMessenger.prototype.changeVisible = function (event) {
         var self = event.data.self;
         self.vMDA.slideToggle("slow", function () {
@@ -178,7 +194,11 @@ var ViewMessenger = (function () {
                 self.vMSB.removeClass('viewMessengerSlideButtonHided');
                 self.vMSB.addClass('viewMessengerSlideButtonShowed');
             }
+
+            // todo: придумать как учесть размеры границ (box-sizing)
+            self.setNewSize(self.vMA.height() + 4, self.vMA.width() + 4);
         });
+
     };
 
 
@@ -216,7 +236,7 @@ var ViewMessenger = (function () {
 
         this.vMTA.css({height: parseInt(this.vMDA.css('height')) -
                                parseInt(this.vMFA.css('height')) -
-                               parseInt(this.vMPC.css('height'))-
+                               parseInt(this.vMPC.css('height')) -
                                2 * parseInt(this.vMTA.css('border-image-width'))});
 
         this.chats.push(chat);
@@ -224,6 +244,7 @@ var ViewMessenger = (function () {
             this.setActiveChat(chat.id);
         return chat;
     }
+
 
     ViewMessenger.prototype.removeChat = function(chatID){
         // Если этот чат активный, то сделать активным броадкаст
@@ -247,6 +268,7 @@ var ViewMessenger = (function () {
         }
         this.chats.splice(index, 1);
     };
+
 
     ViewMessenger.prototype.manageSystemChats = function(localSet){
         // Настройка optionsChatPush
@@ -282,9 +304,10 @@ var ViewMessenger = (function () {
             this.removeChat(this.systemsChats.system.id);
     };
 
+
     ViewMessenger.prototype.setActiveChat = function(aID){
         // если чата с таким aID не существует, то ничего не делать
-        if(this._getChat(aID)) {
+        if (this._getChat(aID)) {
             this.chats.forEach(function (chat) {
                     if (chat.id == this.id) {
                         chat.textArea.addClass('textOutAreaActive');
@@ -314,6 +337,7 @@ var ViewMessenger = (function () {
         // return this.addChat(chatID, 'какой-то текст или логин');
         return null;
     }
+
 
     ViewMessenger.prototype._getChatByName = function (chatName) {
         // Найти чат
@@ -372,6 +396,7 @@ var ViewMessenger = (function () {
 
     };
 
+
     ViewMessenger.prototype._removeAllMessagesInChat = function(chat){
         for(;chat.mesList.length;){
             var dmessage = chat.mesList.pop();
@@ -399,6 +424,7 @@ var ViewMessenger = (function () {
 
     };
 
+
     ViewMessenger.prototype.addMessageToHistory = function(mes){
         // Сверить с нулевый элементом истории, если совпадает, то не добавлять. Иначе добавить
         if ( !(this._history.length > 0) || (!(mes === this._history[0]))) {
@@ -413,6 +439,7 @@ var ViewMessenger = (function () {
         this._historyIndex = -1;
     };
 
+
     ViewMessenger.prototype.setMessagesHistory = function(mess){
         // Добавить все элементы истории (при чтении из куки) в чат, читать массив с конца
         for(;mess.length > 0;){
@@ -420,7 +447,6 @@ var ViewMessenger = (function () {
             this.addMessageToHistory(mes);
         }
     };
-
 
     // Установить в инпут сообщение из истории под заданным индексом
     // TODO: при установке сообщения переместить картеку в конец строки
@@ -450,7 +476,6 @@ var ViewMessenger = (function () {
         chat._setInputHistoryMessage();
     };
 
-
     // Установить предыдущее сообщение в инпут, более новое!!!
     ViewMessenger.prototype.setPrevHistoryMessage = function () {
         chat._historyIndex--;
@@ -460,6 +485,7 @@ var ViewMessenger = (function () {
         // Установить сообщение
         chat._setInputHistoryMessage();
     };
+
 
     ViewMessenger.prototype.addMessageToSystem = function (messID, aText) {
         this.addMessage(-2, messID, new Date(), {login: '#'}, aText);
@@ -505,5 +531,6 @@ var ViewMessenger = (function () {
             }
     };
 
+
     return ViewMessenger;
-})();
+})(Window);

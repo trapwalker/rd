@@ -5,7 +5,7 @@
     <title>NUKE Navigator v5.51</title>
 
     <link rel="stylesheet" href="css/view.css"/>
-
+    <link rel="stylesheet" href="css/window.css"/>
     <link rel="stylesheet" href="css/third_party/jquery-ui.css"/>
     <link rel="stylesheet" href="css/view_messenger.css"/>
 
@@ -14,11 +14,12 @@
     <script src="js/third_party/jquery-ui.min.js"></script>
     <script src="js/jabber_chat_connector.js"></script>
     <script src="js/wsjson.js"></script>
+    <script src="js/window.js"></script>
     <script src="js/view_messenger.js"></script>
     <script src="js/geometric.js"></script>
 </head>
-<body>
-<div id="test_chat">
+<body style = "margin: 0px">
+<div id="test_chat" style = "position: absolute; height: 100%; width: 100%">
 </div>
 
 <script>
@@ -26,10 +27,13 @@
         // создание чата
         chat = new ViewMessenger({
             parentDiv: 'test_chat',
-            height: 550,
-            width: 600,
+            height: 400,
+            width: 400,
             connectionType: 'jabber'
         });
+        chat.showChatWindow();
+        chat.setupDragElement(chat.vMHA);
+
         chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
         chat.addChat("idshnik", "nameOfChat");
         chat.setActiveChat(chat.systemsChats.broadcast.id);
@@ -39,7 +43,7 @@
     });
 
     var chat;
-    var user = {lohin: '123131'}; // нужен, чтобы хоть что-то работало в чате
+    var user = {login: '123131'}; // нужен, чтобы хоть что-то работало в чате
 </script>
 
 </body>
