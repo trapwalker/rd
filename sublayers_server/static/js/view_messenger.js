@@ -128,14 +128,12 @@ var ViewMessenger = (function (_super) {
         
         // повесить хендлеры на разные эвенты
         var connector = this.options.connector;
-    /*
-        connector.addEvent1({
+
+        connector.addEvent({
             key: 'message',
             cbFunc: this.receiveMessage,
             subject: this
         });
-*/
-
 
     }
 

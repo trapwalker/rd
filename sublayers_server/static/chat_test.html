@@ -25,32 +25,21 @@
 <script>
     $(document).ready(function () {
         // создание чата
-        chat_connector = JabberChatConnector({
-            jid: 'test1@andrey-pc',
+        chat_connector = new JabberChatConnector({
+            jid: 'test1@andrey-pc/subclient',
             password: '1',
             adress_server: 'http://localhost:5280/http-bind'
         });
 
-        /*setTimeout(function () {
-            alert(chat_connector);
-            chat = new ViewMessenger({
-                parentDiv: 'test_chat',
-                height: 400,
-                width: 400,
-                connector: chat_connector
-            });
-            chat.showChatWindow();
-            chat.setupDragElement(chat.vMHA);
-        }, 3000);*/
 
-
-
-        //chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
-        //chat.addChat("idshnik", "nameOfChat");
-        //chat.setActiveChat(chat.systemsChats.broadcast.id);
-
-        // Инициализация коннекта чата
-        //wsjson = new WSJSON();
+        chat = new ViewMessenger({
+            parentDiv: 'test_chat',
+            height: 400,
+            width: 400,
+            connector: chat_connector
+        });
+        chat.showChatWindow();
+        chat.setupDragElement(chat.vMHA);
     });
 
     var chat;
