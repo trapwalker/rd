@@ -28,8 +28,9 @@ var JabberChatConnector = (function () {
                 else if (status == Strophe.Status.CONNECTED) {
                     alert('Strophe is connected, ' + self.connection.jid);
                     //addHandler: function (handler, ns, name, type, id, from, options)
-                    self.connection.addHandler(self.onMessage, null, 'message', null, null, null);
-                    self.connection.addHandler(function(){alert('group!!!')}, null, 'message', 'groupchat', null, null);
+                    self.connection.addHandler(self.onPrivateMessage, null, 'message', null, null, null);
+                    //self.connection.addHandler(self.onGroupMessage, null, 'message', 'groupchat', null, null);
+                    self.connection.addHandler(self.onGroupMessage, "jabber:x:conference", null, null, null, null);
                     self.connection.send($pres().tree());
                 }
             }
@@ -40,40 +41,68 @@ var JabberChatConnector = (function () {
     }
 
 
-    JabberChatConnector.prototype.onMessage = function(msg) {
-        alert('onMessage');
+
+
+
+    JabberChatConnector.prototype.onPrivateMessage = function(msg) {
+        //alert('onPrivateMessage');
         var to = msg.getAttribute('to');
-        var from = msg.getAttribute('from');
+        var from = msg.getAttribute('from').split('/')[0];
         var type = msg.getAttribute('type');
         var elems = msg.getElementsByTagName('body');
 
-        if (type == "chat" && elems.length > 0) {
-            var body = elems[0];
-            // todo: придумать как не образаться к глобальной переменной
-            chat_connector.runEvents('message', {
-                chatID: from,
-                chatName: from.split('@')[0],
-                user: {login: from.split('@')[0]},
-                text: Strophe.getText(body)
-            });
-        }
+        if (type === 'chat' || type === 'groupchat')
+            if (elems.length > 0) {
+                var body = elems[0]
+                if (type === 'chat') {
+                        // todo: придумать как не образаться к глобальной переменной
+                        chat_connector.runEvents('message', {
+                            chatID: from,
+                            chatName: from.split('@')[0],
+                            user: {login: from.split('@')[0]},
+                            text: Strophe.getText(body)
+                        });
+                    }
+                if (type === 'groupchat') {
+                        chat_connector.runEvents('message', {
+                            chatID: from,
+                            chatName: from.split('@')[0],
+                            user: {login: msg.getAttribute('from').split('/')[1]},
+                            text: Strophe.getText(body)
+                        })
+                    }
+            }
         // обязательно возвращать true
         return true;
     };
 
 
+    JabberChatConnector.prototype.onGroupMessage = function(msg) {
+        //alert('onGroupMessage');
+        var to = msg.getAttribute('to');
+        var from = msg.getAttribute('from');
+        var type = msg.getAttribute('type');
+
+        chat_connector.connection.muc.join(from, user.login, null, null, null, null, null);
+
+        // обязательно возвращать true
+        return true;
+    };
 
 
     JabberChatConnector.prototype.sendChatMessage = function(mto, mbody){
-        // todo: сформироать XML для отправки
-        var msg = $msg({to: mto, from: this.connection.jid, type: 'chat'}).c('body').t(mbody);
+        var type = (mto.indexOf('conference') > 0) ? 'groupchat' : 'chat';
+
+        var msg = $msg({to: mto, from: this.connection.jid, type: type}).c('body').t(mbody);
         this.connection.send(msg.tree());
-        this.runEvents('message', {
-            chatID: mto,
-            chatName: mto.split('@')[0],
-            user: user,
-            text: mbody
-        });
+
+        if (type === 'chat')
+            this.runEvents('message', {
+                chatID: mto,
+                chatName: mto.split('@')[0],
+                user: user,
+                text: mbody
+            });
 
     };
 
