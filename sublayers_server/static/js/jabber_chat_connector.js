@@ -1,12 +1,3 @@
-/*
- login = abbir
- jid = abbir@sublayers.net
- abbir
- private from = abbir@sublayers.net/sublayers
- group from = city1@conference.sublayers.net/abbir
-
- */
-
 var JabberChatConnector = (function () {
     function JabberChatConnector(options) {
         this.options = {
@@ -14,8 +5,9 @@ var JabberChatConnector = (function () {
             password: '',
             adress_server: 'localhost'
         };
+        alert('JabberChatConnector start');
 
-        if (options) setOptions(options, this.options);
+        setOptions(options, this.options);
 
         this.connection = new Strophe.Connection(this.options.adress_server);
 
@@ -40,18 +32,22 @@ var JabberChatConnector = (function () {
                     //addHandler: function (handler, ns, name, type, id, from, options) // в type нужно указать chat и groupchat, если захотим различать
                     self.connection.addHandler(self.onMessage, null, 'message', null, null, null); // обработка приватных сообщений
                     self.connection.send($pres().tree());
+                    alert('Strophe is connected, ' + self.connection.jid + ' end');
+
                 }
             }
         );
 
         // Эвенты от чата: инициализация
-        this.eventList = [];
+        //this.eventList = [];
+        alert('JabberChatConnector end');
 
     }
 
 
     JabberChatConnector.prototype.onMessage = function(msg) {
-        var to = msg.getAttribute('to');
+        alert('JabberChatConnector.onMessage');
+        /*var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
         var type = msg.getAttribute('type');
         var elems = msg.getElementsByTagName('body');
@@ -60,15 +56,7 @@ var JabberChatConnector = (function () {
             var body = elems[0];
             alert(body);
             // значит сделать добавления сообщения в чат и автоматическое создание чата по JIDу, обрубив сервер (всё что после собаки)
-            // todo подумать как тут лучше образаться к чату, чтоб не через глобальную переменную
-            /*chat_connector.runEvents('message', {
-                chatID: from,
-                chatName: from,
-                user: {login: from},
-                text: body
-            });
-            */
-        }
+        }*/
         // we must return true to keep the handler alive.
         // returning false would remove it after it finishes.
         return true;
@@ -77,7 +65,7 @@ var JabberChatConnector = (function () {
 
 
 
-    JabberChatConnector.prototype.sendChatMessage = function(mto, mbody){
+    /*JabberChatConnector.prototype.sendChatMessage = function(mto, mbody){
         // todo: сформироать XML для отправки
         var msg = $msg({to: mto, from: this.connection.jid, type: 'chat'}).c('body').t(mbody);
         this.connection.send(msg.tree());
@@ -95,7 +83,7 @@ var JabberChatConnector = (function () {
         for(var event in this.eventList)
             if(event.key === key)
                 event.cbFunc(event.subject, params);
-    };
+    };*/
 
 
 

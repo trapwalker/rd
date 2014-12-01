@@ -19,21 +19,19 @@
     <script src="js/geometric.js"></script>
 </head>
 <body style = "margin: 0px">
-<div id="test_chat" style = "position: absolute; height: 100%; width: 100%">
+<div id="test_chat" style = "overflow: hidden; position: absolute; height: 100%; width: 100%">
 </div>
 
 <script>
     $(document).ready(function () {
         // создание чата
         chat_connector = JabberChatConnector({
-            jid: 'menkent@menkent-desktop/subclient',
+            jid: 'test1@andrey-pc',
             password: '1',
             adress_server: 'http://localhost:5280/http-bind'
         });
 
-
-
-        setTimeout(function () {
+        /*setTimeout(function () {
             alert(chat_connector);
             chat = new ViewMessenger({
                 parentDiv: 'test_chat',
@@ -43,7 +41,7 @@
             });
             chat.showChatWindow();
             chat.setupDragElement(chat.vMHA);
-        }, 3000);
+        }, 3000);*/
 
 
 
