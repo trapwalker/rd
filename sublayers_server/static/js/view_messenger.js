@@ -259,6 +259,10 @@ var ViewMessenger = (function (_super) {
         }
     }
 
+    ViewMessenger.prototype.getActiveChat = function() {
+        return this._getChat(this._activeChatID);
+    }
+
 
     ViewMessenger.prototype._getChat = function (chatID) {
         for (var i in this.chats) {
@@ -392,7 +396,7 @@ var ViewMessenger = (function (_super) {
         // todo: переделать на отправку сообщения через объект-интерфейс и передавать туда ссылку на активный чат
         var str = chat.vMI.val();
         if (str.length) {
-            chat._connector.sendChatMessage('menkent2@menkent-desktop', str);
+            chat.options.connector.sendChatMessage(chat.getActiveChat().id, str);
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);

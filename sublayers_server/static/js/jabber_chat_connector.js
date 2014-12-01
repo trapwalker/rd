@@ -28,7 +28,7 @@ var JabberChatConnector = (function () {
                 else if (status == Strophe.Status.CONNECTED) {
                     alert('Strophe is connected, ' + self.connection.jid);
                     //addHandler: function (handler, ns, name, type, id, from, options)
-                    self.connection.addHandler(self.onMessage, null, 'message', 'chat', null, null);
+                    self.connection.addHandler(self.onMessage, null, 'message', null, null, null);
                     self.connection.addHandler(function(){alert('group!!!')}, null, 'message', 'groupchat', null, null);
                     self.connection.send($pres().tree());
                 }
@@ -41,6 +41,7 @@ var JabberChatConnector = (function () {
 
 
     JabberChatConnector.prototype.onMessage = function(msg) {
+        alert('onMessage');
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
         var type = msg.getAttribute('type');
@@ -67,6 +68,13 @@ var JabberChatConnector = (function () {
         // todo: сформироать XML для отправки
         var msg = $msg({to: mto, from: this.connection.jid, type: 'chat'}).c('body').t(mbody);
         this.connection.send(msg.tree());
+        this.runEvents('message', {
+            chatID: mto,
+            chatName: mto.split('@')[0],
+            user: user,
+            text: mbody
+        });
+
     };
 
     JabberChatConnector.prototype.addEvent = function(event){
