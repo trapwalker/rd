@@ -1,11 +1,3 @@
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-
-
 var ViewMessenger = (function (_super) {
     __extends(ViewMessenger, _super);
 
@@ -129,7 +121,7 @@ var ViewMessenger = (function (_super) {
         // повесить хендлеры на разные эвенты
         var connector = this.options.connector;
 
-        connector.addEvent({
+        connector.addInEvent({
             key: 'message',
             cbFunc: this.receiveMessage,
             subject: this

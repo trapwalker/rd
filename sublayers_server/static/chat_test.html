@@ -13,11 +13,12 @@
     <script src="js/third_party/strophe.js"></script>
     <script src="js/third_party/strophe_muc.js"></script>
     <script src="js/third_party/jquery-ui.min.js"></script>
-    <script src="js/jabber_chat_connector.js"></script>
-    <script src="js/wsjson.js"></script>
+    <script src="js/geometric.js"></script>
+    <script src="js/message_stream.js"></script>
+    <script src="js/connector.js"></script>
     <script src="js/window.js"></script>
     <script src="js/view_messenger.js"></script>
-    <script src="js/geometric.js"></script>
+
 </head>
 <body style = "margin: 0px">
 <div id="test_chat" style = "overflow: hidden; position: absolute; height: 100%; width: 100%">
@@ -26,25 +27,30 @@
 <script>
     $(document).ready(function () {
         // создание чата
-        chat_connector = new JabberChatConnector({
-            jid: 'test1@andrey-pc/subclient',
+        j_connector = new JabberConnector({
+            jid: 'menkent@menkent-desktop/subclient',
             password: '1',
             adress_server: 'http://localhost:5280/http-bind'
         });
+
+
+        // создание мессадж стрима
+        message_stream = new MessageConnector();
 
 
         chat = new ViewMessenger({
             parentDiv: 'test_chat',
             height: 400,
             width: 400,
-            connector: chat_connector
+            connector: message_stream
         });
         chat.showChatWindow();
         chat.setupDragElement(chat.vMHA);
     });
 
     var chat;
-    var chat_connector;
+    var j_connector;
+    var message_stream;
     var user = {login: 'Im_Groote'}; // нужен, чтобы хоть что-то работало в чате
 </script>
 

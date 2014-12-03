@@ -1,3 +1,4 @@
+
 var JabberChatConnector = (function () {
     function JabberChatConnector(options) {
         this.options = {
@@ -29,7 +30,6 @@ var JabberChatConnector = (function () {
                     alert('Strophe is connected, ' + self.connection.jid);
                     //addHandler: function (handler, ns, name, type, id, from, options)
                     self.connection.addHandler(self.onPrivateMessage, null, 'message', null, null, null);
-                    //self.connection.addHandler(self.onGroupMessage, null, 'message', 'groupchat', null, null);
                     self.connection.addHandler(self.onGroupMessage, "jabber:x:conference", null, null, null, null);
                     self.connection.send($pres().tree());
                 }
@@ -40,11 +40,7 @@ var JabberChatConnector = (function () {
         this.eventList = [];
     }
 
-
-
-
-
-    JabberChatConnector.prototype.onPrivateMessage = function(msg) {
+    JabberChatConnector.prototype.onPrivateMessage = function (msg) {
         //alert('onPrivateMessage');
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from').split('/')[0];
@@ -55,29 +51,28 @@ var JabberChatConnector = (function () {
             if (elems.length > 0) {
                 var body = elems[0]
                 if (type === 'chat') {
-                        // todo: придумать как не образаться к глобальной переменной
-                        chat_connector.runEvents('message', {
-                            chatID: from,
-                            chatName: from.split('@')[0],
-                            user: {login: from.split('@')[0]},
-                            text: Strophe.getText(body)
-                        });
-                    }
+                    // todo: придумать как не образаться к глобальной переменной
+                    chat_connector.runEvents('message', {
+                        chatID: from,
+                        chatName: from.split('@')[0],
+                        user: {login: from.split('@')[0]},
+                        text: Strophe.getText(body)
+                    });
+                }
                 if (type === 'groupchat') {
-                        chat_connector.runEvents('message', {
-                            chatID: from,
-                            chatName: from.split('@')[0],
-                            user: {login: msg.getAttribute('from').split('/')[1]},
-                            text: Strophe.getText(body)
-                        })
-                    }
+                    chat_connector.runEvents('message', {
+                        chatID: from,
+                        chatName: from.split('@')[0],
+                        user: {login: msg.getAttribute('from').split('/')[1]},
+                        text: Strophe.getText(body)
+                    })
+                }
             }
         // обязательно возвращать true
         return true;
     };
 
-
-    JabberChatConnector.prototype.onGroupMessage = function(msg) {
+    JabberChatConnector.prototype.onGroupMessage = function (msg) {
         //alert('onGroupMessage');
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
@@ -89,8 +84,7 @@ var JabberChatConnector = (function () {
         return true;
     };
 
-
-    JabberChatConnector.prototype.sendChatMessage = function(mto, mbody){
+    JabberChatConnector.prototype.sendChatMessage = function (mto, mbody) {
         var type = (mto.indexOf('conference') > 0) ? 'groupchat' : 'chat';
 
         var msg = $msg({to: mto, from: this.connection.jid, type: type}).c('body').t(mbody);
@@ -106,7 +100,7 @@ var JabberChatConnector = (function () {
 
     };
 
-    JabberChatConnector.prototype.addEvent = function(event){
+    JabberChatConnector.prototype.addEvent = function (event) {
         // event = {key: message | invite_room | leave_room | ... ,
         //          cbFunc: func
         //          subject: chat | другой объект, повесивший евент }
@@ -114,15 +108,13 @@ var JabberChatConnector = (function () {
             this.eventList.push(event);
     };
 
-    JabberChatConnector.prototype.runEvents = function(key, params){
-        for(var index in this.eventList) {
+    JabberChatConnector.prototype.runEvents = function (key, params) {
+        for (var index in this.eventList) {
             var event = this.eventList[index];
             if (event.key === key)
                 event.cbFunc(event.subject, params);
         }
     };
 
-
-
-        return JabberChatConnector;
-    })();
+    return JabberChatConnector;
+})();
