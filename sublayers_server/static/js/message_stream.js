@@ -26,9 +26,9 @@ var MessageStream = (function () {
         var type = msg.type;
         for(var index = 0; index < this.eventList.length; index++) {
             var event = this.eventList[index];
-            if (!key || event.key === type) { // Если !key - то есть если key == null, значит вызвать всегда
+            if (!event.key || event.key === type) { // Если !key - то есть если key == null, значит вызвать всегда
                 // если возвращается false, то нужно снять (удалить) этот листнер
-                if(! event.cbFunc(event.subject, msg))
+                if(! event.cbFunc(event.subject, msg.body))
                     delet_list.push(index);
             }
         }
@@ -58,7 +58,8 @@ var MessageConnector = (function () {
 
     // Получение сообщения от сервер-коннекторов, т.е. евенты для in_stream
     MessageConnector.prototype.receiveMessage = function(msg){
-        this.in_stream.runEvents(msg)
+        //alert('MessageConnector receiveMessage');
+        this.in_stream.runEvents(msg);
     };
 
 

@@ -421,7 +421,8 @@ var ViewMessenger = (function (_super) {
 
 
     ViewMessenger.prototype.receiveMessage = function (self, params) {
-        self.addMessage(params.chatID, params.chatName, params.user, params.text)
+        self.addMessage(params.chatID, params.chatName, params.user, params.text);
+        return true;
     };
 
     return ViewMessenger;

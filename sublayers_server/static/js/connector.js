@@ -5,12 +5,6 @@
 *
 *
 * */
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 
 
 var Connector = (function(){
@@ -36,7 +30,6 @@ var Connector = (function(){
 
 var JabberConnector = (function(_super){
     __extends(JabberConnector, _super);
-
     function JabberConnector(options){
         _super.call(this);
         this.options = {
@@ -77,7 +70,7 @@ var JabberConnector = (function(_super){
     }
 
     // автоматический приём приглашения в группу
-    JabberChatConnector.prototype.onGroupInvite = function (msg) {
+    JabberConnector.prototype.onGroupInvite = function (msg) {
         //alert('onGroupMessage');
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
@@ -122,23 +115,25 @@ var JabberConnector = (function(_super){
         var from = msg.getAttribute('from').split('/')[0];
         var type = msg.getAttribute('type');
         var elems = msg.getElementsByTagName('body');
-        var message;
+        var message = {};
 
         if ((type === 'chat' || type === 'groupchat') && elems.length > 0) {
             if (type === 'chat')
-                message = {
-                    chatID: from,
-                    chatName: from.split('@')[0],
-                    user: {login: from.split('@')[0]},
-                    text: Strophe.getText(elems[0])
-                };
+                message = { type: 'message',
+                    body: {
+                        chatID: from,
+                        chatName: from.split('@')[0],
+                        user: {login: from.split('@')[0]},
+                        text: Strophe.getText(elems[0])
+                    }};
             if (type === 'groupchat')
-                message = {
-                    chatID: from,
-                    chatName: from.split('@')[0],
-                    user: {login: msg.getAttribute('from').split('/')[1]},
-                    text: Strophe.getText(elems[0])
-                }
+                message = { type: 'message',
+                    body: {
+                        chatID: from,
+                        chatName: from.split('@')[0],
+                        user: {login: msg.getAttribute('from').split('/')[1]},
+                        text: Strophe.getText(elems[0])
+                    }};
         }
         return message;
 
@@ -153,5 +148,5 @@ var JabberConnector = (function(_super){
     };
 
 
-
-})();
+    return JabberConnector;
+})(Connector);
