@@ -63,6 +63,13 @@ var JabberConnector = (function(_super){
                     self.connection.addHandler(self.receiveMessage, null, 'message', null, null, null);
                     self.connection.addHandler(self.onGroupInvite, "jabber:x:conference", null, null, null, null);
                     self.connection.send($pres().tree());
+
+                    // вешаем евенты на исходящие сообщения от потока сообений
+                    message_stream.addOutEvent({
+                        key: 'send_chat_message',
+                        cbFunc: self.sendMessage,
+                        subject: self
+                    });
                 }
             }
         );
@@ -82,19 +89,30 @@ var JabberConnector = (function(_super){
     };
 
 
-    JabberConnector.prototype.sendMessage = function(msg){
+    JabberConnector.prototype.sendMessage = function(self, msg){
         // alert('sendMessage');
-        //todo: переделать на правильное обращение к объекту коннектора
-        var mes = j_connector.encodeMessage(mes);
-        j_connector.connection.send(mes.tree());
+        var mes = self.encodeMessage(msg);
+        self.connection.send(mes.tree());
 
         // сгенерировать сообщения для приватных джаббер чатов, чтобы отобразить своё сообщение
-        if (mes.getAttribute('type') === 'chat')
-            j_connector.receiveMessage(mes);
+        if (mes.tree().getAttribute('type') === 'chat')
+            message_stream.receiveMessage(self._forGenPrivateMessage(msg));
+
+        return true;
+    };
 
 
-
-
+    JabberConnector.prototype._forGenPrivateMessage = function(msg){
+        //alert('_forGenPrivateMessage');
+        return {
+            type: 'message',
+            body: {
+                chatID: msg.to,
+                chatName: msg.to.split('@')[0],
+                user: user,
+                text: msg.body
+            }
+        };
     };
 
     JabberConnector.prototype.receiveMessage = function(msg){
@@ -140,7 +158,7 @@ var JabberConnector = (function(_super){
     };
 
     JabberConnector.prototype.encodeMessage = function(msg){
-        // alert('encodeMessage');
+        //alert('JabberConnector encodeMessage');
         var type = (msg.to.indexOf('conference') > 0) ? 'groupchat' : 'chat';
         //
         var mes = $msg({to: msg.to, from: this.connection.jid, type: type}).c('body').t(msg.body);

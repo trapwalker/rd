@@ -388,7 +388,15 @@ var ViewMessenger = (function (_super) {
         // todo: переделать на отправку сообщения через объект-интерфейс и передавать туда ссылку на активный чат
         var str = chat.vMI.val();
         if (str.length) {
-            chat.options.connector.sendChatMessage(chat.getActiveChat().id, str);
+            //chat.options.connector.sendChatMessage(chat.getActiveChat().id, str);
+            chat.options.connector.sendMessage(
+                {
+                    type: 'send_chat_message',
+                    body: {
+                        to: chat.getActiveChat().id,
+                        body: str
+                    }}
+            );
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);
