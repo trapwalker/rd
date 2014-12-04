@@ -30,6 +30,7 @@
         // создание мессадж стрима
         message_stream = new MessageConnector();
 
+        ws_connector = new WSConnector();
 
         // создание чата
         j_connector = new JabberConnector({
@@ -51,6 +52,7 @@
 
     var chat;
     var j_connector;
+    var ws_connector;
     var message_stream;
     var user = {login: 'Im_Groote'}; // нужен, чтобы хоть что-то работало в чате
 </script>

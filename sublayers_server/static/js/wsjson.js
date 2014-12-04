@@ -44,8 +44,6 @@ WSJSON = (function () {
     WSJSON.prototype.sendMess = function(aMess){
         if(user.userCar.hp > 0)
             this.socket.send(JSON.stringify(aMess));
-        //else
-            //alert('Вы не можете этого сделать, так как Ваша машина сломана.');
     };
 
     return WSJSON;

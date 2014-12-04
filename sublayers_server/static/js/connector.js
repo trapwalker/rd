@@ -168,3 +168,99 @@ var JabberConnector = (function(_super){
 
     return JabberConnector;
 })(Connector);
+
+
+
+var WSConnector = (function(_super){
+    __extends(WSConnector, _super);
+    function WSConnector(options){
+        _super.call(this);
+        this.options = {
+            url: "ws://" + location.host + "/ws"
+        };
+        if (options) setOptions(options, this.options);
+
+        this.isConnected = false;
+
+        // создание коннекта и обвешивание евентами
+        this.connection = new WebSocket(this.options.url);
+
+        var self = this;
+
+        this.connection.onopen = function() {
+            self.isConnected = true;
+
+            self.connection.onmessage = function (event) {
+                //receiveMesFromServ(event.data);
+                self.receiveMessage(event.data);
+            };
+
+            self.connection.onerror = function (error) {
+                this.isConnected = false;
+            };
+
+            self.connection.onclose = function (event) {
+                // websocket is closed.
+                self.isConnected = false;
+                if (event.wasClean) {
+                    alert('Соединение закрыто чисто');
+                } else {
+                    modalWindow.modalRestartShow();
+                }
+                //alert('Код: ' + event.code + ' причина: ' + event.reason);
+            };
+
+            // хендлер на отправку сообщения
+            message_stream.addOutEvent({
+                key: 'ws_message_send',
+                cbFunc: self.sendMessage,
+                subject: self
+            })
+
+        };
+
+
+
+    }
+
+
+    WSConnector.prototype.sendMessage = function(self, msg){
+        // alert('sendMessage');
+        var mes = self.encodeMessage(msg);
+        self.connection.send(JSON.stringify(mes));
+
+        return true;
+    };
+
+
+    WSConnector.prototype.receiveMessage = function(msg){
+        //alert('WSConnector receiveMessage');
+        // раскодировать входящее от сервера сообщение
+        // todo: разобраться как обратиться к this
+        var mes = ws_connector.decodeMessage(msg);
+        // отправить сообщение в мессадж стрим
+        if (mes)
+            message_stream.receiveMessage(mes);
+        // обязательно возвращать true
+        return true;
+    };
+
+    WSConnector.prototype.decodeMessage = function(msg){
+        // alert('WSConnector decodeMessage');
+        // todo: конкретизировать типы мессаджей, например push, answer и тд
+        return {
+            type: 'ws_message',
+            body: {
+                body: msg
+            }
+        };
+    };
+
+    WSConnector.prototype.encodeMessage = function(msg){
+        //alert('WSConnector encodeMessage');
+        return msg.body;
+    };
+
+
+    return WSConnector;
+})(Connector);
