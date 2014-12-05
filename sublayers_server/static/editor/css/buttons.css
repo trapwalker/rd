@@ -49,6 +49,10 @@
     background: transparent url('/static/editor/img/globe.png') 100% 100% no-repeat;
 }
 
+.editorSelectArea-icon {
+    background: transparent url('/static/editor/img/select.png') 100% 100% no-repeat;
+}
+
 .editorMapObjects-icon {
     background: transparent url('/static/editor/img/map.png') 100% 100% no-repeat;
 }

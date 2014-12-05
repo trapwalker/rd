@@ -1,3 +1,34 @@
+var EditorMapObjects = (function (_super) {
+    __extends(EditorMapObjects, _super);
+
+    function EditorMapObjects() {
+        _super.call(this);
+        this.isShiftDown = false;
+    }
+
+    EditorMapObjects.prototype._turnOn = function () {
+        //alert('EditorFreeCam.prototype._turnOn');
+        return null;
+    };
+
+    EditorMapObjects.prototype._turnOff = function () {
+        //alert('EditorFreeCam.prototype._turnOff');
+        return null;
+    };
+
+    return EditorMapObjects;
+})(EditorBase);
+
+
+
+
+
+
+
+
+
+
+
 function initMapObjects(editor) {
 
     /* добавление функциональный кнопок (здесь убрал push чтобы можно было обратиться к конкретной кнопке через
