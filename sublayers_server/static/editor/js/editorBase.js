@@ -32,7 +32,7 @@ var EditorBase = (function () {
             this.toolButtons[i].setChecked(false);
     };
 
-    EditorBase.prototype.onKeyDown = function () {
+    EditorBase.prototype.onKeyDown = function (event) {
         //alert('EditorSelectArea.prototype.onKeyDown');
         if (!this.isShiftDown && (event.keyCode === 16)) {
             this.isShiftDown = true;
@@ -43,7 +43,7 @@ var EditorBase = (function () {
         }
     };
 
-    EditorBase.prototype.onKeyUp = function () {
+    EditorBase.prototype.onKeyUp = function (event) {
         //alert('EditorSelectArea.prototype.onKeyUp');
         if (this.isShiftDown) {
             this.isShiftDown = false;

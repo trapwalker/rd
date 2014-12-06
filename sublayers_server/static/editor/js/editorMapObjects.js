@@ -150,14 +150,14 @@ var EditorMapObjects = (function (_super) {
     EditorMapObjects.prototype.onKeyDown = function (event) {
         //alert('EditorMapObjects.prototype.onKeyDown');
         if (this.currentToolButton === 'tbSelect')
-            _super.prototype.onKeyDown.apply(this, event);
+            _super.prototype.onKeyDown.call(this, event);
     };
 
     EditorMapObjects.prototype.mouseUp = function (event) {
         //alert('EditorMapObjects.prototype.mouseUp');
         if (this.isStartDraw)
             repositoryMO.selectByRect(this.selectRectBound);
-        _super.prototype.mouseUp.apply(this, event);
+        _super.prototype.mouseUp.call(this, event);
     };
 
     EditorMapObjects.prototype.mouseMove = function (event) {
@@ -165,7 +165,7 @@ var EditorMapObjects = (function (_super) {
         switch (this.currentToolButton) {
             case 'tbSelect':
                 if (this.isStartDraw)
-                    _super.prototype.mouseMove.apply(this, event);
+                    _super.prototype.mouseMove.call(this, event);
                 return;
             case 'tbRoad':
                 if (this.startPoint) {
@@ -195,6 +195,8 @@ var EditorMapObjects = (function (_super) {
 })(EditorBase);
 
 
+
+// todo: сделать через currentEditor
 // Обработчик тулБаттонов, не получилось внести в класс, из-за проблемы с this
 function selectToolButtonClick() {
     editorMapObjects.setToolButton('tbSelect');
