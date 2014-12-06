@@ -1,26 +1,3 @@
-// TODO: переименовать onClickRoad
-
-// Включение режима свободной камеры
-function onClickFreeCam() {
-    if (currentEditor != editorFreeCam)
-        changeCurrentEditor(editorFreeCam);
-}
-
-// Включение режима редактирования дорог
-function onClickRoad() {
-    if (currentEditor === editorMapObjects)
-        changeCurrentEditor(editorFreeCam);
-    else
-        changeCurrentEditor(editorMapObjects)
-}
-
-// Изменение текущего режима работы редактора
-function changeCurrentEditor(newEditor) {
-    if (currentEditor) currentEditor.turnOff();
-    currentEditor = newEditor;
-    currentEditor.turnOn();
-}
-
 $(document).ready(function () {
     // инициализация карты
     myMap = L.map('map', {
@@ -38,8 +15,15 @@ $(document).ready(function () {
         btnEnbChckd: true,
         btnMap: myMap});
 
+    editorSelectArea.activateButton = L.easyButton({
+        btnFunct: onClickSelectArea,
+        btnTitle:  'Выбор запрашиваемой области',
+        btnIcon: 'editorSelectArea-icon',
+        btnEnbChckd: true,
+        btnMap: myMap});
+
     editorMapObjects.activateButton = L.easyButton({
-        btnFunct: onClickRoad,
+        btnFunct: onClickMapObjects,
         btnTitle:  'Редактор картографии',
         btnIcon: 'editorMapObjects-icon',
         btnEnbChckd: true,
@@ -49,35 +33,8 @@ $(document).ready(function () {
     // создание репазиториев (пока он один)
     repositoryMO = new MapObjectsRepository();
 
-
-    // Попытка создания тулбара
-  //  bar = L.control.toolbar({
-  //      closeButton: true,
-  //      position: 'bottomleft'
-  //  });
-  //  myMap.addControl(bar);
-
-
     // Тест окон
-
-   /* window1 = new Window({
-        parentDiv: 'desktopDiv',
-        name: 'test1',
-        isModal: false,
-        mainDivCSSClass: 'modal-window-welcome'
-    });
-
-    window1.setupDragElement(window1.mainDiv);
-    window1.loadHTML('/static/modal_window/welcomePage.html', function(event) {
-        $('#welcomePageCloseButton').on('click', {modal: window1}, function (event) {
-            event.data.modal.hideWindow();
-        });
-    });
-    window1.showWindow();
-*/
-
-    // Тест окон
-
+    /*
     var window2 = new Window({
         parentDiv: 'desktopDiv',
         name: 'editor_toolbar',
@@ -95,12 +52,10 @@ $(document).ready(function () {
         contentDiv: 'editorToolbarContentDiv',
         checkTypeMarkers: true
     });
-
-
+    */
 });
 
 var myMap;
-var currentEditor;
 // Репозитории я решил выносить сюда
 var repositoryMO;
 // Путь к карте на сервере

@@ -1,12 +1,21 @@
-function initFreeCam(editor) {
-    editor._turnOn = turnOnFreeCam;
-    editor._turnOff = turnOffFreeCam;
-}
+var EditorFreeCam = (function (_super) {
+    __extends(EditorFreeCam, _super);
 
-function turnOnFreeCam() {
-    return null;
-}
+    function EditorFreeCam() {
+        _super.call(this);
+    }
 
-function turnOffFreeCam() {
-    return null;
-}
+    EditorFreeCam.prototype._turnOn = function () {
+        //alert('EditorFreeCam.prototype._turnOn');
+        return null;
+    };
+
+    EditorFreeCam.prototype._turnOff = function () {
+        //alert('EditorFreeCam.prototype._turnOff');
+        return null;
+    };
+
+    return EditorFreeCam;
+})(EditorBase);
+
+var editorFreeCam;
