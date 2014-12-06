@@ -10,7 +10,6 @@ var MessageStream = (function () {
 
     }
 
-
     MessageStream.prototype.addEvent = function(event){
         // event = {key: message | invite_room | leave_room | ... text-type of event,
         //          cbFunc: func
@@ -19,7 +18,6 @@ var MessageStream = (function () {
         if (typeof(event.cbFunc) === 'function')
             this.eventList.push(event);
     };
-
 
     MessageStream.prototype.runEvents = function(msg){
         var delet_list = [];
@@ -40,7 +38,6 @@ var MessageStream = (function () {
         }
     };
 
-
     return MessageStream;
 })();
 
@@ -55,21 +52,16 @@ var MessageConnector = (function () {
 
     }
 
-
     // Получение сообщения от сервер-коннекторов, т.е. евенты для in_stream
     MessageConnector.prototype.receiveMessage = function(msg){
         //alert('MessageConnector receiveMessage');
         this.in_stream.runEvents(msg);
     };
 
-
     // Получение сообщения от клиент-объектов, т.е. евенты для out_stream
     MessageConnector.prototype.sendMessage = function(msg){
         this.out_stream.runEvents(msg)
     };
-
-
-
 
     MessageConnector.prototype.addInEvent = function(event){
         this.in_stream.addEvent(event);
@@ -78,7 +70,6 @@ var MessageConnector = (function () {
     MessageConnector.prototype.addOutEvent = function(event){
         this.out_stream.addEvent(event);
     };
-
 
     return MessageConnector;
 })();

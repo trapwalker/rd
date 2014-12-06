@@ -9,7 +9,7 @@ var ViewMessenger = (function (_super) {
             width: 300,
             _visible: true,
             mesCountInChat: 30,
-            connector: null}, this.options);
+            stream_mes: null}, this.options);
         if (options) setOptions(options, this.options);
 
         // Запихиваем чат в отдельное окно
@@ -119,11 +119,23 @@ var ViewMessenger = (function (_super) {
 
         
         // повесить хендлеры на разные эвенты
-        var connector = this.options.connector;
+        var stream = this.options.stream_mes;
 
-        connector.addInEvent({
+        stream.addInEvent({
             key: 'message',
             cbFunc: this.receiveMessage,
+            subject: this
+        });
+
+        stream.addInEvent({
+            key: 'ws_message',
+            cbFunc: this.receiveMessageFromWS,
+            subject: this
+        });
+
+        stream.addOutEvent({
+            key: 'ws_message_send',
+            cbFunc: this.receiveMessageFromModelManager,
             subject: this
         });
 
@@ -388,8 +400,8 @@ var ViewMessenger = (function (_super) {
         // todo: переделать на отправку сообщения через объект-интерфейс и передавать туда ссылку на активный чат
         var str = chat.vMI.val();
         if (str.length) {
-            //chat.options.connector.sendChatMessage(chat.getActiveChat().id, str);
-            chat.options.connector.sendMessage(
+            //chat.options.stream_mes.sendChatMessage(chat.getActiveChat().id, str);
+            chat.options.stream_mes.sendMessage(
                 {
                     type: 'send_chat_message',
                     body: {
@@ -430,6 +442,25 @@ var ViewMessenger = (function (_super) {
 
     ViewMessenger.prototype.receiveMessage = function (self, params) {
         self.addMessage(params.chatID, params.chatName, params.user, params.text);
+        return true;
+    };
+
+
+    // вывод входящих ws-сообщений в лог
+    ViewMessenger.prototype.receiveMessageFromWS = function(self, msg){
+        //alert('ViewMessenger receiveMessageFromWS');
+
+
+
+        return true;
+    };
+
+    // вывод исходящих через ws сообщений
+    ViewMessenger.prototype.receiveMessageFromModelManager = function(self, msg){
+        //alert('ViewMessenger receiveMessageFromModelManager');
+
+
+
         return true;
     };
 

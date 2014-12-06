@@ -42,11 +42,15 @@ var JabberConnector = (function(_super){
 
         // создание коннекта и обвешивание евентами
         this.connection = new Strophe.Connection(this.options.adress_server);
+    }
+
+
+    JabberConnector.prototype.connect = function(){
         var self = this;
         this.connection.connect(this.options.jid, this.options.password, function (status) {
                 // иначе нельзя, так как нужно использовать self
                 if (status == Strophe.Status.CONNECTING) {
-                    alert('Strophe is connecting.');
+                    //alert('Strophe is connecting.');
                 }
                 else if (status == Strophe.Status.CONNFAIL) {
                     alert('Strophe failed to connect.');
@@ -58,7 +62,7 @@ var JabberConnector = (function(_super){
                     alert('Strophe is disconnected.');
                 }
                 else if (status == Strophe.Status.CONNECTED) {
-                    alert('Strophe is connected, ' + self.connection.jid);
+                    //alert('Strophe is connected, ' + self.connection.jid);
                     //addHandler: function (handler, ns, name, type, id, from, options)
                     self.connection.addHandler(self.receiveMessage, null, 'message', null, null, null);
                     self.connection.addHandler(self.onGroupInvite, "jabber:x:conference", null, null, null, null);
@@ -73,8 +77,7 @@ var JabberConnector = (function(_super){
                 }
             }
         );
-
-    }
+    };
 
     // автоматический приём приглашения в группу
     JabberConnector.prototype.onGroupInvite = function (msg) {
@@ -88,7 +91,6 @@ var JabberConnector = (function(_super){
         return true;
     };
 
-
     JabberConnector.prototype.sendMessage = function(self, msg){
         // alert('sendMessage');
         var mes = self.encodeMessage(msg);
@@ -100,7 +102,6 @@ var JabberConnector = (function(_super){
 
         return true;
     };
-
 
     JabberConnector.prototype._forGenPrivateMessage = function(msg){
         //alert('_forGenPrivateMessage');
@@ -181,12 +182,13 @@ var WSConnector = (function(_super){
         if (options) setOptions(options, this.options);
 
         this.isConnected = false;
+        this.connection = {};
+       }
 
+    WSConnector.prototype.connect = function(){
         // создание коннекта и обвешивание евентами
         this.connection = new WebSocket(this.options.url);
-
         var self = this;
-
         this.connection.onopen = function() {
             self.isConnected = true;
 
@@ -218,20 +220,15 @@ var WSConnector = (function(_super){
             })
 
         };
-
-
-
-    }
-
+    };
 
     WSConnector.prototype.sendMessage = function(self, msg){
-        // alert('sendMessage');
+        //alert('WSConnector sendMessage');
         var mes = self.encodeMessage(msg);
         self.connection.send(JSON.stringify(mes));
 
         return true;
     };
-
 
     WSConnector.prototype.receiveMessage = function(msg){
         //alert('WSConnector receiveMessage');
@@ -250,15 +247,14 @@ var WSConnector = (function(_super){
         // todo: конкретизировать типы мессаджей, например push, answer и тд
         return {
             type: 'ws_message',
-            body: {
-                body: msg
-            }
+            body: msg
+
         };
     };
 
     WSConnector.prototype.encodeMessage = function(msg){
         //alert('WSConnector encodeMessage');
-        return msg.body;
+        return msg;
     };
 
 
