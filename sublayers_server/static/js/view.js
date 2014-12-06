@@ -25,8 +25,6 @@ function redrawMap() {
    //     sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
 //}
 
-
-
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
     myMap._mouseDowned = true;
@@ -39,8 +37,8 @@ function onMouseDownMap(mouseEventObject){
     }, 400);
 }
 
-
 function onMouseUpMap(mouseEventObject) {
+    //alert('onMouseUpMap');
     // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
     if (radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
@@ -57,7 +55,6 @@ function onMouseUpMap(mouseEventObject) {
     // фолсим флаг нажатия
     myMap._mouseDowned = false;
 }
-
 
 function onMouseMoveMap(mouseEventObject) {
     var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
@@ -81,8 +78,6 @@ function onMouseMoveMap(mouseEventObject) {
     }
 }
 
-
-
 function onMouseOutMap(){
     if(radialMenuTimeout)
         clearTimeout(radialMenuTimeout);
@@ -94,7 +89,6 @@ function onMouseOutMap(){
         userCarMarker.sectorsView.setSelectedToNormalState();
     }
 }
-
 
 function onZoomStart(event) {
     clearInterval(timer);
@@ -135,6 +129,7 @@ function createTileLayer(storage) {
         tileLayerShow.addTo(myMap);
 }
 
+
 $(document).ready(function () {
     //Если есть файл map_base_local.js, то брать карту из локального каталога
     if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
@@ -156,8 +151,15 @@ $(document).ready(function () {
 
     // Инициализация.
     ModelInit();
-    wsjson = new WSJSON();
+    message_stream = new MessageConnector();
+    ws_connector = new WSConnector();
+    j_connector = new JabberConnector({
+        jid: 'menkent@menkent-desktop/subclient',
+        password: '1',
+        adress_server: 'http://localhost:5280/http-bind'
+    });
     rpcCallList = new RPCCallList();
+    model_manager = new ModelManager();
 
     myMap = L.map('map',
         {
@@ -203,20 +205,14 @@ $(document).ready(function () {
     chat = new ViewMessenger({
             parentDiv: 'chatArea',
             height: (cookieStorage.flagDebug ? 550 : 250),
-            width: (cookieStorage.flagDebug ? 400 : 400)
+            width: (cookieStorage.flagDebug ? 400 : 400),
+            stream_mes: message_stream
     });
-    chat.addChat(chat.systemsChats.broadcast.id, chat.systemsChats.broadcast.name);
-    if (cookieStorage.optionsChatPush)
-        chat.addChat(chat.systemsChats.push.id, chat.systemsChats.push.name);
-    if (cookieStorage.optionsChatSystemLog)
-        chat.addChat(chat.systemsChats.system.id, chat.systemsChats.system.name);
-    if (cookieStorage.optionsChatAnswer)
-        chat.addChat(chat.systemsChats.answer.id, chat.systemsChats.answer.name);
-    if (cookieStorage.optionsChatRPC)
-        chat.addChat(chat.systemsChats.rpc.id, chat.systemsChats.rpc.name);
-    chat.setActiveChat(cookieStorage.chatActiveID);
-    chat.setVisible(cookieStorage.chatVisible);
+    //chat.setActiveChat(-1);
+    chat.showChatWindow();
+    chat.setupDragElement(chat.vMHA);
     chat.setMessagesHistory(cookieStorage.historyArray);
+    chat.addChat(-1, "-= L O G =-");
 
 
     carMarkerList = new CarMarkerList({_map: myMap});
@@ -231,6 +227,11 @@ $(document).ready(function () {
     };
 
 
+    // Когда всё загружено и создано вызвать коннекты к серверу
+    j_connector.connect();
+    ws_connector.connect();
+
+
     //alert(window.location);
 
     // Не показывать окно приветствия в debug режиме
@@ -238,6 +239,7 @@ $(document).ready(function () {
    //     modalWindow.modalWelcomeShow();
 
 });
+
 
 //Переключение в полноэкранный режим и обратно по кнопке
 function FullScreenToggle() {
@@ -255,7 +257,6 @@ function FullScreenToggle() {
         jSelector.addClass('buttonFullScreenOff');
     }
 }
-
 
 function funcModalOptionsShow(){
     modalWindow.modalOptionsShow();
@@ -276,7 +277,6 @@ function ConnectServerToggle() {
     window.location.reload();
 }
 
-
 function setClientState(state){
     if(state === 'death_car'){
         // Перевести клиент в состояние, пока машинка мертва
@@ -291,14 +291,12 @@ function setClientState(state){
 
 }
 
-
 function showWinLoseMessage(winner){
     if(user.party.name === winner)
         modalWindow.modalWinShow();
     else
         modalWindow.modalLoseShow();
 }
-
 
 // Реализация выстрелов при crazy режиме
 function crazyShooting(){
@@ -321,7 +319,6 @@ function setTitleOnPage(){
     else
         $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
 }
-
 
 // Функция показа кол-ва минут до следующих 15-ти минут
 function showTimeToResetServer(servTime){
@@ -378,6 +375,11 @@ var controllers;
 var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
+var message_stream;
+var model_manager;
+var j_connector;
+var ws_connector;
+
 
 // Массив иконок
 var iconsLeaflet;

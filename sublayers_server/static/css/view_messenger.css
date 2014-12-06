@@ -4,8 +4,6 @@
     border-style: solid;
     border-width: 2px;
     border-radius: 3px;
-    bottom: 6px; /*отступ для рамки*/
-    left: 10px; /*отступ для рамки*/
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.6);
 }

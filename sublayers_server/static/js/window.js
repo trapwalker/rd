@@ -1,12 +1,14 @@
 var Window = (function () {
     function Window(options) {
-        this.options = {
+        // Нужно именно так, из-за наследования, иначе this.options наследника затрет
+        // родительский this.options (или наоборот, в зависимоти от порядка вызовов)
+        if (!this.options) this.options = {};
+        setOptions({
             name: '',
             parentDiv: '',
             mainDivCSSClass: '',
-            isModal: false,
-        };
-        setOptions(options, this.options);
+            isModal: false}, this.options);
+        if (options) setOptions(options, this.options);
 
         // создание структуры дивов
         if (this.options.name == '')
@@ -57,6 +59,12 @@ var Window = (function () {
             this.modalDiv.css('display', 'none');
         else this.mainDiv.css('display', 'none');
     };
+
+
+    Window.prototype.setNewSize = function (height, width) {
+        if (height) this.mainDiv.height(height);
+        if (width) this.mainDiv.width(width);
+    }
 
     return Window;
 })();

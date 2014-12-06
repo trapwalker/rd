@@ -1,56 +1,32 @@
-var ViewMessenger = (function () {
+var ViewMessenger = (function (_super) {
+    __extends(ViewMessenger, _super);
+
     function ViewMessenger(options) {
-        this.options = {
+        if (!this.options) this.options = {};
+        setOptions({
             parentDiv: '',
             height: 400,
             width: 300,
             _visible: true,
-            mesCountInChat: 30
-        };
+            mesCountInChat: 30,
+            stream_mes: null}, this.options);
+        if (options) setOptions(options, this.options);
+
+        // Запихиваем чат в отдельное окно
+        _super.call(this, {
+            name: 'ChatWindow',
+            parentDiv: this.options.parentDiv
+        });
 
         this.chats = [];
-
-        // TODO: сделать функции для добавления системных чатов
-        this.systemsChats = {
-            broadcast: {
-                id: 0,
-                name: 'broadcast'
-            },
-            push: {
-                id: -1,
-                name: 'log-push'
-            },
-            system: {
-                id: -2,
-                name: 'system'
-            },
-            answer: {
-                id: -3,
-                name: 'log-answer'
-            },
-            rpc: {
-                id: -4,
-                name: 'log-rpc'
-            }
-        };
-
-        if (options) {
-            if (options.parentDiv) this.options.parentDiv = options.parentDiv;
-            if (options.height) this.options.height = options.height;
-            if (options.width) this.options.width = options.width;
-        }
-
-        // Счётчик сообщений лога.
-        this.pushID = 0;
-        this.rpcID = 0;
-        this.ansID = 0;
+        this.log_index = 0;
 
         //добавление основного дива
         this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
         this.vMA.css({width: this.options.width});
-        $("#" + this.options.parentDiv).append(this.vMA);
+        //$("#" + this.options.parentDiv).append(this.vMA);
+        this.mainDiv.append(this.vMA);
 
-        //создание заголовка
         //добавление верхнего дива с заголовком и кнопками
         this.vMHA = $("<div id='viewMessengerHeaderArea'></div>");
         this.vMA.append(this.vMHA);
@@ -137,11 +113,41 @@ var ViewMessenger = (function () {
         });
 
         // Установка активного чата по умолчанию
-        this._activeChatID = 0;
+        this._activeChatID = null;
         // Инициализация истории сообщений
         this._history = [];
         this._historyIndex = -1;
+
+        
+        // повесить хендлеры на разные эвенты
+        var stream = this.options.stream_mes;
+
+        stream.addInEvent({
+            key: 'message',
+            cbFunc: this.receiveMessage,
+            subject: this
+        });
+
+        stream.addInEvent({
+            key: 'ws_message',
+            cbFunc: this.receiveMessageFromWS,
+            subject: this
+        });
+
+        stream.addOutEvent({
+            key: 'ws_message_send',
+            cbFunc: this.receiveMessageFromModelManager,
+            subject: this
+        });
+
     }
+
+
+    ViewMessenger.prototype.showChatWindow = function () {
+        this.showWindow();
+        // todo: придумать как учесть размеры границ (box-sizing)
+        this.setNewSize(this.vMA.height() + 4, this.vMA.width() + 4);
+    };
 
 
     ViewMessenger.prototype.changeVisible = function (event) {
@@ -157,7 +163,11 @@ var ViewMessenger = (function () {
                 self.vMSB.removeClass('viewMessengerSlideButtonHided');
                 self.vMSB.addClass('viewMessengerSlideButtonShowed');
             }
+
+            // todo: придумать как учесть размеры границ (box-sizing)
+            self.setNewSize(self.vMA.height() + 4, self.vMA.width() + 4);
         });
+
     };
 
 
@@ -184,7 +194,8 @@ var ViewMessenger = (function () {
             name: aName,
             textArea: $('<div id="textArea' + aID + '" class="textOutArea"></div>'),
             pageButton: $('<div id="pageButton' + aID + '" class="pageButton sublayers-clickable">' + aName + '</div>'),
-            mesList: []
+            mesList: [],
+            mesCount: 0
         }
 
         this.vMTA.append(chat.textArea);
@@ -194,7 +205,7 @@ var ViewMessenger = (function () {
 
         this.vMTA.css({height: parseInt(this.vMDA.css('height')) -
                                parseInt(this.vMFA.css('height')) -
-                               parseInt(this.vMPC.css('height'))-
+                               parseInt(this.vMPC.css('height')) -
                                2 * parseInt(this.vMTA.css('border-image-width'))});
 
         this.chats.push(chat);
@@ -203,9 +214,10 @@ var ViewMessenger = (function () {
         return chat;
     }
 
+
     ViewMessenger.prototype.removeChat = function(chatID){
-        // Если этот чат активный, то сделать активным броадкаст
-        if (this._activeChatID == chatID) this.setActiveChat(0);
+        // Если этот чат активный, то сделать активным нулевой
+        var setNewActive = (this._activeChatID == chatID);
         // получить чат
         var chat = this._getChat(chatID);
         if(! chat) return;
@@ -223,124 +235,88 @@ var ViewMessenger = (function () {
                 index = i;
         }
         this.chats.splice(index, 1);
+        if (setNewActive) {
+            if (this.chats.length > 0)
+                this.setActiveChat(this.chats[0].id);
+            else
+                this._activeChatID = null
+        }
     };
 
-    ViewMessenger.prototype.manageSystemChats = function(localSet){
-        // Настройка optionsChatPush
-        if (localSet.optionsChatPush) {
-            if (!this._getChat(this.systemsChats.push.id))
-                this.addChat(this.systemsChats.push.id, this.systemsChats.push.name);
-        }
-        else
-            this.removeChat(this.systemsChats.push.id);
-
-        // Настройка optionsChatRPC
-        if (localSet.optionsChatRPC) {
-            if (!this._getChat(this.systemsChats.rpc.id))
-                this.addChat(this.systemsChats.rpc.id, this.systemsChats.rpc.name);
-        }
-        else
-            this.removeChat(this.systemsChats.rpc.id);
-
-        // Настройка optionsChatAnswer
-        if (localSet.optionsChatAnswer) {
-            if (!this._getChat(this.systemsChats.answer.id))
-                this.addChat(this.systemsChats.answer.id, this.systemsChats.answer.name);
-        }
-        else
-            this.removeChat(this.systemsChats.answer.id);
-
-        // Настройка optionsChatSystemLog
-        if (localSet.optionsChatSystemLog) {
-            if (!this._getChat(this.systemsChats.system.id))
-                this.addChat(this.systemsChats.system.id, this.systemsChats.system.name);
-        }
-        else
-            this.removeChat(this.systemsChats.system.id);
-    };
 
     ViewMessenger.prototype.setActiveChat = function(aID){
-        this.chats.forEach(function (chat) {
-                if (chat.id == this.id) {
-                    chat.textArea.addClass('textOutAreaActive');
-                    chat.pageButton.addClass('pageButtonActive');
-                    this.self.vMHTS.text('[' + chat.name + ']');
-                }
-                else {
-                    chat.textArea.removeClass('textOutAreaActive');
-                    chat.pageButton.removeClass('pageButtonActive');
-                }
-            },
-            {self: this, id: aID});
+        // если чата с таким aID не существует, то ничего не делать
+        if (this._getChat(aID)) {
+            this.chats.forEach(function (chat) {
+                    if (chat.id == this.id) {
+                        chat.textArea.addClass('textOutAreaActive');
+                        chat.pageButton.addClass('pageButtonActive');
+                        this.self.vMHTS.text('[' + chat.name + ']');
+                    }
+                    else {
+                        chat.textArea.removeClass('textOutAreaActive');
+                        chat.pageButton.removeClass('pageButtonActive');
+                    }
+                },
+                {self: this, id: aID});
 
-        this._activeChatID = aID;
+            this._activeChatID = aID;
+        }
+    }
+
+    ViewMessenger.prototype.getActiveChat = function() {
+        return this._getChat(this._activeChatID);
     }
 
 
     ViewMessenger.prototype._getChat = function (chatID) {
-        // Найти чат
         for (var i in this.chats) {
             if (this.chats[i])
                 if (this.chats[i].id == chatID)
                     return this.chats[i];
         }
-        // Если чата нет, то создать новый и его же вернуть
-        // return this.addChat(chatID, 'какой-то текст или логин');
         return null;
     }
 
+
     ViewMessenger.prototype._getChatByName = function (chatName) {
-        // Найти чат
         for (var i in this.chats) {
             if (this.chats[i])
                 if (this.chats[i].name === chatName)
                     return this.chats[i];
         }
-        // Если чата нет, то создать новый и его же вернуть
-        // return this.addChat(chatID, 'какой-то текст или логин');
         return null;
-    }
+    };
 
 
-    ViewMessenger.prototype.addMessage = function (chatID, messageID, aTime, aUser, aText) {
+    ViewMessenger.prototype.addMessage = function (chatID, chatName, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
-        if(! chat) return;
-        // Отформатировать время
-        var tempTime = aTime.toTimeString().split(' ')[0];
+        if(! chat) chat = this.addChat(chatID, chatName, false);
+        var messageID = chat.mesCount++;
+        // получить локальное время
+        var tempTime = new Date().toLocaleTimeString();
         // создать див сообщения и спаны
         var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="view-messenger-message"></div>');
         var spanTime = $('<span class="view-messenger-text-time">' + '[' + tempTime + '] ' + '</span>');
         var spanUser = $('<span class="view-messenger-text-user sublayers-clickable">' + aUser.login + '</span>');
         var spanText = $('<span class="view-messenger-text-text">' + ': ' + aText + '</span>');
-
-        // проверить, если мессадж с таким айди уже есть, то заменить в нём текст
-        if ($("#" + chat.name+chatID+messageID + ' span:last-child').length) {
-            $("#" + chat.name+chatID+messageID + ' span:last-child').text(aText);
-            return;
-        }
-
         // Добавить, предварительно скрыв
         mesDiv.hide();
         chat.textArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanUser);
         mesDiv.append(spanText);
-
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
-        if (chat.id >= 0)
-            spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
-
+        spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if(aUser.login == user.login)
             spanUser.addClass("view-messenger-text-my-user");
-        // Показать сообщение, опустивскрол дива
+        // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
-
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
-
-        // Удалить старые сообщения, предварительно сняв с них
+        // Удалить старые сообщения, предварительно сняв с них всё
         if(chat.mesList.length > this.options.mesCountInChat){
             var dmessage = chat.mesList.shift();
             dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
@@ -348,6 +324,7 @@ var ViewMessenger = (function () {
         }
 
     };
+
 
     ViewMessenger.prototype._removeAllMessagesInChat = function(chat){
         for(;chat.mesList.length;){
@@ -357,24 +334,6 @@ var ViewMessenger = (function () {
         }
     };
 
-
-    ViewMessenger.prototype.addMessageToLog = function(aText, aLogType) {
-        if (aLogType == "rpc") {
-            this.rpcID++;
-            this.addMessage(-4, this.rpcID, new Date(), {login: 'RPC к серверу #' + this.rpcID},  '<pre>' + aText + '</pre>');
-        }
-
-        if (aLogType == "answer") {
-            this.ansID++;
-            this.addMessage(-3, this.ansID, new Date(), {login: 'Answer от сервера #' + this.ansID}, '<pre>' + aText + '</pre>');
-        }
-
-        if (aLogType == "push") {
-            this.pushID++;
-            this.addMessage(-1, this.pushID, new Date(), {login: 'Push от сервера #' + this.pushID}, '<pre>' + aText + '</pre>');
-        }
-
-    };
 
     ViewMessenger.prototype.addMessageToHistory = function(mes){
         // Сверить с нулевый элементом истории, если совпадает, то не добавлять. Иначе добавить
@@ -390,6 +349,7 @@ var ViewMessenger = (function () {
         this._historyIndex = -1;
     };
 
+
     ViewMessenger.prototype.setMessagesHistory = function(mess){
         // Добавить все элементы истории (при чтении из куки) в чат, читать массив с конца
         for(;mess.length > 0;){
@@ -397,7 +357,6 @@ var ViewMessenger = (function () {
             this.addMessageToHistory(mes);
         }
     };
-
 
     // Установить в инпут сообщение из истории под заданным индексом
     // TODO: при установке сообщения переместить картеку в конец строки
@@ -427,7 +386,6 @@ var ViewMessenger = (function () {
         chat._setInputHistoryMessage();
     };
 
-
     // Установить предыдущее сообщение в инпут, более новое!!!
     ViewMessenger.prototype.setPrevHistoryMessage = function () {
         chat._historyIndex--;
@@ -438,19 +396,24 @@ var ViewMessenger = (function () {
         chat._setInputHistoryMessage();
     };
 
-    ViewMessenger.prototype.addMessageToSystem = function (messID, aText) {
-        this.addMessage(-2, messID, new Date(), {login: '#'}, aText);
-    }
-
 
     ViewMessenger.prototype.viewMessengerSendMessage = function() {
         var str = chat.vMI.val();
         if (str.length) {
-            if (chat._activeChatID >= 0) {
-                sendChatMessage(str);
-            } else {
-                sendServConsole(str);
-            }
+            var active = chat.getActiveChat();
+            if (active)
+                // TODO: переделать здесь как-нибудь иначе
+                if (active.id != -1)  // если это не лог-чат
+                    chat.options.stream_mes.sendMessage(
+                        {
+                            type: 'send_chat_message',
+                            body: {
+                                to: chat.getActiveChat().id,
+                                body: str
+                            }}
+                    );
+                else
+                    sendServConsole(str); // попробовать отправить команду на сервер
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);
@@ -466,10 +429,10 @@ var ViewMessenger = (function () {
 
 
     ViewMessenger.prototype.viewMessengerClickSpanUser = function (event) {
-        var owner = event.data.owner;
         // подстветить все машинки данного пользователя
+        var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
-        if (cookieStorage.optionsSelectAnybody)
+        if (cookieStorage.optionsSelectAnybody && owner.cars)
             for (var i = 0; i < owner.cars.length; i++) {
                 if (listMapObject.exist(owner.cars[i].ID)) {
                     var car = listMapObject.objects[owner.cars[i].ID];
@@ -481,5 +444,40 @@ var ViewMessenger = (function () {
             }
     };
 
+
+    ViewMessenger.prototype.receiveMessage = function (self, params) {
+        self.addMessage(params.chatID, params.chatName, params.user, params.text);
+        return true;
+    };
+
+
+    // вывод входящих ws-сообщений в лог
+    ViewMessenger.prototype.receiveMessageFromWS = function(self, msg){
+        //alert('ViewMessenger receiveMessageFromWS');
+        if (msg.message_type == "push") {
+            if (cookieStorage.enableLogPushMessage())
+            // if (msg.events[0].cls !== "Update")
+                self._addMessageToLog(JSON.stringify(msg, null, 4), 'push');
+        }
+        if (msg.message_type == "answer")
+            if (cookieStorage.enableLogAnswerMessage())
+                self._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
+        return true;
+    };
+
+    // вывод исходящих через ws сообщений
+    ViewMessenger.prototype.receiveMessageFromModelManager = function(self, msg){
+        //alert('ViewMessenger receiveMessageFromModelManager');
+        if(cookieStorage.enableLogRPCMessage())
+            self._addMessageToLog(JSON.stringify(msg, null, 4), 'rpc');
+        return true;
+    };
+
+    ViewMessenger.prototype._addMessageToLog = function(mes, name){
+        // alert('ViewMessenger    addMessageToLog');
+        this.log_index++;
+        this.addMessage(-1, '', {login: name + ' #' + this.log_index},  '<pre>' + mes + '</pre>');
+    };
+
     return ViewMessenger;
-})();
+})(Window);
