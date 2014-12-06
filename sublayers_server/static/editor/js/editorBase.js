@@ -1,5 +1,5 @@
 var EditorBase = (function () {
-    function EditorBase(initEditor) {
+    function EditorBase() {
         this.toolButtons = [];
         this.activateButton = null;
 
@@ -9,8 +9,6 @@ var EditorBase = (function () {
         this.startLatLng = {};
         this.selectRect = {};
         this.selectRectBound = {};
-
-        if (typeof(initEditor) === 'function') initEditor(this);
     }
 
     EditorBase.prototype.turnOn = function () {
@@ -89,7 +87,7 @@ var EditorBase = (function () {
 function initEditors(){
     editorFreeCam = new EditorFreeCam();
     editorSelectArea = new EditorSelectArea();
-    editorMapObjects = new EditorBase(initMapObjects);
+    editorMapObjects = new EditorMapObjects();
 }
 
 
@@ -124,6 +122,12 @@ function mouseUpMain(event) {
         currentEditor.mouseUp(event);
 }
 
+function mouseClickMain(event) {
+    //alert('mouseClickMain');
+    if (typeof(currentEditor.mouseClick) === 'function')
+        currentEditor.mouseClick(event);
+}
+
 
 // Механизм переключения между редакторами
 // Включение режима свободной камеры
@@ -156,6 +160,3 @@ function changeCurrentEditor(newEditor) {
 }
 
 var currentEditor;
-var editorFreeCam;
-var editorSelectArea
-var editorMapObjects;

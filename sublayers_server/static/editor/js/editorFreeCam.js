@@ -3,7 +3,6 @@ var EditorFreeCam = (function (_super) {
 
     function EditorFreeCam() {
         _super.call(this);
-        this.isShiftDown = false;
     }
 
     EditorFreeCam.prototype._turnOn = function () {
@@ -18,3 +17,5 @@ var EditorFreeCam = (function (_super) {
 
     return EditorFreeCam;
 })(EditorBase);
+
+var editorFreeCam;

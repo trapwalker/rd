@@ -25,3 +25,5 @@ var EditorSelectArea = (function (_super) {
 
     return EditorSelectArea;
 })(EditorBase);
+
+var editorSelectArea;
