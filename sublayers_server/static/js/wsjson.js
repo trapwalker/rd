@@ -174,11 +174,7 @@ function sendServConsole(atext) {
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
-function receiveMesFromServ(data){
-    var mes = JSON.parse(data, function(key, value){
-        if((key === 'time') || (key === 'start_time')) return new Date(value * 1000).getTime();
-        return value;
-    });
+function receiveMesFromServ(mes){
     // если message_type = push
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
@@ -276,7 +272,7 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "ChatMessage" || event.cls === "Chat") {
                 // chat_message
-                chat.addMessage(0, event.id, new Date(servtime), getOwner(event.author), event.text);
+                chat.addMessage(-1, '', getOwner(event.author), event.text);
             }
             if (event.cls === "WinMessage") {
                 if(event.winner){

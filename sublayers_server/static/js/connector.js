@@ -244,10 +244,14 @@ var WSConnector = (function(_super){
 
     WSConnector.prototype.decodeMessage = function(msg){
         // alert('WSConnector decodeMessage');
+        var mes = JSON.parse(msg, function(key, value){
+            if((key === 'time') || (key === 'start_time')) return new Date(value * 1000).getTime();
+            return value;
+        });
         // todo: конкретизировать типы мессаджей, например push, answer и тд
         return {
             type: 'ws_message',
-            body: msg
+            body: mes
 
         };
     };

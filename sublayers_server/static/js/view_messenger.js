@@ -19,6 +19,7 @@ var ViewMessenger = (function (_super) {
         });
 
         this.chats = [];
+        this.log_index = 0;
 
         //добавление основного дива
         this.vMA = $("<div id='viewMessengerArea' class='sublayers-unclickable'></div>");
@@ -397,18 +398,22 @@ var ViewMessenger = (function (_super) {
 
 
     ViewMessenger.prototype.viewMessengerSendMessage = function() {
-        // todo: переделать на отправку сообщения через объект-интерфейс и передавать туда ссылку на активный чат
         var str = chat.vMI.val();
         if (str.length) {
-            //chat.options.stream_mes.sendChatMessage(chat.getActiveChat().id, str);
-            chat.options.stream_mes.sendMessage(
-                {
-                    type: 'send_chat_message',
-                    body: {
-                        to: chat.getActiveChat().id,
-                        body: str
-                    }}
-            );
+            var active = chat.getActiveChat();
+            if (active)
+                // TODO: переделать здесь как-нибудь иначе
+                if (active.id != -1)  // если это не лог-чат
+                    chat.options.stream_mes.sendMessage(
+                        {
+                            type: 'send_chat_message',
+                            body: {
+                                to: chat.getActiveChat().id,
+                                body: str
+                            }}
+                    );
+                else
+                    sendServConsole(str); // попробовать отправить команду на сервер
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);
@@ -449,19 +454,29 @@ var ViewMessenger = (function (_super) {
     // вывод входящих ws-сообщений в лог
     ViewMessenger.prototype.receiveMessageFromWS = function(self, msg){
         //alert('ViewMessenger receiveMessageFromWS');
-
-
-
+        if (msg.message_type == "push") {
+            if (cookieStorage.enableLogPushMessage())
+            // if (msg.events[0].cls !== "Update")
+                self._addMessageToLog(JSON.stringify(msg, null, 4), 'push');
+        }
+        if (msg.message_type == "answer")
+            if (cookieStorage.enableLogAnswerMessage())
+                self._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
         return true;
     };
 
     // вывод исходящих через ws сообщений
     ViewMessenger.prototype.receiveMessageFromModelManager = function(self, msg){
         //alert('ViewMessenger receiveMessageFromModelManager');
-
-
-
+        if(cookieStorage.enableLogRPCMessage())
+            self._addMessageToLog(JSON.stringify(msg, null, 4), 'rpc');
         return true;
+    };
+
+    ViewMessenger.prototype._addMessageToLog = function(mes, name){
+        // alert('ViewMessenger    addMessageToLog');
+        this.log_index++;
+        this.addMessage(-1, '', {login: name + ' #' + this.log_index},  '<pre>' + mes + '</pre>');
     };
 
     return ViewMessenger;
