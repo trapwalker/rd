@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 from model.client_api import ClientAPI
-from model.clients import Client
+from model.client import Client
 
 
 class ClientSocketHandler(tornado.websocket.WebSocketHandler):

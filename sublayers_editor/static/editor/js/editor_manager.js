@@ -20,9 +20,23 @@ var EditorManager = (function(){
 
 
     EditorManager.prototype.receiveMessage = function (self, params) {
-        alert('EditorManager receiveMessage');
-        alert(params.body);
-        
+        //alert('EditorManager receiveMessage');
+        params.obj.id = params.obj._id['$oid'];
+
+        switch (params.cls){
+            case 'addObject':
+                repositoryMO.addObjectFromServer(params.obj.object_type, params.obj);
+                break;
+            case 'delObject':
+                repositoryMO.delObjectFromServer(params.obj.object_type, params.obj.id);
+                break;
+            case 'changeObject':
+                repositoryMO.changeObjectFromServer(params.obj.object_type, params.obj);
+                break;
+            default:
+                break;
+        }
+
         return true;
     };
 
@@ -34,10 +48,10 @@ var EditorManager = (function(){
         this.sendMessage(mes);
     };
 
-    EditorManager.prototype.delObject = function(obj){
+    EditorManager.prototype.delObject = function(id){
         var mes = {
             call: "delObject",
-            params: obj
+            params: {id: id}
         };
         this.sendMessage(mes);
     };

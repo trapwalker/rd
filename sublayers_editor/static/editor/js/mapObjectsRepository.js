@@ -232,8 +232,7 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.delObject = function (type, id) {
         //alert('delObject');
-        object.object_type = type;
-        editor_manager.delObject(object);
+        editor_manager.delObject(id);
     };
 
     MapObjectsRepository.prototype.changeObject = function (type, object) {
@@ -255,7 +254,7 @@ MapObjectsRepository = (function () {
         marker.type = type;
         if ((this.markerDragging)&&(this.markerDraggingEvent)) {
             marker.on('');
-            marker.dragging.enable('dragend', markerDraggingEvent);
+            marker.dragging.enable('dragend', this.markerDraggingEvent);
         }
         switch (type) {
             case 'town':

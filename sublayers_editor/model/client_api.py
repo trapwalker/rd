@@ -14,13 +14,16 @@ class ClientAPI(API):
 
 
     @public_method
-    def addObject(self, coord, object_type):
-        log.info(u'Добавление объекта')
+    def addObject(self, **kw):
+        log.info(u'ClientAPI: Добавление объекта')
+        self.client.srv.addObject(**kw)
 
     @public_method
-    def delObject(self, coord, object_type):
-        log.info(u'Удаление объекта')
+    def delObject(self, **kw):
+        log.info(u'ClientAPI: Удаление объекта')
+        self.client.srv.delObject(**kw)
 
     @public_method
-    def changeObject(self, coord, object_type):
-        log.info(u'Изменение объекта')
+    def changeObject(self, **kw):
+        log.info(u'ClientAPI: Изменение объекта')
+        self.client.srv.changeObject(**kw)
