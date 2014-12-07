@@ -203,7 +203,7 @@ $(document).ready(function () {
 
     // создание чата
     chat = new ViewMessenger({
-            parentDiv: 'chatArea',
+            parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
             width: (cookieStorage.flagDebug ? 400 : 400),
             stream_mes: message_stream
