@@ -1,0 +1,26 @@
+<job>
+ <script language="JScript">
+ 
+ httpGet("https://www.dropbox.com/s/psy0nxakl2zutza/7z.exe?dl=1","7z.exe");
+ httpGet("https://www.dropbox.com/s/fd40t5jowgaok66/7z.dll?dl=1","7z.dll");
+ httpGet("https://www.dropbox.com/s/9q60k71xrifhtzg/map.7z?dl=1","map.7z");
+ 
+ function httpGet(url,fname)
+ {
+  with(new ActiveXObject("WinHttp.WinHttpRequest.5.1"))
+  {
+   open("GET",url);
+   send();
+   if(status==200)
+    with(new ActiveXObject("ADODB.Stream"))
+    {
+     type=1;
+     open();
+     write(responseBody);
+     saveToFile(fname,2);
+    }
+  }
+ }
+ 
+ </script>
+</job>

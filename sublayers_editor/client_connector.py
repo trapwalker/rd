@@ -23,14 +23,14 @@ class ClientSocketHandler(tornado.websocket.WebSocketHandler):
 
 
     def on_close(self):
-        log.info('Agent %r socket Closed', self)
+        log.info('Client %r socket Closed', self)
         self.application.clients.remove(self)
         self.api.client.connection = None
 
     def on_message(self, message):
-        log.debug("Got message from %s: %r", self.agent, message)
-        result = self.api.__rpc_call__(message)
-        self.send(result)
+        log.info("Got message from %r", message)
+        self.api.__rpc_call__(message)
+        #self.send(result)
 
     def send(self, data):
         #log.debug('\n\nconnection.send(%s)', data)
