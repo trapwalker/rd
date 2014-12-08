@@ -6,6 +6,7 @@ $(document).ready(function () {
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
 
+
     // инициализация клиент-серверного взаимодействия
     message_stream = new MessageConnector();
     ws_connector = new WSConnector();
@@ -74,3 +75,6 @@ var mapBasePath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 var message_stream;
 var ws_connector;
 var editor_manager;
+
+// todo: узнать откуда брать это число, так как на клиенте оно не должно инициализироваться!
+var map_max_zoom = 18;

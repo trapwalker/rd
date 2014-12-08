@@ -58,9 +58,43 @@ MapObjectsRepository = (function () {
 
     // Работа с областью
 
-    MapObjectsRepository.prototype.requestArea = function (rect, filter) {
+    MapObjectsRepository.prototype.requestArea = function (latLngRect, filter) {
     //TODO: запрос к серверу, по выделенной области вернуть объекты по фильтру
-    }
+        var p1 = myMap.project(latLngRect.getNorthWest(), map_max_zoom);
+        var p2 = myMap.project(latLngRect.getSouthEast(), map_max_zoom);
+        var mes_obj = {
+            min_point: {
+                x: p1.x,
+                y: p1.y,
+                z: map_max_zoom + 8
+            },
+            max_point: {
+                x: p2.x,
+                y: p2.y,
+                z: map_max_zoom + 8
+            },
+            select_zoom: myMap.getZoom()
+        };
+        editor_manager.selectAreaByRect(mes_obj);
+
+/*
+        L.circleMarker(latLngRect.getNorthWest(), {color: '#FFBA12'})
+            .setRadius(16)
+            .bindPopup(
+                'LatLng: ' + latLngRect.getNorthWest() + '</br>' +
+                'Point:' + p1 + '</br>'
+        )
+            .addTo(myMap);
+
+        L.circleMarker(latLngRect.getSouthEast(), {color: '#FFBA12'})
+            .setRadius(16)
+            .bindPopup(
+                'LatLng: ' + latLngRect.getSouthEast() + '</br>' +
+                'Point:' + p1 + '</br>'
+        )
+            .addTo(myMap)
+            */
+    };
 
     MapObjectsRepository.prototype.dropArea = function () {
     //TODO: збросить все выделенные объекты
@@ -226,8 +260,16 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.addObject = function (type, object) {
         //alert('addObject');
-        object.object_type = type;
-        editor_manager.addObject(object);
+        var p = myMap.project(object.coord, map_max_zoom);
+        var mes_obj = {
+            object_type: type,
+            position: {
+                x: p.x,
+                y: p.y,
+                z: map_max_zoom + 8
+            }
+        };
+        editor_manager.addObject(mes_obj);
     };
 
     MapObjectsRepository.prototype.delObject = function (type, id) {
@@ -237,13 +279,24 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.changeObject = function (type, object) {
         //alert('changeObject');
-        object.object_type = type;
-        editor_manager.changeObject(object);
+        var p = myMap.project(object.coord, map_max_zoom);
+        var mes_obj = {
+            object_type: type,
+            id: object.id,
+            position: {
+                x: p.x,
+                y: p.y,
+                z: map_max_zoom + 8
+            }
+        };
+
+        editor_manager.changeObject(mes_obj);
     };
 
     MapObjectsRepository.prototype.addObjectFromServer = function (type, object) {
         // если входные данные не корректны то вывалиться отсюда
-        if (!((object) && (object.id) && (object.coord))) return;
+        if (!((object) && (object.id) && (object.position))) return;
+        object.coord = myMap.unproject([object.position.x, object.position.y], map_max_zoom);
         var marker = L.marker(object.coord, {
             clickable: true,
             keyboard: false}).addTo(myMap);
@@ -296,7 +349,8 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.changeObjectFromServer = function (type, object) {
         //alert('changeObjectFromServer');
-        if (!((object) && (object.id) && (object.coord))) return;
+        if (!((object) && (object.id) && (object.position))) return;
+        object.coord = myMap.unproject([object.position.x, object.position.y], map_max_zoom);
         var list;
         switch (type) {
             case 'town':

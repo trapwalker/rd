@@ -19,7 +19,7 @@ var EditorSelectArea = (function (_super) {
 
     EditorSelectArea.prototype.mouseUp = function (event) {
         if (this.isStartDraw)
-            repositoryMO.requestArea();
+            repositoryMO.requestArea(this.selectRectBound);
         _super.prototype.mouseUp.call(this, event);
     };
 

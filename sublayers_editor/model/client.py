@@ -54,3 +54,27 @@ class Client(object):
                 obj=obj
             )
             self.connection.send(dumps(mes))
+
+    def sendRects(self, rects):
+        log.info(u'Client: Отправка на клиента списка из прямоугольников')
+        mes = dict(
+            cls='sendRects',
+            obj=rects
+        )
+        self.connection.send(dumps(mes))
+
+    def selectAreaByRect(self, objects):
+        log.info(u'Client: Отправка на клиента списка объектов из прямоугольника, число объектов: %r', len(objects))
+        # запись объектов к себе в список
+        list_send = []
+        for obj in objects:
+            if not self.objects.has_key(obj[u'_id']):
+                self.objects[obj[u'_id']] = obj
+                list_send.append(obj)
+        mes = dict(
+            cls='answerSelectAreaByRect',
+            obj=list_send
+        )
+        log.info(u'Client:22222 Отправка на клиента списка объектов из прямоугольника, число объектов: %r', len(list_send))
+        self.connection.send(dumps(mes))
+

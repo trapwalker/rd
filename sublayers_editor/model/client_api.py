@@ -27,3 +27,8 @@ class ClientAPI(API):
     def changeObject(self, **kw):
         log.info(u'ClientAPI: Изменение объекта')
         self.client.srv.changeObject(**kw)
+
+    @public_method
+    def selectAreaByRect(self, **kw):
+        log.info(u'ClientAPI: Запрос объектов в прямоугольной области')
+        self.client.srv.selectAreaByRect(self.client, **kw)
