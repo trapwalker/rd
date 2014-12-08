@@ -87,6 +87,12 @@ if __name__ == "__main__":
     a = EditorServer(app=None)
     #a.db.geo_objects.insert({'type':'town','name':'test_town5', 'population': '4'})
 
+    # Индексация по тайл айди, который может быть НЕ уникальным
+    # >> use maindb
+    # >> db.geo_objects.ensureIndex({ u'tileid' : 1})
+    # a.db.geo_objects.ensureIndex({u'tileid' : 1})
+    print a.db.geo_objects.getIndexes()
+
     for e in a.db.geo_objects.find():
         print e
         #x, y, z = TileId(e[u'tileid']).xyz()
@@ -94,14 +100,4 @@ if __name__ == "__main__":
         #a.db.geo_objects.remove(e)
     print '========================='
 
-    tile_list = TileId.iter_rect(TileId(3568736587787329562L).parent_by_lvl(6), TileId(3582050608447807514).parent_by_lvl(6))
-    res = []
-
-    print dumps(tile_list)
-    '''for tile in tile_list:
-        list = a.db.geo_objects.find({u'tileid':{'$gte':tile.index_child_first(), '$lte': tile.index_child_last()}})
-        print tile
-        #for e in list:
-        #    print e
-    '''
 

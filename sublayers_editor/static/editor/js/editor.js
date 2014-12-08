@@ -2,10 +2,39 @@ $(document).ready(function () {
     // инициализация карты
     myMap = L.map('map', {
         zoomControl: true,      // добавить стандартные кнопки изменения масштаба
-        boxZoom: false          // отключить зумирование через прямоугольник
+        boxZoom: false,          // отключить зумирование через прямоугольник
+        minZoom: 4
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
 
+
+    myMap.on('moveend', function(){
+        var bounds = myMap.getPixelBounds();
+        var tileBounds = L.bounds(
+            bounds.min.divideBy(256)._floor(),
+            bounds.max.divideBy(256)._floor());
+        var zoom = myMap.getZoom();
+
+        var mes_obj = {
+            min_point: {
+                x: tileBounds.min.x,
+                y: tileBounds.min.y,
+                z: zoom
+            },
+            max_point: {
+                x: tileBounds.max.x,
+                y: tileBounds.max.y,
+                z: zoom
+            },
+            select_zoom: zoom
+        };
+        editor_manager.selectAreaByRect(mes_obj);
+
+        //console.log('min = ', tileBounds.min.x, tileBounds.min.y, myMap.getZoom());
+        //console.log('max = ', tileBounds.max.x, tileBounds.max.y, myMap.getZoom());
+
+
+    });
 
     // инициализация клиент-серверного взаимодействия
     message_stream = new MessageConnector();
