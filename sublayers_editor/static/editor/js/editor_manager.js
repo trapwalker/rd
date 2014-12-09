@@ -38,6 +38,12 @@ var EditorManager = (function(){
             case 'delObject':
                 repositoryMO.delObjectFromServer(params.obj.object_type, params.obj.id);
                 break;
+            case 'delObjects':
+                for (var i = 0; i < params.obj.length; i++) {
+                    var obj = params.obj[i];
+                    repositoryMO.delObjectFromServer(obj.object_type, obj._id['$oid']);
+                }
+                break;
             case 'changeObject':
                 repositoryMO.changeObjectFromServer(params.obj.object_type, params.obj);
                 break;
@@ -99,18 +105,18 @@ var EditorManager = (function(){
             var z = rect.point.z;
             var lt1 = myMap.unproject([x << (26 - z), y << (26 - z)], map_max_zoom);
             var lt2 = myMap.unproject([(x + 1) << (26 - z), (y + 1) << (26 - z)], map_max_zoom);
-            console.log(rect.point.x, rect.point.y, rect.point.z);
-            console.log(x << (26 - z), y << (26 - z), z);
-            console.log(lt1);
+            //console.log(rect.point.x, rect.point.y, rect.point.z);
+            //console.log(x << (26 - z), y << (26 - z), z);
+            //console.log(lt1);
 
+            /*
             L.circleMarker(lt1, {color: '#777777'})
                 .setRadius(16)
                 .bindPopup(
                     'LatLng: ' + lt1 + '</br>'
             )
                 .addTo(myMap);
-
-
+            */
 
             var map_rect = L.rectangle(L.latLngBounds([lt1, lt2]),
                 {color: '#333333', weight: 1});
@@ -125,7 +131,7 @@ var EditorManager = (function(){
         for (var i = 0; i < objects.length; i++) {
             var obj = objects[i];
             this._setIdInObject(obj);
-            console.log(obj.id);
+            //console.log(obj.id);
             repositoryMO.addObjectFromServer(obj.object_type, obj);
         }
     };

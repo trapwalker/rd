@@ -32,3 +32,4 @@ class ClientAPI(API):
     def selectAreaByRect(self, **kw):
         log.info(u'ClientAPI: Запрос объектов в прямоугольной области')
         self.client.srv.selectAreaByRect(self.client, **kw)
+        self.client.srv.getRectsByArea(self.client, **kw)

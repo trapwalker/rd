@@ -30,6 +30,7 @@ $(document).ready(function () {
         };
         editor_manager.selectAreaByRect(mes_obj);
 
+
         //console.log('min = ', tileBounds.min.x, tileBounds.min.y, myMap.getZoom());
         //console.log('max = ', tileBounds.max.x, tileBounds.max.y, myMap.getZoom());
 
@@ -72,6 +73,7 @@ $(document).ready(function () {
 
     // подключение к серверу
     ws_connector.connect();
+    myMap.setView([50.595, 36.58], 6);
 
     // Тест окон
     /*

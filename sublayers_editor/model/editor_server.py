@@ -59,6 +59,7 @@ class EditorServer(object):
                     'z': z
                 }
                 res.append(e)
+        client.setSelectArea(tile_list)
         client.selectAreaByRect(res)
 
     def getRectsByArea(self, client, min_point, max_point, select_zoom):

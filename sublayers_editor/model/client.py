@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from bson.json_util import dumps
+from tileid2 import Tileid2 as Tileid
 
 class Client(object):
     def __init__(self, connection, srv):
@@ -12,6 +13,7 @@ class Client(object):
         self._connection = connection
         self.srv = srv
         self.objects = {}
+        self.cur_rect = []
 
     @property
     def is_online(self):
@@ -51,7 +53,7 @@ class Client(object):
             self.objects[obj[u'_id']] = obj
             mes = dict(
                 cls='changeObject',
-                obj=obj
+                obj=obj,
             )
             self.connection.send(dumps(mes))
 
@@ -59,22 +61,57 @@ class Client(object):
         log.info(u'Client: Отправка на клиента списка из прямоугольников')
         mes = dict(
             cls='sendRects',
-            obj=rects
+            obj=rects,
+        )
+        self.connection.send(dumps(mes))
+
+    def setSelectArea(self, rect):
+        log.info(u'Client: Установка нового прямоугольника отсечения')
+        # установка нового прямоугольника выбора
+        self.cur_rect = rect
+
+        # формирование список обектов которые надо удалить
+        list_send = []
+
+        for obj in self.objects:
+            log.info(self.objects[obj])
+            for tile in self.cur_rect:
+                if Tileid(self.objects[obj][u'tileid']).in_tile(tile):
+                    break
+            else:
+                list_send.append(self.objects[obj])
+
+
+        log.info('_________________________________________________')
+        # удаление объектов из self.objects
+        for obj in list_send:
+            log.info(obj)
+            del self.objects[obj[u'_id']]
+
+        # отправка на клиент
+        mes = dict(
+            cls='delObjects',
+            obj=list_send,
         )
         self.connection.send(dumps(mes))
 
     def selectAreaByRect(self, objects):
-        log.info(u'Client: Отправка на клиента списка объектов из прямоугольника, число объектов: %r', len(objects))
-        # запись объектов к себе в список
+        log.info(u'Client: Добавление объектов в область видимости')
+        # запись новых объектов к себе в список
         list_send = []
         for obj in objects:
+            log.info(obj)
             if not self.objects.has_key(obj[u'_id']):
                 self.objects[obj[u'_id']] = obj
                 list_send.append(obj)
+
+        for obj in self.objects:
+            log.info(self.objects[obj])
+
+        # отправка на клиент
         mes = dict(
             cls='answerSelectAreaByRect',
-            obj=list_send
+            obj=list_send,
         )
-        log.info(u'Client:22222 Отправка на клиента списка объектов из прямоугольника, число объектов: %r', len(list_send))
         self.connection.send(dumps(mes))
 
