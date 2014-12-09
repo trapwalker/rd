@@ -28,6 +28,7 @@ class Party(object):
 
         self.name = name
         self.members = []
+        """@type list[agents.Agent]"""
 
     def as_dict(self):
         return dict(
@@ -43,6 +44,16 @@ class Party(object):
 
         if old_party:
             old_party.exclude(agent, silent=True)
+
+        old_agent_observers = agent.observers[:]
+        old_member_observers = self.members[0].observers[:]
+
+        for o in old_member_observers:
+            agent.add_observer(o)
+
+        for a in self.members:
+            for o in old_agent_observers:
+                a.add_observer(o)
 
         self.members.append(agent)
         agent.party = self

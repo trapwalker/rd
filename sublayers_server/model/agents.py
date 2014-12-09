@@ -17,6 +17,7 @@ class Agent(Object):
         log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
         self.observers = Counter()
+        # todo: replace Counter to CounterSet
         self.login = login
         self._connection = connection
         # todo: normalize and check login
