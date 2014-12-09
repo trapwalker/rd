@@ -128,6 +128,23 @@ class Tileid2(long):
   #      x, y, z = self.xyz()
    #     return x, y, z
 
+    def in_tile(self, tile):
+        # если тайлы не одинаковые
+        if self == tile:
+            return True
+        #проверить по зумам
+        if self.zoom() > tile.zoom():
+            if tile.index_child_first() <= self <= tile.index_child_last():
+                return True
+        return False
+
+    def in_rect(self, tl, br):
+        tile_list = Tileid2().iter_rect(tl, br)
+        for tile in tile_list:
+            if self.in_tile(tile):
+                return True
+        return False
+
 
     @classmethod
     def iter_rect(cls, tl, br):
@@ -168,22 +185,11 @@ class Tileid2(long):
 
 
 if __name__ == '__main__':
-    res = Tileid2(150, 350, 26)
-    #res2 = Tileid.iter_rect(Tileid(7, 6, 3),Tileid(7, 6, 3))
-    #print res2[0]
-    x1, y1, z1 = res.xyz()
-    print x1, y1, z1
-    x2, y2, z2 = res.parent(8).xyz()
-    print x2, y2, z2
+    r = Tileid2(9, 9, 4)
+    a = Tileid2(7, 5, 4)
+    b = Tileid2(12, 14, 4)
+    print r.in_rect(a, b)
 
-    #print Tileid(15, 15, 4).parent(1)
-    '''
-    #print Tileid(0,0,0).zoom()
-    res = Tileid2.iter_rect(Tileid2(0, 0, 4), Tileid2(14, 14, 4))
-    for i in res:
-         x, y, z = i.xyz()
-         print x, y, z
-    '''
 
 
 
