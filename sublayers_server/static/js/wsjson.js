@@ -44,8 +44,6 @@ WSJSON = (function () {
     WSJSON.prototype.sendMess = function(aMess){
         if(user.userCar.hp > 0)
             this.socket.send(JSON.stringify(aMess));
-        //else
-            //alert('Вы не можете этого сделать, так как Ваша машина сломана.');
     };
 
     return WSJSON;
@@ -56,6 +54,7 @@ WSJSON = (function () {
 
 // goto
 function sendNewPoint(aPoint, auid) {
+    //alert('sendNewPoint');
     var mes = {
         call: "goto",
         rpc_call_id: rpcCallList.getID(),
@@ -65,9 +64,10 @@ function sendNewPoint(aPoint, auid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.sendMess(mes);
-    if (cookieStorage.enableLogRPCMessage())
-        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    //wsjson.sendMess(mes);
+    model_manager.sendMessage(mes);
+    //if (cookieStorage.enableLogRPCMessage())
+       // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
 
@@ -79,9 +79,10 @@ function sendStopCar() {
         params: { }
     };
     rpcCallList.add(mes);
-    wsjson.sendMess(mes);
-    if (cookieStorage.enableLogRPCMessage())
-        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    //wsjson.sendMess(mes);
+    model_manager.sendMessage(mes);
+    //if (cookieStorage.enableLogRPCMessage())
+        //chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // fire
@@ -95,9 +96,10 @@ function sendFire(aUid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.sendMess(mes);
-    if (cookieStorage.enableLogRPCMessage())
-        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    //wsjson.sendMess(mes);
+    model_manager.sendMessage(mes);
+   // if (cookieStorage.enableLogRPCMessage())
+       // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // fire Crazy
@@ -112,9 +114,10 @@ function sendFireCrazy(aUid, listForShoot) {
             }
         };
         rpcCallList.add(mes);
-        wsjson.sendMess(mes);
-        if (cookieStorage.enableLogRPCMessage())
-            chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+        //wsjson.sendMess(mes);
+        model_manager.sendMessage(mes);
+        //if (cookieStorage.enableLogRPCMessage())
+           // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
     }
 }
 
@@ -128,9 +131,10 @@ function sendSetSpeed(newSpeed, auid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.sendMess(mes);
-    if (cookieStorage.enableLogRPCMessage())
-        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    //wsjson.sendMess(mes);
+    model_manager.sendMessage(mes);
+  //  if (cookieStorage.enableLogRPCMessage())
+      //  chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // send chat_message - отправляется, даже когда машинка мертва
@@ -143,9 +147,10 @@ function sendChatMessage(atext, auid) {
         }
     };
     rpcCallList.add(mes);
-    wsjson.socket.send(JSON.stringify(mes));
-    if (cookieStorage.enableLogRPCMessage())
-        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    //wsjson.socket.send(JSON.stringify(mes));
+    model_manager.sendMessage(mes);
+    //if (cookieStorage.enableLogRPCMessage())
+       // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
 
 // Консоль  для сервера, срабатывает при отправке сообщений из активных debug-чатов
@@ -159,26 +164,23 @@ function sendServConsole(atext) {
     };
     rpcCallList.add(mes);
     // Консоль отправляется на сервер всегда, вне зависимости от запретов клиента
-    wsjson.socket.send(JSON.stringify(mes));
-    if (cookieStorage.enableLogRPCMessage())
-        chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
+    //wsjson.socket.send(JSON.stringify(mes));
+    model_manager.sendMessage(mes);
+    //if (cookieStorage.enableLogRPCMessage())
+    //    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
     if(atext.split('(')[0] === 'crazy')// Если отправили команду crazy на сервер, то пусть и сам стреляет
         crazyShooting();
 }
 
 // Приём сообщения от сервера. Разбор принятого объекта
-function receiveMesFromServ(data){
-    var mes = JSON.parse(data, function(key, value){
-        if((key === 'time') || (key === 'start_time')) return new Date(value * 1000).getTime();
-        return value;
-    });
+function receiveMesFromServ(mes){
     // если message_type = push
     if (mes.message_type == "push") {
         var aTrack, aType, aHP= 0, owner;
-        if (cookieStorage.enableLogPushMessage())
-            if (mes.events[0].cls !== "Update")
-                chat.addMessageToLog(data, 'push');
+        //if (cookieStorage.enableLogPushMessage())
+            //if (mes.events[0].cls !== "Update")
+            //    chat.addMessageToLog(data, 'push');
         // проходим по списку евентов
         mes.events.forEach(function (event, index) {
             // Установка времени
@@ -270,7 +272,7 @@ function receiveMesFromServ(data){
             }
             if (event.cls === "ChatMessage" || event.cls === "Chat") {
                 // chat_message
-                chat.addMessage(0, event.id, new Date(servtime), getOwner(event.author), event.text);
+                chat.addMessage(-1, '', getOwner(event.author), event.text);
             }
             if (event.cls === "WinMessage") {
                 if(event.winner){
@@ -288,8 +290,8 @@ function receiveMesFromServ(data){
 
     // если message_type = answer
     if (mes.message_type == "answer") {
-        if (cookieStorage.enableLogAnswerMessage())
-            chat.addMessageToLog(data, 'answer');
+        //if (cookieStorage.enableLogAnswerMessage())
+         //   chat.addMessageToLog(data, 'answer');
         if (! mes.error) {
             rpcCallList.execute(mes.rpc_call_id);
         }
@@ -544,6 +546,7 @@ function getWeapons(data) {
 }
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible, role) {
+    //alert('initUserCar');
     var fireSectors;
     var speed_to_set = (amax_speed*0.75).toFixed(0); // Сразу будет выставлена такая скорость, чтобы оно норамльно игралось
     if(! user.userCar) {
