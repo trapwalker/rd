@@ -17,7 +17,7 @@ class EditorServer(object):
 
 
     def addObject(self, position, object_type):
-        log.info(u'EditorServer: Добавление объекта')
+        log.info('EditorServer: Add object')
         obj = {u'tileid': TileId(long(position[u'x']), long(position[u'y']), long(position[u'z'])),
                u'object_type': object_type}
         self.db.geo_objects.insert(obj)
@@ -27,7 +27,7 @@ class EditorServer(object):
 
 
     def delObject(self, id):
-        log.info(u'EditorServer: Удаление объекта')
+        log.info('EditorServer: Del object')
         obj = self.db.geo_objects.find_one({u'_id': ObjectId(id)})
         self.db.geo_objects.remove(obj)
         for client in self.app.clients:
@@ -35,7 +35,7 @@ class EditorServer(object):
 
 
     def changeObject(self, position, id, **kw):
-        log.info(u'EditorServer: Изменение объекта')
+        log.info('EditorServer: Change object')
         obj = self.db.geo_objects.find_one({u'_id': ObjectId(id)})
         obj[u'tileid'] = TileId(long(position[u'x']), long(position[u'y']), long(position[u'z']))
         self.db.geo_objects.save(obj)
@@ -44,14 +44,14 @@ class EditorServer(object):
             client.api.client.changeObject(obj)
 
     def selectAreaByRect(self, client, min_point, max_point, select_zoom):
-        log.info(u'EditorServer: Выбор объектов по прямоугольнику')
+        log.info('EditorServer: Select area by rect')
         min_tileid = TileId(long(min_point[u'x']), long(min_point[u'y']), long(min_point[u'z'])).parent_by_lvl(select_zoom)
         max_tileid = TileId(long(max_point[u'x']), long(max_point[u'y']), long(max_point[u'z'])).parent_by_lvl(select_zoom)
-        tile_list = TileId.iter_rect(min_tileid, max_tileid)
+        tile_list = list(TileId.iter_rect(min_tileid, max_tileid))
         res = []
         for tile in tile_list:
-            list = self.db.geo_objects.find({u'tileid':{'$gte':tile.index_child_first(), '$lte': tile.index_child_last()}})
-            for e in list:
+            list_obj = self.db.geo_objects.find({u'tileid':{'$gte':tile.index_child_first(), '$lte': tile.index_child_last()}})
+            for e in list_obj:
                 x, y, z = TileId(e['tileid']).xyz()
                 e[u'position'] = {
                     'x': x,
@@ -63,7 +63,7 @@ class EditorServer(object):
         client.selectAreaByRect(res)
 
     def getRectsByArea(self, client, min_point, max_point, select_zoom):
-        log.info(u'EditorServer: Вернуть тайлы (по TileId) для отображения их на клиенте')
+        log.info('EditorServer: Send rect tiles')
         min_tileid = TileId(long(min_point[u'x']), long(min_point[u'y']), long(min_point[u'z'])).parent_by_lvl(select_zoom)
         max_tileid = TileId(long(max_point[u'x']), long(max_point[u'y']), long(max_point[u'z'])).parent_by_lvl(select_zoom)
         tile_list = TileId.iter_rect(min_tileid, max_tileid)
@@ -78,8 +78,6 @@ class EditorServer(object):
                 },
             })
         client.sendRects(res)
-
-
 
 
 if __name__ == "__main__":

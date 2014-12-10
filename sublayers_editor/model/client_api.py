@@ -15,21 +15,21 @@ class ClientAPI(API):
 
     @public_method
     def addObject(self, **kw):
-        log.info(u'ClientAPI: Добавление объекта')
+        log.info('ClientAPI: Add object')
         self.client.srv.addObject(**kw)
 
     @public_method
     def delObject(self, **kw):
-        log.info(u'ClientAPI: Удаление объекта')
+        log.info('ClientAPI: Del object')
         self.client.srv.delObject(**kw)
 
     @public_method
     def changeObject(self, **kw):
-        log.info(u'ClientAPI: Изменение объекта')
+        log.info('ClientAPI: Change object')
         self.client.srv.changeObject(**kw)
 
     @public_method
     def selectAreaByRect(self, **kw):
-        log.info(u'ClientAPI: Запрос объектов в прямоугольной области')
+        log.info('ClientAPI: Select area by rect')
         self.client.srv.selectAreaByRect(self.client, **kw)
         self.client.srv.getRectsByArea(self.client, **kw)
