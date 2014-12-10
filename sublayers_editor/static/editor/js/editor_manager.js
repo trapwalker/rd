@@ -147,7 +147,9 @@ var EditorManager = (function(){
                 L.circleMarker([p.lat, p.lng], {color: '#FF3333'})
                     .setRadius(6)
                     .bindPopup(
-                        'Road id: ' + road.id + '</br>'
+                        'Road id: ' + road.id + '</br>'+
+                        'Road tag: ' + road.tag_road + '</br>'+
+                        'LatLng: ' + p.lat + '    ' + p.lng + '</br>'
                 )
                     .addTo(myMap);
             }

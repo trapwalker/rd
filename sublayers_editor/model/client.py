@@ -114,7 +114,7 @@ class Client(object):
     def sendTestRoads(self):
         log.info('Client: Send roads to client')
         roads = []
-        for e in self.srv.db.sroads.find({}, {u'_id':0}).limit(100):
+        for e in self.srv.db.sroads.find({}, {u'_id':0}).limit(1000):
             roads.append(e)
 
         mes = dict(

@@ -34,33 +34,40 @@ class OsmWorker:
 
 
     def _get_road(self, way):
-        if not ('highway' in way.tags):
-            return None
-        points = []
-        for node_index in way.nodes:
-            node = self.nodes[node_index]
-            points.append(dict(
-                id = node.id,
-                lng = node.lon,
-                lat = node.lat,
-            ))
-        return dict(
-            id = way.id,
-            points = points,
-        )
+        t = way.tags
+        if 'highway' in t:
+            value = t['highway']
+            if value =='motorway' or value == 'trunk' or value == 'primary':
+                points = []
+                for node_index in way.nodes:
+                    node = self.nodes[node_index]
+                    points.append(dict(
+                        id = node.id,
+                        lng = node.lon,
+                        lat = node.lat,
+                    ))
+                return dict(
+                    id = way.id,
+                    tag_road = value,
+                    points = points,
+                )
+        return None
 
 
     def save_roads_to_db(self):
+        count = 0
         for e in self.roads:
             self.db.sroads.insert(e)
+            count += 1
+        print count
 
 
 if __name__ == "__main__":
 
-    a = OsmWorker('c:/minsk_belarus.osm')
+    a = OsmWorker('c:/minsk.osm')
+    #a = Connection()
+    #db = a.maindb
 
     print '========================='
-
-    for e in a.db.sroads.find().limit(10):
-        print e
+    print len(a.roads)
 
