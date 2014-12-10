@@ -53,6 +53,10 @@ var EditorManager = (function(){
             case 'answerSelectAreaByRect':
                 self.answerSelectAreaByRect(params.obj);
                 break;
+            case 'roads':
+                console.log(params.obj);
+                self._paint_roads(params.obj);
+                break;
             default:
                 break;
         }
@@ -119,7 +123,7 @@ var EditorManager = (function(){
             */
 
             var map_rect = L.rectangle(L.latLngBounds([lt1, lt2]),
-                {color: '#333333', weight: 1});
+                {color: '#333333', weight: 1, clickable:false, fillOpacity: 0.1});
             this.tiles.push(map_rect);
             map_rect.addTo(myMap);
 
@@ -134,6 +138,21 @@ var EditorManager = (function(){
             repositoryMO.addObjectFromServer(obj.object_type, obj);
         }
     };
+
+    EditorManager.prototype._paint_roads = function (roads) {
+        for (var i = 0; i < roads.length; i++) {
+            var road = roads[i];
+            for (var j = 0; j < road.points.length; j++) {
+                var p = road.points[j];
+                L.circleMarker([p.lat, p.lng], {color: '#FFFF33'})
+                    .setRadius(6)
+                    .bindPopup(
+                        'Road id: ' + road.id + '</br>'
+                )
+                    .addTo(myMap);
+            }
+        }
+    }
 
     return EditorManager;
 })();

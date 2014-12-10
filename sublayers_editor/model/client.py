@@ -110,3 +110,15 @@ class Client(object):
             obj=list_send,
         )
         self.connection.send(dumps(mes))
+
+    def sendTestRoads(self):
+        log.info('Client: Send roads to client')
+        roads = []
+        for e in self.srv.db.sroads.find({}, {u'_id':0}).limit(100):
+            roads.append(e)
+
+        mes = dict(
+            cls='roads',
+            obj=roads,
+        )
+        self.connection.send(dumps(mes))
