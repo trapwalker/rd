@@ -153,7 +153,7 @@ class Tileid2(long):
         assert tl.zoom() == br.zoom(), u'Аргументы не должны иметь разные Z'
         x1, y1, z = tl.xyz()
         x2, y2, z = br.xyz()
-        assert (x1 < x2) and (y1 < y2), u'Неправильно задан прямоугольник'
+        assert (x1 <= x2) and (y1 <= y2), u'Неправильно задан прямоугольник'
 
         # получить список Tileid на уровне z
         tile_list = []
