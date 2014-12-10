@@ -29,20 +29,14 @@ $(document).ready(function () {
             select_zoom: zoom
         };
         editor_manager.selectAreaByRect(mes_obj);
-
-
         //console.log('min = ', tileBounds.min.x, tileBounds.min.y, myMap.getZoom());
         //console.log('max = ', tileBounds.max.x, tileBounds.max.y, myMap.getZoom());
-
-
     });
 
     // инициализация клиент-серверного взаимодействия
     message_stream = new MessageConnector();
     ws_connector = new WSConnector();
     editor_manager = new EditorManager();
-
-
 
     // инициализация редакторов
     initEditors();

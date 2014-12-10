@@ -12,6 +12,8 @@ MapObjectsRepository = (function () {
         this.roads = [];
         this.towns = [];
         this.gasStations = [];
+
+        this.markerEventList = [];
         this.markerDragging = false;
 
         // создание иконок маркеров
@@ -111,6 +113,7 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.onObjectMarkerEvent = function (eventName, eventFunction) {
         //alert('onObjectMarkerEvent');
+        this.markerEventList.push({eventName: eventName, eventFunc: eventFunction});
         for (var id in this.towns)
             this.towns[id].on(eventName, eventFunction);
         for (var id in this.gasStations)
@@ -121,6 +124,13 @@ MapObjectsRepository = (function () {
 
     MapObjectsRepository.prototype.offObjectMarkerEvent = function (eventName, eventFunction) {
         //alert('offObjectMarkerEvent');
+        var indexes = [];
+        for(var i = 0; i < this.markerEventList.length; i++)
+            if((this.markerEventList[i].eventName == eventName) &&
+               (this.markerEventList[i].eventFunc == eventFunction))
+                    indexes.push(i);
+        for(var i in indexes)
+            this.markerEventList.splice(indexes[i], 1);
         for (var id in this.towns)
             this.towns[id].off(eventName, eventFunction);
         for (var id in this.gasStations)
@@ -132,9 +142,8 @@ MapObjectsRepository = (function () {
     // Включение / выключение возможности перетаскивания маркеров городов и заправок
 
     MapObjectsRepository.prototype.onObjectMarkerDragging = function (eventFunction) {
-        //alert('onObjectMarkerDragging');
+        //console.log('onObjectMarkerDragging');
         this.markerDragging = true;
-        this.markerDraggingEvent = eventFunction;
         this.onObjectMarkerEvent('dragend', eventFunction);
         for (var id in this.towns)
             this.towns[id].dragging.enable();
@@ -144,11 +153,10 @@ MapObjectsRepository = (function () {
             this.roads[id].dragging.enable();
     };
 
-    MapObjectsRepository.prototype.offObjectMarkerDragging = function () {
-        //alert('offObjectMarkerDragging');
+    MapObjectsRepository.prototype.offObjectMarkerDragging = function (eventFunction) {
+        //console.log('offObjectMarkerDragging');
         this.markerDragging = false;
-        this.offObjectMarkerEvent('dragend', this.markerDraggingEvent);
-        this.markerDraggingEvent = null;
+        this.offObjectMarkerEvent('dragend', eventFunction);
         for (var id in this.towns)
             this.towns[id].dragging.disable();
         for (var id in this.gasStations)
@@ -278,7 +286,7 @@ MapObjectsRepository = (function () {
     };
 
     MapObjectsRepository.prototype.changeObject = function (type, object) {
-        //alert('changeObject');
+        //console.log('changeObject');
         var p = myMap.project(object.coord, map_max_zoom);
         var mes_obj = {
             object_type: type,
@@ -305,10 +313,10 @@ MapObjectsRepository = (function () {
         marker.objectCoord = object.coord;
         marker.objectID = object.id;
         marker.type = type;
-        if ((this.markerDragging)&&(this.markerDraggingEvent)) {
-            marker.on('');
-            marker.dragging.enable('dragend', this.markerDraggingEvent);
-        }
+        for (var index in this.markerEventList)
+            marker.on(this.markerEventList[index].eventName, this.markerEventList[index].eventFunc);
+        if (this.markerDragging)
+            marker.dragging.enable();
         switch (type) {
             case 'town':
                 this.setupMarkerIcon(marker, this.townIcon);

@@ -29,12 +29,14 @@ class Client(object):
 
     def addObject(self, obj):
         log.info('Client: Add object to client')
-        self.objects[obj[u'_id']] = obj
-        mes = dict(
-            cls='addObject',
-            obj=obj
-        )
-        self.connection.send(dumps(mes))
+        for tile in self.cur_rect:
+            if Tileid(obj[u'tileid']).in_tile(tile):
+                self.objects[obj[u'_id']] = obj
+                mes = dict(
+                    cls='addObject',
+                    obj=obj
+                )
+                self.connection.send(dumps(mes))
 
     def delObject(self, obj):
         log.info('Client: Del object from client')
@@ -55,6 +57,10 @@ class Client(object):
                 obj=obj,
             )
             self.connection.send(dumps(mes))
+        else:
+            for tile in self.cur_rect:
+                if Tileid(obj[u'tileid']).in_tile(tile):
+                    self.addObject(obj)
 
     def sendRects(self, rects):
         log.info('Client: Send rect tiles')

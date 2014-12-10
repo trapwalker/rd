@@ -131,7 +131,6 @@ var EditorManager = (function(){
         for (var i = 0; i < objects.length; i++) {
             var obj = objects[i];
             this._setIdInObject(obj);
-            //console.log(obj.id);
             repositoryMO.addObjectFromServer(obj.object_type, obj);
         }
     };

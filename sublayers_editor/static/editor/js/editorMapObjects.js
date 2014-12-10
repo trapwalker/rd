@@ -75,7 +75,7 @@ var EditorMapObjects = (function (_super) {
         if (this.isKeyDown) this.onKeyUp();
         this.unCheckAllToolButtons();
         repositoryMO.offObjectMarkerEvent('click', this.markerClick);
-        repositoryMO.offObjectMarkerDragging();
+        repositoryMO.offObjectMarkerDragging(this.markerDragEnd);
         repositoryMO.clearSelection();
         myMap.off('mousemove', mouseMoveMain);
         this.clearRoad();
@@ -140,7 +140,7 @@ var EditorMapObjects = (function (_super) {
 
     // Перемещения объектов
     EditorMapObjects.prototype.markerDragEnd = function(event) {
-        //alert('EditorMapObjects.prototype.markerDragEnd');
+        //console.log('EditorMapObjects.prototype.markerDragEnd');
         repositoryMO.clearSelection();
         var newCoord = event.target.getLatLng();
         event.target.setLatLng(event.target.objectCoord);
