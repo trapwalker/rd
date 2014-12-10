@@ -6,6 +6,13 @@ $(document).ready(function () {
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
 
+    // инициализация клиент-серверного взаимодействия
+    message_stream = new MessageConnector();
+    ws_connector = new WSConnector();
+    editor_manager = new EditorManager();
+
+
+
     // инициализация редакторов
     initEditors();
     editorFreeCam.activateButton = L.easyButton({
@@ -32,6 +39,9 @@ $(document).ready(function () {
 
     // создание репазиториев (пока он один)
     repositoryMO = new MapObjectsRepository();
+
+    // подключение к серверу
+    ws_connector.connect();
 
     // Тест окон
     /*
@@ -60,3 +70,7 @@ var myMap;
 var repositoryMO;
 // Путь к карте на сервере
 var mapBasePath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+
+var message_stream;
+var ws_connector;
+var editor_manager;

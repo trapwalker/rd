@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+</head>
+<body>
+<div id="optionsPageDiv">
+    <div id="optionsPageDivContent">
+        <p>
+            <input type="checkbox" id="optionsFlagDebug"/>
+            <label for="optionsFlagDebug">Общий параметр debug режима</label>
+        </p>
+
+        <ul>
+            <li>
+                <input type="checkbox" id="optionsChatPush"/>
+                <label for="optionsChatPush">Вывод всех push-сообщений от сервера в специальную вкладку чата</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsChatRPC"/>
+                <label for="optionsChatRPC">Вывод всех rpc-сообщений к серверу в специальную вкладку чата</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsChatAnswer"/>
+                <label for="optionsChatAnswer">Вывод всех answer-сообщений от сервера в специальную вкладку чата</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsChatSystemLog"/>
+                <label for="optionsChatSystemLog">Показывать системную вкладку</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsMarkerContact"/>
+                <label for="optionsMarkerContact">Отображать на карте маркеры Contact-сообщений</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsMarkerUpdate"/>
+                <label for="optionsMarkerUpdate">Отображать на карте маркеры Update-сообщений</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsShowID"/>
+                <label for="optionsShowID">Показывать ID своей машинки в шапке</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsShowDebugLine"/>
+                <label for="optionsShowDebugLine">Показывать линии от своей машинке к другим машинкам</label>
+            </li>
+        </ul>
+
+        <p>Настройки карты</p>
+        <ul>
+            <li>
+                <input type="checkbox" id="optionsMapTileVisible"/>
+                <label for="optionsMapTileVisible">Показывать карту (Тайловый уровень)</label>
+            </li>
+            <li>
+                <input type="number" id="optionsLevelForVisibleLabel" min="2" max="8" step="1" value="5"/>
+                <label for="optionsLevelForVisibleLabel">Уровень приближения, при котором отображаются надписи над
+                    маркерами</label>
+            </li>
+        </ul>
+
+        <p>Настройки контроллера стрельбы</p>
+        <ul>
+            <li>
+                <input type="checkbox" id="optionsFCRotate"/>
+                <label for="optionsFCRotate">Вращения контроллера стрельбы за своей машинкой</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsRMVisible"/>
+                <label for="optionsRMVisible">Отображение радиального меню стрельбы</label>
+            </li>
+        </ul>
+
+        <p>Настройки стрельбы</p>
+        <ul>
+            <li>
+                <input type="checkbox" id="optionsSelectAnybody"/>
+                <label for="optionsSelectAnybody">Разрешить выделение/развыделение машинок</label>
+            </li>
+            <li>
+                <input type="checkbox" id="optionsFriendlyFireEnabled"/>
+                <label for="optionsFriendlyFireEnabled">Разрешить дружественный огонь</label>
+            </li>
+        </ul>
+    </div>
+    <div id="optionsDivButtons">
+        <div id="optionsPageCancelButton" class="optionsPageButton">Cancel</div>
+        <div id="optionsPageCloseButton" class="optionsPageButton">Apply</div>
+    </div>
+</div>
+</body>
+</html>

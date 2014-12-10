@@ -1,4 +1,6 @@
 virtualenv
 tornado
 debug
+pymongo
+sleekxmpp
 #PIL

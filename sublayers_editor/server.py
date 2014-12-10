@@ -28,7 +28,7 @@ class Application(tornado.web.Application):
         self.clients = []
 
         handlers = [
-            (r"/", tornado.web.RedirectHandler, {"url": "/view.html"}),
+            (r"/", tornado.web.RedirectHandler, {"url": "static/editor.html"}),
             (r"/ws", ClientSocketHandler),
         ]
         settings = dict(

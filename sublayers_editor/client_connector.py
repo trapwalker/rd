@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 from model.client_api import ClientAPI
-from model.clients import Client
+from model.client import Client
 
 
 class ClientSocketHandler(tornado.websocket.WebSocketHandler):
@@ -23,15 +23,13 @@ class ClientSocketHandler(tornado.websocket.WebSocketHandler):
 
 
     def on_close(self):
-        log.info('Agent %r socket Closed', self)
+        log.info('Client %r socket Closed', self)
         self.application.clients.remove(self)
         self.api.client.connection = None
 
     def on_message(self, message):
-        log.debug("Got message from %s: %r", self.agent, message)
-        result = self.api.__rpc_call__(message)
-        self.send(result)
+        log.info("Got message from %r", message)
+        self.api.__rpc_call__(message)
 
     def send(self, data):
-        #log.debug('\n\nconnection.send(%s)', data)
         self.write_message(data)
