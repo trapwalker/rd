@@ -144,7 +144,7 @@ var EditorManager = (function(){
             var road = roads[i];
             for (var j = 0; j < road.points.length; j++) {
                 var p = road.points[j];
-                L.circleMarker([p.lat, p.lng], {color: '#FFFF33'})
+                L.circleMarker([p.lat, p.lng], {color: '#FF3333'})
                     .setRadius(6)
                     .bindPopup(
                         'Road id: ' + road.id + '</br>'
