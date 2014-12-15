@@ -15,6 +15,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def open(self):
+        # todo: make agent_init event
         self.user_id = self.get_secure_cookie("user")
         log.info('!!! Open User connection: %s', self.user_id)
         srv = self.application.srv
