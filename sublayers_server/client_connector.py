@@ -31,6 +31,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
             # todo: otimize - slice and send chat history by chunks
 
     def on_close(self):
+        # todo: removing car from worldmap by disconnect
         log.info('Agent %r socket Closed', self)
         self.application.clients.remove(self)
         self.agent.connection = None
