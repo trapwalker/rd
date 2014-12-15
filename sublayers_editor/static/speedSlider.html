@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test Speed Slider</title>
+
+    <link rel="stylesheet" href="css/controls/sliders.css"/>
+    <!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/> -->
+    <link rel="stylesheet" href="css/third_party/jquery-ui.css"/>
+
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script> -->
+    <script src="js/third_party/jquery.min.js"></script>
+    <script src="js/third_party/jquery-ui.min.js"></script>
+    <script src="js/controls/sliders.js"></script>
+</head>
+<body>
+
+<div id="speed"></div>
+<div id="hp"></div>
+
+<script>
+    var a = new ProgressBarFuel({
+        parent: "speed",
+        max: 100
+    });
+
+    var hp = new ProgressBarHP({
+        parent: "hp",
+        max: 300
+    });
+
+    var b = 100;
+    var c = 250;
+
+    var int1 = setInterval(function () {
+        a.setValue(b--, 0);
+    }, 50);
+    var int2 = setInterval(function () {
+        hp.setValue(c--);
+    }, 20);
+
+    setTimeout(function () {
+        clearInterval(int1);
+        clearInterval(int2);
+        setTimeout(function () {
+            a.setMax(100);
+            a.setValue(75, 0);
+            hp.setMax(100);
+            hp.setValue(75);
+        }, 2000);
+    }, 3000);
+
+
+</script>
+
+</body>
+</html>

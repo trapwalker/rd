@@ -23,9 +23,17 @@
     <script src="js/third_party/leaflet-src.js"></script>
     <script src="js/third_party/jquery.min.js"></script>
     <script src="js/third_party/jquery-ui.min.js"></script>
+    <script src="js/third_party/strophe.js"></script>
+    <script src="js/third_party/strophe_muc.js"></script>
+    <script src="js/geometric.js"></script>
+    <script src="js/window.js"></script>
+
+    <script src="js/connector.js"></script>
+    <script src="js/model_manager.js"></script>
+    <script src="js/message_stream.js"></script>
+
     <script src="js/rpc_list.js"></script>
     <script src="js/leaflet_addon.js"></script>
-    <script src="js/geometric.js"></script>
     <script src="js/modelJS.js"></script>
     <script src="js/modelAPI.js"></script>
     <script src="js/wsjson.js"></script>
@@ -44,34 +52,36 @@
     <script src="js/modal_window.js"></script>
 </head>
 <body>
-<div id="map"></div>
-<div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
-<div id="divButtons">
-    <div id="buttonFullScreen" class="buttonFullScreenOn"></div>
-    <div id="buttonOptions" class="sublayers-clickable"></div>
-</div>
-<div id="divScaleCarFuel"></div>
-<div id="divScaleCarHealth"></div>
-<div id="buttonConnectServer" class="sublayers-clickable"></div>
-<div id="chatArea"></div>
-<div id="fireControlArea"></div>
-<div id="speedSetDivForSpeedSlider"></div>
-<div id="zoomSetDivForZoomSlider"></div>
-<div id="radialMenuDiv" style="position:absolute;">
-    <svg id="radialMenuSVG">
-    </svg>
-</div>
-<div id="modalDiv">
-    <div id="modalBack"></div>
-    <div id="modalWelcome"></div>
-    <div id="modalOptions"></div>
-    <div id="modalDeath"></div>
-    <div id="modalWin"></div>
-    <div id="modalLose"></div>
-    <div id="modalRestart"></div>
-</div>
-<div id="timeToResetDiv">
-    <span>До сброса игрового мира осталось:   </span><span id="timeToResetTime"></span>
+<div id="bodydiv">
+    <div id="map"></div>
+    <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
+    <div id="divButtons">
+        <div id="buttonFullScreen" class="buttonFullScreenOn"></div>
+        <div id="buttonOptions" class="sublayers-clickable"></div>
+    </div>
+    <div id="divScaleCarFuel"></div>
+    <div id="divScaleCarHealth"></div>
+    <div id="buttonConnectServer" class="sublayers-clickable"></div>
+    <div id="chatArea"></div>
+    <div id="fireControlArea"></div>
+    <div id="speedSetDivForSpeedSlider"></div>
+    <div id="zoomSetDivForZoomSlider"></div>
+    <div id="radialMenuDiv" style="position:absolute;">
+        <svg id="radialMenuSVG">
+        </svg>
+    </div>
+    <div id="modalDiv">
+        <div id="modalBack"></div>
+        <div id="modalWelcome"></div>
+        <div id="modalOptions"></div>
+        <div id="modalDeath"></div>
+        <div id="modalWin"></div>
+        <div id="modalLose"></div>
+        <div id="modalRestart"></div>
+    </div>
+    <div id="timeToResetDiv">
+        <span>До сброса игрового мира осталось:   </span><span id="timeToResetTime"></span>
+    </div>
 </div>
 </body>
 </html>

@@ -1,0 +1,145 @@
+/* Все размеры и отступы взяты от растровой картинки
+   и забиты руками (быдло верстка форевер) */
+
+.fire-control-parent {
+    position: absolute;
+    bottom: 233px;
+    left: 50%;
+    pointer-events: none;
+    margin-left: -175px;
+}
+
+#fireControlTop {
+    position: absolute;
+    margin-left: 57px;
+    height: 190px;
+    width: 237px;
+    background: transparent url('/static/img/fire_control/battle_hud_glass.png') 100% 100% no-repeat;
+    background-position: top left;
+    bottom: -208px;
+}
+
+#divForSVG {
+    margin-left: 44px;
+    margin-top: 22px;
+}
+
+#fireControlBottom {
+    position: absolute;
+    height: 48px;
+    width: 351px;
+    background: transparent url('/static/img/fire_control/battle_hud_base.png') 100% 100% no-repeat;
+    top: 185px;
+    pointer-events: auto;
+}
+
+#fireControlSlideButton {
+    position: absolute;
+    height: 27px;
+    width: 36px;
+    top: 17px;
+    left: 277px;
+}
+
+.fire-control-slide-button-show {
+     background: transparent url('/static/img/fire_control/battle_hud_btn_down_normal.png') 100% 100% no-repeat;
+ }
+
+.fire-control-slide-button-show:hover {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_down_over.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-show:active {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_down_pressed.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-hide {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_normal.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-hide:hover {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_over.png') 100% 100% no-repeat;
+}
+
+.fire-control-slide-button-hide:active {
+    background: transparent url('/static/img/fire_control/battle_hud_btn_up_pressed.png') 100% 100% no-repeat;
+}
+
+.fire-control-svg {
+    position: absolute;
+    top: 22px;
+    left: 44px;
+}
+
+.fire-control-background {
+    fill: transparent;
+    pointer-events: auto;
+}
+
+.fire-control-sector-shadow {
+    fill: gray;
+    stroke: limegreen;
+    stroke-width: 2;
+    opacity: 0.2;
+    pointer-events: auto;
+}
+
+.fire-control-sector {
+    fill: green;
+    stroke: limegreen;
+    stroke-width: 2;
+    opacity: 0.4;
+    pointer-events: auto;
+}
+
+.fire-control-sector-recharge {
+    fill: green;
+    stroke: limegreen;
+    stroke-width: 2;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.fire-control-sector:hover {
+    fill: green;
+    stroke: limegreen;
+    stroke-width: 2;
+    opacity: 0.6;
+}
+
+.fire-control-all {
+    fill: limegreen;
+    stroke: lime;
+    stroke-width: 2;
+    opacity: 0.4;
+    pointer-events: auto;
+}
+
+.fire-control-all:hover {
+    fill: limegreen;
+    stroke: lime;
+    stroke-width: 2;
+    opacity: 0.6;
+}
+
+.fire-control-radar-point {
+    fill: lime;
+    stroke: lime;
+    stroke-width: 2;
+    opacity: 0.8;
+}
+
+.fire-control-radar-point-friend {
+    fill: lime;
+    stroke: lime;
+    stroke-width: 2;
+    opacity: 0.3;
+}
+
+.fire-control-radar-point-party {
+    fill: #ffd961;
+    stroke: #ffd961;
+    stroke-width: 2;
+    opacity: 0.4;
+}
+

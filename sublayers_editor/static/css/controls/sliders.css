@@ -1,0 +1,535 @@
+/*Настройка трёх главных дивов*/
+.slider-speed-main {
+    position: absolute;
+    bottom: 450px;
+    right: 20px;
+    width: 90px;
+    pointer-events: none;
+}
+
+.slider-speed-left-main {
+    position: absolute;
+    width: 40px;
+    height: 363px;
+    left: 0px;
+}
+
+.slider-speed-right-main {
+    position: absolute;
+    width: 68px;
+    right: 0px;
+}
+
+/*Настройка трёх главных дивов завершена*/
+
+/*Настройка фона шкалы*/
+
+.slider-speed-filler-main {
+    position: absolute;
+    height: 315px;
+    width: 29px;
+    left: 1px;
+    z-index: 2;
+    bottom: 2px;
+    overflow-y: hidden;
+    pointer-events: auto;
+
+}
+
+#slider-speed-filler {
+    background: transparent url('/static/img/CruiseControl/if_spd_filler.png') 50% 50% no-repeat;
+    height: 100%;
+    top: 40%;
+    width: 29px;
+    bottom: 0px;
+    position: absolute;
+    opacity: 0.2;
+
+}
+
+#slider-speed-filler-arrow {
+    background: transparent url('/static/img/CruiseControl/if_spd_arrow.png') 50% 50% no-repeat;
+    width: 29px;
+    height: 2px;
+    z-index: 2;
+    position: absolute;
+    top: 40%;
+}
+
+/*Настройка фона шкалы завершена*/
+
+/*Настройки слайдера и каретки*/
+.slider-speed-carriage {
+    width: 39px;
+    height: 31px;
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_normal.png') 50% 50% no-repeat;
+    font: bold 14px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+.slider-speed-carriage:hover {
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_over.png') 50% 50% no-repeat;
+}
+
+.slider-speed-carriage:active {
+    background: transparent url('/static/img/CruiseControl/if_spd_slider_pressed.png') 50% 50% no-repeat;
+}
+
+.slider-speed-carriage-label {
+    font: bold 14px Arial;
+    color: #2dc34a;
+    text-align: center;
+    position: relative;
+    top: 7px;
+}
+
+.slider-speed-slider {
+    margin-left: 18.5px;
+    background: transparent url('/static/img/CruiseControl/if_spd_bar.png') 50% 50% no-repeat;
+    pointer-events: auto;
+}
+
+/*Настройки слайдера и каретки завершены*/
+
+/*Настройка левых 5-ти дивов - 4 для картинок и один для надписи*/
+#slider-speed-left-hwy {
+    background-image: url('/static/img/CruiseControl/if_spd_limit_hwy.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 55px;
+    position: absolute;
+    opacity: 0.4
+}
+
+#slider-speed-left-rd {
+    background-image: url('/static/img/CruiseControl/if_spd_limit_rd.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 140px;
+    position: absolute;
+    opacity: 0.4
+}
+
+#slider-speed-left-drt {
+    background-image: url('/static/img/CruiseControl/if_spd_limit_drt.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 238px;
+    position: absolute;
+    opacity: 0.4
+}
+
+#slider-speed-left-frst {
+    background-image: url('/static/img/CruiseControl/if_spd_limit_frst.png');
+    background-repeat: no-repeat;
+    height: 30px;
+    width: 40px;
+    top: 294px;
+    position: absolute;
+    opacity: 0.4;
+}
+
+/*Насройка левых дивов завершена*/
+
+/* Настройки Цифрового Спидометра - Непосредственно цифра! */
+.slider-speed-digital-main {
+    background-image: url('/static/img/CruiseControl/if_spd_digital_speed.png');
+    background-repeat: no-repeat;
+    position: relative;
+    height: 39px;
+    width: 68px;
+    margin-bottom: 15.5px;
+}
+
+.slider-speed-digital-value {
+    font: bold 19px Arial;
+    color: #2dc34a;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.slider-speed-digital-label {
+    font: bold 11px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+/* Настройки цифрового спидометра завершены*/
+
+/* Настройки кнопки стоп! */
+.slider-speed-stop-main {
+    background-image: url('/static/img/CruiseControl/if_spd_stop_normal.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    height: 34px;
+    width: 54px;
+    margin-top: 6px;
+    margin-left: 7px;
+    opacity: 0.8;
+    pointer-events: auto;
+}
+
+.slider-speed-stop-main:hover {
+    opacity: 1;
+    height: 36px;
+    width: 56px;
+    margin-top: 5px;
+    margin-left: 5.5px;
+    background-image: url('/static/img/CruiseControl/if_spd_stop_over.png');
+}
+
+.slider-speed-stop-main:active {
+    opacity: 1;
+    background-image: url('/static/img/CruiseControl/if_spd_stop_pressed.png');
+}
+
+/* Настройка текста в слайдере скорости */
+.control-zoom-speed-vertical-text {
+    font: bold 12px Arial;
+    color: #2dc34a;
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+#spanSpeedCruiseControlText {
+    position: absolute;
+    top: 328.5px;
+    left: 44px;
+    white-space: nowrap;
+}
+
+#spanSpeedLimitsText {
+    position: absolute;
+    left: 10px;
+    top: 352px;
+}
+
+/* Настройка кнопки стоп завершена */
+
+/* Настройка слайдера зума */
+.slider-zoom-parent {
+    left: 30px;
+    top: 110px;
+    position: absolute;
+}
+
+#Zoom_slider {
+    border-radius: 0px;
+    height: 150px; /* на каждый масштаб +25px, но начинать считать с НУЛЯ!*/
+    width: 25px;
+    border: 0px;
+    position: absolute;
+    top: 10px;
+}
+
+.slider-zoom-carriage {
+    background: transparent url('/static/img/control_zoom/zoom_btn_bar_center_normal.png') 50% 50% no-repeat;
+    margin-left: -3px;
+}
+
+.slider-zoom-carriage:hover {
+    background: transparent url('/static/img/control_zoom/zoom_btn_bar_center_over.png') 50% 50% no-repeat;
+}
+
+.slider-zoom-carriage:active {
+    background: transparent url('/static/img/control_zoom/zoom_btn_bar_center_pressed.png') 50% 50% no-repeat;
+}
+
+#Zoom_sliderBar {
+    height: 175px; /* на каждый масштаб +25px, но начинать считать с ЕДИНИЦЫ!*/
+    width: 25px;
+    background: transparent url('/static/img/control_zoom/zoom_bar_segment.png') 100% 100% repeat-y;
+    position: absolute;
+    top: 26px;
+    left: 5px;
+}
+
+#Zoom_btnPlus {
+    height: 27px;
+    width: 35px;
+    position: absolute;
+    background: transparent url('/static/img/control_zoom/zoom_btn_plus_normal.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnPlus:hover {
+    background: transparent url('/static/img/control_zoom/zoom_btn_plus_over.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnPlus:active {
+    background: transparent url('/static/img/control_zoom/zoom_btn_plus_pressed.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnMinus {
+    height: 27px;
+    width: 35px;
+    position: absolute;
+    top: 200px; /* На каждый масштаб +25 начинать с двойки*/
+    background: transparent url('/static/img/control_zoom/zoom_btn_minus_normal.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnMinus:hover {
+    background: transparent url('/static/img/control_zoom/zoom_btn_minus_over.png') 50% 50% no-repeat;
+}
+
+#Zoom_btnMinus:active {
+    background: transparent url('/static/img/control_zoom/zoom_btn_minus_pressed.png') 50% 50% no-repeat;
+}
+
+/* Текст Zoom В контроллере зума */
+#spanZoomZoomText {
+    position: absolute;
+    top: 172px; /* по 25*/
+    left: -24px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Настройка слайдера зума завершена */
+
+/* Настройка прогресс бара для Fuel*/
+
+.pbar-fuel-parent {
+    position: absolute;
+    bottom: 80px;
+    right: 350px;
+    pointer-events: none;
+}
+
+#pbarFuelLeft {
+    height: 17px;
+    width: 17px;
+    position: absolute;
+    background: transparent url('/static/img/Health_Fuel/fuel_icon.png') 100% 100% no-repeat;
+    opacity: 1;
+    left: 0px;
+    top: 14px;
+}
+
+#pbarFuelRight {
+    height: 50px;
+    width: 155px;
+    left: 30px;
+    position: absolute;
+}
+
+#pbarFuelRightBar {
+    height: 30px;
+    width: 154px;
+    position: absolute;
+}
+
+#pbarFuelBarFiller {
+    position: absolute;
+    height: 30px;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#pbarFuelBarFillerFill {
+    position: absolute;
+    height: 30px;
+    width: 100%;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_bg_tile.png') 100% 100% repeat-x;
+    z-index: 1;
+    opacity: 0.4;
+    overflow-x: visible;
+}
+
+#pbarFuelBarScale {
+    position: absolute;
+    background: transparent url('/static/img/Health_Fuel/scale_all.png') 100% 100% no-repeat;
+    height: 100%;
+    width: 155px;
+    z-index: 2;
+    opacity: 1;
+}
+
+#pbarFuelBarArrow {
+    position: absolute;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_arrow.png') 100% 100% no-repeat;
+    width: 7px;
+    height: 25px;
+    right: 0%;
+    bottom: 0px;
+    margin-right: -3.5px;
+    z-index: 3;
+    opacity: 1;
+}
+
+/* Строковые дивы и классы для спанов*/
+
+#pbarFuelRightDigits {
+    height: 15px;
+    width: 155px;
+    position: absolute;
+    top: -5px;
+    font: bold 12px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+.pbarRightsDigitsLeft {
+    position: absolute;
+    left: -2px;
+}
+
+.pbarRightsDigitsCenter {
+
+}
+
+.pbarRightsDigitsRight {
+    position: absolute;
+    right: -3px;
+}
+
+#pbarFuelRightLabel {
+    height: 20px;
+    width: 155px;
+    top: 34px;
+    position: absolute;
+    font: bold 12px Arial;
+    color: #2dc34a;
+}
+
+.pbarFuelRightLabelt1 {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarFuelRightLabelt2 {
+    position: absolute;
+    left: 35px;
+}
+
+.pbarFuelRightLabelt3 {
+    position: absolute;
+    left: 45%;
+}
+
+.pbarFuelRightLabelt4 {
+    position: absolute;
+    right: 0px;
+}
+
+/* Завершены настройки FUEL прогресс бара*/
+
+/* Настройка прогресс бара для HP*/
+
+.pbar-hp-parent {
+    position: absolute;
+    bottom: 140px;
+    right: 350px;
+    pointer-events: none;
+}
+
+#pbarHPLeft {
+    height: 18px;
+    width: 25px;
+    position: absolute;
+    background: transparent url('/static/img/Health_Fuel/health_icon.png') 100% 100% no-repeat;
+    opacity: 1;
+    left: -4px;
+    top: 14px;
+}
+
+#pbarHPRight {
+    height: 50px;
+    width: 155px;
+    left: 30px;
+    position: absolute;
+}
+
+#pbarHPRightBar {
+    height: 30px;
+    width: 154px;
+    position: absolute;
+}
+
+#pbarHPBarFiller {
+    position: absolute;
+    height: 30px;
+    width: 100%;
+    overflow-x: hidden;
+
+}
+
+#pbarHPBarFillerFill {
+    position: absolute;
+    height: 30px;
+    width: 100%;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_bg_tile.png') 100% 100% repeat-x;
+    z-index: 1;
+    opacity: 0.4;
+}
+
+#pbarHPBarScale {
+    position: absolute;
+    background: transparent url('/static/img/Health_Fuel/scale_all.png') 100% 100% no-repeat;
+    height: 100%;
+    width: 155px;
+    z-index: 2;
+    opacity: 1;
+}
+
+#pbarHPBarArrow {
+    position: absolute;
+    background: transparent url('/static/img/Health_Fuel/fuel_health_arrow.png') 100% 100% no-repeat;
+    width: 7px;
+    height: 25px;
+    right: 0%;
+    bottom: 0px;
+    margin-right: -3.5px;
+    z-index: 3;
+    opacity: 1;
+}
+
+/* Строковые дивы и классы для спанов*/
+
+#pbarHPRightDigits {
+    height: 15px;
+    width: 155px;
+    position: absolute;
+    top: -5px;
+    font: bold 12px Arial;
+    color: #2dc34a;
+    text-align: center;
+}
+
+#pbarHPRightLabel {
+    height: 20px;
+    width: 155px;
+    top: 34px;
+    position: absolute;
+    font: bold 12px Arial;
+    color: #2dc34a;
+}
+
+.pbarHPRightsDigitsLeft {
+    position: absolute;
+    left: -2px;
+}
+
+.pbarHPRightsDigitsCenter {
+
+}
+
+.pbarHPRightsDigitsRight {
+    position: absolute;
+    right: -8px;
+}
+
+.pbarHPRightLabelt1 {
+    position: absolute;
+    left: 0px;
+}
+
+.pbarHPRightLabelt2 {
+    position: absolute;
+    left: 87px;
+}
+

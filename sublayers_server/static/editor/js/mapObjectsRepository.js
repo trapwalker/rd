@@ -56,6 +56,16 @@ MapObjectsRepository = (function () {
         return this._tempID++;
     };
 
+    // Работа с областью
+
+    MapObjectsRepository.prototype.requestArea = function (rect, filter) {
+    //TODO: запрос к серверу, по выделенной области вернуть объекты по фильтру
+    }
+
+    MapObjectsRepository.prototype.dropArea = function () {
+    //TODO: збросить все выделенные объекты
+    }
+
     // Добавление/удаление событий для маркеров
 
     MapObjectsRepository.prototype.setupMarkerIcon = function (marker, icon) {
