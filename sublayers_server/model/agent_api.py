@@ -19,6 +19,7 @@ import random
 
 
 class AgentAPI(API):
+    # todo: do not make instance of API for all agents
     def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
         # todo: use init position or remove that params
         super(AgentAPI, self).__init__()
