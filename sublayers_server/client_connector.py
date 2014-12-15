@@ -25,6 +25,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.application.clients.append(self)
         self.api = AgentAPI(agent=agent)
 
+        # todo: extract chat logic from here
         for message_params in self.application.chat:
             srv.post_message(messages.Chat(agent=agent, **message_params))
             # todo: otimize - slice and send chat history by chunks
