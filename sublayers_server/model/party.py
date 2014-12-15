@@ -45,6 +45,8 @@ class Party(object):
         if old_party:
             old_party.exclude(agent, silent=True)
 
+        '''
+        # todo: fix it
         old_agent_observers = agent.observers[:]
         old_member_observers = self.members[0].observers[:]
 
@@ -54,6 +56,7 @@ class Party(object):
         for a in self.members:
             for o in old_agent_observers:
                 a.add_observer(o)
+        #'''
 
         self.members.append(agent)
         agent.party = self
