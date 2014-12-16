@@ -20,7 +20,6 @@ class ClientSocketHandler(tornado.websocket.WebSocketHandler):
         client = Client(connection=self, srv=self.application.srv)
         self.api = ClientAPI(client=client)
         self.application.clients.append(self)
-        client.sendTestRoads()
 
 
     def on_close(self):

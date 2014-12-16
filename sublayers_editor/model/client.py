@@ -13,6 +13,7 @@ class Client(object):
         self._connection = connection
         self.srv = srv
         self.objects = {}
+        self.ts_leafs = {}
         self.cur_rect = []
 
     @property
@@ -88,11 +89,32 @@ class Client(object):
             del self.objects[obj[u'_id']]
 
         # отправка на клиент
-        mes = dict(
-            cls='delObjects',
-            obj=list_send,
-        )
-        self.connection.send(dumps(mes))
+        if len(list_send) > 0:
+            mes = dict(
+                cls='delObjects',
+                obj=list_send,
+            )
+            self.connection.send(dumps(mes))
+
+        # формирование список тайлов которые надо удалить
+        list_send_leaf = []
+        for obj in self.ts_leafs:
+            for tile in self.cur_rect:
+                if Tileid(self.ts_leafs[obj][u'tileid']).in_tile(tile):
+                    break
+            else: list_send_leaf.append(self.ts_leafs[obj])
+
+        # удаление листьев из self.ts_leafs
+        for obj in list_send_leaf:
+            del self.ts_leafs[obj[u'_id']]
+
+        # отправка на клиент
+        if len(list_send_leaf) > 0:
+            ts_mes = dict(
+                cls='delTiles',
+                obj=list_send_leaf,
+            )
+            self.connection.send(dumps(ts_mes))
 
     def selectAreaByRect(self, objects):
         log.info('Client: Add new objects by select area')
@@ -105,11 +127,12 @@ class Client(object):
                 list_send.append(obj)
 
         # отправка на клиент
-        mes = dict(
-            cls='answerSelectAreaByRect',
-            obj=list_send,
-        )
-        self.connection.send(dumps(mes))
+        if len(list_send) > 0:
+            mes = dict(
+                cls='answerSelectAreaByRect',
+                obj=list_send,
+            )
+            self.connection.send(dumps(mes))
 
     def sendTestRoads(self):
         log.info('Client: Send roads to client')
@@ -122,3 +145,21 @@ class Client(object):
             obj=roads,
         )
         self.connection.send(dumps(mes))
+
+    def selectLeafsByRect(self, objects):
+        log.info('Client: Add new leafs by select area')
+
+        # запись новых объектов к себе в список
+        list_send = []
+        for obj in objects:
+            if not self.ts_leafs.has_key(obj[u'_id']):
+                self.ts_leafs[obj[u'_id']] = obj
+                list_send.append(obj)
+
+        # отправка на клиент
+        if len(list_send) > 0:
+            mes = dict(
+                cls='addTiles',
+                obj=list_send,
+            )
+            self.connection.send(dumps(mes))

@@ -12,6 +12,7 @@ MapObjectsRepository = (function () {
         this.roads = [];
         this.towns = [];
         this.gasStations = [];
+        this.tsLeaf = [];
 
         this.markerEventList = [];
         this.markerDragging = false;
@@ -299,6 +300,34 @@ MapObjectsRepository = (function () {
         };
 
         editor_manager.changeObject(mes_obj);
+    };
+
+    MapObjectsRepository.prototype.addTilesFromServer = function (objects) {
+        //console.log('MapObjectsRepository.prototype.addTileFromServer');
+        for (var i = 0; i < objects.length; i++) {
+            var x = objects[i].position.x;
+            var y = objects[i].position.y;
+            var z = objects[i].position.z;
+            var lt1 = myMap.unproject([x << (26 - z), y << (26 - z)], map_max_zoom);
+            var lt2 = myMap.unproject([(x + 1) << (26 - z), (y + 1) << (26 - z)], map_max_zoom);
+
+            var map_rect = L.rectangle(L.latLngBounds([lt1, lt2]), {
+                color: objects[i].color,
+                weight: 2,
+                clickable:false,
+                fillOpacity: 0.1});
+            this.tsLeaf[objects[i]._id['$oid']] = map_rect;
+            map_rect.addTo(myMap);
+        }
+    };
+
+    MapObjectsRepository.prototype.delTilesFromServer = function (objects) {
+        //console.log('MapObjectsRepository.prototype.delTileFromServer');
+        for (var i = 0; i < objects.length; i++)
+            if (this.tsLeaf[objects[i]._id['$oid']]) {
+                myMap.removeLayer(this.tsLeaf[objects[i]._id['$oid']]);
+                delete this.tsLeaf[objects[i]._id['$oid']];
+            }
     };
 
     MapObjectsRepository.prototype.addObjectFromServer = function (type, object) {

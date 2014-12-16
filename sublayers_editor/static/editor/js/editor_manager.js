@@ -28,8 +28,6 @@ var EditorManager = (function(){
     EditorManager.prototype.receiveMessage = function (self, params) {
         //alert('EditorManager receiveMessage');
         self._setIdInObject(params.obj);
-        //if (params.obj._id)
-        //    params.obj.id = params.obj._id['$oid'];
 
         switch (params.cls){
             case 'addObject':
@@ -46,6 +44,12 @@ var EditorManager = (function(){
                 break;
             case 'changeObject':
                 repositoryMO.changeObjectFromServer(params.obj.object_type, params.obj);
+                break;
+            case 'addTiles':
+                repositoryMO.addTilesFromServer(params.obj);
+                break;
+            case 'delTiles':
+                repositoryMO.delTilesFromServer(params.obj);
                 break;
             case 'sendRects':
                 self.paintTiles(params.obj);
@@ -111,7 +115,7 @@ var EditorManager = (function(){
             var lt2 = myMap.unproject([(x + 1) << (26 - z), (y + 1) << (26 - z)], map_max_zoom);
             //console.log(rect.point.x, rect.point.y, rect.point.z);
             //console.log(x << (26 - z), y << (26 - z), z);
-            //console.log(lt1);
+            // console.log('in rectangle', lt1);
 
             /*
             L.circleMarker(lt1, {color: '#777777'})
@@ -123,7 +127,7 @@ var EditorManager = (function(){
             */
 
             var map_rect = L.rectangle(L.latLngBounds([lt1, lt2]),
-                {color: '#333333', weight: 1, clickable:false, fillOpacity: 0.1});
+                {color: '#333333', weight: 2, clickable:false, fillOpacity: 0.0});
             this.tiles.push(map_rect);
             map_rect.addTo(myMap);
 

@@ -114,19 +114,15 @@ class Tileid2(long):
         assert 0 <= level <= z, u'Некорректно указан уровень предка.'
         return self.parent(z - level)
 
-    def index_child_first(self):
+    def index_child_first(self, level=1):
         z = self.zoom()
-        assert z < MAX_ZOOM, u'Достигнут максимальный зум.'
-        return Tileid2(self + 1)
+        assert z + level < MAX_ZOOM, u'Достигнут максимальный зум.'
+        return Tileid2(self + level)
 
     def index_child_last(self):
         z = self.zoom()
         assert z < MAX_ZOOM, u'Достигнут максимальный зум.'
         return Tileid2(self | (2 ** (MAX_BIT_COUNT - (z << 1)) - 1))
-
- #   def __str__(self):
-  #      x, y, z = self.xyz()
-   #     return x, y, z
 
     def in_tile(self, tile):
         # если тайлы не одинаковые
@@ -137,6 +133,18 @@ class Tileid2(long):
             if tile.index_child_first() <= self <= tile.index_child_last():
                 return True
         return False
+
+    def childs(self, level=1):
+        u"""Итератор, перечисляющий всех потомков на уровне level вниз от текущего."""
+        assert isinstance(level, int) and level >= 0 and level + self.zoom() < MAX_ZOOM, \
+            u'Некорректное значение аргумента level: {}'.format(level)
+        size = 2 ** level
+        sx, sy, sz = self.index_child_first(level).xyz()
+        for y in xrange(size):
+            for x in xrange(size):
+                yield Tileid2(sx+x, sy+y, sz)
+
+
 
     def in_rect(self, tl, br):
         tile_list = Tileid2().iter_rect(tl, br)
@@ -185,10 +193,13 @@ class Tileid2(long):
 
 
 if __name__ == '__main__':
-    r = Tileid2(9, 9, 4)
-    a = Tileid2(7, 5, 4)
-    b = Tileid2(12, 14, 4)
-    print r.in_rect(a, b)
+    t = Tileid2(1, 1, 2)
+
+    for tile in t.childs(0):
+        print tile.xyz()
+
+
+
 
 
 

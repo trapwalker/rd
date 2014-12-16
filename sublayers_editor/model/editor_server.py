@@ -25,14 +25,12 @@ class EditorServer(object):
         for client in self.app.clients:
             client.api.client.addObject(obj)
 
-
     def delObject(self, id):
         log.info('EditorServer: Del object')
         obj = self.db.geo_objects.find_one({u'_id': ObjectId(id)})
         self.db.geo_objects.remove(obj)
         for client in self.app.clients:
             client.api.client.delObject(obj)
-
 
     def changeObject(self, position, id, **kw):
         log.info('EditorServer: Change object')
@@ -59,8 +57,23 @@ class EditorServer(object):
                     'z': z
                 }
                 res.append(e)
+
+        ts_res = []
+        if long(min_point[u'z']) > 13:
+            for tile in tile_list:
+                list_obj = self.db.tile_sets.find({u'tileid':{'$gte':tile, '$lte': tile.index_child_last()}})
+                for e in list_obj:
+                    x, y, z = TileId(e['tileid']).xyz()
+                    e[u'position'] = {
+                        'x': x,
+                        'y': y,
+                        'z': z,
+                    }
+                    ts_res.append(e)
+
         client.setSelectArea(tile_list)
         client.selectAreaByRect(res)
+        client.selectLeafsByRect(ts_res)
 
     def getRectsByArea(self, client, min_point, max_point, select_zoom):
         log.info('EditorServer: Send rect tiles')
