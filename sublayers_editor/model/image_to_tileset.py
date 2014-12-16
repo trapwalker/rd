@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PIL import Image, ImageDraw #Подключим необходимые библиотеки.
+#from PIL import Image, ImageDraw #Подключим необходимые библиотеки.
 from tileset import Tileset
 from tileid import Tileid
 from tileid2 import Tileid2
@@ -107,6 +107,15 @@ def MongoDBToTileset(collection, ts_name):
     return ts
 
 
+def MongoDBToTilesets(collection):
+    tss = {}
+    for obj in collection.find():
+        if not tss.has_key(obj[u'ts_name']):
+            tss[obj[u'ts_name']] = Tileset()
+        x, y, z = Tileid2(obj[u'tileid']).xyz()
+        tss[obj[u'ts_name']].set_tile(Tileid(x, y, z))
+    return tss
+
 
 if __name__ == '__main__':
     #ts = ImageToTileset(directory=r'C:/_tiles_test', zoom=11,
@@ -121,7 +130,11 @@ if __name__ == '__main__':
     db = db_connection.maindb
 
     #print TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood')
-    ts = MongoDBToTileset(db.tile_sets, 'wood')
+    ts = MongoDBToTilesets(db.tile_sets)
+
+    print ts['wood'].level
+    print ts.keys()
+
     #ts.save(open('d:/ts_wood2_11', 'w'))
 
     #for e in db.tile_sets.find():

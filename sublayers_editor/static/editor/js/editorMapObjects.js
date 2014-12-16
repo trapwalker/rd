@@ -193,9 +193,6 @@ var EditorMapObjects = (function (_super) {
 
     return EditorMapObjects;
 })(EditorBase);
-
-
-
 // todo: сделать через currentEditor
 // Обработчик тулБаттонов, не получилось внести в класс, из-за проблемы с this
 function selectToolButtonClick() {

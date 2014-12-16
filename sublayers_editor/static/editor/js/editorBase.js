@@ -88,6 +88,7 @@ function initEditors(){
     editorFreeCam = new EditorFreeCam();
     editorSelectArea = new EditorSelectArea();
     editorMapObjects = new EditorMapObjects();
+    editorIntersectTest = new EditorIntersectTest();
 }
 
 
@@ -150,6 +151,13 @@ function onClickMapObjects() {
         changeCurrentEditor(editorFreeCam);
     else
         changeCurrentEditor(editorMapObjects)
+}
+
+function onClickIntersectTest() {
+    if (currentEditor === editorIntersectTest)
+        changeCurrentEditor(editorFreeCam);
+    else
+        changeCurrentEditor(editorIntersectTest)
 }
 
 // Изменение текущего режима работы редактора

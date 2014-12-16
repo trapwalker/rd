@@ -60,6 +60,14 @@ $(document).ready(function () {
         btnIcon: 'editorMapObjects-icon',
         btnEnbChckd: true,
         btnMap: myMap});
+
+    editorIntersectTest.activateButton = L.easyButton({
+        btnFunct: onClickIntersectTest,
+        btnTitle:  'Тестирование пересечения с тайлами',
+        btnIcon: 'editorSelectArea-icon',
+        btnEnbChckd: true,
+        btnMap: myMap});
+
     changeCurrentEditor(editorFreeCam);
 
     // создание репазиториев (пока он один)

@@ -33,3 +33,8 @@ class ClientAPI(API):
         log.info('ClientAPI: Select area by rect')
         self.client.srv.selectAreaByRect(self.client, **kw)
         self.client.srv.getRectsByArea(self.client, **kw)
+
+    @public_method
+    def intersectTest(self, **kw):
+        log.info('ClientAPI: Intersect Test Request')
+        self.client.srv.intersectTest(self.client, **kw)

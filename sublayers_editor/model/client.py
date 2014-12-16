@@ -163,3 +163,12 @@ class Client(object):
                 obj=list_send,
             )
             self.connection.send(dumps(mes))
+
+    def intersectTest(self, res):
+        log.info('Client: Send result points of intersect')
+        mes = dict(
+            cls='intersectResult',
+            obj=res,
+        )
+        self.connection.send(dumps(mes))
+

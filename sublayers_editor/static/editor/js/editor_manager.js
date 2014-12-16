@@ -61,6 +61,10 @@ var EditorManager = (function(){
                 console.log(params.obj);
                 self._paint_roads(params.obj);
                 break;
+            case 'intersectResult':
+                //console.log('intersectResult', params.obj);
+                editorIntersectTest.setResultPoints(params.obj);
+                break;
             default:
                 break;
         }
@@ -159,6 +163,18 @@ var EditorManager = (function(){
             }
         }
     }
+
+
+    EditorManager.prototype.sendIntersectTest = function (point, angle) {
+        var mes = {
+            call: 'intersectTest',
+            params: {
+                point: point,
+                angle: angle
+            }
+        };
+        this.sendMessage(mes);
+    };
 
     return EditorManager;
 })();
