@@ -2,7 +2,11 @@
 
 from tileid import Tileid, ROOT
 from math import tan, pi
-import copy 
+import copy
+
+import logging.config
+log = logging.getLogger(__name__)
+
 
 try:
     import cPickle as pickle
@@ -358,7 +362,7 @@ class Tileset(object):
         return (color, id)
 
 
-    def intersect_by_ray(self, tid, a):
+    def intersect_by_ray(self, tid, a, distance=0):
         u'''
             tid - объект класса Tileid
             a - угол в радианах от 0 <= a < 2*pi, относительно севера!
@@ -388,6 +392,14 @@ class Tileset(object):
             def is_correct_tile(x, y, z):
                 max = 2 ** z
                 return 0 <= x < max and 0 <= y < max
+
+            def dist_filter(ox, oy, nx, ny, nz):
+                if dist == 0:
+                    return True
+                _nx = (nx + ox) * (2 ** (z - nz))
+                _ny = (ny + oy) * (2 ** (z - nz))
+                val = (_nx - x) ** 2 + (_ny - y) ** 2
+                return val < dist
 
             def get_intersect_point(func1, func2):
                 ox1, oy1, is_corr, tile1 = func1()
@@ -432,10 +444,15 @@ class Tileset(object):
                 elif pi < a < 2 * pi:      # x = 0 или y = 0
                     ox1, oy1, is_corr, tile1 = get_intersect_point(x_is_0, y_is_0)
 
-            if not is_corr or not is_correct_tile(tile1[0], tile1[1], tile1[2]):
-                return (None, None, None)
 
-            return (ox1, oy1, tile1)
+            if not is_corr or not is_correct_tile(tile1[0], tile1[1], tile1[2]) or not dist_filter(ox1, oy1, tile1[0], tile1[1], tile1[2]):
+                return (ox1, oy1, tile1, False)
+            #todo: переделать формат результата. Варианиты:
+            # вместо Tileid возвращаться кортеж (x, y, z)
+            # вместо кортежа возврата возвращать dict c переменным числом полей (зависит от результата)
+            # зациклить Tileid так, чтобы при отрицательных значениях x, y можно было вывалиться с другой стороны планеты
+
+            return (ox1, oy1, tile1, True)
 
         def recursion_func(tile, ox, oy):
             color1, tile1 = self.get_tile2(tile)
@@ -448,8 +465,8 @@ class Tileset(object):
                 if color1 != color:
                     return (tile1, ox1, oy1)
                 else:
-                    ox2, oy2, tile2 = get_next_tile(tile1, ox1, oy1)
-                    if ox2 is None:
+                    ox2, oy2, tile2, flag = get_next_tile(tile1, ox1, oy1)
+                    if not flag:
                         return None
                     return recursion_func(Tileid(tile2[0], tile2[1], tile2[2]), ox2, oy2)
             else:
@@ -467,14 +484,15 @@ class Tileset(object):
                 oy *= 2
                 return recursion_func(Tileid(tx1, ty1, tz1), ox, oy)
 
+        dist = distance ** 2
         color, tile = self.get_tile2(tid)
         x, y, z = tid.xyz()
         tx, ty, tz = tile.xyz()
         # получить относительные координаты
         ox = float(x) / (2 ** (z - tz)) - tx
         oy = float(y) / (2 ** (z - tz)) - ty
-        ox1, oy1, tile1 = get_next_tile(tile, ox, oy)
-        if ox1 is None:
+        ox1, oy1, tile1, flag = get_next_tile(tile, ox, oy)
+        if not flag:
             return None
         return recursion_func(Tileid(tile1[0], tile1[1], tile1[2]), ox1, oy1)
 

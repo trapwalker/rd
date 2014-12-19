@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 from tileid2 import Tileid2
 from tileid import Tileid
 from image_to_tileset import MongoDBToTilesets
+import tileset
 
 class EditorServer(object):
 
@@ -16,7 +17,13 @@ class EditorServer(object):
         # подключение к базе
         self.db_connection = Connection()
         self.db = self.db_connection.maindb
-        self.tss = MongoDBToTilesets(self.db.tile_sets)
+        #self.tss = MongoDBToTilesets(self.db.tile_sets)
+        self.tss = {
+            u'wood': tileset.Tileset(open('d:/ts_wood_11')),
+            u'water': tileset.Tileset(open('d:/ts_water_11')),
+            u'road': tileset.Tileset(open('d:/ts_road_12')),
+        }
+        log.info('EditorServer: Tilesets loaded !')
 
 
     def addObject(self, position, object_type):
@@ -113,21 +120,66 @@ class EditorServer(object):
 
 
 if __name__ == "__main__":
-    import json
-    from bson.json_util import dumps
-    a = EditorServer(app=None)
-    #a.db.geo_objects.insert({'type':'town','name':'test_town5', 'population': '4'})
+
+    from random import randrange
+    import time
+    from tileset import Tileset
+
+    #srv = EditorServer(app=None)
+
+
+    print 'Load Tilesets from files'
+    start = time.time()
+
+    tss = {
+        'wood': Tileset(open('d:/ts_wood_11')),
+        'water': Tileset(open('d:/ts_water_11')),
+        'road': Tileset(open('d:/ts_road_12')),
+    }
+
+    print "Loaded: ", time.time() - start, "seconds."
+
+
+    print '========================='
+
+    print 'EditorServer: Tilesets loaded !'
+
+    sx, sy, sz = Tileid2(1174, 652, 11).index_child_first(15).xyz()
+    fx, fy, fz = Tileid2(1188, 665, 11).index_child_first(15).xyz()
+    z = 26
+
+
+    exper_list = []
+    # формируем входныe данныe
+    for i in xrange(10000):
+        x = randrange(sx, fx)
+        y = randrange(sy, fy)
+        a = randrange(0, 6280) / 1000.
+        exper_list.append((Tileid(x, y, z), a))
+
+
+    print 'Start experiment for ', len(exper_list), ' elements'
+    start = time.time()
+
+    for e in exper_list:
+        for key in tss:
+            tss[key].intersect_by_ray(e[0], e[1], 10000)
+
+
+    print "it took", time.time() - start, "seconds."
+    print 'End experiment'
+
+
 
     # Индексация по тайл айди, который может быть НЕ уникальным
     # >> use maindb
     # >> db.geo_objects.ensureIndex({ u'tileid' : 1})
     # a.db.geo_objects.ensureIndex({u'tileid' : 1})
-    print a.db.geo_objects.getIndexes()
+    # print a.db.geo_objects.getIndexes()
 
-    for e in a.db.geo_objects.find():
-        print e
-        #x, y, z = TileId(e[u'tileid']).xyz()
-        #print x, y, z
+    # Удаление элементов из коллекции
+    #for e in a.db.geo_objects.find():
+     #   print e
         #a.db.geo_objects.remove(e)
     print '========================='
 

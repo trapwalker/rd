@@ -4,8 +4,8 @@
 from tileset import Tileset
 from tileid import Tileid
 from tileid2 import Tileid2
-from pprint import pprint as pp
 from pymongo import Connection
+
 
 
 #TODO: Если выбранный файл (тайл) полностью одного цвета - учесть это специальным вызовом ts.set_tile
@@ -118,18 +118,18 @@ def MongoDBToTilesets(collection):
 
 
 if __name__ == '__main__':
-    #ts = ImageToTileset(directory=r'C:/_tiles_test', zoom=11,
-    #                    x_start=1173, y_start=652, x_finish=1189, y_finish=666,
-    #                    color=(0, 0, 0))
+    ts = ImageToTileset(directory=r'C:/_tiles_test', zoom=11,
+                        x_start=1173, y_start=652, x_finish=1189, y_finish=666,
+                        color=(0, 0, 0))
     #ts = Tileset(open('d:/ts_wood_11'))
-    #print ts.level
-    #ts.save(open('d:/ts_wood_11', 'w'))
+    print ts.level
+    ts.save(open('d:/ts_wood_11', 'w'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
-
+    '''
     db_connection = Connection()
     db = db_connection.maindb
 
-    #print TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood')
+    #print TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road')
     ts = MongoDBToTilesets(db.tile_sets)
 
     print ts['wood'].level
@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
     #for e in db.tile_sets.find():
     #    print e
-
+    '''
 
 
     '''
