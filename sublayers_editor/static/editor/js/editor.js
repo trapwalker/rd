@@ -7,6 +7,34 @@ $(document).ready(function () {
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
 
+    /*
+    var canvasTiles = L.tileLayer.canvas();
+    canvasTiles.drawTile = function(canvas, tilePoint, zoom) {
+        var ctx = canvas.getContext('2d');
+        ctx.fillText(tilePoint.toString(), 50, 50);
+        ctx.globalAlpha = 0.05;
+        var l = 0, s = 255;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(l, l, s, s);
+
+        
+
+        setInterval(function(){
+            if(l >= s) {
+                ctx.clearRect(0,0,255,255);
+                l=0;
+                s = 255;
+            }
+            l+=2;
+            s-=4;
+            console.log(l, s);
+            ctx.fillRect(l, l, s, s);
+        }, 100)
+
+    };
+    canvasTiles.addTo(myMap);
+    */
+
 
     myMap.on('moveend', function(){
         var bounds = myMap.getPixelBounds();

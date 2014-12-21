@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tileid import Tileid, ROOT
+from tileid2 import Tileid2
 from math import tan, pi
 import copy
 
@@ -362,12 +363,21 @@ class Tileset(object):
         return (color, id)
 
 
-    def intersect_by_ray(self, tid, a, distance=0):
+    def intersect_by_ray(self, tid, a, border_tid=None, distance=0):
         u'''
             tid - объект класса Tileid
             a - угол в радианах от 0 <= a < 2*pi, относительно севера!
-            возвращает кортеж (Tileid, ox, oy), где ox, oy - относительные (0 .. 1) координаты в Tileid
+            border_tid - ограничивающий расчеты Tileid
+            distance - ограничивыающая расчеты дистанция
+            возвращает кортеж ((x, y, z), ox, oy, flag), где:
+                (x, y, z) - координаты Tileid (могут быть не корректны)
+                ox, oy - относительные (0 .. 1) координаты в Tileid
+                flag - факт смены цвета (false: некорректный тайл или выход за ограничитель расчётов)
+                                        (true: цвет сменён)
         '''
+
+        def parent_filter(nx, ny, nz):
+            return (border_tid is None) or Tileid2(nx, ny, nz).is_child(border_tid)
 
         def get_next_tile(tile, ox, oy):
             # вывзывать данную функцию только для листовых тайлов
@@ -393,6 +403,8 @@ class Tileset(object):
                 max = 2 ** z
                 return 0 <= x < max and 0 <= y < max
 
+            '''
+            # Вариант реализации фильтра по дистанции
             def dist_filter(ox, oy, nx, ny, nz):
                 if dist == 0:
                     return True
@@ -400,6 +412,7 @@ class Tileset(object):
                 _ny = (ny + oy) * (2 ** (z - nz))
                 val = (_nx - x) ** 2 + (_ny - y) ** 2
                 return val < dist
+            '''
 
             def get_intersect_point(func1, func2):
                 ox1, oy1, is_corr, tile1 = func1()
@@ -444,15 +457,11 @@ class Tileset(object):
                 elif pi < a < 2 * pi:      # x = 0 или y = 0
                     ox1, oy1, is_corr, tile1 = get_intersect_point(x_is_0, y_is_0)
 
+            # todo: в возврате функции вместо флага использовать выражение ниже
+            if not is_corr or not is_correct_tile(tile1[0], tile1[1], tile1[2]):
+                return ox1, oy1, tile1, False
+            return ox1, oy1, tile1, True
 
-            if not is_corr or not is_correct_tile(tile1[0], tile1[1], tile1[2]) or not dist_filter(ox1, oy1, tile1[0], tile1[1], tile1[2]):
-                return (ox1, oy1, tile1, False)
-            #todo: переделать формат результата. Варианиты:
-            # вместо Tileid возвращаться кортеж (x, y, z)
-            # вместо кортежа возврата возвращать dict c переменным числом полей (зависит от результата)
-            # зациклить Tileid так, чтобы при отрицательных значениях x, y можно было вывалиться с другой стороны планеты
-
-            return (ox1, oy1, tile1, True)
 
         def recursion_func(tile, ox, oy):
             color1, tile1 = self.get_tile2(tile)
@@ -463,11 +472,14 @@ class Tileset(object):
                 ox1 = float(ox) / dz + float(tx - tx1 * dz) / dz
                 oy1 = float(oy) / dz + float(ty - ty1 * dz) / dz
                 if color1 != color:
-                    return (tile1, ox1, oy1)
+                    return tile1.xyz(), ox1, oy1, True
                 else:
+                    _px, _py, _pz = tile1.xyz()
+                    if not parent_filter(_px, _py, _pz):
+                        return tile1.xyz(), ox1, oy1, False
                     ox2, oy2, tile2, flag = get_next_tile(tile1, ox1, oy1)
                     if not flag:
-                        return None
+                        return tile2, ox2, oy2, False
                     return recursion_func(Tileid(tile2[0], tile2[1], tile2[2]), ox2, oy2)
             else:
                 tx1 *=2
@@ -484,7 +496,7 @@ class Tileset(object):
                 oy *= 2
                 return recursion_func(Tileid(tx1, ty1, tz1), ox, oy)
 
-        dist = distance ** 2
+        #dist = distance ** 2
         color, tile = self.get_tile2(tid)
         x, y, z = tid.xyz()
         tx, ty, tz = tile.xyz()
@@ -493,7 +505,7 @@ class Tileset(object):
         oy = float(y) / (2 ** (z - tz)) - ty
         ox1, oy1, tile1, flag = get_next_tile(tile, ox, oy)
         if not flag:
-            return None
+            return tile1, ox1, oy1, False
         return recursion_func(Tileid(tile1[0], tile1[1], tile1[2]), ox1, oy1)
 
 
@@ -543,32 +555,36 @@ def count_in_tree(tree, value, nodeClasses=(list, tuple)):
 ##############################################################################
 if __name__ == '__main__':
     from image_to_tileset import TilesetToImage, ImageToTileset
-    #ts = Tileset(open('d:/ts'))
-    ts = Tileset()
-    ts2 = Tileset()
+    ts = Tileset(open('d:/ts'))
+
+    '''
+    #ts = Tileset()
     ts.set_tile(Tileid(2, 2, 3))
     ts.set_tile(Tileid(6, 6, 4))
     ts.set_tile(Tileid(5, 2, 3))
     ts.set_tile(Tileid(0, 0, 10))
     ts.set_tile(Tileid(0, 1023, 10))
+    '''
+    #TilesetToImage(ts, r"d:/temp_image2.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
 
-    TilesetToImage(ts, r"d:/temp_image2.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
-
+    ts2 = Tileset()
 
     zoom = 10
-    for angle in xrange(0, 719):
-        res = ts.intersect_by_ray(Tileid(256, 256, 10), pi*(float(angle))/180)
+    for angle in xrange(0, 359):
+        res =  ts.intersect_by_ray(Tileid(530, 530, 10), pi*(float(angle))/180, Tileid2(515, 515, 10).parent_by_lvl(1))
         print res, angle
         if not (res is None):
-            x, y, z = res[0].xyz()
-            x = x + res[1]
-            y = y + res[2]
-            x = x * (2**(zoom-z))
-            y = y * (2**(zoom-z))
-            z = zoom
-            ts2.set_tile(Tileid(int(x), int(y), z))
-
+            x, y, z = res[0]
+            if (x > 0) and (y > 0):
+                x = x + res[1]
+                y = y + res[2]
+                x = x * (2**(zoom-z))
+                y = y * (2**(zoom-z))
+                z = zoom
+                ts2.set_tile(Tileid(int(x), int(y), z))
     TilesetToImage(ts2, r"d:/temp_image7.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
+
+
 
 
 

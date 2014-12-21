@@ -107,15 +107,16 @@ class EditorServer(object):
         log.info('EditorServer: Request Intersect With TS')
         res = []
         zoom = 26
+        tid = Tileid(long(point[u'x']), long(point[u'y']), long(point[u'z']))
+        b_tid = Tileid2(long(point[u'x']), long(point[u'y']), long(point[u'z'])).parent_by_lvl(17)
         for key in self.tss:
-            p = self.tss[key].intersect_by_ray(Tileid(long(point[u'x']), long(point[u'y']), long(point[u'z'])), angle)
-            if not (p is None):
-                x, y, z = p[0].xyz()
-                x = x + p[1]
-                y = y + p[2]
-                x = x * (2**(zoom-z))
-                y = y * (2**(zoom-z))
-                res.append(dict(x=long(x), y=long(y), z=zoom, key=key))
+            p = self.tss[key].intersect_by_ray(tid, angle, border_tid = b_tid)
+            x, y, z = p[0]
+            x = x + p[1]
+            y = y + p[2]
+            x = x * (2**(zoom-z))
+            y = y * (2**(zoom-z))
+            res.append(dict(x=long(x), y=long(y), z=zoom, key=key))
         client.intersectTest(res)
 
 

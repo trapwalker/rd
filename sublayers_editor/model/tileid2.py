@@ -8,7 +8,9 @@ class ETileException(Exception):
 
 ROOTBIN = 0 # самый первый тайл, с координатами 0 0 0
 MAX_BIT_COUNT = 63 # не рекомендуется использовать большее значение, т.к. Python переходит на вещественные числа
-MAX_ZOOM = 31      # под хранения z отводится 5 бит (32 уровня глубины), допустимые значения 2^n-1
+MAX_BIT_ZOOM = 5    # под хранения z отводится 5 бит (32 уровня глубины)
+MAX_TILE = (MAX_BIT_COUNT - MAX_BIT_ZOOM) >> 1 # определяет сколько относится к
+MAX_ZOOM = 2**MAX_BIT_ZOOM - 1 # допустимые значениядля z    2^n-1
 
 
 
@@ -144,7 +146,9 @@ class Tileid2(long):
             for x in xrange(size):
                 yield Tileid2(sx+x, sy+y, sz)
 
-
+    def is_child(self, parent):
+        return (self.zoom() > parent.zoom()) and \
+               (self >> (MAX_BIT_COUNT - (parent.zoom() << 1))) == (parent >> (MAX_BIT_COUNT - (parent.zoom() << 1)))
 
     def in_rect(self, tl, br):
         tile_list = Tileid2().iter_rect(tl, br)
@@ -192,11 +196,35 @@ class Tileid2(long):
             yield e
 
 
-if __name__ == '__main__':
-    t = Tileid2(1, 1, 2)
+    def iter_bin(self):
+        b = long(self)
+        # сохранить и отбросить зум
+        zoom = self.zoom()
+        b = b >> MAX_BIT_ZOOM
+        for i in xrange(zoom):
+            yield (b >> ((MAX_TILE - i - 1) << 1)) & 3
 
-    for tile in t.childs(0):
-        print tile.xyz()
+
+    __iter__ = iter_bin
+
+
+    def iter_up(self):
+        b = long(self)
+        # сохранить и отбросить зум
+        zoom = self.zoom()
+        b = b >> MAX_BIT_ZOOM
+        for i in xrange(zoom):
+            yield (b >> ((MAX_TILE - (zoom - i)) << 1)) & 3
+
+
+if __name__ == '__main__':
+    t = Tileid2(7, 7, 4)
+    p = Tileid2(0, 0, 9)
+
+    for node in t.iter_up():
+        print node
+    for node in t:
+        print node
 
 
 
