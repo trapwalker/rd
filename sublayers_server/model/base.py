@@ -3,25 +3,16 @@
 import logging
 log = logging.getLogger(__name__)
 
-from subscription_protocol import make_subscriber_emitter_classes
-from utils import get_uid, serialize
+#from utils import get_uid, serialize
 from inventory import Inventory
 import messages
 from events import ContactSee
 
 from abc import ABCMeta
+from counterset import CounterSet
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
-
-
-SubscriberTo__VisibleObject, EmitterFor__Observer = make_subscriber_emitter_classes(
-    subscriber_name='Observer',
-    emitter_name='VisibleObject')
-
-SubscriberTo__Observer, EmitterFor__Agent = make_subscriber_emitter_classes(
-    subscriber_name='Agent',
-    emitter_name='Observer')
 
 
 class Object(object):
@@ -38,6 +29,9 @@ class Object(object):
         self.uid = id(self)
         self.server.objects[self.uid] = self
         self.is_alive = True
+
+    def __hash__(self):
+        return self.uid
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -94,21 +88,28 @@ class PointObject(Object):
         self._position = position
 
 
-class VisibleObject(PointObject, EmitterFor__Observer):
+class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-
     def __init__(self, **kw):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
         self.server.static_objects.append(self)
+        self.subscribed_agents = CounterSet()
+        self.subscribed_observers = []
+        # todo: 'delete' method fix
         self.init_contacts_search()
 
-    def on_change(self, comment=None):  # todo: privacy level index
-        # todo: emit update message
+    def on_update(self, time, comment=None):  # todo: privacy level index
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
-        self.emit_for__Observer()  # todo: arguments?
+        for agent in self.subscribed_agents:
+            agent.server.post_message(messages.Update(
+                agent=agent,
+                time=time,
+                obj=self,
+                comment='message for subscriber: {}'.format(comment)
+            ))
 
     def contacts_refresh(self):
         self.contacts_clear()
@@ -147,6 +148,8 @@ class VisibleObject(PointObject, EmitterFor__Observer):
     def delete(self):
         self.server.static_objects.remove(self)
         self.contacts_clear()
+        # todo: send 'out' message for all subscribers
+        # todo: test to subscription leaks
         super(VisibleObject, self).delete()
 
 
@@ -166,11 +169,13 @@ class Heap(VisibleObject):
         super(Heap, self).delete()
 
 
-class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
+class Observer(VisibleObject):
 
     def __init__(self, observing_range=0.0, **kw):
         self._r = observing_range
         super(Observer, self).__init__(**kw)
+        self.watched_agents = CounterSet()
+        self.visible_objects = []
         self.server.static_observers.append(self)
 
     def init_contact_test(self, obj):
@@ -179,20 +184,38 @@ class Observer(VisibleObject, SubscriberTo__VisibleObject, EmitterFor__Agent):
         if self.can_see(obj):
             ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
 
-    def on_contact_in(self, obj):
-        pass
+    # todo: check calls
+    def on_contact_in(self, time, obj, is_boundary, comment=None):
+        """
+        @param float time: contact time
+        @param VisibleObject obj: contacted object
+        @param bool is_boundary: True if this contact is visible range penetration
+        @param str comment: debug comment
+        """
+        self.visible_objects.append(obj)
+        obj.subscribed_observers.append(self)
+        # add all subscribed _agents_ into to the _visible object_
+        # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
+        for agent in self.watched_agents:
+            is_first = obj.subscribed_agents.inc(agent) == 1
+            self.server.post_message(messages.See(agent=agent, time=time, subj=self, obj=obj, is_boundary=is_boundary, is_first=is_first))
 
-    def on_contact_out(self, obj):
-        pass
+    # todo: check calls
+    def on_contact_out(self, time, obj, is_boundary, comment=None):
+        """
+        @param float time: contact time
+        @param VisibleObject obj: contacted object
+        @param bool is_boundary: True if this contact is visible range penetration
+        @param str comment: debug comment
+        """
+        # remove all subscribed _agents_ from _visible object_
+        # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
+        for agent in self.watched_agents:
+            is_last = obj.subscribed_agents.dec(agent) == 0
+            self.server.post_message(messages.Out(agent=agent, time=time, subj=self, obj=obj, is_boundary=is_boundary, is_last=is_last))
 
-    def on_change(self, comment=None):
-        super(Observer, self).on_change(comment)
-        self.emit_for__Agent(
-            message=messages.Update(subject=self, obj=self, comment='message for owner: {}'.format(comment))
-        )
-
-    def on_event_from__VisibleObject(self, emitter, *av, **kw):
-        self.emit_for__Agent(message=messages.Update(subject=self, obj=emitter, comment='message from VO (emitter)'))
+        self.visible_objects.remove(obj)
+        obj.subscribed_observers.remove(self)
 
     @property
     def r(self):

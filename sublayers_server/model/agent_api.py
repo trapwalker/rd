@@ -7,29 +7,21 @@ log = logging.getLogger(__name__)
 log.__class__.__call__ = log.__class__.info
 
 import units
-from datetime import datetime
 from vectors import Point
 from api_tools import API, public_method
-from utils import serialize
-from messages import ChatMessage, InitMessage
+import messages
 import tasks
-from weapons import SectoralWeapon
+#from weapons import SectoralWeapon
 from console import Shell
 import events
 
 import random
 
 
-def make_push_package(events):
-    events = [event.as_dict() for event in events]
-    return dict(
-        message_type='push',
-        events=events,
-    )
-
-
 class AgentAPI(API):
+    # todo: do not make instance of API for all agents
     def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
+        # todo: use init position or remove that params
         super(AgentAPI, self).__init__()
         self.agent = agent
         if self.agent.cars:
@@ -51,13 +43,15 @@ class AgentAPI(API):
         )
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
+            # todo: do not use protected methods outside
             if hasattr(attr, '_public_method') and attr._public_method:
                 ctx[attr_name] = attr
         return ctx
 
     def send_init_package(self):
-        if self.agent.connection:
-            self.agent.connection.write_message(serialize(make_push_package([InitMessage(agent=self.agent)])))
+        # todo: move to Init-event performing method
+        agent = self.agent
+        agent.server.post_message(messages.Init(agent=agent, time=None))
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
@@ -77,6 +71,7 @@ class AgentAPI(API):
         #path = tasks.goto(self.car, Point(x, y))
         #return dict(path=path)
         def f(event):
+            # todo: update state
             tasks.goto(self.car, Point(x, y))
         events.Callback(server=self.agent.server, func=f).send()
 
@@ -96,6 +91,7 @@ class AgentAPI(API):
     @public_method
     def crazy(self, target_id=None):
         server = self.agent.server
+
         def crazy_func(event=None):
             log.debug('Run crazy func')
             dt = abs(random.gauss(0, 5)) + 0.5  # sec
@@ -126,7 +122,7 @@ class AgentAPI(API):
         last_motion = None
         for task in reversed(car.task_list):
             if isinstance(task, tasks.Motion):
-                last_motion= task
+                last_motion = task
                 break
 
         last_motion = last_motion or isinstance(car.task, tasks.Motion) and car.task
@@ -143,15 +139,16 @@ class AgentAPI(API):
     def chat_message(self, text):
         log.info('Agent %s say: %r', self.agent.login, text)
         app = self.agent.connection.application
+        me = self.agent
+        srv = me.server
         chat = app.chat
         msg_id = len(chat)  # todo: get "client_id" from client message info
-        msg = ChatMessage(author=self.agent, text=text, client_id=msg_id)
-        chat.append(msg)
 
-        push_data = serialize(make_push_package([msg]))
-
+        message_params = dict(author=me, text=text, client_id=msg_id)
         for client_connection in app.clients:
-            client_connection.write_message(push_data)
+            srv.post_message(messages.Chat(agent=client_connection.agent, **message_params))
+
+        chat.append(message_params)
 
     @public_method
     def console_cmd(self, cmd):

@@ -79,11 +79,14 @@ class Unit(Observer):
             if new_hp == 0:
                 self.on_die()  # todo: implementation
             else:
-                self.on_change(comment='HP {}->{}'.format(self.hp, new_hp))
+                self.on_update(time=server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
+                # todo: on_update params
+                # todo: 'hit' and 'fire' events and messages
 
     def on_die(self):
+        # todo: refactor
         self.stop()
-        self.on_change(comment='RIP')
+        self.on_update(time=server.get_time(), comment='RIP')
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)

@@ -52,7 +52,7 @@ class WinEvent(Event):
 
     def perform(self):
         for agent in self.server.agents.values():
-            agent.send_message_to_client(WinMessage(time=self.time, winner_unit=self.unit))
+            self.server.post_message(WinMessage(agent=agent, time=self.time, winner_unit=self.unit))
 
 
 class WinTrigger(Trigger):
@@ -70,7 +70,7 @@ class Corp(RoleParty):
     def __init__(self):
         # todo: add role unit class to params
         super(Corp, self).__init__(
-            base_point=Point(4835, 23804),  # Девый город
+            base_point=Point(17031, 18000),  # Девый город
             roles=[
                 Role('Cargo',
                     car_params=dict(

@@ -3,17 +3,21 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import Object, SubscriberTo__Observer
-from agent_api import make_push_package
+from base import Object
 from utils import serialize
+from collections import Counter
+
+# todo: make agent offline status possible
 
 
-class Agent(Object, SubscriberTo__Observer):
+class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 
     def __init__(self, login, connection=None, party=None, **kw):
         log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
+        self.observers = Counter()
+        # todo: replace Counter to CounterSet
         self.login = login
         self._connection = connection
         # todo: normalize and check login
@@ -25,8 +29,32 @@ class Agent(Object, SubscriberTo__Observer):
             party.include(self)
         log.debug('=========%s', self.party)
 
-    def as_dict(self):
-        d = super(Agent, self).as_dict()
+    @property
+    def is_online(self):
+        return self._connection is not None
+
+    def add_observer(self, observer):
+        # add _self_ into to the all _visible objects_ by _observer_
+        # todo: send contact (with observer) message to agent
+        # todo: send contacts (with observed VO) messages to agent
+        self.observers[observer] += 1
+        observer.watched_agents[self] += 1
+        observer.subscribed_agents[self] += 1
+        for vo in observer.visible_objects:
+            vo.subscribed_agents[self] += 1
+
+    def drop_observer(self, observer):
+        # remove _self_ from all _visible objects_ by _observer_
+        for vo in observer.visible_objects:
+            vo.subscribed_agents[self] -= 1
+        observer.subscribed_agents[self] -= 1
+        observer.watched_agents[self] -= 1
+        self.observers[observer] -= 1
+        # todo: send contacts-off (with observed VO) messages to agent
+        # todo: send contact-off (with observer) message to agent
+
+    def as_dict(self, *av, **kw):
+        d = super(Agent, self).as_dict(*av, **kw)
         d.update(
             login=self.login,
             party=self.party.as_dict(),
@@ -44,35 +72,20 @@ class Agent(Object, SubscriberTo__Observer):
     def append_car(self, car):  # specific
         if car not in self.cars:
             self.cars.append(car)
-        car.agent = self
-        self.subscribe_to__Observer(car)
+            car.agent = self
+            self.add_observer(car)
 
     def drop_car(self, car):
-        if car not in self.cars:
-            return
-        self.cars.remove(car)
-        self.unsubscribe_from__Observer(car)
+        if car in self.cars:
+            self.drop_observer(car)
+            car.agent = None
+            self.cars.remove(car)
 
-    def on_message(self, connection, messahe):
+    def on_message(self, connection, message):
         pass
 
     def on_disconnect(self, connection):
         pass
-
-    def on_event_from__Observer(self, emitter, message):
-        """
-        @param sublayers_server.model.units.Observer emitter: Message emitter
-        @param sublayers_server.model.messages.UnitMessage message: Incoming message
-        """
-        self.send_message_to_client(message)
-
-    def send_message_to_client(self, message):
-        """
-        @param sublayers_server.model.messages.UnitMessage message: Incoming message
-        """
-        if self.connection:
-            package = make_push_package([message])
-            self.connection.write_message(serialize(package))
 
 
 class User(Agent):
