@@ -79,14 +79,14 @@ class Unit(Observer):
             if new_hp == 0:
                 self.on_die()  # todo: implementation
             else:
-                self.on_update(time=server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
+                self.on_update(time=self.server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
                 # todo: on_update params
                 # todo: 'hit' and 'fire' events and messages
 
     def on_die(self):
         # todo: refactor
-        self.stop()
-        self.on_update(time=server.get_time(), comment='RIP')
+        self.stop()  # todo: fixit
+        self.on_update(time=self.server.get_time(), comment='RIP')
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
@@ -127,6 +127,7 @@ class Bot(Unit):
         super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
         self.state = State(
+            owner=self,
             t=self.server.get_time(),
             p=self._position,
             fi=self._direction,

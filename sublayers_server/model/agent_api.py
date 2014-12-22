@@ -28,6 +28,7 @@ class AgentAPI(API):
             self.car = self.agent.cars[0]
         else:
             self.make_car()
+            # todo: move to event queue
 
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,

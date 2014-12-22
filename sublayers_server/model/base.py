@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from inventory import Inventory
 import messages
-from events import ContactSee
+from events import ContactSee, Init
 
 from abc import ABCMeta
 from counterset import CounterSet
@@ -99,7 +99,8 @@ class VisibleObject(PointObject):
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         # todo: 'delete' method fix
-        self.init_contacts_search()
+        # todo: move to event list
+        Init(obj=self).send()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают

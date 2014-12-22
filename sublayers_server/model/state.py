@@ -152,7 +152,8 @@ class State(BaseState):
         @param float a_braking: typical braking (m/s**2)
         """
         super(State, self).__init__(t, p, fi, v, a, c)
-        
+        self.owner = owner
+
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.v_max = v_max

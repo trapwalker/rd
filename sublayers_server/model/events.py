@@ -68,6 +68,20 @@ class Event(object):
         pass
 
 
+class Init(Event):
+    def __init__(self, obj, **kw):
+        """
+        @param sublayers_server.model.units.Unit subj: Subject of contact
+        """
+        server = obj.server
+        super(Init, self).__init__(server=server, **kw)
+        self.obj = obj  # todo: weakref?
+
+    def perform(self):
+        super(Init, self).perform()
+        self.subj.init_contacts_search()
+
+
 class Subjective(Event):
     __str_template__ = (
         '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
