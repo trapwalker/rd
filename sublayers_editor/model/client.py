@@ -34,7 +34,7 @@ class Client(object):
             if Tileid(obj[u'tileid']).in_tile(tile):
                 self.objects[obj[u'_id']] = obj
                 mes = dict(
-                    cls='addObject',
+                    cls='receiveAddObject',
                     obj=obj
                 )
                 self.connection.send(dumps(mes))
@@ -43,7 +43,7 @@ class Client(object):
         log.info('Client: Del object from client')
         if self.objects.has_key(obj[u'_id']):
             mes = dict(
-                cls='delObject',
+                cls='receiveDelObject',
                 obj=obj
             )
             del self.objects[obj[u'_id']]
@@ -54,7 +54,7 @@ class Client(object):
         if self.objects.has_key(obj[u'_id']):
             self.objects[obj[u'_id']] = obj
             mes = dict(
-                cls='changeObject',
+                cls='receiveChangeObject',
                 obj=obj,
             )
             self.connection.send(dumps(mes))
@@ -66,7 +66,7 @@ class Client(object):
     def sendRects(self, rects):
         log.info('Client: Send rect tiles')
         mes = dict(
-            cls='sendRects',
+            cls='receiveRects',
             obj=rects,
         )
         self.connection.send(dumps(mes))
@@ -91,7 +91,7 @@ class Client(object):
         # отправка на клиент
         if len(list_send) > 0:
             mes = dict(
-                cls='delObjects',
+                cls='receiveDelObjects',
                 obj=list_send,
             )
             self.connection.send(dumps(mes))
@@ -111,7 +111,7 @@ class Client(object):
         # отправка на клиент
         if len(list_send_leaf) > 0:
             ts_mes = dict(
-                cls='delTiles',
+                cls='receiveDelTiles',
                 obj=list_send_leaf,
             )
             self.connection.send(dumps(ts_mes))
@@ -129,22 +129,10 @@ class Client(object):
         # отправка на клиент
         if len(list_send) > 0:
             mes = dict(
-                cls='answerSelectAreaByRect',
+                cls='receiveSelectAreaByRect',
                 obj=list_send,
             )
             self.connection.send(dumps(mes))
-
-    def sendTestRoads(self):
-        log.info('Client: Send roads to client')
-        roads = []
-        for e in self.srv.db.sroads.find({}, {u'_id':0}).limit(1000):
-            roads.append(e)
-
-        mes = dict(
-            cls='roads',
-            obj=roads,
-        )
-        self.connection.send(dumps(mes))
 
     def selectLeafsByRect(self, objects):
         log.info('Client: Add new leafs by select area')
@@ -159,7 +147,7 @@ class Client(object):
         # отправка на клиент
         if len(list_send) > 0:
             mes = dict(
-                cls='addTiles',
+                cls='receiveAddTiles',
                 obj=list_send,
             )
             self.connection.send(dumps(mes))
@@ -167,7 +155,7 @@ class Client(object):
     def intersectTest(self, res):
         log.info('Client: Send result points of intersect')
         mes = dict(
-            cls='intersectResult',
+            cls='receiveIntersectResult',
             obj=res,
         )
         self.connection.send(dumps(mes))

@@ -17,12 +17,14 @@ class EditorServer(object):
         # подключение к базе
         self.db_connection = Connection()
         self.db = self.db_connection.maindb
-        #self.tss = MongoDBToTilesets(self.db.tile_sets)
+        self.tss = MongoDBToTilesets(self.db.tile_sets)
+        '''
         self.tss = {
             u'wood': tileset.Tileset(open('d:/ts_wood_11')),
             u'water': tileset.Tileset(open('d:/ts_water_11')),
             u'road': tileset.Tileset(open('d:/ts_road_12')),
         }
+        '''
         log.info('EditorServer: Tilesets loaded !')
 
 
