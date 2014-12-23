@@ -69,12 +69,7 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y):
-        #path = tasks.goto(self.car, Point(x, y))
-        #return dict(path=path)
-        def f(event):
-            # todo: update state
-            tasks.goto(self.car, Point(x, y))
-        events.Callback(server=self.agent.server, func=f).send()
+        self.car.goto(Point(x, y))
 
     @public_method
     def stop(self):

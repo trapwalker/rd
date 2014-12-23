@@ -3,10 +3,23 @@
 import logging
 log = logging.getLogger(__name__)
 
+from functools import update_wrapper
+
 from state import State
 from base import Observer
 from balance import BALANCE
 from math import pi
+import events
+
+
+def async_call(method):
+    def cover(self, time=None, **kw):
+        def async_closure(event):
+            return method(self, time=event.time, **kw)
+
+        events.Callback(server=self.server, time=time, func=async_closure).send()
+    update_wrapper(cover, method)
+    return cover
 
 
 class Unit(Observer):
@@ -85,7 +98,8 @@ class Unit(Observer):
 
     def on_die(self):
         # todo: refactor
-        self.stop()  # todo: fixit
+        if isinstance(self, Bot):
+            self.stop()  # todo: fixit
         self.on_update(time=self.server.get_time(), comment='RIP')
 
     def as_dict(self, to_time=None):
@@ -144,24 +158,27 @@ class Bot(Unit):
         )
         return d
 
-    def stop(self):
-        self.state.update(t=self.server.get_time(), cc=0)
+    @async_call
+    def stop(self, time):
+        self.state.update(t=time, cc=0)
 
-    def goto(self, position, chain=False):
+    @async_call
+    def goto(self, position, time):
         """
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        self.state.update(t=self.server.get_time(), target_point=position)
-        return None
+        self.state.update(t=time, target_point=position)
 
-    def set_cc(self, value):
+    @async_call
+    def set_cc(self, value, time):
         # todo: docstring
-        self.state.update(t=self.server.get_time(), cc=value)
+        self.state.update(t=time, cc=value)
 
-    def set_turn(self, way=0):
+    @async_call
+    def set_turn(self, way, time):
         # todo: docstring
-        self.state.update(t=self.server.get_time(), turn=way)
+        self.state.update(t=time, turn=way)
 
     @property
     def v(self):
@@ -198,6 +215,7 @@ class Bot(Unit):
         self._max_velocity = value
 
     def special_contacts_search(self):
+        # todo: fixit
         self_motion = self.motion
         if self_motion is None:
             return super(Bot, self).special_contacts_search()
