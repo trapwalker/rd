@@ -10,7 +10,6 @@ import units
 from vectors import Point
 from api_tools import API, public_method
 import messages
-import tasks
 #from weapons import SectoralWeapon
 from console import Shell
 import events
@@ -107,29 +106,14 @@ class AgentAPI(API):
 
                 p = p or Point.random_gauss(car.position, Point(1000, 1000))
                 log.debug('%s crazy go to %s position', car, target or p)
-                tasks.goto(self.car, p)
+                self.car.goto(p, time=event.time if event else server.get_time())
 
         crazy_func()
 
     @public_method
     def set_speed(self, new_speed):
         assert new_speed > 0, 'Cruise control speed must be > 0'
-        car = self.car
-        last_motion = None
-        for task in reversed(car.task_list):
-            if isinstance(task, tasks.Motion):
-                last_motion = task
-                break
-
-        last_motion = last_motion or isinstance(car.task, tasks.Motion) and car.task
-        if last_motion:
-            car.stop()
-            car.max_velocity = new_speed  # todo: check value
-            target_point = last_motion.path[-1]['b'] if last_motion.path else last_motion.target_point
-            path = tasks.goto(owner=car, target_point=target_point)  # todo: target point in abstract Motion is absent
-            return dict(path=path)
-        else:
-            car.max_velocity = new_speed  # todo: check value
+        self.car.set_cc(new_speed)
 
     @public_method
     def chat_message(self, text):
