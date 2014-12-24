@@ -59,6 +59,15 @@ class BaseState(object):
             assert _turn_sign
             self._turn_sign = 1 if _turn_sign > 0.0 else -1
 
+    @property
+    def turn_sign(self):
+        if self.c is None:
+            return 0
+        pc = self.p0 - self.c
+        _turn_sign = Point.polar(1, self.fi0).cross_mul(pc)
+        assert _turn_sign
+        return 1 if _turn_sign > 0.0 else -1
+
     def fix(self, t=None, dt=0.0):
         """
         @param float t: time (sec), t == t0 by default
@@ -240,6 +249,8 @@ class State(BaseState):
 
         if self.a:
             self.t_max = self.t0 + dv / self.a
+
+        log.debug('State: after update: turn_sign{real vs calc}=%s vs %s', self._turn_sign, self.turn_sign)
 
     def __str__(self):
         return (
