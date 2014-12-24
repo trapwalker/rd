@@ -191,9 +191,9 @@ class Bot(Unit):
         # todo: docstring
         self._update(time=time, cc=value)
 
-    def set_turn(self, way, time=None):
+    def set_turn(self, turn, time=None):
         # todo: docstring
-        self._update(time=time, turn=way)
+        self._update(time=time, turn=turn)
 
     @property
     def v(self):

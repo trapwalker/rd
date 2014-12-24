@@ -158,7 +158,7 @@ var FireSector = (function () {
 
 
 var State = (function () {
-    function State(t, position, direct, velocity, acceleration, center_point){
+    function State(t, position, direct, velocity, acceleration, center_point, turn){
         this.t0 = t;                // Время начала движения (состояния)
         this.p0 = position;         // Начальная позиция - вектор!
         this.fi0 = direct;          // Начальный угол
@@ -166,10 +166,14 @@ var State = (function () {
         this.a = acceleration;      // Начальное ускорение - число!
         this.c = center_point;     // Центр разворота - точка!
 
+
         if (this.c) {
             var pc = subVector(this.p0, this.c);
             this._r = absVector(pc);
-            this._turn_sign = mulVectVectors2D(polarPoint(1, this.fi0), pc) > 0 ? 1 : -1;
+            if(turn)
+                this._turn_sign = turn;
+            else
+                this._turn_sign = mulVectVectors2D(polarPoint(1, this.fi0), pc) > 0 ? 1 : -1;
         }
         else {
             this._r = null;
@@ -205,7 +209,7 @@ var State = (function () {
             return summVector(this.c, polarPoint(this._r, this.getCurrentDirection(t) - this._turn_sign * Math.PI * 0.5));
         }
         else {
-            dt = t - this.t0;
+            var dt = t - this.t0;
             return summVector(this.p0, polarPoint(0.5 * this.a * dt * dt + this.v0 * dt, this.fi0));
         }
     };

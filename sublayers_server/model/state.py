@@ -110,7 +110,7 @@ class BaseState(object):
             a=self.a,
             c=self.c,
             #_r=self._r,
-            #_turn=self._turn_sign,
+            turn=self._turn_sign,
         )
 
     @property

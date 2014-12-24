@@ -101,18 +101,16 @@ function onKeyDownMap(event) {
     if (!pressedKey) {
         switch (event.keyCode) {
             case 37:
-
-                console.log('влево');
+                clientManager.sendTurn(1);
                 break;
             case 38:
                 clientManager.sendSetSpeed(user.userCar.maxSpeed);
                 break;
             case 39:
-                console.log('вправо');
+                clientManager.sendTurn(-1);
                 break;
             case 40:
-                console.log('вниз');
-                clientManager.sendStopCar(0);
+                clientManager.sendStopCar();
                 break;
         }
         pressedKey = true;

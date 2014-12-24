@@ -134,3 +134,8 @@ class AgentAPI(API):
     def console_cmd(self, cmd):
         log.info('Agent %s cmd: %r', self.agent.login, cmd)
         self.shell.run(cmd)
+
+    @public_method
+    def set_turn(self, turn=0):
+        log.info('AgentAPI set_turn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: ')
+        self.car.set_turn(turn)

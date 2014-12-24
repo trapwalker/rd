@@ -2,7 +2,7 @@
 // функции формирования исходящих сообщений
 
 // goto
-function sendNewPoint(aPoint, auid) {
+function sendNewPoint(aPoint) {
     //alert('sendNewPoint');
     var mes = {
         call: "goto",
@@ -12,12 +12,8 @@ function sendNewPoint(aPoint, auid) {
             y: aPoint.y
         }
     };
-    rpcCallList.add(mes);
-    //wsjson.sendMess(mes);
-    clientManager._sendMessage(mes);
-    //if (cookieStorage.enableLogRPCMessage())
-       // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
-
+   // rpcCallList.add(mes);
+   // clientManager._sendMessage(mes);
 }
 
 

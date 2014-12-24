@@ -28,7 +28,8 @@ var ClientManager = ( function(){
             data.fi0,                                // Направление
             data.v0,                                 // Скорость - число
             data.a,                                 // Ускорение - число
-            data.c ? (new Point(data.c.x, data.c.y)) : null     // Центр поворота, которого может не быть
+            data.c ? (new Point(data.c.x, data.c.y)) : null,     // Центр поворота, которого может не быть
+            data.turn
         );
     };
 
@@ -267,6 +268,20 @@ var ClientManager = ( function(){
             call: "stop",
             rpc_call_id: rpcCallList.getID(),
             params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    // turn
+    ClientManager.prototype.sendTurn = function(turn) {
+        var mes = {
+            call: "set_turn",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                turn: turn
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
