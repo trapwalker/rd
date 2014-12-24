@@ -162,6 +162,7 @@ class Bot(Unit):
     def update(self, time=None, cc=None, turn=None, target_point=None):
         def async_closure(event):
             self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
+            self.on_update(time=event.time)
             t_max = self.state.t_max
             if t_max is not None:
                 self.update(time=t_max)
