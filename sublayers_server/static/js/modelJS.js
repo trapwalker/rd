@@ -537,5 +537,9 @@ var State = (function () {
         }
     };
 
+    State.prototype.getCurrentSpeedAbs = function(t){
+        this.getCurrentSpeed(t);
+    }
+
     return State;
 })();

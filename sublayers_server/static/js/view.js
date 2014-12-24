@@ -6,8 +6,8 @@ function redrawMap() {
     if (user.userCar) {
         userCarMarker.draw(clock.getCurrentTime());
         // перерисовка всех контроллеров
-        if (controllers)
-            controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
+        //if (controllers)
+        //    controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
     }
 
     // работа со списком машинок
@@ -231,7 +231,7 @@ $(document).ready(function () {
 
 
     // Когда всё загружено и создано вызвать коннекты к серверу
-    j_connector.connect();
+    //j_connector.connect();
     ws_connector.connect();
 
 
