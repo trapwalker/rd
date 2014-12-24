@@ -159,34 +159,32 @@ class Bot(Unit):
         )
         return d
 
-    def update(self, cc=None, turn=None, target=None):
+    def update(self, time=None, cc=None, turn=None, target_point=None):
         def async_closure(event):
-            log.debug('async_closure: kw=%r', kw)
-            return method(self, time=event.time, **kw)
+            self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
+            t_max = self.state.t_max
+            if t_max is not None:
+                self.update(time=t_max)
 
         events.Callback(server=self.server, time=time, func=async_closure).send()
 
-    @async_call
     def stop(self, time):
-        self.state.update(t=time, cc=0)
+        self.update(time=time, cc=0)
 
-    @async_call
     def goto(self, position, time):
         """
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        self.state.update(t=time, target_point=position)
+        self.update(time=time, target_point=position)
 
-    @async_call
     def set_cc(self, value, time):
         # todo: docstring
-        self.state.update(t=time, cc=value)
+        self.update(time=time, cc=value)
 
-    @async_call
     def set_turn(self, way, time):
         # todo: docstring
-        self.state.update(t=time, turn=way)
+        self.update(time=time, turn=way)
 
     @property
     def v(self):
