@@ -325,19 +325,6 @@ function ConnectServerToggle() {
     window.location.reload();
 }
 
-function setClientState(state){
-    if(state === 'death_car'){
-        // Перевести клиент в состояние, пока машинка мертва
-        cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-        myMap.dragging.enable(); // разрешить тягать карту
-        return true;
-    }
-    // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
-    cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
-    myMap.dragging.disable(); // запретить двигать карту
-
-
-}
 
 function showWinLoseMessage(winner){
     if(user.party.name === winner)
