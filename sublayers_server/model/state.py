@@ -104,7 +104,7 @@ class BaseState(object):
             dt = t - self.t0
             return self.p0 + Point.polar(0.5 * self.a * dt ** 2 + self.v0 * dt, self.fi0)
         else:
-            return self.c + Point.polar(self._r, self.fi(t) - self._turn_sign * pi * 0.5)
+            return self.c + Point.polar(self._r, self.fi(t) + self._turn_sign * pi * 0.5)
 
     def export(self):
         u"""

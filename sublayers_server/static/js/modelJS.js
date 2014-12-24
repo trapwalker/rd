@@ -206,7 +206,7 @@ var State = (function () {
     State.prototype.getCurrentCoord = function(t) {
         //console.log('State.prototype.getCurrentCoord', t, this.v0, this.a);
         if (this.c) {
-            return summVector(this.c, polarPoint(this._r, this.getCurrentDirection(t) - this._turn_sign * Math.PI * 0.5));
+            return summVector(this.c, polarPoint(this._r, this.getCurrentDirection(t) + this._turn_sign * Math.PI * 0.5));
         }
         else {
             var dt = t - this.t0;
