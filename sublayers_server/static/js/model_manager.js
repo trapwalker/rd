@@ -9,8 +9,8 @@
 
 // TODO: переименовать в клиент манагер
 
-var ModelManager = ( function(){
-    function ModelManager(){
+var ClientManager = ( function(){
+    function ClientManager(){
         // подписаться на входящие сообщения типа ws_message
         message_stream.addInEvent({
             key: 'ws_message',
@@ -21,7 +21,7 @@ var ModelManager = ( function(){
 
     // вспомогательные методы для парсинга
     // Считывает параметры для создания состояние и возвращает его.
-    ModelManager.prototype._getState = function(data) {
+    ClientManager.prototype._getState = function(data) {
         return new State(
             data.t0,                                 // Время
             new Point(data.p0.x, data.p0.y),          // Позиция
@@ -32,7 +32,7 @@ var ModelManager = ( function(){
         );
     };
 
-    ModelManager.prototype._getOwner = function(data) {
+    ClientManager.prototype._getOwner = function(data) {
         if (data.cls === "User") {
             var party;
             if (data.party)
@@ -51,8 +51,7 @@ var ModelManager = ( function(){
         return null;
     };
 
-
-    ModelManager.prototype._getWeapons = function(data) {
+    ClientManager.prototype._getWeapons = function(data) {
         var sectors = [];
         data.forEach(function (weapon, index) {
             // TODO: ввести позже речардж сектора, когда будет присылаться
@@ -63,8 +62,7 @@ var ModelManager = ( function(){
         return sectors;
     };
 
-
-    ModelManager.prototype._setClientState = function(state){
+    ClientManager.prototype._setClientState = function(state){
         if(state === 'death_car'){
             // Перевести клиент в состояние, пока машинка мертва
             cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
@@ -77,21 +75,17 @@ var ModelManager = ( function(){
     };
 
 
-
-    ModelManager.prototype.sendMessage = function(msg){
-        //alert('ModelManager  sendMessage');
+    ClientManager.prototype._sendMessage = function(msg){
+        //alert('ClientManager  sendMessage');
         // TODO: сейчас данная функция вызывается из функций wsjson.js, позже переделать!
-
-        // формирование и отправка мессаджа
         message_stream.sendMessage({
             type: 'ws_message_send',
             body: msg
         });
     };
 
-
-    ModelManager.prototype.receiveMessage = function (self, params) {
-        console.log('ModelManager.prototype.receiveMessage');
+    ClientManager.prototype.receiveMessage = function (self, params) {
+        console.log('ClientManager.prototype.receiveMessage');
         // TODO: написать правильный обработчик здесь. А пока так
         if (params.message_type == "push") {
             params.events.forEach(function (event) {
@@ -118,10 +112,12 @@ var ModelManager = ( function(){
     // Входящие сообщения
 
     // Входящий от сервера Init для машинки
-    ModelManager.prototype.Init = function(event){
-        console.log('ModelManager.prototype.Init');
+    ClientManager.prototype.Init = function(event){
+        console.log('ClientManager.prototype.Init');
         var servtime = event.time;
-        var max_speed = event.cars[0].max_velocity;
+        // todo: Переделать на нормальную максимальную скорость!
+        //var max_speed = event.cars[0].max_velocity;
+        var max_speed = 28;
         var aMaxHP = event.cars[0].max_hp;
         var radius_visible = event.cars[0].r;
         var aHP = event.cars[0].hp;
@@ -143,7 +139,6 @@ var ModelManager = ( function(){
 
         if (!user.userCar) {
             user.userCar = new UserCar(uid,       //ID машинки
-                0,       //Тип машинки
                 aHP,      //HP машинки
                 max_speed,      //Максималка
                 state
@@ -151,6 +146,8 @@ var ModelManager = ( function(){
 
             // Добавить сектора в userCar
             user.userCar.AddFireSectors(fireSectors);
+
+
 
             // Инициализация маркера машинки
             userCarMarker = new UserCarMarker({
@@ -186,9 +183,8 @@ var ModelManager = ( function(){
         user.userCar.debugLines = [];
     };
 
-
-    ModelManager.prototype.Update = function(event){
-        console.log('ModelManager.prototype.Update');
+    ClientManager.prototype.Update = function(event){
+        console.log('ClientManager.prototype.Update');
         var servtime = event.time;
         // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
         clock.setDt(servtime / 1000.);
@@ -202,7 +198,7 @@ var ModelManager = ( function(){
             var oldHP = user.userCar.hp;
             user.userCar.hp = aHP;
             if (oldHP > 0) // Устанавливается траектория, только если машинка жива
-                user.userCar.track = aState;
+                user.userCar.state = aState;
             if (user.userCar.hp <= 0) {
                 userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
                 this._setClientState('death_car');
@@ -218,7 +214,7 @@ var ModelManager = ( function(){
             listMapObject.setCarHP(event.object.uid, aHP);
             // Установить новую траекторию
             if (oldHP > 0) // Устанавливается траектория, только если машинка жива
-                listMapObject.setTrack(event.object.uid, aState);
+                listMapObject.setState(event.object.uid, aState);
             // После добавления машинки или её апдейта, проверяем сколько у неё хп
             if (listMapObject.objects[event.object.uid].hp <= 0) {
                 listMapObject.objects[event.object.uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
@@ -227,10 +223,6 @@ var ModelManager = ( function(){
                     flashMarker(listMapObject.objects[event.object.uid].marker);
             }
         }
-
-
-
-
 
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -253,5 +245,33 @@ var ModelManager = ( function(){
 
 
 
-    return ModelManager;
+    // Исходящие сообщения
+
+    // setSpeed
+    ClientManager.prototype.sendSetSpeed = function(newSpeed) {
+        var mes = {
+            call: "set_speed",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                new_speed: newSpeed / user.userCar.maxSpeed
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    // stop
+    ClientManager.prototype.sendStopCar = function() {
+        var mes = {
+            call: "stop",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    return ClientManager;
 })();

@@ -14,25 +14,13 @@ function sendNewPoint(aPoint, auid) {
     };
     rpcCallList.add(mes);
     //wsjson.sendMess(mes);
-    model_manager.sendMessage(mes);
+    clientManager._sendMessage(mes);
     //if (cookieStorage.enableLogRPCMessage())
        // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
 }
 
-// stop
-function sendStopCar() {
-    var mes = {
-        call: "stop",
-        rpc_call_id: rpcCallList.getID(),
-        params: { }
-    };
-    rpcCallList.add(mes);
-    //wsjson.sendMess(mes);
-    model_manager.sendMessage(mes);
-    //if (cookieStorage.enableLogRPCMessage())
-        //chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
-}
+
 
 // fire
 function sendFire(aUid) {
@@ -46,7 +34,7 @@ function sendFire(aUid) {
     };
     rpcCallList.add(mes);
     //wsjson.sendMess(mes);
-    model_manager.sendMessage(mes);
+    clientManager._sendMessage(mes);
    // if (cookieStorage.enableLogRPCMessage())
        // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
@@ -64,27 +52,13 @@ function sendFireCrazy(aUid, listForShoot) {
         };
         rpcCallList.add(mes);
         //wsjson.sendMess(mes);
-        model_manager.sendMessage(mes);
+        clientManager._sendMessage(mes);
         //if (cookieStorage.enableLogRPCMessage())
            // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
     }
 }
 
-// setSpeed
-function sendSetSpeed(newSpeed, auid) {
-    var mes = {
-        call: "set_speed",
-        rpc_call_id: rpcCallList.getID(),
-        params: {
-            new_speed: newSpeed / user.userCar.maxSpeed
-        }
-    };
-    rpcCallList.add(mes);
-    //wsjson.sendMess(mes);
-    model_manager.sendMessage(mes);
-  //  if (cookieStorage.enableLogRPCMessage())
-      //  chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
-}
+
 
 // send chat_message - отправляется, даже когда машинка мертва
 function sendChatMessage(atext, auid) {
@@ -97,7 +71,7 @@ function sendChatMessage(atext, auid) {
     };
     rpcCallList.add(mes);
     //wsjson.socket.send(JSON.stringify(mes));
-    model_manager.sendMessage(mes);
+    clientManager._sendMessage(mes);
     //if (cookieStorage.enableLogRPCMessage())
        // chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 }
@@ -114,7 +88,7 @@ function sendServConsole(atext) {
     rpcCallList.add(mes);
     // Консоль отправляется на сервер всегда, вне зависимости от запретов клиента
     //wsjson.socket.send(JSON.stringify(mes));
-    model_manager.sendMessage(mes);
+    clientManager._sendMessage(mes);
     //if (cookieStorage.enableLogRPCMessage())
     //    chat.addMessageToLog(JSON.stringify(mes, null, 4), 'rpc');
 
@@ -260,7 +234,7 @@ function setCurrentCar(uid, aType, aHP, aTrack, aOwner, role) {
         } else { // Если такая машинка уже есть, то
             // установить все переменные
             listMapObject.setCarHP(uid, aHP);
-            listMapObject.setTrack(uid, aTrack);
+            listMapObject.setState(uid, aTrack);
         }
         // После добавления машинки или её апдейта, проверяем сколько у неё хп
         if(listMapObject.objects[uid].hp == 0){

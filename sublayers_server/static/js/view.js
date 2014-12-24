@@ -6,8 +6,8 @@ function redrawMap() {
     if (user.userCar) {
         userCarMarker.draw(clock.getCurrentTime());
         // перерисовка всех контроллеров
-        //if (controllers)
-        //    controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
+        if (controllers)
+            controllers.draw(userCarMarker.currentUserCarAngle, user.userCar);
     }
 
     // работа со списком машинок
@@ -105,14 +105,14 @@ function onKeyDownMap(event) {
                 console.log('влево');
                 break;
             case 38:
-                sendSetSpeed(user.userCar.maxSpeed);
+                clientManager.sendSetSpeed(user.userCar.maxSpeed);
                 break;
             case 39:
                 console.log('вправо');
                 break;
             case 40:
                 console.log('вниз');
-                sendStopCar(0);
+                clientManager.sendStopCar(0);
                 break;
         }
         pressedKey = true;
@@ -203,7 +203,7 @@ $(document).ready(function () {
         adress_server: 'http://localhost:5280/http-bind'
     });
     rpcCallList = new RPCCallList();
-    model_manager = new ModelManager();
+    clientManager = new ClientManager();
 
     myMap = L.map('map',
         {
@@ -232,6 +232,7 @@ $(document).ready(function () {
     myMap.on('zoomend', onZoomEnd);
     document.getElementById('map').onkeydown = onKeyDownMap;
     document.getElementById('map').onkeyup = onKeyUpMap;
+    myMap.keyboard.disable();
 
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
@@ -411,7 +412,7 @@ var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
 var message_stream;
-var model_manager;
+var clientManager;
 var j_connector;
 var ws_connector;
 

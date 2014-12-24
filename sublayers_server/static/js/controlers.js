@@ -86,26 +86,26 @@ var Controllers = (function () {
 
         // Так как все контролеры проинициализированы, то сделать их активными
         this.isActive = true;
-    }
+    };
 
     Controllers.prototype.draw = function (directionCar, uCar) {
         // Если контролеры не активны, то не перерисовывать
         if(! this.isActive) return;
         var ttime = clock.getCurrentTime();
         // Отрисовка контролера скорости
-        this.speedSetSlider.setRealSpeed(uCar.getCurrentSpeedAbs(ttime));
+        this.speedSetSlider.setRealSpeed(uCar.getCurrentSpeed(ttime));
 
         // Отрисовка контроллера хп
         this.hpController.setValue(uCar.hp);
         // Отрисовка контроллера Fuel
-        var tfuel = uCar.getCurrentFuel(ttime);
-        this.fuelController.setValue(tfuel, tfuel * uCar.track.fuelDec);
+        //var tfuel = uCar.getCurrentFuel(ttime);
+        //this.fuelController.setValue(tfuel, tfuel * uCar.state.fuelDec);
 
         // Отрисовка контроллера стрельбы
         if (!(directionCar == 0)) // Пока присылаются два стопа, нужно это условие
             if (this.fireControl)
                 this.fireControl.setRotate(directionCar);
-    };
+    };  
 
     return Controllers;
 })();
@@ -113,11 +113,11 @@ var Controllers = (function () {
 // Колбеки Для работы с контроллерами
 function changeSpeedOnSlider() {
     if (user.userCar)
-        sendSetSpeed(controllers.speedSetSlider.getSpeed(), user.userCar.ID);
+        clientManager.sendSetSpeed(controllers.speedSetSlider.getSpeed(), user.userCar.ID);
 }
 
 function stopSpeedOnSlider() {
-    if (user.userCar) sendStopCar();
+    if (user.userCar) clientManager.sendStopCar();
 }
 
 function changeZoomOnSlider(aSliderZoom) {
