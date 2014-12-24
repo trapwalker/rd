@@ -141,6 +141,7 @@ class Bot(Unit):
                  **kw):
         super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
+        self._state_events = []
         self.state = State(
             owner=self,
             t=self.server.get_time(),
@@ -160,6 +161,11 @@ class Bot(Unit):
         return d
 
     def _update(self, time=None, cc=None, turn=None, target_point=None):
+        # Cancelling all old state events
+        _state_events = self._state_events
+        while _state_events:
+            _state_events.pop().cancel()
+
         def async_closure(event):
             self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
             self.on_update(time=event.time)
@@ -167,8 +173,9 @@ class Bot(Unit):
             if t_max is not None:
                 self._update(time=t_max)
 
-        events.Callback(server=self.server, time=time, func=async_closure).send()
-        # todo: invalidate old future update-events
+        ev = events.Callback(server=self.server, time=time, func=async_closure)
+        self._state_events.append(ev)
+        ev.send()
 
     def stop(self, time=None):
         self._update(time=time, cc=0)
