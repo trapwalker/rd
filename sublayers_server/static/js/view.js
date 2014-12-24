@@ -101,13 +101,13 @@ function onKeyDownMap(event) {
     if (!pressedKey) {
         switch (event.keyCode) {
             case 37:
-                clientManager.sendTurn(-1);
+                clientManager.sendTurn(1);
                 break;
             case 38:
                 clientManager.sendSetSpeed(user.userCar.maxSpeed);
                 break;
             case 39:
-                clientManager.sendTurn(1);
+                clientManager.sendTurn(-1);
                 break;
             case 40:
                 clientManager.sendStopCar();
