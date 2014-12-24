@@ -252,7 +252,7 @@ $(document).ready(function () {
     chat = new ViewMessenger({
             parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
-            width: (cookieStorage.flagDebug ? 400 : 400),
+            width: (cookieStorage.flagDebug ? 600 : 400),
             stream_mes: message_stream
     });
     //chat.setActiveChat(-1);
@@ -260,6 +260,7 @@ $(document).ready(function () {
     chat.setupDragElement(chat.vMHA);
     chat.setMessagesHistory(cookieStorage.historyArray);
     chat.addChat(-1, "-= L O G =-");
+    chat.setActiveChat(-1);
 
 
     carMarkerList = new CarMarkerList({_map: myMap});

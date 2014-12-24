@@ -7,6 +7,8 @@
 
 
 
+// TODO: переименовать в клиент манагер
+
 var ModelManager = ( function(){
     function ModelManager(){
         // подписаться на входящие сообщения типа ws_message
@@ -32,27 +34,26 @@ var ModelManager = ( function(){
 
     ModelManager.prototype.receiveMessage = function (self, params) {
         console.log('ModelManager.prototype.receiveMessage');
+        console.log(params);
         // TODO: написать правильный обработчик здесь. А пока так
 
-/*
-        params.events.forEach(function (event, index) {
-            if (typeof(self[event.cls]) === 'function')
-                self[event.cls](event);
-            else
-                console.log('Error: неизвестная апи-команда для клиента: ', params.cls);
-                receiveMesFromServ(params);
-        });
-*/
-
-
-            if (typeof(self[params.events[0].cls]) === 'function')
-                self[params.events[0].cls](params.events[0]);
+        if (params.message_type == "push") {
+            params.events.forEach(function (event) {
+                if (typeof(self[event.cls]) === 'function')
+                    self[event.cls](event);
+                else {
+                    console.log('Error: неизвестная API-команда для клиента: ', params.cls);
+                    receiveMesFromServ(params);
+                }
+            });
+        }
+        else if (params.message_type == "answer")
+            if (!params.error)
+                rpcCallList.execute(params.rpc_call_id);
             else {
-                console.log('Error: неизвестная апи-команда для клиента: ', params.events[0]);
-                receiveMesFromServ(params);
+                console.log('Ошибка запроса: ', params.error);
+                // Todo: обработка ошибки
             }
-
-
 
         return true;
 
@@ -71,6 +72,13 @@ var ModelManager = ( function(){
         var aMaxHP;
         var radius_visible = event.cars[0].r;
         var aHP;
+        var uid = event.cars[0].uid;
+        var aType = 0;
+        var aWeapons = event.cars[0].weapons;
+        var role = event.cars[0].role;
+        var state = getState(event.cars[0].state);
+        var fireSectors;
+
 
         if (event.cars[0].hp) aHP = event.cars[0].hp;
         if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
@@ -87,15 +95,6 @@ var ModelManager = ( function(){
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
         }
 
-        var uid = event.cars[0].uid;
-        var aType = 0;
-        var aWeapons = event.cars[0].weapons;
-        var role = event.cars[0].role;
-        var state = getState(event.cars[0].state);
-
-
-        var fireSectors;
-        var speed_to_set = (max_speed * 0.75).toFixed(0); // Сразу будет выставлена такая скорость, чтобы оно норамльно игралось
         if (!user.userCar) {
             user.userCar = new UserCar(uid,       //ID машинки
                 aType,       //Тип машинки
@@ -128,7 +127,7 @@ var ModelManager = ( function(){
                 hpMax: aMaxHP,
                 fireSectors: user.userCar.fireSectors,
                 max_velocity: max_speed,
-                set_velocity: speed_to_set
+                set_velocity: (max_speed * 0.75).toFixed(0)
             });
 
             // Инициализация радиального меню - установка правильных id секторов
