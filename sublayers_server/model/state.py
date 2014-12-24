@@ -225,7 +225,7 @@ class State(BaseState):
         self._v_cc = self.v_max * self.cc
         target_v = self._v_cc
 
-        if turn is not None:
+        if turn is not None and self._turn_sign != turn:
             self._turn_sign = turn
             if turn == 0:
                 self._r = None
@@ -250,7 +250,7 @@ class State(BaseState):
         if self.a:
             self.t_max = self.t0 + dv / self.a
 
-        log.debug('State: after update: turn_sign{real vs calc}=%s vs %s', self._turn_sign, self.turn_sign)
+        log.debug('State: after update: turn_sign=%s; c=%s, r=%s', self._turn_sign, self.c, self._r)
 
     def __str__(self):
         return (
