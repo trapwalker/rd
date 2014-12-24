@@ -104,7 +104,10 @@ function onKeyDownMap(event) {
                 clientManager.sendTurn(1);
                 break;
             case 38:
-                clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                if(user.userCar.state.c)
+                    clientManager.sendTurn(0);
+                else
+                    clientManager.sendSetSpeed(user.userCar.maxSpeed);
                 break;
             case 39:
                 clientManager.sendTurn(-1);
