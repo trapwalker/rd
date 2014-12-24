@@ -499,6 +499,7 @@ var UserCarMarker = (function () {
     }
 
     UserCarMarker.prototype.draw = function (aClockTime) {
+        //console.log('UserCarMarker.prototype.draw');
         this.currentUserCarPoint = user.userCar.getCurrentCoord(aClockTime);
         this.currentUserCarAngle = user.userCar.getCurrentDirection(aClockTime);
         this.currentUserCarLatLng = this.options._map.unproject([this.currentUserCarPoint.x, this.currentUserCarPoint.y],
@@ -523,9 +524,9 @@ var UserCarMarker = (function () {
         this.sectorsView.drawSectors(this.currentUserCarPoint, this.currentUserCarAngle);
 
         // Перерисовка траектории
-        if(! cookieStorage.debugMode())
-            this.trackView.draw(this.currentUserCarLatLng);
-
+        //if(! cookieStorage.debugMode())
+        //    this.trackView.draw(this.currentUserCarLatLng);
+        //console.log('UserCarMarker.prototype.draw', this.currentUserCarPoint);
 
         // TODO: Отрисовать свои дебаг линии
         // отрисовка линий

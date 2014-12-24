@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import Object
-from utils import serialize
 from collections import Counter
 
 # todo: make agent offline status possible

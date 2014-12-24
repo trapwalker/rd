@@ -10,7 +10,6 @@ import units
 from vectors import Point
 from api_tools import API, public_method
 import messages
-import tasks
 #from weapons import SectoralWeapon
 from console import Shell
 import events
@@ -28,6 +27,7 @@ class AgentAPI(API):
             self.car = self.agent.cars[0]
         else:
             self.make_car()
+            # todo: move to event queue
 
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,
@@ -68,12 +68,7 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y):
-        #path = tasks.goto(self.car, Point(x, y))
-        #return dict(path=path)
-        def f(event):
-            # todo: update state
-            tasks.goto(self.car, Point(x, y))
-        events.Callback(server=self.agent.server, func=f).send()
+        self.car.goto(position=Point(x, y))
 
     @public_method
     def stop(self):
@@ -111,29 +106,14 @@ class AgentAPI(API):
 
                 p = p or Point.random_gauss(car.position, Point(1000, 1000))
                 log.debug('%s crazy go to %s position', car, target or p)
-                tasks.goto(self.car, p)
+                self.car.goto(position=p, time=event.time if event else server.get_time())
 
         crazy_func()
 
     @public_method
     def set_speed(self, new_speed):
         assert new_speed > 0, 'Cruise control speed must be > 0'
-        car = self.car
-        last_motion = None
-        for task in reversed(car.task_list):
-            if isinstance(task, tasks.Motion):
-                last_motion = task
-                break
-
-        last_motion = last_motion or isinstance(car.task, tasks.Motion) and car.task
-        if last_motion:
-            car.stop()
-            car.max_velocity = new_speed  # todo: check value
-            target_point = last_motion.path[-1]['b'] if last_motion.path else last_motion.target_point
-            path = tasks.goto(owner=car, target_point=target_point)  # todo: target point in abstract Motion is absent
-            return dict(path=path)
-        else:
-            car.max_velocity = new_speed  # todo: check value
+        self.car.set_cc(value=new_speed)
 
     @public_method
     def chat_message(self, text):
@@ -154,3 +134,8 @@ class AgentAPI(API):
     def console_cmd(self, cmd):
         log.info('Agent %s cmd: %r', self.agent.login, cmd)
         self.shell.run(cmd)
+
+    @public_method
+    def set_turn(self, turn=0):
+        log.info('AgentAPI set_turn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: ')
+        self.car.set_turn(turn)

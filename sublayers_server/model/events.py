@@ -68,6 +68,20 @@ class Event(object):
         pass
 
 
+class Init(Event):
+    def __init__(self, obj, **kw):
+        """
+        @param sublayers_server.model.units.Unit subj: Subject of contact
+        """
+        server = obj.server
+        super(Init, self).__init__(server=server, **kw)
+        self.obj = obj  # todo: weakref?
+
+    def perform(self):
+        super(Init, self).perform()
+        self.obj.init_contacts_search()
+
+
 class Subjective(Event):
     __str_template__ = (
         '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
@@ -148,18 +162,3 @@ class Callback(Event):
     def perform(self):
         super(Callback, self).perform()
         return self.func(self)
-
-
-class TaskEnd(Subjective):
-
-    def __init__(self, task, **kw):
-        """
-        """
-        subj = task.owner
-        super(TaskEnd, self).__init__(subj=subj, **kw)
-        self.task = task
-
-    def perform(self):
-        super(TaskEnd, self).perform()
-        if self.subj.task is self.task:
-            self.task.done()

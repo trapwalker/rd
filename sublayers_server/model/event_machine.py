@@ -12,7 +12,6 @@ from party import PartyDispatcher
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
-from itertools import chain
 from collections import deque
 
 MAX_SERVER_SLEEP_TIME = 0.1
@@ -27,9 +26,7 @@ class Server(object):
         self.uid = uid or get_uid()
         # todo: GEO-indexing collections
         self.objects = {}  # Total GEO-objects in game by uid
-        self.statics = []  # Stationary objects (stations, heaps, standing robots)  # todo: GEO-index
-        self.motions = []  # Active motion tasks  # todo: GEO-index
-        self.static_observers = []  # todo: GEO-index
+        self.geo_objects = []  # todo: GEO-index
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
         self.message_queue = deque()
         self.agents = {}  # Agents dictionary
@@ -38,24 +35,6 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
         self.parties = PartyDispatcher()
-
-    def filter_objects(self, quadrant):
-        # todo: typehinting of quadrant
-        return chain(
-            self.filter_statics(quadrant),
-            (motion.owner for motion in self.filter_motions(quadrant)),  # todo: optimize
-        )
-
-    def filter_motions(self, quadrant):
-        # todo: typehinting of quadrant
-        return self.motions  # todo: filter collection by quadrant
-
-    def filter_statics(self, quadrant):
-        # todo: typehinting of quadrant
-        return self.statics  # todo: filter collection by quadrant
-
-    def filter_static_observers(self, quadrant):
-        return self.static_observers  # todo: filter collection by quadrant
 
     @staticmethod
     def get_time():

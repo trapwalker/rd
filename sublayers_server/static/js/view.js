@@ -94,6 +94,51 @@ function onZoomStart(event) {
     clearInterval(timer);
 }
 
+var pressedKey;
+
+function onKeyDownMap(event) {
+    //console.log('onKeyDownMap');
+    if (!pressedKey) {
+        switch (event.keyCode) {
+            case 37:
+                clientManager.sendTurn(1);
+                break;
+            case 38:
+                if(user.userCar.state.c)
+                    clientManager.sendTurn(0);
+                else
+                    clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                break;
+            case 39:
+                clientManager.sendTurn(-1);
+                break;
+            case 40:
+                clientManager.sendStopCar();
+                break;
+        }
+        pressedKey = true;
+    }
+}
+
+function onKeyUpMap(event) {
+    console.log('onKeyUpMap');
+    switch (event.keyCode) {
+        case 37:
+            console.log('влево');
+            break;
+        case 38:
+            console.log('вверх');
+            break;
+        case 39:
+            console.log('вправо');
+            break;
+        case 40:
+            console.log('вниз');
+            break;
+    }
+    pressedKey = false;
+}
+
 function onZoomEnd(event) {
     timer = setInterval(redrawMap, timerDelay);
     if(controllers.isActive)  // чтобы при изменении зума карты  менялся и слайдер.
@@ -159,7 +204,7 @@ $(document).ready(function () {
         adress_server: 'http://localhost:5280/http-bind'
     });
     rpcCallList = new RPCCallList();
-    model_manager = new ModelManager();
+    clientManager = new ClientManager();
 
     myMap = L.map('map',
         {
@@ -167,7 +212,6 @@ $(document).ready(function () {
             maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
-            keyboard: false,
             scrollWheelZoom: "center",
             dragging: false,
             crs: L.CRS.Simple,
@@ -178,6 +222,8 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
+    // Обработчики событий карты
+    pressedKey = false;
     //myMap.on('click', onMouseClickMap);
     myMap.on('mousedown', onMouseDownMap);
     myMap.on('mouseup', onMouseUpMap);
@@ -185,6 +231,9 @@ $(document).ready(function () {
     myMap.on('mouseout', onMouseOutMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
+    document.getElementById('map').onkeydown = onKeyDownMap;
+    document.getElementById('map').onkeyup = onKeyUpMap;
+    myMap.keyboard.disable();
 
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
@@ -205,7 +254,7 @@ $(document).ready(function () {
     chat = new ViewMessenger({
             parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
-            width: (cookieStorage.flagDebug ? 400 : 400),
+            width: (cookieStorage.flagDebug ? 600 : 400),
             stream_mes: message_stream
     });
     //chat.setActiveChat(-1);
@@ -213,6 +262,7 @@ $(document).ready(function () {
     chat.setupDragElement(chat.vMHA);
     chat.setMessagesHistory(cookieStorage.historyArray);
     chat.addChat(-1, "-= L O G =-");
+    chat.setActiveChat(-1);
 
 
     carMarkerList = new CarMarkerList({_map: myMap});
@@ -228,7 +278,7 @@ $(document).ready(function () {
 
 
     // Когда всё загружено и создано вызвать коннекты к серверу
-    j_connector.connect();
+    //j_connector.connect();
     ws_connector.connect();
 
 
@@ -277,19 +327,6 @@ function ConnectServerToggle() {
     window.location.reload();
 }
 
-function setClientState(state){
-    if(state === 'death_car'){
-        // Перевести клиент в состояние, пока машинка мертва
-        cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-        myMap.dragging.enable(); // разрешить тягать карту
-        return true;
-    }
-    // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
-    cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
-    myMap.dragging.disable(); // запретить двигать карту
-
-
-}
 
 function showWinLoseMessage(winner){
     if(user.party.name === winner)
@@ -376,7 +413,7 @@ var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
 var message_stream;
-var model_manager;
+var clientManager;
 var j_connector;
 var ws_connector;
 
@@ -406,6 +443,7 @@ var modalWindow;
 
 //Путь к карте на сервере
 var mapBasePath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
+
 
 //Путь к карте в локальном каталоге
 var mapBasePathLocal = '';

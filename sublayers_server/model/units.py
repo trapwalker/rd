@@ -3,11 +3,24 @@
 import logging
 log = logging.getLogger(__name__)
 
+from functools import update_wrapper
+
+from state import State
 from base import Observer
-import tasks
 from balance import BALANCE
-from trajectory import build_trajectory
 from math import pi
+import events
+
+
+def async_call(method):
+    def cover(self, time=None, **kw):
+        def async_closure(event):
+            log.debug('async_closure: kw=%r', kw)
+            return method(self, time=event.time, **kw)
+
+        events.Callback(server=self.server, time=time, func=async_closure).send()
+    update_wrapper(cover, method)
+    return cover
 
 
 class Unit(Observer):
@@ -25,10 +38,6 @@ class Unit(Observer):
         """
         super(Unit, self).__init__(**kw)
         self.role = role
-        self._task = None
-        """@type: sublayers_server.model.tasks.Task | None"""
-        self.task_list = []
-        """@type: list[sublayers_server.model.tasks.Task]"""
         log.debug('BEFORE owner set')
         self.owner = owner
         log.debug('AFTER owner set')
@@ -84,49 +93,15 @@ class Unit(Observer):
             if new_hp == 0:
                 self.on_die()  # todo: implementation
             else:
-                self.on_update(time=server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
+                self.on_update(time=self.server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
                 # todo: on_update params
                 # todo: 'hit' and 'fire' events and messages
 
     def on_die(self):
         # todo: refactor
-        self.stop()
-        self.on_update(time=server.get_time(), comment='RIP')
-
-    def set_tasklist(self, task_or_list, append=False):
-        if isinstance(task_or_list, tasks.Task):
-            task_or_list = [task_or_list]
-
-        if append:
-            self.task_list += list(task_or_list)
-        else:
-            self.task_list = list(task_or_list)
-
-        if not self.task or not append:
-            self.next_task()
-
-    def next_task(self):
-        old_task = self.task
-        if old_task:
-            if old_task.is_worked:
-                old_task.cancel()
-            self._task = None
-
-        if self.task_list:
-            while self.task_list:
-                self._task = self.task_list.pop(0)
-                try:
-                    self.task.start()
-                except tasks.ETaskParamsUnactual as e:
-                    log.warning('Skip unactual task: %s', e)
-                    self._task = None
-                    continue
-                else:
-                    break
-
-    def clear_tasks(self):
-        self.task_list = []
-        self.next_task()
+        if isinstance(self, Bot):
+            self.stop()  # todo: fixit
+        self.on_update(time=self.server.get_time(), comment='RIP')
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
@@ -145,17 +120,8 @@ class Unit(Observer):
         if self.role:
             self.role.remove_car(self)
             # todo: rename
-        self.clear_tasks()
-        self.server.statics.remove(self)
         super(Unit, self).delete()
         # todo: check staticobservers deletion
-
-    @property
-    def task(self):
-        """
-        @rtype: sublayers_server.model.tasks.Task | None
-        """
-        return self._task
 
 
 class Station(Unit):
@@ -173,51 +139,62 @@ class Bot(Unit):
                  observing_range=BALANCE.Bot.observing_range,
                  max_velocity=BALANCE.Bot.velocity,
                  **kw):
-        self.old_motion = None
-        """@type: sublayers_server.model.tasks.Motion | None"""
-        self.motion = None
-        """@type: sublayers_server.model.tasks.Motion | None"""
         super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
+        self._state_events = []
+        self.state = State(
+            owner=self,
+            t=self.server.get_time(),
+            p=self._position,
+            fi=self._direction,
+            # todo: acc and velociti constrains and params
+        )
 
     def as_dict(self, to_time=None):
         if not to_time:
             to_time = self.server.get_time()
         d = super(Bot, self).as_dict(to_time=to_time)
         d.update(
-            motion=self.motion.motion_info(to_time) if self.motion else None,
+            state=self.state.export(),
             max_velocity=self.max_velocity,
         )
         return d
 
-    def stop(self):
-        self.clear_tasks()
+    def _update(self, time=None, cc=None, turn=None, target_point=None):
+        # Cancelling all old state events
+        _state_events = self._state_events
+        while _state_events:
+            _state_events.pop().cancel()
 
-    def goto(self, position, chain=False):
+        def async_closure(event):
+            self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
+            self.on_update(time=event.time)
+            t_max = self.state.t_max
+            if t_max is not None:
+                self._update(time=t_max)
+
+        ev = events.Callback(server=self.server, time=time, func=async_closure)
+        self._state_events.append(ev)
+        ev.send()
+
+    def stop(self, time=None):
+        self._update(time=time, cc=0)
+        # todo: clear target_point
+
+    def goto(self, position, time=None):
         """
         @param position: sublayers_server.model.vectors.Point
         """
-        #log.debug('======== GOTO ++++++')
-        self.clear_tasks()
-        assert self.motion is None, 'ATTENTION! If You see this text, please call server developer: %s' % self.motion
-        path = build_trajectory(
-            self.position,
-            self.direction,
-            self.max_velocity,  # todo: current velocity fix
-            position,
-        )
+        # todo: chaining
+        self._update(time=time, target_point=position)
 
-        self.set_tasklist([
-            tasks.GotoArc(owner=self, target_point=segment['b'], arc_params=segment)
-            if 'r' in segment else
-            tasks.Goto(owner=self, target_point=segment['b'])
+    def set_cc(self, value, time=None):
+        # todo: docstring
+        self._update(time=time, cc=value)
 
-            for segment in path
-        ], append=chain)
-
-        #self.set_tasklist(tasks.Goto(owner=self, target_point=position), append=chain)  # Хорда вместо траектории
-        log.debug('======== GOTO ------')
-        return path
+    def set_turn(self, turn, time=None):
+        # todo: docstring
+        self._update(time=time, turn=turn)
 
     @property
     def v(self):
@@ -226,23 +203,21 @@ class Bot(Unit):
 
         @rtype: sublayers_server.model.vectors.Point
         """
-        return self.motion.v if self.motion else None
+        return self.state.v(t=self.server.get_time())
 
     @Unit.position.getter
     def position(self):
         """
         @rtype: sublayers_server.model.vectors.Point
         """
-        if self.motion and (isinstance(self.motion, tasks.Goto) and self.motion.vector is None or not self.motion.is_started):
-            log.warning('Wrong motion state: {!r} (started={})', self.motion, self.motion.is_started)
-        return self.motion.position if self.motion and self.motion.is_started else self._position
+        return self.state.p(t=self.server.get_time())
 
     @Unit.direction.getter
     def direction(self):
         """
         @rtype: float
         """
-        return self.motion.direction if self.motion else super(Bot, self).direction
+        return self.state.fi(t=self.server.get_time())
 
     @property
     def max_velocity(self):  # m/s
@@ -256,17 +231,19 @@ class Bot(Unit):
         self._max_velocity = value
 
     def special_contacts_search(self):
+        # todo: fixit
+        '''
         self_motion = self.motion
         if self_motion is None:
             return super(Bot, self).special_contacts_search()
 
         detect_contacts_with_static = self_motion.detect_contacts_with_static
-        for obj in self.server.filter_statics(None):  # todo: GEO-index clipping
+        for obj in self.server.filter_static(None):  # todo: GEO-index clipping
             detect_contacts_with_static(obj)
 
         detect_contacts_with_dynamic = self_motion.detect_contacts_with_dynamic
-        for motion in self.server.filter_motions(None):  # todo: GEO-index clipping
+        for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
             if motion.owner != self:
                 detect_contacts_with_dynamic(motion)
-
+        '''
     # todo: test motions deletion from server

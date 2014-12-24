@@ -57,7 +57,16 @@ class BaseState(object):
             self._r = abs(pc)
             _turn_sign = Point.polar(1, fi).cross_mul(pc)
             assert _turn_sign
-            self._turn_sign = 1 if _turn_sign > 0 else -1
+            self._turn_sign = 1 if _turn_sign > 0.0 else -1
+
+    @property
+    def turn_sign(self):
+        if self.c is None:
+            return 0
+        pc = self.p0 - self.c
+        _turn_sign = Point.polar(1, self.fi0).cross_mul(pc)
+        assert _turn_sign
+        return 1 if _turn_sign > 0.0 else -1
 
     def fix(self, t=None, dt=0.0):
         """
@@ -72,8 +81,8 @@ class BaseState(object):
         if t != self.t0:
             self.p0 = self.p(t)
             """@type: Point"""
-            self.v0 = self.v(t)
             self.fi0 = self.fi(t)
+            self.v0 = self.v(t)
             self.t0 = t
 
     def v(self, t):
@@ -84,7 +93,7 @@ class BaseState(object):
             return self.fi0
 
         dt = t - self.t0
-        return self.fi0 + (0.5 * self.a * dt ** 2 + self.v0 * dt) / self._r
+        return self.fi0 - (0.5 * self.a * dt ** 2 + self.v0 * dt) / self._r * self._turn_sign
 
     def p(self, t):
         """
@@ -95,7 +104,7 @@ class BaseState(object):
             dt = t - self.t0
             return self.p0 + Point.polar(0.5 * self.a * dt ** 2 + self.v0 * dt, self.fi0)
         else:
-            return self.c + Point.polar(self._r, self.fi(t) - self._turn_sign * pi * 0.5)
+            return self.c + Point.polar(self._r, self.fi(t) + self._turn_sign * pi * 0.5)
 
     def export(self):
         u"""
@@ -110,14 +119,19 @@ class BaseState(object):
             a=self.a,
             c=self.c,
             #_r=self._r,
-            #_turn=self._turn_sign,
+            turn=self._turn_sign,
         )
+
+    @property
+    def is_moving(self):
+        return self.v0 > 0.0 or self.a > 0.0
 
 
 class State(BaseState):
 
     def __init__(
         self,
+        owner,
         t, p, fi=0.0, v=0.0, a=0.0, c=None,
         cc=0.0, turn=0, target_point=None,
 
@@ -128,6 +142,7 @@ class State(BaseState):
         a_braking=-10.0,
     ):
         """
+        @param sublayers_server.model.units.Bot owner: owner of the state
         @param float t: time (sec)
         @param Point p: position (m)
         @param float fi: direction (rad)
@@ -146,11 +161,13 @@ class State(BaseState):
         @param float a_braking: typical braking (m/s**2)
         """
         super(State, self).__init__(t, p, fi, v, a, c)
+        self.owner = owner
+
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.v_max = v_max
         self.r_min = r_min
-        assert ac_max > 0
+        assert ac_max > 0.0
         self.ac_max = ac_max
 
         # just declare
@@ -208,7 +225,7 @@ class State(BaseState):
         self._v_cc = self.v_max * self.cc
         target_v = self._v_cc
 
-        if turn is not None:
+        if turn is not None and self._turn_sign != turn:
             self._turn_sign = turn
             if turn == 0:
                 self._r = None
@@ -232,6 +249,8 @@ class State(BaseState):
 
         if self.a:
             self.t_max = self.t0 + dv / self.a
+
+        log.debug('State: after update: turn_sign=%s; c=%s, r=%s', self._turn_sign, self.c, self._r)
 
     def __str__(self):
         return (
@@ -274,6 +293,6 @@ if __name__ == '__main__':
         s.update(*av, **kw)
         print s
     
-    s = State(0.0, Point(0))
+    s = State(0.0, Point(0.0))
     print 'START:', s
     thread.start_new(lookup, (s,))
