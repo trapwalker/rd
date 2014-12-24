@@ -94,8 +94,49 @@ function onZoomStart(event) {
     clearInterval(timer);
 }
 
+var pressedKey;
 
+function onKeyDownMap(event) {
+    //console.log('onKeyDownMap');
+    if (!pressedKey) {
+        switch (event.keyCode) {
+            case 37:
 
+                console.log('влево');
+                break;
+            case 38:
+                sendSetSpeed(user.userCar.maxSpeed);
+                break;
+            case 39:
+                console.log('вправо');
+                break;
+            case 40:
+                console.log('вниз');
+                sendStopCar(0);
+                break;
+        }
+        pressedKey = true;
+    }
+}
+
+function onKeyUpMap(event) {
+    console.log('onKeyUpMap');
+    switch (event.keyCode) {
+        case 37:
+            console.log('влево');
+            break;
+        case 38:
+            console.log('вверх');
+            break;
+        case 39:
+            console.log('вправо');
+            break;
+        case 40:
+            console.log('вниз');
+            break;
+    }
+    pressedKey = false;
+}
 
 function onZoomEnd(event) {
     timer = setInterval(redrawMap, timerDelay);
@@ -170,7 +211,6 @@ $(document).ready(function () {
             maxZoom: 7,
             zoomControl: false,
             attributionControl: false,
-            keyboard: false,
             scrollWheelZoom: "center",
             dragging: false,
             crs: L.CRS.Simple,
@@ -181,6 +221,8 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
+    // Обработчики событий карты
+    pressedKey = false;
     //myMap.on('click', onMouseClickMap);
     myMap.on('mousedown', onMouseDownMap);
     myMap.on('mouseup', onMouseUpMap);
@@ -188,6 +230,8 @@ $(document).ready(function () {
     myMap.on('mouseout', onMouseOutMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
+    document.getElementById('map').onkeydown = onKeyDownMap;
+    document.getElementById('map').onkeyup = onKeyUpMap;
 
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
@@ -409,6 +453,7 @@ var modalWindow;
 
 //Путь к карте на сервере
 var mapBasePath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
+
 
 //Путь к карте в локальном каталоге
 var mapBasePathLocal = '';
