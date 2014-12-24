@@ -94,6 +94,9 @@ function onZoomStart(event) {
     clearInterval(timer);
 }
 
+
+
+
 function onZoomEnd(event) {
     timer = setInterval(redrawMap, timerDelay);
     if(controllers.isActive)  // чтобы при изменении зума карты  менялся и слайдер.

@@ -159,6 +159,13 @@ class Bot(Unit):
         )
         return d
 
+    def update(self, cc=None, turn=None, target=None):
+        def async_closure(event):
+            log.debug('async_closure: kw=%r', kw)
+            return method(self, time=event.time, **kw)
+
+        events.Callback(server=self.server, time=time, func=async_closure).send()
+
     @async_call
     def stop(self, time):
         self.state.update(t=time, cc=0)
