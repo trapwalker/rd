@@ -66,7 +66,12 @@ class PointObject(Object):
         """
         super(PointObject, self).__init__(**kw)
         self._position = position
+        self.server.geo_objects.append(self)
         """@type: sublayers_server.model.vectors.Point"""
+
+    def delete(self):
+        self.server.geo_objects.remove(self)
+        super(PointObject, self).delete()
 
     def as_dict(self, **kw):
         d = super(PointObject, self).as_dict(**kw)
@@ -95,7 +100,6 @@ class VisibleObject(PointObject):
         self.contacts = []
         """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
-        self.server.static_objects.append(self)
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         # todo: 'delete' method fix
@@ -128,7 +132,7 @@ class VisibleObject(PointObject):
     def init_contacts_search(self):
         """Search init contacts"""
         '''
-        for obj in self.server.filter_objects(None):  # todo: GEO-index clipping
+        for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if isinstance(obj, Observer) and obj is not self:  # todo: optimize filtration observers
                 self.init_contact_test(obj)
 
@@ -137,7 +141,7 @@ class VisibleObject(PointObject):
 
     def special_contacts_search(self):
         '''
-        for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
+        for motion in self.server.geo_objects:  # todo: GEO-index clipping
             assert (
                 motion.start_time is not None
                 and motion.duration is not None
@@ -151,7 +155,6 @@ class VisibleObject(PointObject):
         self.special_contacts_search()
 
     def delete(self):
-        self.server.static_objects.remove(self)
         self.contacts_clear()
         # todo: send 'out' message for all subscribers
         # todo: test to subscription leaks
@@ -181,7 +184,6 @@ class Observer(VisibleObject):
         super(Observer, self).__init__(**kw)
         self.watched_agents = CounterSet()
         self.visible_objects = []
-        self.server.static_observers.append(self)
 
     def init_contact_test(self, obj):
         """Override test to contacts between *self* and *obj*, append them if is."""
