@@ -168,6 +168,7 @@ class Bot(Unit):
                 self._update(time=t_max)
 
         events.Callback(server=self.server, time=time, func=async_closure).send()
+        # todo: invalidate old future update-events
 
     def stop(self, time=None):
         self._update(time=time, cc=0)
