@@ -68,7 +68,7 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y):
-        self.car.goto(Point(x, y))
+        self.car.goto(position=Point(x, y))
 
     @public_method
     def stop(self):
@@ -106,14 +106,14 @@ class AgentAPI(API):
 
                 p = p or Point.random_gauss(car.position, Point(1000, 1000))
                 log.debug('%s crazy go to %s position', car, target or p)
-                self.car.goto(p, time=event.time if event else server.get_time())
+                self.car.goto(position=p, time=event.time if event else server.get_time())
 
         crazy_func()
 
     @public_method
     def set_speed(self, new_speed):
         assert new_speed > 0, 'Cruise control speed must be > 0'
-        self.car.set_cc(new_speed)
+        self.car.set_cc(value=new_speed)
 
     @public_method
     def chat_message(self, text):

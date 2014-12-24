@@ -127,13 +127,16 @@ class VisibleObject(PointObject):
 
     def init_contacts_search(self):
         """Search init contacts"""
+        '''
         for obj in self.server.filter_objects(None):  # todo: GEO-index clipping
             if isinstance(obj, Observer) and obj is not self:  # todo: optimize filtration observers
                 self.init_contact_test(obj)
 
         self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
+        #'''
 
     def special_contacts_search(self):
+        '''
         for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
             assert (
                 motion.start_time is not None
@@ -141,6 +144,7 @@ class VisibleObject(PointObject):
                 and motion.is_started
             )
             motion.detect_contacts_with_static(self)
+        #'''
 
     def contacts_search(self):
         # todo: rename methods (search->forecast)
@@ -182,8 +186,10 @@ class Observer(VisibleObject):
     def init_contact_test(self, obj):
         """Override test to contacts between *self* and *obj*, append them if is."""
         super(Observer, self).init_contact_test(obj)
+        '''
         if self.can_see(obj):
             ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
+        #'''
 
     # todo: check calls
     def on_contact_in(self, time, obj, is_boundary, comment=None):
@@ -199,7 +205,14 @@ class Observer(VisibleObject):
         # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
             is_first = obj.subscribed_agents.inc(agent) == 1
-            self.server.post_message(messages.See(agent=agent, time=time, subj=self, obj=obj, is_boundary=is_boundary, is_first=is_first))
+            self.server.post_message(messages.See(
+                agent=agent,
+                time=time,
+                subj=self,
+                obj=obj,
+                is_boundary=is_boundary,
+                is_first=is_first,
+            ))
 
     # todo: check calls
     def on_contact_out(self, time, obj, is_boundary, comment=None):
@@ -213,7 +226,14 @@ class Observer(VisibleObject):
         # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
             is_last = obj.subscribed_agents.dec(agent) == 0
-            self.server.post_message(messages.Out(agent=agent, time=time, subj=self, obj=obj, is_boundary=is_boundary, is_last=is_last))
+            self.server.post_message(messages.Out(
+                agent=agent,
+                time=time,
+                subj=self,
+                obj=obj,
+                is_boundary=is_boundary,
+                is_last=is_last,
+            ))
 
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)

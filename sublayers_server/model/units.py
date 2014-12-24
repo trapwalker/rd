@@ -15,6 +15,7 @@ import events
 def async_call(method):
     def cover(self, time=None, **kw):
         def async_closure(event):
+            log.debug('async_closure: kw=%r', kw)
             return method(self, time=event.time, **kw)
 
         events.Callback(server=self.server, time=time, func=async_closure).send()
@@ -216,6 +217,7 @@ class Bot(Unit):
 
     def special_contacts_search(self):
         # todo: fixit
+        '''
         self_motion = self.motion
         if self_motion is None:
             return super(Bot, self).special_contacts_search()
@@ -228,5 +230,5 @@ class Bot(Unit):
         for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
             if motion.owner != self:
                 detect_contacts_with_dynamic(motion)
-
+        '''
     # todo: test motions deletion from server
