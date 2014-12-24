@@ -200,7 +200,7 @@ var State = (function () {
             return this.fi0;
         }
         dt = t - this.t0;
-        return this.fi0 + (0.5 * this.a * dt * dt + this.v0 * dt) / this._r;
+        return this.fi0 - (0.5 * this.a * dt * dt + this.v0 * dt) / this._r * this._turn_sign;
     };
 
     State.prototype.getCurrentCoord = function(t) {

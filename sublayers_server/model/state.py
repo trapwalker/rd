@@ -93,7 +93,7 @@ class BaseState(object):
             return self.fi0
 
         dt = t - self.t0
-        return self.fi0 + (0.5 * self.a * dt ** 2 + self.v0 * dt) / self._r
+        return self.fi0 - (0.5 * self.a * dt ** 2 + self.v0 * dt) / self._r * self._turn_sign
 
     def p(self, t):
         """
