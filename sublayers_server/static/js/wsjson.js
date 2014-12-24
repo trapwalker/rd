@@ -1,54 +1,3 @@
-// класс WSJSON - необходим для отправки и приёма сообщений от сервера
-WSJSON = (function () {
-    function WSJSON() {
-        var url = "ws://" + location.host + "/ws";
-        this.socket = new WebSocket(url);
-        this.isConnected = false;
-        this.timeDelay = 5000; // 5 ескунд
-
-        this.onopen = function() {
-            this.isConnected = true;
-        };
-
-        this.socket.onmessage = function (event) {
-            receiveMesFromServ(event.data);
-        };
-
-        this.socket.onerror = function (error) {
-            this.isConnected = false;
-            //alert("Ошибка соединения...Попытка переподключения пока отсутствует. Приносим свои извинения.");
-            /*
-            setTimeout(function reconnect(){
-                alert('in reconnect');
-                this.timeDelay *= 2;
-                this.socket = new WebSocket(this.url);
-            }, this.timeDelay);
-            */
-        }
-
-        this.socket.onclose = function (event) {
-            // websocket is closed.
-            this.isConnected = false;
-            if (event.wasClean) {
-                alert('Соединение закрыто чисто');
-            } else {
-                //alert('Обрыв соединения. Переподключитесь к серверу.'); // например, "убит" процесс сервера
-                //window.location.reload();
-                modalWindow.modalRestartShow();
-            }
-            //alert('Код: ' + event.code + ' причина: ' + event.reason);
-        };
-
-    };
-
-    WSJSON.prototype.sendMess = function(aMess){
-        if(user.userCar.hp > 0)
-            this.socket.send(JSON.stringify(aMess));
-    };
-
-    return WSJSON;
-})();
-
 
 // функции формирования исходящих сообщений
 
@@ -215,26 +164,7 @@ function receiveMesFromServ(mes){
             }
             if (event.cls === "Update") {
                 // Update
-                // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
-                clock.setDt(servtime / 1000.);
-                if (event.object.hp)aHP = event.object.hp;
-                aTrack = getTrack(event.object);
-                owner = getOwner(event.object);
-                updateCurrentCar(event.object.uid, aType, aHP, aTrack, owner);
 
-                // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-                if (cookieStorage.enableMarkerUpdate())
-                    debugMapList.push(
-                        L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], myMap.getMaxZoom()), {color: '#FF0000'})
-                            .setRadius(3)
-                            .bindPopup(
-                                'Тип сообщения: ' + event.cls + '</br>' +
-                                'Server-Time: ' + servtime / 1000. + '</br>' +
-                                'uid объекта: ' + event.object.uid + '</br>' +
-                                'comment: ' + event.comment + '</br>'
-                        )
-                            .addTo(myMap)
-                    );
 
             }
             if (event.cls === "InitMessage" || event.cls === "Init") {
@@ -267,14 +197,6 @@ function receiveMesFromServ(mes){
         });
     }
 
-    // если message_type = answer
-    if (mes.message_type == "answer") {
-        //if (cookieStorage.enableLogAnswerMessage())
-         //   chat.addMessageToLog(data, 'answer');
-        if (! mes.error) {
-            rpcCallList.execute(mes.rpc_call_id);
-        }
-    }
 }
 
 function getTrack(data){
