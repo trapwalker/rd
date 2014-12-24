@@ -81,8 +81,8 @@ class BaseState(object):
         if t != self.t0:
             self.p0 = self.p(t)
             """@type: Point"""
-            self.v0 = self.v(t)
             self.fi0 = self.fi(t)
+            self.v0 = self.v(t)
             self.t0 = t
 
     def v(self, t):

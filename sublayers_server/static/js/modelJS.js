@@ -185,8 +185,8 @@ var State = (function () {
         t = (t ? t : this.t0) + dt;
         if (t != this.t0) {
             this.p0 = this.getCurrentCoord(t);
-            this.v0 = this.getCurrentSpeed(t);
             this.fi0 = this.getCurrentDirection(t);
+            this.v0 = this.getCurrentSpeed(t);
             this.t0 = t;
         }
     };
