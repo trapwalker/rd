@@ -227,7 +227,7 @@ var ClientManager = ( function(){
 
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerUpdate())
+        if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.position.x, event.object.position.y], myMap.getMaxZoom()), {color: '#FF0000'})
                     .setRadius(3)
@@ -240,6 +240,18 @@ var ClientManager = ( function(){
                     .addTo(myMap)
             );
 
+            debugMapList.push(
+                L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
+                    .setRadius(6)
+                    .bindPopup(
+                        'Тип сообщения: ' + event.cls + '</br>' +
+                        'Server-Time: ' + servtime / 1000. + '</br>' +
+                        'uid объекта: ' + event.object.uid + '</br>' +
+                        'comment: ' + event.comment + '</br>'
+                )
+                    .addTo(myMap)
+            );
+        }
 
     }
 
