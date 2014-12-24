@@ -127,7 +127,7 @@ function sendSetSpeed(newSpeed, auid) {
         call: "set_speed",
         rpc_call_id: rpcCallList.getID(),
         params: {
-            new_speed: newSpeed
+            new_speed: newSpeed / user.userCar.maxSpeed
         }
     };
     rpcCallList.add(mes);
@@ -238,29 +238,8 @@ function receiveMesFromServ(mes){
 
             }
             if (event.cls === "InitMessage" || event.cls === "Init") {
-                // InitMessage
-                aTrack = getTrack(event.cars[0]);
-                var max_speed;
-                var aMaxHP = 30;
-                var radius_visible = event.cars[0].r;
-
-                // Запустить отчёт времени до рестарта сервера
-                showTimeToResetServer(servtime);
-
-                // Инициализация Юзера
-                if(event.agent.cls == "User"){
-                    user.login = event.agent.login;
-                    user.ID = event.agent.uid;
-                    if (event.agent.party)
-                        user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
+                alert('Init');
                 }
-
-                // Инициализация userCar
-                if (event.cars[0].hp) aHP = event.cars[0].hp;
-                if (event.cars[0].max_hp) aMaxHP = event.cars[0].max_hp;
-                if (event.cars[0].max_velocity) max_speed = event.cars[0].max_velocity;
-                initUserCar(event.cars[0].uid, 0, aHP, aMaxHP, aTrack, max_speed, event.cars[0].weapons, radius_visible, event.cars[0].role);
-            }
             if (event.cls === "Out") {
                 // TODO: не удалять машинку сразу, так как её может видеть участник пати
                 if(event.is_last) { // Только если машинку нужно совсем убирать
@@ -397,10 +376,10 @@ function getTrack(data){
 // Считывает параметры для создания состояние и возвращает его.
 function getState(data) {
     return new State(
-        data.t,                                 // Время
-        new Point(data.p.x, data.p.y),          // Позиция
-        data.fi,                                // Направление
-        data,v,                                 // Скорость - число
+        data.t0,                                 // Время
+        new Point(data.p0.x, data.p0.y),          // Позиция
+        data.fi0,                                // Направление
+        data.v0,                                 // Скорость - число
         data.a,                                 // Ускорение - число
         data.c ? (new Point(data.c.x, data.c.y)) : null     // Центр поворота, которого может не быть
     );
@@ -546,7 +525,7 @@ function getWeapons(data) {
 }
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible, role) {
-    //alert('initUserCar');
+    console.log('initUserCar');
     var fireSectors;
     var speed_to_set = (amax_speed*0.75).toFixed(0); // Сразу будет выставлена такая скорость, чтобы оно норамльно игралось
     if(! user.userCar) {
@@ -598,7 +577,7 @@ function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radi
 
 
         // Выставление скорости на сервере
-        changeSpeedOnSlider();
+        // changeSpeedOnSlider();
     }
     else {
         // значит пришёл второй initMessage, значит нужно переопределить все параметры
