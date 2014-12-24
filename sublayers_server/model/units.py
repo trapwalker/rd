@@ -179,6 +179,7 @@ class Bot(Unit):
 
     def stop(self, time=None):
         self._update(time=time, cc=0)
+        # todo: clear target_point
 
     def goto(self, position, time=None):
         """
