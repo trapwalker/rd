@@ -104,10 +104,8 @@ function onKeyDownMap(event) {
                 clientManager.sendTurn(1);
                 break;
             case 38:
-                if(user.userCar.state.c)
-                    clientManager.sendTurn(0);
-                else
-                    clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                //clientManager.sendSetSpeed();
                 break;
             case 39:
                 clientManager.sendTurn(-1);
@@ -124,16 +122,15 @@ function onKeyUpMap(event) {
     console.log('onKeyUpMap');
     switch (event.keyCode) {
         case 37:
-            console.log('влево');
+            clientManager.sendTurn(0);
             break;
         case 38:
-            console.log('вверх');
-            break;
+            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
         case 39:
-            console.log('вправо');
+            clientManager.sendTurn(0);
             break;
         case 40:
-            console.log('вниз');
+            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
             break;
     }
     pressedKey = false;
