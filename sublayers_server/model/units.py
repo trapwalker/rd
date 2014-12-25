@@ -170,6 +170,8 @@ class Bot(Unit):
             self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
             self.on_update(time=event.time)
             t_max = self.state.t_max
+            if turn:
+                log.debug('!!!! turn set: turn=%(turn)s; t_max=%(t_max)s', **locals())
             if t_max is not None:
                 self._update(time=t_max)
 
