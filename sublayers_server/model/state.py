@@ -225,7 +225,7 @@ class State(BaseState):
         self._v_cc = self.v_max * self.cc
         target_v = self._v_cc
 
-        if turn is not None and self._turn_sign != turn:
+        if turn is not None:
             self._turn_sign = turn
             if turn == 0:
                 self._r = None
