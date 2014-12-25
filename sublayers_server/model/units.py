@@ -162,9 +162,9 @@ class Bot(Unit):
 
     def _update(self, time=None, cc=None, turn=None, target_point=None):
         # Cancelling all old state events
-        _state_events = self._state_events
-        while _state_events:
-            _state_events.pop().cancel()
+        #_state_events = self._state_events
+        #while _state_events:
+        #    _state_events.pop().cancel()
 
         def async_closure(event):
             self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
@@ -174,7 +174,7 @@ class Bot(Unit):
                 self._update(time=t_max)
 
         ev = events.Callback(server=self.server, time=time, func=async_closure)
-        self._state_events.append(ev)
+        #_state_events.append(ev)
         ev.send()
 
     def stop(self, time=None):
