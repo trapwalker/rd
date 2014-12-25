@@ -233,8 +233,10 @@ class State(BaseState):
             else:
                 self._r = self.v0 ** 2 / self.ac_max
                 if self._r < self.r_min:
+                    log.debug('===== r=%s < rmin=%s; target_v=%s', self._r, self.r_min, target_v)
                     self._r = self.r_min
                     target_v = min(target_v, sqrt(self._r * self.ac_max))
+                    log.debug('===== new target_v=%s', target_v)
                 else:
                     target_v = min(target_v, self.v0)
                 self.c = (self.p0 + Point.polar(self._r, self.fi0 - self._turn_sign * pi / 2.0))
@@ -247,10 +249,15 @@ class State(BaseState):
         else:
             self.a = 0.0
 
+        log.debug('===== old t_max=%s', self.t_max)
+
         if self.a:
             self.t_max = self.t0 + dv / self.a
 
-        log.debug('State: after update: turn_sign=%s; c=%s, r=%s', self._turn_sign, self.c, self._r)
+        log.debug('===== dv=%s, a=%s, t_max-t=%s', dv, self.a, (self.t_max - t) if self.t_max else 'None')
+
+        log.debug('State: after update: turn_sign=%s; c=%s, r=%s, t_max-t=%s',
+                  self._turn_sign, self.c, self._r, (self.t_max - t) if self.t_max else 'None')
 
     def __str__(self):
         return (
