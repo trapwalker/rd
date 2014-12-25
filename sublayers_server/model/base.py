@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from inventory import Inventory
 import messages
-from events import ContactSee, Init
+from events import ContactSee, ContactOut, Init
 
 from abc import ABCMeta
 from counterset import CounterSet
@@ -66,8 +66,8 @@ class PointObject(Object):
         """
         super(PointObject, self).__init__(**kw)
         self._position = position
-        self.server.geo_objects.append(self)
         """@type: sublayers_server.model.vectors.Point"""
+        self.server.geo_objects.append(self)
 
     def delete(self):
         self.server.geo_objects.remove(self)
@@ -124,35 +124,17 @@ class VisibleObject(PointObject):
         for event in self.contacts[:]:
             event.cancel()
 
-    def init_contact_test(self, obj):
-        """Test to contacts between *self* and *obj*, append them if is."""
-        if obj.can_see(self):
-            ContactSee(time=self.server.get_time(), subj=obj, obj=self).send()
-
-    def init_contacts_search(self):
-        """Search init contacts"""
-        '''
-        for obj in self.server.geo_objects:  # todo: GEO-index clipping
-            if isinstance(obj, Observer) and obj is not self:  # todo: optimize filtration observers
-                self.init_contact_test(obj)
-
-        self.contacts_search()  # todo: Устранить потенциальное дублирование контакта, если он окажетя на границе
-        #'''
-
-    def special_contacts_search(self):
-        '''
-        for motion in self.server.geo_objects:  # todo: GEO-index clipping
-            assert (
-                motion.start_time is not None
-                and motion.duration is not None
-                and motion.is_started
-            )
-            motion.detect_contacts_with_static(self)
-        #'''
-
     def contacts_search(self):
         # todo: rename methods (search->forecast)
-        self.special_contacts_search()
+        log.debug('-------------contacts_search')
+        for obj in self.server.geo_objects:  # todo: GEO-index clipping
+            if obj is not self:  # todo: optimize filtration observers
+                self.contact_test(obj)
+                obj.contact_test(self)  # todo: optimize forecasts
+
+    def contact_test(self, obj):
+        """Test to contacts between *self* and *obj*, append them if is."""
+        pass
 
     def delete(self):
         self.contacts_clear()
@@ -185,13 +167,24 @@ class Observer(VisibleObject):
         self.watched_agents = CounterSet()
         self.visible_objects = []
 
-    def init_contact_test(self, obj):
-        """Override test to contacts between *self* and *obj*, append them if is."""
-        super(Observer, self).init_contact_test(obj)
-        '''
-        if self.can_see(obj):
-            ContactSee(time=self.server.get_time(), subj=self, obj=obj).send()
-        #'''
+    def contact_test(self, obj):
+        """Test to contacts between *self* and *obj*, append them if is."""
+        # todo: test to time
+        can_see = self.can_see(obj)
+        see = obj in self.visible_objects
+        log.debug('-------------contact_test(%s, %s): can_see=%s, see=%s', self, obj, can_see, see)
+        if can_see != see:
+            (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).send()
+            return
+
+    def can_see(self, obj):
+        """
+        @type obj: VisibleObject
+        """
+        dist = abs(self.position - obj.position)
+        log.debug('-------------can_see(%s, %s): dist=%s, r=%s', self, obj, dist, self._r)
+        return dist <= self._r  # todo: check <= vs <
+        # todo: Расчет видимости с учетом маскировки противника
 
     # todo: check calls
     def on_contact_in(self, time, obj, is_boundary, comment=None):
@@ -243,14 +236,6 @@ class Observer(VisibleObject):
     @property
     def r(self):
         return self._r
-
-    def can_see(self, obj):
-        """
-        @type obj: VisibleObject
-        """
-        dist = abs(self.position - obj.position)
-        return dist <= self._r  # todo: check <= vs <
-        # todo: Расчет видимости с учетом маскировки противника
 
     def as_dict(self, **kw):
         d = super(Observer, self).as_dict(**kw)

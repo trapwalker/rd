@@ -79,7 +79,7 @@ class Init(Event):
 
     def perform(self):
         super(Init, self).perform()
-        self.obj.init_contacts_search()
+        self.obj.contacts_search()
 
 
 class Subjective(Event):

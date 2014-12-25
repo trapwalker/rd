@@ -231,21 +231,3 @@ class Bot(Unit):
     @max_velocity.setter
     def max_velocity(self, value):
         self._max_velocity = value
-
-    def special_contacts_search(self):
-        # todo: fixit
-        '''
-        self_motion = self.motion
-        if self_motion is None:
-            return super(Bot, self).special_contacts_search()
-
-        detect_contacts_with_static = self_motion.detect_contacts_with_static
-        for obj in self.server.filter_static(None):  # todo: GEO-index clipping
-            detect_contacts_with_static(obj)
-
-        detect_contacts_with_dynamic = self_motion.detect_contacts_with_dynamic
-        for motion in self.server.filter_moving(None):  # todo: GEO-index clipping
-            if motion.owner != self:
-                detect_contacts_with_dynamic(motion)
-        '''
-    # todo: test motions deletion from server
