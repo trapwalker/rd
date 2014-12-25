@@ -1,16 +1,12 @@
 /*
-* Класс для управления моделью.
-* Подписывается на события входящих сообщений от вебсокета
-* Отсылает исходящие сообщения в поток сообщений
-*
-* */
+ * Класс для управления моделью.
+ * Подписывается на события входящих сообщений от вебсокета
+ * Отсылает исходящие сообщения в поток сообщений
+ * */
 
 
-
-// TODO: переименовать в клиент манагер
-
-var ClientManager = ( function(){
-    function ClientManager(){
+var ClientManager = (function () {
+    function ClientManager() {
         // подписаться на входящие сообщения типа ws_message
         message_stream.addInEvent({
             key: 'ws_message',
@@ -21,7 +17,7 @@ var ClientManager = ( function(){
 
     // вспомогательные методы для парсинга
     // Считывает параметры для создания состояние и возвращает его.
-    ClientManager.prototype._getState = function(data) {
+    ClientManager.prototype._getState = function (data) {
         return new State(
             data.t0,                                 // Время
             new Point(data.p0.x, data.p0.y),          // Позиция
@@ -33,7 +29,7 @@ var ClientManager = ( function(){
         );
     };
 
-    ClientManager.prototype._getOwner = function(data) {
+    ClientManager.prototype._getOwner = function (data) {
         if (data.cls === "User") {
             var party;
             if (data.party)
@@ -44,7 +40,7 @@ var ClientManager = ( function(){
             if (owner) {
                 owner = ownerList.add(owner);
                 // Если даже мы его не добавили, то обновить owner'у его пати
-                if(owner.party.id !== party.id) owner.party = party;
+                if (owner.party.id !== party.id) owner.party = party;
                 //
                 return owner;
             }
@@ -52,19 +48,19 @@ var ClientManager = ( function(){
         return null;
     };
 
-    ClientManager.prototype._getWeapons = function(data) {
+    ClientManager.prototype._getWeapons = function (data) {
         var sectors = [];
         data.forEach(function (weapon, index) {
             // TODO: ввести позже речардж сектора, когда будет присылаться
             var sector = new FireSector(weapon.direction, gradToRad(weapon.sector_width), weapon.r, index, 2000);
             sector.damage = weapon.damage;
             this.sectors.push(sector);
-        }, {sectors: sectors} );
+        }, {sectors: sectors});
         return sectors;
     };
 
-    ClientManager.prototype._setClientState = function(state){
-        if(state === 'death_car'){
+    ClientManager.prototype._setClientState = function (state) {
+        if (state === 'death_car') {
             // Перевести клиент в состояние, пока машинка мертва
             cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
             myMap.dragging.enable(); // разрешить тягать карту
@@ -76,7 +72,7 @@ var ClientManager = ( function(){
     };
 
 
-    ClientManager.prototype._sendMessage = function(msg){
+    ClientManager.prototype._sendMessage = function (msg) {
         //alert('ClientManager  sendMessage');
         // TODO: сейчас данная функция вызывается из функций wsjson.js, позже переделать!
         message_stream.sendMessage({
@@ -113,7 +109,7 @@ var ClientManager = ( function(){
     // Входящие сообщения
 
     // Входящий от сервера Init для машинки
-    ClientManager.prototype.Init = function(event){
+    ClientManager.prototype.Init = function (event) {
         console.log('ClientManager.prototype.Init');
         var servtime = event.time;
         // todo: Переделать на нормальную максимальную скорость!
@@ -131,7 +127,7 @@ var ClientManager = ( function(){
         showTimeToResetServer(servtime);
 
         // Инициализация Юзера
-        if(event.agent.cls == "User"){
+        if (event.agent.cls == "User") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             if (event.agent.party)
@@ -147,7 +143,6 @@ var ClientManager = ( function(){
 
             // Добавить сектора в userCar
             user.userCar.AddFireSectors(fireSectors);
-
 
 
             // Инициализация маркера машинки
@@ -184,7 +179,7 @@ var ClientManager = ( function(){
         user.userCar.debugLines = [];
     };
 
-    ClientManager.prototype.Update = function(event){
+    ClientManager.prototype.Update = function (event) {
         console.log('ClientManager.prototype.Update');
         var servtime = event.time;
         // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
@@ -240,28 +235,64 @@ var ClientManager = ( function(){
                     .addTo(myMap)
             );
 
+            if (event.object.state.c)
+                debugMapList.push(
+                    L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
+                        .setRadius(6)
+                        .bindPopup(
+                            'Тип сообщения: ' + event.cls + '</br>' +
+                            'Server-Time: ' + servtime / 1000. + '</br>' +
+                            'uid объекта: ' + event.object.uid + '</br>' +
+                            'comment: ' + event.comment + '</br>'
+                    )
+                        .addTo(myMap)
+                );
+        }
+
+    };
+
+    ClientManager.prototype.Contact = function (event) {
+        console.log('ClientManager.prototype.Contact');
+        var servtime = event.time;
+        if(event.is_first) { // Только если первый раз добавляется машинка
+            aState = this._getState(event.object.state);
+            var aHP = event.object.hp;
+            setCurrentCar(event.object.uid, 0, aHP, aState, this._getOwner(event.object.owner), event.object.role);
+        }
+        // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+        if (cookieStorage.enableMarkerContact())
             debugMapList.push(
-                L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
-                    .setRadius(6)
+                L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()), {color: '#FFBA12'})
+                    .setRadius(8)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
                         'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
-                        'comment: ' + event.comment + '</br>'
+                        'subject_id: ' + event.subject_id + '</br>'
                 )
                     .addTo(myMap)
             );
-        }
 
+        // отрисовка линии от объекта к субъекту
+        // TODO: сделано специально, иначе нужно пересматривать ВСЮ архитектуру клиента
+        setTimeout(function () {
+            carMarkerList.addContactLine(event.subject_id, event.object.uid);
+        }, 500);
+
+    };
+
+
+    ClientManager.prototype.See = function(event){
+        console.log('ClientManager.prototype.See');
+        this.Contact(event);
     }
-
 
 
 
     // Исходящие сообщения
 
     // setSpeed
-    ClientManager.prototype.sendSetSpeed = function(newSpeed) {
+    ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         var mes = {
             call: "set_speed",
             rpc_call_id: rpcCallList.getID(),
@@ -275,7 +306,7 @@ var ClientManager = ( function(){
 
 
     // stop
-    ClientManager.prototype.sendStopCar = function() {
+    ClientManager.prototype.sendStopCar = function () {
         var mes = {
             call: "stop",
             rpc_call_id: rpcCallList.getID(),
@@ -287,7 +318,7 @@ var ClientManager = ( function(){
 
 
     // turn
-    ClientManager.prototype.sendTurn = function(turn) {
+    ClientManager.prototype.sendTurn = function (turn) {
         var mes = {
             call: "set_turn",
             rpc_call_id: rpcCallList.getID(),
