@@ -130,8 +130,7 @@ class Station(Unit):
     def __init__(self, max_hp=BALANCE.Station.max_hp, observing_range=BALANCE.Station.observing_range, **kw):
         super(Station, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
 
-
-class Bot(Unit):
+class Mobile(Unit):
     u"""Class of mobile units"""
 
     def __init__(self,
@@ -139,7 +138,7 @@ class Bot(Unit):
                  observing_range=BALANCE.Bot.observing_range,
                  max_velocity=BALANCE.Bot.velocity,
                  **kw):
-        super(Bot, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
+        super(Mobile, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
         self._state_events = []
         self.state = State(
@@ -153,7 +152,7 @@ class Bot(Unit):
     def as_dict(self, to_time=None):
         if not to_time:
             to_time = self.server.get_time()
-        d = super(Bot, self).as_dict(to_time=to_time)
+        d = super(Mobile, self).as_dict(to_time=to_time)
         d.update(
             state=self.state.export(),
             max_velocity=self.max_velocity,
@@ -231,3 +230,7 @@ class Bot(Unit):
     @max_velocity.setter
     def max_velocity(self, value):
         self._max_velocity = value
+
+
+class Bot(Mobile):
+    pass

@@ -142,7 +142,7 @@ class State(BaseState):
         a_braking=-10.0,
     ):
         """
-        @param sublayers_server.model.units.Bot owner: owner of the state
+        @param sublayers_server.model.units.Mobile owner: owner of the state
         @param float t: time (sec)
         @param Point p: position (m)
         @param float fi: direction (rad)
