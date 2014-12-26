@@ -222,7 +222,12 @@ var ClientManager = (function () {
 
         // Bang
         if (event.object.bang){
-            new Bang(new Point(event.object.state.p0.x, event.object.state.p0.y));
+            event.bang = {
+                duration: 2000,
+                end_duration: 1000,
+                bang_power: 50
+            };
+            new Bang(new Point(event.object.state.p0.x, event.object.state.p0.y), event.bang.bang_power, event.bang.duration, event.bang.end_duration);
         }
 
 

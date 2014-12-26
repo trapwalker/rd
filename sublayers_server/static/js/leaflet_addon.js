@@ -218,50 +218,43 @@ function iconLeafletInit(){
 
 
 var Bang = (function(){
-    function Bang(position){
-        this._r = 1;
-        //this.marker = L.circleMarker(myMap.unproject([position.x, position.y], myMap.getMaxZoom()), {color: '#FFFFFF'})
-        //    .setRadius(this._r);
-        var bang_power = 50;
-        var bang_duration = 1500;
-        var bang_end_duration = 1000;
-
-
-        this.myIcon = L.divIcon({
-            className: 'my-bang-icon',
-            iconSize: [bang_power, bang_power],
-            iconAnchor: [bang_power, bang_power],
-            html: '<svg height="'+bang_power * 2 +'px" width="'+bang_power*2+'px">' +
-                '<circle cx="' + bang_power + '" cy="'+bang_power+'" r="2" fill="#FFAF21">' +
-                '<animate attributeName="r" repeatCount="1" fill="freeze"' +
+    function Bang(position, aPower, aBangDur, aBandEndDur){
+        var bang_power = aPower || 50;
+        var bang_duration = aBangDur || 1500;
+        var bang_end_duration = aBandEndDur ||  1000;
+        if (position) {
+            this.myIcon = L.divIcon({
+                className: 'my-bang-icon',
+                iconSize: [bang_power, bang_power],
+                iconAnchor: [bang_power-1, bang_power-1],
+                html: '<svg height="' + bang_power * 2 + 'px" width="' + bang_power * 2 + 'px">' +
+                    '<circle cx="' + bang_power + '" cy="' + bang_power + '" r="2" fill="#FFAF21">' +
+                    '<animate attributeName="r" repeatCount="1" fill="freeze"' +
                     'dur="' + bang_duration + 'ms" ' +
                     'from="1" to="' + bang_power + '"' +
                     'values="1; ' + bang_power * 0.5 + '; ' + bang_power * 0.8 + '; ' + bang_power + ';" ' +
                     '/>' +
-                '<animate attributeType="CSS" attributeName="opacity"'+
-                    'from="1" to="0" dur="'+bang_end_duration+'ms" repeatCount="1" fill="freeze"' +
-                     'begin="' + bang_duration + 'ms"/>' +              
-                '</circle>' +
-                '</svg>'
-        });
-        this.marker = L.marker(myMap.unproject([position.x, position.y]), {icon: this.myIcon});//.addTo(myMap);
-        //marker.valueOf()._icon.style.backgroundColor = 'green'; //or any color
-        console.log('on map', this.marker);
-        //this._map = myMap;
-        this.duration = bang_duration + bang_end_duration;
-    };
+                    '<animate attributeType="CSS" attributeName="opacity"' +
+                    'from="1" to="0" dur="' + bang_end_duration + 'ms" repeatCount="1" fill="freeze"' +
+                    'begin="' + bang_duration + 'ms"/>' +
+                    '</circle>' +
+                    '</svg>'
+            });
+            this.marker = L.marker(myMap.unproject([position.x, position.y]), {icon: this.myIcon});
+            //console.log('on map', this.marker);
+            this.duration = bang_duration + bang_end_duration;
+        }
+    }
 
     Bang.prototype.start = function(){
-        var self = this;
-        var r = this._r;
-        //myMap.addLayer(this.marker);
-        this.marker.addTo(myMap);
-
-        setTimeout(function(){
-            console.log('now_remove', self);
-            myMap.removeLayer(self.marker);
-        }, this.duration);
-
+        if(this.marker) {
+            var self = this;
+            this.marker.addTo(myMap);
+            setTimeout(function () {
+                //console.log('now_remove', self);
+                myMap.removeLayer(self.marker);
+            }, this.duration);
+        }
     };
 
     return Bang
