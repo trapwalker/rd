@@ -159,29 +159,8 @@ class Mobile(Unit):
         )
         return d
 
-    def _update(self, time=None, cc=None, turn=None, target_point=None):
-        # Cancelling all old state events
-        #_state_events = self._state_events
-        #while _state_events:
-        #    _state_events.pop().cancel()
-
-        def async_closure(event):
-            self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
-            log.debug('!!! ============ Before on_update')
-            self.on_update(time=event.time)
-            t_max = self.state.t_max
-            log.debug('!!! ============ After on_update, tmax = %s', t_max)
-            if turn:
-                log.debug('!!!! turn set: turn=%s; t_max=%s', turn, t_max)
-            if t_max is not None:
-                self._update(time=t_max)
-
-        ev = events.Callback(server=self.server, time=time, func=async_closure)
-        #_state_events.append(ev)
-        ev.send()
-
     def stop(self, time=None):
-        self._update(time=time, cc=0)
+        events.Update(subj=self, time=time, cc=0).send()
         # todo: clear target_point
 
     def goto(self, position, time=None):
@@ -189,15 +168,15 @@ class Mobile(Unit):
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        self._update(time=time, target_point=position)
+        events.Update(subj=self, time=time, target_point=position).send()
 
     def set_cc(self, value, time=None):
         # todo: docstring
-        self._update(time=time, cc=value)
+        events.Update(subj=self, time=time, cc=value).send()
 
     def set_turn(self, turn, time=None):
         # todo: docstring
-        self._update(time=time, turn=turn)
+        events.Update(subj=self, time=time, turn=turn).send()
 
     @property
     def v(self):

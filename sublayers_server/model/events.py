@@ -90,11 +90,34 @@ class Subjective(Event):
 
     def __init__(self, subj, **kw):
         """
-        @param sublayers_server.model.units.Unit subj: Subject of contact
+        @param sublayers_server.model.units.Unit subj: Subject of event
         """
         server = subj.server
         super(Subjective, self).__init__(server=server, **kw)
         self.subj = subj  # todo: weakref?
+
+
+class Update(Subjective):
+    def __init__(self, cc=None, turn=None, target_point=None, **kw):
+        """
+        @param sublayers_server.model.units.Mobile subj: Subject of update
+        """
+        super(Update, self).__init__(**kw)
+        self.cc = cc
+        self.turn = turn
+        self.target_point = target_point
+
+    def perform(self):
+        super(Update, self).perform()
+        t = self.time
+        subj = self.subj
+        """@type: sublayers_server.model.units.Mobile"""
+        subj.state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
+        subj.on_update(time=t)
+        t_max = subj.state.t_max
+        if t_max is not None:
+            Update(subj=subj, time=t_max).send()
+            # todo: disactualize future event
 
 
 class Contact(Subjective):
