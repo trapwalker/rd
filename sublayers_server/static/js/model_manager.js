@@ -81,7 +81,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.receiveMessage = function (self, params) {
-        console.log('ClientManager.prototype.receiveMessage');
+        //console.log('ClientManager.prototype.receiveMessage');
         // TODO: написать правильный обработчик здесь. А пока так
         if (params.message_type == "push") {
             params.events.forEach(function (event) {
@@ -179,7 +179,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Update = function (event) {
-        console.log('ClientManager.prototype.Update');
+        //console.log('ClientManager.prototype.Update');
         var servtime = event.time;
         // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
         clock.setDt(servtime / 1000.);
@@ -217,6 +217,12 @@ var ClientManager = (function () {
                 if (oldHP != aHP) // Если хп изменилось, то мигнуть маркером
                     flashMarker(listMapObject.objects[event.object.uid].marker);
             }
+        }
+
+
+        // Bang
+        if (event.object.bang){
+            new Bang(new Point(event.object.state.p0.x, event.object.state.p0.y));
         }
 
 
@@ -269,12 +275,12 @@ var ClientManager = (function () {
                     var car = new MapCar(uid, aHP, aState);
                     // установить роль
                     car.role = event.object.role;
+                    car.cls = event.object.cls;
                     carMarkerList.add(car, aOwner);
                     //if(aHP == 0)// поставить стоп-трек
                     //    car.track.speedV = new Point(0, 0);
 
-                } else { // Если такая машинка уже есть, то
-                    // установить все переменные
+                } else { // Если такая машинка уже есть, то установить все переменные
                     listMapObject.setCarHP(uid, aHP);
                     listMapObject.setState(uid, aState);
                 }
@@ -306,12 +312,10 @@ var ClientManager = (function () {
 
     };
 
-
     ClientManager.prototype.See = function (event) {
         console.log('ClientManager.prototype.See');
         this.Contact(event);
     };
-
 
     ClientManager.prototype.Out = function (event) {
         console.log('ClientManager.prototype.Out');
@@ -322,7 +326,6 @@ var ClientManager = (function () {
             carMarkerList.del(event.object_id);
         }
     };
-
 
     ClientManager.prototype.Chat = function (event){
         console.log('ClientManager.prototype.Chat');

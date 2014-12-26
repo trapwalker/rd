@@ -31,7 +31,12 @@ function getCarMarker(aCar, aMap) {
     //    '" class="car-label-info-class sublayers-clickable" onClick="carInfoClickEvent(event)"></div>';
     var test_html_str = "";
     var newMarker = L.rotatedMarker([0, 0]);
-    newMarker.setIcon(iconsLeaflet.icon_moving_V2);
+    if(aCar.cls === 'Rocket'){
+        newMarker.setIcon(iconsLeaflet.icon_moving_V1);
+    }
+    else {
+        newMarker.setIcon(iconsLeaflet.icon_moving_V2);
+    }
     if (aCar.owner) {
         var party_str = "";
         if (aCar.owner.party.name.length > 2)party_str = '[' + aCar.role + '@' + aCar.owner.party.name + ']';
@@ -209,3 +214,56 @@ function iconLeafletInit(){
         iconSize: [51, 28]
     });
 }
+
+
+
+var Bang = (function(){
+    function Bang(position){
+        this._r = 1;
+        //this.marker = L.circleMarker(myMap.unproject([position.x, position.y], myMap.getMaxZoom()), {color: '#FFFFFF'})
+        //    .setRadius(this._r);
+        var bang_power = 20;
+        var bang_duration = 1500;
+        var bang_end_duration = 1000;
+
+
+        this.myIcon = L.divIcon({
+            className: 'my-bang-icon',
+            iconSize: [25, 25],
+            html: '<svg height="80px" width="80px">' +
+                '<circle cx="25" cy="25" r="2" fill="#FFAF21">' +
+                '<animate attributeName="r" repeatCount="1" fill="freeze"' +
+                    'dur="' + bang_duration + 'ms" ' +
+                    'from="1" to="' + bang_power + '"' +
+                    'values="1; ' + bang_power * 0.5 + '; ' + bang_power * 0.8 + '; ' + bang_power + ';" ' +
+                    '/>' +
+                '<animate attributeType="CSS" attributeName="opacity"'+
+                    'from="1" to="0" dur="'+bang_end_duration+'ms" repeatCount="1" fill="freeze"' +
+                     'begin="' + bang_duration + 'ms"/>' +              
+                '</circle>' +
+                '</svg>'
+        });
+        this.marker = L.marker(myMap.unproject([position.x, position.y]), {icon: this.myIcon});//.addTo(myMap);
+        //marker.valueOf()._icon.style.backgroundColor = 'green'; //or any color
+        console.log('on map', this.marker);
+        //this._map = myMap;
+        this.duration = bang_duration + bang_end_duration;
+    };
+
+    Bang.prototype.start = function(){
+        var self = this;
+        var r = this._r;
+        //myMap.addLayer(this.marker);
+        this.marker.addTo(myMap);
+
+        setTimeout(function(){
+            console.log('now_remove', self);
+            myMap.removeLayer(self.marker);
+        }, this.duration);
+
+    };
+
+    return Bang
+})();
+
+

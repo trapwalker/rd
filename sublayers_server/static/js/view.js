@@ -113,19 +113,24 @@ function onKeyDownMap(event) {
             case 40:
                 clientManager.sendStopCar();
                 break;
+            case 32:
+                //console.log('Bang : ', user.userCar.getCurrentCoord(clock.getCurrentTime()));
+                new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+                break;
         }
         pressedKey = true;
     }
 }
 
 function onKeyUpMap(event) {
-    console.log('onKeyUpMap');
+    //console.log('onKeyUpMap');
     switch (event.keyCode) {
         case 37:
             clientManager.sendTurn(0);
             break;
         case 38:
             clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+            break;
         case 39:
             clientManager.sendTurn(0);
             break;
