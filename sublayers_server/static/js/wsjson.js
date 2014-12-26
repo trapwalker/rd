@@ -12,8 +12,8 @@ function sendNewPoint(aPoint) {
             y: aPoint.y
         }
     };
-   // rpcCallList.add(mes);
-   // clientManager._sendMessage(mes);
+    rpcCallList.add(mes);
+    clientManager._sendMessage(mes);
 }
 
 
@@ -106,36 +106,9 @@ function receiveMesFromServ(mes){
             var servtime = event.time;
             if (event.cls === "See" || event.cls === "Contact") {
                 // see || contact
-                if(event.is_first) { // Только если первый раз добавляется машинка
-                    aTrack = getTrack(event.object);
-                    if (event.object.hp) aHP = event.object.hp;
-                    setCurrentCar(event.object.uid, aType, aHP, aTrack, getOwner(event.object.owner), event.object.role);
-                }
-                // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-                if (cookieStorage.enableMarkerContact())
-                    debugMapList.push(
-                        L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()), {color: '#FFBA12'})
-                            .setRadius(8)
-                            .bindPopup(
-                                'Тип сообщения: ' + event.cls + '</br>' +
-                                'Server-Time: ' + servtime / 1000. + '</br>' +
-                                'uid объекта: ' + event.object.uid + '</br>' +
-                                'subject_id: ' + event.subject_id + '</br>'
-                        )
-                            .addTo(myMap)
-                    );
-
-                // отрисовка линии от объекта к субъекту
-                // TODO: сделано специально, иначе нужно пересматривать ВСЮ архитектуру клиента
-                setTimeout(function () {
-                    carMarkerList.addContactLine(event.subject_id, event.object.uid);
-                }, 500);
-
             }
             if (event.cls === "Update") {
                 // Update
-
-
             }
             if (event.cls === "InitMessage" || event.cls === "Init") {
                 alert('Init');
@@ -170,44 +143,6 @@ function receiveMesFromServ(mes){
 }
 
 
-// Получение движения по кругу
-function getCircleMotion(motion){
-    var a = new Point(motion.arc.a.x, motion.arc.a.y);
-    var b = new Point(motion.arc.b.x, motion.arc.b.y);
-    var c = new Point(motion.arc.c.x, motion.arc.c.y);
-    var alpha = motion.arc.alpha;
-    var beta = motion.arc.beta;
-    var r = motion.arc.r;
-    var vLinear = new Point(motion.v.x, motion.v.y);
-
-    // Время, на преодоление прямого участка с текущей линейной скоростью
-    var tLinear = distancePoints(a, b) / vLinear.abs();  // секунды
-    // Расчёт длины по окружности
-    var lArc = beta - alpha;
-    // Расчёт радиальной скорости - получаем изменение угла в секунду   = rad/s
-    var w = lArc / tLinear;
-    // Радиус-вектор, который мы будем поворачивать со скоростью w для вычисления позиции и направления машинки
-    var radiusV = subVector(a,c);
-    // время начала движения
-    var start_time = motion.time ? motion.time : (new Date().getTime());
-    // движение по часовой стрелке или против часовой стрелки 1 = по часовой
-    var ccw = motion.arc.ccw;
-
-    return new MoveCircle(
-        start_time / 1000. , // Время начала движения
-        //clock.getCurrentTime(),
-        fuelMaxProbka,                          //Запас топлива
-        fuelDecrProbka,                          //Расход топлива
-        c,                  // центр поворота
-        radiusV,            // ралиус-вектор
-        alpha,              // начальный угол
-        w,                  // угловая скорость
-        0,                  // ускорение
-        ccw,                // По часовой стрелке или против неё
-        vLinear.abs()       // Линейная скорость, для отображения в спидометре
-    );
-
-}
 // Сделано состояние клиента "убит", значит машинка юзера убита.
 // Возможно сделать метод для машинки, который будет вызываться и переводить её в это состояние,
 // т.е. менять там иконку и возможно другие параметры.

@@ -167,8 +167,10 @@ class Mobile(Unit):
 
         def async_closure(event):
             self.state.update(t=event.time, cc=cc, turn=turn, target_point=target_point)
+            log.debug('!!! ============ Before on_update')
             self.on_update(time=event.time)
             t_max = self.state.t_max
+            log.debug('!!! ============ After on_update, tmax = %s', t_max)
             if turn:
                 log.debug('!!!! turn set: turn=%s; t_max=%s', turn, t_max)
             if t_max is not None:

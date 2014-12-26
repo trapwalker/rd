@@ -231,6 +231,7 @@ var SliderSpeed = (function () {
     }
 
     SliderSpeed.prototype.change = function (event, ui) {
+        console.log('SliderSpeed.prototype.change');
         var slider = _SlidersMass[event.data.id];
         if (typeof(slider.options.onChange) === "function") {
             slider.options.onChange();
@@ -270,10 +271,12 @@ var SliderSpeed = (function () {
     }
 
     SliderSpeed.prototype.setSpeed = function (value) {
+        console.log('SliderSpeed.prototype.setSpeed');
         return $('#sliderSpeedSlider').slider("value", value);
     }
 
     SliderSpeed.prototype.setMaxSpeed = function (max_speed) {
+        console.log('SliderSpeed.prototype.setMaxSpeed');
         $('#sliderSpeedSlider').slider("option", "max", max_speed);
         this.options.max = max_speed;
         return this;
