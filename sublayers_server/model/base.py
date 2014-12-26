@@ -37,6 +37,7 @@ class Object(object):
         return self.__str_template__.format(self=self)
 
     def delete(self):
+        # todo: delete event
         self.is_alive = False
         del self.server.objects[self.uid]
 
@@ -103,7 +104,6 @@ class VisibleObject(PointObject):
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         # todo: 'delete' method fix
-        # todo: move to event list
         Init(obj=self).send()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
