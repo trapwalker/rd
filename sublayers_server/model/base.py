@@ -126,7 +126,6 @@ class VisibleObject(PointObject):
 
     def contacts_search(self):
         # todo: rename methods (search->forecast)
-        log.debug('-------------contacts_search')
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if obj is not self:  # todo: optimize filtration observers
                 self.contact_test(obj)
@@ -172,7 +171,6 @@ class Observer(VisibleObject):
         # todo: test to time
         can_see = self.can_see(obj)
         see = obj in self.visible_objects
-        log.debug('-------------contact_test(%s, %s): can_see=%s, see=%s', self, obj, can_see, see)
         if can_see != see:
             (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).send()
             return
@@ -182,7 +180,6 @@ class Observer(VisibleObject):
         @type obj: VisibleObject
         """
         dist = abs(self.position - obj.position)
-        log.debug('-------------can_see(%s, %s): dist=%s, r=%s', self, obj, dist, self._r)
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника
 

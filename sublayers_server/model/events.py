@@ -79,7 +79,8 @@ class Init(Event):
 
     def perform(self):
         super(Init, self).perform()
-        self.obj.contacts_search()
+        #self.obj.contacts_search()
+        SearchContacts(subj=self.obj).send()
 
 
 class Subjective(Event):
@@ -97,11 +98,22 @@ class Subjective(Event):
         self.subj = subj  # todo: weakref?
 
 
+class SearchContacts(Subjective):
+    def __init__(self, interval=0.5, **kw):
+        super(SearchContacts, self).__init__(**kw)
+        self.interval = interval
+
+    def perform(self):
+        super(SearchContacts, self).perform()
+        subj = self.subj
+        """@type: sublayers_server.model.base.Observer"""
+        if subj.is_alive:
+            subj.contacts_refresh()
+            SearchContacts(subj=subj, time=subj.server.get_time() + self.interval).send()  # todo: make regular interva
+
+
 class Update(Subjective):
     def __init__(self, cc=None, turn=None, target_point=None, **kw):
-        """
-        @param sublayers_server.model.units.Mobile subj: Subject of update
-        """
         super(Update, self).__init__(**kw)
         self.cc = cc
         self.turn = turn
