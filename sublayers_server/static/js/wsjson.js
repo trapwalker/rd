@@ -114,17 +114,11 @@ function receiveMesFromServ(mes){
                 alert('Init');
                 }
             if (event.cls === "Out") {
-                // TODO: не удалять машинку сразу, так как её может видеть участник пати
-                if(event.is_last) { // Только если машинку нужно совсем убирать
-                    // стирание линий
-                    carMarkerList.delContactLine(event.subject_id, event.object_id);
-                    // удаление машинки
-                    carMarkerList.del(event.object_id);
-                }
+
+
             }
             if (event.cls === "ChatMessage" || event.cls === "Chat") {
                 // chat_message
-                chat.addMessage(-1, '', getOwner(event.author), event.text);
             }
             if (event.cls === "WinMessage") {
                 if(event.winner){
@@ -143,37 +137,6 @@ function receiveMesFromServ(mes){
 }
 
 
-// Сделано состояние клиента "убит", значит машинка юзера убита.
-// Возможно сделать метод для машинки, который будет вызываться и переводить её в это состояние,
-// т.е. менять там иконку и возможно другие параметры.
-function setCurrentCar(uid, aType, aHP, aTrack, aOwner, role) {
-    if (uid == user.userCar.ID) { // если машинка своя
-        user.userCar.track = aTrack;
-        user.userCar.hp = aHP;
-    }
-    else { // если не своя, то проверить есть ли такая в модели
-        if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
-            var car = new MapCar(uid, aType, aHP, aTrack);
-            // установить роль
-            car.role = role;
-
-            carMarkerList.add(car, aOwner);
-
-            if(aHP == 0)// поставить стоп-трек
-                car.track.speedV = new Point(0, 0);
-
-        } else { // Если такая машинка уже есть, то
-            // установить все переменные
-            listMapObject.setCarHP(uid, aHP);
-            listMapObject.setState(uid, aTrack);
-        }
-        // После добавления машинки или её апдейта, проверяем сколько у неё хп
-        if(listMapObject.objects[uid].hp == 0){
-            listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
-        }
-    }
-
-}
 
 
 function initUserCar(uid, aType, aHP, aMaxHP, aTrack, amax_speed, aWeapons, radius_visible, role) {

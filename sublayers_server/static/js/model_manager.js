@@ -73,8 +73,7 @@ var ClientManager = (function () {
 
 
     ClientManager.prototype._sendMessage = function (msg) {
-        //alert('ClientManager  sendMessage');
-        // TODO: сейчас данная функция вызывается из функций wsjson.js, позже переделать!
+        //console.log('ClientManager.prototype._sendMessage');
         message_stream.sendMessage({
             type: 'ws_message_send',
             body: msg
@@ -90,7 +89,7 @@ var ClientManager = (function () {
                     self[event.cls](event);
                 else {
                     console.log('Error: неизвестная API-команда для клиента: ', params.cls);
-                    receiveMesFromServ(params);
+                    //receiveMesFromServ(params);
                 }
             });
         }
@@ -254,15 +253,41 @@ var ClientManager = (function () {
     ClientManager.prototype.Contact = function (event) {
         console.log('ClientManager.prototype.Contact');
         var servtime = event.time;
-        if(event.is_first) { // Только если первый раз добавляется машинка
-            aState = this._getState(event.object.state);
+
+
+        if (event.is_first) { // Только если первый раз добавляется машинка
+            var aState = this._getState(event.object.state);
             var aHP = event.object.hp;
-            setCurrentCar(event.object.uid, 0, aHP, aState, this._getOwner(event.object.owner), event.object.role);
+            var uid = event.object.uid;
+            var aOwner = this._getOwner(event.object.owner);
+            if (uid == user.userCar.ID) { // если машинка своя
+                user.userCar.state = aState;
+                user.userCar.hp = aHP;
+            }
+            else { // если не своя, то проверить есть ли такая в модели
+                if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
+                    var car = new MapCar(uid, aHP, aState);
+                    // установить роль
+                    car.role = event.object.role;
+                    carMarkerList.add(car, aOwner);
+                    //if(aHP == 0)// поставить стоп-трек
+                    //    car.track.speedV = new Point(0, 0);
+
+                } else { // Если такая машинка уже есть, то
+                    // установить все переменные
+                    listMapObject.setCarHP(uid, aHP);
+                    listMapObject.setState(uid, aState);
+                }
+                // После добавления машинки или её апдейта, проверяем сколько у неё хп
+                if (listMapObject.objects[uid].hp == 0) {
+                    listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
+                }
+            }
         }
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerContact())
             debugMapList.push(
-                L.circleMarker(myMap.unproject([aTrack.coord.x, aTrack.coord.y], myMap.getMaxZoom()), {color: '#FFBA12'})
+                L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FFBA12'})
                     .setRadius(8)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
@@ -282,11 +307,27 @@ var ClientManager = (function () {
     };
 
 
-    ClientManager.prototype.See = function(event){
+    ClientManager.prototype.See = function (event) {
         console.log('ClientManager.prototype.See');
         this.Contact(event);
-    }
+    };
 
+
+    ClientManager.prototype.Out = function (event) {
+        console.log('ClientManager.prototype.Out');
+        if(event.is_last) { // Только если машинку нужно совсем убирать
+            // стирание линий
+            carMarkerList.delContactLine(event.subject_id, event.object_id);
+            // удаление машинки
+            carMarkerList.del(event.object_id);
+        }
+    };
+
+
+    ClientManager.prototype.Chat = function (event){
+        console.log('ClientManager.prototype.Chat');
+        //chat.addMessage(-1, '', getOwner(event.author), event.text);
+    };
 
 
     // Исходящие сообщения
