@@ -222,16 +222,17 @@ var Bang = (function(){
         this._r = 1;
         //this.marker = L.circleMarker(myMap.unproject([position.x, position.y], myMap.getMaxZoom()), {color: '#FFFFFF'})
         //    .setRadius(this._r);
-        var bang_power = 20;
+        var bang_power = 50;
         var bang_duration = 1500;
         var bang_end_duration = 1000;
 
 
         this.myIcon = L.divIcon({
             className: 'my-bang-icon',
-            iconSize: [25, 25],
-            html: '<svg height="80px" width="80px">' +
-                '<circle cx="25" cy="25" r="2" fill="#FFAF21">' +
+            iconSize: [bang_power, bang_power],
+            iconAnchor: [bang_power, bang_power],
+            html: '<svg height="'+bang_power * 2 +'px" width="'+bang_power*2+'px">' +
+                '<circle cx="' + bang_power + '" cy="'+bang_power+'" r="2" fill="#FFAF21">' +
                 '<animate attributeName="r" repeatCount="1" fill="freeze"' +
                     'dur="' + bang_duration + 'ms" ' +
                     'from="1" to="' + bang_power + '"' +
