@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from utils import time_log_format, serialize
+from balance import BALANCE
 
 
 def make_push_package(events):
@@ -176,4 +177,29 @@ class Out(Contact):
             object_id=self.obj.uid,
             is_last=self.is_last,
         )
+        return d
+
+
+class Bang(Subjective):
+    def __init__(self,
+                 position,
+                 bang_power=BALANCE.RocketBang.bang_power,
+                 duration=BALANCE.RocketBang.duration,
+                 end_duration=BALANCE.RocketBang.end_duration,
+                 **kw):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        """
+        super(Bang, self).__init__(**kw)
+        self.position = position
+        self.bang_power = bang_power
+        self.duration = duration
+        self.end_duration = end_duration
+
+    def as_dict(self):
+        d = super(Bang, self).as_dict()
+        d.update(position=self.position,
+                 bang_power=self.bang_power,
+                 duration=self.duration,
+                 end_duration=self.end_duration)
         return d

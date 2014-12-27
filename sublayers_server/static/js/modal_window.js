@@ -134,7 +134,7 @@ var ModalWindow = (function () {
             cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
             cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
             cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
-            chat.manageSystemChats(cookieStorage);
+            //chat.manageSystemChats(cookieStorage);
 
             // Скрыть или показать тайловый уровень в зависимости от настроек опций
             cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
@@ -159,7 +159,7 @@ var ModalWindow = (function () {
                     if (optionsShowDebugLine.checked) // добавить линию на карту
                         uline.plln.addTo(myMap);
                     else
-                        uline.plln.removeLayer(car.debugLine);
+                        myMap.removeLayer(uline.plln);
                 }
                 // TODO: Тут возможна ошибка с перебором
                 // включить линии для не своей машинки
@@ -172,7 +172,7 @@ var ModalWindow = (function () {
                             if (optionsShowDebugLine.checked) // добавить линию на карту
                                 line.plln.addTo(myMap);
                             else
-                                line.plln.removeLayer(car.debugLine);
+                                myMap.removeLayer(line.plln);
                         }
                     }
             }

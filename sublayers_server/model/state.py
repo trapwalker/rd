@@ -254,10 +254,10 @@ class State(BaseState):
         if self.a:
             self.t_max = self.t0 + dv / self.a
 
-        log.debug('===== dv=%s, a=%s, t_max-t=%s', dv, self.a, (self.t_max - t) if self.t_max else 'None')
+        #log.debug('===== dv=%s, a=%s, t_max-t=%s', dv, self.a, (self.t_max - t) if self.t_max else 'None')
 
-        log.debug('State: after update: turn_sign=%s; c=%s, r=%s, t_max-t=%s',
-                  self._turn_sign, self.c, self._r, (self.t_max - t) if self.t_max else 'None')
+        #log.debug('State: after update: turn_sign=%s; c=%s, r=%s, t_max-t=%s',
+        #          self._turn_sign, self.c, self._r, (self.t_max - t) if self.t_max else 'None')
 
     def __str__(self):
         return (

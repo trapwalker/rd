@@ -62,30 +62,25 @@ var CarMarkerList = (function () {
         for(var i in listMapObject.objects){
             this.del(listMapObject.objects[i].ID);
         }
-    }
+    };
 
     // Добавление машинки
     CarMarkerList.prototype.add = function (aCar, aOwner) {
         // Бинд машинки и её хозяина
-        aOwner.bindCar(aCar);
+        if(aOwner)
+            aOwner.bindCar(aCar);
         // Добавление машинки в listMapObject
         listMapObject.add(aCar);
         // И сразу же добавить маркер
         aCar.marker = getCarMarker(aCar, this.options._map);
 
         // Если Owner с User в одной пати, то подстветить машинку (чтобы потом её не дамажить)
-        if(aCar.owner.party.id == user.party.id)
-            this.addToBackLight(aCar);
+        if(aCar.owner)
+            if (aCar.owner.party.id == user.party.id)
+                this.addToBackLight(aCar);
 
         aCar.pathSVG = [];
 
-        // Линии от машинки к юзер Кар
-
-        /*
-        aCar.debugLine = L.polyline([aCar.marker.getLatLng(),userCarMarker.marker.getLatLng()], {color: 'red'});
-        if(cookieStorage.optionsShowDebugLine)// если рисовать линию
-           aCar.debugLine.addTo(this.options._map);
-           */
         // Инициализация списка отладочных линий
         aCar.debugLines = [];
     };
@@ -135,7 +130,7 @@ var CarMarkerList = (function () {
             plln: plln
         });
 
-        if(cookieStorage.optionsShowDebugLine)// если рисовать линию
+        if(cookieStorage.optionsShowDebugLine())// если рисовать линию
             plln.addTo(this.options._map);
 
     };
@@ -311,7 +306,7 @@ var CarMarkerList = (function () {
                 }
             }
         }
-    }
+    };
 
     CarMarkerList.prototype.getListIDsForShoot = function (sectorUid) {
         var listIDs = [];

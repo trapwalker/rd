@@ -18,7 +18,7 @@ var LocalCookieStorage = (function(){
             optionsSelectAnybody: false,
             levelZoomForVisibleLabel: 5,
             optionsShowID: false,
-            optionsShowDebugLine: true,
+            optionsShowDebugLine: false,
             optionsFriendlyFireEnabled: true
         };
 

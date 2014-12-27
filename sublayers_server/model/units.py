@@ -10,6 +10,7 @@ from base import Observer
 from balance import BALANCE
 from math import pi
 import events
+import messages
 
 
 def async_call(method):
@@ -124,6 +125,11 @@ class Unit(Observer):
         # todo: check staticobservers deletion
 
 
+    def generate_rocket(self):
+        #log.debug('Unit Start Generate Rocket')
+        Rocket(starter=self, server=self.server)
+
+
 class Station(Unit):
     u"""Class of buildings"""
 
@@ -141,6 +147,10 @@ class Mobile(Unit):
         super(Mobile, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
         self._state_events = []
+        self.init_params()
+
+
+    def init_params(self):
         self.state = State(
             owner=self,
             t=self.server.get_time(),
@@ -215,3 +225,62 @@ class Mobile(Unit):
 
 class Bot(Mobile):
     pass
+
+
+class Rocket(Mobile):
+    def __init__(self, starter, life_time=BALANCE.Rocket.life_time, **kw):
+        # взять позицию и направление выпустившего ракету
+        self.starter = starter
+        pos = starter.position
+        direct = starter.direction
+        self.state = None
+        super(Rocket, self).__init__(position=pos, direction=direct,
+                                     max_hp=BALANCE.Rocket.max_hp,
+                                     observing_range=BALANCE.Rocket.observing_range,
+                                     max_velocity=BALANCE.Rocket.v_max,
+                                     **kw)
+
+        server = self.server
+
+        def life_time_off(event=None):
+            # запустить евент о смерти себя же
+            log.debug('Start life_time_off !')
+
+        self.cb_event = events.Callback(server=server, time=server.get_time() + life_time, func=life_time_off, comment="Bang!!!!")
+        self.cb_event.send()
+
+
+    def init_params(self):
+        self.state = State(
+            owner=self,
+            t=self.server.get_time(),
+            p=self.starter.position,
+            fi=self.starter.direction,
+            a_accelerate=BALANCE.Rocket.a_accelerate,
+            a=BALANCE.Rocket.a_accelerate,
+            v_max=BALANCE.Rocket.v_max,
+            ac_max=BALANCE.Rocket.ac_max,
+            v=self.starter.v,
+            cc=1.0
+        )
+
+    def on_contact_in(self, time, obj, **kw):
+        #log.debug('Rocket Contacn IN')
+        #super(Rocket, self).on_contact_in(**kw)
+        if obj is not self.starter:
+            # todo: сделать евент Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
+            # и именно тот евент и будет отправлять это сообщение
+            if isinstance(obj, Bot):
+                self.cb_event.cancel()
+                for agent in self.watched_agents:
+                    self.server.post_message(messages.Bang(
+                        position=self.position,
+                        agent=agent,
+                        time=time,
+                        subj=self,
+                    ))
+
+
+
+
+

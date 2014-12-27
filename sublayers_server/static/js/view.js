@@ -115,7 +115,8 @@ function onKeyDownMap(event) {
                 break;
             case 32:
                 //console.log('Bang : ', user.userCar.getCurrentCoord(clock.getCurrentTime()));
-                new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+                //new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+                clientManager.sendRocket();
                 break;
         }
         pressedKey = true;

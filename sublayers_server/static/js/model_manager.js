@@ -18,33 +18,36 @@ var ClientManager = (function () {
     // вспомогательные методы для парсинга
     // Считывает параметры для создания состояние и возвращает его.
     ClientManager.prototype._getState = function (data) {
-        return new State(
-            data.t0,                                 // Время
-            new Point(data.p0.x, data.p0.y),          // Позиция
-            data.fi0,                                // Направление
-            data.v0,                                 // Скорость - число
-            data.a,                                 // Ускорение - число
-            data.c ? (new Point(data.c.x, data.c.y)) : null,     // Центр поворота, которого может не быть
-            data.turn
-        );
+        if (data)
+            return new State(
+                data.t0,                                 // Время
+                new Point(data.p0.x, data.p0.y),          // Позиция
+                data.fi0,                                // Направление
+                data.v0,                                 // Скорость - число
+                data.a,                                 // Ускорение - число
+                data.c ? (new Point(data.c.x, data.c.y)) : null,     // Центр поворота, которого может не быть
+                data.turn
+            );
+        return null;
     };
 
     ClientManager.prototype._getOwner = function (data) {
-        if (data.cls === "User") {
-            var party;
-            if (data.party)
-                party = new OwnerParty(data.party.id, data.party.name);
-            else
-                party = new OwnerParty(0, "");
-            var owner = new Owner(data.uid, data.login, party);
-            if (owner) {
-                owner = ownerList.add(owner);
-                // Если даже мы его не добавили, то обновить owner'у его пати
-                if (owner.party.id !== party.id) owner.party = party;
-                //
-                return owner;
+        if(data)
+            if (data.cls === "User") {
+                var party;
+                if (data.party)
+                    party = new OwnerParty(data.party.id, data.party.name);
+                else
+                    party = new OwnerParty(0, "");
+                var owner = new Owner(data.uid, data.login, party);
+                if (owner) {
+                    owner = ownerList.add(owner);
+                    // Если даже мы его не добавили, то обновить owner'у его пати
+                    if (owner.party.id !== party.id) owner.party = party;
+                    //
+                    return owner;
+                }
             }
-        }
         return null;
     };
 
@@ -318,7 +321,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        console.log('ClientManager.prototype.See');
+        console.log('ClientManager.prototype.See', event);
         this.Contact(event);
     };
 
@@ -334,6 +337,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Chat = function (event){
         console.log('ClientManager.prototype.Chat');
+        //chat.addMessage(-1, '', getOwner(event.author), event.text);
+    };
+
+    ClientManager.prototype.Bang = function (event){
+        console.log('ClientManager.prototype.Bang ', event);
         //chat.addMessage(-1, '', getOwner(event.author), event.text);
     };
 
@@ -374,6 +382,16 @@ var ClientManager = (function () {
             params: {
                 turn: turn
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendRocket = function () {
+        var mes = {
+            call: "send_rocket",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

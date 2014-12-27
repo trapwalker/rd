@@ -55,3 +55,17 @@ class BALANCE(BalanceSettingsABS):
     class Weapon(BalanceSettingsABS):
         damage = 10.0
         r = 50.0
+
+    class Rocket:
+        observing_range = 100.0
+        max_hp = 10.0
+        life_time = 6  # s
+        a_accelerate = 200
+        v_max = 150
+        ac_max = 10
+
+    class RocketBang:
+        duration = 2000 # ms
+        end_duration = 1000  #ms
+        bang_power = 50
+

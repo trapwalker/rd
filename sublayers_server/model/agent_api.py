@@ -139,3 +139,8 @@ class AgentAPI(API):
     def set_turn(self, turn=0):
         log.info('AgentAPI set_turn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: ')
         self.car.set_turn(turn)
+
+    @public_method
+    def send_rocket(self):
+        #log.debug('AgentAPI Rocket !!!')
+        self.car.generate_rocket()
