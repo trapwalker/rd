@@ -144,7 +144,7 @@ class Role(object):
 
 
 class RoleParty(Party):
-    def __init__(self, base_point, roles, respawn_sigma=Point(100, 100), **kw):
+    def __init__(self, base_point, roles, respawn_sigma=Point(1, 1), **kw):
         super(RoleParty, self).__init__(**kw)
         self.base_point = base_point
         self.respawn_sigma = respawn_sigma

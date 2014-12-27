@@ -241,11 +241,19 @@ class Rocket(Mobile):
                                      **kw)
 
         server = self.server
+        rocket = self
 
         def life_time_off(event=None):
             # запустить евент о смерти себя же
             log.debug('Start life_time_off !')
+
+            def delete_this(event=None):
+                rocket.delete()
+
             # todo запустить евент на удаление себя с сервера
+            rocket.stop()
+            rocket.cb_event = events.Callback(server=server, time=server.get_time() + rocket.state.t_max, func=life_time_off, comment="Bang!!!!")
+
 
         self.cb_event = events.Callback(server=server, time=server.get_time() + life_time, func=life_time_off, comment="Bang!!!!")
         self.cb_event.send()
@@ -275,7 +283,8 @@ class Rocket(Mobile):
             # и именно тот евент и будет отправлять это сообщение
             if isinstance(obj, Bot):
                 log.debug('Rocket Bang send!!!!!!!!!!!!!!!!!!!!')
-                self.cb_event.cancel()
+                if self.cb_event:
+                    self.cb_event.cancel()
                 for agent in self.subscribed_agents:
                     self.server.post_message(messages.Bang(
                         position=self.position,
@@ -284,6 +293,22 @@ class Rocket(Mobile):
                         subj=self,
                     ))
                 # todo: запустить евент на удаление самого себя с сервера
+
+    def delete(self):
+        log.debug('delete Rocket !!!')
+        # todo правильно очистить все контакты
+        for agent in self.subscribed_agents:
+            self.server.post_message(messages.Out(
+                position=self.position,
+                agent=agent,
+                time=self.server.get_time(),
+                subj=agent.cars[0],
+                obj=self,
+                is_last=True,
+                is_boundary=False,
+            ))
+
+        # todo вызвать super(Rocket, self).delete()
 
 
 

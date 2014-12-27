@@ -95,51 +95,65 @@ function onZoomStart(event) {
 }
 
 var pressedKey;
+var pressedArrow;
 
 function onKeyDownMap(event) {
     //console.log('onKeyDownMap');
-    if (!pressedKey) {
         switch (event.keyCode) {
             case 37:
-                clientManager.sendTurn(1);
+                if (!pressedArrow) {
+                    clientManager.sendTurn(1);
+                    pressedArrow = true;
+                }
                 break;
             case 38:
-                clientManager.sendSetSpeed(user.userCar.maxSpeed);
-                //clientManager.sendSetSpeed();
+                if (!pressedArrow) {
+                    clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                    pressedArrow = true;
+                }
                 break;
             case 39:
-                clientManager.sendTurn(-1);
+                if (!pressedArrow) {
+                    clientManager.sendTurn(-1);
+                    pressedArrow = true;
+                }
                 break;
             case 40:
-                clientManager.sendStopCar();
+                if (!pressedArrow) {
+                    clientManager.sendStopCar();
+                    pressedArrow = true;
+                }
                 break;
             case 32:
-                //console.log('Bang : ', user.userCar.getCurrentCoord(clock.getCurrentTime()));
-                //new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
                 clientManager.sendRocket();
                 break;
         }
-        pressedKey = true;
-    }
+
+
 }
 
 function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
-    switch (event.keyCode) {
-        case 37:
-            clientManager.sendTurn(0);
-            break;
-        case 38:
-            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
-            break;
-        case 39:
-            clientManager.sendTurn(0);
-            break;
-        case 40:
-            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
-            break;
+    if(pressedArrow) {
+        switch (event.keyCode) {
+            case 37:
+                clientManager.sendTurn(0);
+                pressedArrow = false;
+                break;
+            case 38:
+                clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+                pressedArrow = false;
+                break;
+            case 39:
+                clientManager.sendTurn(0);
+                pressedArrow = false;
+                break;
+            case 40:
+                clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+                pressedArrow = false;
+                break;
+        }
     }
-    pressedKey = false;
 }
 
 function onZoomEnd(event) {

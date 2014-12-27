@@ -59,7 +59,7 @@ class BALANCE(BalanceSettingsABS):
     class Rocket:
         observing_range = 100.0
         max_hp = 10.0
-        life_time = 6  # s
+        life_time = 2  # s
         a_accelerate = 200
         v_max = 150
         ac_max = 10

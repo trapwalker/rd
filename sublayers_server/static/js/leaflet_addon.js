@@ -240,8 +240,7 @@ var Bang = (function(){
                     '</circle>' +
                     '</svg>'
             });
-            this.marker = L.marker(myMap.unproject([position.x, position.y]), {icon: this.myIcon});
-            //console.log('on map', this.marker);
+            this.marker = L.marker(myMap.unproject([position.x, position.y], myMap.getMaxZoom()), {icon: this.myIcon, zIndexOffset: 10});
             this.duration = bang_duration + bang_end_duration;
         }
     }
