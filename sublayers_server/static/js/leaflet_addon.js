@@ -32,7 +32,7 @@ function getCarMarker(aCar, aMap) {
     var test_html_str = "";
     var newMarker = L.rotatedMarker([0, 0]);
     if(aCar.cls === 'Rocket'){
-        newMarker.setIcon(iconsLeaflet.icon_moving_V1);
+        newMarker.setIcon(iconsLeaflet.icon_rocket_V1);
     }
     else {
         newMarker.setIcon(iconsLeaflet.icon_moving_V2);
@@ -212,6 +212,12 @@ function iconLeafletInit(){
     iconsLeaflet.icon_stopped_V3 = new L.icon({
         iconUrl: 'img/map_icons/map_icon_player_v3_stopped.png',
         iconSize: [51, 28]
+    });
+
+    // Создание иконки ракеты
+    iconsLeaflet.icon_rocket_V1 = new L.icon({
+        iconUrl: 'img/map_icons/map_icon_rocket.png',
+        iconSize: [40, 18]
     });
 }
 
