@@ -248,11 +248,17 @@ class Rocket(Mobile):
             log.debug('Start life_time_off !')
 
             def delete_this(event=None):
+                log.debug('Start life_time_off  22222  !')
                 rocket.delete()
 
-            # todo запустить евент на удаление себя с сервера
+            # todo после stop запустить евент на удаление себя с сервера, но почему-то t_max is None
             rocket.stop()
-            rocket.cb_event = events.Callback(server=server, time=server.get_time() + rocket.state.t_max, func=life_time_off, comment="Bang!!!!")
+            if rocket.state.t_max is None:
+                log.debug('=====================================================================================')
+            else:
+                log.debug('-------------------------------------------------------------------------------------')
+            #rocket.cb_event = events.Callback(server=server, time=server.get_time() + rocket.state.t_max, func=delete_this, comment="Bang!!!!")
+            #rocket.cb_event.send()
 
 
         self.cb_event = events.Callback(server=server, time=server.get_time() + life_time, func=life_time_off, comment="Bang!!!!")
@@ -270,20 +276,20 @@ class Rocket(Mobile):
             a=BALANCE.Rocket.a_accelerate,
             v_max=BALANCE.Rocket.v_max,
             ac_max=BALANCE.Rocket.ac_max,
+            a_braking=BALANCE.Rocket.a_braking,
             v= v if v >= 0 else 0,
-            cc=1.0
+            cc=0.0
         )
+        # если так не сделать, то не работают нормально Update евенты
+        self.set_cc(value=1.0)
 
     def on_contact_in(self, time, obj, **kw):
         #log.debug('Rocket Contacn IN')
         #super(Rocket, self).on_contact_in(**kw)
-        #todo раскомментить, когда взрывы будут работать
         if obj is not self.starter:
-            # todo: сделать евент Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
-            # и именно тот евент и будет отправлять это сообщение
-            if isinstance(obj, Bot):
-                log.debug('Rocket Bang send!!!!!!!!!!!!!!!!!!!!')
-                if self.cb_event:
+            # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
+            if isinstance(obj, Bot):    # чтобы ракеты не врезались друг в друга
+                if self.cb_event:       # если это наступило раньше евента на удаление или евента на стоп
                     self.cb_event.cancel()
                 for agent in self.subscribed_agents:
                     self.server.post_message(messages.Bang(
@@ -292,9 +298,9 @@ class Rocket(Mobile):
                         time=time,
                         subj=self,
                     ))
-                # todo: запустить евент на удаление самого себя с сервера
+                # todo: запустить евент на немедленное удаление самого себя с сервера
 
-    def delete(self):
+    '''def delete(self):
         log.debug('delete Rocket !!!')
         # todo правильно очистить все контакты
         for agent in self.subscribed_agents:
@@ -308,7 +314,7 @@ class Rocket(Mobile):
                 is_boundary=False,
             ))
 
-        # todo вызвать super(Rocket, self).delete()
+       ''' # todo вызвать super(Rocket, self).delete()
 
 
 

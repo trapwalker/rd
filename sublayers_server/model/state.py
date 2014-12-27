@@ -242,6 +242,7 @@ class State(BaseState):
                 self.c = (self.p0 + Point.polar(self._r, self.fi0 - self._turn_sign * pi / 2.0))
 
         dv = target_v - self.v0
+
         if dv > EPS:
             self.a = self.a_accelerate
         elif dv < -EPS:
@@ -251,8 +252,14 @@ class State(BaseState):
 
         log.debug('===== old t_max=%s', self.t_max)
 
+        old_t_max = self.t_max
+
         if self.a:
             self.t_max = self.t0 + dv / self.a
+
+        if old_t_max is not None and self.t_max is not None:
+            if -EPS < old_t_max - self.t_max < EPS:
+                self.t_max = None   # иначе бесконечный цикл
 
         #log.debug('===== dv=%s, a=%s, t_max-t=%s', dv, self.a, (self.t_max - t) if self.t_max else 'None')
 

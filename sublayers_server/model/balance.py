@@ -17,7 +17,7 @@ class BALANCE(BalanceSettingsABS):
         max_hp = 1000.0
 
     class Bot(Unit):
-        observing_range = 2000.0
+        observing_range = 5000.0
         velocity = 100.0  # m/s
         max_hp = 100.0
 
@@ -57,15 +57,16 @@ class BALANCE(BalanceSettingsABS):
         r = 50.0
 
     class Rocket:
-        observing_range = 100.0
+        observing_range = 100.0 # очень небольшой радиус. думаю от 100 до 300 должен быть
         max_hp = 10.0
-        life_time = 2  # s
-        a_accelerate = 200
-        v_max = 150
-        ac_max = 10
+        life_time = 2  # s  (время полёта ракеты до заканчивания её топлива)
+        a_accelerate = 200  # ускорение ракеты
+        a_braking = -50.0   # торможение ракеты ... будто она упала на землю
+        v_max = 300         # максимальная скорость ракеты
+        ac_max = 10         # на будущее
 
     class RocketBang:
-        duration = 2000 # ms
-        end_duration = 1000  #ms
-        bang_power = 50
+        duration = 2000 # ms задавать в милисекундах - время расплывания круга
+        end_duration = 1000  #ms    длдительность затухания круга
+        bang_power = 50  # px - радиус взрыва в пикселях на экране... сейчас не засисит от зума
 

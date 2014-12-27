@@ -219,6 +219,7 @@ function iconLeafletInit(){
 
 var Bang = (function(){
     function Bang(position, aPower, aBangDur, aBandEndDur){
+        // todo: сделать зависимость радиуса взрыва от текущего зума. а если радиус меньше 5, то совсем не показывать его
         var bang_power = aPower || 50;
         var bang_duration = aBangDur || 1500;
         var bang_end_duration = aBandEndDur ||  1000;
