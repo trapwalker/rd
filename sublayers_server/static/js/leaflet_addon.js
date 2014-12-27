@@ -247,11 +247,11 @@ var Bang = (function(){
     }
 
     Bang.prototype.start = function(){
+        //console.log('Bang Started');
         if(this.marker) {
             var self = this;
             this.marker.addTo(myMap);
             setTimeout(function () {
-                //console.log('now_remove', self);
                 myMap.removeLayer(self.marker);
             }, this.duration);
         }

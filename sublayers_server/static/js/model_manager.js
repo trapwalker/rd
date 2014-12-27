@@ -222,18 +222,6 @@ var ClientManager = (function () {
             }
         }
 
-
-        // Bang
-        if (event.object.bang){
-            event.bang = {
-                duration: 2000,
-                end_duration: 1000,
-                bang_power: 50
-            };
-            new Bang(new Point(event.object.state.p0.x, event.object.state.p0.y), event.bang.bang_power, event.bang.duration, event.bang.end_duration);
-        }
-
-
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
@@ -341,8 +329,11 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Bang = function (event){
-        console.log('ClientManager.prototype.Bang ', event);
+        console.log('ClientManager.prototype.Bang ');
         //chat.addMessage(-1, '', getOwner(event.author), event.text);
+        new Bang(new Point(event.position.x, event.position.y), event.bang_power, event.duration, event.end_duration)
+            .start();
+        // todo разобраться, почему оно не всегда отрисовывается
     };
 
 

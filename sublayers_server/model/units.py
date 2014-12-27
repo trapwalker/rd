@@ -245,12 +245,14 @@ class Rocket(Mobile):
         def life_time_off(event=None):
             # запустить евент о смерти себя же
             log.debug('Start life_time_off !')
+            # todo запустить евент на удаление себя с сервера
 
         self.cb_event = events.Callback(server=server, time=server.get_time() + life_time, func=life_time_off, comment="Bang!!!!")
         self.cb_event.send()
 
 
     def init_params(self):
+        v = self.starter.v
         self.state = State(
             owner=self,
             t=self.server.get_time(),
@@ -260,25 +262,28 @@ class Rocket(Mobile):
             a=BALANCE.Rocket.a_accelerate,
             v_max=BALANCE.Rocket.v_max,
             ac_max=BALANCE.Rocket.ac_max,
-            v=self.starter.v,
+            v= v if v >= 0 else 0,
             cc=1.0
         )
 
     def on_contact_in(self, time, obj, **kw):
         #log.debug('Rocket Contacn IN')
         #super(Rocket, self).on_contact_in(**kw)
+        #todo раскомментить, когда взрывы будут работать
         if obj is not self.starter:
             # todo: сделать евент Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
             # и именно тот евент и будет отправлять это сообщение
             if isinstance(obj, Bot):
+                log.debug('Rocket Bang send!!!!!!!!!!!!!!!!!!!!')
                 self.cb_event.cancel()
-                for agent in self.watched_agents:
+                for agent in self.subscribed_agents:
                     self.server.post_message(messages.Bang(
                         position=self.position,
                         agent=agent,
                         time=time,
                         subj=self,
                     ))
+                # todo: запустить евент на удаление самого себя с сервера
 
 
 
