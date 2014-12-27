@@ -181,6 +181,7 @@ class Out(Contact):
 
 
 class Bang(Subjective):
+    # todo: It is not subjective (IMHO)
     def __init__(self,
                  position,
                  bang_power=BALANCE.RocketBang.bang_power,
@@ -189,6 +190,7 @@ class Bang(Subjective):
                  **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        # todo: right doctyping required
         """
         super(Bang, self).__init__(**kw)
         self.position = position

@@ -156,7 +156,7 @@ class Mobile(Unit):
             t=self.server.get_time(),
             p=self._position,
             fi=self._direction,
-            # todo: acc and velociti constrains and params
+            # todo: acc and velocity constrains and params
         )
 
     def as_dict(self, to_time=None):
@@ -229,6 +229,7 @@ class Bot(Mobile):
 
 class Rocket(Mobile):
     def __init__(self, starter, life_time=BALANCE.Rocket.life_time, **kw):
+        # todo: docstring required
         # взять позицию и направление выпустившего ракету
         self.starter = starter
         pos = starter.position
@@ -266,7 +267,6 @@ class Rocket(Mobile):
 
 
     def init_params(self):
-        v = self.starter.v
         self.state = State(
             owner=self,
             t=self.server.get_time(),
@@ -277,7 +277,7 @@ class Rocket(Mobile):
             v_max=BALANCE.Rocket.v_max,
             ac_max=BALANCE.Rocket.ac_max,
             a_braking=BALANCE.Rocket.a_braking,
-            v= v if v >= 0 else 0,
+            v=self.starter.v,
             cc=0.0
         )
         # если так не сделать, то не работают нормально Update евенты
@@ -286,19 +286,23 @@ class Rocket(Mobile):
     def on_contact_in(self, time, obj, **kw):
         #log.debug('Rocket Contacn IN')
         #super(Rocket, self).on_contact_in(**kw)
-        if obj is not self.starter:
-            # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
-            if isinstance(obj, Bot):    # чтобы ракеты не врезались друг в друга
-                if self.cb_event:       # если это наступило раньше евента на удаление или евента на стоп
-                    self.cb_event.cancel()
-                for agent in self.subscribed_agents:
-                    self.server.post_message(messages.Bang(
-                        position=self.position,
-                        agent=agent,
-                        time=time,
-                        subj=self,
-                    ))
-                # todo: запустить евент на немедленное удаление самого себя с сервера
+        if obj is self.starter:
+            return
+        # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
+        if not isinstance(obj, Bot):  # чтобы ракеты не врезались друг в друга
+            return
+
+        if self.cb_event:  # если это наступило раньше евента на удаление или евента на стоп
+            self.cb_event.cancel()  # todo: fixit
+
+        for agent in self.subscribed_agents:
+            self.server.post_message(messages.Bang(
+                position=self.position,
+                agent=agent,
+                time=time,
+                subj=self,
+            ))
+        # todo: запустить евент на немедленное удаление самого себя с сервера
 
     '''def delete(self):
         log.debug('delete Rocket !!!')
