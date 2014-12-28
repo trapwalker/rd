@@ -103,11 +103,11 @@ class Unit(Observer):
         )
         return d
 
-    def on_delete(self, **kw):
+    def on_before_delete(self, **kw):
         if self.role:
             self.role.remove_car(self)
             # todo: rename
-        super(Unit, self).on_delete(**kw)
+        super(Unit, self).on_before_delete(**kw)
 
 
 class Station(Unit):

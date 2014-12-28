@@ -99,7 +99,14 @@ class Init(Objective):
 class Delete(Objective):
     def perform(self):
         super(Delete, self).perform()
-        self.obj.on_delete(event=self)
+        self.obj.on_before_delete(event=self)
+        DeleteEnd(obj=self.obj).send()
+
+
+class DeleteEnd(Objective):
+    def perform(self):
+        super(DeleteEnd, self).perform()
+        self.obj.on_after_delete(event=self)
 
 
 class Subjective(Event):

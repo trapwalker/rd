@@ -49,16 +49,18 @@ class Object(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
-    def on_delete(self, event):
-        events_list = self.events
-        while events_list:
-            events_list.pop().cancel()
+    def on_before_delete(self, event):
+        pass
+
+    def on_after_delete(self, event):
+        for event in self.events[:]:
+            event.cancel()
         del self.server.objects[self.uid]
         self.is_alive = False
+        log.debug('Finally deletion: %s', self)
 
-    def delete(self):
-        Delete(obj=self).send()
-        # todo: Двухфазное удаление (!)
+    def delete(self, time=None):
+        Delete(obj=self, time=time).send()
 
     id = property(id)
 
@@ -89,9 +91,9 @@ class PointObject(Object):
         """@type: sublayers_server.model.vectors.Point"""
         self.server.geo_objects.append(self)
 
-    def on_delete(self, **kw):
+    def on_after_delete(self, event):
         self.server.geo_objects.remove(self)
-        super(PointObject, self).on_delete(**kw)
+        super(PointObject, self).on_after_delete(event=event)
 
     def as_dict(self, **kw):
         d = super(PointObject, self).as_dict(**kw)
@@ -122,7 +124,6 @@ class VisibleObject(PointObject):
         super(VisibleObject, self).__init__(**kw)
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
-        # todo: 'delete' method fix
         Init(obj=self).send()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
@@ -155,16 +156,17 @@ class VisibleObject(PointObject):
         """Test to contacts between *self* and *obj*, append them if is."""
         pass
 
-    def on_delete(self, event, **kw):
-        self.contacts_clear()
+    def on_before_delete(self, event):
         # todo: send 'out' message for all subscribers (!)
         # todo: test to subscription leaks
-        super(VisibleObject, self).on_delete(event, **kw)
-
-    def delete(self):
         for obs in self.subscribed_observers:
             ContactOut(subj=obs, obj=self).send()
-        super(VisibleObject, self).delete()
+        super(VisibleObject, self).on_before_delete(event=event)
+
+    def on_after_delete(self, event):
+        # todo: check contact list is empty
+        self.contacts_clear()
+        super(VisibleObject, self).on_after_delete(event=event)
 
 
 class Heap(VisibleObject):
@@ -178,9 +180,9 @@ class Heap(VisibleObject):
         self.inventory = Inventory(things=items)
         """@type: Inventory"""
 
-    def on_delete(self, **kw):
+    def on_after_delete(self, event):
         self.inventory = None
-        super(Heap, self).on_delete(**kw)
+        super(Heap, self).on_after_delete(event=event)
 
 
 class Observer(VisibleObject):
@@ -264,7 +266,7 @@ class Observer(VisibleObject):
         d.update(r=self.r)
         return d
 
-    def delete(self):
+    def on_before_delete(self, event):
         for obj in self.visible_objects:
             ContactOut(subj=self, obj=obj).send()
-        super(Observer, self).delete()
+        super(Observer, self).on_before_delete(event=event)
