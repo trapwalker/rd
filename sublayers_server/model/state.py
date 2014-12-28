@@ -250,8 +250,6 @@ class State(BaseState):
         else:
             self.a = 0.0
 
-        log.debug('===== old t_max=%s', self.t_max)
-
         old_t_max = self.t_max
 
         if self.a:
