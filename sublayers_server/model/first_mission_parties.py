@@ -138,7 +138,7 @@ class Band(RoleParty):
                     car_params=dict(
                         max_hp=100,
                         max_velocity=80,
-                        observing_range=1200,
+                        observing_range=2200,
                         weapons=[
                             SectoralWeapon(direction=0, sector_width=50, r=350, damage=10),
                             SectoralWeapon(direction=pi/2, sector_width=50, r=300, damage=10),
