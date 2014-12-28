@@ -23,9 +23,14 @@ class Rocket(Mobile):
                                      observing_range=BALANCE.Rocket.observing_range,
                                      max_velocity=BALANCE.Rocket.v_max,
                                      **kw)
+        self.life_time = life_time
 
-        # Назначаем остановку
-        events.Update(subj=self, time=self.server.get_time() + life_time, comment="Bang!!!!").send()
+    def on_init(self, event):
+        # Запускаем:
+        events.Update(subj=self, cc=1.0).send()
+        # Назначаем остановку:
+        #events.Update(subj=self, cc=0.0, time=self.server.get_time() + self.life_time, comment="Bang!!!!").send()
+        self.delete(time=self.server.get_time() + self.life_time)
 
     def on_stop(self, event):
         self.delete()

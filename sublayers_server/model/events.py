@@ -92,8 +92,7 @@ class Objective(Event):
 class Init(Objective):
     def perform(self):
         super(Init, self).perform()
-        SearchContacts(subj=self.obj).send()
-        # todo: move to 'on_init' method
+        self.obj.on_init(self)
 
 
 class Delete(Objective):

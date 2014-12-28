@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from inventory import Inventory
 import messages
-from events import ContactSee, ContactOut, Init, Delete, Callback
+from events import ContactSee, ContactOut, Init, Delete, Callback, SearchContacts
 
 from abc import ABCMeta
 from counterset import CounterSet
@@ -125,6 +125,9 @@ class VisibleObject(PointObject):
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         Init(obj=self).send()
+
+    def on_init(self, event):
+        SearchContacts(subj=self).send()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
         # todo: get event in params
