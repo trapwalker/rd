@@ -50,7 +50,7 @@ class AgentAPI(API):
         return ctx
 
     def send_init_package(self):
-        # todo: move to Init-event performing method
+        # todo: move to Init-event performing method (!)
         agent = self.agent
         agent.server.post_message(messages.Init(agent=agent, time=None))
 

@@ -81,10 +81,12 @@ class Objective(Event):
     def perform(self):
         super(Objective, self).perform()
         self.obj.events.remove(self)
+        # todo: fixit
 
     def cancel(self):
         super(Objective, self).cancel()
         self.obj.events.remove(self)
+        # todo: fixit
 
 
 class Init(Objective):
@@ -118,10 +120,12 @@ class Subjective(Event):
     def perform(self):
         super(Subjective, self).perform()
         self.subj.events.remove(self)
+        # todo: fixit
 
     def cancel(self):
         super(Subjective, self).cancel()
-        self.obj.events.remove(self)
+        self.subj.events.remove(self)
+        # todo: fixit
 
 
 class SearchContacts(Subjective):
@@ -185,11 +189,11 @@ class Contact(Subjective):
 
     def cancel(self):
         super(Subjective, self).cancel()
-        self.remove_links()
+        #self.remove_links()
 
     def perform(self):
         super(Subjective, self).perform()
-        self.remove_links()
+        #self.remove_links()
 
     def remove_links(self):
         try:
