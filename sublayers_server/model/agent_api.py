@@ -11,6 +11,7 @@ from vectors import Point
 from api_tools import API, public_method
 import messages
 #from weapons import SectoralWeapon
+from rocket import Rocket
 from console import Shell
 import events
 
@@ -112,8 +113,11 @@ class AgentAPI(API):
 
     @public_method
     def set_speed(self, new_speed):
-        assert new_speed > 0, 'Cruise control speed must be > 0'
-        self.car.set_cc(value=new_speed)
+        #assert new_speed > 0, 'Cruise control speed must be > 0'
+        if new_speed == 0:
+            self.car.stop()
+        else:
+            self.car.set_cc(value=new_speed)
 
     @public_method
     def chat_message(self, text):
@@ -143,4 +147,4 @@ class AgentAPI(API):
     @public_method
     def send_rocket(self):
         #log.debug('AgentAPI Rocket !!!')
-        self.car.generate_rocket()
+        Rocket(starter=self.car, server=self.agent.server)

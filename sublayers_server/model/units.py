@@ -3,25 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-from functools import update_wrapper
-
 from state import State
 from base import Observer
 from balance import BALANCE
 from math import pi
 import events
-import messages
-
-
-def async_call(method):
-    def cover(self, time=None, **kw):
-        def async_closure(event):
-            log.debug('async_closure: kw=%r', kw)
-            return method(self, time=event.time, **kw)
-
-        events.Callback(server=self.server, time=time, func=async_closure).send()
-    update_wrapper(cover, method)
-    return cover
 
 
 class Unit(Observer):
@@ -117,17 +103,11 @@ class Unit(Observer):
         )
         return d
 
-    def delete(self):
+    def on_delete(self, **kw):
         if self.role:
             self.role.remove_car(self)
             # todo: rename
-        super(Unit, self).delete()
-        # todo: check staticobservers deletion
-
-
-    def generate_rocket(self):
-        #log.debug('Unit Start Generate Rocket')
-        Rocket(starter=self, server=self.server)
+        super(Unit, self).on_delete(**kw)
 
 
 class Station(Unit):
@@ -135,6 +115,7 @@ class Station(Unit):
 
     def __init__(self, max_hp=BALANCE.Station.max_hp, observing_range=BALANCE.Station.observing_range, **kw):
         super(Station, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
+
 
 class Mobile(Unit):
     u"""Class of mobile units"""
@@ -149,8 +130,8 @@ class Mobile(Unit):
         self._state_events = []
         self.init_params()
 
-
     def init_params(self):
+        # todo: init state in __init__, but params set by dict
         self.state = State(
             owner=self,
             t=self.server.get_time(),
@@ -168,6 +149,12 @@ class Mobile(Unit):
             max_velocity=self.max_velocity,
         )
         return d
+
+    def on_start(self, event):
+        pass
+
+    def on_stop(self, event):
+        pass
 
     def stop(self, time=None):
         events.Update(subj=self, time=time, cc=0).send()
@@ -225,102 +212,3 @@ class Mobile(Unit):
 
 class Bot(Mobile):
     pass
-
-
-class Rocket(Mobile):
-    def __init__(self, starter, life_time=BALANCE.Rocket.life_time, **kw):
-        # todo: docstring required
-        # взять позицию и направление выпустившего ракету
-        self.starter = starter
-        pos = starter.position
-        direct = starter.direction
-        self.state = None
-        super(Rocket, self).__init__(position=pos, direction=direct,
-                                     max_hp=BALANCE.Rocket.max_hp,
-                                     observing_range=BALANCE.Rocket.observing_range,
-                                     max_velocity=BALANCE.Rocket.v_max,
-                                     **kw)
-
-        server = self.server
-        rocket = self
-
-        def life_time_off(event=None):
-            # запустить евент о смерти себя же
-            log.debug('Start life_time_off !')
-
-            def delete_this(event=None):
-                log.debug('Start life_time_off  22222  !')
-                rocket.delete()
-
-            # todo после stop запустить евент на удаление себя с сервера, но почему-то t_max is None
-            rocket.stop()
-            if rocket.state.t_max is None:
-                log.debug('=====================================================================================')
-            else:
-                log.debug('-------------------------------------------------------------------------------------')
-            #rocket.cb_event = events.Callback(server=server, time=server.get_time() + rocket.state.t_max, func=delete_this, comment="Bang!!!!")
-            #rocket.cb_event.send()
-
-
-        self.cb_event = events.Callback(server=server, time=server.get_time() + life_time, func=life_time_off, comment="Bang!!!!")
-        self.cb_event.send()
-
-
-    def init_params(self):
-        self.state = State(
-            owner=self,
-            t=self.server.get_time(),
-            p=self.starter.position,
-            fi=self.starter.direction,
-            a_accelerate=BALANCE.Rocket.a_accelerate,
-            a=BALANCE.Rocket.a_accelerate,
-            v_max=BALANCE.Rocket.v_max,
-            ac_max=BALANCE.Rocket.ac_max,
-            a_braking=BALANCE.Rocket.a_braking,
-            v=self.starter.v,
-            cc=0.0
-        )
-        # если так не сделать, то не работают нормально Update евенты
-        self.set_cc(value=1.0)
-
-    def on_contact_in(self, time, obj, **kw):
-        #log.debug('Rocket Contacn IN')
-        #super(Rocket, self).on_contact_in(**kw)
-        if obj is self.starter:
-            return
-        # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
-        if not isinstance(obj, Bot):  # чтобы ракеты не врезались друг в друга
-            return
-
-        if self.cb_event:  # если это наступило раньше евента на удаление или евента на стоп
-            self.cb_event.cancel()  # todo: fixit
-
-        for agent in self.subscribed_agents:
-            self.server.post_message(messages.Bang(
-                position=self.position,
-                agent=agent,
-                time=time,
-                subj=self,
-            ))
-        # todo: запустить евент на немедленное удаление самого себя с сервера
-
-    '''def delete(self):
-        log.debug('delete Rocket !!!')
-        # todo правильно очистить все контакты
-        for agent in self.subscribed_agents:
-            self.server.post_message(messages.Out(
-                position=self.position,
-                agent=agent,
-                time=self.server.get_time(),
-                subj=agent.cars[0],
-                obj=self,
-                is_last=True,
-                is_boundary=False,
-            ))
-
-       ''' # todo вызвать super(Rocket, self).delete()
-
-
-
-
-

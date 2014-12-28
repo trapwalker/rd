@@ -6,13 +6,25 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from inventory import Inventory
 import messages
-from events import ContactSee, ContactOut, Init
+from events import ContactSee, ContactOut, Init, Delete, Callback
 
 from abc import ABCMeta
 from counterset import CounterSet
+from functools import update_wrapper
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
+
+
+def async_call(method):
+    def cover(self, time=None, **kw):
+        def async_closure(event):
+            log.debug('async_closure: kw=%r', kw)
+            return method(self, time=event.time, **kw)
+
+        Callback(server=self.server, time=time, func=async_closure).send()
+    update_wrapper(cover, method)
+    return cover
 
 
 class Object(object):
@@ -28,6 +40,7 @@ class Object(object):
         """@type: sublayers_server.model.event_machine.Server"""
         self.uid = id(self)
         self.server.objects[self.uid] = self
+        self.events = []  # all events about this object
         self.is_alive = True
 
     def __hash__(self):
@@ -36,10 +49,16 @@ class Object(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
-    def delete(self):
-        # todo: delete event
-        self.is_alive = False
+    def on_delete(self, event):
+        events_list = self.events
+        while events_list:
+            events_list.pop().cancel()
         del self.server.objects[self.uid]
+        self.is_alive = False
+
+    def delete(self):
+        Delete(obj=self).send()
+        # todo: Двухфазное удаление (!)
 
     id = property(id)
 
@@ -70,9 +89,9 @@ class PointObject(Object):
         """@type: sublayers_server.model.vectors.Point"""
         self.server.geo_objects.append(self)
 
-    def delete(self):
+    def on_delete(self, **kw):
         self.server.geo_objects.remove(self)
-        super(PointObject, self).delete()
+        super(PointObject, self).on_delete(**kw)
 
     def as_dict(self, **kw):
         d = super(PointObject, self).as_dict(**kw)
@@ -107,6 +126,7 @@ class VisibleObject(PointObject):
         Init(obj=self).send()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
+        # todo: get event in params
         self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             agent.server.post_message(messages.Update(
@@ -135,10 +155,15 @@ class VisibleObject(PointObject):
         """Test to contacts between *self* and *obj*, append them if is."""
         pass
 
-    def delete(self):
+    def on_delete(self, event, **kw):
         self.contacts_clear()
-        # todo: send 'out' message for all subscribers
+        # todo: send 'out' message for all subscribers (!)
         # todo: test to subscription leaks
+        super(VisibleObject, self).on_delete(event, **kw)
+
+    def delete(self):
+        for obs in self.subscribed_observers:
+            ContactOut(subj=obs, obj=self).send()
         super(VisibleObject, self).delete()
 
 
@@ -153,9 +178,9 @@ class Heap(VisibleObject):
         self.inventory = Inventory(things=items)
         """@type: Inventory"""
 
-    def delete(self):
+    def on_delete(self, **kw):
         self.inventory = None
-        super(Heap, self).delete()
+        super(Heap, self).on_delete(**kw)
 
 
 class Observer(VisibleObject):
@@ -238,3 +263,8 @@ class Observer(VisibleObject):
         d = super(Observer, self).as_dict(**kw)
         d.update(r=self.r)
         return d
+
+    def delete(self):
+        for obj in self.visible_objects:
+            ContactOut(subj=self, obj=obj).send()
+        super(Observer, self).delete()

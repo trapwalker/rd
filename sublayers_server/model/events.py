@@ -68,19 +68,36 @@ class Event(object):
         pass
 
 
-class Init(Event):
+class Objective(Event):
     def __init__(self, obj, **kw):
         """
         @param sublayers_server.model.units.Unit subj: Subject of contact
         """
         server = obj.server
-        super(Init, self).__init__(server=server, **kw)
+        super(Objective, self).__init__(server=server, **kw)
         self.obj = obj  # todo: weakref?
+        obj.events.append(self)
 
     def perform(self):
+        super(Objective, self).perform()
+        self.obj.events.remove(self)
+
+    def cancel(self):
+        super(Objective, self).cancel()
+        self.obj.events.remove(self)
+
+
+class Init(Objective):
+    def perform(self):
         super(Init, self).perform()
-        #self.obj.contacts_search()
         SearchContacts(subj=self.obj).send()
+        # todo: move to 'on_init' method
+
+
+class Delete(Objective):
+    def perform(self):
+        super(Delete, self).perform()
+        self.obj.on_delete(event=self)
 
 
 class Subjective(Event):
@@ -96,6 +113,15 @@ class Subjective(Event):
         server = subj.server
         super(Subjective, self).__init__(server=server, **kw)
         self.subj = subj  # todo: weakref?
+        subj.events.append(self)
+
+    def perform(self):
+        super(Subjective, self).perform()
+        self.subj.events.remove(self)
+
+    def cancel(self):
+        super(Subjective, self).cancel()
+        self.obj.events.remove(self)
 
 
 class SearchContacts(Subjective):
@@ -124,9 +150,17 @@ class Update(Subjective):
         t = self.time
         subj = self.subj
         """@type: sublayers_server.model.units.Mobile"""
-        subj.state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
+        state = subj.state
+        is_moving_before = state.is_moving
+        state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
+        is_moving_after = state.is_moving
         subj.on_update(time=t)
-        t_max = subj.state.t_max
+        if is_moving_before != is_moving_after:
+            if is_moving_after:
+                subj.on_start(event=self)
+            else:
+                subj.on_stop(event=self)
+        t_max = state.t_max
         if t_max is not None:
             Update(subj=subj, time=t_max).send()
             # todo: disactualize future event
