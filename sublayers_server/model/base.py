@@ -270,6 +270,6 @@ class Observer(VisibleObject):
         return d
 
     def on_before_delete(self, event):
-        for obj in self.visible_objects:
-            ContactOut(subj=self, obj=obj).send()
+        #for obj in self.visible_objects:
+        #    ContactOut(subj=self, obj=obj).send()
         super(Observer, self).on_before_delete(event=event)
