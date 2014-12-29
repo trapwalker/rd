@@ -58,6 +58,8 @@ var Controllers = (function () {
             _rotated: cookieStorage.optionsFCRotate
         });
 
+        this.fireControl.setVisible(cookieStorage.radarVisible);
+
 
         // Так как все контролеры проинициализированы, то сделать их активными
         this.isActive = true;
