@@ -110,6 +110,7 @@ class Subjective(Message):
 
 
 class Update(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] obj={self.obj}>'
     def __init__(self, obj, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
