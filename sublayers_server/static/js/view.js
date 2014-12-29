@@ -248,8 +248,8 @@ $(document).ready(function () {
     myMap.on('mouseout', onMouseOutMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
-    document.getElementById('map').onkeydown = onKeyDownMap;
-    document.getElementById('map').onkeyup = onKeyUpMap;
+    document.getElementById('bodydiv').onkeydown = onKeyDownMap;
+    document.getElementById('bodydiv').onkeyup = onKeyUpMap;
     myMap.keyboard.disable();
 
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);

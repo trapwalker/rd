@@ -30,7 +30,7 @@ def assert_time_in_state(f):
 
 class BaseState(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, c=None):
+    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, c=None, r_min=5.0, ac_max=10.0):
         """
         @param float t: time (sec)
         @param Point p: position (m)
@@ -46,6 +46,9 @@ class BaseState(object):
         self.v0 = v
         self.a = a
         self.c = c
+        self.r_min = r_min
+        assert ac_max > 0.0
+        self.ac_max = ac_max
 
         # Кэш вычислимых параметров
         if c is None:
@@ -85,15 +88,24 @@ class BaseState(object):
             self.v0 = self.v(t)
             self.t0 = t
 
+    def s(self, t):
+        dt = t - self.t0
+        return self.v0 * dt + 0.5 * self.a ** 2
+
     def v(self, t):
         return self.v0 + self.a * (t - self.t0)
+
+    def r(self, t):
+        if self.a == 0.0:
+            return self._r
+        return (self.v(t) ** 2) / self.ac_max
 
     def fi(self, t):
         if self.c is None:
             return self.fi0
-
-        dt = t - self.t0
-        return self.fi0 - (0.5 * self.a * dt ** 2 + self.v0 * dt) / self._r * self._turn_sign
+        if self.a == 0.0:
+            return self.fi0 - self.s(t) / self.r(t) * self._turn_sign
+        return
 
     def p(self, t):
         """
@@ -160,15 +172,12 @@ class State(BaseState):
         @param float a_accelerate: typical acceleration (m/s**2)
         @param float a_braking: typical braking (m/s**2)
         """
-        super(State, self).__init__(t, p, fi, v, a, c)
+        super(State, self).__init__(t, p, fi, v, a, c, r_min, ac_max)
         self.owner = owner
 
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.v_max = v_max
-        self.r_min = r_min
-        assert ac_max > 0.0
-        self.ac_max = ac_max
 
         # just declare
         self.t_max = None

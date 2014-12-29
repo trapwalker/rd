@@ -60,7 +60,7 @@ class Rocket(Mobile):
         # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
         if not isinstance(obj, Bot):  # чтобы ракеты не врезались друг в друга
             return
-
+        log.debug('Rocket Contacn IN !!!!!!!!!!!!!!!')
         for agent in self.subscribed_agents:
             self.server.post_message(messages.Bang(
                 position=self.position,
