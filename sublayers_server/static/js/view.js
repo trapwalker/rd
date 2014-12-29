@@ -274,12 +274,12 @@ $(document).ready(function () {
             width: (cookieStorage.flagDebug ? 600 : 400),
             stream_mes: message_stream
     });
-    //chat.setActiveChat(-1);
     chat.showChatWindow();
     chat.setupDragElement(chat.vMHA);
     chat.setMessagesHistory(cookieStorage.historyArray);
     chat.addChat(-1, "-= L O G =-");
     chat.setActiveChat(-1);
+    chat.setVisible(cookieStorage.chatVisible);
 
 
     carMarkerList = new CarMarkerList({_map: myMap});

@@ -19,7 +19,8 @@ var LocalCookieStorage = (function(){
             levelZoomForVisibleLabel: 5,
             optionsShowID: false,
             optionsShowDebugLine: false,
-            optionsFriendlyFireEnabled: true
+            optionsFriendlyFireEnabled: true,
+            radarVisible: false
         };
 
 
@@ -44,6 +45,7 @@ var LocalCookieStorage = (function(){
         this.optionsShowID = defOptions.optionsShowID;
         this.optionsFriendlyFireEnabled = defOptions.optionsFriendlyFireEnabled;
         this.optionsShowDebugLine = defOptions.optionsShowDebugLine;
+        this.radarVisible = defOptions.radarVisible;
 
         // Состояние тягания карты. dragging можно делать только когда машинка мертва
         this.optionsDraggingMap = false;
@@ -75,6 +77,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsShowID', (this.optionsShowID ? 1 : 0));
         this.setCookie('optionsFriendlyFireEnabled', (this.optionsFriendlyFireEnabled ? 1 : 0));
         this.setCookie('optionsShowDebugLine', (this.optionsShowDebugLine ? 1 : 0));
+        this.setCookie('radarVisible', (controllers.fireControl.getVisible() ? 1 : 0));
     };
 
 
@@ -172,6 +175,11 @@ var LocalCookieStorage = (function(){
         var optionsFriendlyFireEnabled = this.getCookie('optionsFriendlyFireEnabled');
         if (optionsFriendlyFireEnabled !== undefined)
             this.optionsFriendlyFireEnabled = (optionsFriendlyFireEnabled == 1);
+
+        // прочесть параметр Видимости чата и установить его
+        var radarVisible = this.getCookie('radarVisible');
+        if (radarVisible !== undefined)
+            this.radarVisible = (radarVisible == 1);
     };
 
 // Функции для работы с cookie
