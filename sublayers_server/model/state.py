@@ -46,6 +46,7 @@ class BaseState(object):
         self._sp_m = 0
         self._sp_fi0 = 0
         self._sp_dfi = 0
+        self._sp_r = None
 
     def fix(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
@@ -94,7 +95,8 @@ class BaseState(object):
             return self.p0 + Point.polar(self.s(t), self.fi0)
         if self.a <= 0:
             return self._c + Point.polar(self.r(t), self.fi(t) + self._turn_sign * pi * 0.5)
-        return self._c + Point.polar(self.r(t), self.fi(t) + self._turn_sign * self._sp_dfi)
+        self._sp_r.
+        return self._c + self._sp_r   self.fi(t) - self._sp_fi0)
 
     def export(self):
         u"""
@@ -109,6 +111,12 @@ class BaseState(object):
             a=self.a,
             c=self._c,
             turn=self._turn_sign,
+            ac_max=self.ac_max,
+            r_min=self.r_min,
+            _sp_m=self._sp_m,
+            _sp_fi0=self._sp_fi0,
+            _sp_dfi=self._sp_dfi,
+            _sp_r=self._sp_r,
         )
 
     @property
@@ -194,6 +202,8 @@ class State(BaseState):
                     self._sp_fi0 = self.sp_fi(self.t0)
                     self._sp_dfi = pi - acos(m / sqrt(1 + m ** 2))
                     self._c = self.p0 + Point.polar(r, self.fi0 - self._turn_sign * self._sp_dfi)
+                    self._sp_r = self.p0 - self._c
+                    self._sp_r.angle()
                 else:
                     self._c = self.p0 + Point.polar(r, self.fi0 - self._turn_sign * pi / 2.0)
 

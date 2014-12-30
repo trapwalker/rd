@@ -26,7 +26,13 @@ var ClientManager = (function () {
                 data.v0,                                 // Скорость - число
                 data.a,                                 // Ускорение - число
                 data.c ? (new Point(data.c.x, data.c.y)) : null,     // Центр поворота, которого может не быть
-                data.turn
+                data.turn,
+                data.ac_max,
+                data.r_min,
+                data._sp_m,
+                data._sp_fi0,
+                data._sp_dfi,
+                data._sp_r ? (new Point(data._sp_r.x, data._sp_r.y)) : null
             );
         return null;
     };

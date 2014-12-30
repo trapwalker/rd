@@ -95,64 +95,63 @@ function onZoomStart(event) {
 }
 
 var pressedKey;
-var pressedArrow;
+var pressedArrowUp;
+var pressedArrowDown;
+var pressedArrowLeft;
+var pressedArrowRight;
 
 function onKeyDownMap(event) {
     //console.log('onKeyDownMap');
         switch (event.keyCode) {
             case 37:
-                if (!pressedArrow) {
+                if (!pressedArrowLeft) {
                     clientManager.sendTurn(1);
-                    pressedArrow = true;
+                    pressedArrowLeft = true;
                 }
                 break;
             case 38:
-                if (!pressedArrow) {
+                if (!pressedArrowUp) {
                     clientManager.sendSetSpeed(user.userCar.maxSpeed);
-                    pressedArrow = true;
+                    pressedArrowUp = true;
                 }
                 break;
             case 39:
-                if (!pressedArrow) {
+                if (!pressedArrowRight) {
                     clientManager.sendTurn(-1);
-                    pressedArrow = true;
+                    pressedArrowRight = true;
                 }
                 break;
             case 40:
-                if (!pressedArrow) {
+                if (!pressedArrowDown) {
                     clientManager.sendStopCar();
-                    pressedArrow = true;
+                    pressedArrowDown = true;
                 }
                 break;
             case 32:
                 clientManager.sendRocket();
                 break;
         }
-
-
 }
 
 function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
-    if(pressedArrow) {
-        switch (event.keyCode) {
-            case 37:
-                clientManager.sendTurn(0);
-                pressedArrow = false;
-                break;
-            case 38:
-                clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
-                pressedArrow = false;
-                break;
-            case 39:
-                clientManager.sendTurn(0);
-                pressedArrow = false;
-                break;
-            case 40:
-                clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
-                pressedArrow = false;
-                break;
-        }
+    switch (event.keyCode) {
+        case 37:
+            clientManager.sendTurn(0);
+            pressedArrowLeft = false;
+            break;
+        case 38:
+            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+            pressedArrowUp = false;
+            break;
+        case 39:
+            clientManager.sendTurn(0);
+            pressedArrowRight = false;
+            break;
+        case 40:
+            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+            pressedArrowDown = false;
+            break;
     }
 }
 
