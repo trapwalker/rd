@@ -147,7 +147,7 @@ class VisibleObject(PointObject):
 
     def on_update(self, time, comment=None):  # todo: privacy level index
         # todo: get event in params
-        self.contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
+        self.on_contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             agent.server.post_message(messages.Update(
                 agent=agent,
@@ -156,8 +156,9 @@ class VisibleObject(PointObject):
                 comment='message for subscriber: {}'.format(comment)
             ))
 
-    def contacts_refresh(self):
-        self.contacts_clear()
+    def on_contacts_refresh(self):
+        # todo: rename tp on_contacts_refresh
+        self.contacts_clear()  # todo: check it. Is forecast actual?
         self.contacts_search()
 
     def contacts_clear(self):

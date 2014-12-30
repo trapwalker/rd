@@ -78,7 +78,7 @@ class Objective(Event):
 
     def __init__(self, obj, **kw):
         """
-        @param sublayers_server.model.units.Unit subj: Subject of contact
+        @param sublayers_server.model.base.Object obj: Object of event
         """
         server = obj.server
         super(Objective, self).__init__(server=server, **kw)
@@ -115,48 +115,21 @@ class DeleteEnd(Objective):
         self.obj.on_after_delete(event=self)
 
 
-class Subjective(Event):
-    __str_template__ = (
-        '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
-        '{self.subj.classname}#{self.subj.id}>'
-    )
-
-    def __init__(self, subj, **kw):
-        """
-        @param sublayers_server.model.units.Unit subj: Subject of event
-        """
-        server = subj.server
-        super(Subjective, self).__init__(server=server, **kw)
-        self.subj = subj  # todo: weakref?
-        subj.events.append(self)
-
-    def perform(self):
-        super(Subjective, self).perform()
-        self.subj.events.remove(self)
-        # todo: fixit
-
-    def cancel(self):
-        super(Subjective, self).cancel()
-        self.subj.events.remove(self)
-        # todo: fixit
-
-
-class SearchContacts(Subjective):
-    def __init__(self, interval=0.5, **kw):
-        super(SearchContacts, self).__init__(**kw)
-        self.interval = interval
+class SearchContacts(Objective):
 
     def perform(self):
         super(SearchContacts, self).perform()
-        subj = self.subj
+        obj = self.obj
         """@type: sublayers_server.model.base.Observer"""
-        if subj.is_alive:
-            subj.contacts_refresh()
-            SearchContacts(subj=subj, time=subj.server.get_time() + self.interval).send()  # todo: make regular interva
+        interval = obj.contacts_refresh_interval
+        if obj.is_alive and interval:
+            obj.on_contacts_refresh()  # todo: check it
+            SearchContacts(obj=obj, time=obj.server.get_time() + interval).send()  # todo: make regular interva
 
 
-class Update(Subjective):
+class Update(Objective):
     def __init__(self, cc=None, turn=None, target_point=None, **kw):
+        # todo: extract update params to separate dict (!) Нужна возможность обновлять нединамические объекты
         super(Update, self).__init__(**kw)
         self.cc = cc
         self.turn = turn
@@ -165,40 +138,39 @@ class Update(Subjective):
     def perform(self):
         super(Update, self).perform()
         t = self.time
-        subj = self.subj
+        obj = self.obj
         """@type: sublayers_server.model.units.Mobile"""
-        state = subj.state
+        state = obj.state  # todo: fixit for stateless objects
         is_moving_before = state.is_moving
         state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
         is_moving_after = state.is_moving
-        subj.on_update(time=t)
+        obj.on_update(time=t)
         if is_moving_before != is_moving_after:
             if is_moving_after:
-                subj.on_start(event=self)
+                obj.on_start(event=self)
             else:
-                subj.on_stop(event=self)
+                obj.on_stop(event=self)
         t_max = state.t_max
         if t_max is not None:
-            Update(subj=subj, time=t_max).send()
+            Update(obj=obj, time=t_max).send()
             # todo: disactualize future event
 
 
-class Contact(Subjective):
+class Contact(Objective):
     __str_template__ = (
         '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
         '{self.subj.classname}#{self.subj.id}-'
-        '{self.obj.classname}#{self.obj.id}>'
-    )
+        '{self.obj.classname}#{self.obj.id}>')
 
-    def __init__(self, obj, **kw):
+    def __init__(self, obj, subj, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Object of contact
+        @param sublayers_server.model.base.Observer subj: Subject of contact
         """
-        self.obj = obj
-        super(Contact, self).__init__(**kw)
-        self.subj.contacts.append(self)
+        self.subj = subj
+        super(Contact, self).__init__(obj=obj, **kw)
         obj.contacts.append(self)
-        #log.debug('EVENT %s add to %s and %s', self, self.subj, obj)
+        subj.contacts.append(self)
 
     def cancel(self):
         super(Subjective, self).cancel()

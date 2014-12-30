@@ -150,6 +150,10 @@ class Mobile(Unit):
         )
         return d
 
+    def on_init(self, event):
+        self.contacts_refresh_interval = 0.5  # todo: optimize. Regular in motion only
+        super(Mobile, self).on_init(event)
+
     def on_start(self, event):
         pass
 
@@ -157,7 +161,7 @@ class Mobile(Unit):
         pass
 
     def stop(self, time=None):
-        events.Update(subj=self, time=time, cc=0).send()
+        events.Update(obj=self, time=time, cc=0).send()
         # todo: clear target_point
 
     def goto(self, position, time=None):
@@ -165,15 +169,15 @@ class Mobile(Unit):
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        events.Update(subj=self, time=time, target_point=position).send()
+        events.Update(obj=self, time=time, target_point=position).send()
 
     def set_cc(self, value, time=None):
         # todo: docstring
-        events.Update(subj=self, time=time, cc=value).send()
+        events.Update(obj=self, time=time, cc=value).send()
 
     def set_turn(self, turn, time=None):
         # todo: docstring
-        events.Update(subj=self, time=time, turn=turn).send()
+        events.Update(obj=self, time=time, turn=turn).send()
 
     @property
     def v(self):
