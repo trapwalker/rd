@@ -2,6 +2,7 @@
 
 import logging
 log = logging.getLogger(__name__)
+log.info('\n\n\n')
 
 from functools import total_ordering
 
@@ -24,9 +25,11 @@ class Event(object):
 
     def send(self):
         self.server.post_event(self)  # todo: test to atomic construction
+        log.info('POST   %s', self)
 
     def cancel(self):
         self.actual = False
+        log.info('CANCEL %s', self)
 
     def __hash__(self):
         return hash((self.time,))
@@ -65,7 +68,7 @@ class Event(object):
         """
         #log.debug('EVENT %s perform', self)
         # todo: extract events log
-        pass
+        log.info('RUN    %s', self)
 
 
 class Objective(Event):
