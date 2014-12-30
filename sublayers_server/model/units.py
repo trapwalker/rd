@@ -25,9 +25,9 @@ class Unit(Observer):
         """
         super(Unit, self).__init__(**kw)
         self.role = role
-        log.debug('BEFORE owner set')
+        log.debug('BEFORE %s.owner=%s', self, owner)
         self.owner = owner
-        log.debug('AFTER owner set')
+        log.debug('AFTER %s.owner=%s', self, owner)
         self.max_hp = max_hp
         self._hp = max_hp
         self._direction = direction

@@ -87,12 +87,12 @@ class Objective(Event):
 
     def perform(self):
         super(Objective, self).perform()
-        self.obj.events.remove(self)
+        #self.obj.events.remove(self)
         # todo: fixit
 
     def cancel(self):
         super(Objective, self).cancel()
-        self.obj.events.remove(self)
+        #self.obj.events.remove(self)
         # todo: fixit
 
 
@@ -173,12 +173,12 @@ class Contact(Objective):
         subj.contacts.append(self)
 
     def cancel(self):
-        super(Subjective, self).cancel()
-        #self.remove_links()
+        super(Contact, self).cancel()
+        #self.remove_links()  # todo: fixit
 
     def perform(self):
-        super(Subjective, self).perform()
-        #self.remove_links()
+        super(Contact, self).perform()
+        #self.remove_links()  # todo: fixit
 
     def remove_links(self):
         try:
