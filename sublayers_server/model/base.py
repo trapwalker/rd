@@ -127,7 +127,19 @@ class VisibleObject(PointObject):
         super(VisibleObject, self).__init__(**kw)
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
+        self._contacts_refresh_interval = None
         Init(obj=self).send()
+
+    @property
+    def contacts_refresh_interval(self):
+        return self._contacts_refresh_interval
+
+    @contacts_refresh_interval.setter
+    def contacts_refresh_interval(self, value):
+        #old_interval = self._contacts_refresh_interval
+        self._contacts_refresh_interval = value
+        #if old_interval != value and not old_interval:
+        #    SearchContacts(obj=self).send()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
