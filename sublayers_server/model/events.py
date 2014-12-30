@@ -72,6 +72,10 @@ class Event(object):
 
 
 class Objective(Event):
+    __str_template__ = (
+        '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
+        '{self.obj.classname}#{self.obj.id}>')
+
     def __init__(self, obj, **kw):
         """
         @param sublayers_server.model.units.Unit subj: Subject of contact
