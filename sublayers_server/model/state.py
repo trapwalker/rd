@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from vectors import Point
 #from si import kmh
 
-from math import degrees, radians, pi, sqrt
+from math import degrees, radians, pi, sqrt, log, acos
 
 
 EPS = 1e-5
@@ -30,38 +30,32 @@ def assert_time_in_state(f):
 
 class BaseState(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, c=None, r_min=5.0, ac_max=10.0):
-        """
-        @param float t: time (sec)
-        @param Point p: position (m)
-        @param float fi: direction (rad)
-        @param float v: velocity (m/s)
-        @param float a: linear accelerate (m/s^2)
-        @param Point|None c: current center of turning if turning is (m)
-        """
+    def __init__(self, t, p, fi=0.0, v=0.0, r_min=5.0, ac_max=10.0):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
         assert v >= 0.0
         self.v0 = v
-        self.a = a
-        self.c = c
+        self.a = 0.0
         self.r_min = r_min
         assert ac_max > 0.0
         self.ac_max = ac_max
 
-        # Кэш вычислимых параметров
-        if c is None:
-            self._r = None
-            self._turn_sign = 0
-        else:
-            assert c != p
-            pc = p - c
-            self._r = abs(pc)
-            _turn_sign = Point.polar(1, fi).cross_mul(pc)
-            assert _turn_sign
-            self._turn_sign = 1 if _turn_sign > 0.0 else -1
+        self._c = None
+        self._turn_sign = 0
+        self._sp_m = 0
+        self._sp_fi0 = 0
+        self._sp_dfi = 0
 
+    def fix(self, t=None, dt=0.0):
+        t = (self.t0 if t is None else t) + dt
+        if t != self.t0:
+            self.p0 = self.p(t)
+            self.fi0 = self.fi(t)
+            self.v0 = self.v(t)
+            self.t0 = t
+
+    '''
     @property
     def turn_sign(self):
         if self.c is None:
@@ -70,53 +64,37 @@ class BaseState(object):
         _turn_sign = Point.polar(1, self.fi0).cross_mul(pc)
         assert _turn_sign
         return 1 if _turn_sign > 0.0 else -1
-
-    def fix(self, t=None, dt=0.0):
-        """
-        @param float t: time (sec), t == t0 by default
-        @param float dt: delta time (sec)
-
-        Функция приведения Состояния ко времени t+dt.
-        Базовые параметры обновляются на заданный момент.
-        """
-        t = (self.t0 if t is None else t) + dt
-
-        if t != self.t0:
-            self.p0 = self.p(t)
-            """@type: Point"""
-            self.fi0 = self.fi(t)
-            self.v0 = self.v(t)
-            self.t0 = t
+    '''
 
     def s(self, t):
         dt = t - self.t0
-        return self.v0 * dt + 0.5 * self.a ** 2
+        return self.v0 * dt + 0.5 * self.a * (dt ** 2)
 
     def v(self, t):
-        return self.v0 + self.a * (t - self.t0)
+        dt = t - self.t0
+        return self.v0 + self.a * dt
 
     def r(self, t):
-        if self.a == 0.0:
-            return self._r
-        return (self.v(t) ** 2) / self.ac_max
+        return (self.v(t) ** 2) / self.ac_max + self.r_min
+
+    def sp_fi(self, t):
+        assert self._sp_m > 0
+        return log(self.r(t) / self.r_min) / self._sp_m
 
     def fi(self, t):
-        if self.c is None:
+        if self._c is None:
             return self.fi0
-        if self.a == 0.0:
+        if self.a <= 0.0:
             return self.fi0 - self.s(t) / self.r(t) * self._turn_sign
-        return
+        _sp_fi1 = self.sp_fi(t)
+        return self.fi0 - (_sp_fi1 - self._sp_fi0) * self._turn_sign
 
     def p(self, t):
-        """
-        @param float t: time
-        @rtype: Point
-        """
-        if self.c is None:
-            dt = t - self.t0
-            return self.p0 + Point.polar(0.5 * self.a * dt ** 2 + self.v0 * dt, self.fi0)
-        else:
-            return self.c + Point.polar(self._r, self.fi(t) + self._turn_sign * pi * 0.5)
+        if self._c is None:
+            return self.p0 + Point.polar(self.s(t), self.fi0)
+        if self.a <= 0:
+            return self._c + Point.polar(self.r(t), self.fi(t) + self._turn_sign * pi * 0.5)
+        return self._c + Point.polar(self.r(t), self.fi(t) + self._turn_sign * self._sp_dfi)
 
     def export(self):
         u"""
@@ -129,8 +107,7 @@ class BaseState(object):
             fi0=self.fi0,
             v0=self.v0,
             a=self.a,
-            c=self.c,
-            #_r=self._r,
+            c=self._c,
             turn=self._turn_sign,
         )
 
@@ -141,51 +118,25 @@ class BaseState(object):
 
 class State(BaseState):
 
-    def __init__(
-        self,
-        owner,
-        t, p, fi=0.0, v=0.0, a=0.0, c=None,
-        cc=0.0, turn=0, target_point=None,
-
-        r_min=5.0,    # m
-        v_max=28.0,   # m/s ~ 100km/h
-        ac_max=10.0,  # m/s^2 ~ 1g
-        a_accelerate=5.0,
-        a_braking=-10.0,
-    ):
-        """
-        @param sublayers_server.model.units.Mobile owner: owner of the state
-        @param float t: time (sec)
-        @param Point p: position (m)
-        @param float fi: direction (rad)
-        @param float v: velocity (m/s)
-        @param float a: linear accelerate (m/s^2)
-        @param Point|None c: current center of turning if turning is (m)
-
-        @param float cc: Cruise speed ratio
-        @param int turn: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CW
-        @param Point|None target_point: target point of motion
-
-        @param float r_min: minimal turning radius (m)
-        @param float v_max: maximal possible velocity (m/s)
-        @param float ac_max: maximal centripetal acceleration (m/s**2)
-        @param float a_accelerate: typical acceleration (m/s**2)
-        @param float a_braking: typical braking (m/s**2)
-        """
-        super(State, self).__init__(t, p, fi, v, a, c, r_min, ac_max)
+    def __init__(self, owner, t, p, fi=0.0, v=0.0,
+        r_min=10,
+        ac_max=10.0,
+        v_max=30.0,
+        a_accelerate=4.0,
+        a_braking=-8.0,
+        ):
         self.owner = owner
+        super(State, self).__init__(t, p, fi, v, r_min, ac_max)
 
+        self.v_max = v_max
+        assert (a_accelerate < 0.5 * self.ac_max)
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
-        self.v_max = v_max
 
-        # just declare
-        self.t_max = None
         self.cc = None
-        self._v_cc = None
-        self.target_point = None
 
-        self.update(cc=cc, turn=turn, target_point=target_point)
+        self.t_max = None
+        self.target_point = None
 
     def _update_by_target(self, target_point):
         """
@@ -214,64 +165,43 @@ class State(BaseState):
 
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None, target_point=None):
-        """
-        @param float t: time (sec)
-        @param float dt: delta time (sec)
-        @param float cc: Cruise speed ratio
-        @param int turn: segment trajectory turning factor: 0 - forward; 1 - CCW; -1 - CW
-        @param Point|None target_point: target point of motion
-        """
         self.fix(t=t, dt=dt)
         self.t_max = None
 
         if cc is not None:
             self.cc = cc
-
-        if target_point is not None:
-            assert turn is None, 'Turn factor and target_point declared both in state update.'
-            self._update_by_target(target_point)
-
-        self._v_cc = self.v_max * self.cc
-        target_v = self._v_cc
+        if self.cc is not None:
+            dv = self.v_max * self.cc - self.v0
+            if dv > EPS:
+                self.a = self.a_accelerate
+            elif dv < -EPS:
+                self.a = self.a_braking
+            else:
+                self.a = 0.0
+            if self.a != 0.0:
+                self.t_max = self.t0 + dv / self.a
 
         if turn is not None:
             self._turn_sign = turn
             if turn == 0:
-                self._r = None
-                self.c = None
+                self._c = None
             else:
-                self._r = self.v0 ** 2 / self.ac_max
-                if self._r < self.r_min:
-                    log.debug('===== r=%s < rmin=%s; target_v=%s', self._r, self.r_min, target_v)
-                    self._r = self.r_min
-                    target_v = min(target_v, sqrt(self._r * self.ac_max))
-                    log.debug('===== new target_v=%s', target_v)
+                r = self.r(self.t0)
+                if self.a > 0.0:
+                    aa = self.a / self.ac_max
+                    m = 2 * aa / sqrt(1 - aa ** 2)
+                    self._sp_m = m
+                    self._sp_fi0 = self.sp_fi(self.t0)
+                    self._sp_dfi = pi - acos(m / sqrt(1 + m ** 2))
+                    self._c = self.p0 + Point.polar(r, self.fi0 - self._turn_sign * self._sp_dfi)
                 else:
-                    target_v = min(target_v, self.v0)
-                self.c = (self.p0 + Point.polar(self._r, self.fi0 - self._turn_sign * pi / 2.0))
+                    self._c = self.p0 + Point.polar(r, self.fi0 - self._turn_sign * pi / 2.0)
 
-        dv = target_v - self.v0
+        #if target_point is not None:
+        #    assert turn is None, 'Turn factor and target_point declared both in state update.'
+        #    self._update_by_target(target_point)
 
-        if dv > EPS:
-            self.a = self.a_accelerate
-        elif dv < -EPS:
-            self.a = self.a_braking
-        else:
-            self.a = 0.0
 
-        old_t_max = self.t_max
-
-        if self.a:
-            self.t_max = self.t0 + dv / self.a
-
-        if old_t_max is not None and self.t_max is not None:
-            if -EPS < old_t_max - self.t_max < EPS:
-                self.t_max = None   # иначе бесконечный цикл
-
-        #log.debug('===== dv=%s, a=%s, t_max-t=%s', dv, self.a, (self.t_max - t) if self.t_max else 'None')
-
-        #log.debug('State: after update: turn_sign=%s; c=%s, r=%s, t_max-t=%s',
-        #          self._turn_sign, self.c, self._r, (self.t_max - t) if self.t_max else 'None')
 
     def __str__(self):
         return (
@@ -291,6 +221,13 @@ class State(BaseState):
 
 
 if __name__ == '__main__':
+
+    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=0.0, a_accelerate=1.0)
+    st.update(turn=1, cc=1.0)
+    for t in xrange(31):
+        print 't=', t, ' s(t)=', st.s(t), ' r(t)=', st.r(t), ' fi(t)=', st.fi(t), ' p(t)=', st.p(t)
+
+    '''
     import thread
     g = 1
 
@@ -317,3 +254,4 @@ if __name__ == '__main__':
     s = State(0.0, Point(0.0))
     print 'START:', s
     thread.start_new(lookup, (s,))
+    '''
