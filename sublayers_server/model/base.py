@@ -49,6 +49,9 @@ class Object(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
+    def on_init(self, event):
+        pass
+
     def on_before_delete(self, event):
         pass
 
@@ -127,7 +130,8 @@ class VisibleObject(PointObject):
         Init(obj=self).send()
 
     def on_init(self, event):
-        SearchContacts(subj=self).send()
+        super(VisibleObject, self).on_init(event)
+        SearchContacts(obj=self).send()
 
     def on_update(self, time, comment=None):  # todo: privacy level index
         # todo: get event in params
