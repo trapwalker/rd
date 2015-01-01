@@ -25,9 +25,7 @@ class Unit(Observer):
         """
         super(Unit, self).__init__(**kw)
         self.role = role
-        log.debug('BEFORE %s.owner=%s', self, owner)
         self.owner = owner
-        log.debug('AFTER %s.owner=%s', self, owner)
         self.max_hp = max_hp
         self._hp = max_hp
         self._direction = direction
@@ -127,7 +125,6 @@ class Mobile(Unit):
                  **kw):
         super(Mobile, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
-        self._state_events = []
         self.init_params()
 
     def init_params(self):
