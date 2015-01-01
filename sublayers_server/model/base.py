@@ -42,6 +42,7 @@ class Object(object):
         self.server.objects[self.uid] = self
         self.events = []  # all events about this object
         self.is_alive = True
+        self.limbo = False
 
     def __hash__(self):
         return self.uid
@@ -145,8 +146,11 @@ class VisibleObject(PointObject):
 
     def on_contacts_check(self):
         # todo: check all existed contacts
+        if self.limbo:
+            log.warning('Trying to check contacts in limbo: subj=%s', self)
+            return
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
-            if obj is not self:  # todo: optimize filtration observers
+            if obj is not self and not obj.limbo:  # todo: optimize filtration observers
                 self.contact_test(obj)
                 obj.contact_test(self)  # todo: optimize forecasts
 

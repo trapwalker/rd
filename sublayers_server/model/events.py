@@ -114,6 +114,7 @@ class Delete(Objective):
     def on_perform(self):
         super(Delete, self).on_perform()
         self.obj.on_before_delete(event=self)
+        self.obj.limbo = True
         DeleteEnd(obj=self.obj).send()
 
 
