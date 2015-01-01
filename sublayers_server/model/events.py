@@ -146,6 +146,7 @@ class Update(Objective):
 
     def on_perform(self):
         super(Update, self).on_perform()
+        # todo: move this logic into the Mobile.on_update (?)
         t = self.time
         obj = self.obj
         """@type: sublayers_server.model.units.Mobile"""
