@@ -255,6 +255,7 @@ class State(BaseState):
         if self.a:
             self.t_max = self.t0 + dv / self.a
 
+        # todo: fix t_max==t0 problem
         if old_t_max is not None and self.t_max is not None:
             if -EPS < old_t_max - self.t_max < EPS:
                 self.t_max = None   # иначе бесконечный цикл

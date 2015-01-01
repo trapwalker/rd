@@ -162,6 +162,7 @@ class Update(Objective):
                 obj.on_stop(event=self)
         t_max = state.t_max
         if t_max is not None:
+            assert t_max != self.time  # todo: fixit
             Update(obj=obj, time=t_max).send()
             # todo: disactualize future event
 
