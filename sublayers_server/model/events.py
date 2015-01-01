@@ -28,8 +28,15 @@ class Event(object):
         log.info('POST   %s', self)
 
     def cancel(self):
-        self.actual = False
-        log.info('CANCEL %s', self)
+        if self.actual:
+            self.on_cancel()
+            self.actual = False
+            log.info('CANCEL %s', self)
+        else:
+            log.warning('Double cancelling event: %s', self)
+
+    def on_cancel(self):
+        pass
 
     def __hash__(self):
         return hash((self.time,))
@@ -66,9 +73,12 @@ class Event(object):
         """
         Performing event logic.
         """
-        #log.debug('EVENT %s perform', self)
-        # todo: extract events log
+        assert self.actual
         log.info('RUN    %s', self)
+        self.on_perform()
+
+    def on_perform(self):
+        pass
 
 
 class Objective(Event):
@@ -85,45 +95,43 @@ class Objective(Event):
         self.obj = obj  # todo: weakref?
         obj.events.append(self)
 
-    def perform(self):
-        super(Objective, self).perform()
-        #self.obj.events.remove(self)
-        # todo: fixit
+    def on_perform(self):
+        super(Objective, self).on_perform()
+        self.obj.events.remove(self)
 
-    def cancel(self):
-        super(Objective, self).cancel()
-        #self.obj.events.remove(self)
-        # todo: fixit
+    def on_cancel(self):
+        super(Objective, self).on_cancel()
+        self.obj.events.remove(self)
 
 
 class Init(Objective):
-    def perform(self):
-        super(Init, self).perform()
+    def on_perform(self):
+        super(Init, self).on_perform()
         self.obj.on_init(self)
 
 
 class Delete(Objective):
-    def perform(self):
-        super(Delete, self).perform()
+    def on_perform(self):
+        super(Delete, self).on_perform()
         self.obj.on_before_delete(event=self)
         DeleteEnd(obj=self.obj).send()
 
 
 class DeleteEnd(Objective):
-    def perform(self):
-        super(DeleteEnd, self).perform()
+    def on_perform(self):
+        super(DeleteEnd, self).on_perform()
         self.obj.on_after_delete(event=self)
 
 
 class SearchContacts(Objective):
 
-    def perform(self):
-        super(SearchContacts, self).perform()
+    def on_perform(self):
+        super(SearchContacts, self).on_perform()
         obj = self.obj
         """@type: sublayers_server.model.base.Observer"""
-        interval = obj.contacts_refresh_interval
+        interval = obj.contacts_check_interval
         if obj.is_alive and interval:
-            obj.on_contacts_refresh()  # todo: check it
+            obj.on_contacts_check()  # todo: check it
             SearchContacts(obj=obj, time=obj.server.get_time() + interval).send()  # todo: make regular interva
 
 
@@ -135,8 +143,8 @@ class Update(Objective):
         self.turn = turn
         self.target_point = target_point
 
-    def perform(self):
-        super(Update, self).perform()
+    def on_perform(self):
+        super(Update, self).on_perform()
         t = self.time
         obj = self.obj
         """@type: sublayers_server.model.units.Mobile"""
@@ -169,43 +177,19 @@ class Contact(Objective):
         """
         self.subj = subj
         super(Contact, self).__init__(obj=obj, **kw)
-        obj.contacts.append(self)
-        subj.contacts.append(self)
 
-    def cancel(self):
-        super(Contact, self).cancel()
-        #self.remove_links()  # todo: fixit
-
-    def perform(self):
-        super(Contact, self).perform()
-        #self.remove_links()  # todo: fixit
-
-    def remove_links(self):
-        try:
-            #log.debug('EVENT %s before remove from %s [%s]', self, self.subj, self.subj.contacts)
-            self.subj.contacts.remove(self)
-        except ValueError:
-            log.exception('Subjective contacts clearing: subj=%(subj)s, comment=%(comment)s',
-                          dict(subj=self.subj, comment=self.comment))
-
-        try:
-            self.obj.contacts.remove(self)
-        except ValueError:
-            log.exception('Contact contacts clearing: obj=%(obj)s, comment=%(comment)s',
-                          dict(obj=self.obj, comment=self.comment))
-                          
 
 class ContactSee(Contact):
 
-    def perform(self):
-        super(ContactSee, self).perform()
+    def on_perform(self):
+        super(ContactSee, self).on_perform()
         self.subj.on_contact_in(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
 
 
 class ContactOut(Contact):
 
-    def perform(self):
-        super(ContactOut, self).perform()
+    def on_perform(self):
+        super(ContactOut, self).on_perform()
         self.subj.on_contact_out(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
 
 
@@ -217,6 +201,6 @@ class Callback(Event):
         super(Callback, self).__init__(**kw)
         self.func = func
 
-    def perform(self):
-        super(Callback, self).perform()
+    def on_perform(self):
+        super(Callback, self).on_perform()
         return self.func(self)

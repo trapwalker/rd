@@ -151,7 +151,7 @@ class Mobile(Unit):
         return d
 
     def on_init(self, event):
-        self.contacts_refresh_interval = 0.5  # todo: optimize. Regular in motion only
+        self.contacts_check_interval = 0.5  # todo: optimize. Regular in motion only
         super(Mobile, self).on_init(event)
 
     def on_start(self, event):

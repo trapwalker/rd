@@ -122,24 +122,11 @@ class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
     def __init__(self, **kw):
-        self.contacts = []
-        """@type: list[sublayers_server.model.events.Contact]"""
         super(VisibleObject, self).__init__(**kw)
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
-        self._contacts_refresh_interval = None
+        self.contacts_check_interval = None  # todo: extract to special task
         Init(obj=self).send()
-
-    @property
-    def contacts_refresh_interval(self):
-        return self._contacts_refresh_interval
-
-    @contacts_refresh_interval.setter
-    def contacts_refresh_interval(self, value):
-        #old_interval = self._contacts_refresh_interval
-        self._contacts_refresh_interval = value
-        #if old_interval != value and not old_interval:
-        #    SearchContacts(obj=self).send()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
@@ -147,7 +134,7 @@ class VisibleObject(PointObject):
 
     def on_update(self, time, comment=None):  # todo: privacy level index
         # todo: get event in params
-        self.on_contacts_refresh()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
+        self.on_contacts_check()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             agent.server.post_message(messages.Update(
                 agent=agent,
@@ -156,17 +143,8 @@ class VisibleObject(PointObject):
                 comment='message for subscriber: {}'.format(comment)
             ))
 
-    def on_contacts_refresh(self):
-        # todo: rename tp on_contacts_refresh
-        self.contacts_clear()  # todo: check it. Is forecast actual?
-        self.contacts_search()
-
-    def contacts_clear(self):
-        for event in self.contacts[:]:
-            event.cancel()
-
-    def contacts_search(self):
-        # todo: rename methods (search->forecast)
+    def on_contacts_check(self):
+        # todo: check all existed contacts
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if obj is not self:  # todo: optimize filtration observers
                 self.contact_test(obj)
@@ -177,15 +155,13 @@ class VisibleObject(PointObject):
         pass
 
     def on_before_delete(self, event):
-        # todo: send 'out' message for all subscribers (!)
         # todo: test to subscription leaks
         for obs in self.subscribed_observers:
             ContactOut(subj=obs, obj=self).send()
         super(VisibleObject, self).on_before_delete(event=event)
 
     def on_after_delete(self, event):
-        # todo: check contact list is empty
-        self.contacts_clear()
+        # todo: checkit
         super(VisibleObject, self).on_after_delete(event=event)
 
 

@@ -57,7 +57,7 @@ class Rocket(Mobile):
         #super(Rocket, self).on_contact_in(**kw)
         if obj is self.starter:
             return
-        # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у всего списка машинок, которые ракета задела
+        # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у задетых машинок
         if not isinstance(obj, Bot):  # чтобы ракеты не врезались друг в друга
             return
 
