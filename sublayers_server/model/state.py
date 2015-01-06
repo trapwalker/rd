@@ -249,21 +249,17 @@ class State(BaseState):
             self.a = self.a_braking
         else:
             self.a = 0.0
+            if dv:
+                log.warning('Reduce v0+=dv: v0=%s+%s', self.v0, dv)
+            self.v0 += dv
+            dv = 0.0
 
-        old_t_max = self.t_max
+        assert self.t_max is None
 
-        if self.a:
+        if self.a != 0.0:
             self.t_max = self.t0 + dv / self.a
 
         # todo: fix t_max==t0 problem
-        if old_t_max is not None and self.t_max is not None:
-            if -EPS < old_t_max - self.t_max < EPS:
-                self.t_max = None   # иначе бесконечный цикл
-
-        #log.debug('===== dv=%s, a=%s, t_max-t=%s', dv, self.a, (self.t_max - t) if self.t_max else 'None')
-
-        #log.debug('State: after update: turn_sign=%s; c=%s, r=%s, t_max-t=%s',
-        #          self._turn_sign, self.c, self._r, (self.t_max - t) if self.t_max else 'None')
 
     def __str__(self):
         return (

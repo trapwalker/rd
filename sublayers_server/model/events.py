@@ -90,6 +90,7 @@ class Objective(Event):
         """
         @param sublayers_server.model.base.Object obj: Object of event
         """
+        assert obj.is_alive and not obj.limbo
         server = obj.server
         super(Objective, self).__init__(server=server, **kw)
         self.obj = obj  # todo: weakref?
@@ -115,7 +116,9 @@ class Delete(Objective):
         super(Delete, self).on_perform()
         self.obj.on_before_delete(event=self)
         self.obj.limbo = True
-        DeleteEnd(obj=self.obj).send()
+        events = self.obj.events
+        t_max = (max(events).time + 1e-3) if events else None  # todo: extract to constant 'time_quant'
+        DeleteEnd(obj=self.obj, time=t_max).send()
 
 
 class DeleteEnd(Objective):
@@ -178,6 +181,7 @@ class Contact(Objective):
         @param sublayers_server.model.base.VisibleObject obj: Object of contact
         @param sublayers_server.model.base.Observer subj: Subject of contact
         """
+        assert subj.is_alive and not subj.limbo
         self.subj = subj
         super(Contact, self).__init__(obj=obj, **kw)
 

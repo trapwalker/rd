@@ -59,7 +59,7 @@ class Object(object):
     def on_after_delete(self, event):
         if self.events:
             log.error('Events after deletion: %s', self.events)
-        assert len(self.events) == 0  # todo: set 2 hase of deletion as last event
+        assert len(self.events) == 0  # todo: set 2 phase of deletion as last event
         del self.server.objects[self.uid]
         self.is_alive = False
         log.debug('Finally deletion: %s', self)
