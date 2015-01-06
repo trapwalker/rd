@@ -137,6 +137,7 @@ class Mobile(Unit):
             t=self.server.get_time(),
             p=self._position,
             fi=self._direction,
+            v_max=self._max_velocity
             # todo: acc and velocity constrains and params
         )
 

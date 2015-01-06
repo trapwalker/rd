@@ -31,8 +31,7 @@ var ClientManager = (function () {
                 data.r_min,
                 data._sp_m,
                 data._sp_fi0,
-                data._sp_dfi,
-                data._sp_r ? (new Point(data._sp_r.x, data._sp_r.y)) : null
+                data._rv_fi
             );
         return null;
     };
@@ -122,7 +121,7 @@ var ClientManager = (function () {
         var servtime = event.time;
         // todo: Переделать на нормальную максимальную скорость!
         //var max_speed = event.cars[0].max_velocity;
-        var max_speed = 28;
+        var max_speed = event.cars[0].max_velocity;
         var aMaxHP = event.cars[0].max_hp;
         var radius_visible = event.cars[0].r;
         var aHP = event.cars[0].hp;
@@ -347,6 +346,7 @@ var ClientManager = (function () {
 
     // setSpeed
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
+        console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
         var mes = {
             call: "set_speed",
             rpc_call_id: rpcCallList.getID(),
@@ -357,7 +357,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     // stop
     ClientManager.prototype.sendStopCar = function () {
@@ -370,9 +369,9 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
     // turn
     ClientManager.prototype.sendTurn = function (turn) {
+        console.log('sendTurn', turn);
         var mes = {
             call: "set_turn",
             rpc_call_id: rpcCallList.getID(),

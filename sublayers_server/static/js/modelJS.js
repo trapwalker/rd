@@ -73,12 +73,12 @@ var DynamicObject = (function (_super) {
 
 
     DynamicObject.prototype.getCurrentDirection = function (aClockTime) {
-        return this.state.getCurrentDirection(aClockTime);
+        return this.state.fi(aClockTime);
     };
 
 
     DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
-        return this.state.getCurrentCoord(aClockTime);
+        return this.state.p(aClockTime);
     };
 
 
@@ -88,7 +88,7 @@ var DynamicObject = (function (_super) {
 
 
     DynamicObject.prototype.getCurrentSpeed = function (aClockTime) {
-        return this.state.getCurrentSpeed(aClockTime);
+        return this.state.v(aClockTime);
     };
 
 
@@ -158,7 +158,7 @@ var FireSector = (function () {
 
 
 var State = (function () {
-    function State(t, position, direct, velocity, acceleration, center_point, turn, ac_max, r_min, _sp_m, _sp_fi0, _sp_dfi, _sp_r){
+    function State(t, position, direct, velocity, acceleration, center_point, turn, ac_max, r_min, _sp_m, _sp_fi0, _rv_fi) {
         this.t0 = t;                // Время начала движения (состояния)
         this.p0 = position;         // Начальная позиция - вектор!
         this.fi0 = direct;          // Начальный угол
@@ -170,8 +170,7 @@ var State = (function () {
         this.r_min = r_min;         // Минимальный радиус разворота
         this._sp_m = _sp_m;
         this._sp_fi0 = _sp_fi0;
-        this._sp_dfi = _sp_dfi;
-        this._sp_r = _sp_r;
+        this._rv_fi = _rv_fi;
     };
 
     State.prototype.s = function(t) {
@@ -185,6 +184,8 @@ var State = (function () {
     };
 
     State.prototype.r = function(t) {
+        if (this.a <= 0)
+            return Math.pow(this.v0, 2) / this.ac_max + this.r_min;
         return Math.pow(this.v(t), 2) / this.ac_max + this.r_min
     };
 
@@ -196,33 +197,16 @@ var State = (function () {
         if (!this._c) return this.fi0;
         if (this.a <= 0.0)
             return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
-        var _sp_fi1 = this.sp_fi(t);
-        return this.fi0 - (_sp_fi1 - this._sp_fi0) * this._turn_sign;
+        return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
     };
 
     State.prototype.p = function(t) {
-
         if (!this._c)
             return summVector(this.p0, polarPoint(this.s(t), this.fi0));
-        if (this.a <= 0)
-            return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * Math.PI * 0.5));
-        console.log('3333');
-        console.log(this._c, this.a, this._sp_r, this.fi(t) - this._sp_fi0);
-        return summVector(this._c, polarPoint(this._sp_r, this.fi(t) - this._sp_fi0));
+        console.log(this.fi(t) + this._turn_sign * this._rv_fi);
+        return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * this._rv_fi));
     };
 
-    //todo: удалить следующие 3 функции
-    State.prototype.getCurrentSpeed = function(t){
-        return this.v(t);
-    };
-
-    State.prototype.getCurrentDirection = function(t){
-        return this.fi(t);
-    };
-
-    State.prototype.getCurrentCoord = function(t) {
-        return this.p(t);
-    };
 
     return State;
 })();

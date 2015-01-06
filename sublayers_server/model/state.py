@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import logging
-log = logging.getLogger(__name__)
+#import logging
+#log = logging.getLogger(__name__)
 
 from vectors import Point
-#from si import kmh
-
 from math import degrees, radians, pi, sqrt, log, acos
 
 
@@ -30,7 +28,7 @@ def assert_time_in_state(f):
 
 class BaseState(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, r_min=5.0, ac_max=10.0):
+    def __init__(self, t, p, fi=0.0, v=0.0, r_min=10.0, ac_max=10.0):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
@@ -45,8 +43,7 @@ class BaseState(object):
         self._turn_sign = 0
         self._sp_m = 0
         self._sp_fi0 = 0
-        self._sp_dfi = 0
-        self._sp_r = None
+        self._rv_fi = 0
 
     def fix(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
@@ -55,17 +52,6 @@ class BaseState(object):
             self.fi0 = self.fi(t)
             self.v0 = self.v(t)
             self.t0 = t
-
-    '''
-    @property
-    def turn_sign(self):
-        if self.c is None:
-            return 0
-        pc = self.p0 - self.c
-        _turn_sign = Point.polar(1, self.fi0).cross_mul(pc)
-        assert _turn_sign
-        return 1 if _turn_sign > 0.0 else -1
-    '''
 
     def s(self, t):
         dt = t - self.t0
@@ -76,6 +62,8 @@ class BaseState(object):
         return self.v0 + self.a * dt
 
     def r(self, t):
+        if self.a < 0:
+            return (self.v0 ** 2) / self.ac_max + self.r_min
         return (self.v(t) ** 2) / self.ac_max + self.r_min
 
     def sp_fi(self, t):
@@ -87,16 +75,12 @@ class BaseState(object):
             return self.fi0
         if self.a <= 0.0:
             return self.fi0 - self.s(t) / self.r(t) * self._turn_sign
-        _sp_fi1 = self.sp_fi(t)
-        return self.fi0 - (_sp_fi1 - self._sp_fi0) * self._turn_sign
+        return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign
 
     def p(self, t):
         if self._c is None:
             return self.p0 + Point.polar(self.s(t), self.fi0)
-        if self.a <= 0:
-            return self._c + Point.polar(self.r(t), self.fi(t) + self._turn_sign * pi * 0.5)
-        self._sp_r.
-        return self._c + self._sp_r   self.fi(t) - self._sp_fi0)
+        return self._c + Point.polar(self.r(t), self.fi(t) + self._turn_sign * self._rv_fi)
 
     def export(self):
         u"""
@@ -115,8 +99,8 @@ class BaseState(object):
             r_min=self.r_min,
             _sp_m=self._sp_m,
             _sp_fi0=self._sp_fi0,
-            _sp_dfi=self._sp_dfi,
-            _sp_r=self._sp_r,
+            _rv_fi=self._rv_fi,
+
         )
 
     @property
@@ -133,16 +117,16 @@ class State(BaseState):
         a_accelerate=4.0,
         a_braking=-8.0,
         ):
+
         self.owner = owner
         super(State, self).__init__(t, p, fi, v, r_min, ac_max)
 
         self.v_max = v_max
+        assert (a_accelerate > 0) and (a_braking < 0)
         assert (a_accelerate < 0.5 * self.ac_max)
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
-
         self.cc = None
-
         self.t_max = None
         self.target_point = None
 
@@ -177,6 +161,7 @@ class State(BaseState):
         self.t_max = None
 
         if cc is not None:
+            assert  0 <= cc <= 1
             self.cc = cc
         if self.cc is not None:
             dv = self.v_max * self.cc - self.v0
@@ -191,21 +176,20 @@ class State(BaseState):
 
         if turn is not None:
             self._turn_sign = turn
-            if turn == 0:
+        if self._turn_sign is not None:
+            if self._turn_sign == 0:
                 self._c = None
             else:
-                r = self.r(self.t0)
                 if self.a > 0.0:
-                    aa = self.a / self.ac_max
-                    m = 2 * aa / sqrt(1 - aa ** 2)
+                    aa = 2 * self.a / self.ac_max
+                    m = aa / sqrt(1 - aa ** 2)
                     self._sp_m = m
                     self._sp_fi0 = self.sp_fi(self.t0)
-                    self._sp_dfi = pi - acos(m / sqrt(1 + m ** 2))
-                    self._c = self.p0 + Point.polar(r, self.fi0 - self._turn_sign * self._sp_dfi)
-                    self._sp_r = self.p0 - self._c
-                    self._sp_r.angle()
+                    self._rv_fi = acos(m / sqrt(1 + m ** 2))
+                    self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
                 else:
-                    self._c = self.p0 + Point.polar(r, self.fi0 - self._turn_sign * pi / 2.0)
+                    self._rv_fi = 0.5 * pi
+                    self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * self._rv_fi)
 
         #if target_point is not None:
         #    assert turn is None, 'Turn factor and target_point declared both in state update.'
@@ -231,11 +215,17 @@ class State(BaseState):
 
 
 if __name__ == '__main__':
+    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=30.0, a_accelerate=1.0, a_braking=-1.0)
+    #st.update(cc=1.0)
+    #print st.p(t=1.0)
 
-    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=0.0, a_accelerate=1.0)
-    st.update(turn=1, cc=1.0)
+    st.update(cc=0.0, turn=1.0)
+
+    print ' c=', st._c
+
+
     for t in xrange(31):
-        print 't=', t, ' s(t)=', st.s(t), ' r(t)=', st.r(t), ' fi(t)=', st.fi(t), ' p(t)=', st.p(t)
+        print 't=', t, ' r(t)=', st.r(t), ' p(t)=', st.p(t), ' fi(t)=', 180/pi*st.fi(t)
 
     '''
     import thread

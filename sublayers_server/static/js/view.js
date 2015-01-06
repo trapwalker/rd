@@ -101,36 +101,36 @@ var pressedArrowLeft;
 var pressedArrowRight;
 
 function onKeyDownMap(event) {
-    //console.log('onKeyDownMap');
-        switch (event.keyCode) {
-            case 37:
-                if (!pressedArrowLeft) {
-                    clientManager.sendTurn(1);
-                    pressedArrowLeft = true;
-                }
-                break;
-            case 38:
-                if (!pressedArrowUp) {
-                    clientManager.sendSetSpeed(user.userCar.maxSpeed);
-                    pressedArrowUp = true;
-                }
-                break;
-            case 39:
-                if (!pressedArrowRight) {
-                    clientManager.sendTurn(-1);
-                    pressedArrowRight = true;
-                }
-                break;
-            case 40:
-                if (!pressedArrowDown) {
-                    clientManager.sendStopCar();
-                    pressedArrowDown = true;
-                }
-                break;
-            case 32:
-                clientManager.sendRocket();
-                break;
-        }
+    //console.log('onKeyDownMap', event.keyCode);
+    switch (event.keyCode) {
+        case 37:
+            if (!pressedArrowLeft) {
+                clientManager.sendTurn(1);
+                pressedArrowLeft = true;
+            }
+            break;
+        case 38:
+            if (!pressedArrowUp) {
+                clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                pressedArrowUp = true;
+            }
+            break;
+        case 39:
+            if (!pressedArrowRight) {
+                clientManager.sendTurn(-1);
+                pressedArrowRight = true;
+            }
+            break;
+        case 40:
+            if (!pressedArrowDown) {
+                clientManager.sendStopCar();
+                pressedArrowDown = true;
+            }
+            break;
+        case 32:
+            clientManager.sendRocket();
+            break;
+    }
 }
 
 function onKeyUpMap(event) {
@@ -141,7 +141,7 @@ function onKeyUpMap(event) {
             pressedArrowLeft = false;
             break;
         case 38:
-            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             pressedArrowUp = false;
             break;
         case 39:
@@ -149,7 +149,7 @@ function onKeyUpMap(event) {
             pressedArrowRight = false;
             break;
         case 40:
-            clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
+            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             pressedArrowDown = false;
             break;
     }
