@@ -54,7 +54,9 @@ class Object(object):
         pass
 
     def on_before_delete(self, event):
-        pass
+        for ev in self.events[:]:
+            ev.cancel()
+        assert len(self.events) == 0
 
     def on_after_delete(self, event):
         if self.events:
@@ -161,9 +163,9 @@ class VisibleObject(PointObject):
 
     def on_before_delete(self, event):
         # todo: test to subscription leaks
+        super(VisibleObject, self).on_before_delete(event=event)
         for obs in self.subscribed_observers:
             ContactOut(subj=obs, obj=self).send()
-        super(VisibleObject, self).on_before_delete(event=event)
 
     def on_after_delete(self, event):
         # todo: checkit
@@ -266,8 +268,3 @@ class Observer(VisibleObject):
         d = super(Observer, self).as_dict(**kw)
         d.update(r=self.r)
         return d
-
-    def on_before_delete(self, event):
-        #for obj in self.visible_objects:
-        #    ContactOut(subj=self, obj=obj).send()
-        super(Observer, self).on_before_delete(event=event)

@@ -117,7 +117,8 @@ class Delete(Objective):
         self.obj.on_before_delete(event=self)
         self.obj.limbo = True
         events = self.obj.events
-        t_max = (max(events).time + 1e-3) if events else None  # todo: extract to constant 'time_quant'
+        t_max = (max(events).time + 1.0) if events else None  # todo: extract to constant 'limbo_timeout'
+        log.debug('Termination of %s set to %s', self.obj, t_max)
         DeleteEnd(obj=self.obj, time=t_max).send()
 
 
