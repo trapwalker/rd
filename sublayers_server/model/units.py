@@ -125,13 +125,10 @@ class Mobile(Unit):
                  **kw):
         super(Mobile, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
-        self.init_params()
+        self.state = State(owner=self, t=self.server.get_time(), **self.init_state_params())
 
-    def init_params(self):
-        # todo: init state in __init__, but params set by dict
-        self.state = State(
-            owner=self,
-            t=self.server.get_time(),
+    def init_state_params(self):
+        return dict(
             p=self._position,
             fi=self._direction,
             v_max=self._max_velocity

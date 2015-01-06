@@ -36,9 +36,7 @@ class Rocket(Mobile):
         self.delete()
 
     def init_params(self):
-        self.state = State(
-            owner=self,
-            t=self.server.get_time(),
+        return dict(
             p=self.starter.position,
             fi=self.starter.direction,
             a_accelerate=BALANCE.Rocket.a_accelerate,
@@ -47,10 +45,8 @@ class Rocket(Mobile):
             ac_max=BALANCE.Rocket.ac_max,
             a_braking=BALANCE.Rocket.a_braking,
             v=self.starter.v,
-            cc=0.0
+            cc=0.0,
         )
-        # если так не сделать, то не работают нормально Update евенты
-        #self.set_cc(value=1.0)
 
     def on_contact_in(self, time, obj, **kw):
         #log.debug('Rocket Contacn IN')
