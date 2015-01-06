@@ -73,12 +73,12 @@ var DynamicObject = (function (_super) {
 
 
     DynamicObject.prototype.getCurrentDirection = function (aClockTime) {
-        return this.state.getCurrentDirection(aClockTime);
+        return this.state.fi(aClockTime);
     };
 
 
     DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
-        return this.state.getCurrentCoord(aClockTime);
+        return this.state.p(aClockTime);
     };
 
 
@@ -88,7 +88,7 @@ var DynamicObject = (function (_super) {
 
 
     DynamicObject.prototype.getCurrentSpeed = function (aClockTime) {
-        return this.state.getCurrentSpeed(aClockTime);
+        return this.state.v(aClockTime);
     };
 
 
@@ -158,61 +158,55 @@ var FireSector = (function () {
 
 
 var State = (function () {
-    function State(t, position, direct, velocity, acceleration, center_point, turn){
+    function State(t, position, direct, velocity, acceleration, center_point, turn, ac_max, r_min, _sp_m, _sp_fi0, _rv_fi) {
         this.t0 = t;                // Время начала движения (состояния)
         this.p0 = position;         // Начальная позиция - вектор!
         this.fi0 = direct;          // Начальный угол
         this.v0 = velocity;         // Начальная скорость - число, а не вектор
         this.a = acceleration;      // Начальное ускорение - число!
-        this.c = center_point;     // Центр разворота - точка!
-
-
-        if (this.c) {
-            var pc = subVector(this.p0, this.c);
-            this._r = absVector(pc);
-            if(turn)
-                this._turn_sign = turn;
-            else
-                this._turn_sign = mulVectVectors2D(polarPoint(1, this.fi0), pc) > 0 ? 1 : -1;
-        }
-        else {
-            this._r = null;
-            this._turn_sign = 0;
-        }
-    }
-
-    State.prototype.fix = function(t, dt) {
-        t = (t ? t : this.t0) + dt;
-        if (t != this.t0) {
-            this.p0 = this.getCurrentCoord(t);
-            this.fi0 = this.getCurrentDirection(t);
-            this.v0 = this.getCurrentSpeed(t);
-            this.t0 = t;
-        }
+        this._c = center_point;      // Центр разворота - точка!
+        this._turn_sign = turn;
+        this.ac_max = ac_max;       // Максимальная перегрузка
+        this.r_min = r_min;         // Минимальный радиус разворота
+        this._sp_m = _sp_m;
+        this._sp_fi0 = _sp_fi0;
+        this._rv_fi = _rv_fi;
     };
 
-    State.prototype.getCurrentSpeed = function(t){
-        return this.v0 + this.a * (t - this.t0);
+    State.prototype.s = function(t) {
+        var dt = t - this.t0;
+        return this.v0 * dt + 0.5 * this.a * (dt * dt);
     };
 
-    State.prototype.getCurrentDirection = function(t){
-        if(! this.c) {
-            return this.fi0;
-        }
-        dt = t - this.t0;
-        return this.fi0 - (0.5 * this.a * dt * dt + this.v0 * dt) / this._r * this._turn_sign;
+    State.prototype.v = function(t) {
+        var dt = t - this.t0;
+        return this.v0 + this.a * dt;
     };
 
-    State.prototype.getCurrentCoord = function(t) {
-        //console.log('State.prototype.getCurrentCoord', t, this.v0, this.a);
-        if (this.c) {
-            return summVector(this.c, polarPoint(this._r, this.getCurrentDirection(t) + this._turn_sign * Math.PI * 0.5));
-        }
-        else {
-            var dt = t - this.t0;
-            return summVector(this.p0, polarPoint(0.5 * this.a * dt * dt + this.v0 * dt, this.fi0));
-        }
+    State.prototype.r = function(t) {
+        if (this.a <= 0)
+            return Math.pow(this.v0, 2) / this.ac_max + this.r_min;
+        return Math.pow(this.v(t), 2) / this.ac_max + this.r_min
     };
+
+    State.prototype.sp_fi = function(t) {
+        return Math.log(this.r(t) / this.r_min) / this._sp_m
+    };
+
+    State.prototype.fi = function(t) {
+        if (!this._c) return this.fi0;
+        if (this.a <= 0.0)
+            return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
+        return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
+    };
+
+    State.prototype.p = function(t) {
+        if (!this._c)
+            return summVector(this.p0, polarPoint(this.s(t), this.fi0));
+        console.log(this.fi(t) + this._turn_sign * this._rv_fi);
+        return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * this._rv_fi));
+    };
+
 
     return State;
 })();

@@ -95,64 +95,63 @@ function onZoomStart(event) {
 }
 
 var pressedKey;
-var pressedArrow;
+var pressedArrowUp;
+var pressedArrowDown;
+var pressedArrowLeft;
+var pressedArrowRight;
 
 function onKeyDownMap(event) {
-    //console.log('onKeyDownMap');
-        switch (event.keyCode) {
-            case 37:
-                if (!pressedArrow) {
-                    clientManager.sendTurn(1);
-                    pressedArrow = true;
-                }
-                break;
-            case 38:
-                if (!pressedArrow) {
-                    clientManager.sendSetSpeed(user.userCar.maxSpeed);
-                    pressedArrow = true;
-                }
-                break;
-            case 39:
-                if (!pressedArrow) {
-                    clientManager.sendTurn(-1);
-                    pressedArrow = true;
-                }
-                break;
-            case 40:
-                if (!pressedArrow) {
-                    clientManager.sendStopCar();
-                    pressedArrow = true;
-                }
-                break;
-            case 32:
-                clientManager.sendRocket();
-                break;
-        }
-
-
+    //console.log('onKeyDownMap', event.keyCode);
+    switch (event.keyCode) {
+        case 37:
+            if (!pressedArrowLeft) {
+                clientManager.sendTurn(1);
+                pressedArrowLeft = true;
+            }
+            break;
+        case 38:
+            if (!pressedArrowUp) {
+                clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                pressedArrowUp = true;
+            }
+            break;
+        case 39:
+            if (!pressedArrowRight) {
+                clientManager.sendTurn(-1);
+                pressedArrowRight = true;
+            }
+            break;
+        case 40:
+            if (!pressedArrowDown) {
+                clientManager.sendStopCar();
+                pressedArrowDown = true;
+            }
+            break;
+        case 32:
+            clientManager.sendRocket();
+            break;
+    }
 }
 
 function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
-    if(pressedArrow) {
-        switch (event.keyCode) {
-            case 37:
-                clientManager.sendTurn(0);
-                pressedArrow = false;
-                break;
-            case 38:
-                clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
-                pressedArrow = false;
-                break;
-            case 39:
-                clientManager.sendTurn(0);
-                pressedArrow = false;
-                break;
-            case 40:
-                clientManager.sendSetSpeed(user.userCar.state.getCurrentSpeed(clock.getCurrentTime()));
-                pressedArrow = false;
-                break;
-        }
+    switch (event.keyCode) {
+        case 37:
+            clientManager.sendTurn(0);
+            pressedArrowLeft = false;
+            break;
+        case 38:
+            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
+            pressedArrowUp = false;
+            break;
+        case 39:
+            clientManager.sendTurn(0);
+            pressedArrowRight = false;
+            break;
+        case 40:
+            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
+            pressedArrowDown = false;
+            break;
     }
 }
 
@@ -248,8 +247,8 @@ $(document).ready(function () {
     myMap.on('mouseout', onMouseOutMap);
     myMap.on('zoomstart', onZoomStart);
     myMap.on('zoomend', onZoomEnd);
-    document.getElementById('map').onkeydown = onKeyDownMap;
-    document.getElementById('map').onkeyup = onKeyUpMap;
+    document.getElementById('bodydiv').onkeydown = onKeyDownMap;
+    document.getElementById('bodydiv').onkeyup = onKeyUpMap;
     myMap.keyboard.disable();
 
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
