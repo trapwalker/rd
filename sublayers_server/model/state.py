@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-#import logging
-#log = logging.getLogger(__name__)
+import logging
+log = logging.getLogger(__name__)
 
 from vectors import Point
-from math import degrees, radians, pi, sqrt, log, acos
+from math import degrees, radians, pi, sqrt, log as ln, acos
 
 
 EPS = 1e-5
@@ -68,7 +68,7 @@ class BaseState(object):
 
     def sp_fi(self, t):
         assert self._sp_m > 0
-        return log(self.r(t) / self.r_min) / self._sp_m
+        return ln(self.r(t) / self.r_min) / self._sp_m
 
     def fi(self, t):
         if self._c is None:
