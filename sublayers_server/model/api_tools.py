@@ -49,7 +49,7 @@ def public_method(func):
         try:
             res = func(*av, **kw)
         except TypeError as e:
-            log.error('API error: %s !-> %r', log_call, e)
+            log.exception('API error: %s !-> %r', log_call, e)
             raise EWrongParamsError(e.message)
         except Exception as e:
             log.error('API UNEXPECTED(!) error: %s !-> %r', log_call, e)
