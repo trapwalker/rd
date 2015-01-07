@@ -125,7 +125,7 @@ class State(BaseState):
 
         self.v_max = v_max
         assert (a_accelerate > 0) and (a_braking < 0)
-        assert (a_accelerate < 0.5 * self.ac_max)
+        #assert (a_accelerate < 0.5 * self.ac_max)  # todo: Обсудить (!)
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.cc = None
