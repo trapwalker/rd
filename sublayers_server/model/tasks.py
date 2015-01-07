@@ -5,9 +5,29 @@ log = logging.getLogger(__name__)
 
 from abc import ABCMeta
 
+import events
+
 
 class TaskError(Exception):
     pass
+
+
+class TaskEvent(events.Event):
+
+    def __init__(self, task, **kw):
+        """
+        @param Task task: Task for performing
+        """
+        super(TaskEvent, self).__init__(server=task.owner.server, **kw)
+        self.task = task
+        task.events.append(self)
+
+    def on_cancel(self):
+        self.task.events.remove(self)
+
+    def on_perform(self):
+        self.task.events.remove(self)
+        self.task.perform(self)
 
 
 class Task(object):
@@ -26,6 +46,7 @@ class Task(object):
         self.is_cancelled = False
         self.is_done = False
         owner.tasks.append(self)
+        self.events = []
 
     @property
     def status_str(self):
@@ -49,6 +70,10 @@ class Task(object):
         return dict(
             cls=self.classname,
         )
+
+    def to_plan(self, time=None, dt=0.0):
+        t = time or self.owner.server.get_time() + dt
+        TaskEvent(time=t, task=self).send()
 
     def start(self):
         #log.debug('TASK start: %s', self)
@@ -77,6 +102,9 @@ class Task(object):
         self.on_cancel()
         self.is_cancelled = True
         self.owner.tasks.remove(self)
+
+    def perform(self, event):
+        self.on_perform(event)
 
     def on_perform(self, event):
         pass
