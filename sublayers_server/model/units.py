@@ -131,7 +131,10 @@ class Mobile(Unit):
                  **kw):
         super(Mobile, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
         self._max_velocity = max_velocity
-        self.state = State(owner=self, t=self.server.get_time(), **self.init_state_params())
+        t = self.server.get_time()
+        self.state = State(owner=self, t=t, **self.init_state_params())
+        events.Update(obj=self, time=t)
+        # todo: test to excess update-message after initial contact-message
 
     def init_state_params(self):
         return dict(

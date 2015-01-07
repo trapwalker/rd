@@ -110,14 +110,16 @@ class BaseState(object):
 
 class State(BaseState):
 
-    def __init__(self, owner, t, p, fi=0.0, v=0.0,
+    def __init__(
+        self, owner, t, p, fi=0.0, v=0.0,
+        cc=0.0,
+        turn=0,
         r_min=10,
         ac_max=10.0,
         v_max=30.0,
         a_accelerate=4.0,
         a_braking=-8.0,
-        ):
-
+    ):
         self.owner = owner
         super(State, self).__init__(t, p, fi, v, r_min, ac_max)
 
@@ -129,6 +131,7 @@ class State(BaseState):
         self.cc = None
         self.t_max = None
         self.target_point = None
+        self.update(cc=cc, turn=turn)
 
     def _update_by_target(self, target_point):
         """
@@ -163,38 +166,41 @@ class State(BaseState):
         if cc is not None:
             assert  0 <= cc <= 1
             self.cc = cc
-        if self.cc is not None:
-            dv = self.v_max * self.cc - self.v0
-            if dv > EPS:
-                self.a = self.a_accelerate
-            elif dv < -EPS:
-                self.a = self.a_braking
-            else:
-                self.a = 0.0
+
+        assert self.cc is not None
+
+        dv = self.v_max * self.cc - self.v0
+        if dv > EPS:
+            self.a = self.a_accelerate
+        elif dv < -EPS:
+            self.a = self.a_braking
+        else:
+            self.a = 0.0
             if dv:
                 log.warning('Reduce v0+=dv: v0=%s+%s', self.v0, dv)
             self.v0 += dv
             dv = 0.0
+
         if self.a != 0.0:
-                self.t_max = self.t0 + dv / self.a
+            self.t_max = self.t0 + dv / self.a
 
         # todo: fix t_max==t0 problem
         if turn is not None:
             self._turn_sign = turn
-        if self._turn_sign is not None:
-            if self._turn_sign == 0:
-                self._c = None
+
+        if self._turn_sign == 0:
+            self._c = None
+        else:
+            if self.a > 0.0:
+                aa = 2 * self.a / self.ac_max
+                m = aa / sqrt(1 - aa ** 2)
+                self._sp_m = m
+                self._sp_fi0 = self.sp_fi(self.t0)
+                self._rv_fi = acos(m / sqrt(1 + m ** 2))
+                self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
             else:
-                if self.a > 0.0:
-                    aa = 2 * self.a / self.ac_max
-                    m = aa / sqrt(1 - aa ** 2)
-                    self._sp_m = m
-                    self._sp_fi0 = self.sp_fi(self.t0)
-                    self._rv_fi = acos(m / sqrt(1 + m ** 2))
-                    self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
-                else:
-                    self._rv_fi = 0.5 * pi
-                    self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * self._rv_fi)
+                self._rv_fi = 0.5 * pi
+                self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * self._rv_fi)
 
         #if target_point is not None:
         #    assert turn is None, 'Turn factor and target_point declared both in state update.'
