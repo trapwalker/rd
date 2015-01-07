@@ -6,6 +6,10 @@ log = logging.getLogger(__name__)
 from abc import ABCMeta
 
 
+class TaskError(Exception):
+    pass
+
+
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
@@ -53,22 +57,21 @@ class Task(object):
         elif self.is_paused:
             self.on_resume()
             self.is_paused = False
+        else:
+            raise TaskError('Trying to start of already started task')
 
     def pause(self):
-        if self.is_worked:
-            self.on_pause()
-            self.is_paused = True
-        else:
-            raise TaskError  # todo: realize
+        assert self.is_worked
+        self.on_pause()
+        self.is_paused = True
 
     def done(self):
-        #log.debug('TASK done: %s', self)
+        assert self.is_started and not self.is_cancelled and not self.is_done
         self.on_done()
         self.is_done = True
 
     def cancel(self):
-        #log.debug('TASK cancel: %s', self)
-        #raise Exception('#############')
+        assert not self.is_cancelled and not self.is_done
         self.on_cancel()
         self.is_cancelled = True
 
@@ -78,10 +81,16 @@ class Task(object):
     def on_start(self):
         pass
 
-    def on_before_end(self):
+    def on_pause(self):
         pass
 
-    def on_after_end(self):
+    def on_resume(self):
+        pass
+
+    def on_done(self):
+        pass
+
+    def on_cancel(self):
         pass
 
     def __str__(self):
