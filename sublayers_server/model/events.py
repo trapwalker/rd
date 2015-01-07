@@ -90,7 +90,6 @@ class Objective(Event):
         """
         @param sublayers_server.model.base.Object obj: Object of event
         """
-        assert obj.is_alive and not obj.limbo
         server = obj.server
         super(Objective, self).__init__(server=server, **kw)
         self.obj = obj  # todo: weakref?
