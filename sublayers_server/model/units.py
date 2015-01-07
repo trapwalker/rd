@@ -140,7 +140,7 @@ class Mobile(Unit):
         return dict(
             p=self._position,
             fi=self._direction,
-            v_max=self._max_velocity
+            v_max=self._max_velocity,
             # todo: acc and velocity constrains and params
         )
 

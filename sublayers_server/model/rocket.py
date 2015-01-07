@@ -11,19 +11,26 @@ import messages
 
 
 class Rocket(Mobile):
-    def __init__(self, starter, life_time=BALANCE.Rocket.life_time, **kw):
+    def __init__(
+        self, starter, 
+        life_time=BALANCE.Rocket.life_time, 
+        max_hp=BALANCE.Rocket.max_hp,
+        max_velocity=BALANCE.Rocket.velocity,
+        observing_range=BALANCE.Rocket.observing_range,
+        **kw
+    ):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
         self.starter = starter
         pos = starter.position
         direct = starter.direction
         self.state = None
-        super(Rocket, self).__init__(position=pos, direction=direct,
-                                     max_hp=BALANCE.Rocket.max_hp,
-                                     observing_range=BALANCE.Rocket.observing_range,
-                                     max_velocity=BALANCE.Rocket.v_max,
-                                     **kw)
         self.life_time = life_time
+        super(Rocket, self).__init__(position=pos, direction=direct,
+                                     max_hp=max_hp,
+                                     observing_range=observing_range,
+                                     max_velocity=max_velocity,
+                                     **kw)
 
     def on_init(self, event):
         # Запускаем:
@@ -35,13 +42,12 @@ class Rocket(Mobile):
     def on_stop(self, event):
         self.delete()
 
-    def init_params(self):
+    def init_state_params(self):
         return dict(
             p=self.starter.position,
             fi=self.starter.direction,
-            a_accelerate=BALANCE.Rocket.a_accelerate,
-            a=BALANCE.Rocket.a_accelerate,
-            v_max=BALANCE.Rocket.v_max,
+            a_accelerate=BALANCE.Rocket.a_accelerate,  # todo: defoult settings injection
+            v_max=self.max_velocity,
             ac_max=BALANCE.Rocket.ac_max,
             a_braking=BALANCE.Rocket.a_braking,
             v=self.starter.v,
