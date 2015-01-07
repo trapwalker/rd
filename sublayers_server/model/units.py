@@ -36,6 +36,8 @@ class Unit(Observer):
         # todo: (!) attach/detach weapon and other stuff to/from unit (event)
         self.weapons = weapons or []
         """@type: list[sublayers_server.model.weapon.Weapon]"""
+        self.tasks = []
+        """@type: list[sublayers_server.model.tasks.Task]"""
 
     @property
     def direction(self):

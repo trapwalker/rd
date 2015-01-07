@@ -25,6 +25,7 @@ class Task(object):
         self.is_paused = False
         self.is_cancelled = False
         self.is_done = False
+        owner.tasks.append(self)
 
     @property
     def status_str(self):
@@ -69,11 +70,13 @@ class Task(object):
         assert self.is_started and not self.is_cancelled and not self.is_done
         self.on_done()
         self.is_done = True
+        self.owner.tasks.remove(self)
 
     def cancel(self):
         assert not self.is_cancelled and not self.is_done
         self.on_cancel()
         self.is_cancelled = True
+        self.owner.tasks.remove(self)
 
     def on_perform(self, event):
         pass
