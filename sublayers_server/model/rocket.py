@@ -34,7 +34,7 @@ class Rocket(Mobile):
 
     def on_init(self, event):
         # Запускаем:
-        events.Update(obj=self, cc=1.0).send()
+        #events.Update(obj=self, cc=1.0).send()
         # Назначаем остановку:
         #events.Update(obj=self, cc=0.0, time=self.server.get_time() + self.life_time, comment="Bang!!!!").send()
         self.delete(time=self.server.get_time() + self.life_time)
@@ -51,7 +51,7 @@ class Rocket(Mobile):
             ac_max=BALANCE.Rocket.ac_max,
             a_braking=BALANCE.Rocket.a_braking,
             v=self.starter.v,
-            cc=0.0,
+            cc=1.0,
         )
 
     def on_contact_in(self, time, obj, **kw):
