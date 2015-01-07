@@ -136,15 +136,13 @@ class VisibleObject(PointObject):
         super(VisibleObject, self).on_init(event)
         SearchContacts(obj=self).send()
 
-    def on_update(self, time, comment=None):  # todo: privacy level index
-        # todo: get event in params
+    def on_update(self, event):  # todo: privacy level index
         self.on_contacts_check()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             agent.server.post_message(messages.Update(
                 agent=agent,
-                time=time,
+                time=event.time,
                 obj=self,
-                comment='message for subscriber: {}'.format(comment)
             ))
 
     def on_contacts_check(self):

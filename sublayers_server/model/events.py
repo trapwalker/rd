@@ -158,7 +158,7 @@ class Update(Objective):
         is_moving_before = state.is_moving
         state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
         is_moving_after = state.is_moving
-        obj.on_update(time=t)
+        obj.on_update(event=self)
         if is_moving_before != is_moving_after:
             if is_moving_after:
                 obj.on_start(event=self)

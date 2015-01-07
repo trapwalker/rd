@@ -57,6 +57,8 @@ class Unit(Observer):
         return self._hp
 
     def hit(self, hp):
+        # todo: make hit event
+        '''
         if self.max_hp is None:
             return
 
@@ -81,12 +83,16 @@ class Unit(Observer):
                 self.on_update(time=self.server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
                 # todo: on_update params
                 # todo: 'hit' and 'fire' events and messages
+        #'''
 
     def on_die(self):
+        # todo: make die event
+        '''
         # todo: refactor
         if isinstance(self, Bot):
             self.stop()  # todo: fixit
         self.on_update(time=self.server.get_time(), comment='RIP')
+        #'''
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
