@@ -203,7 +203,6 @@ var State = (function () {
     State.prototype.p = function(t) {
         if (!this._c)
             return summVector(this.p0, polarPoint(this.s(t), this.fi0));
-        console.log(this.fi(t) + this._turn_sign * this._rv_fi);
         return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * this._rv_fi));
     };
 

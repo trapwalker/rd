@@ -120,49 +120,104 @@ class State(BaseState):
         a_accelerate=4.0,
         a_braking=-8.0,
     ):
+        assert (v_max > 0) and (v <= v_max)
+        assert (a_accelerate > 0) and (a_braking < 0)
+
         self.owner = owner
         super(State, self).__init__(t, p, fi, v, r_min, ac_max)
-
         self.v_max = v_max
-        assert (a_accelerate > 0) and (a_braking < 0)
         #assert (a_accelerate < 0.5 * self.ac_max)  # todo: Обсудить (!)
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
-        self.cc = None
+        self.cc = v / v_max
         self.t_max = None
         self.target_point = None
         self.update(cc=cc, turn=turn)
 
-    def _update_by_target(self, target_point):
-        """
-        Select instruction and update State for first segment of trajectory to target_point
-        """
-        self.target_point = target_point
-        # todo: calc and store future trip distance
-
-        braking_dist = -0.5 * self.v0 ** 2 / self.a_braking
-        target_distance = self.p0.distance(target_point)
-        target_direction = self.p0.direction(target_point)
-
-        # todo: normalize angles before compare (!)
-        if abs(target_distance - braking_dist) <= EPS and (self.v0 <= EPS or target_direction == self.fi0):
-            # we have arrived or we must brake to a stop
-            self.cc = 0.0
-            target_point = None
-        elif target_distance > braking_dist and target_direction == self.fi0:
-                # we must accelerate first
-            if self.cc < EPS:
-                self.cc = 1.0
-
-                # b=-0.5*v**2/ab
-                # v=v0+a*t
-            # todo: accelerate
 
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None, target_point=None):
         self.fix(t=t, dt=dt)
         self.t_max = None
+        if target_point is not None:
+            self._update_by_target(cc, target_point)
+        else:
+            self._update(cc, turn)
 
+
+    def _get_turn_sign(self, target_point):
+        assert target_point is not None
+        pt = target_point - self.p0
+        pf = Point.polar(1, self.fi0)
+        _turn_sign = pf.cross_mul(pt)
+        if _turn_sign == 0.0 :
+            return 0.0 if pf.angle_with(pt) == 0.0 else 1
+        return 1 if _turn_sign > 0.0 else -1
+
+
+    def _get_turn_fi(self, target_point):
+        #todo: найти место для этой функции
+        def normalize_angle(angle):
+            if angle < 0: return normalize_angle(angle + 2 * pi)
+            if angle >= 2 * pi: return normalize_angle(angle - 2 * pi)
+            return angle
+
+        assert target_point is not None
+        turn_sign = self._get_turn_sign(target_point=target_point)
+        if turn_sign == 0.0:
+            return 0.0
+        r = self.r(self.t0)
+        c = self.p0 + Point.polar(r, self.fi0 + turn_sign * 0.5 * pi)
+        cp = self.p0 - c
+        ct = target_point - c
+        ct_angle = ct.angle
+        ce_fi = ct_angle - turn_sign * acos(r / abs(ct))
+        if ce_fi < - pi: ce_fi = 2 * pi + ce_fi
+        if ce_fi > pi: ce_fi = ce_fi - 2 * pi
+        res = ce_fi - cp.angle
+        if turn_sign < 0: res = 2 * pi - res
+        return normalize_angle(res)
+
+
+    def _update_by_target(self, cc, target_point):
+        """
+        Select instruction and update State for first segment of trajectory to target_point
+        """
+
+        self.target_point = target_point
+        # Мы около цели, необходимо остановиться
+        log.debug('111111111111111111111111111111111111111111111111111')
+        if self.p0.distance(target_point) < (2 * self.r_min):
+            self.target_point = None
+            self._update(cc=0.0, turn=-self._get_turn_sign(target_point))
+            return
+
+        # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
+        log.debug('222222222222222222222222222222222222222222222222222')
+        v_min = 5.0 # m/s
+        assert v_min < self.v_max
+        if self.v0 < v_min: #todo: определить минимальную скоростью
+            temp_cc = min(cc, v_min / self.v_max)
+            self._update(cc=temp_cc, turn=-self._get_turn_sign(target_point)) #todo: обсудить этот момент
+            return
+
+        # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
+        log.debug('333333333333333333333333333333333333333333333333333')
+        turn_fi = self._get_turn_fi(target_point)
+        log.debug(turn_fi)
+        if abs(turn_fi) > EPS:
+            self._update(turn=-self._get_turn_sign(target_point))
+            self.t_max = self.t0 + turn_fi * self.r(self.t0) / self.v0
+            return
+
+        # если мы направлены в сторону цели
+        log.debug('444444444444444444444444444444444444444444444444444')
+        s = abs(target_point - self.p0)
+        self.target_point = None
+        self._update(turn=0, cc=1.0)
+
+
+    def _update(self, cc=None, turn=None):
         if cc is not None:
             assert  0 <= cc <= 1
             self.cc = cc
@@ -197,14 +252,10 @@ class State(BaseState):
                 self._sp_m = m
                 self._sp_fi0 = self.sp_fi(self.t0)
                 self._rv_fi = acos(m / sqrt(1 + m ** 2))
-                self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
             else:
                 self._rv_fi = 0.5 * pi
-                self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * self._rv_fi)
+            self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
 
-        #if target_point is not None:
-        #    assert turn is None, 'Turn factor and target_point declared both in state update.'
-        #    self._update_by_target(target_point)
 
     def __str__(self):
         return (
@@ -224,17 +275,25 @@ class State(BaseState):
 
 
 if __name__ == '__main__':
-    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=30.0, a_accelerate=1.0, a_braking=-1.0)
-    #st.update(cc=1.0)
-    #print st.p(t=1.0)
+    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=0.0, a_accelerate=1.0, a_braking=-1.0)
+    print st._get_turn_fi(target_point=Point(0, 0)) * 180 / pi
 
-    st.update(cc=0.0, turn=1.0)
+    '''
+    for a in xrange(362):
+        p = Point.polar(100, a * pi / 180)
+        print st._get_turn_fi(p) * 180 / pi, a
+    '''
 
-    print ' c=', st._c
+    '''
+    print '==================='
+    print st._get_turn_sign(Point(100, 0)), 0
+    print st._get_turn_sign(Point(0, 100)), 90
+    print st._get_turn_sign(Point(-100, 0)), 180
+    print st._get_turn_sign(Point(0, -100)), -90
+    '''
 
 
-    for t in xrange(31):
-        print 't=', t, ' r(t)=', st.r(t), ' p(t)=', st.p(t), ' fi(t)=', 180/pi*st.fi(t)
+
 
     '''
     import thread

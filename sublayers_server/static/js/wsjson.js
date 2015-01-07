@@ -1,23 +1,6 @@
 
 // функции формирования исходящих сообщений
 
-// goto
-function sendNewPoint(aPoint) {
-    //alert('sendNewPoint');
-    var mes = {
-        call: "goto",
-        rpc_call_id: rpcCallList.getID(),
-        params: {
-            x: aPoint.x,
-            y: aPoint.y
-        }
-    };
-    rpcCallList.add(mes);
-    clientManager._sendMessage(mes);
-}
-
-
-
 // fire
 function sendFire(aUid) {
     var mes = {

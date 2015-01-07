@@ -115,7 +115,7 @@ var Controllers = (function () {
 // Колбеки Для работы с контроллерами
 function changeSpeedOnSlider() {
     if (user.userCar)
-        clientManager.sendSetSpeed(controllers.speedSetSlider.getSpeed(), user.userCar.ID);
+        clientManager.sendSetSpeed(controllers.speedSetSlider.getSpeed());
 }
 
 function stopSpeedOnSlider() {

@@ -168,12 +168,12 @@ class Mobile(Unit):
         events.Update(obj=self, time=time, cc=0).send()
         # todo: clear target_point
 
-    def goto(self, position, time=None):
+    def goto(self, position, cc, time=None):
         """
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        events.Update(obj=self, time=time, target_point=position).send()
+        events.Update(obj=self, time=time, target_point=position, cc=cc).send()
 
     def set_cc(self, value, time=None):
         # todo: docstring

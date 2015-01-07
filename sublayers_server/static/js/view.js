@@ -20,11 +20,6 @@ function redrawMap() {
 
 }
 
-//function onMouseClickMap(mouseEventObject) {
-   // if(user.userCar)
-   //     sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
-//}
-
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
     myMap._mouseDowned = true;
@@ -46,7 +41,7 @@ function onMouseUpMap(mouseEventObject) {
     // Если не вызывалось меню, то поехать в заданную точку
     if (radialMenu.isHide && myMap._mouseDowned) {
         if (user.userCar)
-            sendNewPoint(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.ID);
+            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
     } else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         radialMenu.hideMenu(true);
@@ -104,6 +99,7 @@ function onKeyDownMap(event) {
     //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
         case 37:
+            console.log(37);
             if (!pressedArrowLeft) {
                 clientManager.sendTurn(1);
                 pressedArrowLeft = true;

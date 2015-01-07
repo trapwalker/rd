@@ -344,7 +344,6 @@ var ClientManager = (function () {
 
     // Исходящие сообщения
 
-    // setSpeed
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
         var mes = {
@@ -358,7 +357,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    // stop
     ClientManager.prototype.sendStopCar = function () {
         var mes = {
             call: "stop",
@@ -369,14 +367,28 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    // turn
     ClientManager.prototype.sendTurn = function (turn) {
-        console.log('sendTurn', turn);
+        //console.log('sendTurn', turn);
         var mes = {
             call: "set_turn",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 turn: turn
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGoto = function (target, newSpeed) {
+        //console.log('sendGoto');
+        var mes = {
+            call: "goto",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                x: target.x,
+                y: target.y,
+                new_speed: newSpeed / user.userCar.maxSpeed
             }
         };
         rpcCallList.add(mes);
