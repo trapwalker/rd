@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from inventory import Inventory
 import messages
-from events import ContactSee, ContactOut, Init, Delete, Callback, SearchContacts
+from events import ContactSee, ContactOut, Init, Delete, Event, SearchContacts
 
 from abc import ABCMeta
 from counterset import CounterSet
@@ -22,7 +22,7 @@ def async_call(method):
             log.debug('async_closure: kw=%r', kw)
             return method(self, time=event.time, **kw)
 
-        Callback(server=self.server, time=time, func=async_closure).send()
+        Event(server=self.server, time=time, callback_before=async_closure).send()
     update_wrapper(cover, method)
     return cover
 

@@ -14,13 +14,15 @@ class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
 
-    def __init__(self, server, time=None, comment=None):
+    def __init__(self, server, time=None, callback_before=None, callback_after=None, comment=None):
         """
         @param float time: Time of event
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
         self.time = time or server.get_time()
         self.actual = True
+        self.callback_before = callback_before
+        self.callback_after = callback_after
         self.comment = comment  # todo: Устранить отладочную информацию
 
     def send(self):
@@ -75,7 +77,11 @@ class Event(object):
         """
         assert self.actual
         log.info('RUN    %s', self)
+        if self.callback_before is not None:
+            self.callback_before(event=self)
         self.on_perform()
+        if self.callback_after is not None:
+            self.callback_after(event=self)
 
     def on_perform(self):
         pass
@@ -198,16 +204,3 @@ class ContactOut(Contact):
     def on_perform(self):
         super(ContactOut, self).on_perform()
         self.subj.on_contact_out(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
-
-
-class Callback(Event):
-
-    def __init__(self, func, **kw):
-        """
-        """
-        super(Callback, self).__init__(**kw)
-        self.func = func
-
-    def on_perform(self):
-        super(Callback, self).on_perform()
-        return self.func(self)
