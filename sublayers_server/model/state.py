@@ -139,9 +139,10 @@ class State(BaseState):
     def update(self, t=None, dt=0.0, cc=None, turn=None, target_point=None):
         self.fix(t=t, dt=dt)
         self.t_max = None
-        if target_point is not None:
+        if target_point is not None and cc is not None and cc != 0.0:
             self._update_by_target(cc, target_point)
         else:
+            self.target_point = None
             self._update(cc, turn)
 
 
@@ -179,32 +180,77 @@ class State(BaseState):
         return normalize_angle(res)
 
 
+    def _calc_time_segment(self, s, cc):
+        """
+        Возвращает  (t1, t2, t3)
+        t1 - время отведённое на разгон
+        t2 - время отведённое на равномерное движение
+        t3 - время отведённое на торможение
+        """
+        vcc = cc * self.v_max
+        v0 = self.v0
+        bb = self.a_braking
+        aa = self.a_accelerate if vcc > v0 else self.a_braking
+
+        # рассчитать тормозной путь от текущей скорости
+        t4 = - v0 / bb
+        s4 = v0 * t4 + bb * (t4 ** 2) / 2
+        if s4 >= s: # если не успеваем, то сразу торможение
+            return (0.0, 0.0, t4)
+        # путь и время разгона
+        t1 = (vcc - v0) / aa
+        if abs(t1) < EPS: t1 = 0.0
+        s1 = v0 * t1 + aa * (t1 ** 2) / 2.0
+        # путь и время торможения
+        t3 = - vcc / bb
+        s3 = vcc * t3 + bb * (t3 ** 2) / 2.0
+
+        if s3 + s1 > s: # нет равномерного движения
+            if aa == bb: # мы уже в торможении
+                return (0.0, 0.0, t3) # остановка
+            else: # нет запаса расстояния для разгона до vcc
+                # рассчёт времени разгона и торможения
+                t3 = sqrt((2*aa*s + v0 ** 2) / (bb ** 2 - aa * bb))
+                t1 = (- bb * t3 - v0) / aa
+                if abs(t1) < EPS: t1 = 0.0
+                return (t1, 0.0, t3) # разгон и торможение
+
+        if s3 + s1 <= s: # есть отрезок равномерного движения
+            s2 = s - s3 - s1
+            t2 = s2 / vcc
+            if abs(t2) < EPS: t2 = 0.0 # чтобы не добавлять ивент через очень короткое время
+            return (t1, t2, t3)
+
+
     def _update_by_target(self, cc, target_point):
         """
         Select instruction and update State for first segment of trajectory to target_point
         """
 
+
         self.target_point = target_point
         # Мы около цели, необходимо остановиться
+        #todo: todo
+        '''
         log.debug('111111111111111111111111111111111111111111111111111')
-        if self.p0.distance(target_point) < (2 * self.r_min):
+        if self.p0.distance(target_point) < (2 * self.r(self.t0)):
             self.target_point = None
             self._update(cc=0.0, turn=-self._get_turn_sign(target_point))
             return
+        '''
 
         # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
         log.debug('222222222222222222222222222222222222222222222222222')
-        v_min = 5.0 # m/s
+        v_min = 5.0  #todo: обсудить куда это вынести
         assert v_min < self.v_max
-        if self.v0 < v_min: #todo: определить минимальную скоростью
-            temp_cc = min(cc, v_min / self.v_max)
-            self._update(cc=temp_cc, turn=-self._get_turn_sign(target_point)) #todo: обсудить этот момент
+        temp_cc = min(cc, v_min / self.v_max) #определить минимальную скоростью
+        if self.v0 < temp_cc * self.v_max:
+            self._update(cc=temp_cc, turn=-self._get_turn_sign(target_point))
             return
 
         # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
         log.debug('333333333333333333333333333333333333333333333333333')
         turn_fi = self._get_turn_fi(target_point)
-        log.debug(turn_fi)
         if abs(turn_fi) > EPS:
             self._update(turn=-self._get_turn_sign(target_point))
             self.t_max = self.t0 + turn_fi * self.r(self.t0) / self.v0
@@ -213,8 +259,25 @@ class State(BaseState):
         # если мы направлены в сторону цели
         log.debug('444444444444444444444444444444444444444444444444444')
         s = abs(target_point - self.p0)
-        self.target_point = None
-        self._update(turn=0, cc=1.0)
+        t1, t2, t3 = self._calc_time_segment(s, cc)
+        log.debug(t1)
+        log.debug(t2)
+        log.debug(t3)
+        if t1 != 0.0:
+            self._update(turn=0.0, cc=cc)
+            self.t_max = self.t0 + t1
+            return
+        if t2 != 0.0:
+            self._update(turn=0.0, cc=cc)
+            self.t_max = self.t0 + t2
+            return
+        if t3 != 0.0:
+            log.debug('TORMOZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
+            self._update(turn=0.0, cc=0.0)
+            self.target_point = None
+            return
+
+        log.debug('ERRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOORRRRRRRRRRRRRRRRRRRR')
 
 
     def _update(self, cc=None, turn=None):
@@ -275,51 +338,4 @@ class State(BaseState):
 
 
 if __name__ == '__main__':
-    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=0.0, a_accelerate=1.0, a_braking=-1.0)
-    print st._get_turn_fi(target_point=Point(0, 0)) * 180 / pi
-
-    '''
-    for a in xrange(362):
-        p = Point.polar(100, a * pi / 180)
-        print st._get_turn_fi(p) * 180 / pi, a
-    '''
-
-    '''
-    print '==================='
-    print st._get_turn_sign(Point(100, 0)), 0
-    print st._get_turn_sign(Point(0, 100)), 90
-    print st._get_turn_sign(Point(-100, 0)), 180
-    print st._get_turn_sign(Point(0, -100)), -90
-    '''
-
-
-
-
-    '''
-    import thread
-    g = 1
-
-    def lookup(state):
-        from sys import stderr
-        from time import sleep
-        global g
-        g = 1
-        while g:
-            try:
-                state.update(dt=1.0)
-            except ETimeIsNotInState as e:                
-                print >>stderr, e.message
-                state.update(t=state.t_max)
-            print >>stderr, state
-            sleep(1)
-
-    def u(*av, **kw):
-        if 'fi' in kw:
-            kw['fi'] = radians(kw['fi'])
-        s.update(*av, **kw)
-        print s
-    
-    s = State(0.0, Point(0.0))
-    print 'START:', s
-    thread.start_new(lookup, (s,))
-    '''
+    pass

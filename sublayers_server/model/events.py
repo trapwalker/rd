@@ -157,6 +157,7 @@ class Update(Objective):
         is_moving_before = state.is_moving
         state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
         is_moving_after = state.is_moving
+
         obj.on_update(event=self)
         if is_moving_before != is_moving_after:
             if is_moving_after:
@@ -166,7 +167,11 @@ class Update(Objective):
         t_max = state.t_max
         if t_max is not None:
             assert t_max != self.time  # todo: fixit
-            Update(obj=obj, time=t_max, target_point=state.target_point).send()
+            if self.target_point:
+                if state.target_point is None:
+                    self.cc = 0.0
+                    self.target_point = None
+            Update(obj=obj, time=t_max, cc=self.cc, target_point=self.target_point).send()
             # todo: disactualize future event
 
 
