@@ -12,24 +12,6 @@ class TaskError(Exception):
     pass
 
 
-class TaskEvent(events.Event):
-
-    def __init__(self, task, **kw):
-        """
-        @param Task task: Task for performing
-        """
-        super(TaskEvent, self).__init__(server=task.owner.server, **kw)
-        self.task = task
-        task.events.append(self)
-
-    def on_cancel(self):
-        self.task.events.remove(self)
-
-    def on_perform(self):
-        self.task.events.remove(self)
-        self.task.perform(self)
-
-
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
@@ -76,9 +58,10 @@ class Task(object):
             cls=self.classname,
         )
 
-    def to_plan(self, time=None, dt=0.0):
-        t = time or self.owner.server.get_time() + dt
-        TaskEvent(time=t, task=self).send()
+    def _cancel_events(self):
+        events = self.events
+        while events:
+            events.pop().cancel()
 
     def start(self):
         #log.debug('TASK start: %s', self)
@@ -93,22 +76,26 @@ class Task(object):
 
     def pause(self):
         assert self.is_worked
+        self._cancel_events()
         self.on_pause()
         self.is_paused = True
 
     def done(self):
         assert self.is_started and not self.is_cancelled and not self.is_done
+        self._cancel_events()
         self.on_done()
         self.is_done = True
         self.owner.tasks.remove(self)
 
     def cancel(self):
         assert not self.is_cancelled and not self.is_done
+        self._cancel_events()
         self.on_cancel()
         self.is_cancelled = True
         self.owner.tasks.remove(self)
 
     def perform(self, event):
+        self.events.remove(event)
         self.on_perform(event)
 
     def on_perform(self, event):
