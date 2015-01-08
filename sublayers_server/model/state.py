@@ -120,49 +120,167 @@ class State(BaseState):
         a_accelerate=4.0,
         a_braking=-8.0,
     ):
+        assert (v_max > 0) and (v <= v_max)
+        assert (a_accelerate > 0) and (a_braking < 0)
+
         self.owner = owner
         super(State, self).__init__(t, p, fi, v, r_min, ac_max)
-
         self.v_max = v_max
-        assert (a_accelerate > 0) and (a_braking < 0)
         #assert (a_accelerate < 0.5 * self.ac_max)  # todo: Обсудить (!)
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
-        self.cc = None
+        self.cc = v / v_max
         self.t_max = None
         self.target_point = None
         self.update(cc=cc, turn=turn)
 
-    def _update_by_target(self, target_point):
-        """
-        Select instruction and update State for first segment of trajectory to target_point
-        """
-        self.target_point = target_point
-        # todo: calc and store future trip distance
-
-        braking_dist = -0.5 * self.v0 ** 2 / self.a_braking
-        target_distance = self.p0.distance(target_point)
-        target_direction = self.p0.direction(target_point)
-
-        # todo: normalize angles before compare (!)
-        if abs(target_distance - braking_dist) <= EPS and (self.v0 <= EPS or target_direction == self.fi0):
-            # we have arrived or we must brake to a stop
-            self.cc = 0.0
-            target_point = None
-        elif target_distance > braking_dist and target_direction == self.fi0:
-                # we must accelerate first
-            if self.cc < EPS:
-                self.cc = 1.0
-
-                # b=-0.5*v**2/ab
-                # v=v0+a*t
-            # todo: accelerate
 
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None, target_point=None):
         self.fix(t=t, dt=dt)
         self.t_max = None
+        if target_point is not None and cc is not None and cc != 0.0:
+            self._update_by_target(cc, target_point)
+        else:
+            self.target_point = None
+            self._update(cc, turn)
 
+
+    def _get_turn_sign(self, target_point):
+        assert target_point is not None
+        pt = target_point - self.p0
+        pf = Point.polar(1, self.fi0)
+        _turn_sign = pf.cross_mul(pt)
+        if _turn_sign == 0.0 :
+            return 0.0 if pf.angle_with(pt) == 0.0 else 1
+        return 1 if _turn_sign > 0.0 else -1
+
+
+    def _get_turn_fi(self, target_point):
+        #todo: найти место для этой функции
+        def normalize_angle(angle):
+            if angle < 0: return normalize_angle(angle + 2 * pi)
+            if angle >= 2 * pi: return normalize_angle(angle - 2 * pi)
+            return angle
+
+        assert target_point is not None
+        turn_sign = self._get_turn_sign(target_point=target_point)
+        if turn_sign == 0.0:
+            return 0.0
+        r = self.r(self.t0)
+        c = self.p0 + Point.polar(r, self.fi0 + turn_sign * 0.5 * pi)
+        cp = self.p0 - c
+        ct = target_point - c
+        ct_angle = ct.angle
+        ce_fi = ct_angle - turn_sign * acos(r / abs(ct))
+        if ce_fi < - pi: ce_fi = 2 * pi + ce_fi
+        if ce_fi > pi: ce_fi = ce_fi - 2 * pi
+        res = ce_fi - cp.angle
+        if turn_sign < 0: res = 2 * pi - res
+        return normalize_angle(res)
+
+
+    def _calc_time_segment(self, s, cc):
+        """
+        Возвращает  (t1, t2, t3)
+        t1 - время отведённое на разгон
+        t2 - время отведённое на равномерное движение
+        t3 - время отведённое на торможение
+        """
+        vcc = cc * self.v_max
+        v0 = self.v0
+        bb = self.a_braking
+        aa = self.a_accelerate if vcc > v0 else self.a_braking
+
+        # рассчитать тормозной путь от текущей скорости
+        t4 = - v0 / bb
+        s4 = v0 * t4 + bb * (t4 ** 2) / 2
+        if s4 >= s: # если не успеваем, то сразу торможение
+            return (0.0, 0.0, t4)
+        # путь и время разгона
+        t1 = (vcc - v0) / aa
+        if abs(t1) < EPS: t1 = 0.0
+        s1 = v0 * t1 + aa * (t1 ** 2) / 2.0
+        # путь и время торможения
+        t3 = - vcc / bb
+        s3 = vcc * t3 + bb * (t3 ** 2) / 2.0
+
+        if s3 + s1 > s: # нет равномерного движения
+            if aa == bb: # мы уже в торможении
+                return (0.0, 0.0, t3) # остановка
+            else: # нет запаса расстояния для разгона до vcc
+                # рассчёт времени разгона и торможения
+                t3 = sqrt((2*aa*s + v0 ** 2) / (bb ** 2 - aa * bb))
+                t1 = (- bb * t3 - v0) / aa
+                if abs(t1) < EPS: t1 = 0.0
+                return (t1, 0.0, t3) # разгон и торможение
+
+        if s3 + s1 <= s: # есть отрезок равномерного движения
+            s2 = s - s3 - s1
+            t2 = s2 / vcc
+            if abs(t2) < EPS: t2 = 0.0 # чтобы не добавлять ивент через очень короткое время
+            return (t1, t2, t3)
+
+
+    def _update_by_target(self, cc, target_point):
+        """
+        Select instruction and update State for first segment of trajectory to target_point
+        """
+
+
+        self.target_point = target_point
+        # Мы около цели, необходимо остановиться
+        #todo: todo
+        '''
+        log.debug('111111111111111111111111111111111111111111111111111')
+        if self.p0.distance(target_point) < (2 * self.r(self.t0)):
+            self.target_point = None
+            self._update(cc=0.0, turn=-self._get_turn_sign(target_point))
+            return
+        '''
+
+        # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
+        log.debug('222222222222222222222222222222222222222222222222222')
+        v_min = 5.0  #todo: обсудить куда это вынести
+        assert v_min < self.v_max
+        temp_cc = min(cc, v_min / self.v_max) #определить минимальную скоростью
+        if self.v0 < temp_cc * self.v_max:
+            self._update(cc=temp_cc, turn=-self._get_turn_sign(target_point))
+            return
+
+        # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
+        log.debug('333333333333333333333333333333333333333333333333333')
+        turn_fi = self._get_turn_fi(target_point)
+        if abs(turn_fi) > EPS:
+            self._update(turn=-self._get_turn_sign(target_point))
+            self.t_max = self.t0 + turn_fi * self.r(self.t0) / self.v0
+            return
+
+        # если мы направлены в сторону цели
+        log.debug('444444444444444444444444444444444444444444444444444')
+        s = abs(target_point - self.p0)
+        t1, t2, t3 = self._calc_time_segment(s, cc)
+        log.debug(t1)
+        log.debug(t2)
+        log.debug(t3)
+        if t1 != 0.0:
+            self._update(turn=0.0, cc=cc)
+            self.t_max = self.t0 + t1
+            return
+        if t2 != 0.0:
+            self._update(turn=0.0, cc=cc)
+            self.t_max = self.t0 + t2
+            return
+        if t3 != 0.0:
+            log.debug('TORMOZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
+            self._update(turn=0.0, cc=0.0)
+            self.target_point = None
+            return
+
+        log.debug('ERRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOORRRRRRRRRRRRRRRRRRRR')
+
+
+    def _update(self, cc=None, turn=None):
         if cc is not None:
             assert  0 <= cc <= 1
             self.cc = cc
@@ -197,14 +315,10 @@ class State(BaseState):
                 self._sp_m = m
                 self._sp_fi0 = self.sp_fi(self.t0)
                 self._rv_fi = acos(m / sqrt(1 + m ** 2))
-                self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
             else:
                 self._rv_fi = 0.5 * pi
-                self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * self._rv_fi)
+            self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
 
-        #if target_point is not None:
-        #    assert turn is None, 'Turn factor and target_point declared both in state update.'
-        #    self._update_by_target(target_point)
 
     def __str__(self):
         return (
@@ -224,43 +338,4 @@ class State(BaseState):
 
 
 if __name__ == '__main__':
-    st = State(owner=None, t=0.0, fi=0.0, p=Point(0.0), v=30.0, a_accelerate=1.0, a_braking=-1.0)
-    #st.update(cc=1.0)
-    #print st.p(t=1.0)
-
-    st.update(cc=0.0, turn=1.0)
-
-    print ' c=', st._c
-
-
-    for t in xrange(31):
-        print 't=', t, ' r(t)=', st.r(t), ' p(t)=', st.p(t), ' fi(t)=', 180/pi*st.fi(t)
-
-    '''
-    import thread
-    g = 1
-
-    def lookup(state):
-        from sys import stderr
-        from time import sleep
-        global g
-        g = 1
-        while g:
-            try:
-                state.update(dt=1.0)
-            except ETimeIsNotInState as e:                
-                print >>stderr, e.message
-                state.update(t=state.t_max)
-            print >>stderr, state
-            sleep(1)
-
-    def u(*av, **kw):
-        if 'fi' in kw:
-            kw['fi'] = radians(kw['fi'])
-        s.update(*av, **kw)
-        print s
-    
-    s = State(0.0, Point(0.0))
-    print 'START:', s
-    thread.start_new(lookup, (s,))
-    '''
+    pass

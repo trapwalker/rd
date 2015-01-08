@@ -68,8 +68,8 @@ class AgentAPI(API):
         self.send_init_package()
 
     @public_method
-    def goto(self, x, y):
-        self.car.goto(position=Point(x, y))
+    def goto(self, x, y, new_speed):
+        self.car.goto(position=Point(x, y), cc=new_speed)
 
     @public_method
     def stop(self):
