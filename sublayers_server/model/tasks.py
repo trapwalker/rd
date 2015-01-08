@@ -57,6 +57,11 @@ class Task(object):
             'D' if self.is_done else 'd',
         ])
 
+    def __str__(self):
+        return self.__str_template__.format(self=self)
+
+    id = property(id)
+
     @property
     def is_worked(self):
         return self.is_started and not self.is_cancelled and not self.is_done and not self.is_paused
@@ -123,11 +128,6 @@ class Task(object):
 
     def on_cancel(self):
         pass
-
-    def __str__(self):
-        return self.__str_template__.format(self=self)
-
-    id = property(id)
 
 
 class Goto(Task):
