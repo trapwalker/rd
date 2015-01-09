@@ -345,12 +345,15 @@ var ClientManager = (function () {
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
-        console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        new_speed = newSpeed / user.userCar.maxSpeed;
+        new_speed = new_speed >= 0 ? new_speed : 0;
+        new_speed = new_speed <= 1 ? new_speed : 1;
         var mes = {
             call: "set_speed",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                new_speed: newSpeed / user.userCar.maxSpeed
+                new_speed: new_speed
             }
         };
         rpcCallList.add(mes);

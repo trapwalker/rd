@@ -32,7 +32,7 @@ class BaseState(object):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
-        assert v >= 0.0
+        #assert v >= 0.0
         self.v0 = v
         self.a = 0.0
         self.r_min = r_min
