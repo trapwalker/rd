@@ -136,6 +136,7 @@ class Mobile(Unit):
         self._max_velocity = max_velocity
         t = self.server.get_time()
         self.state = State(owner=self, t=t, **self.init_state_params())
+        # todo: todo !!!! Перевести это на таски!
         events.Update(obj=self, time=t)
         # todo: test to excess update-message after initial contact-message
 
