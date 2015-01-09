@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 from tasks import Task, TaskEvent
-from state import State
+from state import State, EPS
 
 
 class MotionTaskEvent(TaskEvent):
@@ -28,13 +28,84 @@ class MotionTask(Task):
         st = State.copy_state(owner.state)
         while True:
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=self.cc, turn=self.turn))
-            st.update(t=time, cc=self.cc, turn=self.turn)
-            time = st.t_max
+            time = st.update(t=time, cc=self.cc, turn=self.turn)
             if time is None:
                 break
 
     def _calc_goto(self, event):
-        pass
+        log.debug('_calc_goto =============================================== start')
+
+        time = event.time
+        owner = self.owner
+        target_point = self.target_point
+
+        st = State.copy_state(owner.state)
+        st.update(t=time, cc=self.cc)
+
+        log.debug('time=%s', time)
+        # Мы около цели, необходимо остановиться
+        if st.p0.distance(target_point) < (2 * st.r(st.t0)):
+            log.debug('111111111111111111111111111111111111111111111111111')
+            log.debug('time=%s', time)
+            turn = -st._get_turn_sign(target_point)
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=turn))
+            time = st.update(t=time, cc=0.0, turn=turn)
+            if time:
+                self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, turn=0.0))
+                log.debug('time=%s', time)
+            return
+
+        # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
+        v_min = 20.0  #todo: обсудить куда это вынести
+        assert v_min < st.v_max
+        temp_cc = min(self.cc, v_min / st.v_max) #определить минимальную скоростью
+        if st.v0 < temp_cc * st.v_max:
+            log.debug('222222222222222222222222222222222222222222222222222')
+            log.debug('time=%s', time)
+            turn = -st._get_turn_sign(target_point)
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
+            time = st.update(t=time, cc=temp_cc, turn=turn)
+            log.debug('time=%s', time)
+
+        # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
+        st.update(t=time)
+        turn_fi = st._get_turn_fi(target_point)
+        if abs(turn_fi) > EPS:
+            log.debug('333333333333333333333333333333333333333333333333333')
+            log.debug('time=%s   in circle', time)
+            temp_cc = st.v(time) / st.v_max
+            turn = -st._get_turn_sign(target_point)
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
+            st.update(t=time, cc=temp_cc, turn=turn)
+            time = st.t0 + turn_fi * st.r(st.t0) / st.v0
+            log.debug('time=%s    out circle', time)
+
+        # если мы направлены в сторону цели
+        log.debug('444444444444444444444444444444444444444444444444444')
+        log.debug('time=%s', time)
+        st.update(t=time, turn=0.0)
+
+        s = abs(target_point - st.p0)
+        t1, t2, t3 = st._calc_time_segment(s, self.cc)
+        log.debug(t1)
+        log.debug(t2)
+        log.debug(t3)
+        if t1 != 0.0:
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=self.cc, turn=0.0))
+            st.update(t=time, cc=self.cc, turn=0.0)
+            time = st.t0 + t1
+        if t2 != 0.0:
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=self.cc, turn=0.0))
+            st.update(t=time, cc=self.cc, turn=0.0)
+            time = st.t0 + t2
+        if t3 != 0.0:
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=0.0))
+            time = st.update(t=time, cc=0.0, turn=0.0)
+            assert time
+            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self))
+
+        log.debug('_calc_goto =============================================== end')
+
 
     def _update_state(self, event):
         owner = self.owner
@@ -61,6 +132,7 @@ class MotionTask(Task):
                         task.del_event(e)
 
     def on_perform(self, event):
+        log.debug('======================================== on_perform time=%s', event.time)
         if self.is_motion_start:
             self._update_state(event)
         else:

@@ -69,7 +69,7 @@ class AgentAPI(API):
 
     @public_method
     def goto(self, x, y, new_speed):
-        #self.car.goto(position=Point(x, y), cc=new_speed)
+        self.car.goto(position=Point(x, y), cc=new_speed)
         pass
 
     @public_method

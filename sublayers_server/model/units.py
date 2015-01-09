@@ -176,10 +176,12 @@ class Mobile(Unit):
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        events.Update(obj=self, time=time, target_point=position, cc=cc).send()
+        MotionTask(owner=self, target_point=position, cc=cc).start()
+        #events.Update(obj=self, time=time, target_point=position, cc=cc).send()
 
     def set_cc(self, value, time=None):
         # todo: docstring
+        # todo: найти из старых тасков самую новую target_point
         MotionTask(owner=self, cc=value).start()
         #events.Update(obj=self, time=time, cc=value).send()
 

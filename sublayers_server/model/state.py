@@ -134,17 +134,6 @@ class State(BaseState):
         self.update(cc=cc, turn=turn)
 
 
-    @assert_time_in_state
-    def update(self, t=None, dt=0.0, cc=None, turn=None, target_point=None):
-        self.fix(t=t, dt=dt)
-        self.t_max = None
-        if target_point is not None and cc is not None and cc != 0.0:
-            self._update_by_target(cc, target_point)
-        else:
-            self.target_point = None
-            self._update(cc, turn)
-
-
     def _get_turn_sign(self, target_point):
         assert target_point is not None
         pt = target_point - self.p0
@@ -221,65 +210,14 @@ class State(BaseState):
             return (t1, t2, t3)
 
 
-    def _update_by_target(self, cc, target_point):
-        """
-        Select instruction and update State for first segment of trajectory to target_point
-        """
+
+    @assert_time_in_state
+    def update(self, t=None, dt=0.0, cc=None, turn=None):
+
+        self.fix(t=t, dt=dt)
+        self.t_max = None
 
 
-        self.target_point = target_point
-        # Мы около цели, необходимо остановиться
-        #todo: todo
-        '''
-        log.debug('111111111111111111111111111111111111111111111111111')
-        if self.p0.distance(target_point) < (2 * self.r(self.t0)):
-            self.target_point = None
-            self._update(cc=0.0, turn=-self._get_turn_sign(target_point))
-            return
-        '''
-
-        # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
-        log.debug('222222222222222222222222222222222222222222222222222')
-        v_min = 5.0  #todo: обсудить куда это вынести
-        assert v_min < self.v_max
-        temp_cc = min(cc, v_min / self.v_max) #определить минимальную скоростью
-        if self.v0 < temp_cc * self.v_max:
-            self._update(cc=temp_cc, turn=-self._get_turn_sign(target_point))
-            return
-
-        # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
-        log.debug('333333333333333333333333333333333333333333333333333')
-        turn_fi = self._get_turn_fi(target_point)
-        if abs(turn_fi) > EPS:
-            self._update(turn=-self._get_turn_sign(target_point))
-            self.t_max = self.t0 + turn_fi * self.r(self.t0) / self.v0
-            return
-
-        # если мы направлены в сторону цели
-        log.debug('444444444444444444444444444444444444444444444444444')
-        s = abs(target_point - self.p0)
-        t1, t2, t3 = self._calc_time_segment(s, cc)
-        log.debug(t1)
-        log.debug(t2)
-        log.debug(t3)
-        if t1 != 0.0:
-            self._update(turn=0.0, cc=cc)
-            self.t_max = self.t0 + t1
-            return
-        if t2 != 0.0:
-            self._update(turn=0.0, cc=cc)
-            self.t_max = self.t0 + t2
-            return
-        if t3 != 0.0:
-            log.debug('TORMOZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
-            self._update(turn=0.0, cc=0.0)
-            self.target_point = None
-            return
-
-        log.debug('ERRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOORRRRRRRRRRRRRRRRRRRR')
-
-
-    def _update(self, cc=None, turn=None):
         if cc is not None:
             assert  0 <= cc <= 1
             self.cc = cc
@@ -320,7 +258,7 @@ class State(BaseState):
                 self._rv_fi = 0.5 * pi
             self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
 
-        return self.t_max # так мы поймём, будет ли t_max
+        return self.t_max
 
 
     def __str__(self):
