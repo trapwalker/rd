@@ -20,8 +20,7 @@ class TaskEvent(events.Event):
 
     def on_perform(self):
         super(TaskEvent, self).on_perform()
-        if self in self.task.events:
-            self.task.perform(self)
+        self.task.perform(self)
 
 
 class Task(object):
@@ -75,7 +74,6 @@ class Task(object):
         while events:
             event = events.pop()
             self.on_del_event(event)
-            event.cancel()
 
     def start(self):
         #log.debug('TASK start: %s', self)
@@ -111,12 +109,20 @@ class Task(object):
             self.owner.tasks.remove(self)
 
     def perform(self, event):
-        self.events.remove(event)
+        if event in self.events:
+            self.events.remove(event)
         self.on_perform(event)
 
     def add_event(self, event):
         self.events.append(event)
         self.on_add_event(event)
+
+    def del_event(self, event):
+        if event in self.events:
+            self.events.remove(event)
+            self.on_del_event(event)
+        if not self.events:
+            self.done()
 
     def on_perform(self, event):
         pass
@@ -141,7 +147,7 @@ class Task(object):
         event.send()
 
     def on_del_event(self, event):
-        pass
+        event.cancel()
     
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
 # todo: Make "Scouting" task +modifiers (aggresive, sneaking, defending, ...)
