@@ -26,6 +26,7 @@ class Event(object):
         self.comment = comment  # todo: Устранить отладочную информацию
 
     def send(self):
+        # todo: rename method Event.send -> Evemt.post
         self.server.post_event(self)  # todo: test to atomic construction
         log.info('POST   %s', self)
 
