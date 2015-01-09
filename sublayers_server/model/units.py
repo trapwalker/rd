@@ -7,6 +7,7 @@ from state import State
 from base import Observer
 from balance import BALANCE
 from math import pi
+from motion_task import MotionTask
 import events
 
 
@@ -167,7 +168,7 @@ class Mobile(Unit):
         pass
 
     def stop(self, time=None):
-        events.Update(obj=self, time=time, cc=0).send()
+        MotionTask(owner=self, cc=0.0).start()
         # todo: clear target_point
 
     def goto(self, position, cc, time=None):
@@ -179,11 +180,13 @@ class Mobile(Unit):
 
     def set_cc(self, value, time=None):
         # todo: docstring
-        events.Update(obj=self, time=time, cc=value).send()
+        MotionTask(owner=self, cc=value).start()
+        #events.Update(obj=self, time=time, cc=value).send()
 
     def set_turn(self, turn, time=None):
         # todo: docstring
-        events.Update(obj=self, time=time, turn=turn).send()
+        MotionTask(owner=self, turn=turn).start()
+        #events.Update(obj=self, time=time, turn=turn).send()
 
     @property
     def v(self):

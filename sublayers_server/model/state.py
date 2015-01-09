@@ -100,7 +100,6 @@ class BaseState(object):
             _sp_m=self._sp_m,
             _sp_fi0=self._sp_fi0,
             _rv_fi=self._rv_fi,
-
         )
 
     @property
@@ -294,10 +293,12 @@ class State(BaseState):
             self.a = self.a_braking
         else:
             self.a = 0.0
+            '''
             if dv:
                 log.warning('Reduce v0+=dv: v0=%s+%s', self.v0, dv)
             self.v0 += dv
             dv = 0.0
+            '''
 
         if self.a != 0.0:
             self.t_max = self.t0 + dv / self.a
@@ -319,6 +320,8 @@ class State(BaseState):
                 self._rv_fi = 0.5 * pi
             self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
 
+        return self.t_max # так мы поймём, будет ли t_max
+
 
     def __str__(self):
         return (
@@ -335,6 +338,28 @@ class State(BaseState):
             t_max_str='{:.2f}'.format(self.t_max) if self.t_max is not None else '',
             **self.__dict__
         )
+
+
+    @classmethod
+    def copy_state(cls, st):
+        res = State(
+            owner=st.owner, t=st.t0, p=st.p0, fi=st.fi0, v=st.v0,
+            cc=st.cc,
+            turn=st._turn_sign,
+            r_min=st.r_min,
+            ac_max=st.ac_max,
+            v_max=st.v_max,
+            a_accelerate=st.a_accelerate,
+            a_braking=st.a_braking)
+        res.a = st.a
+        res._c = st._c
+        res._sp_m = st._sp_m
+        res._sp_fi0 = st._sp_fi0
+        res._rv_fi = st._rv_fi
+        res.t_max = st.t_max
+        return res
+
+
 
 
 if __name__ == '__main__':

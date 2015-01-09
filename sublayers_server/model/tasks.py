@@ -12,6 +12,18 @@ class TaskError(Exception):
     pass
 
 
+class TaskEvent(events.Event):
+    def __init__(self, task, **kw):
+        super(TaskEvent, self).__init__(**kw)
+        assert task
+        self.task = task
+
+    def on_perform(self):
+        super(TaskEvent, self).on_perform()
+        if self in self.task.events:
+            self.task.perform(self)
+
+
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
@@ -61,7 +73,9 @@ class Task(object):
     def _cancel_events(self):
         events = self.events
         while events:
-            events.pop().cancel()
+            event = events.pop()
+            self.on_del_event(event)
+            event.cancel()
 
     def start(self):
         #log.debug('TASK start: %s', self)
@@ -85,18 +99,24 @@ class Task(object):
         self._cancel_events()
         self.on_done()
         self.is_done = True
-        self.owner.tasks.remove(self)
+        if self in self.owner.tasks:
+            self.owner.tasks.remove(self)
 
     def cancel(self):
         assert not self.is_cancelled and not self.is_done
         self._cancel_events()
         self.on_cancel()
         self.is_cancelled = True
-        self.owner.tasks.remove(self)
+        if self in self.owner.tasks:
+            self.owner.tasks.remove(self)
 
     def perform(self, event):
         self.events.remove(event)
         self.on_perform(event)
+
+    def add_event(self, event):
+        self.events.append(event)
+        self.on_add_event(event)
 
     def on_perform(self, event):
         pass
@@ -111,15 +131,17 @@ class Task(object):
         pass
 
     def on_done(self):
+        log.debug('Task on done !!!!')
         pass
 
     def on_cancel(self):
         pass
 
+    def on_add_event(self, event):
+        event.send()
 
-class Goto(Task):
-    pass
-
+    def on_del_event(self, event):
+        pass
     
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
 # todo: Make "Scouting" task +modifiers (aggresive, sneaking, defending, ...)

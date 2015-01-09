@@ -170,6 +170,10 @@ class Update(Objective):
                 obj.on_start(event=self)
             else:
                 obj.on_stop(event=self)
+
+
+
+
         t_max = state.t_max
         if t_max is not None:
             assert t_max != self.time  # todo: fixit
