@@ -51,8 +51,7 @@ class AgentAPI(API):
 
     def send_init_package(self):
         # todo: move to Init-event performing method (!)
-        agent = self.agent
-        agent.server.post_message(messages.Init(agent=agent, time=None))
+        messages.Init(agent=self.agent, time=None).post()
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.party.init_car(
@@ -124,13 +123,12 @@ class AgentAPI(API):
         log.info('Agent %s say: %r', self.agent.login, text)
         app = self.agent.connection.application
         me = self.agent
-        srv = me.server
         chat = app.chat
         msg_id = len(chat)  # todo: get "client_id" from client message info
 
         message_params = dict(author=me, text=text, client_id=msg_id)
         for client_connection in app.clients:
-            srv.post_message(messages.Chat(agent=client_connection.agent, **message_params))
+            messages.Chat(agent=client_connection.agent, **message_params).post()
 
         chat.append(message_params)
 

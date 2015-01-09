@@ -64,11 +64,11 @@ class Rocket(Mobile):
             return
         log.debug('Rocket Contacn IN !!!!!!!!!!!!!!!')
         for agent in self.subscribed_agents:
-            self.server.post_message(messages.Bang(
+            messages.Bang(
                 position=self.position,
                 agent=agent,
                 time=time,
                 subj=self,
-            ))
+            ).post()
 
         self.delete()
