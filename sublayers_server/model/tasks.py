@@ -97,21 +97,18 @@ class Task(object):
         self._cancel_events()
         self.on_done()
         self.is_done = True
-        if self in self.owner.tasks:
-            self.owner.tasks.remove(self)
+        self.owner.tasks.remove(self)
 
     def cancel(self):
         assert not self.is_cancelled and not self.is_done
         self._cancel_events()
         self.on_cancel()
         self.is_cancelled = True
-        if self in self.owner.tasks:
-            self.owner.tasks.remove(self)
+        self.owner.tasks.remove(self)
 
     def perform(self, event):
-        if event in self.events:
-            self.events.remove(event)
         self.on_perform(event)
+        self.del_event(event)
 
     def add_event(self, event):
         self.events.append(event)
@@ -120,7 +117,7 @@ class Task(object):
     def del_event(self, event):
         if event in self.events:
             self.events.remove(event)
-            self.on_del_event(event)
+        self.on_del_event(event)
         if not self.events:
             self.done()
 
