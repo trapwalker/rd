@@ -25,8 +25,7 @@ class Event(object):
         self.callback_after = callback_after
         self.comment = comment  # todo: Устранить отладочную информацию
 
-    def send(self):
-        # todo: rename method Event.send -> Evemt.post
+    def post(self):
         self.server.post_event(self)  # todo: test to atomic construction
         log.info('POST   %s', self)
 
@@ -125,7 +124,7 @@ class Delete(Objective):
         events = self.obj.events
         t_max = (max(events).time + 1.0) if events else None  # todo: extract to constant 'limbo_timeout'
         log.debug('Termination of %s set to %s', self.obj, t_max)
-        DeleteEnd(obj=self.obj, time=t_max).send()
+        DeleteEnd(obj=self.obj, time=t_max).post()
 
 
 class DeleteEnd(Objective):
@@ -143,7 +142,7 @@ class SearchContacts(Objective):
         interval = obj.contacts_check_interval
         if obj.is_alive and interval:
             obj.on_contacts_check()  # todo: check it
-            SearchContacts(obj=obj, time=obj.server.get_time() + interval).send()  # todo: make regular interva
+            SearchContacts(obj=obj, time=obj.server.get_time() + interval).post()  # todo: make regular interva
 
 
 class Update(Objective):
@@ -178,7 +177,7 @@ class Update(Objective):
                 if state.target_point is None:
                     self.cc = 0.0
                     self.target_point = None
-            Update(obj=obj, time=t_max, cc=self.cc, target_point=self.target_point).send()
+            Update(obj=obj, time=t_max, cc=self.cc, target_point=self.target_point).post()
             # todo: disactualize future event
 
 

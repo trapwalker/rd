@@ -167,7 +167,7 @@ class Mobile(Unit):
         pass
 
     def stop(self, time=None):
-        events.Update(obj=self, time=time, cc=0).send()
+        events.Update(obj=self, time=time, cc=0).post()
         # todo: clear target_point
 
     def goto(self, position, cc, time=None):
@@ -175,15 +175,15 @@ class Mobile(Unit):
         @param position: sublayers_server.model.vectors.Point
         """
         # todo: chaining
-        events.Update(obj=self, time=time, target_point=position, cc=cc).send()
+        events.Update(obj=self, time=time, target_point=position, cc=cc).post()
 
     def set_cc(self, value, time=None):
         # todo: docstring
-        events.Update(obj=self, time=time, cc=value).send()
+        events.Update(obj=self, time=time, cc=value).post()
 
     def set_turn(self, turn, time=None):
         # todo: docstring
-        events.Update(obj=self, time=time, turn=turn).send()
+        events.Update(obj=self, time=time, turn=turn).post()
 
     @property
     def v(self):

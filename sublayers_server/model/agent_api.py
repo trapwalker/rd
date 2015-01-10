@@ -90,7 +90,7 @@ class AgentAPI(API):
         def crazy_func(event=None):
             log.debug('Run crazy func')
             dt = abs(random.gauss(0, 5)) + 0.5  # sec
-            events.Event(server=server, time=server.get_time() + dt, callback_before=crazy_func, comment="I'm crazy").send()
+            events.Event(server=server, time=server.get_time() + dt, callback_before=crazy_func, comment="I'm crazy").post()
             if self.agent.cars:
                 p = None
                 target = None

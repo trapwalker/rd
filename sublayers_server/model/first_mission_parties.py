@@ -22,7 +22,7 @@ class CargoBot(Bot):
     def on_die(self):
         super(CargoBot, self).on_die()
         log.debug('Cargo is DIE!')
-        WinEvent(server=self.server, winner_unit=None).send()
+        WinEvent(server=self.server, winner_unit=None).post()
 
 
 class WinMessage(Message):
@@ -63,7 +63,7 @@ class WinTrigger(Trigger):
         log.debug('Win trigger tested: %s', obj)
         if isinstance(obj, Bot) and obj.owner and obj.role and obj.role.name == 'Cargo':
             log.debug('Win trigger accepted!: %s', obj)
-            WinEvent(server=self.server, winner_unit=obj).send()
+            WinEvent(server=self.server, winner_unit=obj).post()
 
 
 class Corp(RoleParty):
