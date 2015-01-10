@@ -23,6 +23,5 @@ class ServerAPI(API):
         agent = self.server.agents.get(agent_id, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             cls = AI if ai else User
-            log.debug('PARTIES=%s', self.server.parties)
             agent = cls(server=self.server, login=agent_id, party=self.server.parties.get_smalest_party())
         return agent

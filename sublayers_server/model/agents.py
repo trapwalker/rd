@@ -13,7 +13,6 @@ class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 
     def __init__(self, login, connection=None, party=None, **kw):
-        log.info('!!!!!!!!Agent before init')
         super(Agent, self).__init__(**kw)
         self.observers = Counter()
         # todo: replace Counter to CounterSet
@@ -26,7 +25,6 @@ class Agent(Object):
         self.party = None
         if party is not None:
             party.include(self)
-        log.debug('=========%s', self.party)
 
     @property
     def is_online(self):

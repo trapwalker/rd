@@ -38,7 +38,6 @@ class Party(object):
 
     def include(self, agent):
         old_party = agent.party
-        log.debug('--------%s', agent.party)
         if old_party is self:
             return
 
