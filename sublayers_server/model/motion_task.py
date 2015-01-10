@@ -4,6 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 from tasks import Task, TaskEvent
 from state import State, EPS
+from vectors import Point
+import math
 
 
 class MotionTaskEvent(TaskEvent):
@@ -47,16 +49,42 @@ class MotionTask(Task):
         if st.p0.distance(target_point) < (2 * st.r(st.t0)):
             log.debug('111111111111111111111111111111111111111111111111111')
             log.debug('time=%s', time)
+            # начать двигаться по кругу и тормозить сразу же
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=turn))
-            time = st.update(t=time, cc=0.0, turn=turn)
-            if time:
-                self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, turn=0.0))
-                log.debug('time=%s', time)
+            br_time = st.update(t=time, cc=0.0, turn=turn)
+            log.debug('br_time=%s', br_time)
+            '''
+            Если мы кликнули внутрь радиуса, то нужно узнать сможем ли мы будучи в торможении достичь данной точки
+            Для этого рассчитаем угол, на который мы должны довернуть своё текущее направление
+            '''
+            my_vect = Point.polar(1, st.fi0)
+            t_vect = target_point - st.p0
+            angle = abs(t_vect.angle_with(my_vect))
+            log.debug('angle=%s', angle)
+            if angle > EPS:
+                # рассчитаем длину пути по кругу для достижения направления
+                l_circle = angle * st.r(st.t0)
+                # рассчитаем тормозной путь
+                s_bracking = st.s(br_time)
+                log.debug('l_circle=%s', l_circle)
+                log.debug('s_bracking=%s', s_bracking)
+                # если путь по кругу меньше, чем тормозной путь
+                if l_circle < s_bracking:
+                    # узнать как долго мы должны двигаться по кругу
+                    t_circle = (- st.v0 + math.sqrt(st.v0 ** 2 + 2 * st.a * l_circle)) / st.a
+                    log.debug('t_circle=%s', t_circle)
+                    # закончить круг и остальную часть ехать прямо и тормозить
+                    self.add_event(MotionTaskEvent(server=owner.server, time=time + t_circle, task=self, cc=0.0, turn=0.0))
+                    # на всякий случай обновить время остановки
+                    br_time = st.update(t=t_circle, cc=0.0, turn=0.0)
+            if br_time:
+                self.add_event(MotionTaskEvent(server=owner.server, time=br_time, task=self, turn=0.0))
+                log.debug('time=%s', br_time)
             return
 
         # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
-        v_min = 20.0  #todo: обсудить куда это вынести
+        v_min = 5.0  #todo: обсудить куда вынести данный балансный параметр
         assert v_min < st.v_max
         temp_cc = min(self.cc, v_min / st.v_max) #определить минимальную скоростью
         if st.v0 < temp_cc * st.v_max:
