@@ -76,7 +76,6 @@ class Task(object):
             self.on_del_event(event)
 
     def start(self):
-        #log.debug('TASK start: %s', self)
         if not self.is_started:
             self.on_start()
             self.is_started = True
@@ -134,7 +133,6 @@ class Task(object):
         pass
 
     def on_done(self):
-        log.debug('Task on done !!!!')
         pass
 
     def on_cancel(self):
@@ -148,5 +146,4 @@ class Task(object):
     
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
 # todo: Make "Scouting" task +modifiers (aggresive, sneaking, defending, ...)
-# todo: Make "Goto" task modifiers (aggresive, sneaking, ...)
 # todo: Make "Standing" task modifiers (aggresive, sneaking, defending, ...)

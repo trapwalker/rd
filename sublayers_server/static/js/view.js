@@ -99,7 +99,6 @@ function onKeyDownMap(event) {
     //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
         case 37:
-            console.log(37);
             if (!pressedArrowLeft) {
                 clientManager.sendTurn(1);
                 pressedArrowLeft = true;

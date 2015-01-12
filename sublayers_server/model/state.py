@@ -4,15 +4,12 @@ import logging
 log = logging.getLogger(__name__)
 
 from vectors import Point
-from math import degrees, radians, pi, sqrt, log as ln, acos
-
+from math import degrees, pi, sqrt, log as ln, acos
 
 EPS = 1e-5
 
-
 class ETimeIsNotInState(Exception):
     pass
-
 
 def assert_time_in_state(f):
     from functools import update_wrapper
@@ -28,22 +25,20 @@ def assert_time_in_state(f):
 
 class BaseState(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, r_min=10.0, ac_max=10.0):
+    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, r_min=10.0, ac_max=10.0, c = None, turn = 0.0, sp_m = 0.0, sp_fi0 = 0.0, rv_fi = 0.0):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
-        #assert v >= 0.0
         self.v0 = v
-        self.a = 0.0
+        self.a = a
         self.r_min = r_min
         assert ac_max > 0.0
         self.ac_max = ac_max
-
-        self._c = None
-        self._turn_sign = 0
-        self._sp_m = 0
-        self._sp_fi0 = 0
-        self._rv_fi = 0
+        self._c = c
+        self._turn_sign = turn
+        self._sp_m = sp_m
+        self._sp_fi0 = sp_fi0
+        self._rv_fi = rv_fi
 
     def fix(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
@@ -125,14 +120,13 @@ class State(BaseState):
         self.owner = owner
         super(State, self).__init__(t, p, fi, v, r_min, ac_max)
         self.v_max = v_max
-        #assert (a_accelerate < 0.5 * self.ac_max)  # todo: Обсудить (!)
+        assert (a_accelerate < 0.5 * self.ac_max)
         self.a_accelerate = a_accelerate
         self.a_braking = a_braking
         self.cc = v / v_max
         self.t_max = None
         self.target_point = None
         self.update(cc=cc, turn=turn)
-
 
     def _get_turn_sign(self, target_point):
         assert target_point is not None
@@ -142,7 +136,6 @@ class State(BaseState):
         if _turn_sign == 0.0 :
             return 0.0 if pf.angle_with(pt) == 0.0 else 1
         return 1 if _turn_sign > 0.0 else -1
-
 
     def _get_turn_fi(self, target_point):
         #todo: найти место для этой функции
@@ -166,7 +159,6 @@ class State(BaseState):
         res = ce_fi - cp.angle
         if turn_sign < 0: res = 2 * pi - res
         return normalize_angle(res)
-
 
     def _calc_time_segment(self, s, cc):
         """
@@ -209,19 +201,14 @@ class State(BaseState):
             if abs(t2) < EPS: t2 = 0.0 # чтобы не добавлять ивент через очень короткое время
             return (t1, t2, t3)
 
-
-
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None):
-
         self.fix(t=t, dt=dt)
         self.t_max = None
-
 
         if cc is not None:
             assert  0 <= cc <= 1
             self.cc = cc
-
         assert self.cc is not None
 
         dv = self.v_max * self.cc - self.v0
@@ -231,20 +218,11 @@ class State(BaseState):
             self.a = self.a_braking
         else:
             self.a = 0.0
-            '''
-            if dv:
-                log.warning('Reduce v0+=dv: v0=%s+%s', self.v0, dv)
-            self.v0 += dv
-            dv = 0.0
-            '''
-
         if self.a != 0.0:
             self.t_max = self.t0 + dv / self.a
 
-        # todo: fix t_max==t0 problem
         if turn is not None:
             self._turn_sign = turn
-
         if self._turn_sign == 0:
             self._c = None
         else:
@@ -259,7 +237,6 @@ class State(BaseState):
             self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
 
         return self.t_max
-
 
     def __str__(self):
         return (
@@ -276,7 +253,6 @@ class State(BaseState):
             t_max_str='{:.2f}'.format(self.t_max) if self.t_max is not None else '',
             **self.__dict__
         )
-
 
     @classmethod
     def copy_state(cls, st):
@@ -296,9 +272,6 @@ class State(BaseState):
         res._rv_fi = st._rv_fi
         res.t_max = st.t_max
         return res
-
-
-
 
 if __name__ == '__main__':
     pass

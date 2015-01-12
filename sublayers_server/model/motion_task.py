@@ -35,25 +35,18 @@ class MotionTask(Task):
                 break
 
     def _calc_goto(self, event):
-        log.debug('_calc_goto =============================================== start')
-
         time = event.time
         owner = self.owner
         target_point = self.target_point
-
         st = State.copy_state(owner.state)
         st.update(t=time, cc=self.cc)
-
-        log.debug('time=%s', time)
         # Мы около цели, необходимо остановиться
         if st.p0.distance(target_point) < (2 * st.r(st.t0)):
-            log.debug('111111111111111111111111111111111111111111111111111')
-            log.debug('time=%s', time)
+            # todo: если target_point не ближе чем минимальный радиус, то проехать вперед с замедлением
             # начать двигаться по кругу и тормозить сразу же
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=turn))
             br_time = st.update(t=time, cc=0.0, turn=turn)
-            log.debug('br_time=%s', br_time)
             '''
             Если мы кликнули внутрь радиуса, то нужно узнать сможем ли мы будучи в торможении достичь данной точки
             Для этого рассчитаем угол, на который мы должны довернуть своё текущее направление
@@ -61,26 +54,22 @@ class MotionTask(Task):
             my_vect = Point.polar(1, st.fi0)
             t_vect = target_point - st.p0
             angle = abs(t_vect.angle_with(my_vect))
-            log.debug('angle=%s', angle)
+
             if angle > EPS:
                 # рассчитаем длину пути по кругу для достижения направления
                 l_circle = angle * st.r(st.t0)
                 # рассчитаем тормозной путь
                 s_bracking = st.s(br_time)
-                log.debug('l_circle=%s', l_circle)
-                log.debug('s_bracking=%s', s_bracking)
                 # если путь по кругу меньше, чем тормозной путь
                 if l_circle < s_bracking:
                     # узнать как долго мы должны двигаться по кругу
                     t_circle = (- st.v0 + math.sqrt(st.v0 ** 2 + 2 * st.a * l_circle)) / st.a
-                    log.debug('t_circle=%s', t_circle)
                     # закончить круг и остальную часть ехать прямо и тормозить
                     self.add_event(MotionTaskEvent(server=owner.server, time=time + t_circle, task=self, cc=0.0, turn=0.0))
                     # на всякий случай обновить время остановки
                     br_time = st.update(t=t_circle, cc=0.0, turn=0.0)
             if br_time:
                 self.add_event(MotionTaskEvent(server=owner.server, time=br_time, task=self, turn=0.0))
-                log.debug('time=%s', br_time)
             return
 
         # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
@@ -88,36 +77,24 @@ class MotionTask(Task):
         assert v_min < st.v_max
         temp_cc = min(self.cc, v_min / st.v_max) #определить минимальную скоростью
         if st.v0 < temp_cc * st.v_max:
-            log.debug('222222222222222222222222222222222222222222222222222')
-            log.debug('time=%s', time)
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
             time = st.update(t=time, cc=temp_cc, turn=turn)
-            log.debug('time=%s', time)
 
         # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
         st.update(t=time)
         turn_fi = st._get_turn_fi(target_point)
         if abs(turn_fi) > EPS:
-            log.debug('333333333333333333333333333333333333333333333333333')
-            log.debug('time=%s   in circle', time)
             temp_cc = st.v(time) / st.v_max
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
             st.update(t=time, cc=temp_cc, turn=turn)
             time = st.t0 + turn_fi * st.r(st.t0) / st.v0
-            log.debug('time=%s    out circle', time)
 
         # если мы направлены в сторону цели
-        log.debug('444444444444444444444444444444444444444444444444444')
-        log.debug('time=%s', time)
         st.update(t=time, turn=0.0)
-
         s = abs(target_point - st.p0)
         t1, t2, t3 = st._calc_time_segment(s, self.cc)
-        log.debug(t1)
-        log.debug(t2)
-        log.debug(t3)
         if t1 != 0.0:
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=self.cc, turn=0.0))
             st.update(t=time, cc=self.cc, turn=0.0)
@@ -131,9 +108,6 @@ class MotionTask(Task):
             time = st.update(t=time, cc=0.0, turn=0.0)
             assert time
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self))
-
-        log.debug('_calc_goto =============================================== end')
-
 
     def _update_state(self, event):
         owner = self.owner
@@ -158,18 +132,29 @@ class MotionTask(Task):
                 for e in events:
                     if e.time > time:
                         task.del_event(e)
+                        log.debug(e.task)
 
     def on_perform(self, event):
-        log.debug('======================================== on_perform time=%s', event.time)
         if self.is_motion_start:
             self._update_state(event)
         else:
+            owner = self.owner
+            if owner.cur_motion_task is not None:
+                if (self.target_point is None) and (self.turn is None):
+                    self.target_point = owner.cur_motion_task.target_point
+                if self.cc is None:
+                    self.cc = owner.cur_motion_task.cc
             self._clear_motion_tasks(event)
             if self.target_point:
                 self._calc_goto(event)
             else:
                 self._calc_keybord(event)
+            owner.cur_motion_task = self
             self.is_motion_start = True
 
     def on_start(self):
         MotionTaskEvent(server=self.owner.server, task=self).send()
+
+    def on_done(self):
+        if self.owner.cur_motion_task == self:
+            self.owner.cur_motion_task = None

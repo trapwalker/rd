@@ -90,12 +90,7 @@ class Unit(Observer):
 
     def on_die(self):
         # todo: make die event
-        '''
-        # todo: refactor
-        if isinstance(self, Bot):
-            self.stop()  # todo: fixit
-        self.on_update(time=self.server.get_time(), comment='RIP')
-        #'''
+        pass
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
@@ -136,8 +131,7 @@ class Mobile(Unit):
         self._max_velocity = max_velocity
         t = self.server.get_time()
         self.state = State(owner=self, t=t, **self.init_state_params())
-        # todo: todo !!!! Перевести это на таски!
-        events.Update(obj=self, time=t)
+        self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
 
     def init_state_params(self):
@@ -168,28 +162,9 @@ class Mobile(Unit):
     def on_stop(self, event):
         pass
 
-    def stop(self, time=None):
-        MotionTask(owner=self, cc=0.0).start()
-        # todo: clear target_point
-
-    def goto(self, position, cc, time=None):
-        """
-        @param position: sublayers_server.model.vectors.Point
-        """
-        # todo: chaining
-        MotionTask(owner=self, target_point=position, cc=cc).start()
-        #events.Update(obj=self, time=time, target_point=position, cc=cc).send()
-
-    def set_cc(self, value, time=None):
-        # todo: docstring
-        # todo: найти из старых тасков самую новую target_point
-        MotionTask(owner=self, cc=value).start()
-        #events.Update(obj=self, time=time, cc=value).send()
-
-    def set_turn(self, turn, time=None):
-        # todo: docstring
-        MotionTask(owner=self, turn=turn).start()
-        #events.Update(obj=self, time=time, turn=turn).send()
+    def set_motion(self, position=None, cc=None, turn=None):
+        assert (turn is None) or (position is None)
+        MotionTask(owner=self, target_point=position, cc=cc, turn=turn).start()
 
     @property
     def v(self):

@@ -145,46 +145,6 @@ class SearchContacts(Objective):
             SearchContacts(obj=obj, time=obj.server.get_time() + interval).send()  # todo: make regular interva
 
 
-class Update(Objective):
-    def __init__(self, cc=None, turn=None, target_point=None, **kw):
-        # todo: extract update params to separate dict (!) Нужна возможность обновлять нединамические объекты
-        super(Update, self).__init__(**kw)
-        self.cc = cc
-        self.turn = turn
-        self.target_point = target_point
-
-    def on_perform(self):
-        super(Update, self).on_perform()
-        # todo: move this logic into the Mobile.on_update (?)
-        t = self.time
-        obj = self.obj
-        """@type: sublayers_server.model.units.Mobile"""
-        state = obj.state  # todo: fixit for stateless objects
-        is_moving_before = state.is_moving
-        state.update(t=t, cc=self.cc, turn=self.turn, target_point=self.target_point)
-        is_moving_after = state.is_moving
-
-        obj.on_update(event=self)
-        if is_moving_before != is_moving_after:
-            if is_moving_after:
-                obj.on_start(event=self)
-            else:
-                obj.on_stop(event=self)
-
-
-
-
-        t_max = state.t_max
-        if t_max is not None:
-            assert t_max != self.time  # todo: fixit
-            if self.target_point:
-                if state.target_point is None:
-                    self.cc = 0.0
-                    self.target_point = None
-            Update(obj=obj, time=t_max, cc=self.cc, target_point=self.target_point).send()
-            # todo: disactualize future event
-
-
 class Contact(Objective):
     __str_template__ = (
         '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '

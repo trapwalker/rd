@@ -156,7 +156,7 @@ def main():
     bot = Bot(server=srv, position=Point(-600, -10))
     user.subscribe_to__Observer(bot)
 
-    bot.goto(Point(800, 10))
+    bot.set_motion(position=Point(800, 10))
 
     pp(srv.timeline, width=1)
 
