@@ -143,7 +143,7 @@ def main():
     from vectors import Point
 
     def inspect(event=None):
-        events.Event(time=srv.get_time() + 1, callback_before=inspect).send()
+        events.Event(time=srv.get_time() + 1, callback_before=inspect).post()
         if event:
             log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
 

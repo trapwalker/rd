@@ -22,7 +22,7 @@ def async_call(method):
             log.debug('async_closure: kw=%r', kw)
             return method(self, time=event.time, **kw)
 
-        Event(server=self.server, time=time, callback_before=async_closure).send()
+        Event(server=self.server, time=time, callback_before=async_closure).post()
     update_wrapper(cover, method)
     return cover
 
@@ -67,7 +67,7 @@ class Object(object):
         log.debug('Finally deletion: %s', self)
 
     def delete(self, time=None):
-        Delete(obj=self, time=time).send()
+        Delete(obj=self, time=time).post()
 
     id = property(id)
 
@@ -130,20 +130,20 @@ class VisibleObject(PointObject):
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         self.contacts_check_interval = None  # todo: extract to special task
-        Init(obj=self).send()
+        Init(obj=self).post()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
-        SearchContacts(obj=self).send()
+        SearchContacts(obj=self).post()
 
     def on_update(self, event):  # todo: privacy level index
         self.on_contacts_check()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
-            agent.server.post_message(messages.Update(
+            messages.Update(
                 agent=agent,
                 time=event.time,
                 obj=self,
-            ))
+            ).post()
 
     def on_contacts_check(self):
         # todo: check all existed contacts
@@ -163,7 +163,7 @@ class VisibleObject(PointObject):
         # todo: test to subscription leaks
         super(VisibleObject, self).on_before_delete(event=event)
         for obs in self.subscribed_observers:
-            ContactOut(subj=obs, obj=self).send()
+            ContactOut(subj=obs, obj=self).post()
 
     def on_after_delete(self, event):
         # todo: checkit
@@ -200,7 +200,7 @@ class Observer(VisibleObject):
         can_see = self.can_see(obj)
         see = obj in self.visible_objects
         if can_see != see:
-            (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).send()
+            (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).post()
             return
 
     def can_see(self, obj):
@@ -225,14 +225,14 @@ class Observer(VisibleObject):
         # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
             is_first = obj.subscribed_agents.inc(agent) == 1
-            self.server.post_message(messages.See(
+            messages.See(
                 agent=agent,
                 time=time,
                 subj=self,
                 obj=obj,
                 is_boundary=is_boundary,
                 is_first=is_first,
-            ))
+            ).post()
 
     # todo: check calls
     def on_contact_out(self, time, obj, is_boundary, comment=None):
@@ -246,14 +246,14 @@ class Observer(VisibleObject):
         # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
             is_last = obj.subscribed_agents.dec(agent) == 0
-            self.server.post_message(messages.Out(
+            messages.Out(
                 agent=agent,
                 time=time,
                 subj=self,
                 obj=obj,
                 is_boundary=is_boundary,
                 is_last=is_last,
-            ))
+            ).post()
 
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)

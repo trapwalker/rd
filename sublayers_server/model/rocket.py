@@ -34,9 +34,9 @@ class Rocket(Mobile):
 
     def on_init(self, event):
         # Запускаем:
-        #events.Update(obj=self, cc=1.0).send()
+        #events.Update(obj=self, cc=1.0).post()
         # Назначаем остановку:
-        #events.Update(obj=self, cc=0.0, time=self.server.get_time() + self.life_time, comment="Bang!!!!").send()
+        #events.Update(obj=self, cc=0.0, time=self.server.get_time() + self.life_time, comment="Bang!!!!").post()
         self.delete(time=self.server.get_time() + self.life_time)
 
     def on_stop(self, event):
@@ -64,11 +64,11 @@ class Rocket(Mobile):
             return
         log.debug('Rocket Contacn IN !!!!!!!!!!!!!!!')
         for agent in self.subscribed_agents:
-            self.server.post_message(messages.Bang(
+            messages.Bang(
                 position=self.position,
                 agent=agent,
                 time=time,
                 subj=self,
-            ))
+            ).post()
 
         self.delete()

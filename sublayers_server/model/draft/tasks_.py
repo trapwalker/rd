@@ -130,7 +130,7 @@ class Determined(Task):
     def on_after_start(self, **kw):
         super(Determined, self).on_after_start(**kw)
         self.end_task_event = TaskEnd(time=self.finish_time, task=self)
-        self.end_task_event.send()
+        self.end_task_event.post()
 
     @property
     def duration(self):
@@ -350,9 +350,9 @@ class Goto(Motion):
             t1 = (-k - d4) / a + t0
             t2 = (-k + d4) / a + t0
             if tmin <= t1 <= tmax:
-                ContactSee(time=t1, subj=subj, obj=obj).send()
+                ContactSee(time=t1, subj=subj, obj=obj).post()
             if tmin <= t2 <= tmax:
-                ContactOut(time=t2, subj=subj, obj=obj).send()
+                ContactOut(time=t2, subj=subj, obj=obj).post()
 
     def detect_contacts_with_static(self, static):
         """

@@ -30,6 +30,9 @@ class Message(object):
         self.time = time
         self.comment = comment
 
+    def post(self):
+        self.agent.server.post_message(self)
+
     def send(self):
         # todo: online status optimization
         connection = self.agent.connection

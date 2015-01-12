@@ -19,6 +19,9 @@ from vectors import Point
 
 TimeClass = get_time().__class__
 
+NATO_ABC = ('Alpha Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliet Kilo Lima Mike November Oscar Papa '
+            'Quebec Romeo Sierra Tango Uniform Victor Whiskey Xray Yankee Zulu').split()
+
 
 class NameGenerator(object):
     adjectives = '''Mad Adventurous Affectionate Aggressive Ambitious Angry Arrogant Boastful Brave Brutal Calm Candid
@@ -41,6 +44,8 @@ leopard fox lobster elk horse frog macaque mammoth mongoose baboon marmoset bear
 anteater mouse rhea narwhal rhino monkey ape sheep okapi opossum donkey ass octopus baboon panther penguin puma 
 cougar crawfish glutton lynx saiga salamander pig swine hog sowboar serval chamois skunk dog sable marmot suslik 
 tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchilla jaguar yak lizard'''.split()
+    
+    short_list = NATO_ABC[:]
 
     __doc__ = """ Returns one from {} combinations of pair (adjective, animal)
     and {} variants of login like 'MadFrog123'.""".format(
@@ -51,13 +56,16 @@ tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchil
         return random.choice(cls.adjectives).capitalize(), random.choice(cls.animals).capitalize(),
 
     @classmethod
-    def login(cls, a, b):
+    def login(cls, a, b, test=False):
+        if test and cls.short_list:
+            return cls.short_list.pop(0)
+        
         return ''.join([a, b, str(random.randrange(100, 1000))])
 
     @classmethod
-    def new(cls):
+    def new(cls, test=False):
         fname, lname = cls.pair()
-        return dict(fname=fname, lname=lname, login=cls.login(fname, lname))
+        return dict(fname=fname, lname=lname, login=cls.login(fname, lname, test=test))
 
 
 def special_type_serialize_prepare(obj):
