@@ -132,7 +132,6 @@ class MotionTask(Task):
                 for e in events:
                     if e.time > time:
                         task.del_event(e)
-                        log.debug(e.task)
 
     def on_perform(self, event):
         if self.is_motion_start:
@@ -144,6 +143,8 @@ class MotionTask(Task):
                     self.target_point = owner.cur_motion_task.target_point
                 if self.cc is None:
                     self.cc = owner.cur_motion_task.cc
+                if self.cc == 0.0:
+                    self.target_point = None
             self._clear_motion_tasks(event)
             if self.target_point:
                 self._calc_goto(event)
