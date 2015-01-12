@@ -73,9 +73,9 @@ class MotionTask(Task):
             return
 
         # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
-        v_min = 5.0  #todo: обсудить куда вынести данный балансный параметр
+        v_min = 5.0  # todo: обсудить куда вынести данный балансный параметр
         assert v_min < st.v_max
-        temp_cc = min(self.cc, v_min / st.v_max) #определить минимальную скоростью
+        temp_cc = min(self.cc, v_min / st.v_max)  # определить минимальную скоростью
         if st.v0 < temp_cc * st.v_max:
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
@@ -154,7 +154,7 @@ class MotionTask(Task):
             self.is_motion_start = True
 
     def on_start(self):
-        MotionTaskEvent(server=self.owner.server, task=self).send()
+        MotionTaskEvent(server=self.owner.server, task=self).post()
 
     def on_done(self):
         if self.owner.cur_motion_task == self:

@@ -139,7 +139,7 @@ class Task(object):
         pass
 
     def on_add_event(self, event):
-        event.send()
+        event.post()
 
     def on_del_event(self, event):
         event.cancel()
