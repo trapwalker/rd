@@ -345,55 +345,58 @@ var ClientManager = (function () {
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
-        console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
-        var mes = {
-            call: "set_speed",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                new_speed: newSpeed / user.userCar.maxSpeed
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
+        //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        this.sendMotion(null, newSpeed, null)
     };
 
     ClientManager.prototype.sendStopCar = function () {
-        var mes = {
-            call: "stop",
-            rpc_call_id: rpcCallList.getID(),
-            params: { }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
+        //console.log('sendStopCar');
+        this.sendMotion(null, 0.0, null)
     };
 
     ClientManager.prototype.sendTurn = function (turn) {
         //console.log('sendTurn', turn);
+        this.sendMotion(null, null, turn)
+    };
+
+    ClientManager.prototype.sendGoto = function (target, newSpeed) {
+        //console.log('sendGoto');
+        this.sendMotion(target, newSpeed, null)
+    };
+
+    ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
+        //console.log('ClientManager.prototype.sendMotion');
+        new_speed = newSpeed;
+        if (new_speed) {
+            new_speed = new_speed / user.userCar.maxSpeed;
+            new_speed = new_speed >= 0 ? new_speed : 0;
+            new_speed = new_speed <= 1 ? new_speed : 1;
+        }
+        new_turn = turn;
+        if (new_turn) {
+            new_turn = new_turn > 1 ? 1 : new_turn;
+            new_turn = new_turn < -1 ? -1 : new_turn;
+            new_turn = Math.abs(new_turn) < 1 ? 0: new_turn;
+        }
+        new_x = target ? target.x : null;
+        new_y = target ? target.y : null;
         var mes = {
-            call: "set_turn",
+            call: "set_motion",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                turn: turn
+                x: new_x,
+                y: new_y,
+                cc: new_speed,
+                turn: new_turn
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendGoto = function (target, newSpeed) {
-        //console.log('sendGoto');
-        var mes = {
-            call: "goto",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                x: target.x,
-                y: target.y,
-                new_speed: newSpeed / user.userCar.maxSpeed
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
+
+
+
 
     ClientManager.prototype.sendRocket = function () {
         var mes = {

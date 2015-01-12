@@ -12,6 +12,17 @@ class TaskError(Exception):
     pass
 
 
+class TaskEvent(events.Event):
+    def __init__(self, task, **kw):
+        super(TaskEvent, self).__init__(**kw)
+        assert task
+        self.task = task
+
+    def on_perform(self):
+        super(TaskEvent, self).on_perform()
+        self.task.perform(self)
+
+
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
@@ -61,10 +72,10 @@ class Task(object):
     def _cancel_events(self):
         events = self.events
         while events:
-            events.pop().cancel()
+            event = events.pop()
+            self.on_del_event(event)
 
     def start(self):
-        #log.debug('TASK start: %s', self)
         if not self.is_started:
             self.on_start()
             self.is_started = True
@@ -95,8 +106,19 @@ class Task(object):
         self.owner.tasks.remove(self)
 
     def perform(self, event):
-        self.events.remove(event)
         self.on_perform(event)
+        self.del_event(event)
+
+    def add_event(self, event):
+        self.events.append(event)
+        self.on_add_event(event)
+
+    def del_event(self, event):
+        if event in self.events:
+            self.events.remove(event)
+        self.on_del_event(event)
+        if not self.events:
+            self.done()
 
     def on_perform(self, event):
         pass
@@ -116,12 +138,12 @@ class Task(object):
     def on_cancel(self):
         pass
 
+    def on_add_event(self, event):
+        event.post()
 
-class Goto(Task):
-    pass
-
+    def on_del_event(self, event):
+        event.cancel()
     
 # todo: Make "Follow" task +modifiers (aggresive, sneaking, defending, ...)
 # todo: Make "Scouting" task +modifiers (aggresive, sneaking, defending, ...)
-# todo: Make "Goto" task modifiers (aggresive, sneaking, ...)
 # todo: Make "Standing" task modifiers (aggresive, sneaking, defending, ...)

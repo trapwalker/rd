@@ -67,14 +67,6 @@ class AgentAPI(API):
         self.send_init_package()
 
     @public_method
-    def goto(self, x, y, new_speed):
-        self.car.goto(position=Point(x, y), cc=new_speed)
-
-    @public_method
-    def stop(self):
-        self.car.stop()
-
-    @public_method
     def fire(self, weapon_num=None, hit_list=None):
         # todo: move to Unit class
         if weapon_num is None:
@@ -106,17 +98,10 @@ class AgentAPI(API):
 
                 p = p or Point.random_gauss(car.position, Point(1000, 1000))
                 log.debug('%s crazy go to %s position', car, target or p)
-                self.car.goto(position=p, time=event.time if event else server.get_time())
+                #self.car.goto(position=p, time=event.time if event else server.get_time())
+                self.car.set_motion(position=p, cc=1.0)
 
         crazy_func()
-
-    @public_method
-    def set_speed(self, new_speed):
-        #assert new_speed > 0, 'Cruise control speed must be > 0'
-        if new_speed == 0:
-            self.car.stop()
-        else:
-            self.car.set_cc(value=new_speed)
 
     @public_method
     def chat_message(self, text):
@@ -138,11 +123,16 @@ class AgentAPI(API):
         self.shell.run(cmd)
 
     @public_method
-    def set_turn(self, turn=0):
-        log.info('AgentAPI set_turn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: ')
-        self.car.set_turn(turn)
-
-    @public_method
     def send_rocket(self):
         #log.debug('AgentAPI Rocket !!!')
+        # todo: ракета должна создаваться в unit
         Rocket(starter=self.car, server=self.agent.server)
+
+    @public_method
+    def set_motion(self, x, y, cc, turn):
+        p = None
+        if x and y:
+            p = Point(x, y)
+        self.car.set_motion(position=p, cc=cc, turn=turn)
+
+
