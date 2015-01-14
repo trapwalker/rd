@@ -222,24 +222,6 @@ var User = (function () {
 })();
 
 
-var Clock = (function () {
-    function Clock() {
-        this.dt = 0;
-    }
-
-
-    Clock.prototype.getCurrentTime = function () {
-        return new Date().getTime() / 1000. + this.dt;
-    };
-
-    // Для установки dt необходимо серверное время передать в секундах = UTC/1000.
-    Clock.prototype.setDt = function (aTimeServer) {
-        this.dt = aTimeServer - new Date().getTime() / 1000.;
-    };
-
-
-    return Clock;
-})();
 
 // Владелец машины
 var Owner = (function () {
