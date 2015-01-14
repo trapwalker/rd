@@ -6,12 +6,12 @@ var EditorFreeCam = (function (_super) {
     }
 
     EditorFreeCam.prototype._turnOn = function () {
-        //alert('EditorFreeCam.prototype._turnOn');
+        //console.log('EditorFreeCam.prototype._turnOn');
         return null;
     };
 
     EditorFreeCam.prototype._turnOff = function () {
-        //alert('EditorFreeCam.prototype._turnOff');
+        //console.log('EditorFreeCam.prototype._turnOff');
         return null;
     };
 
