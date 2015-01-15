@@ -4,23 +4,31 @@ var VisualManager = (function () {
         this._visual_list = []; // хранятся объекты {vo: visualObject, changed: boolean}. Ключ: объект вида
     }
 
-    VisualManager.prototype.addModelObject = function (obj) {
-        if (!this._model_list[obj])
-            this._model_list[obj] = {
-                obj: obj,
+    VisualManager.prototype.addModelObject = function (mobj) {
+        if (!this._model_list[mobj])
+            this._model_list[mobj] = {
+                obj: mobj,
                 list: []
             }
     };
 
-    VisualManager.prototype.delModelObject = function (obj) {
-        if (this._model_list[obj])
-            delete this._model_list[obj];
+    VisualManager.prototype.delModelObject = function (mobj) {
+        if (this._model_list[mobj])
+            delete this._model_list[mobj];
     };
 
-    VisualManager.prototype.changeModelObject = function (obj) {
-        if (this._model_list[obj])
-            for (var i = 0; i < this._model_list[obj].list.length; i++)
-                this._model_list[obj].list[i].changed = true;
+    VisualManager.prototype.changeModelObject = function (mobj) {
+        if (this._model_list[mobj])
+            for (var i = 0; i < this._model_list[mobj].list.length; i++)
+                this._model_list[mobj].list[i].changed = true;
+    };
+
+    // Возвращается список визуальных объектов для переданного модельного объекта
+    VisualManager.prototype.getVobjsByMobj = function(mobj){
+        var res_list = [];
+        var list = this._model_list[mobj].list;
+        for (var i=0; i< list.length; i++)
+            res_list.push(list[i].obj);
     };
 
     // Добавляет визуальный объект и подписывает его на модельные объекты из model_objects
@@ -50,11 +58,11 @@ var VisualManager = (function () {
 
     // Проходит по всем визуальным объектам и при необходимости перерисовывает их
     // (автоматически вызывается из timeManager)
-    VisualManager.prototype.perform = function () {
+    VisualManager.prototype.perform = function (time) {
         for (var i = 0; i < this._visual_list.length; i++) {
             e = this._visual_list[i];
             if (e.changed) {
-                e.change();
+                e.change(time);
                 e.changed = false;
             }
         }

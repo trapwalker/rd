@@ -188,13 +188,13 @@ function createTileLayer(storage) {
 
 $(document).ready(function () {
     //Если есть файл map_base_local.js, то брать карту из локального каталога
-    if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
+    //if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
 
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 
     // инициализация и показ модальных окон
-    modalWindow = new ModalWindow({
+    /*modalWindow = new ModalWindow({
         parent: 'modalDiv',
         back: 'modalBack',
         modalWelcome: 'modalWelcome',
@@ -203,19 +203,30 @@ $(document).ready(function () {
         modalWin: 'modalWin',
         modalLose: 'modalLose',
         modalRestart: 'modalRestart'
-    });
+    });*/
 
     // Инициализация.
     ModelInit();
+
+
     message_stream = new MessageConnector();
+
     ws_connector = new WSConnector();
+
     j_connector = new JabberConnector({
         jid: 'menkent@menkent-desktop/subclient',
         password: '1',
         adress_server: 'http://localhost:5280/http-bind'
     });
+
+
     rpcCallList = new RPCCallList();
+
+
+
     clientManager = new ClientManager();
+
+
 
     myMap = L.map('map',
         {
@@ -233,6 +244,8 @@ $(document).ready(function () {
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
 
+
+
     // Обработчики событий карты
     pressedKey = false;
     //myMap.on('click', onMouseClickMap);
@@ -246,10 +259,14 @@ $(document).ready(function () {
     document.getElementById('bodydiv').onkeyup = onKeyUpMap;
     myMap.keyboard.disable();
 
+
     var storage = getIndexedDBStorage(createTileLayer) || getWebSqlStorage(createTileLayer) || createTileLayer(null);
     if (!storage) {
         alert('Storage not loading!');
     }
+
+
+
 
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
@@ -262,26 +279,34 @@ $(document).ready(function () {
 
 
     // создание чата
+    console.log('1');
     chat = new ViewMessenger({
             parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
             width: (cookieStorage.flagDebug ? 600 : 400),
             stream_mes: message_stream
     });
+    console.log('2');
+
+
     chat.showChatWindow();
+    console.log('3');
     chat.setupDragElement(chat.vMHA);
+    console.log('4');
     chat.setMessagesHistory(cookieStorage.historyArray);
+    console.log('5');
     chat.addChat(-1, "-= L O G =-");
+    console.log('6');
     chat.setActiveChat(-1);
+    console.log('7');
     chat.setVisible(cookieStorage.chatVisible);
+    console.log('8');
+
+
+
 
 
     carMarkerList = new CarMarkerList({_map: myMap});
-
-
-    // Запуск тамера
-    timer = setInterval(redrawMap, timerDelay);
-
 
     window.onbeforeunload = function (e) {
         cookieStorage.save();
@@ -290,6 +315,8 @@ $(document).ready(function () {
 
     // Когда всё загружено и создано вызвать коннекты к серверу
     //j_connector.connect();
+
+
     ws_connector.connect();
 
 
@@ -299,6 +326,7 @@ $(document).ready(function () {
    // if (!cookieStorage.debugMode())
    //     modalWindow.modalWelcomeShow();
 
+    console.log('111111')
 });
 
 
@@ -413,7 +441,12 @@ function RunPrefixMethod(obj, method) {
 
 }
 
+// todo: снести myMap
 var myMap;
+var map = myMap;
+
+
+
 var chat;
 var userCarMarker;
 var wsjson;
@@ -432,8 +465,6 @@ var ws_connector;
 // Массив иконок
 var iconsLeaflet;
 
-
-var timerDelay = 20; //константа задающая временной интервал таймера (юзать по всему проекту только это)
 var user;
 var listMapObject;
 var ownerList;

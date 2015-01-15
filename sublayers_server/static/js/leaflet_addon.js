@@ -4,7 +4,7 @@
  Использование:
  создание: var marker = L.rotatedMarker(<как обычный маркер>);
  добавление на карту: marker.addTo(map);
- установка угла в градусах: marker.options.angle = direction;
+ установка угла в радианах: marker.options.angle = direction;
  поворот картинки осуществляется при переустановке координат!
  перерисовка маркера: marker.setLatLng(marker.getLatLng() - или нужные координаты);
  */
@@ -73,14 +73,6 @@ function getTownMarker(aTown, aMap) {
 }
 
 
-function onMouseOverForLabels(){
-    if(this._labelNoHide) return false;
-    this.setLabelNoHide(true);
-}
-
-function onMouseOutForLabels(){
-    this.setLabelNoHide(cookieStorage.visibleLabel());
-}
 
 function carInfoClickEvent(event){
     var car = listMapObject.objects[event.target.id.split('_')[1]];
@@ -105,32 +97,6 @@ function flashMarker(marker){
     }, 500);
 }
 
-function onMouseClickMarker(event){
-    if(cookieStorage.optionsSelectAnybody) {
-        if (listMapObject.exist(this.carID)) {
-            var car = listMapObject.objects[this.carID];
-            if (car.backLight)
-                carMarkerList.delFromBackLight(car);
-            else
-                carMarkerList.addToBackLight(car);
-
-            // тест эффекта мигания маркера
-            this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
-            var self = this;
-            setTimeout(function () {
-                self.setOpacity(1);
-            }, 500);
-        }
-    }
-    if (event.originalEvent.stopPropagation) {
-        // Вариант стандарта W3C:
-        event.originalEvent.stopPropagation()
-    } else {
-        // Вариант Internet Explorer:
-        event.originalEvent.cancelBubble = true
-    }
-
-}
 
 
 function onMarkerPopupOpen(e) {

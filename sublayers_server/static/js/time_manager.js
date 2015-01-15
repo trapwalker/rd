@@ -63,7 +63,7 @@ var TimeManager = (function () {
             list[i].obj[list[i].method](time);
 
         if(visualManager )
-            visualManager.perform();
+            visualManager.perform(time);
 
         this._FPSInterval += clock.getCurrentTime() - time;
         time._FPSCount++;
