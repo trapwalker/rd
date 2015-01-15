@@ -26,12 +26,16 @@ var ConstSetFPSTimeout = 5000; // Время (мс), через которое �
 var TimeManager = (function () {
     function TimeManager() {
         this._FPSEvent = null;
-        time._FPSCount = 0;
+        this._FPSCount = 0;
         this._FPSInterval = ConstTimerInterval;
 
         this._timer = null;
         this._interval = ConstTimerInterval;
         this._timer_list = [];
+
+        // todo: очень спорный момент запуска при старте
+        this.timerStart();
+        this.autoFPSStart();
     }
 
     // ТАЙМЕР
@@ -57,6 +61,9 @@ var TimeManager = (function () {
         // основной проход
         for (var i = 0; i < list.length; i++)
             list[i].obj[list[i].method](time);
+
+        if(visualManager )
+            visualManager.perform();
 
         this._FPSInterval += clock.getCurrentTime() - time;
         time._FPSCount++;
@@ -133,4 +140,4 @@ var TimeManager = (function () {
 })();
 
 var clock = new Clock();
-var timer = new TimeManager();
+var timeManager = new TimeManager();

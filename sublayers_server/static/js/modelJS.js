@@ -5,7 +5,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
-
 var ListMapObject = (function () {
     function ListMapObject() {
         this.objects = [];
@@ -52,48 +51,52 @@ var ListMapObject = (function () {
     return ListMapObject;
 })();
 
-
-var MapObject = (function () {
-    function MapObject(aID) {
-        this.ID = aID;
+var Object = (function () {
+    function MapObject(ID) {
+        this.ID = ID;
     }
 
     return MapObject;
 })();
 
-
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
-
-    function DynamicObject(aID, aState) {
-        _super.call(this, aID);
-        this.state = aState;
+    function DynamicObject(ID, state) {
+        _super.call(this, ID);
+        this._state = null;
+        this.setState(state);
     }
 
-
-    DynamicObject.prototype.getCurrentDirection = function (aClockTime) {
-        return this.state.fi(aClockTime);
+    DynamicObject.prototype.getCurrentDirection = function (time) {
+        return this._state.fi(time);
     };
 
-
-    DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
-        return this.state.p(aClockTime);
+    DynamicObject.prototype.getCurrentCoord = function (time) {
+        return this._state.p(time);
     };
 
-
-    DynamicObject.prototype.getCurrentFuel = function (aClockTime) {
-        return null;
+    DynamicObject.prototype.getCurrentSpeed = function (time) {
+        return this._state.v(time);
     };
 
-
-    DynamicObject.prototype.getCurrentSpeed = function (aClockTime) {
-        return this.state.v(aClockTime);
+    DynamicObject.prototype.setState = function (state) {
+        this._state = state;
+        if (state.is_moving()){
+            // todo: добавиться в TimeManager
+        }else{
+            // todo: удалиться из TimeManager'a
+        }
     };
-
 
     return DynamicObject;
-})(MapObject);
+})(Object);
+
+
+
+
+
+
 
 
 var MapCar = (function (_super) {
@@ -152,7 +155,6 @@ var FireSector = (function () {
         this.recharge = aRecharge;
     }
 
-
     return FireSector;
 })();
 
@@ -206,6 +208,9 @@ var State = (function () {
         return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * this._rv_fi));
     };
 
+    State.prototype.is_moving = function () {
+        return this.a != 0.0 || this.v0 != 0.0
+    };
 
     return State;
 })();
