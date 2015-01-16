@@ -188,10 +188,12 @@ function createTileLayer(storage) {
 
 $(document).ready(function () {
     //Если есть файл map_base_local.js, то брать карту из локального каталога
-    //if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
+    if (mapBasePathLocal != '') {mapBasePath = mapBasePathLocal};
 
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
+
+    console.log(1);
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -205,9 +207,11 @@ $(document).ready(function () {
         modalRestart: 'modalRestart'
     });
 
+    console.log(2);
+
     // Инициализация.
     ModelInit();
-
+    console.log(3);
 
     message_stream = new MessageConnector();
 

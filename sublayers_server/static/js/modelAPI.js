@@ -6,7 +6,6 @@ function ModelInit() {
 
     listMapObject = new ListMapObject();
     ownerList = new OwnerList();
-    iconLeafletInit();
 
 
     radialMenu = new RadialMenu({

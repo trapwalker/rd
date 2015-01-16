@@ -51,13 +51,17 @@ var ListMapObject = (function () {
     return ListMapObject;
 })();
 
-var Object = (function () {
-    function MapObject(ID) {
+
+
+var ClientObject = (function () {
+    function ClientObject(ID) {
         this.ID = ID;
     }
 
-    return MapObject;
+    return ClientObject;
 })();
+
+
 
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
@@ -90,7 +94,7 @@ var DynamicObject = (function (_super) {
     };
 
     return DynamicObject;
-})(Object);
+})(ClientObject);
 
 
 
