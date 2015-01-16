@@ -194,7 +194,7 @@ $(document).ready(function () {
     cookieStorage = new LocalCookieStorage();
 
     // инициализация и показ модальных окон
-    /*modalWindow = new ModalWindow({
+    modalWindow = new ModalWindow({
         parent: 'modalDiv',
         back: 'modalBack',
         modalWelcome: 'modalWelcome',
@@ -203,7 +203,7 @@ $(document).ready(function () {
         modalWin: 'modalWin',
         modalLose: 'modalLose',
         modalRestart: 'modalRestart'
-    });*/
+    });
 
     // Инициализация.
     ModelInit();
@@ -317,7 +317,7 @@ $(document).ready(function () {
     //j_connector.connect();
 
 
-    ws_connector.connect();
+    //ws_connector.connect();
 
 
     //alert(window.location);
@@ -462,8 +462,7 @@ var j_connector;
 var ws_connector;
 
 
-// Массив иконок
-var iconsLeaflet;
+
 
 var user;
 var listMapObject;

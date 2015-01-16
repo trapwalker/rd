@@ -14,9 +14,9 @@ var WCarMarker = (function (_super) {
         var marker;
         marker = L.rotatedMarker([0, 0]);
 
-        // todo: сделать IconManager
-        //newMarker.setIcon(iconsLeaflet.getIcon(car.cls));
-        marker.setIcon(iconsLeaflet.icon_moving_V2);
+        // todo: сделать доступ к иконнке через car.cls
+        newMarker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
+        //marker.setIcon(iconsLeaflet.icon_moving_V2);
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
         if (car.owner) {
