@@ -93,6 +93,12 @@ var DynamicObject = (function (_super) {
         }
     };
 
+    DynamicObject.prototype.change = function(time){
+        if(this._state.is_moving())
+            visualManager.changeModelObject(this);
+    };
+
+
     return DynamicObject;
 })(ClientObject);
 

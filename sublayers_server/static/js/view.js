@@ -193,8 +193,6 @@ $(document).ready(function () {
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 
-    console.log(1);
-
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
         parent: 'modalDiv',
@@ -207,11 +205,9 @@ $(document).ready(function () {
         modalRestart: 'modalRestart'
     });
 
-    console.log(2);
 
     // Инициализация.
     ModelInit();
-    console.log(3);
 
     message_stream = new MessageConnector();
 
@@ -223,13 +219,9 @@ $(document).ready(function () {
         adress_server: 'http://localhost:5280/http-bind'
     });
 
-
     rpcCallList = new RPCCallList();
 
-
-
     clientManager = new ClientManager();
-
 
 
     myMap = L.map('map',
@@ -247,7 +239,6 @@ $(document).ready(function () {
             //        [51.43, 39.44]
             //    ])
         }).setView([50.595, 36.59], cookieStorage.zoom);
-
 
 
     // Обработчики событий карты
@@ -270,8 +261,6 @@ $(document).ready(function () {
     }
 
 
-
-
     // Включение/Выключение полноэранного режима
     buttonFullScreen.onclick = FullScreenToggle;
 
@@ -283,28 +272,20 @@ $(document).ready(function () {
 
 
     // создание чата
-    console.log('1');
     chat = new ViewMessenger({
             parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
             width: (cookieStorage.flagDebug ? 600 : 400),
             stream_mes: message_stream
     });
-    console.log('2');
 
 
     chat.showChatWindow();
-    console.log('3');
     chat.setupDragElement(chat.vMHA);
-    console.log('4');
     chat.setMessagesHistory(cookieStorage.historyArray);
-    console.log('5');
     chat.addChat(-1, "-= L O G =-");
-    console.log('6');
     chat.setActiveChat(-1);
-    console.log('7');
     chat.setVisible(cookieStorage.chatVisible);
-    console.log('8');
 
 
 
@@ -321,7 +302,7 @@ $(document).ready(function () {
     //j_connector.connect();
 
 
-    //ws_connector.connect();
+    ws_connector.connect();
 
 
     //alert(window.location);
@@ -330,7 +311,6 @@ $(document).ready(function () {
    // if (!cookieStorage.debugMode())
    //     modalWindow.modalWelcomeShow();
 
-    console.log('111111')
 });
 
 

@@ -119,8 +119,6 @@ var ClientManager = (function () {
     ClientManager.prototype.Init = function (event) {
         console.log('ClientManager.prototype.Init');
         var servtime = event.time;
-        // todo: Переделать на нормальную максимальную скорость!
-        //var max_speed = event.cars[0].max_velocity;
         var max_speed = event.cars[0].max_velocity;
         var aMaxHP = event.cars[0].max_hp;
         var radius_visible = event.cars[0].r;
@@ -130,8 +128,17 @@ var ClientManager = (function () {
         var state = this._getState(event.cars[0].state);
         var fireSectors = this._getWeapons(event.cars[0].weapons);
 
+
+
+
+
+
+
+
+
+        // todo: совсем избавиться от этой функции
         // Запустить отчёт времени до рестарта сервера
-        showTimeToResetServer(servtime);
+        //showTimeToResetServer(servtime);
 
         // Инициализация Юзера
         if (event.agent.cls == "User") {
@@ -142,14 +149,37 @@ var ClientManager = (function () {
         }
 
         if (!user.userCar) {
-            user.userCar = new UserCar(uid,       //ID машинки
+
+
+            // создать машинку
+            var ucar = new UserCar(uid,       //ID машинки
                 aHP,      //HP машинки
                 max_speed,      //Максималка
                 state
-            );   //Текущая траектория
+            );
+
+            // создать её маркер
+            var m_ucar = new WCarMarker(ucar);
+
+            // связать их через визуал менеджер
+            visualManager.addModelObject(ucar);
+            visualManager.addVisualObject(m_ucar, [ucar]);
+
+            // добавить машинку в таймер
+            // TODO: если машина не двигается, то не добавлять. Потом!
+            timeManager.addTimerEvent(this, 'change');
+
+
+
+            user.userCar = ucar;
 
             // Добавить сектора в userCar
             user.userCar.AddFireSectors(fireSectors);
+
+
+
+
+
 
 
             // Инициализация маркера машинки
@@ -183,7 +213,7 @@ var ClientManager = (function () {
         setTitleOnPage();
 
         // Установка своих линий
-        user.userCar.debugLines = [];
+        //user.userCar.debugLines = [];
     };
 
     ClientManager.prototype.Update = function (event) {
