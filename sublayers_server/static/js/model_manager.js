@@ -145,8 +145,9 @@ var ClientManager = (function () {
             );
 
             // Виджеты:
-            new WCarMarker(mcar);   // маркер
-            new WMapPosition(mcar); // виджет позиционирования карты
+            new WCarMarker(mcar);    // виджет маркера
+            new WMapPosition(mcar);  // виджет позиционирования карты
+            new WSpeedSlider(mcar);  // виджет круиз контроля
 
             user.userCar = mcar;
 

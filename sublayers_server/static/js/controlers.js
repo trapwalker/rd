@@ -22,31 +22,6 @@ var Controllers = (function () {
             max: options.hpMax ? options.hpMax : 100
         });
 
-        // создание слайдера зума
-        this.zoomSetSlider = new SliderZoom({
-            parentDiv: "zoomSetDivForZoomSlider",
-            max: myMap.getMaxZoom(),
-            min: myMap.getMinZoom(),
-            step: 1,
-            onChange: changeZoomOnSlider
-        });
-        this.zoomSetSlider.setZoom(myMap.getZoom());
-
-        // создание слайдера скорости
-        this.speedSetSlider = new SliderSpeed({
-            parent: "speedSetDivForSpeedSlider",
-            height: 320,
-            parentCss: 'slider-speed-main',
-            max: options.max_velocity,
-            min: 1,
-            step: 1,
-            onChange: changeSpeedOnSlider,
-            onStop: stopSpeedOnSlider,
-            max_velocity: options.set_velocity
-        });
-
-
-
         // Инициализация контролера стрельбы
         this.fireControl = new FireControl({
             parentDiv: 'fireControlArea',
@@ -115,15 +90,6 @@ var Controllers = (function () {
 })();
 
 // Колбеки Для работы с контроллерами
-function changeSpeedOnSlider() {
-    if (user.userCar)
-        clientManager.sendSetSpeed(controllers.speedSetSlider.getSpeed());
-}
-
-function stopSpeedOnSlider() {
-    if (user.userCar) clientManager.sendStopCar();
-}
-
 // колл бек для выстрела того или иного сектора
 function cbForSectorsShoot(aFireSector) {
     //alert('Выстрел из сектора id = '+aFireSector.uid + '   Перезарядка = '+ aFireSector.recharge);

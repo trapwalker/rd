@@ -65,7 +65,7 @@ var WZoomSlider = (function (_super) {
         this.change();
     }
 
-    WZoomSlider.prototype.change = function(time){
+    WZoomSlider.prototype.change = function(){
         //console.log('WZoomSlider.prototype.change');
         $('#Zoom_slider').slider("value", this.mapMng.getZoom());
     };

@@ -94,6 +94,7 @@ var DynamicObject = (function (_super) {
     DynamicObject.prototype.setState = function (state) {
         if ((!this._state) || (state.is_moving() != this._state.is_moving())) {
             timeManager.delTimerEvent(this, 'change');
+            visualManager.changeModelObject(this);
             if (state.is_moving())
                 timeManager.addTimerEvent(this, 'change');
         }
@@ -159,6 +160,11 @@ var UserCar = (function (_super) {
         this.maxSpeed = aMaxSpeed;
     }
 
+    UserCar.prototype.getGround = function () {
+        // todo: правильно обработать тип местности
+        return null;
+    }
+
 
     return UserCar;
 })(MapCar);
@@ -191,7 +197,7 @@ var State = (function () {
         this._sp_m = _sp_m;
         this._sp_fi0 = _sp_fi0;
         this._rv_fi = _rv_fi;
-    };
+    }
 
     State.prototype.s = function(t) {
         var dt = t - this.t0;
