@@ -210,12 +210,13 @@ var MapManager = (function(_super){
         document.getElementById('bodydiv').onkeydown = onKeyDownMap;
         document.getElementById('bodydiv').onkeyup = onKeyUpMap;
         map.keyboard.disable();
-        // todo инициализация виджетов карты
-        // zoom_slider
+
+        // Bнициализация виджетов карты
+        new WZoomSlider(this);
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
-        console.log('MapManager.prototype.createTileLayer');
+        //console.log('MapManager.prototype.createTileLayer');
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
                 maxZoom: 7,
@@ -233,13 +234,21 @@ var MapManager = (function(_super){
             mapManager.tileLayer.addTo(map);
     };
 
-    MapManager.prototype.setZoom = function(zoom) {
+    // =============================== Zoom
 
+    MapManager.prototype.getZoom = function(){
+        return map.getZoom();
+    };
+
+    MapManager.prototype.setZoom = function(zoom) {
+        //console.log('MapManager.prototype.setZoom');
+        map.setZoom(zoom);
     };
 
     MapManager.prototype.onZoomEnd = function(event) {
         // Не знает про this !
         timeManager.timerStart();
+        visualManager.changeModelObject(mapManager);
         //if (controllers.isActive)  // чтобы при изменении зума карты  менялся и слайдер.
         //    controllers.zoomSetSlider.setZoom(myMap.getZoom());
         /*
@@ -253,15 +262,14 @@ var MapManager = (function(_super){
          // Изменение радиуса круга обзора
          //userCarMarker.setNewZoom();
          */
-        visualManager.changeModelObject(mapManager);
     };
 
     MapManager.prototype.onZoomStart = function(event) {
-        // Не знает про this !
         timeManager.timerStop();
-        // todo: узнать нужно или нет
-        //visualManager.changeModelObject(mapManager);
     };
+
+
+
 
     return MapManager;
 })(ClientObject);

@@ -124,13 +124,6 @@ function stopSpeedOnSlider() {
     if (user.userCar) clientManager.sendStopCar();
 }
 
-function changeZoomOnSlider(aSliderZoom) {
-    if(! (myMap.getZoom() == aSliderZoom.getZoom()))
-        myMap.setZoom(aSliderZoom.getZoom());
-    if(userCarMarker)
-        userCarMarker.tail.setActive(myMap.getZoom() > levelZoomForVisibleTail);
-}
-
 // колл бек для выстрела того или иного сектора
 function cbForSectorsShoot(aFireSector) {
     //alert('Выстрел из сектора id = '+aFireSector.uid + '   Перезарядка = '+ aFireSector.recharge);

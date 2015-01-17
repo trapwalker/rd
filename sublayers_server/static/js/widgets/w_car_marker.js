@@ -1,6 +1,6 @@
 /*
  * Виджет для отрисовки маркера машинки
- * */
+*/
 
 
 var WCarMarker = (function (_super) {
@@ -40,7 +40,7 @@ var WCarMarker = (function (_super) {
     };
 
     WCarMarker.prototype.change = function(time){
-        console.log('WCarMarker.prototype.change');
+        //console.log('WCarMarker.prototype.change');
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера

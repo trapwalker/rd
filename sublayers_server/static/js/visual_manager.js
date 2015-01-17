@@ -5,13 +5,12 @@ var VisualManager = (function () {
     }
 
     VisualManager.prototype.addModelObject = function (mobj) {
-        console.log('VisualManager.prototype.addModelObject', mobj, this._model_list[mobj.ID]);
+        //console.log('VisualManager.prototype.addModelObject');
         if (!this._model_list[mobj.ID])
             this._model_list[mobj.ID] = {
                 obj: mobj,
                 list: []
             };
-        console.log('_model_list = ', this._model_list);
     };
 
     VisualManager.prototype.delModelObject = function (mobj) {
@@ -20,8 +19,7 @@ var VisualManager = (function () {
     };
 
     VisualManager.prototype.changeModelObject = function (mobj) {
-        console.log('VisualManager.prototype.changeModelObject', mobj);
-        console.log(this._model_list);
+        //console.log('VisualManager.prototype.changeModelObject');
         if (this._model_list[mobj.ID])
             for (var i = 0; i < this._model_list[mobj.ID].list.length; i++)
                 this._model_list[mobj.ID].list[i].changed = true;
@@ -37,7 +35,7 @@ var VisualManager = (function () {
 
     // Добавляет визуальный объект и подписывает его на модельные объекты из model_objects
     VisualManager.prototype.addVisualObject = function (vobj, model_objects) {
-        console.log('VisualManager.prototype.addVisualObject', model_objects);
+        //console.log('VisualManager.prototype.addVisualObject', model_objects);
         // todo: добавить проверку на присутствие vobj в this._visual_list
         var vo = {obj: vobj, changed: false};
         this._visual_list.push(vo);
