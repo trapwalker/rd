@@ -55,19 +55,26 @@ var ListMapObject = (function () {
 
 var ClientObject = (function () {
     function ClientObject(ID) {
-        this.ID = ID;
+        this.ID = ID || generator_ID.getID();
     }
+
+    ClientObject.prototype.addToVisualManager = function () {
+        visualManager.addModelObject(this);
+    };
+
+    ClientObject.prototype.delFromVisualManager = function () {
+        visualManager.delModelObject(this);
+    };
 
     return ClientObject;
 })();
-
-
 
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
     function DynamicObject(ID, state) {
         _super.call(this, ID);
+        this.addToVisualManager();
         this._state = null;
         this.setState(state);
     }
@@ -85,17 +92,18 @@ var DynamicObject = (function (_super) {
     };
 
     DynamicObject.prototype.setState = function (state) {
-        this._state = state;
-        if (state.is_moving()){
-            // todo: добавиться в TimeManager
-        }else{
-            // todo: удалиться из TimeManager'a
+        if ((!this._state) || (state.is_moving() != this._state.is_moving())) {
+            timeManager.delTimerEvent(this, 'change');
+            if (state.is_moving())
+                timeManager.addTimerEvent(this, 'change');
         }
+        this._state = state;
     };
 
     DynamicObject.prototype.change = function(time){
-        if(this._state.is_moving())
-            visualManager.changeModelObject(this);
+        visualManager.changeModelObject(this);
+        // todo: Сделать оптимизацию: расчёты p(t), fi(t), v(t) проводить здесь.
+        // а по тем методам отдавать данные расчитанные здесь!
     };
 
 

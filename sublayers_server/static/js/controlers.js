@@ -9,6 +9,7 @@ var Controllers = (function () {
         // Активны ли сейчас контроллеры
         this.isActive = false;
 
+        /*
         //Шкала топлива машины игрока
         this.fuelController = new ProgressBarFuel({
             parent: "divScaleCarFuel",
@@ -63,6 +64,7 @@ var Controllers = (function () {
 
         // Так как все контролеры проинициализированы, то сделать их активными
         this.isActive = true;
+        */
 
     }
 

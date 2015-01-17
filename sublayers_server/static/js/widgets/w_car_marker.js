@@ -1,3 +1,8 @@
+/*
+ * Виджет для отрисовки маркера машинки
+ * */
+
+
 var WCarMarker = (function (_super) {
     __extends(WCarMarker, _super);
 
@@ -8,15 +13,13 @@ var WCarMarker = (function (_super) {
         this._createMarker();
     }
 
-
     WCarMarker.prototype._createMarker = function(){
         var car = this.car;
         var marker;
         marker = L.rotatedMarker([0, 0]);
 
         // todo: сделать доступ к иконнке через car.cls
-        newMarker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
-        //marker.setIcon(iconsLeaflet.icon_moving_V2);
+        marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
         if (car.owner) {
@@ -33,10 +36,11 @@ var WCarMarker = (function (_super) {
         marker.carID = car.ID;
 
         this.marker = marker;
-
+        this.change(clock.getCurrentTime());
     };
 
     WCarMarker.prototype.change = function(time){
+        console.log('WCarMarker.prototype.change');
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера

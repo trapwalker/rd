@@ -128,18 +128,6 @@ var ClientManager = (function () {
         var state = this._getState(event.cars[0].state);
         var fireSectors = this._getWeapons(event.cars[0].weapons);
 
-
-
-
-
-
-
-
-
-        // todo: совсем избавиться от этой функции
-        // Запустить отчёт времени до рестарта сервера
-        //showTimeToResetServer(servtime);
-
         // Инициализация Юзера
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
@@ -149,40 +137,25 @@ var ClientManager = (function () {
         }
 
         if (!user.userCar) {
-
-
             // создать машинку
-            var ucar = new UserCar(uid,       //ID машинки
-                aHP,      //HP машинки
-                max_speed,      //Максималка
+            var mcar = new UserCar(
+                uid,       //ID машинки
+                aHP,       //HP машинки
+                max_speed, //Максималка
                 state
             );
 
-            // создать её маркер
-            var m_ucar = new WCarMarker(ucar);
+            // Виджеты:
+            new WCarMarker(mcar);   // маркер
+            new WMapPosition(mcar); // виджет позиционирования карты
 
-            // связать их через визуал менеджер
-            visualManager.addModelObject(ucar);
-            visualManager.addVisualObject(m_ucar, [ucar]);
-
-            // добавить машинку в таймер
-            // TODO: если машина не двигается, то не добавлять. Потом!
-            timeManager.addTimerEvent(this, 'change');
-
-
-
-            user.userCar = ucar;
+            user.userCar = mcar;
 
             // Добавить сектора в userCar
             user.userCar.AddFireSectors(fireSectors);
 
-
-
-
-
-
-
             // Инициализация маркера машинки
+            /*
             userCarMarker = new UserCarMarker({
                 position: myMap.unproject([state.p0.x, state.p0.y], myMap.getMaxZoom()),
                 tailEnable: false,
@@ -192,6 +165,7 @@ var ClientManager = (function () {
                 sectors: user.userCar.fireSectors,
                 countSectorPoints: 20
             });
+            */
 
             // Инициализация контроллеров
             controllers = new Controllers({
@@ -203,7 +177,7 @@ var ClientManager = (function () {
             });
 
             // Инициализация радиального меню - установка правильных id секторов
-            radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
+            //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
         }
 
         // Присвоение роли
@@ -231,7 +205,8 @@ var ClientManager = (function () {
             var oldHP = user.userCar.hp;
             user.userCar.hp = aHP;
             if (oldHP > 0) // Устанавливается траектория, только если машинка жива
-                user.userCar.state = aState;
+                //user.userCar.state = aState;
+                user.userCar.setState(aState);
             if (user.userCar.hp <= 0) {
                 userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
                 this._setClientState('death_car');
@@ -390,8 +365,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGoto = function (target, newSpeed) {
-        //console.log('sendGoto');
-        this.sendMotion(target, newSpeed, null)
+        console.log('sendGoto', newSpeed);
+        this.sendMotion(target, 50, null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {

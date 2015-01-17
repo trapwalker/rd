@@ -8,11 +8,11 @@ var VisualObject = (function () {
     }
 
     VisualObject.prototype.addToVisualManager = function () {
-        visualManager.addVisualObject(this, this._model_objects)
+        visualManager.addVisualObject(this, this._model_objects);
     };
 
     VisualObject.prototype.delFromVisualManager = function () {
-        visualManager.delVisualObject(this, this._model_objects)
+        visualManager.delVisualObject(this, this._model_objects);
     };
 
     return VisualObject;

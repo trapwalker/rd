@@ -35,7 +35,7 @@ var TimeManager = (function () {
 
         // todo: очень спорный момент запуска при старте
         this.timerStart();
-        this.autoFPSStart();
+        //this.autoFPSStart();
     }
 
     // ТАЙМЕР
@@ -55,6 +55,7 @@ var TimeManager = (function () {
 
     // Функция таймера
     TimeManager.prototype._interval_perform = function () {
+        //console.log('TimeManager.prototype._interval_perform');
         time = clock.getCurrentTime();
 
         var list = this._timer_list;
@@ -62,7 +63,7 @@ var TimeManager = (function () {
         for (var i = 0; i < list.length; i++)
             list[i].obj[list[i].method](time);
 
-        if(visualManager )
+        if(visualManager)
             visualManager.perform(time);
 
         this._FPSInterval += clock.getCurrentTime() - time;

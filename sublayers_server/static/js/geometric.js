@@ -133,3 +133,6 @@ function stopEvent(event) {
     else // Вариант Internet Explorer:
         event.cancelBubble = true
 }
+
+
+// Генератор отрицательных ID
