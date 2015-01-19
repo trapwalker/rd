@@ -34,7 +34,7 @@ function onMouseUpMap(mouseEventObject) {
     //if (radialMenu.isHide && myMap._mouseDowned) {
     //    if (user.userCar)
         //clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
-            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.max_velocity);
+            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.maxSpeed);
     //} else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         //radialMenu.hideMenu(true);
@@ -177,8 +177,8 @@ var MapManager = (function(_super){
 
         map = L.map('map',
             {
-                minZoom: 1,
-                maxZoom: 7,
+                minZoom: 3,
+                maxZoom: 16,
                 zoomControl: false,
                 attributionControl: false,
                 scrollWheelZoom: "center",
@@ -219,7 +219,7 @@ var MapManager = (function(_super){
         //console.log('MapManager.prototype.createTileLayer');
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
-                maxZoom: 7,
+                maxZoom: 16,
                 continuousWorld: true,
                 opacity: 0.5,
                 storage: storage});
@@ -228,7 +228,7 @@ var MapManager = (function(_super){
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
                 opacity: 0.5,
-                maxZoom: 7});
+                maxZoom: 16});
         }
         if(cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);

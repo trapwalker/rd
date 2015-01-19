@@ -366,11 +366,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendGoto = function (target, newSpeed) {
         console.log('sendGoto', newSpeed);
-        this.sendMotion(target, 50, null);
+        this.sendMotion(target, newSpeed, null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        //console.log('ClientManager.prototype.sendMotion');
+        console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
         new_speed = newSpeed;
         if (new_speed) {
             new_speed = new_speed / user.userCar.maxSpeed;
