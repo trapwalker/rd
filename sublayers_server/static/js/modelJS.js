@@ -5,7 +5,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
-
 var ListMapObject = (function () {
     function ListMapObject() {
         this.objects = [];
@@ -53,47 +52,70 @@ var ListMapObject = (function () {
 })();
 
 
-var MapObject = (function () {
-    function MapObject(aID) {
-        this.ID = aID;
+
+var ClientObject = (function () {
+    function ClientObject(ID) {
+        this.ID = ID || generator_ID.getID();
     }
 
-    return MapObject;
-})();
+    ClientObject.prototype.addToVisualManager = function () {
+        visualManager.addModelObject(this);
+    };
 
+    ClientObject.prototype.delFromVisualManager = function () {
+        visualManager.delModelObject(this);
+    };
+
+    return ClientObject;
+})();
 
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
-
-    function DynamicObject(aID, aState) {
-        _super.call(this, aID);
-        this.state = aState;
+    function DynamicObject(ID, state) {
+        _super.call(this, ID);
+        this.addToVisualManager();
+        this._state = null;
+        this.setState(state);
     }
 
-
-    DynamicObject.prototype.getCurrentDirection = function (aClockTime) {
-        return this.state.fi(aClockTime);
+    DynamicObject.prototype.getCurrentDirection = function (time) {
+        return this._state.fi(time);
     };
 
-
-    DynamicObject.prototype.getCurrentCoord = function (aClockTime) {
-        return this.state.p(aClockTime);
+    DynamicObject.prototype.getCurrentCoord = function (time) {
+        return this._state.p(time);
     };
 
-
-    DynamicObject.prototype.getCurrentFuel = function (aClockTime) {
-        return null;
+    DynamicObject.prototype.getCurrentSpeed = function (time) {
+        return this._state.v(time);
     };
 
+    DynamicObject.prototype.setState = function (state) {
+        if ((!this._state) || (state.is_moving() != this._state.is_moving())) {
+            timeManager.delTimerEvent(this, 'change');
+            visualManager.changeModelObject(this);
+            if (state.is_moving())
+                timeManager.addTimerEvent(this, 'change');
+        }
+        this._state = state;
+    };
 
-    DynamicObject.prototype.getCurrentSpeed = function (aClockTime) {
-        return this.state.v(aClockTime);
+    DynamicObject.prototype.change = function(time){
+        visualManager.changeModelObject(this);
+        // todo: Сделать оптимизацию: расчёты p(t), fi(t), v(t) проводить здесь.
+        // а по тем методам отдавать данные расчитанные здесь!
     };
 
 
     return DynamicObject;
-})(MapObject);
+})(ClientObject);
+
+
+
+
+
+
 
 
 var MapCar = (function (_super) {
@@ -136,7 +158,23 @@ var UserCar = (function (_super) {
     function UserCar(aID, aHP, aMaxSpeed, aState) {
         _super.call(this, aID, aHP, aState);
         this.maxSpeed = aMaxSpeed;
+        this._lastSpeed = 0.75 * aMaxSpeed;
     }
+
+    UserCar.prototype.getGround = function () {
+        // todo: правильно обработать тип местности
+        return null;
+    };
+
+    UserCar.prototype.setLastSpeed = function (speed) {
+        this._lastSpeed = speed;
+    };
+
+
+    UserCar.prototype.getLastSpeed = function () {
+        return this._lastSpeed;
+    };
+
 
 
     return UserCar;
@@ -151,7 +189,6 @@ var FireSector = (function () {
         this.uid = aUid;
         this.recharge = aRecharge;
     }
-
 
     return FireSector;
 })();
@@ -171,7 +208,7 @@ var State = (function () {
         this._sp_m = _sp_m;
         this._sp_fi0 = _sp_fi0;
         this._rv_fi = _rv_fi;
-    };
+    }
 
     State.prototype.s = function(t) {
         var dt = t - this.t0;
@@ -206,6 +243,9 @@ var State = (function () {
         return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * this._rv_fi));
     };
 
+    State.prototype.is_moving = function () {
+        return this.a != 0.0 || this.v0 != 0.0
+    };
 
     return State;
 })();
@@ -222,24 +262,6 @@ var User = (function () {
 })();
 
 
-var Clock = (function () {
-    function Clock() {
-        this.dt = 0;
-    }
-
-
-    Clock.prototype.getCurrentTime = function () {
-        return new Date().getTime() / 1000. + this.dt;
-    };
-
-    // Для установки dt необходимо серверное время передать в секундах = UTC/1000.
-    Clock.prototype.setDt = function (aTimeServer) {
-        this.dt = aTimeServer - new Date().getTime() / 1000.;
-    };
-
-
-    return Clock;
-})();
 
 // Владелец машины
 var Owner = (function () {

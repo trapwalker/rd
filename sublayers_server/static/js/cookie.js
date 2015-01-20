@@ -18,7 +18,7 @@ var LocalCookieStorage = (function(){
             optionsSelectAnybody: false,
             levelZoomForVisibleLabel: 5,
             optionsShowID: false,
-            optionsShowDebugLine: false,
+            optionsShowDebugLine: true,
             optionsFriendlyFireEnabled: true,
             radarVisible: false
         };
@@ -286,8 +286,8 @@ var LocalCookieStorage = (function(){
     };
 
     // optionsShowDebugLine
-    LocalCookieStorage.prototype.optionsShowDebugLine = function(){
-        return this.optionsShowDebugLine;
+    LocalCookieStorage.prototype.enableShowDebugLine = function(){
+        return this.flagDebug && this.optionsShowDebugLine;
     };
 
     return LocalCookieStorage;

@@ -4,7 +4,7 @@
  Использование:
  создание: var marker = L.rotatedMarker(<как обычный маркер>);
  добавление на карту: marker.addTo(map);
- установка угла в градусах: marker.options.angle = direction;
+ установка угла в радианах: marker.options.angle = direction;
  поворот картинки осуществляется при переустановке координат!
  перерисовка маркера: marker.setLatLng(marker.getLatLng() - или нужные координаты);
  */
@@ -73,14 +73,6 @@ function getTownMarker(aTown, aMap) {
 }
 
 
-function onMouseOverForLabels(){
-    if(this._labelNoHide) return false;
-    this.setLabelNoHide(true);
-}
-
-function onMouseOutForLabels(){
-    this.setLabelNoHide(cookieStorage.visibleLabel());
-}
 
 function carInfoClickEvent(event){
     var car = listMapObject.objects[event.target.id.split('_')[1]];
@@ -105,32 +97,6 @@ function flashMarker(marker){
     }, 500);
 }
 
-function onMouseClickMarker(event){
-    if(cookieStorage.optionsSelectAnybody) {
-        if (listMapObject.exist(this.carID)) {
-            var car = listMapObject.objects[this.carID];
-            if (car.backLight)
-                carMarkerList.delFromBackLight(car);
-            else
-                carMarkerList.addToBackLight(car);
-
-            // тест эффекта мигания маркера
-            this.setOpacity(0.5); // Если нужно мигания и Label, то передать вторым параметром true
-            var self = this;
-            setTimeout(function () {
-                self.setOpacity(1);
-            }, 500);
-        }
-    }
-    if (event.originalEvent.stopPropagation) {
-        // Вариант стандарта W3C:
-        event.originalEvent.stopPropagation()
-    } else {
-        // Вариант Internet Explorer:
-        event.originalEvent.cancelBubble = true
-    }
-
-}
 
 
 function onMarkerPopupOpen(e) {
@@ -141,129 +107,5 @@ function onMarkerPopupOpen(e) {
 }
 
 
-
-// Формирование списка Иконок для всех видов маркеров леафлета
-function iconLeafletInit(){
-    iconsLeaflet = {};
-
-    // Создание иконки города
-    iconsLeaflet.icon_city = new L.icon({
-        iconUrl: 'img/map_icons/map_ico_city.png',
-        iconSize: [26, 29]
-    });
-
-    // Создание иконки заправочной станции
-    iconsLeaflet.icon_station = new L.icon({
-        iconUrl: 'img/map_icons/map_ico_fuelstation.png',
-        iconSize: [26, 29]
-    });
-
-
-    // Создание иконки движущейся машинки V 1
-    iconsLeaflet.icon_moving_V1 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v1_moving.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки стоящей машинки V 1
-    iconsLeaflet.icon_stopped_V1 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v1_stopped.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки убитой машинки V 1
-    iconsLeaflet.icon_killed_V1 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v1_killed.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки движущейся машинки V 2
-    iconsLeaflet.icon_moving_V2 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v2_moving_slow.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки БЫСТРО движущейся машинки V 2
-    iconsLeaflet.icon_moving_fast_V2 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v2_moving_fast.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки стоящей машинки V 2
-    iconsLeaflet.icon_stopped_V2 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v2_stopped.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки убитой машинки V 2
-    iconsLeaflet.icon_killed_V2 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v2_killed.png',
-        iconSize: [51, 28]
-    });
-
-
-    // Создание иконки движущейся машинки V 3
-    iconsLeaflet.icon_moving_V3 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v3_moving.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки стоящей машинки V 3
-    iconsLeaflet.icon_stopped_V3 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_player_v3_stopped.png',
-        iconSize: [51, 28]
-    });
-
-    // Создание иконки ракеты
-    iconsLeaflet.icon_rocket_V1 = new L.icon({
-        iconUrl: 'img/map_icons/map_icon_rocket.png',
-        iconSize: [40, 18]
-    });
-}
-
-
-
-var Bang = (function(){
-    function Bang(position, aPower, aBangDur, aBandEndDur){
-        // todo: сделать зависимость радиуса взрыва от текущего зума. а если радиус меньше 5, то совсем не показывать его
-        var bang_power = aPower || 50;
-        var bang_duration = aBangDur || 1500;
-        var bang_end_duration = aBandEndDur ||  1000;
-        if (position) {
-            this.myIcon = L.divIcon({
-                className: 'my-bang-icon',
-                iconSize: [bang_power, bang_power],
-                iconAnchor: [bang_power-1, bang_power-1],
-                html: '<svg height="' + bang_power * 2 + 'px" width="' + bang_power * 2 + 'px">' +
-                    '<circle cx="' + bang_power + '" cy="' + bang_power + '" r="2" fill="#FFAF21">' +
-                    '<animate attributeName="r" repeatCount="1" fill="freeze"' +
-                    'dur="' + bang_duration + 'ms" ' +
-                    'from="1" to="' + bang_power + '"' +
-                    'values="1; ' + bang_power * 0.5 + '; ' + bang_power * 0.8 + '; ' + bang_power + ';" ' +
-                    '/>' +
-                    '<animate attributeType="CSS" attributeName="opacity"' +
-                    'from="1" to="0" dur="' + bang_end_duration + 'ms" repeatCount="1" fill="freeze"' +
-                    'begin="' + bang_duration + 'ms"/>' +
-                    '</circle>' +
-                    '</svg>'
-            });
-            this.marker = L.marker(myMap.unproject([position.x, position.y], myMap.getMaxZoom()), {icon: this.myIcon, zIndexOffset: 10});
-            this.duration = bang_duration + bang_end_duration;
-        }
-    }
-
-    Bang.prototype.start = function(){
-        //console.log('Bang Started');
-        if(this.marker) {
-            var self = this;
-            this.marker.addTo(myMap);
-            setTimeout(function () {
-                myMap.removeLayer(self.marker);
-            }, this.duration);
-        }
-    };
-
-    return Bang
-})();
 
 
