@@ -158,12 +158,23 @@ var UserCar = (function (_super) {
     function UserCar(aID, aHP, aMaxSpeed, aState) {
         _super.call(this, aID, aHP, aState);
         this.maxSpeed = aMaxSpeed;
+        this._lastSpeed = 0.75 * aMaxSpeed;
     }
 
     UserCar.prototype.getGround = function () {
         // todo: правильно обработать тип местности
         return null;
-    }
+    };
+
+    UserCar.prototype.setLastSpeed = function (speed) {
+        this._lastSpeed = speed;
+    };
+
+
+    UserCar.prototype.getLastSpeed = function () {
+        return this._lastSpeed;
+    };
+
 
 
     return UserCar;

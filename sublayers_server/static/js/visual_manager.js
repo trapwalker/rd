@@ -15,6 +15,7 @@ var VisualManager = (function () {
 
     VisualManager.prototype.delModelObject = function (mobj) {
         if (this._model_list[mobj.ID])
+            // todo: возможно нельзя пользоваться delete. возможно нужно просто присваивать null
             delete this._model_list[mobj.ID];
     };
 
@@ -25,12 +26,21 @@ var VisualManager = (function () {
                 this._model_list[mobj.ID].list[i].changed = true;
     };
 
+    // Возвращает модельный объект по id'шнику
+    VisualManager.prototype.getModelObject = function(m_id){
+        if (this._model_list.hasOwnProperty(m_id))
+            return this._model_list[m_id].obj;
+        else
+            return null;
+    };
+
     // Возвращается список визуальных объектов для переданного модельного объекта
     VisualManager.prototype.getVobjsByMobj = function(mobj){
         var res_list = [];
         var list = this._model_list[mobj.ID].list;
         for (var i=0; i< list.length; i++)
             res_list.push(list[i].obj);
+        return res_list;
     };
 
     // Добавляет визуальный объект и подписывает его на модельные объекты из model_objects

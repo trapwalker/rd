@@ -165,7 +165,7 @@ var ClientManager = (function () {
                 sectors: user.userCar.fireSectors,
                 countSectorPoints: 20
             });
-            */
+
 
             // Инициализация контроллеров
             controllers = new Controllers({
@@ -178,6 +178,7 @@ var ClientManager = (function () {
 
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
+             */
         }
 
         // Присвоение роли
@@ -199,6 +200,19 @@ var ClientManager = (function () {
         var aState = this._getState(event.object.state);
         var owner = this._getOwner(event.object);
 
+        var uid = event.object.uid;
+        var car = visualManager.getModelObject(uid);
+
+        if (! car) {
+            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка!');
+            return;
+        }
+
+        // обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
+        car.setState(aState);
+
+
+        /*
         if (event.object.uid == user.userCar.ID) { // если машинка своя
             // Установить новую траекторию
             // Сохранить старое хп и установить нвоое
@@ -231,6 +245,7 @@ var ClientManager = (function () {
                     flashMarker(listMapObject.objects[event.object.uid].marker);
             }
         }
+        */
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerUpdate()) {
@@ -272,10 +287,32 @@ var ClientManager = (function () {
             var aHP = event.object.hp;
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
-            if (uid == user.userCar.ID) { // если машинка своя
-                user.userCar.state = aState;
-                user.userCar.hp = aHP;
+
+            var car = visualManager.getModelObject(uid);
+
+            if (car) {
+                console.error('Contact Error: Такая машинка уже есть на клиенте! Ошибка!');
+                return;
             }
+
+
+            if (car == user.userCar) {
+                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
+                return;
+            }
+
+            // создание новой машинки
+
+            car = new MapCar(uid, aHP, aState);
+
+            car.role = event.object.role;
+            car.cls = event.object.cls;
+
+            // создание виджетов новой машинки
+            new WCarMarker(car);    // виджет маркера
+
+
+            /*
             else { // если не своя, то проверить есть ли такая в модели
                 if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
                     var car = new MapCar(uid, aHP, aState);
@@ -287,15 +324,20 @@ var ClientManager = (function () {
                     //    car.track.speedV = new Point(0, 0);
 
                 } else { // Если такая машинка уже есть, то установить все переменные
-                    listMapObject.setCarHP(uid, aHP);
-                    listMapObject.setState(uid, aState);
+                    //listMapObject.setCarHP(uid, aHP);
+                    //listMapObject.setState(uid, aState);
                 }
                 // После добавления машинки или её апдейта, проверяем сколько у неё хп
                 if (listMapObject.objects[uid].hp == 0) {
                     listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
                 }
             }
+
+            */
         }
+
+
+
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerContact())
             debugMapList.push(
@@ -311,11 +353,12 @@ var ClientManager = (function () {
             );
 
         // отрисовка линии от объекта к субъекту
+        /*
         // TODO: сделано специально, иначе нужно пересматривать ВСЮ архитектуру клиента
         setTimeout(function () {
             carMarkerList.addContactLine(event.subject_id, event.object.uid);
         }, 500);
-
+        */
     };
 
     ClientManager.prototype.See = function (event) {
@@ -326,10 +369,24 @@ var ClientManager = (function () {
     ClientManager.prototype.Out = function (event) {
         console.log('ClientManager.prototype.Out');
         if(event.is_last) { // Только если машинку нужно совсем убирать
+            // очистить все виджеты машинки
+            var uid = event.object_id;
+            var car = visualManager.getModelObject(uid);
+            if (! car) {
+                console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
+                return;
+            }
+            var list_vo = visualManager.getVobjsByMobj(car);
+            for(var i = 0; i< list_vo.length; i++)
+                list_vo[i].delFromVisualManager();
+
+
+
+
             // стирание линий
-            carMarkerList.delContactLine(event.subject_id, event.object_id);
+            //carMarkerList.delContactLine(event.subject_id, event.object_id);
             // удаление машинки
-            carMarkerList.del(event.object_id);
+            //carMarkerList.del(event.object_id);
         }
     };
 
@@ -351,6 +408,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        user.userCar.setLastSpeed(newSpeed);
         this.sendMotion(null, newSpeed, null)
     };
 
@@ -365,8 +423,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGoto = function (target, newSpeed) {
-        console.log('sendGoto', newSpeed);
-        this.sendMotion(target, newSpeed, null);
+        console.log('sendGoto', user.userCar.getLastSpeed());
+        this.sendMotion(target, user.userCar.getLastSpeed(), null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
