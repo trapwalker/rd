@@ -12,8 +12,18 @@ var Bang = (function(){
                 className: 'my-bang-icon',
                 iconSize: [bang_power, bang_power],
                 iconAnchor: [bang_power-1, bang_power-1],
-                html: '<svg height="' + bang_power * 2 + 'px" width="' + bang_power * 2 + 'px">' +
-                    '<circle cx="' + bang_power + '" cy="' + bang_power + '" r="2" fill="#FFAF21">' +
+                html: '<svg height="' + bang_power * 2 + 'px" width="' + bang_power * 2 + 'px"'+
+                    'xmlns="http://www.w3.org/2000/svg" version="1.1"'+
+                    'xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                    '<defs>'+
+                        +'<radialGradient id="MyGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">' +
+                            '<stop offset="0%" stop-color="rgb(255,175,33)" stop-opacity="0"/>' +
+                            '<stop offset="100%" stop-color="rgb(255,175,33)" stop-opacity="1"/>' +
+                        '</radialGradient>' +
+                    '</defs>' +
+                    // вот так должно работать! не работает почему-то defs и градиент не присваивается
+                    //'<circle cx="' + bang_power + '" cy="' + bang_power + '" r="50" fill="url(#MyGradient)">' +
+                    '<circle cx="' + bang_power + '" cy="' + bang_power + '" r="2" fill="rgb(255,175,33)">' +
                     '<animate attributeName="r" repeatCount="1" fill="freeze"' +
                     'dur="' + bang_duration + 'ms" ' +
                     'from="1" to="' + bang_power + '"' +
@@ -31,11 +41,12 @@ var Bang = (function(){
     }
 
     Bang.prototype.start = function(){
-        //console.log('Bang Started');
+        console.log('Bang Started');
         if(this.marker) {
             var self = this;
             this.marker.addTo(map);
             timeManager.addTimeoutEvent(this, 'finish', this.duration);
+            console.log('Bang added to map');
         }
     };
 

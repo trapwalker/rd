@@ -117,7 +117,8 @@ function onKeyDownMap(event) {
             }
             break;
         case 32:
-            clientManager.sendRocket();
+            //clientManager.sendRocket();
+            new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
             break;
     }
 }
