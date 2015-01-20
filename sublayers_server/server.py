@@ -36,11 +36,11 @@ class Application(tornado.web.Application):
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html"}),
             (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/ws", AgentSocketHandler),
+            (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static")}),
         ]
         settings = dict(
             cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
-            static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,
         )
         tornado.web.Application.__init__(self, handlers, **settings)
