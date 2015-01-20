@@ -36,11 +36,11 @@ class Application(tornado.web.Application):
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html"}),
             (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/ws", AgentSocketHandler),
+            (r"/static/(.*)", StaticFileHandlerPub, {"path": os.path.join(os.path.dirname(__file__), "static")}),
         ]
         settings = dict(
             cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
-            static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,
         )
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -58,7 +58,13 @@ class Application(tornado.web.Application):
 
         #b = Bot(server=self.srv, position=Point(0, 0))
         #b.goto(Point(1000, 1500))
-        
+
+
+class StaticFileHandlerPub(tornado.web.StaticFileHandler):
+    def set_extra_headers(self, path):
+        super(StaticFileHandlerPub, self).set_extra_headers(path)
+        self.set_header("Access-Control-Allow-Origin", "*")
+
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
