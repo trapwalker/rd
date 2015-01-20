@@ -5,8 +5,8 @@
 
 
 //Путь к карте на сервере
-//var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
+//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
 //Путь к карте в локальном каталоге
 var ConstMapPathLocal = '';
