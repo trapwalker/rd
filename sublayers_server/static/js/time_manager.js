@@ -19,7 +19,7 @@ var Clock = (function () {
 
 // todo: подумать над синхронизацией
 
-var ConstTimerInterval = 50;   // Интервал таймера (мс)
+var ConstTimerInterval = 20;   // Интервал таймера (мс)
 var ConstIntervalTimeEps = 5; // Допустимая погрешность средней величины реального интервала таймера (мс)
 var ConstSetFPSTimeout = 5000; // Время (мс), через которое будет обновляться интервал таймера (зависит от производительности)
 
@@ -72,6 +72,7 @@ var TimeManager = (function () {
 
     // Установка интервала таймера
     TimeManager.prototype.setIntervalTimer = function (interval) {
+        console.log('TimeManager.prototype.setIntervalTimer', interval);
         this.timerStop();
         this._interval = interval;
         this.timerStart();
