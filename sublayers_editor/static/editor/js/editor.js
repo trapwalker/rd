@@ -1,3 +1,26 @@
+function requestViewRect(event) {
+    var bounds = myMap.getPixelBounds();
+    var tileBounds = L.bounds(
+        bounds.min.divideBy(256)._floor(),
+        bounds.max.divideBy(256)._floor());
+    var zoom = myMap.getZoom();
+    var mes_obj = {
+        min_point: {
+            x: tileBounds.min.x,
+            y: tileBounds.min.y,
+            z: zoom
+        },
+        max_point: {
+            x: tileBounds.max.x,
+            y: tileBounds.max.y,
+            z: zoom
+        },
+        select_zoom: zoom
+    };
+    editor_manager.sendSelectAreaByRect(mes_obj);
+}
+
+
 $(document).ready(function () {
     // инициализация карты
     myMap = L.map('map', {
@@ -6,60 +29,7 @@ $(document).ready(function () {
         minZoom: 4
     }).setView([50.595, 36.59], 6);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
-
-    /*
-    var canvasTiles = L.tileLayer.canvas();
-    canvasTiles.drawTile = function(canvas, tilePoint, zoom) {
-        var ctx = canvas.getContext('2d');
-        ctx.fillText(tilePoint.toString(), 50, 50);
-        ctx.globalAlpha = 0.05;
-        var l = 0, s = 255;
-        ctx.fillStyle = '#000';
-        ctx.fillRect(l, l, s, s);
-
-        
-
-        setInterval(function(){
-            if(l >= s) {
-                ctx.clearRect(0,0,255,255);
-                l=0;
-                s = 255;
-            }
-            l+=2;
-            s-=4;
-            console.log(l, s);
-            ctx.fillRect(l, l, s, s);
-        }, 100)
-
-    };
-    canvasTiles.addTo(myMap);
-    */
-
-
-    myMap.on('moveend', function(){
-        var bounds = myMap.getPixelBounds();
-        var tileBounds = L.bounds(
-            bounds.min.divideBy(256)._floor(),
-            bounds.max.divideBy(256)._floor());
-        var zoom = myMap.getZoom();
-
-        var mes_obj = {
-            min_point: {
-                x: tileBounds.min.x,
-                y: tileBounds.min.y,
-                z: zoom
-            },
-            max_point: {
-                x: tileBounds.max.x,
-                y: tileBounds.max.y,
-                z: zoom
-            },
-            select_zoom: zoom
-        };
-        editor_manager.selectAreaByRect(mes_obj);
-        //console.log('min = ', tileBounds.min.x, tileBounds.min.y, myMap.getZoom());
-        //console.log('max = ', tileBounds.max.x, tileBounds.max.y, myMap.getZoom());
-    });
+    myMap.on('moveend', requestViewRect);
 
     // инициализация клиент-серверного взаимодействия
     message_stream = new MessageConnector();
@@ -104,6 +74,32 @@ $(document).ready(function () {
     // подключение к серверу
     ws_connector.connect();
     myMap.setView([50.595, 36.58], 6);
+
+
+    /* Рисовалка на канвасе
+     var canvasTiles = L.tileLayer.canvas();
+     canvasTiles.drawTile = function(canvas, tilePoint, zoom) {
+     var ctx = canvas.getContext('2d');
+     ctx.fillText(tilePoint.toString(), 50, 50);
+     ctx.globalAlpha = 0.05;
+     var l = 0, s = 255;
+     ctx.fillStyle = '#000';
+     ctx.fillRect(l, l, s, s);
+     setInterval(function(){
+     if(l >= s) {
+     ctx.clearRect(0,0,255,255);
+     l=0;
+     s = 255;
+     }
+     l+=2;
+     s-=4;
+     console.log(l, s);
+     ctx.fillRect(l, l, s, s);
+     }, 100)
+     };
+     canvasTiles.addTo(myMap);
+     */
+
 
     // Тест окон
     /*

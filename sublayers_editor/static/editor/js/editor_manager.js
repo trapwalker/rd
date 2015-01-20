@@ -5,7 +5,6 @@ var EditorManager = (function(){
             cbFunc: this.receiveMessage,
             subject: this
         });
-
         this.tiles = []
     }
 
@@ -14,11 +13,8 @@ var EditorManager = (function(){
             obj.id = obj._id['$oid'];
     };
 
-    EditorManager.prototype.sendMessage = function(msg){
-        //alert('EditorManager  sendMessage');
-        // TODO: сейчас данная функция вызывается из функций wsjson.js, позже переделать!
-
-        // формирование и отправка мессаджа
+    EditorManager.prototype._sendMessage = function(msg){
+        //console.log('EditorManager.prototype._sendMessage');
         message_stream.sendMessage({
             type: 'ws_message_send',
             body: msg
@@ -26,85 +22,96 @@ var EditorManager = (function(){
     };
 
     EditorManager.prototype.receiveMessage = function (self, params) {
-        //alert('EditorManager receiveMessage');
+        //console.log('EditorManager.prototype.receiveMessage');
         self._setIdInObject(params.obj);
-
-        switch (params.cls){
-            case 'addObject':
-                repositoryMO.addObjectFromServer(params.obj.object_type, params.obj);
-                break;
-            case 'delObject':
-                repositoryMO.delObjectFromServer(params.obj.object_type, params.obj.id);
-                break;
-            case 'delObjects':
-                for (var i = 0; i < params.obj.length; i++) {
-                    var obj = params.obj[i];
-                    repositoryMO.delObjectFromServer(obj.object_type, obj._id['$oid']);
-                }
-                break;
-            case 'changeObject':
-                repositoryMO.changeObjectFromServer(params.obj.object_type, params.obj);
-                break;
-            case 'addTiles':
-                repositoryMO.addTilesFromServer(params.obj);
-                break;
-            case 'delTiles':
-                repositoryMO.delTilesFromServer(params.obj);
-                break;
-            case 'sendRects':
-                self.paintTiles(params.obj);
-                break;
-            case 'answerSelectAreaByRect':
-                self.answerSelectAreaByRect(params.obj);
-                break;
-            case 'roads':
-                console.log(params.obj);
-                self._paint_roads(params.obj);
-                break;
-            case 'intersectResult':
-                //console.log('intersectResult', params.obj);
-                editorIntersectTest.setResultPoints(params.obj);
-                break;
-            default:
-                break;
-        }
-
+        if (typeof(self[params.cls]) === 'function')
+            self[params.cls](params);
+        else
+            console.log('Error: неизвестная апи-команда для клиента: ', params.cls);
         return true;
     };
 
-    EditorManager.prototype.addObject = function(obj){
+    // Методы отправки сообщений
+
+    EditorManager.prototype.sendAddObject = function(obj){
         var mes = {
             call: "addObject",
             params: obj
         };
-        this.sendMessage(mes);
+        this._sendMessage(mes);
     };
 
-    EditorManager.prototype.delObject = function(id){
+    EditorManager.prototype.sendDelObject = function(id){
         var mes = {
             call: "delObject",
             params: {id: id}
         };
-        this.sendMessage(mes);
+        this._sendMessage(mes);
     };
 
-    EditorManager.prototype.changeObject = function(obj){
+    EditorManager.prototype.sendChangeObject = function(obj){
         var mes = {
             call: "changeObject",
             params: obj
         };
-        this.sendMessage(mes);
+        this._sendMessage(mes);
     };
 
-    EditorManager.prototype.selectAreaByRect = function(obj){
+    EditorManager.prototype.sendSelectAreaByRect = function(obj){
         var mes = {
             call: "selectAreaByRect",
             params: obj
         };
-        this.sendMessage(mes);
+        this._sendMessage(mes);
     };
 
-    EditorManager.prototype.paintTiles = function(rects){
+    EditorManager.prototype.sendIntersectTest = function(point, angle) {
+        var mes = {
+            call: 'intersectTest',
+            params: {
+                point: point,
+                angle: angle
+            }
+        };
+        this._sendMessage(mes);
+    };
+
+    // Методы приема сообщений
+
+    EditorManager.prototype.receiveAddObject = function(params) {
+        //console.log('EditorManager.prototype.receiveAddObject');
+        repositoryMO.addObjectFromServer(params.obj);
+    };
+
+    EditorManager.prototype.receiveDelObject = function(params) {
+        //console.log('EditorManager.prototype.receiveDelObject');
+        repositoryMO.delObjectFromServer(params.obj.id);
+    };
+
+    EditorManager.prototype.receiveDelObjects = function(params) {
+        //console.log('EditorManager.prototype.receiveDelObjects');
+        for (var i = 0; i < params.obj.length; i++)
+            repositoryMO.delObjectFromServer(params.obj[i]._id['$oid']);
+    };
+
+    EditorManager.prototype.receiveChangeObject = function(params) {
+        //console.log('EditorManager.prototype.receiveChangeObject');
+        repositoryMO.changeObjectFromServer(params.obj);
+    };
+
+    EditorManager.prototype.receiveAddTiles = function(params) {
+        //console.log('EditorManager.prototype.receiveAddTiles');
+        repositoryMO.addTilesFromServer(params.obj);
+    };
+
+    EditorManager.prototype.receiveDelTiles = function(params) {
+        //console.log('EditorManager.prototype.receiveDelTiles');
+        repositoryMO.delTilesFromServer(params.obj);
+    };
+
+    EditorManager.prototype.receiveRects = function(params) {
+        //console.log('EditorManager.prototype.receiveRects');
+        rects = params.obj;
         while(this.tiles.length > 0){
             // Стереть старые
             tile = this.tiles.pop();
@@ -117,63 +124,27 @@ var EditorManager = (function(){
             var z = rect.point.z;
             var lt1 = myMap.unproject([x << (26 - z), y << (26 - z)], map_max_zoom);
             var lt2 = myMap.unproject([(x + 1) << (26 - z), (y + 1) << (26 - z)], map_max_zoom);
-            //console.log(rect.point.x, rect.point.y, rect.point.z);
-            //console.log(x << (26 - z), y << (26 - z), z);
-            // console.log('in rectangle', lt1);
-
-            /*
-            L.circleMarker(lt1, {color: '#777777'})
-                .setRadius(16)
-                .bindPopup(
-                    'LatLng: ' + lt1 + '</br>'
-            )
-                .addTo(myMap);
-            */
 
             var map_rect = L.rectangle(L.latLngBounds([lt1, lt2]),
                 {color: '#333333', weight: 2, clickable:false, fillOpacity: 0.0});
             this.tiles.push(map_rect);
             map_rect.addTo(myMap);
-
         }
-
     };
 
-    EditorManager.prototype.answerSelectAreaByRect = function(objects){
+    EditorManager.prototype.receiveSelectAreaByRect = function(params) {
+        //console.log('EditorManager.prototype.receiveSelectAreaByRect');
+        objects = params.obj;
         for (var i = 0; i < objects.length; i++) {
             var obj = objects[i];
             this._setIdInObject(obj);
-            repositoryMO.addObjectFromServer(obj.object_type, obj);
+            repositoryMO.addObjectFromServer(obj);
         }
     };
 
-    EditorManager.prototype._paint_roads = function (roads) {
-        for (var i = 0; i < roads.length; i++) {
-            var road = roads[i];
-            for (var j = 0; j < road.points.length; j++) {
-                var p = road.points[j];
-                L.circleMarker([p.lat, p.lng], {color: '#FF3333'})
-                    .setRadius(6)
-                    .bindPopup(
-                        'Road id: ' + road.id + '</br>'+
-                        'Road tag: ' + road.tag_road + '</br>'+
-                        'LatLng: ' + p.lat + '    ' + p.lng + '</br>'
-                )
-                    .addTo(myMap);
-            }
-        }
-    }
-
-
-    EditorManager.prototype.sendIntersectTest = function (point, angle) {
-        var mes = {
-            call: 'intersectTest',
-            params: {
-                point: point,
-                angle: angle
-            }
-        };
-        this.sendMessage(mes);
+    EditorManager.prototype.receiveIntersectResult = function(params) {
+        //console.log('EditorManager.prototype.receiveIntersectResult');
+        editorIntersectTest.setResultPoints(params.obj);
     };
 
     return EditorManager;

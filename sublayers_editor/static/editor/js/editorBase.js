@@ -82,7 +82,6 @@ var EditorBase = (function () {
     return EditorBase;
 })();
 
-
 // Инициализация редакторов
 function initEditors(){
     editorFreeCam = new EditorFreeCam();
@@ -90,7 +89,6 @@ function initEditors(){
     editorMapObjects = new EditorMapObjects();
     editorIntersectTest = new EditorIntersectTest();
 }
-
 
 // Обработчики событий мыши и клавиатуры
 function onKeyDownMain(event) {
@@ -128,7 +126,6 @@ function mouseClickMain(event) {
     if (typeof(currentEditor.mouseClick) === 'function')
         currentEditor.mouseClick(event);
 }
-
 
 // Механизм переключения между редакторами
 // Включение режима свободной камеры
