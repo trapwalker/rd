@@ -58,7 +58,13 @@ class Application(tornado.web.Application):
 
         #b = Bot(server=self.srv, position=Point(0, 0))
         #b.goto(Point(1000, 1500))
-        
+
+
+class StaticFileHandlerPub(tornado.web.RequestHandler):
+    def set_extra_headers(self, path):
+        super(StaticFileHandlerPub, self).set_extra_headers(path)
+        self.set_header("Access-Control-Allow-Origin", "*")
+
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
