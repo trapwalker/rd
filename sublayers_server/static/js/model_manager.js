@@ -352,13 +352,18 @@ var ClientManager = (function () {
                     .addTo(myMap)
             );
 
-        // отрисовка линии от объекта к субъекту
-        /*
-        // TODO: сделано специально, иначе нужно пересматривать ВСЮ архитектуру клиента
-        setTimeout(function () {
-            carMarkerList.addContactLine(event.subject_id, event.object.uid);
-        }, 500);
-        */
+        // отрисовка линии от объекта к субъекту event.subject_id, event.object.uid
+
+        if(cookieStorage.enableShowDebugLine()) {
+            var scar = visualManager.getModelObject(event.subject_id);
+            var ocar = visualManager.getModelObject(event.object.uid);
+            if (!scar || !ocar) {
+                console.error('Contact Error: невозможно отобразить Contact-Line, так как на клиенте отсутствует одна из машин: ', scar, ocar);
+                return;
+            }
+            new WRedContactLine(scar, ocar);
+        }
+        
     };
 
     ClientManager.prototype.See = function (event) {
@@ -379,6 +384,9 @@ var ClientManager = (function () {
             var list_vo = visualManager.getVobjsByMobj(car);
             for(var i = 0; i< list_vo.length; i++)
                 list_vo[i].delFromVisualManager();
+
+            // убрать саму машинку из визуалменеджера
+            visualManager.delModelObject(car);
 
 
 
@@ -423,12 +431,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGoto = function (target, newSpeed) {
-        console.log('sendGoto', user.userCar.getLastSpeed());
+        //console.log('sendGoto', user.userCar.getLastSpeed());
         this.sendMotion(target, user.userCar.getLastSpeed(), null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
+        //console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
         new_speed = newSpeed;
         if (new_speed) {
             new_speed = new_speed / user.userCar.maxSpeed;

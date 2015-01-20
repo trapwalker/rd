@@ -178,7 +178,7 @@ var MapManager = (function(_super){
         map = L.map('map',
             {
                 minZoom: 3,
-                maxZoom: 16,
+                maxZoom: 7,
                 zoomControl: false,
                 attributionControl: false,
                 scrollWheelZoom: "center",
@@ -219,7 +219,7 @@ var MapManager = (function(_super){
         //console.log('MapManager.prototype.createTileLayer');
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
-                maxZoom: 16,
+                maxZoom: 7,
                 continuousWorld: true,
                 opacity: 0.5,
                 storage: storage});
@@ -228,7 +228,7 @@ var MapManager = (function(_super){
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
                 opacity: 0.5,
-                maxZoom: 16});
+                maxZoom: 7});
         }
         if(cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);

@@ -49,8 +49,9 @@ var WCarMarker = (function (_super) {
         this.marker.setLatLng(tempLatLng);
     };
 
-    VisualObject.prototype.delFromVisualManager = function () {
-        var car = this.car;
+    WCarMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCarMarker.prototype.delFromVisualManager');
+        this.car = null;
         map.removeLayer(this.marker);
         _super.prototype.delFromVisualManager.call(this);
     };

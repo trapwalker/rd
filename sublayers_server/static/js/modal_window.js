@@ -119,6 +119,7 @@ var ModalWindow = (function () {
             cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
             cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
             cookieStorage.optionsFriendlyFireEnabled = optionsFriendlyFireEnabled.checked ? true : false;
+            cookieStorage.optionsShowDebugLine = optionsShowDebugLine.checked ? true : false;
 
             // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
             cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
@@ -136,6 +137,7 @@ var ModalWindow = (function () {
             cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
             //chat.manageSystemChats(cookieStorage);
 
+            /*
             // Скрыть или показать тайловый уровень в зависимости от настроек опций
             cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
             TileLaterSet();
@@ -150,34 +152,7 @@ var ModalWindow = (function () {
             // optionsShowID переделать шапку, в зависимости от результата
             cookieStorage.optionsShowID = optionsShowID.checked ? true : false;
             setTitleOnPage();
-
-            // optionsShowDebugLine - выключить все линии всех машинок
-            if (optionsShowDebugLine.checked != cookieStorage.optionsShowDebugLine) {
-                // включить все линии на своей машинке
-                for(var k = 0; k < user.userCar.debugLines.length; k++){
-                    var uline = user.userCar.debugLines[k];
-                    if (optionsShowDebugLine.checked) // добавить линию на карту
-                        uline.plln.addTo(myMap);
-                    else
-                        myMap.removeLayer(uline.plln);
-                }
-                // TODO: Тут возможна ошибка с перебором
-                // включить линии для не своей машинки
-                for (var i in listMapObject.objects)
-                    if (listMapObject.exist(i)) {
-                        // пересчёт координат
-                        var car = listMapObject.objects[i];
-                        for (var j = 0; j < car.debugLines.length; j++) {
-                            var line = car.debugLines[j];
-                            if (optionsShowDebugLine.checked) // добавить линию на карту
-                                line.plln.addTo(myMap);
-                            else
-                                myMap.removeLayer(line.plln);
-                        }
-                    }
-            }
-            cookieStorage.optionsShowDebugLine = optionsShowDebugLine.checked ? true : false;
-
+            */
 
         }
     };
