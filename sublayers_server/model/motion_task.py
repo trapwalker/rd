@@ -34,19 +34,23 @@ class MotionTask(Task):
             if time is None:
                 break
 
+
     def _calc_goto(self, event):
-        time = event.time
-        owner = self.owner
-        target_point = self.target_point
-        st = State.copy_state(owner.state)
-        st.update(t=time, cc=self.cc)
-        # Мы около цели, необходимо остановиться
-        if st.p0.distance(target_point) < (2 * st.r(st.t0)):
+
+        def _calc_stop_car():
+            '''
+            расчёт движения при целевой точке заданной внутри двух радиусов поворота
+            '''
+
             # todo: если target_point не ближе чем минимальный радиус, то проехать вперед с замедлением
             # начать двигаться по кругу и тормозить сразу же
             turn = -st._get_turn_sign(target_point)
-            self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=turn))
             br_time = st.update(t=time, cc=0.0, turn=turn)
+            if br_time:
+                self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=turn))
+            else:
+                self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=0.0, turn=0.0))
+                return
             '''
             Если мы кликнули внутрь радиуса, то нужно узнать сможем ли мы будучи в торможении достичь данной точки
             Для этого рассчитаем угол, на который мы должны довернуть своё текущее направление
@@ -54,7 +58,6 @@ class MotionTask(Task):
             my_vect = Point.polar(1, st.fi0)
             t_vect = target_point - st.p0
             angle = abs(t_vect.angle_with(my_vect))
-
             if angle > EPS:
                 # рассчитаем длину пути по кругу для достижения направления
                 l_circle = angle * st.r(st.t0)
@@ -70,6 +73,19 @@ class MotionTask(Task):
                     br_time = st.update(t=t_circle, cc=0.0, turn=0.0)
             if br_time:
                 self.add_event(MotionTaskEvent(server=owner.server, time=br_time, task=self, turn=0.0))
+
+
+        time = event.time
+        owner = self.owner
+        target_point = self.target_point
+        st = State.copy_state(owner.state)
+        st.update(t=time, cc=self.cc)
+
+        ddist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+        log.debug('ddist_1 = %s', ddist)
+        # Мы около цели, необходимо остановиться
+        if not (ddist > EPS):
+            _calc_stop_car()
             return
 
         # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
@@ -83,6 +99,11 @@ class MotionTask(Task):
 
         # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
         st.update(t=time)
+        ddist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+        log.debug('ddist_2 = %s', ddist)
+        if not (ddist > EPS):
+            _calc_stop_car()
+            return
         turn_fi = st._get_turn_fi(target_point)
         if abs(turn_fi) > EPS:
             temp_cc = st.v(time) / st.v_max
