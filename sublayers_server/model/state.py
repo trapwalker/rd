@@ -254,23 +254,24 @@ class State(BaseState):
             **self.__dict__
         )
 
-    @classmethod
-    def copy_state(cls, st):
-        res = State(
-            owner=st.owner, t=st.t0, p=st.p0, fi=st.fi0, v=st.v0,
-            cc=st.cc,
-            turn=st._turn_sign,
-            r_min=st.r_min,
-            ac_max=st.ac_max,
-            v_max=st.v_max,
-            a_accelerate=st.a_accelerate,
-            a_braking=st.a_braking)
-        res.a = st.a
-        res._c = st._c
-        res._sp_m = st._sp_m
-        res._sp_fi0 = st._sp_fi0
-        res._rv_fi = st._rv_fi
-        res.t_max = st.t_max
+    def __copy__(self):
+        # todo: use standart pickling methods like __getinitargs__(), __getstate__() and __setstate__()
+        # todo: Необходимо избавиться от этого метода в текущем виде. Это плохой метод.
+        res = self.__class__(
+            owner=self.owner, t=self.t0, p=self.p0, fi=self.fi0, v=self.v0,
+            cc=self.cc,
+            turn=self._turn_sign,
+            r_min=self.r_min,
+            ac_max=self.ac_max,
+            v_max=self.v_max,
+            a_accelerate=self.a_accelerate,
+            a_braking=self.a_braking)
+        res.a = self.a
+        res._c = self._c
+        res._sp_m = self._sp_m
+        res._sp_fi0 = self._sp_fi0
+        res._rv_fi = self._rv_fi
+        res.t_max = self.t_max
         return res
 
 if __name__ == '__main__':
