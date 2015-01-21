@@ -34,7 +34,6 @@ class MotionTask(Task):
             if time is None:
                 break
 
-
     def _calc_goto(self, event):
 
         def _calc_stop_car():

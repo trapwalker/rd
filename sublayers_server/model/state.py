@@ -8,8 +8,10 @@ from math import degrees, pi, sqrt, log as ln, acos
 
 EPS = 1e-5
 
+
 class ETimeIsNotInState(Exception):
     pass
+
 
 def assert_time_in_state(f):
     from functools import update_wrapper
@@ -256,7 +258,7 @@ class State(BaseState):
 
     @classmethod
     def copy_state(cls, st):
-        res = State(
+        res = cls(
             owner=st.owner, t=st.t0, p=st.p0, fi=st.fi0, v=st.v0,
             cc=st.cc,
             turn=st._turn_sign,

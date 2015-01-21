@@ -115,6 +115,11 @@ class Init(Objective):
         super(Init, self).on_perform()
         self.obj.on_init(self)
 
+class Die(Objective):
+    def on_perform(self):
+        super(Die, self).on_perform()
+        self.obj.on_die(self)
+
 
 class Delete(Objective):
     def on_perform(self):

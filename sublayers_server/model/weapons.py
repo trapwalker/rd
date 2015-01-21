@@ -1,85 +1,74 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from math import pi
-
 log = logging.getLogger(__name__)
 
-from units import Unit
 from balance import BALANCE
-from errors import EIllegal
-
-
-class EWeaponIsNotAttached(EIllegal):
-    pass
+from hp_task import HPTask
 
 
 class Weapon(object):
-
-    def __init__(self, owner=None, damage=BALANCE.Weapon.damage, r=BALANCE.Weapon.r):
-        """
-        @param sublayers_server.model.units.Unit owner: owner of weapon
-        """
+    def __init__(self, owner, radius=BALANCE.Weapon.radius, width=BALANCE.Weapon.width):
         super(Weapon, self).__init__()
         self.owner = owner
-        self.damage = damage
-        self.r = r
+        self.owner.weapons.append(self)
+        self.radius = radius
+        self.width = width
 
     def as_dict(self, **kw):
         return dict(
-            damage=self.damage,
-            r=self.r,
+            radius=self.radius,
+            width=self.width,
         )
 
-    def id2unit(self, id):
-        """
-        @param sublayers_server.model.units.Unit | int | str id: unit or id of unit
-        """
-        if isinstance(id, Unit):
-            return id
-        else:
-            owner = self.owner
-            if not owner:
-                raise EWeaponIsNotAttached('Trying to resolve units id')
-            unit = owner.server.objects.get(id)
-            if unit is None:
-                log.warning('Unit with id=%s is not found.', id)
-            return unit
 
-    def fire(self, hit_list=None):
-        if hit_list is None:
-            return
-
-        hits = [(self.id2unit(hit['carID']), hit['damage_factor']) for hit in hit_list]
-        for unit, factor in hits:
-            log.debug('Hit unit %s to %s*%s=%s', unit, factor, self.damage, self.damage * factor)
-            if unit:
-                unit.hit(self.damage * factor)
-                # todo: make 'hit' or 'fire' event or message
-
-
-class SectoralWeapon(Weapon):
-    def __init__(self, direction=0, sector_width=pi/4, **kw):
-        """
-        @type direction: float
-        @type sector_width: float
-        """
-        super(SectoralWeapon, self).__init__(**kw)
-        self.direction = direction
-        self.sector_width = sector_width
-
-    # todo: hit_test emplementation
-    # todo: hit_search emplementation
-
-    def abs_direction(self):
-        if not self.owner:
-            raise EWeaponIsNotAttached('Trying to get weapon absolute direction')
-        return self.owner.direction + self.direction
+class WeaponAuto(Weapon):
+    def __init__(self, dps=BALANCE.Weapon.dps, **kw):
+        super(WeaponAuto, self).__init__(**kw)
+        self.dps = dps
 
     def as_dict(self, **kw):
-        d = super(SectoralWeapon, self).as_dict(**kw)
+        d = super(WeaponAuto, self).as_dict(**kw)
         d.update(
-            direction=self.direction,
-            sector_width=self.sector_width,
+            dps=self.dps,
         )
         return d
+
+    def on_start(self, car):
+        #todo: создать таск на патроны, который отменит дамаг и сделает
+        #todo: проверка на вкл/выкл
+        HPTask(owner=car, dps=self.dps).start()
+        self.owner.on_start_auto_fire(self)
+
+    def on_end(self, car):
+        #todo: создать таск на патроны, который отменит дамаг и сделает
+        #todo: проверка на вкл/выкл
+        HPTask(owner=car, dps=-self.dps).start()
+        self.owner.on_end_auto_fire(self)
+
+
+class WeaponDischarge(Weapon):
+    def __init__(self, dmg=BALANCE.Weapon.dmg, time_recharge=BALANCE.Weapon.time_recharge, **kw):
+        super(WeaponDischarge, self).__init__(**kw)
+        self.dmg = dmg
+        self.last_shoot = None
+        self.t_rch = time_recharge
+
+    def as_dict(self, **kw):
+        d = super(WeaponDischarge, self).as_dict(**kw)
+        d.update(
+            dmg=self.dmg,
+            time_recharge=self.t_rch,
+        )
+        return d
+
+    def on_fire(self, cars, time):
+        if self.last_shoot is not None:
+            if (self.last_shoot + self.t_rch) > time:
+                return
+        # todo: проверка на патроны
+        for car in cars:
+            HPTask(owner=car, dhp=self.dmg).start()
+        self.last_shoot = time
+        self.owner.on_discharge_fire(self)
+
