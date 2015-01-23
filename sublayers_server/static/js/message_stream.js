@@ -14,27 +14,25 @@ var MessageStream = (function () {
         //          cbFunc: func
         //          subject: chat | другой объект, повесивший евент }
         // todo: убедиться, что key может быть null - хорошая идея
-        if (typeof(event.cbFunc) === 'function')
+        if (typeof(event.subject[event.cbFunc]) === 'function')
             this.eventList.push(event);
     };
 
 
-    MessageStream.prototype.runEvents = function(msg){
-        var delet_list = [];
-        var type = msg.type;
-        for(var index = 0; index < this.eventList.length; index++) {
-            var event = this.eventList[index];
-            if (!event.key || event.key === type) { // Если !key - то есть если key == null, значит вызвать всегда
-                // если возвращается false, то нужно снять (удалить) этот листнер
-                if(! event.cbFunc(event.subject, msg.body))
-                    delet_list.push(index);
+    MessageStream.prototype.runEvents = function (msg) {
+        /*
+         this.eventList.forEach(function (event) {
+         if (!event.key || event.key === msg.type) { // Если !key - то есть если key == null, значит вызвать всегда
+         event.subject[event.cbFunc](msg.body);
+         }
+         });
+         */
+        var event = null;
+        for (var i = 0; i < this.eventList.length; i++) {
+            event = this.eventList[i];
+            if (!event.key || event.key === msg.type) { // Если !key - то есть если key == null, значит вызвать всегда
+                event.subject[event.cbFunc](msg.body);
             }
-        }
-
-        // удаление ненужных event
-        for (; delet_list.length > 0;) {
-            var event_index = delet_list.pop();
-            this.eventList.splice(event_index, 1);
         }
     };
 

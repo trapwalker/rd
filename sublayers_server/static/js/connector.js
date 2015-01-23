@@ -182,6 +182,9 @@ var WSConnector = (function(_super){
 
         this.isConnected = false;
         this.connection = {};
+
+        this.max_time = 0;
+
        }
 
     WSConnector.prototype.connect = function(){
@@ -214,30 +217,36 @@ var WSConnector = (function(_super){
             // хендлер на отправку сообщения
             message_stream.addOutEvent({
                 key: 'ws_message_send',
-                cbFunc: self.sendMessage,
+                cbFunc: 'sendMessage',
                 subject: self
             })
 
         };
     };
 
-    WSConnector.prototype.sendMessage = function(self, msg){
+    WSConnector.prototype.sendMessage = function(msg){
         //alert('WSConnector sendMessage');
-        var mes = self.encodeMessage(msg);
-        self.connection.send(JSON.stringify(mes));
+        var mes = this.encodeMessage(msg);
+        this.connection.send(JSON.stringify(mes));
 
         return true;
     };
 
     WSConnector.prototype.receiveMessage = function(msg){
-        //alert('WSConnector receiveMessage');
+        //console.log('WSConnector receiveMessage');
         // раскодировать входящее от сервера сообщение
-        // todo: разобраться как обратиться к this
-        var mes = ws_connector.decodeMessage(msg);
+        var time_start = clock.getCurrentTime();
+        var mes = this.decodeMessage(msg);
         // отправить сообщение в мессадж стрим
         if (mes)
             message_stream.receiveMessage(mes);
         // обязательно возвращать true
+        var time_length = clock.getCurrentTime() - time_start;
+        if (time_length > this.max_time){
+            this.max_time = time_length;
+            console.log('new max record of receiveMessage is ', time_length);
+        }
+
         return true;
     };
 
