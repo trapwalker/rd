@@ -431,7 +431,7 @@ var ClientManager = (function () {
         this.sendMotion(null, null, turn)
     };
 
-    ClientManager.prototype.sendGoto = function (target, newSpeed) {
+    ClientManager.prototype.sendGoto = function (target) {
         //console.log('sendGoto', user.userCar.getLastSpeed());
         this.sendMotion(target, user.userCar.getLastSpeed(), null);
     };

@@ -34,7 +34,7 @@ function onMouseUpMap(mouseEventObject) {
     //if (radialMenu.isHide && myMap._mouseDowned) {
     //    if (user.userCar)
         //clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
-            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), user.userCar.maxSpeed);
+            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
     //} else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         //radialMenu.hideMenu(true);
@@ -89,6 +89,15 @@ var pressedArrowDown;
 var pressedArrowLeft;
 var pressedArrowRight;
 
+var crazy_timer = null;
+
+function sendRandGoTo(){
+    var pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
+    rx = Math.random() * 100. - 50. + pos.x;
+    ry = Math.random() * 100. - 50. + pos.y;
+    clientManager.sendGoto(new Point(rx, ry));
+}
+
 function onKeyDownMap(event) {
     //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
@@ -119,6 +128,15 @@ function onKeyDownMap(event) {
         case 32:
             //clientManager.sendRocket();
             new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+            break;
+        case 84: // T // Crazy Click Timer
+            if (crazy_timer){
+                clearInterval(crazy_timer);
+                crazy_timer = null;
+            }
+            else{
+                crazy_timer = setInterval(sendRandGoTo, 100);
+            }
             break;
     }
 }
