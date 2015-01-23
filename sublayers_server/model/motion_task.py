@@ -95,7 +95,8 @@ class MotionTask(Task):
         v_min = 5.0  # todo: обсудить куда вынести данный балансный параметр
         assert v_min < st.v_max
         temp_cc = min(self.cc, v_min / st.v_max)  # определить минимальную скоростью
-        if st.v0 < temp_cc * st.v_max:
+        #if st.v0 < temp_cc * st.v_max and abs(st.v0 - temp_cc * st.v_max) > EPS:
+        if temp_cc * st.v_max - st.v0 > EPS:
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
             time = st.update(t=time, cc=temp_cc, turn=turn)

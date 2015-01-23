@@ -176,6 +176,8 @@ class State(BaseState):
         t4 = - v0 / bb
         s4 = v0 * t4 + bb * (t4 ** 2) / 2
         if s4 >= s: # если не успеваем, то сразу торможение
+            if abs(t4) < EPS:
+                t4 = 0.0
             return (0.0, 0.0, t4)
         # путь и время разгона
         t1 = (vcc - v0) / aa
@@ -183,6 +185,8 @@ class State(BaseState):
         s1 = v0 * t1 + aa * (t1 ** 2) / 2.0
         # путь и время торможения
         t3 = - vcc / bb
+        if abs(t3) < EPS:
+            t3 = 0.0
         s3 = vcc * t3 + bb * (t3 ** 2) / 2.0
 
         if s3 + s1 > s: # нет равномерного движения
