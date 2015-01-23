@@ -19,12 +19,21 @@ var MessageStream = (function () {
     };
 
 
-    MessageStream.prototype.runEvents = function(msg){
-        this.eventList.forEach(function (event) {
+    MessageStream.prototype.runEvents = function (msg) {
+        /*
+         this.eventList.forEach(function (event) {
+         if (!event.key || event.key === msg.type) { // Если !key - то есть если key == null, значит вызвать всегда
+         event.subject[event.cbFunc](msg.body);
+         }
+         });
+         */
+        var event = null;
+        for (var i = 0; i < this.eventList.length; i++) {
+            event = this.eventList[i];
             if (!event.key || event.key === msg.type) { // Если !key - то есть если key == null, значит вызвать всегда
                 event.subject[event.cbFunc](msg.body);
             }
-        });
+        }
     };
 
     return MessageStream;
