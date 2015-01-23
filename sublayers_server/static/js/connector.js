@@ -182,6 +182,9 @@ var WSConnector = (function(_super){
 
         this.isConnected = false;
         this.connection = {};
+
+        this.max_time = 0;
+
        }
 
     WSConnector.prototype.connect = function(){
@@ -232,11 +235,18 @@ var WSConnector = (function(_super){
     WSConnector.prototype.receiveMessage = function(msg){
         //console.log('WSConnector receiveMessage');
         // раскодировать входящее от сервера сообщение
+        var time_start = clock.getCurrentTime();
         var mes = this.decodeMessage(msg);
         // отправить сообщение в мессадж стрим
         if (mes)
             message_stream.receiveMessage(mes);
         // обязательно возвращать true
+        var time_length = clock.getCurrentTime() - time_start;
+        if (time_length > this.max_time){
+            this.max_time = time_length;
+            console.log('new max record of receiveMessage is ', time_length);
+        }
+
         return true;
     };
 

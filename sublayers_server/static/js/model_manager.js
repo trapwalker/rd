@@ -279,7 +279,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        console.log('ClientManager.prototype.Contact');
+        //console.log('ClientManager.prototype.Contact');
         var servtime = event.time;
 
 
@@ -368,7 +368,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        console.log('ClientManager.prototype.See', event);
+        //console.log('ClientManager.prototype.See');
         this.Contact(event);
     };
 

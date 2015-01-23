@@ -16,14 +16,12 @@ var MessageStream = (function () {
         // todo: убедиться, что key может быть null - хорошая идея
         if (typeof(event.subject[event.cbFunc]) === 'function')
             this.eventList.push(event);
-
     };
 
 
     MessageStream.prototype.runEvents = function(msg){
         this.eventList.forEach(function (event) {
             if (!event.key || event.key === msg.type) { // Если !key - то есть если key == null, значит вызвать всегда
-                // если возвращается false, то нужно снять (удалить) этот листнер
                 event.subject[event.cbFunc](msg.body);
             }
         });
