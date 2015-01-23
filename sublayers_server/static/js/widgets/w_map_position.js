@@ -13,6 +13,7 @@ var WMapPosition = (function (_super) {
 
     WMapPosition.prototype.change = function(time){
         //console.log('WMapPosition.prototype.change');
+        time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         map.panTo(tempLatLng, {animate: false});
