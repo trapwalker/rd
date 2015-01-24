@@ -2,16 +2,18 @@
 
 import logging
 log = logging.getLogger(__name__)
-from tasks import Task, TaskEvent
-from hp_state import HPState
+from tasks import Task, TaskPerformEvent
+from copy import copy
 from events import Die
 
-class HPTaskEvent(TaskEvent):
+
+class HPTaskEvent(TaskPerformEvent):
     def __init__(self, dhp=None, dps=None, is_die=False, **kw):
         super(HPTaskEvent, self).__init__(**kw)
         self.dhp = dhp
         self.dps = dps
         self.is_die = is_die
+
 
 class HPTask(Task):
     def __init__(self, dhp=None, dps=None, **kw):
@@ -19,7 +21,6 @@ class HPTask(Task):
         assert self.owner.hp_state is not None
         self.dhp = dhp
         self.dps = dps
-        self.is_hp_start = False
 
     def _update_state(self, event):
         owner = self.owner
@@ -30,31 +31,25 @@ class HPTask(Task):
         owner.on_update(event=event)
 
     def _clear_hp_tasks(self, event):
-        owner = self.owner
         time = event.time
-        tasks = owner.tasks[:]
+        tasks = self.owner.tasks[:]
         for task in tasks:
             if task != self and isinstance(task, HPTask):
                 events = task.events[:]
                 for e in events:
-                    if e.time > time: # die может произойти раньше
-                        task.del_event(e)
+                    if e.time > time:  # die может произойти раньше
+                        e.cancel()
 
     def on_perform(self, event):
-        if self.is_hp_start:
-            self._update_state(event)
-            return
+        super(HPTask, self).on_perform(event=event)
+        self._update_state(event)
+
+    def on_start(self, event):
         self._clear_hp_tasks(event)
         time = event.time
         owner = self.owner
-        hpst = HPState.copy_state(owner.hp_state)
-        self.add_event(HPTaskEvent(server=owner.server, time=time, task=self, dhp=self.dhp, dps=self.dps))
+        hpst = copy(owner.hp_state)
+        HPTaskEvent(time=time, task=self, dhp=self.dhp, dps=self.dps).post()
         time = hpst.update(t=time, dhp=self.dhp, dps=self.dps)
         if time is not None:
-             self.add_event(HPTaskEvent(server=owner.server, time=time, task=self, is_die=True))
-        self.is_hp_start = True
-
-    def on_start(self):
-        HPTaskEvent(server=self.owner.server, task=self).post()
-
-
+            HPTaskEvent(time=time, task=self, is_die=True).post()

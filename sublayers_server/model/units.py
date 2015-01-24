@@ -9,7 +9,6 @@ from base import Observer
 from balance import BALANCE
 from math import pi
 from motion_task import MotionTask
-import events
 
 
 class Unit(Observer):
@@ -67,7 +66,11 @@ class Unit(Observer):
         return self.hp_state.hp(t) <= 0.0
 
     @property
-    def hp(self, t=None):
+    def hp(self):
+        t = t if t is not None else self.server.get_time()
+        return self.hp_state.hp(t)
+
+    def hp_by_time(self, t=None):
         t = t if t is not None else self.server.get_time()
         return self.hp_state.hp(t)
 
@@ -118,7 +121,7 @@ class Unit(Observer):
         d.update(
             owner=owner and owner.as_dict(),
             direction=self.direction,
-            hp=self.hp(t=to_time),
+            hp=self.hp_by_time(t=to_time),
             max_hp=self.hp_state.max_hp,
             weapons=[weapon.as_dict(to_time=to_time) for weapon in self.weapons],
             role=None if self.role is None else self.role.name,

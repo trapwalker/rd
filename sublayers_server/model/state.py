@@ -18,8 +18,8 @@ def assert_time_in_state(f):
     # todo: make metadata coveringx
 
     def cover(self, t=None, *av, **kw):
-        if self.t_max is not None and t is not None and t > self.t_max:
-            raise ETimeIsNotInState('Time {} given, but {} is last in this state'.format(t, self.t_max))
+        if self.t_max is not None and t is not None and not (self.t0 <= t <= self.t_max):
+            raise ETimeIsNotInState('Time {} given, but {} is last in this state and t0 is {}'.format(t, self.t_max, self.t0))
         return f(self, t=t, *av, **kw)
 
     return update_wrapper(cover, f)
@@ -163,7 +163,7 @@ class State(BaseState):
         return normalize_angle(res)
 
     def _calc_time_segment(self, s, cc):
-        """
+        u"""
         Возвращает  (t1, t2, t3)
         t1 - время отведённое на разгон
         t2 - время отведённое на равномерное движение
@@ -176,8 +176,8 @@ class State(BaseState):
 
         # рассчитать тормозной путь от текущей скорости
         t4 = - v0 / bb
-        s4 = v0 * t4 + bb * (t4 ** 2) / 2
-        if s4 >= s: # если не успеваем, то сразу торможение
+        s4 = v0 * t4 + bb * (t4 ** 2) / 2.0
+        if s4 >= s:  # если не успеваем, то сразу торможение
             if abs(t4) < EPS:
                 t4 = 0.0
             return (0.0, 0.0, t4)
@@ -191,20 +191,20 @@ class State(BaseState):
             t3 = 0.0
         s3 = vcc * t3 + bb * (t3 ** 2) / 2.0
 
-        if s3 + s1 > s: # нет равномерного движения
-            if aa == bb: # мы уже в торможении
-                return (0.0, 0.0, t3) # остановка
-            else: # нет запаса расстояния для разгона до vcc
+        if s3 + s1 > s:  # нет равномерного движения
+            if aa == bb:  # мы уже в торможении
+                return (0.0, 0.0, t3)  # остановка
+            else:  # нет запаса расстояния для разгона до vcc
                 # рассчёт времени разгона и торможения
                 t3 = sqrt((2*aa*s + v0 ** 2) / (bb ** 2 - aa * bb))
                 t1 = (- bb * t3 - v0) / aa
                 if abs(t1) < EPS: t1 = 0.0
-                return (t1, 0.0, t3) # разгон и торможение
+                return (t1, 0.0, t3)  # разгон и торможение
 
-        if s3 + s1 <= s: # есть отрезок равномерного движения
+        if s3 + s1 <= s:  # есть отрезок равномерного движения
             s2 = s - s3 - s1
             t2 = s2 / vcc
-            if abs(t2) < EPS: t2 = 0.0 # чтобы не добавлять ивент через очень короткое время
+            if abs(t2) < EPS: t2 = 0.0  # чтобы не добавлять ивент через очень короткое время
             return (t1, t2, t3)
 
     @assert_time_in_state

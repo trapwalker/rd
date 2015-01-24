@@ -20,7 +20,7 @@ def assert_time_in_hpstate(f):
 
 class HPState(object):
     def __init__(self, t, max_hp=100.0, hp=100.0, dps=0.0):
-        assert (max_hp > 0) and (hp > 0) and (max_hp > hp)
+        assert (max_hp > 0) and (hp > 0) and (max_hp >= hp)
         self.t0 = t
         self.t_die = None
         self.max_hp = max_hp
@@ -64,13 +64,14 @@ class HPState(object):
             dps=self.dps,
         )
 
-    @classmethod
-    def copy_state(cls, st):
-        return cls(
-            t=st.t0,
-            max_hp=st.max_hp,
-            hp=st.hp0,
-            dps=st.dps,
+    def __copy__(self):
+        # todo: use standart pickling methods like __getinitargs__(), __getstate__() and __setstate__()
+        # todo: Необходимо избавиться от этого метода в текущем виде. Это плохой метод.
+        return self.__class__(
+            t=self.t0,
+            max_hp=self.max_hp,
+            hp=self.hp0,
+            dps=self.dps,
             )
 
 if __name__ == '__main__':

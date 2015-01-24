@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from party import RoleParty, Role
-from weapons import SectoralWeapon
 from vectors import Point
 from units import Bot
 from events import Event
