@@ -124,19 +124,19 @@ var ViewMessenger = (function (_super) {
 
         stream.addInEvent({
             key: 'message',
-            cbFunc: this.receiveMessage,
+            cbFunc: 'receiveMessage',
             subject: this
         });
 
         stream.addInEvent({
             key: 'ws_message',
-            cbFunc: this.receiveMessageFromWS,
+            cbFunc: 'receiveMessageFromWS',
             subject: this
         });
 
         stream.addOutEvent({
             key: 'ws_message_send',
-            cbFunc: this.receiveMessageFromModelManager,
+            cbFunc: 'receiveMessageFromModelManager',
             subject: this
         });
 
@@ -445,31 +445,31 @@ var ViewMessenger = (function (_super) {
     };
 
 
-    ViewMessenger.prototype.receiveMessage = function (self, params) {
-        self.addMessage(params.chatID, params.chatName, params.user, params.text);
+    ViewMessenger.prototype.receiveMessage = function (params) {
+        this.addMessage(params.chatID, params.chatName, params.user, params.text);
         return true;
     };
 
 
     // вывод входящих ws-сообщений в лог
-    ViewMessenger.prototype.receiveMessageFromWS = function(self, msg){
+    ViewMessenger.prototype.receiveMessageFromWS = function(msg){
         //alert('ViewMessenger receiveMessageFromWS');
         if (msg.message_type == "push") {
             if (cookieStorage.enableLogPushMessage())
             // if (msg.events[0].cls !== "Update")
-                self._addMessageToLog(JSON.stringify(msg, null, 4), 'push');
+                this._addMessageToLog(JSON.stringify(msg, null, 4), 'push');
         }
         if (msg.message_type == "answer")
             if (cookieStorage.enableLogAnswerMessage())
-                self._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
+                this._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
         return true;
     };
 
     // вывод исходящих через ws сообщений
-    ViewMessenger.prototype.receiveMessageFromModelManager = function(self, msg){
+    ViewMessenger.prototype.receiveMessageFromModelManager = function(msg){
         //alert('ViewMessenger receiveMessageFromModelManager');
         if(cookieStorage.enableLogRPCMessage())
-            self._addMessageToLog(JSON.stringify(msg, null, 4), 'rpc');
+            this._addMessageToLog(JSON.stringify(msg, null, 4), 'rpc');
         return true;
     };
 

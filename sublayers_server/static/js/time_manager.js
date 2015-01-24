@@ -42,7 +42,7 @@ var TimeManager = (function () {
 
     // Запуск таймера
     TimeManager.prototype.timerStart = function () {
-        self = this;
+        var self = this;
         this._timer = setInterval(function () {
             self._interval_perform();
         }, this._interval)

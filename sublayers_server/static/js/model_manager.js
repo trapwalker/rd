@@ -9,7 +9,7 @@ var ClientManager = (function () {
         // подписаться на входящие сообщения типа ws_message
         message_stream.addInEvent({
             key: 'ws_message',
-            cbFunc: this.receiveMessage,
+            cbFunc: 'receiveMessage',
             subject: this
         });
     }
@@ -87,15 +87,16 @@ var ClientManager = (function () {
         });
     };
 
-    ClientManager.prototype.receiveMessage = function (self, params) {
-        //console.log('ClientManager.prototype.receiveMessage');
+    ClientManager.prototype.receiveMessage = function (params) {
+        //console.log('ClientManager.prototype.receiveMessage', params);
         // TODO: написать правильный обработчик здесь. А пока так
+        var self=this;
         if (params.message_type == "push") {
             params.events.forEach(function (event) {
                 if (typeof(self[event.cls]) === 'function')
                     self[event.cls](event);
                 else {
-                    console.log('Error: неизвестная API-команда для клиента: ', params.cls);
+                    console.error('Error: неизвестная API-команда для клиента: ', event.cls);
                     //receiveMesFromServ(params);
                 }
             });
@@ -104,7 +105,7 @@ var ClientManager = (function () {
             if (!params.error)
                 rpcCallList.execute(params.rpc_call_id);
             else {
-                console.log('Ошибка запроса: ', params.error);
+                console.error('Ошибка запроса: ', params.error);
                 // Todo: обработка ошибки
             }
         return true;
@@ -116,7 +117,7 @@ var ClientManager = (function () {
 
     // Входящий от сервера Init для машинки
     ClientManager.prototype.Init = function (event) {
-        console.log('ClientManager.prototype.Init');
+        //console.log('ClientManager.prototype.Init');
         var servtime = event.time;
         var max_speed = event.cars[0].max_velocity;
         var aMaxHP = event.cars[0].max_hp;
@@ -278,7 +279,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        console.log('ClientManager.prototype.Contact');
+        //console.log('ClientManager.prototype.Contact');
         var servtime = event.time;
 
 
@@ -367,7 +368,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        console.log('ClientManager.prototype.See', event);
+        //console.log('ClientManager.prototype.See');
         this.Contact(event);
     };
 
@@ -430,7 +431,7 @@ var ClientManager = (function () {
         this.sendMotion(null, null, turn)
     };
 
-    ClientManager.prototype.sendGoto = function (target, newSpeed) {
+    ClientManager.prototype.sendGoto = function (target) {
         //console.log('sendGoto', user.userCar.getLastSpeed());
         this.sendMotion(target, user.userCar.getLastSpeed(), null);
     };

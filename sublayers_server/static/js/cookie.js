@@ -1,7 +1,7 @@
 var LocalCookieStorage = (function(){
     function LocalCookieStorage(){
         var defOptions = {
-            flagDebug: true,
+            flagDebug: false,
             chatVisible: true,
             chatActiveID: 0,
             zoom: 6,

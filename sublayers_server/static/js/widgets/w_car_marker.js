@@ -41,6 +41,7 @@ var WCarMarker = (function (_super) {
 
     WCarMarker.prototype.change = function(time){
         //console.log('WCarMarker.prototype.change');
+        time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера

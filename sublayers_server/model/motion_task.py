@@ -2,10 +2,13 @@
 
 import logging
 log = logging.getLogger(__name__)
+
 from tasks import Task, TaskEvent
 from state import State, EPS
 from vectors import Point
+
 import math
+from copy import copy
 
 
 class MotionTaskEvent(TaskEvent):
@@ -27,7 +30,7 @@ class MotionTask(Task):
     def _calc_keybord(self, event):
         time = event.time
         owner = self.owner
-        st = State.copy_state(owner.state)
+        st = copy(owner.state)
         while True:
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=self.cc, turn=self.turn))
             time = st.update(t=time, cc=self.cc, turn=self.turn)
@@ -77,7 +80,7 @@ class MotionTask(Task):
         time = event.time
         owner = self.owner
         target_point = self.target_point
-        st = State.copy_state(owner.state)
+        st = copy(owner.state)
         st.update(t=time, cc=self.cc)
 
         ddist = st.p0.distance(target_point) - 2 * st.r(st.t0)
@@ -91,7 +94,8 @@ class MotionTask(Task):
         v_min = 5.0  # todo: обсудить куда вынести данный балансный параметр
         assert v_min < st.v_max
         temp_cc = min(self.cc, v_min / st.v_max)  # определить минимальную скоростью
-        if st.v0 < temp_cc * st.v_max:
+        #if st.v0 < temp_cc * st.v_max and abs(st.v0 - temp_cc * st.v_max) > EPS:
+        if temp_cc * st.v_max - st.v0 > EPS:
             turn = -st._get_turn_sign(target_point)
             self.add_event(MotionTaskEvent(server=owner.server, time=time, task=self, cc=temp_cc, turn=turn))
             time = st.update(t=time, cc=temp_cc, turn=turn)
