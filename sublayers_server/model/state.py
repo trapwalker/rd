@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from vectors import Point
+from vectors import Point, normalize_angle
 from math import degrees, pi, sqrt, log as ln, acos
 
 EPS = 1e-5
@@ -140,12 +140,6 @@ class State(BaseState):
         return 1 if _turn_sign > 0.0 else -1
 
     def _get_turn_fi(self, target_point):
-        #todo: найти место для этой функции
-        def normalize_angle(angle):
-            if angle < 0: return normalize_angle(angle + 2 * pi)
-            if angle >= 2 * pi: return normalize_angle(angle - 2 * pi)
-            return angle
-
         assert target_point is not None
         turn_sign = self._get_turn_sign(target_point=target_point)
         if turn_sign == 0.0:

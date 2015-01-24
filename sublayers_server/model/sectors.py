@@ -5,8 +5,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from weapons import WeaponAuto, WeaponDischarge
-from units import Unit
 from math import pi
+from vectors import shortest_angle, normalize_angle
 
 
 class Sector(object):
@@ -15,7 +15,7 @@ class Sector(object):
         self.owner = owner
         self.radius = radius
         self.width = width
-        self.fi = fi
+        self.fi = normalize_angle(fi)  # угол относительно машинки
         self.half_width = width / 2.
 
     def as_dict(self):
@@ -31,58 +31,59 @@ class FireSector(Sector):
         super(FireSector, self).__init__(**kw)
         self.weapon_list = []
         self.target_list = []
-        self.is_auto = False
+        self.is_auto = 0
+        self.side = self._check_side()
         self.owner.fire_sectors.append(self)
+
+    def _check_side(self):
+        fi = self.fi
+        pi4 = pi / 4.
+        if pi4 < fi < 3 * pi4:
+            return 'left'
+        if 3 * pi4 <= fi <= 5 * pi4:
+            return 'back'
+        if 5 * pi4 < fi < 7 * pi4:
+            return 'right'
+        return 'front'
 
     def _fire_auto_start(self, target):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.on_start(target)
+                w.start(target)
 
     def _fire_auto_end(self, target):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.on_end(target)
+                w.end(target)
 
     def add_weapon(self, weapon):
         assert weapon in self.weapon_list
         self.weapon_list.append(weapon)
         if isinstance(weapon, WeaponAuto):
-            self.is_auto = True
+            self.is_auto += 1
 
     def del_weapon(self, weapon):
         if weapon in self.weapon_list:
             self.weapon_list.remove(weapon)
-        self.is_auto = False
-        for wp in self.weapon_list:
-            if isinstance(wp, WeaponAuto):
-                self.is_auto = True
-                break
+        if isinstance(weapon, WeaponAuto):
+            self.is_auto -= 1
+        assert self.is_auto >= 0
 
-    def test_target_in_sector(self, target):
-        #todo: найти место для этой функции
-        def shortest_angle(angle):
-            if angle < 0:
-                return shortest_angle(angle + 2 * pi)
-            if angle >= 2 * pi:
-                return shortest_angle(angle - 2 * pi)
-            if angle > pi:
-                return 2 * pi - angle
-            return angle
-
-        if not isinstance(target, Unit):
+    def _test_target_in_sector(self, target):
+        # todo: Придумать как обойти это! тут должен быть любой потомок Unit (у кого есть ХП)
+        if not isinstance(target, self.owner.__class__):
             return False
-
         #todo: проверить объект на партийность
-
         v = target.position - self.owner.position
         if (v.x ** 2 + v.y ** 2) > self.radius ** 2:
             return False
+        if self.width >= 2 * pi:
+            return True
         fi = self.owner.direction + self.fi
         return shortest_angle(v.angle - fi) <= self.half_width
 
     def fire_auto(self, target):
-        if self.test_target_in_sector(target):
+        if self._test_target_in_sector(target):
             if not target in self.target_list:
                 self.target_list.append(target)
                 self._fire_auto_start(target)
@@ -95,13 +96,27 @@ class FireSector(Sector):
             cars = self.target_list
         else:
             for vo in self.owner.visible_objects:
-                if self.test_target_in_sector(vo):
+                if self._test_target_in_sector(vo):
                     cars.append(vo)
+        t_rch = 0
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
-                wp.on_fire(cars, time)
+                t_rch = max(t_rch, wp.fire(cars, time))
+        return t_rch
 
     def out_car(self, target):
         if target in self.target_list:
             self._fire_auto_end(target=target)
             self.target_list.remove(target)
+
+    def can_discharge_fire(self, time):
+        for wp in self.weapon_list:
+            if isinstance(wp, WeaponDischarge):
+                if not wp.can_fire(time):
+                    return False
+        return True
+
+    def enable_auto_fire(self, enable=False):
+        for w in self.weapon_list:
+            if isinstance(w, WeaponAuto):
+                w.set_enable(enable, self.target_list)

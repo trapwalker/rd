@@ -3,7 +3,7 @@
 __all__ = ['Point']
 
 from random import gauss
-from math import atan2, e, cos, sin
+from math import atan2, e, cos, sin, pi
 
 EPS = 1e-9
 
@@ -204,6 +204,22 @@ class Point(complex):
         """
         return Point(complex.__truediv__(self, p))
 
-if __name__ == '__main__':
-    from math import degrees as deg, radians as rad
-    P = Point
+
+def normalize_angle(angle):
+    u"""
+    Приводит полученный угол к диапазону 0 <= angle < 2 * pi
+    """
+    # todo: перейти на итеративный алгоритм
+    if angle < 0: return normalize_angle(angle + 2 * pi)
+    if angle >= 2 * pi: return normalize_angle(angle - 2 * pi)
+    return angle
+
+
+def shortest_angle(angle):
+    u"""
+    Приводит полученный угол к диапазону -pi < angle <= pi
+    """
+    ang = normalize_angle(angle)
+    if ang > pi:
+        return 2 * pi - ang
+    return ang
