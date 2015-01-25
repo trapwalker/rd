@@ -25,7 +25,7 @@ class HPTask(Task):
     def _update_state(self, event):
         owner = self.owner
         if event.is_die:
-            Die(server=owner.server, time=event.time, obj=owner).post()
+            Die(time=event.time, obj=owner).post()
             return
         owner.hp_state.update(t=event.time, dhp=event.dhp, dps=event.dps)
         owner.on_update(event=event)
@@ -48,8 +48,10 @@ class HPTask(Task):
         self._clear_hp_tasks(event)
         time = event.time
         owner = self.owner
-        hpst = copy(owner.hp_state)
-        HPTaskEvent(time=time, task=self, dhp=self.dhp, dps=self.dps).post()
-        time = hpst.update(t=time, dhp=self.dhp, dps=self.dps)
-        if time is not None:
-            HPTaskEvent(time=time, task=self, is_die=True).post()
+        time_die = copy(owner.hp_state).update(t=time, dhp=self.dhp, dps=self.dps)
+        if time_die == time:  # если время дамага совпадает с временем смерти, то один евент
+            HPTaskEvent(time=time, task=self, dhp=self.dhp, dps=self.dps, is_die=True).post()
+        else:  # если времена разные, то добавить оба евента
+            HPTaskEvent(time=time, task=self, dhp=self.dhp, dps=self.dps).post()
+            if time_die is not None:
+                HPTaskEvent(time=time_die, task=self, is_die=True).post()

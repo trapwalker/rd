@@ -69,36 +69,62 @@ var ClientObject = (function () {
     return ClientObject;
 })();
 
+
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
-    function DynamicObject(ID, state) {
+    function DynamicObject(ID, state, hp_state) {
         _super.call(this, ID);
+        this._in_tm = false;
         this.addToVisualManager();
-        this._state = null;
-        this.setState(state);
+        this._motion_state = state;
+        this._hp_state = hp_state;
+        this._manage_tm();
     }
 
     DynamicObject.prototype.getCurrentDirection = function (time) {
-        return this._state.fi(time);
+        return this._motion_state.fi(time);
     };
 
     DynamicObject.prototype.getCurrentCoord = function (time) {
-        return this._state.p(time);
+        return this._motion_state.p(time);
     };
 
     DynamicObject.prototype.getCurrentSpeed = function (time) {
-        return this._state.v(time);
+        return this._motion_state.v(time);
+    };
+
+    DynamicObject.prototype._manage_tm = function () {
+        var hp_changed = this._hp_state.is_changed();
+        var motion_changed = this._motion_state.is_moving();
+
+        if (this._in_tm && !(motion_changed || hp_changed)) {
+            // если в timeManager и стейты не меняются, то удалиться из таймменеджера
+            timeManager.delTimerEvent(this, 'change');
+            this._in_tm = false;
+        }
+        if (!this._in_tm && (motion_changed || hp_changed)) {
+            // если не в timeManager и хоть один стейт меняется, то добавиться в таймменеджер
+            timeManager.addTimerEvent(this, 'change');
+            this._in_tm = true;
+        }
     };
 
     DynamicObject.prototype.setState = function (state) {
-        if ((!this._state) || (state.is_moving() != this._state.is_moving())) {
-            timeManager.delTimerEvent(this, 'change');
-            visualManager.changeModelObject(this);
-            if (state.is_moving())
-                timeManager.addTimerEvent(this, 'change');
-        }
-        this._state = state;
+        this._motion_state = state;
+        this._manage_tm();
+        visualManager.changeModelObject(this);
+    };
+
+    DynamicObject.prototype.setHPState = function (hp_state) {
+        this._hp_state = hp_state;
+        console.log(user.userCar._hp_state.dps);
+        this._manage_tm();
+        visualManager.changeModelObject(this);
+    };
+
+    DynamicObject.prototype.getCurrentHP = function(time){
+        return this._hp_state.hp(time);
     };
 
     DynamicObject.prototype.change = function(time){
@@ -107,24 +133,15 @@ var DynamicObject = (function (_super) {
         // а по тем методам отдавать данные расчитанные здесь!
     };
 
-
     return DynamicObject;
 })(ClientObject);
-
-
-
-
-
-
 
 
 var MapCar = (function (_super) {
     __extends(MapCar, _super);
 
-
-    function MapCar(aID, aHP, aState) {
-        _super.call(this, aID, aState);
-        this.hp = aHP;
+    function MapCar(aID, aState, aHPState) {
+        _super.call(this, aID, aState, aHPState);
         this.fireSectors = [];
     }
 
@@ -155,8 +172,8 @@ var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
 
-    function UserCar(aID, aHP, aMaxSpeed, aState) {
-        _super.call(this, aID, aHP, aState);
+    function UserCar(aID, aMaxSpeed, aState, aHPState) {
+        _super.call(this, aID, aState, aHPState);
         this.maxSpeed = aMaxSpeed;
         this._lastSpeed = 0.75 * aMaxSpeed;
     }
@@ -249,6 +266,28 @@ var State = (function () {
 
     return State;
 })();
+
+
+var HPState = (function () {
+    function HPState(t, max_hp, hp0, dps) {
+        this.t0 = t;
+        this.max_hp = max_hp;
+        this.hp0 = hp0;
+        this.dps = dps;
+    }
+
+    HPState.prototype.hp = function(t) {
+        return Math.min(this.max_hp, this.hp0 - this.dps * (t - this.t0));
+    };
+
+    HPState.prototype.is_changed = function() {
+        return this.dps != 0.0;
+    };
+
+
+    return HPState;
+})();
+
 
 
 var User = (function () {

@@ -177,6 +177,7 @@ var WSpeedSlider = (function (_super) {
 
     WSpeedSlider.prototype.delFromVisualManager = function () {
         // todo: удалить свою вёрстку
+        this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };
 

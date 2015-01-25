@@ -19,5 +19,11 @@ var WMapPosition = (function (_super) {
         map.panTo(tempLatLng, {animate: false});
     };
 
+    WMapPosition.prototype.delFromVisualManager = function () {
+        this.scar = null;
+        this.ocar = null;
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
     return WMapPosition;
 })(VisualObject);

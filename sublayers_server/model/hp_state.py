@@ -3,8 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
+
 class ETimeIsNotInState(Exception):
     pass
+
 
 def assert_time_in_hpstate(f):
     from functools import update_wrapper
@@ -20,12 +22,12 @@ def assert_time_in_hpstate(f):
 
 class HPState(object):
     def __init__(self, t, max_hp=100.0, hp=100.0, dps=0.0):
-        assert (max_hp > 0) and (hp > 0) and (max_hp >= hp)
+        assert (max_hp > 0) and (max_hp >= hp)
         self.t0 = t
         self.t_die = None
         self.max_hp = max_hp
         self.hp0 = hp
-        self.dps = dps # отрицательный dps(урон) = хил
+        self.dps = dps  # отрицательный dps => хил
         self.update(self.t0)
 
     def fix(self, t=None, dt=0.0):
@@ -42,13 +44,11 @@ class HPState(object):
     def update(self, t=None, dt=0.0, dhp=None, dps=None):
         self.fix(t=t, dt=dt)
         self.t_die = None
-
         if dhp:
             self.hp0 -= dhp
             if self.hp0 <= 0:
                 self.t_die = self.t0
                 return self.t_die
-
         if dps:
             self.dps += dps
         if self.dps > 0.0:
@@ -57,7 +57,7 @@ class HPState(object):
 
     def export(self):
         return dict(
-            cls='HPState',
+            cls=self.__class__.__name__,
             t0=self.t0,
             max_hp=self.max_hp,
             hp0=self.hp0,
@@ -73,6 +73,3 @@ class HPState(object):
             hp=self.hp0,
             dps=self.dps,
             )
-
-if __name__ == '__main__':
-    pass

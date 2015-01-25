@@ -39,8 +39,10 @@ var WRedContactLine = (function (_super) {
     WRedContactLine.prototype.delFromVisualManager = function () {
         // если вызван данный метод, то клиент переставл видеть какую-то из машинок.
         // А значит нужно вычистить виджет из второй машинки...
-        visualManager.delVisualObject(this, this._model_objects);
+        _super.prototype.delFromVisualManager.call(this);
 
+        this.scar = null;
+        this.ocar = null;
         if (map.hasLayer(this.plln))
             map.removeLayer(this.plln);
     };

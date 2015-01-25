@@ -88,7 +88,7 @@ class BaseState(object):
             t0=self.t0,
             p0=self.p0,
             fi0=self.fi0,
-            v0=self.v0,
+            v0=self.v0 if abs(self.v0) > EPS else 0,
             a=self.a,
             c=self._c,
             turn=self._turn_sign,

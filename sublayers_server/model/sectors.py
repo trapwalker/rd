@@ -20,6 +20,7 @@ class Sector(object):
 
     def as_dict(self):
         return dict(
+            cls=self.__class__.__name__,
             radius=self.radius,
             width=self.width,
             fi=self.fi,
@@ -34,6 +35,14 @@ class FireSector(Sector):
         self.is_auto = 0
         self.side = self._check_side()
         self.owner.fire_sectors.append(self)
+
+    def as_dict(self):
+        d = super(FireSector, self).as_dict()
+        d.update(
+            side=self.side,
+            weapons=[weapon.as_dict() for weapon in self.weapon_list],
+        )
+        return d
 
     def _check_side(self):
         fi = self.fi
@@ -57,7 +66,7 @@ class FireSector(Sector):
                 w.end(target)
 
     def add_weapon(self, weapon):
-        assert weapon in self.weapon_list
+        assert not (weapon in self.weapon_list)
         self.weapon_list.append(weapon)
         if isinstance(weapon, WeaponAuto):
             self.is_auto += 1
@@ -71,8 +80,9 @@ class FireSector(Sector):
 
     def _test_target_in_sector(self, target):
         # todo: Придумать как обойти это! тут должен быть любой потомок Unit (у кого есть ХП)
-        if not isinstance(target, self.owner.__class__):
-            return False
+        # if not isinstance(target, self.owner.__class__):
+            #log.debug('=============== not Unit !!!!1 =======cls = %s', target.__class__.__name__)
+        #    return False
         #todo: проверить объект на партийность
         v = target.position - self.owner.position
         if (v.x ** 2 + v.y ** 2) > self.radius ** 2:
@@ -120,3 +130,4 @@ class FireSector(Sector):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable, self.target_list)
+        # todo: возможно отправить на клиент какое-то сообщение о включённых орудиях
