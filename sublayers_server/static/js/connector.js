@@ -185,6 +185,12 @@ var WSConnector = (function(_super){
 
         this.max_time = 0;
 
+        var self = this;
+        setInterval(function () {
+            console.log('max record of receiveMessage in last 10 seconds is ', self.max_time);
+            self.max_time = 0;
+        }, 10000)
+
        }
 
     WSConnector.prototype.connect = function(){
@@ -244,7 +250,7 @@ var WSConnector = (function(_super){
         var time_length = clock.getCurrentTime() - time_start;
         if (time_length > this.max_time){
             this.max_time = time_length;
-            console.log('new max record of receiveMessage is ', time_length);
+            //console.log('new max record of receiveMessage is ', time_length);
         }
 
         return true;

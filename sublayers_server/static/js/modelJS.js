@@ -52,7 +52,6 @@ var ListMapObject = (function () {
 })();
 
 
-
 var ClientObject = (function () {
     function ClientObject(ID) {
         this.ID = ID || generator_ID.getID();
@@ -118,7 +117,7 @@ var DynamicObject = (function (_super) {
 
     DynamicObject.prototype.setHPState = function (hp_state) {
         this._hp_state = hp_state;
-        console.log(user.userCar._hp_state.dps);
+        //console.log(user.userCar._hp_state.dps);
         this._manage_tm();
         visualManager.changeModelObject(this);
     };
@@ -289,7 +288,6 @@ var HPState = (function () {
 })();
 
 
-
 var User = (function () {
     function User(aID) {
         this.ID = aID;
@@ -299,7 +297,6 @@ var User = (function () {
 
     return User;
 })();
-
 
 
 // Владелец машины
