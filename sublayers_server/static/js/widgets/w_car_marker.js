@@ -11,6 +11,7 @@ var WCarMarker = (function (_super) {
         this.car = car;
         this.marker = null;
         this._createMarker();
+        this.change(clock.getCurrentTime());
     }
 
     WCarMarker.prototype._createMarker = function(){
@@ -36,7 +37,6 @@ var WCarMarker = (function (_super) {
         marker.carID = car.ID;
 
         this.marker = marker;
-        this.change(clock.getCurrentTime());
     };
 
     WCarMarker.prototype.change = function(time){

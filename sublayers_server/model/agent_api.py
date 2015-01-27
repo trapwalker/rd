@@ -67,13 +67,12 @@ class AgentAPI(API):
         self.send_init_package()
 
     @public_method
-    def fire(self, weapon_num=None, hit_list=None):
-        # todo: move to Unit class
-        if weapon_num is None:
-            for weapon in self.car.weapons:
-                weapon.fire(hit_list)
-        else:
-            self.car.weapons[weapon_num].fire(hit_list)
+    def fire_discharge(self, side):
+        self.car.fire_discharge(side=side)
+
+    @public_method
+    def fire_auto_enable(self, side, enable):
+        self.car.fire_auto_enable(side=side, enable=enable)
 
     @public_method
     def crazy(self, target_id=None):

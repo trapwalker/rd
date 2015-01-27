@@ -4,19 +4,21 @@ import logging
 log = logging.getLogger(__name__)
 
 from state import State
+from hp_state import HPState
 from base import Observer
 from balance import BALANCE
 from math import pi
 from motion_task import MotionTask
-import events
+from sectors import FireSector
+from weapons import WeaponDischarge, WeaponAuto
+from events import FireDischargeEvent, FireAutoEnableEvent
 
 
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
     def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None,
-                 role=None,
-                 **kw):
+                 role=None, **kw):
         """
         @param sublayers_server.model.agents.Agent owner: Object owner
         @param float max_hp: Maximum health level
@@ -27,18 +29,15 @@ class Unit(Observer):
         super(Unit, self).__init__(**kw)
         self.role = role
         self.owner = owner
-        self.max_hp = max_hp
-        self._hp = max_hp
+        t = self.server.get_time()
+        self.hp_state = HPState(t=t, max_hp=max_hp, hp=max_hp, dps=0.0)
         self._direction = direction
-        self.defence = defence
-        if weapons:
-            for weapon in weapons:
-                weapon.owner = self
-        # todo: (!) attach/detach weapon and other stuff to/from unit (event)
-        self.weapons = weapons or []
-        """@type: list[sublayers_server.model.weapon.Weapon]"""
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
+        self.fire_sectors = []
+        """@type: list[sublayers_server.model.sectors.FireSector]"""
+        for weapon in weapons:
+            self.setup_weapon(dict_weapon=weapon)
 
     @property
     def direction(self):
@@ -53,44 +52,85 @@ class Unit(Observer):
 
     @property
     def is_died(self):
-        return self.hp == 0
+        return self.hp_state.hp(self.server.get_time()) <= 0.0
 
     @property
     def hp(self):
-        return self._hp
+        return self.hp_state.hp(self.server.get_time())
 
-    def hit(self, hp):
-        # todo: make hit event
-        '''
-        if self.max_hp is None:
-            return
+    def hp_by_time(self, t=None):
+        t = t if t is not None else self.server.get_time()
+        return self.hp_state.hp(t)
 
-        hp *= self.defence
+    def setup_weapon(self, dict_weapon):
+        sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
+        if dict_weapon['is_auto']:
+            WeaponAuto(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
+                       dps=dict_weapon['dps'])
+        else:
+            WeaponDischarge(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
+                            dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
 
-        if not hp:
-            return
-
-        new_hp = self.hp
-        new_hp -= hp
-        if new_hp < 0:
-            new_hp = 0
-
-        if new_hp > self.max_hp:
-            new_hp = self.max_hp
-
-        if new_hp != self.hp:
-            self._hp = new_hp
-            if new_hp == 0:
-                self.on_die()  # todo: implementation
-            else:
-                self.on_update(time=self.server.get_time(), comment='HP {}->{}'.format(self.hp, new_hp))
-                # todo: on_update params
-                # todo: 'hit' and 'fire' events and messages
-        #'''
-
-    def on_die(self):
-        # todo: make die event
+    def takeoff_weapon(self, weapon):
+        # todo: продумать меанизм снятия оружия
         pass
+
+    def fire_discharge(self, side):
+        FireDischargeEvent(obj=self, side=side).post()
+
+    def fire_auto_enable(self, side, enable):
+        FireAutoEnableEvent(obj=self, side=side, enable=enable).post()
+
+    def on_fire_discharge(self, event):
+        time = event.time
+        side = event.side
+        # сначала проверяем можем ли мы стрельнуть бортом
+        for sector in self.fire_sectors:
+            if sector.side == side:
+                if not sector.can_discharge_fire(time=time):
+                    return
+        t_rch = 0
+        for sector in self.fire_sectors:
+            if sector.side == side:
+                t_rch = max(t_rch, sector.fire_discharge(time=time))
+        # todo: отправить на клиент маскимальную перезарядку данного борта (нельзя всем отправлять свою перезарядку! НЕЛЬЗЯ) !!!!
+        # todo:  нужно отправить всем сообщение о выстреле
+        # для себя: side, time, t_rch
+
+    def on_fire_auto_enable(self, event):
+        side = event.side
+        enable = event.enable
+        for sector in self.fire_sectors:
+            if sector.side == side:
+                sector.enable_auto_fire(enable=enable)
+
+    def on_start_auto_fire(self, weapon):
+        # todo: начало авто стрельбы. нужно отправить (всем или только себе) сообщение о выстреле
+        pass
+
+    def on_end_auto_fire(self, weapon):
+        # todo: конец авто стрельбы. нужно отправить (всем или только себе) сообщение о выстреле
+        pass
+
+    def contact_test(self, obj):
+        super(Unit, self).contact_test(obj=obj)
+        for sector in self.fire_sectors:
+            if sector.is_auto:
+                sector.fire_auto(target=obj)
+
+    def on_contact_out(self, time, obj, **kw):
+        super(Unit, self).on_contact_out(time=time, obj=obj, **kw)
+        for sector in self.fire_sectors:
+            sector.out_car(target=obj)
+
+    def on_die(self, event):
+        # перестать стрелять своими автоматическими секторами
+        self.fire_auto_enable(side='front', enable=False)
+        self.fire_auto_enable(side='back', enable=False)
+        self.fire_auto_enable(side='left', enable=False)
+        self.fire_auto_enable(side='right', enable=False)
+        # todo: удалить себя и на этом месте создать обломки
+        self.delete()
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
@@ -98,9 +138,8 @@ class Unit(Observer):
         d.update(
             owner=owner and owner.as_dict(),
             direction=self.direction,
-            hp=self.hp,
-            max_hp=self.max_hp,
-            weapons=[weapon.as_dict(to_time=to_time) for weapon in self.weapons],
+            hp_state=self.hp_state.export(),
+            fire_sectors=[sector.as_dict() for sector in self.fire_sectors],
             role=None if self.role is None else self.role.name,
         )
         return d

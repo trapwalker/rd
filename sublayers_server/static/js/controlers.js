@@ -16,12 +16,6 @@ var Controllers = (function () {
             max: options.fuelMax ? options.fuelMax : 100
         });
 
-        //Шкала здоровья машины игрока
-        this.hpController = new ProgressBarHP({
-            parent: "divScaleCarHealth",
-            max: options.hpMax ? options.hpMax : 100
-        });
-
         // Инициализация контролера стрельбы
         this.fireControl = new FireControl({
             parentDiv: 'fireControlArea',
@@ -50,7 +44,6 @@ var Controllers = (function () {
         //Шкала здоровья машины игрока - установить новый максимальный параметр
         this.hpController.setMax(options.hpMax ? options.hpMax : 100);
 
-        // Слайдер зума не трогаем
 
         // Меняем максимальную и установленную скорости
         this.speedSetSlider.setMaxSpeed(options.max_velocity);

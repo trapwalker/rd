@@ -115,6 +115,11 @@ class Init(Objective):
         super(Init, self).on_perform()
         self.obj.on_init(self)
 
+class Die(Objective):
+    def on_perform(self):
+        super(Die, self).on_perform()
+        self.obj.on_die(self)
+
 
 class Delete(Objective):
     def on_perform(self):
@@ -173,3 +178,25 @@ class ContactOut(Contact):
     def on_perform(self):
         super(ContactOut, self).on_perform()
         self.subj.on_contact_out(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
+
+
+class FireDischargeEvent(Objective):
+    def __init__(self, side, **kw):
+        super(FireDischargeEvent, self).__init__(**kw)
+        self.side = side
+
+    def on_perform(self):
+        super(FireDischargeEvent, self).on_perform()
+        self.obj.on_fire_discharge(self)
+
+
+class FireAutoEnableEvent(Objective):
+    def __init__(self, side, enable, **kw):
+        super(FireAutoEnableEvent, self).__init__(**kw)
+        self.side = side
+        self.enable = enable
+
+    def on_perform(self):
+        super(FireAutoEnableEvent, self).on_perform()
+        self.obj.on_fire_auto_enable(self)
+

@@ -1,5 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 
+from math import pi
+
 
 class BalanceSettingsABS:
     def __init__(self):
@@ -53,8 +55,11 @@ class BALANCE(BalanceSettingsABS):
             return r
 
     class Weapon(BalanceSettingsABS):
-        damage = 10.0
-        r = 50.0
+        dmg = 10.0
+        dps = 1
+        radius = 50.0
+        width = pi / 2
+        time_recharge = 6
 
     class Rocket:
         observing_range = 100.0 # очень небольшой радиус. думаю от 100 до 300 должен быть

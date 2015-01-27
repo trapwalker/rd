@@ -8,6 +8,12 @@ var Clock = (function () {
         return new Date().getTime() / 1000. + this.dt;
     };
 
+    // Получение текущего времени в миллисекундах - нельзя учитывать при расчёте движения
+    Clock.prototype.getClientMS = function () {
+        return new Date().getTime();
+    };
+
+
     // Расчет серверной "поправки". Для установки dt необходимо
     // серверное время передать в секундах = UTC/1000.
     Clock.prototype.setDt = function (aTimeServer) {
@@ -56,7 +62,7 @@ var TimeManager = (function () {
     // Функция таймера
     TimeManager.prototype._interval_perform = function () {
         //console.log('TimeManager.prototype._interval_perform');
-        time = clock.getCurrentTime();
+        var time = clock.getCurrentTime();
 
         var list = this._timer_list;
         // основной проход
@@ -66,8 +72,12 @@ var TimeManager = (function () {
         if(visualManager)
             visualManager.perform(time);
 
-        this._FPSInterval += clock.getCurrentTime() - time;
-        time._FPSCount++;
+
+        var time2 = clock.getCurrentTime() - time;
+        this._FPSInterval += time2;
+        if (time2 > this._interval)
+            console.log('Таймер не успел отработать! Время работы: ', time2,  '      Желаемое время: ', this._interval);
+        this._FPSCount++;
     };
 
     // Установка интервала таймера

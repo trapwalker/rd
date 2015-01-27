@@ -1,6 +1,5 @@
 
 
-
 var Bang = (function(){
     function Bang(position, aPower, aBangDur, aBandEndDur){
         // todo: сделать зависимость радиуса взрыва от текущего зума. а если радиус меньше 5, то совсем не показывать его

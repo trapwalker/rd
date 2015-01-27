@@ -4,14 +4,13 @@ import logging
 log = logging.getLogger(__name__)
 
 from party import RoleParty, Role
-from weapons import SectoralWeapon
 from vectors import Point
 from units import Bot
 from events import Event
 from trigger import Trigger
 from messages import Message
 
-from math import pi
+from math import pi, radians
 
 
 class CargoBot(Bot):
@@ -19,8 +18,8 @@ class CargoBot(Bot):
         super(CargoBot, self).__init__(*av, **kw)
         self.server.mission_cargo = self
 
-    def on_die(self):
-        super(CargoBot, self).on_die()
+    def on_die(self, event):
+        super(CargoBot, self).on_die(event=event)
         log.debug('Cargo is DIE!')
         WinEvent(server=self.server, winner_unit=None).post()
 
@@ -70,7 +69,7 @@ class Corp(RoleParty):
     def __init__(self):
         # todo: add role unit class to params
         super(Corp, self).__init__(
-            base_point=Point(17031, 18000),  # Девый город
+            base_point=Point(17031, 19800),  # Девый город
             roles=[
                 Role('Cargo',
                     car_params=dict(
@@ -79,9 +78,10 @@ class Corp(RoleParty):
                         max_velocity=40,
                         observing_range=1500,
                         weapons=[
-                            SectoralWeapon(direction=pi, sector_width=70, r=200, damage=10),
-                            SectoralWeapon(direction=pi/2, sector_width=70, r=150, damage=10),
-                            SectoralWeapon(direction=-pi/2, sector_width=70, r=150, damage=10),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      max_count=1,
@@ -93,9 +93,10 @@ class Corp(RoleParty):
                         max_velocity=80,
                         observing_range=1200,
                         weapons=[
-                            SectoralWeapon(direction=0, sector_width=50, r=350, damage=10),
-                            SectoralWeapon(direction=pi/2, sector_width=50, r=300, damage=10),
-                            SectoralWeapon(direction=-pi/2, sector_width=50, r=300, damage=10),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      weight=1,
@@ -106,7 +107,10 @@ class Corp(RoleParty):
                         max_velocity=125,
                         observing_range=2000,
                         weapons=[
-                            SectoralWeapon(direction=0, sector_width=40, r=400, damage=6),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      weight=1,
@@ -117,10 +121,10 @@ class Corp(RoleParty):
                         max_velocity=60,
                         observing_range=1000,
                         weapons=[
-                            SectoralWeapon(direction=0, sector_width=80, r=200, damage=18),
-                            SectoralWeapon(direction=pi, sector_width=80, r=150, damage=12),
-                            SectoralWeapon(direction=pi/2, sector_width=80, r=150, damage=12),
-                            SectoralWeapon(direction=-pi/2, sector_width=80, r=150, damage=12),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      weight=1,
@@ -140,9 +144,10 @@ class Band(RoleParty):
                         max_velocity=80,
                         observing_range=2200,
                         weapons=[
-                            SectoralWeapon(direction=0, sector_width=50, r=350, damage=10),
-                            SectoralWeapon(direction=pi/2, sector_width=50, r=300, damage=10),
-                            SectoralWeapon(direction=-pi/2, sector_width=50, r=300, damage=10),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      weight=1,
@@ -153,7 +158,10 @@ class Band(RoleParty):
                         max_velocity=125,
                         observing_range=2000,
                         weapons=[
-                            SectoralWeapon(direction=0, sector_width=40, r=400, damage=6),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      weight=1,
@@ -164,10 +172,10 @@ class Band(RoleParty):
                         max_velocity=60,
                         observing_range=1000,
                         weapons=[
-                            SectoralWeapon(direction=0, sector_width=80, r=200, damage=18),
-                            SectoralWeapon(direction=pi, sector_width=80, r=150, damage=12),
-                            SectoralWeapon(direction=pi/2, sector_width=80, r=150, damage=12),
-                            SectoralWeapon(direction=-pi/2, sector_width=80, r=150, damage=12),
+                            dict(fi=0, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(70), dps=1),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(70), dmg=10, time_recharge=5),
                         ],
                      ),
                      weight=1,

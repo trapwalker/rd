@@ -127,7 +127,15 @@ function onKeyDownMap(event) {
             break;
         case 32:
             //clientManager.sendRocket();
-            new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+            //new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
+                user.userCar.getCurrentDirection(clock.getCurrentTime())).start();
+            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
+                user.userCar.getCurrentDirection(clock.getCurrentTime()) + Math.PI / 2.).start();
+            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
+               user.userCar.getCurrentDirection(clock.getCurrentTime()) - Math.PI / 2.).start();
+            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
+                user.userCar.getCurrentDirection(clock.getCurrentTime()) + Math.PI).start();
             break;
         case 84: // T // Crazy Click Timer
             if (crazy_timer){
@@ -137,6 +145,30 @@ function onKeyDownMap(event) {
             else{
                 crazy_timer = setInterval(sendRandGoTo, 100);
             }
+            break;
+        case 87:  // W
+            clientManager.sendFireDischarge('front');
+            break;
+        case 65:  // A
+            clientManager.sendFireDischarge('left');
+            break;
+        case 83:  // S
+            clientManager.sendFireDischarge('back');
+            break;
+        case 68:  // D
+            clientManager.sendFireDischarge('right');
+            break;
+        case 69:  // E
+            clientManager.sendFireAutoEnable('front', true);
+            clientManager.sendFireAutoEnable('back', true);
+            clientManager.sendFireAutoEnable('right', true);
+            clientManager.sendFireAutoEnable('left', true);
+            break;
+        case 81:  // Q
+            clientManager.sendFireAutoEnable('front', false);
+            clientManager.sendFireAutoEnable('back', false);
+            clientManager.sendFireAutoEnable('right', false);
+            clientManager.sendFireAutoEnable('left', false);
             break;
     }
 }

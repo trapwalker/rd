@@ -3,9 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from weapons import SectoralWeapon
 from vectors import Point
-
 from math import pi
 
 
@@ -160,6 +158,10 @@ class RoleParty(Party):
 
     def car_base_params(self):
         return dict(
+            weapons=[],
+        )
+        '''
+        return dict(
             weapons=[
                 SectoralWeapon(direction=0, sector_width=45, r=400),
                 SectoralWeapon(direction=pi, sector_width=45, r=350),
@@ -167,6 +169,7 @@ class RoleParty(Party):
                 SectoralWeapon(direction=pi/2, sector_width=60, r=300),
             ],
         )
+        '''
 
     def clear_dead(self):
         for role in self.roles:

@@ -35,6 +35,17 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getHPState = function (data) {
+        if (data)
+            return new HPState(
+                data.t0,
+                data.max_hp,
+                data.hp0,
+                data.dps
+            );
+        return null;
+    };
+
     ClientManager.prototype._getOwner = function (data) {
         if(data)
             if (data.cls === "User") {
@@ -55,13 +66,15 @@ var ClientManager = (function () {
         return null;
     };
 
-    ClientManager.prototype._getWeapons = function (data) {
+    ClientManager.prototype._getSectors = function (data) {
         var sectors = [];
-        data.forEach(function (weapon, index) {
-            // TODO: ввести позже речардж сектора, когда будет присылаться
-            var sector = new FireSector(weapon.direction, gradToRad(weapon.sector_width), weapon.r, index, 2000);
-            sector.damage = weapon.damage;
-            this.sectors.push(sector);
+        data.forEach(function (sector, index) {
+            this.sectors.push({
+                fi: sector.fi,
+                radius: sector.radius,
+                side: sector.side,
+                width: sector.width
+            });
         }, {sectors: sectors});
         return sectors;
     };
@@ -77,7 +90,6 @@ var ClientManager = (function () {
         cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
         myMap.dragging.disable(); // запретить двигать карту
     };
-
 
     ClientManager.prototype._sendMessage = function (msg) {
         //console.log('ClientManager.prototype._sendMessage');
@@ -122,11 +134,11 @@ var ClientManager = (function () {
         var max_speed = event.cars[0].max_velocity;
         var aMaxHP = event.cars[0].max_hp;
         var radius_visible = event.cars[0].r;
-        var aHP = event.cars[0].hp;
         var uid = event.cars[0].uid;
         var role = event.cars[0].role;
         var state = this._getState(event.cars[0].state);
-        var fireSectors = this._getWeapons(event.cars[0].weapons);
+        var hp_state = this._getHPState(event.cars[0].hp_state);
+        var fireSectors = this._getSectors(event.cars[0].fire_sectors);
 
         // Инициализация Юзера
         if (event.agent.cls == "User") {
@@ -140,20 +152,23 @@ var ClientManager = (function () {
             // создать машинку
             var mcar = new UserCar(
                 uid,       //ID машинки
-                aHP,       //HP машинки
                 max_speed, //Максималка
-                state
+                state,
+                hp_state
             );
 
             // Виджеты:
             new WCarMarker(mcar);    // виджет маркера
             new WMapPosition(mcar);  // виджет позиционирования карты
             new WSpeedSlider(mcar);  // виджет круиз контроля
+            new WHPSlider(mcar);     // виджет HP
+            // todo: сделать также зависимось от бортов
+            new WFireSectors(mcar, fireSectors);  // виджет секторов
 
             user.userCar = mcar;
 
             // Добавить сектора в userCar
-            user.userCar.AddFireSectors(fireSectors);
+            //user.userCar.AddFireSectors(fireSectors);
 
             // Инициализация маркера машинки
             /*
@@ -198,7 +213,8 @@ var ClientManager = (function () {
         // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
         clock.setDt(servtime / 1000.);
         var aHP = event.object.hp;
-        var aState = this._getState(event.object.state);
+        var motion_state = this._getState(event.object.state);
+        var hp_state = this._getHPState(event.object.hp_state);
         var owner = this._getOwner(event.object);
 
         var uid = event.object.uid;
@@ -210,7 +226,8 @@ var ClientManager = (function () {
         }
 
         // обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
-        car.setState(aState);
+        car.setState(motion_state);
+        car.setHPState(hp_state);
 
 
         /*
@@ -284,10 +301,11 @@ var ClientManager = (function () {
 
 
         if (event.is_first) { // Только если первый раз добавляется машинка
-            var aState = this._getState(event.object.state);
-            var aHP = event.object.hp;
+            var state = this._getState(event.object.state);
+            var hp_state = this._getHPState(event.object.hp_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
+
 
             var car = visualManager.getModelObject(uid);
 
@@ -296,7 +314,6 @@ var ClientManager = (function () {
                 return;
             }
 
-
             if (car == user.userCar) {
                 console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
                 return;
@@ -304,7 +321,7 @@ var ClientManager = (function () {
 
             // создание новой машинки
 
-            car = new MapCar(uid, aHP, aState);
+            car = new MapCar(uid, state, hp_state);
 
             car.role = event.object.role;
             car.cls = event.object.cls;
@@ -465,6 +482,36 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    ClientManager.prototype.sendFireDischarge = function (side) {
+        //console.log('ClientManager.prototype.sendFireDischarge');
+        var mes = {
+            call: "fire_discharge",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                side: side
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendFireAutoEnable = function (side, enable) {
+        //console.log('ClientManager.prototype.sendFireDischarge');
+        var mes = {
+            call: "fire_auto_enable",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                side: side,
+                enable: enable
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+
 
 
 
