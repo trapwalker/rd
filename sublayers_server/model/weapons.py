@@ -42,12 +42,11 @@ class WeaponAuto(Weapon):
     def _start(self, car):
         #todo: создать таск на патроны, который отменит дамаг и сделает стоп стрельбы
         HPTask(owner=car, dps=self.dps).start()
-        self.owner.on_start_auto_fire(self)
 
     def _end(self, car):
-        if not car.is_died:  # если цель мертва, то нет смысла снимать с неё дамаг, но прекратить его нужно
+        if not car.is_died:  # если цель мертва, то нет смысла снимать с неё дамаг
             HPTask(owner=car, dps=-self.dps).start()
-        self.owner.on_end_auto_fire(self)
+        # todo: остановить списывание патронов пулемёта
 
     def start(self, car):
         if self._enable:
@@ -67,7 +66,6 @@ class WeaponAuto(Weapon):
                     self._start(car)
                 else:
                     self._end(car)
-        # todo: возможно отправить на клиент какое-то сообщение о включённых орудиях
 
 
 class WeaponDischarge(Weapon):
@@ -87,8 +85,7 @@ class WeaponDischarge(Weapon):
 
     def fire(self, cars, time):
         # todo: добавить проверку на патроны
-        log.debug('---------------------HERE !!! SHOOT !!!! %s', len(cars))
-        if self.can_fire(time=time) and cars:
+        if self.can_fire(time=time):
             for car in cars:
                 HPTask(owner=car, dhp=self.dmg).start()
             self.last_shoot = time
@@ -96,6 +93,4 @@ class WeaponDischarge(Weapon):
         return 0
 
     def can_fire(self, time):
-        if self.last_shoot:
-            log.debug('---------------------t_rch + time = %s', self.last_shoot + self.t_rch)
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)

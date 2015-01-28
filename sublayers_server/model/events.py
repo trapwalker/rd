@@ -115,6 +115,7 @@ class Init(Objective):
         super(Init, self).on_perform()
         self.obj.on_init(self)
 
+
 class Die(Objective):
     def on_perform(self):
         super(Die, self).on_perform()
@@ -161,6 +162,7 @@ class Contact(Objective):
         @param sublayers_server.model.base.VisibleObject obj: Object of contact
         @param sublayers_server.model.base.Observer subj: Subject of contact
         """
+
         assert subj.is_alive and not subj.limbo
         self.subj = subj
         super(Contact, self).__init__(obj=obj, **kw)

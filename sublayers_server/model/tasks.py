@@ -23,7 +23,7 @@ class TaskPerformEvent(events.Event):
         if self in task.events:
             task.events.remove(self)
         if not task.events:
-            TaskDoneEvent(task=self.task).post()
+            self.task.on_done(self)
 
     def on_perform(self):
         super(TaskPerformEvent, self).on_perform()
@@ -43,19 +43,10 @@ class TaskInitEvent(events.Event):
 
     def on_perform(self):
         super(TaskInitEvent, self).on_perform()
-        self.task.on_start(self)
-
-
-class TaskDoneEvent(events.Event):
-    def __init__(self, task, **kw):
-        assert task
-        super(TaskDoneEvent, self).__init__(server=task.owner.server, **kw)
-        self.task = task
-
-    def on_perform(self):
-        super(TaskDoneEvent, self).on_perform()
-        self.task.on_done(self)
-
+        if not self.task.owner.limbo:
+            self.task.on_start(self)
+        else:
+            self.task.on_done(self)
 
 class Task(object):
     __metaclass__ = ABCMeta

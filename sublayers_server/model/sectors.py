@@ -79,11 +79,8 @@ class FireSector(Sector):
         assert self.is_auto >= 0
 
     def _test_target_in_sector(self, target):
-        # todo: Придумать как обойти это! тут должен быть любой потомок Unit (у кого есть ХП)
-        # if not isinstance(target, self.owner.__class__):
-            #log.debug('=============== not Unit !!!!1 =======cls = %s', target.__class__.__name__)
-        #    return False
-        #todo: проверить объект на партийность
+        if not self.owner.is_target(target):
+            return False
         v = target.position - self.owner.position
         if (v.x ** 2 + v.y ** 2) > self.radius ** 2:
             return False
@@ -130,4 +127,3 @@ class FireSector(Sector):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable, self.target_list)
-        # todo: возможно отправить на клиент какое-то сообщение о включённых орудиях

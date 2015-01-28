@@ -9,6 +9,7 @@ from base import Observer
 from balance import BALANCE
 from math import pi
 from motion_task import MotionTask
+from hp_task import HPTask
 from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
 from events import FireDischargeEvent, FireAutoEnableEvent
@@ -71,6 +72,10 @@ class Unit(Observer):
             WeaponDischarge(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
                             dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
 
+    def is_target(self, target):
+        # todo: проверить объект на партийность
+        return isinstance(target, Unit)
+
     def takeoff_weapon(self, weapon):
         # todo: продумать меанизм снятия оружия
         pass
@@ -88,6 +93,7 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             if sector.side == side:
                 if not sector.can_discharge_fire(time=time):
+                    # todo: отправить на клиент сообщение о том, что орудия ещё в перезарядке
                     return
         t_rch = 0
         for sector in self.fire_sectors:
@@ -103,14 +109,6 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             if sector.side == side:
                 sector.enable_auto_fire(enable=enable)
-
-    def on_start_auto_fire(self, weapon):
-        # todo: начало авто стрельбы. нужно отправить (всем или только себе) сообщение о выстреле
-        pass
-
-    def on_end_auto_fire(self, weapon):
-        # todo: конец авто стрельбы. нужно отправить (всем или только себе) сообщение о выстреле
-        pass
 
     def contact_test(self, obj):
         super(Unit, self).contact_test(obj=obj)
@@ -132,6 +130,8 @@ class Unit(Observer):
         # todo: удалить себя и на этом месте создать обломки
         self.delete()
 
+
+
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
         owner = self.owner
@@ -145,10 +145,13 @@ class Unit(Observer):
         return d
 
     def on_before_delete(self, **kw):
+        super(Unit, self).on_before_delete(**kw)
         if self.role:
             self.role.remove_car(self)
             # todo: rename
-        super(Unit, self).on_before_delete(**kw)
+        for task in self.tasks:
+            if isinstance(task, HPTask):
+                task.done()
 
 
 class Station(Unit):
@@ -204,6 +207,12 @@ class Mobile(Unit):
     def set_motion(self, position=None, cc=None, turn=None):
         assert (turn is None) or (position is None)
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn).start()
+
+    def on_before_delete(self,  **kw):
+        super(Mobile, self).on_before_delete(**kw)
+        for task in self.tasks:
+            if isinstance(task, MotionTask):
+                task.done()
 
     @property
     def v(self):

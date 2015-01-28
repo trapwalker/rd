@@ -55,6 +55,12 @@ class HPState(object):
             self.t_die = self.t0 + self.hp0 / self.dps
         return self.t_die
 
+    def set_die(self, time):
+        self.t0 = time
+        self.t_die = time
+        self.hp0 = 0
+        self.dps = 0
+
     def export(self):
         return dict(
             cls=self.__class__.__name__,

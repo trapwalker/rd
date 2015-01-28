@@ -62,20 +62,28 @@ class AgentAPI(API):
 
     @public_method
     def change_car(self):
+        if self.car.limbo:
+            return
         self.agent.drop_car(self.car)
         self.make_car()
         self.send_init_package()
 
     @public_method
     def fire_discharge(self, side):
+        if self.car.limbo:
+            return
         self.car.fire_discharge(side=side)
 
     @public_method
     def fire_auto_enable(self, side, enable):
+        if self.car.limbo:
+            return
         self.car.fire_auto_enable(side=side, enable=enable)
 
     @public_method
     def crazy(self, target_id=None):
+        if self.car.limbo:
+            return
         server = self.agent.server
 
         def crazy_func(event=None):
@@ -118,17 +126,22 @@ class AgentAPI(API):
 
     @public_method
     def console_cmd(self, cmd):
+        if self.car.limbo:
+            return
         log.info('Agent %s cmd: %r', self.agent.login, cmd)
         self.shell.run(cmd)
 
     @public_method
     def send_rocket(self):
-        #log.debug('AgentAPI Rocket !!!')
+        if self.car.limbo:
+            return
         # todo: ракета должна создаваться в unit
         Rocket(starter=self.car, server=self.agent.server)
 
     @public_method
     def set_motion(self, x, y, cc, turn):
+        if self.car.limbo:
+            return
         p = None
         if x and y:
             p = Point(x, y)

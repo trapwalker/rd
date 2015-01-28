@@ -163,7 +163,8 @@ class VisibleObject(PointObject):
         # todo: test to subscription leaks
         super(VisibleObject, self).on_before_delete(event=event)
         for obs in self.subscribed_observers:
-            ContactOut(subj=obs, obj=self).post()
+            if not obs.limbo:
+                ContactOut(subj=obs, obj=self).post()
 
     def on_after_delete(self, event):
         # todo: checkit
