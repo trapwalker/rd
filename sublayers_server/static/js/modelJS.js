@@ -117,7 +117,6 @@ var DynamicObject = (function (_super) {
 
     DynamicObject.prototype.setHPState = function (hp_state) {
         this._hp_state = hp_state;
-        //console.log(user.userCar._hp_state.dps);
         this._manage_tm();
         visualManager.changeModelObject(this);
     };

@@ -102,17 +102,26 @@ var ClientManager = (function () {
 
     ClientManager.prototype.receiveMessage = function (params) {
         //console.log('ClientManager.prototype.receiveMessage', params);
-        // TODO: написать правильный обработчик здесь. А пока так
-        var self=this;
+
         if (params.message_type == "push") {
+            if(params.events){
+                var e = params.events[0];
+                if (typeof(this[e.cls]) === 'function')
+                    this[e.cls](e);
+                else
+                    console.error('Error: неизвестная API-команда для клиента: ', e.cls);
+            }
+
+            /*
+            var self=this;
             params.events.forEach(function (event) {
                 if (typeof(self[event.cls]) === 'function')
-                    self[event.cls](event);
-                else {
+                        self[event.cls](event);
+                else
                     console.error('Error: неизвестная API-команда для клиента: ', event.cls);
-                    //receiveMesFromServ(params);
-                }
             });
+            */
+
         }
         else if (params.message_type == "answer")
             if (!params.error)
@@ -140,6 +149,8 @@ var ClientManager = (function () {
         var state = this._getState(event.cars[0].state);
         var hp_state = this._getHPState(event.cars[0].hp_state);
         var fireSectors = this._getSectors(event.cars[0].fire_sectors);
+
+        clock.setDt(servtime / 1000.);
 
         // Инициализация Юзера
         if (event.agent.cls == "User") {
@@ -212,7 +223,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Update');
         var servtime = event.time;
         // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
-        clock.setDt(servtime / 1000.);
+        //clock.setDt(servtime / 1000.);
+
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
         var owner = this._getOwner(event.object);
@@ -220,52 +232,17 @@ var ClientManager = (function () {
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
 
-        if (! car) {
+        if (!car) {
             console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка!');
             return;
         }
 
         // обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
+
         car.setState(motion_state);
         car.setHPState(hp_state);
-
-
-        /*
-        if (event.object.uid == user.userCar.ID) { // если машинка своя
-            // Установить новую траекторию
-            // Сохранить старое хп и установить нвоое
-            var oldHP = user.userCar.hp;
-            user.userCar.hp = aHP;
-            if (oldHP > 0) // Устанавливается траектория, только если машинка жива
-                //user.userCar.state = aState;
-                user.userCar.setState(aState);
-            if (user.userCar.hp <= 0) {
-                userCarMarker.marker.setIcon(iconsLeaflet.icon_killed_V1);
-                this._setClientState('death_car');
-                modalWindow.modalDeathShow();
-            } else {
-                if (oldHP != aHP) // Если хп изменилось, то мигнуть маркером
-                    flashMarker(userCarMarker.marker);
-            }
-        }
-        else { // если не своя, то проверить есть ли такая в модели
-            // Сохранить старое хп и установить нвоое
-            var oldHP = listMapObject.objects[event.object.uid].hp;
-            listMapObject.setCarHP(event.object.uid, aHP);
-            // Установить новую траекторию
-            if (oldHP > 0) // Устанавливается траектория, только если машинка жива
-                listMapObject.setState(event.object.uid, aState);
-            // После добавления машинки или её апдейта, проверяем сколько у неё хп
-            if (listMapObject.objects[event.object.uid].hp <= 0) {
-                listMapObject.objects[event.object.uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
-            } else {
-                if (oldHP != aHP) // Если хп изменилось, то мигнуть маркером
-                    flashMarker(listMapObject.objects[event.object.uid].marker);
-            }
-        }
-        */
-
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
+        /*
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
@@ -292,6 +269,7 @@ var ClientManager = (function () {
                         .addTo(myMap)
                 );
         }
+        */
 
     };
 

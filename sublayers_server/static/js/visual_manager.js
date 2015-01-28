@@ -21,9 +21,11 @@ var VisualManager = (function () {
 
     VisualManager.prototype.changeModelObject = function (mobj) {
         //console.log('VisualManager.prototype.changeModelObject');
-        if (this._model_list[mobj.ID])
-            for (var i = 0; i < this._model_list[mobj.ID].list.length; i++)
-                this._model_list[mobj.ID].list[i].changed = true;
+        if (this._model_list[mobj.ID]) {
+            var m_list = this._model_list[mobj.ID].list;
+            for (var i = 0; i < m_list.length; i++)
+                m_list[i].changed = true;
+        }
     };
 
     // Возвращает модельный объект по id'шнику
