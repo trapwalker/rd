@@ -122,6 +122,7 @@ class Unit(Observer):
             sector.out_car(target=obj)
 
     def on_die(self, event):
+        super(Unit, self).on_die(event)
         # перестать стрелять своими автоматическими секторами
         self.fire_auto_enable(side='front', enable=False)
         self.fire_auto_enable(side='back', enable=False)

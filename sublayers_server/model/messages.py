@@ -73,6 +73,10 @@ class Init(Message):
         return d
 
 
+class Die(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+
 class Chat(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text">'
 

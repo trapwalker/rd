@@ -83,8 +83,9 @@ var ClientManager = (function () {
     ClientManager.prototype._setClientState = function (state) {
         if (state === 'death_car') {
             // Перевести клиент в состояние, пока машинка мертва
-            cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-            map.dragging.enable(); // разрешить тягать карту
+            //cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
+            //map.dragging.enable(); // разрешить тягать карту
+            modalWindow.modalDeathShow();
             return true;
         }
         // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
@@ -142,7 +143,6 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Init');
         var servtime = event.time;
         var max_speed = event.cars[0].max_velocity;
-        var aMaxHP = event.cars[0].max_hp;
         var radius_visible = event.cars[0].r;
         var uid = event.cars[0].uid;
         var role = event.cars[0].role;
@@ -169,6 +169,11 @@ var ClientManager = (function () {
                 hp_state
             );
 
+            user.userCar = mcar;
+
+            // Присвоение роли
+            user.role = role;
+
             // Виджеты:
             new WCarMarker(mcar);    // виджет маркера
             new WMapPosition(mcar);  // виджет позиционирования карты
@@ -177,40 +182,14 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
 
-            user.userCar = mcar;
-
-            // Добавить сектора в userCar
-            //user.userCar.AddFireSectors(fireSectors);
-
-            // Инициализация маркера машинки
-            /*
-            userCarMarker = new UserCarMarker({
-                position: myMap.unproject([state.p0.x, state.p0.y], myMap.getMaxZoom()),
-                tailEnable: false,
-                _map: myMap,
-                radiusView: radius_visible,
-                carID: uid,
-                sectors: user.userCar.fireSectors,
-                countSectorPoints: 20
-            });
 
 
-            // Инициализация контроллеров
-            controllers = new Controllers({
-                fuelMax: fuelMaxProbka,
-                hpMax: aMaxHP,
-                fireSectors: user.userCar.fireSectors,
-                max_velocity: max_speed,
-                set_velocity: (max_speed * 0.75).toFixed(0)
-            });
 
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
-             */
+
         }
 
-        // Присвоение роли
-        user.role = role;
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
         setTitleOnPage();
@@ -275,9 +254,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Contact = function (event) {
         //console.log('ClientManager.prototype.Contact');
-        var servtime = event.time;
-
-
         if (event.is_first) { // Только если первый раз добавляется машинка
             var state = this._getState(event.object.state);
             var hp_state = this._getHPState(event.object.hp_state);
@@ -303,6 +279,9 @@ var ClientManager = (function () {
 
             car.role = event.object.role;
             car.cls = event.object.cls;
+
+            // todo: обсудить работу с овнерами
+            aOwner.bindCar(car);
 
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
@@ -392,6 +371,11 @@ var ClientManager = (function () {
             // удаление машинки
             //carMarkerList.del(event.object_id);
         }
+    };
+
+    ClientManager.prototype.Die = function (event) {
+        console.log('ClientManager.prototype.Die');
+        this._setClientState('death_car');
     };
 
     ClientManager.prototype.Chat = function (event){

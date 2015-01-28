@@ -303,7 +303,7 @@ var Owner = (function () {
     function Owner(uid, login, aParty) {
         this.uid = uid;
         this.login = login;
-        this.cars = new Array();
+        this.cars = [];
         this.party = aParty ? aParty : new OwnerParty(0, "");
     }
 

@@ -170,6 +170,9 @@ function onKeyDownMap(event) {
             clientManager.sendFireAutoEnable('right', false);
             clientManager.sendFireAutoEnable('left', false);
             break;
+        case 90:  // Z
+            //clientManager.Die();
+            break;
     }
 }
 

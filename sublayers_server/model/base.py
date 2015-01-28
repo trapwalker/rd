@@ -267,3 +267,10 @@ class Observer(VisibleObject):
         d = super(Observer, self).as_dict(**kw)
         d.update(r=self.r)
         return d
+
+    def on_die(self, event):
+        # todo: перенести в более правильное место. Временно тут!
+        for agent in self.watched_agents:
+            messages.Die(
+                agent=agent
+            ).post()

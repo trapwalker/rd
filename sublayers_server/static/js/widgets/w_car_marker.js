@@ -23,13 +23,16 @@ var WCarMarker = (function (_super) {
         marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
-        if (car.owner) {
+        if (car.owner || car == user.userCar) {
+            var owner = car.owner || user;
             var party_str = "";
-            if (car.owner.party.name.length > 2)party_str = '[' + aCar.role + '@' + car.owner.party.name + ']';
-            marker.bindLabel(car.owner.login + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+            if (owner.party.name.length > 2)
+                party_str = '[' + (car.role || user.role)+ '@' + owner.party.name + ']';
+            marker.bindLabel(owner.login + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
         }
-        else
-            marker.bindLabel(car.ID, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+        else {
+            marker.bindLabel(car.ID.toString(), {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+        }
 
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
