@@ -84,7 +84,7 @@ var ClientManager = (function () {
         if (state === 'death_car') {
             // Перевести клиент в состояние, пока машинка мертва
             cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-            myMap.dragging.enable(); // разрешить тягать карту
+            map.dragging.enable(); // разрешить тягать карту
             return true;
         }
         // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
@@ -213,7 +213,6 @@ var ClientManager = (function () {
         var servtime = event.time;
         // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
         clock.setDt(servtime / 1000.);
-        var aHP = event.object.hp;
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
         var owner = this._getOwner(event.object);

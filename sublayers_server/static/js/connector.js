@@ -184,11 +184,17 @@ var WSConnector = (function(_super){
         this.connection = {};
 
         this.max_time = 0;
+        this.decode_time = 0;
+        this.count = 0;
+
 
         var self = this;
         setInterval(function () {
-            console.log('max record of receiveMessage in last 10 seconds is ', self.max_time);
+            console.log('Максимальное время обработки сообщения от сервера: ', self.max_time, '   Всего получено сообщений за период: ', self.count);
+            console.log('Максимальное время разбора сообщения от сервера: ', self.decode_time);
             self.max_time = 0;
+            self.decode_time = 0;
+            self.count = 0;
         }, 10000)
 
        }
@@ -243,16 +249,17 @@ var WSConnector = (function(_super){
         // раскодировать входящее от сервера сообщение
         var time_start = clock.getCurrentTime();
         var mes = this.decodeMessage(msg);
+        var dec_time = clock.getCurrentTime() - time_start;
+        if (dec_time > this.decode_time)
+            this.decode_time = dec_time;
         // отправить сообщение в мессадж стрим
         if (mes)
             message_stream.receiveMessage(mes);
         // обязательно возвращать true
         var time_length = clock.getCurrentTime() - time_start;
-        if (time_length > this.max_time){
+        if (time_length > this.max_time)
             this.max_time = time_length;
-            //console.log('new max record of receiveMessage is ', time_length);
-        }
-
+        this.count ++;
         return true;
     };
 

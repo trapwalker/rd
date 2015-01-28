@@ -42,6 +42,14 @@ var TimeManager = (function () {
         // todo: очень спорный момент запуска при старте
         this.timerStart();
         //this.autoFPSStart();
+
+        this.render_time = 0;
+
+        var self = this;
+        setInterval(function () {
+            console.log('Максимальное время отрисовки: ', self.render_time);
+            self.render_time = 0;
+        }, 10000)
     }
 
     // ТАЙМЕР
@@ -74,6 +82,8 @@ var TimeManager = (function () {
 
 
         var time2 = clock.getCurrentTime() - time;
+        if (time2 > this.render_time)
+            this.render_time = time2;
         this._FPSInterval += time2;
         if (time2 > this._interval)
             console.log('Таймер не успел отработать! Время работы: ', time2,  '      Желаемое время: ', this._interval);
