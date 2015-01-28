@@ -73,7 +73,8 @@ var ClientManager = (function () {
                 fi: sector.fi,
                 radius: sector.radius,
                 side: sector.side,
-                width: sector.width
+                width: sector.width,
+                is_auto: sector.weapons[0].cls == "WeaponAuto"
             });
         }, {sectors: sectors});
         return sectors;

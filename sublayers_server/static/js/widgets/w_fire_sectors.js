@@ -67,9 +67,15 @@ var WFireSectors = (function (_super) {
                 */
             }
             else {
+                var sect_color = null;
+                if (sector._fireSector.is_auto)
+                    sect_color = '#7777FF';
+                else
+                    sect_color = '#32cd32';
+
                 sector.polygon = L.polygon(tempPointsAll, {
                     weight: 0,
-                    fillColor: '#32cd32',
+                    fillColor: sect_color,
                     fillOpacity: 0.2,
                     clickable: false
                 });
