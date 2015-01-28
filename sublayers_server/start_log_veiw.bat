@@ -1,1 +1,1 @@
-tail -F server.log 
+tail -F log\server.log 
