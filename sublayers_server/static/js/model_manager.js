@@ -383,12 +383,39 @@ var ClientManager = (function () {
         //chat.addMessage(-1, '', getOwner(event.author), event.text);
     };
 
+
+    // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         console.log('ClientManager.prototype.Bang ');
         //chat.addMessage(-1, '', getOwner(event.author), event.text);
         new Bang(new Point(event.position.x, event.position.y), event.bang_power, event.duration, event.end_duration)
             .start();
         // todo разобраться, почему оно не всегда отрисовывается
+    };
+
+    ClientManager.prototype.FireDischarge = function (event) {
+        console.log('ClientManager.prototype.FireDischarge ');
+        var dir_side = null;
+        switch (event.side) {
+            case 'front':
+                dir_side = 0;
+                break;
+            case 'left':
+                dir_side = Math.PI / 2.;
+                break;
+            case 'right':
+                dir_side = -Math.PI / 2.;
+                break;
+            case 'back':
+                dir_side = Math.PI;
+                break;
+            default:
+                console.error('Невозможно отрисовать эффект. Неизвестный борт!', event.side);
+                return;
+        }
+        if (dir_side != null)
+            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
+                    user.userCar.getCurrentDirection(clock.getCurrentTime()) + dir_side).start();
     };
 
 

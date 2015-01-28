@@ -13,6 +13,7 @@ from hp_task import HPTask
 from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
 from events import FireDischargeEvent, FireAutoEnableEvent
+import messages
 
 
 class Unit(Observer):
@@ -102,6 +103,15 @@ class Unit(Observer):
         # todo: отправить на клиент маскимальную перезарядку данного борта (нельзя всем отправлять свою перезарядку! НЕЛЬЗЯ) !!!!
         # todo:  нужно отправить всем сообщение о выстреле
         # для себя: side, time, t_rch
+        if t_rch > 0.0:
+            # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
+            for agent in self.watched_agents:
+                messages.FireDischarge(
+                    agent=agent,
+                    side=side,
+                    t_rch=t_rch,
+                ).post()
+
 
     def on_fire_auto_enable(self, event):
         side = event.side

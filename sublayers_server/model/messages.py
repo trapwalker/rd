@@ -213,3 +213,21 @@ class Bang(Subjective):
                  duration=self.duration,
                  end_duration=self.end_duration)
         return d
+
+class FireDischarge(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] side={self.side}>'
+    def __init__(self, side, t_rch, **kw):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        """
+        super(FireDischarge, self).__init__(**kw)
+        self.side = side
+        self.t_rch = t_rch
+
+    def as_dict(self):
+        d = super(FireDischarge, self).as_dict()
+        d.update(
+            side=self.side,
+            t_rch=self.t_rch,
+        )
+        return d

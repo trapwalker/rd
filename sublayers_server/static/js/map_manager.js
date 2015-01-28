@@ -127,16 +127,7 @@ function onKeyDownMap(event) {
             break;
         case 32:
             //clientManager.sendRocket();
-            //new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
-            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-                user.userCar.getCurrentDirection(clock.getCurrentTime())).start();
-            /*new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-                user.userCar.getCurrentDirection(clock.getCurrentTime()) + Math.PI / 2.).start();
-            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-               user.userCar.getCurrentDirection(clock.getCurrentTime()) - Math.PI / 2.).start();
-            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-                user.userCar.getCurrentDirection(clock.getCurrentTime()) + Math.PI).start();
-                */
+            new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
             break;
         case 84: // T // Crazy Click Timer
             if (crazy_timer){
