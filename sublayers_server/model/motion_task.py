@@ -121,13 +121,15 @@ class MotionTask(Task):
         t1, t2, t3 = st._calc_time_segment(s, self.cc)
         if t1 != 0.0:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+            st.update(t=time, cc=self.cc, turn=0.0)
             time = time + t1
         if t2 != 0.0:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+            st.update(t=time, cc=self.cc, turn=0.0)
             time = time + t2
         if t3 != 0.0:
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
-            time = time + t3
+            time = st.update(t=time, cc=0.0, turn=0.0)
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
 
     def _update_state(self, event):

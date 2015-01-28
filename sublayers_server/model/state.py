@@ -19,6 +19,7 @@ def assert_time_in_state(f):
 
     def cover(self, t=None, *av, **kw):
         if self.t_max is not None and t is not None and not (self.t0 <= t <= self.t_max):
+        #if self.t_max is not None and t is not None and (((self.t0 - t) > EPS) or (t - self.t_max) > EPS):
             raise ETimeIsNotInState('Time {} given, but {} is last in this state and t0 is {}'.format(t, self.t_max, self.t0))
         return f(self, t=t, *av, **kw)
 
@@ -48,6 +49,8 @@ class BaseState(object):
             self.p0 = self.p(t)
             self.fi0 = self.fi(t)
             self.v0 = self.v(t)
+            #if abs(self.v0) < EPS:
+            #    self.v0 = 0
             self.t0 = t
 
     def s(self, t):
