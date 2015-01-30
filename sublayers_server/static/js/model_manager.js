@@ -150,7 +150,7 @@ var ClientManager = (function () {
         var hp_state = this._getHPState(event.cars[0].hp_state);
         var fireSectors = this._getSectors(event.cars[0].fire_sectors);
 
-        clock.setDt(servtime / 1000.);
+        clock.setDt((new Date().getTime() - servtime) / 1000.);
 
         // Инициализация Юзера
         if (event.agent.cls == "User") {
@@ -200,10 +200,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update');
-        var servtime = event.time;
-        // Пока что установка времени будет осуществляться здесь! Т.к. При контакте она лагает.
-        //clock.setDt(servtime / 1000.);
-
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
         var owner = this._getOwner(event.object);

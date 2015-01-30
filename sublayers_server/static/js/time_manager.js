@@ -1,11 +1,19 @@
 var Clock = (function () {
     function Clock() {
         this.dt = 0;
+        message_stream.addInEvent({
+            key: 'ws_message',
+            cbFunc: 'receiveMessage',
+            subject: this
+        });
+        this._count_message = 0;
+        this._pings = 0;
+        this._msg_count_correct = 50; // количество сообщений необходимое для корректировки dt
     }
 
     // Получение текущего времени с поправкой на сервер
     Clock.prototype.getCurrentTime = function () {
-        return new Date().getTime() / 1000. + this.dt;
+        return new Date().getTime() / 1000. - this.dt;
     };
 
     // Получение текущего времени в миллисекундах - нельзя учитывать при расчёте движения
@@ -13,11 +21,23 @@ var Clock = (function () {
         return new Date().getTime();
     };
 
+    // Расчет серверной "поправки".
+    Clock.prototype.setDt = function (aDiffTime) {
+        this.dt = aDiffTime;
+        console.log('Поправка времени = ', this.dt)
+    };
 
-    // Расчет серверной "поправки". Для установки dt необходимо
-    // серверное время передать в секундах = UTC/1000.
-    Clock.prototype.setDt = function (aTimeServer) {
-        this.dt = aTimeServer - new Date().getTime() / 1000.;
+    Clock.prototype.receiveMessage = function (params) {
+        if (params.message_type == "push") {
+            this._pings += (new Date().getTime() - params.serv_time) / 1000.;
+            this._count_message ++;
+            if (this._count_message >= this._msg_count_correct) {
+                this._pings /= this._count_message;
+                this.setDt(this._pings);
+                this._pings = 0;
+                this._count_message = 0;
+            }
+        }
     };
 
     return Clock;

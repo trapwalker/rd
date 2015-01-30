@@ -47,8 +47,6 @@ $(document).ready(function () {
     // Инициализация.
     ModelInit();
 
-    message_stream = new MessageConnector();
-
     ws_connector = new WSConnector();
 
     j_connector = new JabberConnector({
@@ -205,7 +203,6 @@ var controllers;
 var debugMapList = [];
 var carMarkerList;
 var cookieStorage;
-var message_stream;
 var clientManager;
 var j_connector;
 var ws_connector;

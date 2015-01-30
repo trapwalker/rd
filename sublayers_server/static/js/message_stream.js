@@ -73,6 +73,9 @@ var MessageConnector = (function () {
 })();
 
 
+var message_stream = new MessageConnector();
+
+
 
 
 

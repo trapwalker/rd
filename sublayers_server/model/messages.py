@@ -9,10 +9,12 @@ from balance import BALANCE
 
 
 def make_push_package(events):
+    serv_time = events[0].agent.server.get_time()
     events = [event.as_dict() for event in events]
     return dict(
         message_type='push',
         events=events,
+        serv_time=serv_time,
     )
 
 
