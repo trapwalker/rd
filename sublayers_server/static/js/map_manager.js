@@ -253,8 +253,8 @@ var MapManager = (function(_super){
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
         map.on('zoomend', this.onZoomEnd);
-        document.getElementById('bodydiv').onkeydown = onKeyDownMap;
-        document.getElementById('bodydiv').onkeyup = onKeyUpMap;
+        document.getElementById('map').onkeydown = onKeyDownMap;
+        document.getElementById('map').onkeyup = onKeyUpMap;
         map.keyboard.disable();
 
         // Bнициализация виджетов карты
