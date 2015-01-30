@@ -61,6 +61,14 @@ class AgentAPI(API):
         )
 
     @public_method
+    def set_party(self, name):
+        log.info('%s set party to %s', self.agent.login, name)
+
+    @public_method
+    def send_invite(self, username):
+        log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+
+    @public_method
     def change_car(self):
         if self.car.limbo:
             return
@@ -82,13 +90,14 @@ class AgentAPI(API):
 
     @public_method
     def crazy(self, target_id=None):
+        log.info('Crazy mode called for %s', self.agent)
         if self.car.limbo:
             return
         server = self.agent.server
 
         def crazy_func(event=None):
             log.debug('Run crazy func')
-            dt = abs(random.gauss(0, 5)) + 0.5  # sec
+            dt = abs(random.gauss(0, 5)) + 1.5  # sec
             events.Event(server=server, time=server.get_time() + dt, callback_before=crazy_func, comment="I'm crazy").post()
             if self.agent.cars:
                 p = None

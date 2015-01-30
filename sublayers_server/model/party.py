@@ -42,7 +42,7 @@ class Party(object):
         if old_party:
             old_party.exclude(agent, silent=True)
 
-        log('Agent %s including to %s. Cars=%s', agent, self, agent.cars)
+        log.info('Agent %s including to %s. Cars=%s', agent, self, agent.cars)
         '''
         # todo: fix it
         old_agent_observers = agent.observers[:]
