@@ -5,11 +5,15 @@
 
 
 //Путь к карте на сервере
-var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+//var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
+var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
 //Путь к карте в локальном каталоге
 var ConstMapPathLocal = '';
+
+//Максимальный и минимальный зумы карты
+var ConstMaxMapZoom = 18;
+var ConstMinMapZoom = 0;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -35,6 +39,8 @@ function onMouseUpMap(mouseEventObject) {
     //    if (user.userCar)
         //clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
             clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    //console.log(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+
     //} else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         //radialMenu.hideMenu(true);
@@ -223,8 +229,8 @@ var MapManager = (function(_super){
 
         map = L.map('map',
             {
-                minZoom: 3,
-                maxZoom: 7,
+                minZoom: ConstMinMapZoom,
+                maxZoom: ConstMaxMapZoom,
                 zoomControl: false,
                 attributionControl: false,
                 scrollWheelZoom: "center",
@@ -265,7 +271,7 @@ var MapManager = (function(_super){
         //console.log('MapManager.prototype.createTileLayer');
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
-                maxZoom: 7,
+                maxZoom: ConstMaxMapZoom,
                 continuousWorld: true,
                 opacity: 0.5,
                 storage: storage});
@@ -274,7 +280,7 @@ var MapManager = (function(_super){
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
                 opacity: 0.5,
-                maxZoom: 7});
+                maxZoom: ConstMaxMapZoom});
         }
         if(cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);

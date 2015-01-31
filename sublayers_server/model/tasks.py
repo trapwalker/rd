@@ -48,6 +48,7 @@ class TaskInitEvent(events.Event):
         else:
             self.task.on_done(self)
 
+
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
@@ -73,8 +74,6 @@ class Task(object):
 
     def __str__(self):
         return self.__str_template__.format(self=self)
-
-    id = property(id)
 
     @property
     def is_worked(self):

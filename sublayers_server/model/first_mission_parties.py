@@ -69,7 +69,7 @@ class Corp(RoleParty):
     def __init__(self):
         # todo: add role unit class to params
         super(Corp, self).__init__(
-            base_point=Point(17031, 19800),  # Девый город
+            base_point=Point(38697925, 21562513),
             roles=[
                 Role('Cargo',
                     car_params=dict(
@@ -129,7 +129,7 @@ class Corp(RoleParty):
 class Band(RoleParty):
     def __init__(self):
         super(Band, self).__init__(
-            base_point=Point(17031, 19632),  # Центральный город
+            base_point=Point(38697925, 21562513),
             roles=[
                 Role('Rover',
                     car_params=dict(

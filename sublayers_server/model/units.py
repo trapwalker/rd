@@ -13,6 +13,7 @@ from hp_task import HPTask
 from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
 from events import FireDischargeEvent, FireAutoEnableEvent
+from effects_zone import EffectRoad, EffectWater, EffectWood
 import messages
 
 
@@ -34,6 +35,8 @@ class Unit(Observer):
         t = self.server.get_time()
         self.hp_state = HPState(t=t, max_hp=max_hp, hp=max_hp, dps=0.0)
         self._direction = direction
+        self.zones = []
+        self.effects = []
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
@@ -112,7 +115,6 @@ class Unit(Observer):
                     t_rch=t_rch,
                 ).post()
 
-
     def on_fire_auto_enable(self, event):
         side = event.side
         enable = event.enable
@@ -125,6 +127,8 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             if sector.is_auto:
                 sector.fire_auto(target=obj)
+        # зонирование
+        self.server.ts_zone.test_zones(obj=self)
 
     def on_contact_out(self, time, obj, **kw):
         super(Unit, self).on_contact_out(time=time, obj=obj, **kw)
@@ -140,8 +144,6 @@ class Unit(Observer):
         self.fire_auto_enable(side='right', enable=False)
         # todo: удалить себя и на этом месте создать обломки
         self.delete()
-
-
 
     def as_dict(self, to_time=None):
         d = super(Unit, self).as_dict(to_time=to_time)
@@ -163,6 +165,35 @@ class Unit(Observer):
         for task in self.tasks:
             if isinstance(task, HPTask):
                 task.done()
+
+    def in_zone(self, zone):
+        if zone in self.zones:
+           return
+        self.zones.append(zone)
+        if zone == 'wood':
+            EffectWood(owner=self).start()
+        elif zone == 'road':
+            EffectRoad(owner=self).start()
+        elif zone == 'water':
+            EffectWater(owner=self).start()
+
+    def out_zone(self, zone):
+        if not (zone in self.zones):
+            return
+        self.zones.remove(zone)
+        # определить класс отменяемых эффектов
+        zone_class = None
+        if zone == 'wood':
+            zone_class = EffectWood
+        elif zone == 'road':
+            zone_class = EffectRoad
+        elif zone == 'water':
+            zone_class = EffectWater
+
+        assert zone_class
+        for effect in self.effects:
+            if isinstance(effect, zone_class):
+                effect.done()
 
 
 class Station(Unit):
