@@ -4,7 +4,6 @@ import logging
 from math import pi
 
 log = logging.getLogger(__name__)
-log.__class__.__call__ = log.__class__.info
 
 import units
 from vectors import Point
@@ -30,6 +29,7 @@ class AgentAPI(API):
             self.make_car()
             # todo: move to event queue
 
+        # todo: deprecated
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,
             P=Point,
@@ -38,6 +38,7 @@ class AgentAPI(API):
         self.send_init_package()
 
     def cmd_line_context(self):
+        # todo: deprecated
         ctx = dict(
             srv=self.agent.server,
             car=self.car,
@@ -61,8 +62,14 @@ class AgentAPI(API):
         )
 
     @public_method
-    def set_party(self, name):
-        log.info('%s set party to %s', self.agent.login, name)
+    def set_party(self, name=None, id=None):
+        """
+        Create party or accept invitation
+        @param basestring|None name: new or existed name of party
+        @param str|int id: existed id of party
+        """
+        # todo: autogenerate party name
+        log.info('%s try to set or create party %s', self.agent.login, name)
 
     @public_method
     def send_invite(self, username):
@@ -70,8 +77,6 @@ class AgentAPI(API):
 
     @public_method
     def change_car(self):
-        if self.car.limbo:
-            return
         self.agent.drop_car(self.car)
         self.make_car()
         self.send_init_package()
@@ -90,6 +95,7 @@ class AgentAPI(API):
 
     @public_method
     def crazy(self, target_id=None):
+        # todo: identify target by name too
         log.info('Crazy mode called for %s', self.agent)
         if self.car.limbo:
             return
@@ -134,13 +140,6 @@ class AgentAPI(API):
         chat.append(message_params)
 
     @public_method
-    def console_cmd(self, cmd):
-        if self.car.limbo:
-            return
-        log.info('Agent %s cmd: %r', self.agent.login, cmd)
-        self.shell.run(cmd)
-
-    @public_method
     def send_rocket(self):
         if self.car.limbo:
             return
@@ -156,4 +155,27 @@ class AgentAPI(API):
             p = Point(x, y)
         self.car.set_motion(position=p, cc=cc, turn=turn)
 
+    @public_method
+    def console_cmd(self, cmd):
+        log.debug('Agent %s cmd: %r', self.agent.login, cmd)
+        cmd = cmd.strip()
+        assert cmd, 'console command is empty or False: {!r}'.format(cmd)
+        words = cmd.split()
+        command, args = words[0], words[1:]
 
+        # todo: need refactoring
+        if command == 'crazy':
+            target = args[0] if args else None
+            if isinstance(target, (basestring)) and target.isdigit():
+                target = int(target)
+            self.crazy(target)
+        elif command == 'sepuku':
+            self.change_car()
+        elif command == 'party':
+            # todo: options of party create
+            self.set_party(name=args[0] if args else None)
+        elif command == 'invite':
+            for name in args:
+                self.send_invite(username=name)
+        else:
+            log.warning('Unknown console command "%s"', cmd)
