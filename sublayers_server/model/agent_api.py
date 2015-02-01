@@ -96,34 +96,8 @@ class AgentAPI(API):
     @public_method
     def crazy(self, target_id=None):
         # todo: identify target by name too
-        log.info('Crazy mode called for %s', self.agent)
-        if self.car.limbo:
-            return
-        server = self.agent.server
-
-        def crazy_func(event=None):
-            log.debug('Run crazy func')
-            dt = abs(random.gauss(0, 5)) + 1.5  # sec
-            events.Event(server=server, time=server.get_time() + dt, callback_before=crazy_func, comment="I'm crazy").post()
-            if self.agent.cars:
-                p = None
-                target = None
-                car = self.agent.cars[0]
-
-                if target_id:
-                    target = server.objects.get(target_id)
-                if not target and hasattr(server, 'mission_cargo'):
-                    target = server.mission_cargo
-
-                if target and hasattr(target, 'position'):
-                    p = Point.random_gauss(target.position, Point(1000, 1000))
-
-                p = p or Point.random_gauss(car.position, Point(1000, 1000))
-                log.debug('%s crazy go to %s position', car, target or p)
-                #self.car.goto(position=p, time=event.time if event else server.get_time())
-                self.car.set_motion(position=p, cc=1.0)
-
-        crazy_func()
+        from task_tools import CrazyTask
+        CrazyTask(owner=self.car, target_id=target_id).start()
 
     @public_method
     def chat_message(self, text):
