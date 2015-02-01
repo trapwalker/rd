@@ -47,6 +47,7 @@ class TaskInitEvent(events.Event):
             self.task.on_start(self)
         else:
             self.task.on_done(self)
+            # todo: Проверить на корректность завершения таска. Не следует ли вызывать здесь done()?
 
 class Task(object):
     __metaclass__ = ABCMeta
