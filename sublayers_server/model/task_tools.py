@@ -39,4 +39,8 @@ class CrazyTask(Task):
 
     def on_start(self, event):
         super(CrazyTask, self).on_start(event=event)
+        for task in self.owner.tasks[:]:
+            if task is not self and isinstance(task, self.__class__):
+                task.done()  # todo: Убедиться, что это безопасно ввиду motion_task.py:156
+
         TaskPerformEvent(task=self).post()

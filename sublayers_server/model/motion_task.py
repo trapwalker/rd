@@ -149,9 +149,12 @@ class MotionTask(Task):
         time = event.time
         tasks = self.owner.tasks[:]
         for task in tasks:
-            if task != self and isinstance(task, MotionTask):
+            if task is not self and isinstance(task, MotionTask):
                 events = task.events[:]
+                # todo: А нельзя здесь просто написать что-то вроде task.cancel() или .done()?
                 for e in events:
+                    # todo: Как такое может быть, чтобы какое-то более раннее событие не сработало?
+                    # Или речь здесь идёт об одновременных событиях (строгость неравенства)?
                     if e.time > time:
                         e.cancel()
 
