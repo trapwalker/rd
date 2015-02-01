@@ -144,7 +144,7 @@ class AgentAPI(API):
                 target = int(target)
             self.crazy(target)
         elif command == 'sepuku':
-            self.change_car()
+            self.change_car()  # todo: починить смену машинки
         elif command == 'party':
             # todo: options of party create
             self.set_party(name=args[0] if args else None)
