@@ -9,12 +9,9 @@ import units
 from vectors import Point
 from api_tools import API, public_method
 import messages
-#from weapons import SectoralWeapon
 from rocket import Rocket
 from console import Shell
-import events
-
-import random
+from party import Party
 
 
 class AgentAPI(API):
@@ -70,6 +67,9 @@ class AgentAPI(API):
         """
         # todo: autogenerate party name
         log.info('%s try to set or create party %s', self.agent.login, name)
+        party = Party.search_or_create(name)
+        party.include(self.agent)
+        # todo: События на добавление/исключение в/из пати
 
     @public_method
     def send_invite(self, username):
