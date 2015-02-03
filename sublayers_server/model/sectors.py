@@ -124,6 +124,7 @@ class FireSector(Sector):
         return True
 
     def enable_auto_fire(self, enable=False):
+        log.debug('================ sector off or on auto_fire !!! side of sector: %s', self.side)
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable, self.target_list)
