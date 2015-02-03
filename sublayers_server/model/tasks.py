@@ -51,6 +51,7 @@ class TaskInitEvent(events.Event):
             # todo: Проверить на корректность завершения таска. Не следует ли вызывать здесь done()?
 
 
+
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
@@ -106,7 +107,6 @@ class Task(object):
             self._cancel_events()
         else:
             self.on_done()
-        self.is_started = False
 
     def perform(self):
         # здесь должен создаваться потомок TaskPerformEvent
@@ -120,24 +120,27 @@ class Task(object):
         self.owner.tasks.append(self)
 
     def on_done(self, event=None):
+        self.is_started = False
         if self in self.owner.tasks:
             self.owner.tasks.remove(self)
 
     def cancel(self):
         assert self.is_started
-        self._cancel_events()
-        self.is_started = False
+        self.done()
 
 
 class TaskSingleton(Task):
     def on_start(self, event):
-        self._clear_tasks()
+        self._clear_tasks(event.time)
         super(TaskSingleton, self).on_start(event=event)
 
-    def _clear_tasks(self):
+    def _clear_tasks(self, time):
         tasks = []
         for task in self.owner.tasks:
              if isinstance(task, self.__class__):
                  tasks.append(task)
-        while tasks:
-            tasks.pop().cancel()
+        for task in tasks:
+            events = task.events[:]
+            for event in events:
+                if event.time > time:
+                    event.cancel()
