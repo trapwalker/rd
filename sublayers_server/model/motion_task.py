@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tasks import Task, TaskPerformEvent
+from tasks import TaskPerformEvent, TaskSingleton
 from state import EPS
 from vectors import Point
 from copy import copy
@@ -18,7 +18,7 @@ class MotionTaskEvent(TaskPerformEvent):
         self.turn = turn
 
 
-class MotionTask(Task):
+class MotionTask(TaskSingleton):
     def __init__(self, cc=None, turn=None, target_point=None, **kw):
         super(MotionTask, self).__init__(**kw)
         assert self.owner.state is not None
@@ -145,42 +145,34 @@ class MotionTask(Task):
             else:
                 owner.on_stop(event=event)
 
-    def _clear_motion_tasks(self, event):
-        time = event.time
-        tasks = self.owner.tasks[:]
-        for task in tasks:
-            if task is not self and isinstance(task, MotionTask):
-                events = task.events[:]
-                # todo: А нельзя здесь просто написать что-то вроде task.cancel() или .done()?
-                for e in events:
-                    # todo: Как такое может быть, чтобы какое-то более раннее событие не сработало?
-                    # Или речь здесь идёт об одновременных событиях (строгость неравенства)?
-                    if e.time > time:
-                        e.cancel()
-
     def on_perform(self, event):
         super(MotionTask, self).on_perform(event=event)
         self._update_state(event)
 
     def on_start(self, event):
         owner = self.owner
-        if owner.cur_motion_task is not None:
+        old_tp = None if owner.cur_motion_task is None else owner.cur_motion_task.target_point
+        old_cc = None if owner.cur_motion_task is None else owner.cur_motion_task.cc
+
+        super(MotionTask, self).on_start(event=event)
+
+        if old_tp or old_cc:
             if (self.target_point is None) and (self.turn is None):
-                self.target_point = owner.cur_motion_task.target_point
+                self.target_point = old_tp
             if self.cc is None:
-                self.cc = owner.cur_motion_task.cc
+                self.cc = old_cc
 
         if (self.cc is not None) and abs(self.cc) < EPS:
-                self.target_point = None
-                self.cc = 0.0
-        self._clear_motion_tasks(event)
+            self.target_point = None
+            self.cc = 0.0
+
         if self.target_point:
             self._calc_goto(event)
         else:
             self._calc_keybord(event)
         owner.cur_motion_task = self
 
-    def on_done(self, event):
+    def on_done(self, event=None):
         if self.owner.cur_motion_task == self:
             self.owner.cur_motion_task = None
         super(MotionTask, self).on_done(event=event)

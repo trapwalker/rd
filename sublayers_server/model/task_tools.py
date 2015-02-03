@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tasks import Task, TaskPerformEvent
+from tasks import TaskSingleton, TaskPerformEvent
 from vectors import Point
 import random
 
 
-class CrazyTask(Task):
+class CrazyTask(TaskSingleton):
     def __init__(self, target_id=None, **kw):
         super(CrazyTask, self).__init__(**kw)
         self.target_id = target_id
@@ -39,8 +39,4 @@ class CrazyTask(Task):
 
     def on_start(self, event):
         super(CrazyTask, self).on_start(event=event)
-        for task in self.owner.tasks[:]:
-            if task is not self and isinstance(task, self.__class__):
-                task.done()  # todo: Убедиться, что это безопасно ввиду motion_task.py:156
-
         TaskPerformEvent(task=self).post()

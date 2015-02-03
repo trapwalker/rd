@@ -2,7 +2,7 @@
 
 import logging
 log = logging.getLogger(__name__)
-from tasks import Task, TaskPerformEvent
+from tasks import TaskPerformEvent, TaskSingleton
 from copy import copy
 from events import Die
 
@@ -15,7 +15,7 @@ class HPTaskEvent(TaskPerformEvent):
         self.is_die = is_die
 
 
-class HPTask(Task):
+class HPTask(TaskSingleton):
     def __init__(self, dhp=None, dps=None, **kw):
         super(HPTask, self).__init__(**kw)
         assert self.owner.hp_state is not None
@@ -31,23 +31,13 @@ class HPTask(Task):
         owner.hp_state.update(t=event.time, dhp=event.dhp, dps=event.dps)
         owner.on_update(event=event)
 
-    def _clear_hp_tasks(self, event):
-        time = event.time
-        tasks = self.owner.tasks[:]
-        for task in tasks:
-            if task != self and isinstance(task, HPTask):
-                events = task.events[:]
-                for e in events:
-                    if e.time > time:  # die может произойти раньше
-                        e.cancel()
-
     def on_perform(self, event):
         super(HPTask, self).on_perform(event=event)
         self._update_state(event)
 
     def on_start(self, event):
+        super(HPTask, self).on_start(event=event)
         owner = self.owner
-        self._clear_hp_tasks(event)
         time = event.time
         time_die = copy(owner.hp_state).update(t=time, dhp=self.dhp, dps=self.dps)
         if time_die == time:  # если время дамага совпадает с временем смерти, то один евент

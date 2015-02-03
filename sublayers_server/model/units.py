@@ -162,7 +162,7 @@ class Unit(Observer):
             # todo: rename
         for task in self.tasks:
             if isinstance(task, HPTask):
-                task.done()
+                task.cancel()
 
 
 class Station(Unit):
@@ -223,7 +223,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(**kw)
         for task in self.tasks:
             if isinstance(task, MotionTask):
-                task.done()
+                task.cancel()
 
     @property
     def v(self):
