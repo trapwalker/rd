@@ -60,3 +60,12 @@ class Effect(object):
     def on_done(self, event):
         if self in self.owner.effects:
             self.owner.effects.remove(self)
+
+    # todo: пока будет здесь! Вомзожно переедет в другой класс
+    def _cancel_effects(self):
+        do_diff = True
+        for effect in self.owner.effects:
+            if effect != self and isinstance(effect, self.__class__) and effect.actual:
+                effect.actual = False
+                do_diff = False
+        return do_diff

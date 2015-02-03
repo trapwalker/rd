@@ -128,7 +128,8 @@ class Unit(Observer):
             if sector.is_auto:
                 sector.fire_auto(target=obj)
         # зонирование
-        self.server.ts_zone.test_zones(obj=self)
+        for zone in self.server.zones:
+            zone.test_in_zone(obj=self)
 
     def on_contact_out(self, time, obj, **kw):
         super(Unit, self).on_contact_out(time=time, obj=obj, **kw)
@@ -164,36 +165,7 @@ class Unit(Observer):
             # todo: rename
         for task in self.tasks:
             if isinstance(task, HPTask):
-                task.cancel()
-
-    def in_zone(self, zone):
-        if zone in self.zones:
-           return
-        self.zones.append(zone)
-        if zone == 'wood':
-            EffectWood(owner=self).start()
-        elif zone == 'road':
-            EffectRoad(owner=self).start()
-        elif zone == 'water':
-            EffectWater(owner=self).start()
-
-    def out_zone(self, zone):
-        if not (zone in self.zones):
-            return
-        self.zones.remove(zone)
-        # определить класс отменяемых эффектов
-        zone_class = None
-        if zone == 'wood':
-            zone_class = EffectWood
-        elif zone == 'road':
-            zone_class = EffectRoad
-        elif zone == 'water':
-            zone_class = EffectWater
-
-        assert zone_class
-        for effect in self.effects:
-            if isinstance(effect, zone_class):
-                effect.done()
+                task.done()
 
 
 class Station(Unit):
@@ -254,7 +226,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(**kw)
         for task in self.tasks:
             if isinstance(task, MotionTask):
-                task.cancel()
+                task.done()
 
     @property
     def v(self):

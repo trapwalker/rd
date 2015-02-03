@@ -48,8 +48,6 @@ class TaskInitEvent(events.Event):
             self.task.on_start(self)
         else:
             self.task.on_done(self)
-            # todo: Проверить на корректность завершения таска. Не следует ли вызывать здесь done()?
-
 
 
 class Task(object):
@@ -70,7 +68,6 @@ class Task(object):
     def status_str(self):
         return ''.join([
             'S' if self.is_started else 's',
-            'D' if self.is_done else 'd',
         ])
 
     def __str__(self):
@@ -124,14 +121,10 @@ class Task(object):
         if self in self.owner.tasks:
             self.owner.tasks.remove(self)
 
-    def cancel(self):
-        assert self.is_started
-        self.done()
-
 
 class TaskSingleton(Task):
     def on_start(self, event):
-        self._clear_tasks(event.time)
+        self._clear_tasks(time=event.time)
         super(TaskSingleton, self).on_start(event=event)
 
     def _clear_tasks(self, time):

@@ -6,14 +6,6 @@ from effects import Effect
 
 
 class EffectWood(Effect):
-    def _cancel_effects(self):
-        do_diff = True
-        for effect in self.owner.effects:
-            if effect != self and isinstance(effect, EffectWood) and effect.actual:
-                effect.actual = False
-                do_diff = False
-        return do_diff
-
     def on_start(self, event):
         super(EffectWood, self).on_start(event=event)
         if self._cancel_effects():
@@ -28,14 +20,6 @@ class EffectWood(Effect):
 
 
 class EffectWater(Effect):
-    def _cancel_effects(self):
-        do_diff = True
-        for effect in self.owner.effects:
-           if effect != self and isinstance(effect, EffectWater) and effect.actual:
-                effect.actual = False
-                do_diff = False
-        return do_diff
-
     def on_start(self, event):
         super(EffectWater, self).on_start(event=event)
         if self._cancel_effects():
@@ -50,14 +34,6 @@ class EffectWater(Effect):
 
 
 class EffectRoad(Effect):
-    def _cancel_effects(self):
-        do_diff = True
-        for effect in self.owner.effects:
-            if effect != self and isinstance(effect, EffectRoad) and effect.actual:
-                effect.actual = False
-                do_diff = False
-        return do_diff
-
     def on_start(self, event):
         super(EffectRoad, self).on_start(event=event)
         if self._cancel_effects():
@@ -72,6 +48,6 @@ class EffectRoad(Effect):
             log.debug('ZONES !!!!! ====== ======= ====== !!!!      Out Road')
 
     def done(self, time=None):
-        super(EffectRoad, self).done(time=self.owner.server.get_time() + 10)
+        super(EffectRoad, self).done(time=self.owner.server.get_time())
 
 
