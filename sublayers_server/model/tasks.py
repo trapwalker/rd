@@ -27,8 +27,9 @@ class TaskPerformEvent(events.Event):
 
     def on_perform(self):
         super(TaskPerformEvent, self).on_perform()
-        self.task.on_perform(self)
-        self._del_event_from_task()
+        if self.task.is_worked:
+            self.task.on_perform(self)
+            self._del_event_from_task()
 
     def on_cancel(self):
         self._del_event_from_task()
@@ -47,22 +48,22 @@ class TaskInitEvent(events.Event):
             self.task.on_start(self)
         else:
             self.task.on_done(self)
+            # todo: Проверить на корректность завершения таска. Не следует ли вызывать здесь done()?
+
 
 
 class Task(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.__class__.__name__} [{self.status_str}]>'
 
+    # todo: Может быть сделать опцию, которая превращала бы таск в синглет, при старте замещающий собратьев?
     def __init__(self, owner):
         """
         @param sublayers_server.model.units.Unit owner: Owner of task
         """
         super(Task, self).__init__()
         self.owner = owner
-        self._get_time = owner.server.get_time
         self.is_started = False
-        self.is_done = False
-        owner.tasks.append(self)
         self.events = []
 
     @property
@@ -77,7 +78,7 @@ class Task(object):
 
     @property
     def is_worked(self):
-        return self.is_started and not self.is_done
+        return self.is_started
 
     @property
     def classname(self):
@@ -96,14 +97,17 @@ class Task(object):
 
     def start(self):
         if not self.is_started:
-            self.is_started = True
             TaskInitEvent(task=self).post()
         else:
             raise TaskError('Trying to start of already started task')
 
     def done(self):
-        assert self.is_started and not self.is_done
-        self._cancel_events()
+        assert self.is_started
+        if self.events:
+            self._cancel_events()
+        else:
+            self.on_done()
+        self.is_started = False
 
     def perform(self):
         # здесь должен создаваться потомок TaskPerformEvent
@@ -113,8 +117,28 @@ class Task(object):
         assert self.is_started
 
     def on_start(self, event):
-        pass
+        self.is_started = True
+        self.owner.tasks.append(self)
 
-    def on_done(self, event):
-        self.is_done = True
-        self.owner.tasks.remove(self)
+    def on_done(self, event=None):
+        if self in self.owner.tasks:
+            self.owner.tasks.remove(self)
+
+    def cancel(self):
+        assert self.is_started
+        self._cancel_events()
+        self.is_started = False
+
+
+class TaskSingleton(Task):
+    def on_start(self, event):
+        self._clear_tasks()
+        super(TaskSingleton, self).on_start(event=event)
+
+    def _clear_tasks(self):
+        tasks = []
+        for task in self.owner.tasks:
+             if isinstance(task, self.__class__):
+                 tasks.append(task)
+        while tasks:
+            tasks.pop().cancel()

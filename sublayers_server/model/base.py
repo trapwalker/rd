@@ -16,17 +16,6 @@ from functools import update_wrapper
 # todo: fix side effect on edge of tile
 
 
-def async_call(method):
-    def cover(self, time=None, **kw):
-        def async_closure(event):
-            log.debug('async_closure: kw=%r', kw)
-            return method(self, time=event.time, **kw)
-
-        Event(server=self.server, time=time, callback_before=async_closure).post()
-    update_wrapper(cover, method)
-    return cover
-
-
 class Object(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id}>'

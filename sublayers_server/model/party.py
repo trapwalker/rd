@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from vectors import Point
-from math import pi
 
 
 def inc_name_number(name):
@@ -14,19 +13,29 @@ def inc_name_number(name):
 
 
 class Party(object):
-    party_names = set()
+    parties = {}
 
     def __init__(self, name=None):
         if name is None:
             name = self.__class__.__name__
 
-        while name in self.party_names:
+        while name in self.parties:
             name = inc_name_number(name)
-        self.party_names.add(name)
+        self.parties[name] = self
 
         self.name = name
         self.members = []
         """@type list[agents.Agent]"""
+        self.invites = []
+        """@type list[agents.Agent]"""
+
+    @classmethod
+    def search(cls, name):
+        return cls.parties.get(name)
+
+    @classmethod
+    def search_or_create(cls, name):
+        return cls.search(name) or cls(name)
 
     def as_dict(self):
         return dict(
@@ -80,6 +89,7 @@ class Party(object):
 class PartyDispatcher(dict):
 
     def __init__(self, parties=None):
+        super(PartyDispatcher, self).__init__()
         from first_mission_parties import Corp, Band
         if parties is None:
             parties = [Corp(), Band()]
@@ -160,16 +170,6 @@ class RoleParty(Party):
         return dict(
             weapons=[],
         )
-        '''
-        return dict(
-            weapons=[
-                SectoralWeapon(direction=0, sector_width=45, r=400),
-                SectoralWeapon(direction=pi, sector_width=45, r=350),
-                SectoralWeapon(direction=pi * 1.5, sector_width=60, r=300),
-                SectoralWeapon(direction=pi/2, sector_width=60, r=300),
-            ],
-        )
-        '''
 
     def clear_dead(self):
         for role in self.roles:

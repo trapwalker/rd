@@ -9,12 +9,9 @@ import units
 from vectors import Point
 from api_tools import API, public_method
 import messages
-#from weapons import SectoralWeapon
 from rocket import Rocket
 from console import Shell
-import events
-
-import random
+from party import Party
 
 
 class AgentAPI(API):
@@ -70,6 +67,9 @@ class AgentAPI(API):
         """
         # todo: autogenerate party name
         log.info('%s try to set or create party %s', self.agent.login, name)
+        party = Party.search_or_create(name)
+        party.include(self.agent)
+        # todo: События на добавление/исключение в/из пати
 
     @public_method
     def send_invite(self, username):
@@ -96,34 +96,8 @@ class AgentAPI(API):
     @public_method
     def crazy(self, target_id=None):
         # todo: identify target by name too
-        log.info('Crazy mode called for %s', self.agent)
-        if self.car.limbo:
-            return
-        server = self.agent.server
-
-        def crazy_func(event=None):
-            log.debug('Run crazy func')
-            dt = abs(random.gauss(0, 5)) + 1.5  # sec
-            events.Event(server=server, time=server.get_time() + dt, callback_before=crazy_func, comment="I'm crazy").post()
-            if self.agent.cars:
-                p = None
-                target = None
-                car = self.agent.cars[0]
-
-                if target_id:
-                    target = server.objects.get(target_id)
-                if not target and hasattr(server, 'mission_cargo'):
-                    target = server.mission_cargo
-
-                if target and hasattr(target, 'position'):
-                    p = Point.random_gauss(target.position, Point(1000, 1000))
-
-                p = p or Point.random_gauss(car.position, Point(1000, 1000))
-                log.debug('%s crazy go to %s position', car, target or p)
-                #self.car.goto(position=p, time=event.time if event else server.get_time())
-                self.car.set_motion(position=p, cc=1.0)
-
-        crazy_func()
+        from task_tools import CrazyTask
+        CrazyTask(owner=self.car, target_id=target_id).start()
 
     @public_method
     def chat_message(self, text):
@@ -170,7 +144,7 @@ class AgentAPI(API):
                 target = int(target)
             self.crazy(target)
         elif command == 'sepuku':
-            self.change_car()
+            self.change_car()  # todo: починить смену машинки
         elif command == 'party':
             # todo: options of party create
             self.set_party(name=args[0] if args else None)
