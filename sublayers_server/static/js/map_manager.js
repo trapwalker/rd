@@ -38,7 +38,7 @@ function onMouseUpMap(mouseEventObject) {
     //if (radialMenu.isHide && myMap._mouseDowned) {
     //    if (user.userCar)
         //clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
-            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+            clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
     //console.log(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
 
     //} else {
@@ -47,7 +47,7 @@ function onMouseUpMap(mouseEventObject) {
         //userCarMarker.sectorsView.setSelectedToNormalState();
     //}
     // фолсим флаг нажатия
-    myMap._mouseDowned = false;
+    map._mouseDowned = false;
 }
 
 function onMouseMoveMap(mouseEventObject) {
@@ -252,9 +252,9 @@ var MapManager = (function(_super){
 
         // Обработчики событий карты
         pressedKey = false;
-        //map.on('click', onMouseClickMap);
-        map.on('mousedown', onMouseDownMap);
-        map.on('mouseup', onMouseUpMap);
+        map.on('click', onMouseUpMap);
+        //map.on('mousedown', onMouseDownMap);
+        //map.on('mouseup', onMouseUpMap);
         map.on('mousemove', onMouseMoveMap);
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
