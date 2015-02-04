@@ -22,12 +22,15 @@ class MotionTask(TaskSingleton):
     def __init__(self, cc=None, turn=None, target_point=None, **kw):
         super(MotionTask, self).__init__(**kw)
         assert self.owner.state is not None
-        self.cc = cc
+        self.cc = None
+        self.u_cc = cc
         self.turn = turn
         self.target_point = target_point
 
     # todo: убрать из _calc event и заменить его на event.time
     def _calc_keybord(self, event):
+
+        assert (self.cc is not None) and (self.cc > EPS)
         time = event.time
         owner = self.owner
         st = copy(owner.state)
@@ -152,20 +155,19 @@ class MotionTask(TaskSingleton):
     def on_start(self, event):
         owner = self.owner
         old_tp = None if owner.cur_motion_task is None else owner.cur_motion_task.target_point
-        old_cc = None if owner.cur_motion_task is None else owner.cur_motion_task.cc
-
+        old_u_cc = None if owner.cur_motion_task is None else owner.cur_motion_task.u_cc
         super(MotionTask, self).on_start(event=event)
-
-        if old_tp or old_cc:
+        if old_tp or old_u_cc:
             if (self.target_point is None) and (self.turn is None):
                 self.target_point = old_tp
-            if self.cc is None:
-                self.cc = old_cc
-
+            if self.u_cc is None:
+                self.u_cc = old_u_cc
+        log.debug('MotionTask on start----- task cc = %s', self.cc)
+        if (self.u_cc is not None):
+            self.cc = min(self.u_cc, max(owner.p_cc.current, 0.0))
         if (self.cc is not None) and abs(self.cc) < EPS:
             self.target_point = None
             self.cc = 0.0
-
         if self.target_point:
             self._calc_goto(event)
         else:

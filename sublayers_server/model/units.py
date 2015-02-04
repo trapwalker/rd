@@ -14,6 +14,7 @@ from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
 from events import FireDischargeEvent, FireAutoEnableEvent
 from parameters import Parameter
+from effects_zone import EffectDirt
 import messages
 
 
@@ -43,6 +44,7 @@ class Unit(Observer):
         self._direction = direction
         self.zones = []
         self.effects = []
+        EffectDirt(owner=self).start()
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
@@ -196,6 +198,7 @@ class Mobile(Unit):
                  v_max=BALANCE.Mobile.v_max,
                  a_accelerate=BALANCE.Mobile.a_accelerate,
                  a_braking=BALANCE.Mobile.a_braking,
+                 max_control_speed=BALANCE.Mobile.max_control_speed,
                  **kw):
         super(Mobile, self).__init__(**kw)
         time = self.server.get_time()
@@ -206,9 +209,8 @@ class Mobile(Unit):
                                                                         a_braking=a_braking))
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
-
         # Parametrs
-        # self.p_cc = Parameter(original=1.0)
+        self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
 
     def init_state_params(self, r_min, ac_max, v_max, a_accelerate, a_braking):
         return dict(
