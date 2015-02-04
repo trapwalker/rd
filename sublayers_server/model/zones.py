@@ -30,11 +30,13 @@ def init_zones_on_server(server):
         effects=[EffectWater],
         ts=Tileset(open('d:/ts_water')),
     ))
+    '''
     server.zones.append(ZoneTileset(
         server=server,
         effects=[EffectRoad],
         ts=Tileset(open('d:/ts_road')),
     ))
+    '''
 
     log.info("Zones ready!")
 

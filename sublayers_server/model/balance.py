@@ -11,17 +11,27 @@ class BalanceSettingsABS:
 class BALANCE(BalanceSettingsABS):
     """Gameplay balancing settings"""
 
-    class Unit(BalanceSettingsABS):
+    class Observer(BalanceSettingsABS):
+        observing_range = 1000.0
+
+    class Unit(Observer):
         defence = 1.0
+        max_hp = 100.0
+        direction = -pi/2
 
     class Station(Unit):
-        observing_range = 5000.0
         max_hp = 1000.0
 
-    class Bot(Unit):
-        observing_range = 5000.0
+    class Mobile(Unit):
+        r_min=10
+        ac_max=10.0
+        v_max=30.0
+        a_accelerate=4.0
+        a_braking=-8.0
+
+    class Bot(Mobile):
         velocity = 100.0  # m/s
-        max_hp = 100.0
+
 
         @staticmethod
         def rv_relation(v):

@@ -121,7 +121,6 @@ class State(BaseState):
     ):
         assert (v_max > 0) and (v <= v_max)
         assert (a_accelerate > 0) and (a_braking < 0)
-
         self.owner = owner
         super(State, self).__init__(t, p, fi, v, r_min, ac_max)
         self.v_max = v_max

@@ -9,14 +9,18 @@ class EffectWood(Effect):
     def on_start(self, event):
         super(EffectWood, self).on_start(event=event)
         if self._cancel_effects():
-            # меняем state
-            log.debug('ZONES !!!!! ====== ======= ====== !!!!      In Wood')
+            # меняем параметры
+            owner = self.owner
+            owner.p_r.current -= owner.p_r.original * 0.5
+            owner._r = max(0, owner.p_r.current)
 
     def on_done(self, event):
         super(EffectWood, self).on_done(event=event)
         if self.actual:
-            # меняем state
-            log.debug('ZONES !!!!! ====== ======= ====== !!!!      Out Wood')
+            # меняем параметры обратно
+            owner = self.owner
+            owner.p_r.current += owner.p_r.original * 0.5
+            owner._r = max(0, owner.p_r.current)
 
 
 class EffectWater(Effect):

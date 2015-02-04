@@ -13,15 +13,21 @@ from hp_task import HPTask
 from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
 from events import FireDischargeEvent, FireAutoEnableEvent
-from effects_zone import EffectRoad, EffectWater, EffectWood
+from parameters import Parameter
 import messages
 
 
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self, owner=None, max_hp=None, direction=-pi/2, defence=BALANCE.Unit.defence, weapons=None,
-                 role=None, **kw):
+    def __init__(self,
+                 owner=None,
+                 max_hp=BALANCE.Unit.max_hp,
+                 direction=BALANCE.Unit.direction,
+                 defence=BALANCE.Unit.defence,
+                 weapons=None,
+                 role=None,
+                 **kw):
         """
         @param sublayers_server.model.agents.Agent owner: Object owner
         @param float max_hp: Maximum health level
@@ -32,8 +38,8 @@ class Unit(Observer):
         super(Unit, self).__init__(**kw)
         self.role = role
         self.owner = owner
-        t = self.server.get_time()
-        self.hp_state = HPState(t=t, max_hp=max_hp, hp=max_hp, dps=0.0)
+        time = self.server.get_time()
+        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
         self._direction = direction
         self.zones = []
         self.effects = []
@@ -43,6 +49,12 @@ class Unit(Observer):
         """@type: list[sublayers_server.model.sectors.FireSector]"""
         for weapon in weapons:
             self.setup_weapon(dict_weapon=weapon)
+
+        # Параметры Unit'а
+
+
+        # Резисты Unit'а
+
 
     @property
     def direction(self):
@@ -179,23 +191,34 @@ class Mobile(Unit):
     u"""Class of mobile units"""
 
     def __init__(self,
-                 max_hp=BALANCE.Bot.max_hp,
-                 observing_range=BALANCE.Bot.observing_range,
-                 max_velocity=BALANCE.Bot.velocity,
+                 r_min=BALANCE.Mobile.r_min,
+                 ac_max=BALANCE.Mobile.ac_max,
+                 v_max=BALANCE.Mobile.v_max,
+                 a_accelerate=BALANCE.Mobile.a_accelerate,
+                 a_braking=BALANCE.Mobile.a_braking,
                  **kw):
-        super(Mobile, self).__init__(max_hp=max_hp, observing_range=observing_range, **kw)
-        self._max_velocity = max_velocity
-        t = self.server.get_time()
-        self.state = State(owner=self, t=t, **self.init_state_params())
+        super(Mobile, self).__init__(**kw)
+        time = self.server.get_time()
+        self.state = State(owner=self, t=time, **self.init_state_params(r_min=r_min,
+                                                                        ac_max=ac_max,
+                                                                        v_max=v_max,
+                                                                        a_accelerate=a_accelerate,
+                                                                        a_braking=a_braking))
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
 
-    def init_state_params(self):
+        # Parametrs
+        # self.p_cc = Parameter(original=1.0)
+
+    def init_state_params(self, r_min, ac_max, v_max, a_accelerate, a_braking):
         return dict(
             p=self._position,
             fi=self._direction,
-            v_max=self._max_velocity,
-            # todo: acc and velocity constrains and params
+            v_max=v_max,
+            r_min=r_min,
+            ac_max=ac_max,
+            a_accelerate=a_accelerate,
+            a_braking=a_braking,
         )
 
     def as_dict(self, to_time=None):
@@ -232,7 +255,6 @@ class Mobile(Unit):
     def v(self):
         """
         Velocity vector
-
         @rtype: sublayers_server.model.vectors.Point
         """
         return self.state.v(t=self.server.get_time())
@@ -256,11 +278,7 @@ class Mobile(Unit):
         """
         @rtype: float
         """
-        return self._max_velocity
-
-    @max_velocity.setter
-    def max_velocity(self, value):
-        self._max_velocity = value
+        return self.state.v_max
 
 
 class Bot(Mobile):
