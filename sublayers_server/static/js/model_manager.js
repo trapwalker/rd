@@ -217,20 +217,19 @@ var ClientManager = (function () {
         car.setState(motion_state);
         car.setHPState(hp_state);
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        /*
+
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
                     .setRadius(3)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
-                        'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'comment: ' + event.comment + '</br>'
                 )
                     .addTo(myMap)
             );
-
+            /*
             if (event.object.state.c)
                 debugMapList.push(
                     L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
@@ -243,8 +242,8 @@ var ClientManager = (function () {
                     )
                         .addTo(myMap)
                 );
+             */
         }
-        */
 
     };
 
@@ -277,7 +276,8 @@ var ClientManager = (function () {
             car.cls = event.object.cls;
 
             // todo: обсудить работу с овнерами
-            aOwner.bindCar(car);
+            if (aOwner)
+                aOwner.bindCar(car);
 
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
@@ -316,7 +316,6 @@ var ClientManager = (function () {
                     .setRadius(8)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
-                        'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'subject_id: ' + event.subject_id + '</br>'
                 )
@@ -352,7 +351,8 @@ var ClientManager = (function () {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
-            car.owner.unbindCar(car);
+            if (car.owner)
+                car.owner.unbindCar(car);
 
             var list_vo = visualManager.getVobjsByMobj(car);
             for(var i = 0; i< list_vo.length; i++)

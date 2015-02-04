@@ -29,8 +29,8 @@ class MotionTask(TaskSingleton):
 
     # todo: убрать из _calc event и заменить его на event.time
     def _calc_keybord(self, event):
-
-        assert (self.cc is not None) and (self.cc > EPS)
+        # todo: что-то предпринять, если cc слишком мал...например обнулить его
+        # assert (self.cc is not None) and (self.cc > EPS)
         time = event.time
         owner = self.owner
         st = copy(owner.state)
@@ -157,17 +157,20 @@ class MotionTask(TaskSingleton):
         old_tp = None if owner.cur_motion_task is None else owner.cur_motion_task.target_point
         old_u_cc = None if owner.cur_motion_task is None else owner.cur_motion_task.u_cc
         super(MotionTask, self).on_start(event=event)
+
         if old_tp or old_u_cc:
             if (self.target_point is None) and (self.turn is None):
                 self.target_point = old_tp
             if self.u_cc is None:
                 self.u_cc = old_u_cc
-        log.debug('MotionTask on start----- task cc = %s', self.cc)
+
         if (self.u_cc is not None):
             self.cc = min(self.u_cc, max(owner.p_cc.current, 0.0))
+
         if (self.cc is not None) and abs(self.cc) < EPS:
             self.target_point = None
             self.cc = 0.0
+
         if self.target_point:
             self._calc_goto(event)
         else:

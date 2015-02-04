@@ -49,8 +49,9 @@ class Unit(Observer):
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
         """@type: list[sublayers_server.model.sectors.FireSector]"""
-        for weapon in weapons:
-            self.setup_weapon(dict_weapon=weapon)
+        if weapons:
+            for weapon in weapons:
+                self.setup_weapon(dict_weapon=weapon)
 
         # Параметры Unit'а
 
