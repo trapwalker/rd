@@ -3,20 +3,23 @@
 import logging
 log = logging.getLogger(__name__)
 
-from units import Mobile, Bot
-from state import State
+from units import Mobile
 from balance import BALANCE
-import events
 import messages
+from hp_task import HPTask
 
 
 class Rocket(Mobile):
     def __init__(
         self, starter, 
-        life_time=BALANCE.Rocket.life_time, 
-        max_hp=BALANCE.Rocket.max_hp,
-        max_velocity=BALANCE.Rocket.velocity,
+        life_time=BALANCE.Rocket.life_time,
         observing_range=BALANCE.Rocket.observing_range,
+        max_hp=BALANCE.Rocket.max_hp,
+        a_accelerate=BALANCE.Rocket.a_accelerate,
+        a_braking=BALANCE.Rocket.a_braking,
+        v_max=BALANCE.Rocket.v_max,
+        ac_max=BALANCE.Rocket.ac_max,
+        max_control_speed=BALANCE.Rocket.max_control_speed,
         **kw
     ):
         # todo: docstring required
@@ -27,42 +30,50 @@ class Rocket(Mobile):
         self.state = None
         self.life_time = life_time
         super(Rocket, self).__init__(position=pos, direction=direct,
-                                     max_hp=max_hp,
                                      observing_range=observing_range,
-                                     max_velocity=max_velocity,
+                                     max_hp=max_hp,
+                                     a_accelerate=a_accelerate,
+                                     a_braking=a_braking,
+                                     v_max=v_max,
+                                     ac_max=ac_max,
+                                     max_control_speed=max_control_speed,
                                      **kw)
 
+
     def on_init(self, event):
-        # Запускаем:
-        #events.Update(obj=self, cc=1.0).post()
-        # Назначаем остановку:
-        #events.Update(obj=self, cc=0.0, time=self.server.get_time() + self.life_time, comment="Bang!!!!").post()
+        super(Rocket, self).on_init(event)
+        self.set_motion(cc=1.0)
+        HPTask(owner=self, dps=1.0)
         self.delete(time=self.server.get_time() + self.life_time)
 
     def on_stop(self, event):
         self.delete()
 
-    def init_state_params(self):
+    def init_state_params(self, r_min, ac_max, v_max, a_accelerate, a_braking):
+        v_starter = self.starter.v
         return dict(
             p=self.starter.position,
             fi=self.starter.direction,
-            a_accelerate=BALANCE.Rocket.a_accelerate,  # todo: defoult settings injection
-            v_max=self.max_velocity,
-            ac_max=BALANCE.Rocket.ac_max,
-            a_braking=BALANCE.Rocket.a_braking,
-            v=self.starter.v,
-            cc=1.0,
+            a_accelerate=a_accelerate,
+            r_min=r_min,
+            v_max=v_max,
+            ac_max=ac_max,
+            a_braking=a_braking,
+            v=v_starter if v_starter > 1.0 else 0.0,
+            cc=0.0,
         )
 
     def on_contact_in(self, time, obj, **kw):
         #log.debug('Rocket Contacn IN')
-        #super(Rocket, self).on_contact_in(**kw)
+        super(Rocket, self).on_contact_in(time=time, obj=obj, **kw)
+        if self.hp <= 0:
+            return
         if obj is self.starter:
             return
-        # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у задетых машинок
-        if not isinstance(obj, Bot):  # чтобы ракеты не врезались друг в друга
+        if isinstance(obj, Rocket):  # чтобы ракеты не врезались друг в друга
             return
         log.debug('Rocket Contacn IN !!!!!!!!!!!!!!!')
+        # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у задетых машинок
         for agent in self.subscribed_agents:
             messages.Bang(
                 position=self.position,
@@ -72,3 +83,6 @@ class Rocket(Mobile):
             ).post()
 
         self.delete()
+
+    def on_die(self, event):
+        self.set_motion(cc=0.0)

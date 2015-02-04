@@ -118,7 +118,7 @@ class AgentAPI(API):
         if self.car.limbo:
             return
         # todo: ракета должна создаваться в unit
-        Rocket(starter=self.car, server=self.agent.server)
+        # Rocket(starter=self.car, server=self.agent.server)
 
     @public_method
     def set_motion(self, x, y, cc, turn):

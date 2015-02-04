@@ -21,6 +21,8 @@ var WCarMarker = (function (_super) {
 
         // todo: сделать доступ к иконнке через car.cls
         marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
+        if(car.cls == 'Rocket')
+            marker.setIcon(iconsLeaflet.getIcon('icon_rocket_V1'));
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
         if (car.owner || car == user.userCar) {
