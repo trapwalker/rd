@@ -15,7 +15,7 @@ def inc_name_number(name):
 class Party(object):
     parties = {}
 
-    def __init__(self, name=None):
+    def __init__(self, owner=None, name=None):
         if name is None:
             name = self.__class__.__name__
 
@@ -24,10 +24,13 @@ class Party(object):
         self.parties[name] = self
 
         self.name = name
-        self.members = []
+        self.owner = owner
+        self.members = []  # todo: may be set of agents?
         """@type list[agents.Agent]"""
-        self.invites = []
+        self.invites = []  # todo: may be set of agents?
         """@type list[agents.Agent]"""
+        if owner is not None:
+            self.include(owner)  # todo: may be async call?
 
     @classmethod
     def search(cls, name):
@@ -69,6 +72,11 @@ class Party(object):
         agent.party = self
         #agent.on_change_party(old=old_party)  todo: realize
 
+    def invite(self, user):
+        if user not in self.invites:
+            self.invites.append(user)
+            # todo: send invitation message
+
     def exclude(self, agent, silent=False):
         if agent.party is not self:
             return
@@ -84,6 +92,9 @@ class Party(object):
         return '<Party {self.name}/{n}>'.format(self=self, n=len(self))
 
     id = property(id)
+
+    def __contains__(self, agent):
+        return agent in self.members
 
 
 class PartyDispatcher(dict):

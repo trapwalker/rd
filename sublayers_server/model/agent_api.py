@@ -67,13 +67,35 @@ class AgentAPI(API):
         """
         # todo: autogenerate party name
         log.info('%s try to set or create party %s', self.agent.login, name)
-        party = Party.search_or_create(name)
-        party.include(self.agent)
+        if name is None:
+            if self.agent.party and self.agent.party.owner is not self.agent:
+                self.agent.party.exclude(self.agent)
+        else:
+            party = Party.search(name)
+            if party is None:
+                party = Party(owner=self.agent, name=name)
+            elif self.agent not in party:
+                party.include(self.agent)
+                # todo: проверка инвайтов, соответствующие исключения
         # todo: События на добавление/исключение в/из пати
 
     @public_method
     def send_invite(self, username):
         log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        user = self.agent.server.agents.get(username)
+        if user is None:
+            return  # todo: raise legal exception
+
+        party = self.agent.party
+        if party is not None:
+            if party.owner is not self.agent:
+                party.exclude(self.agent)  # todo: may be generate legal exception for explicit excluding
+                party = None
+
+        if party is None:
+            party = Party(owner=self.agent)
+
+        party.invite(user)
 
     @public_method
     def change_car(self):
