@@ -1,15 +1,33 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 from pymongo import Connection
 from image_to_tileset import MongoDBToTilesets
 from tileset import Tileset
 from tileid import Tileid
 from effects_zone import EffectRoad, EffectWater, EffectWood
 
+
+
 log = logging.getLogger(__name__)
 
 def init_zones_on_server(server):
+    def read_ts_from_file(file_name, server, effects):
+        zone = None
+        if os.path.exists(file_name):
+            if os.path.isfile(file_name):
+                zone = ZoneTileset(
+                    server=server,
+                    effects=effects,
+                    ts=Tileset(open(file_name)),
+                )
+        if zone:
+            server.zones.append(zone)
+            log.info('Successful read zone from file: %s', file_name)
+        else:
+            log.info('Failed read zone from file: %s', file_name)
+
     # todo: считывать формат загрузки из конфигурационного файла
     """
     # Считывание из Mongo
@@ -20,21 +38,11 @@ def init_zones_on_server(server):
     """
     # Считывание из файлов
     log.info("Read zones tileset from files.")
-    server.zones.append(ZoneTileset(
-        server=server,
-        effects=[EffectWood],
-        ts=Tileset(open('d:/ts_wood')),
-    ))
-    server.zones.append(ZoneTileset(
-        server=server,
-        effects=[EffectWater],
-        ts=Tileset(open('d:/ts_water')),
-    ))
-    server.zones.append(ZoneTileset(
-        server=server,
-        effects=[EffectRoad],
-        ts=Tileset(open('d:/ts_road')),
-    ))
+
+    read_ts_from_file(file_name='./tilesets/ts_wood', server=server, effects=[EffectWood])
+    read_ts_from_file(file_name='./tilesets/ts_water', server=server, effects=[EffectWater])
+    read_ts_from_file(file_name='./tilesets/ts_road', server=server, effects=[EffectRoad])
+
     log.info("Zones ready!")
 
 
