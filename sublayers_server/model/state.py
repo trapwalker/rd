@@ -132,6 +132,7 @@ class State(BaseState):
         self.t_max = None
         self.target_point = None
         self.update(cc=cc, turn=turn)
+        self.u_cc = None  # пользовательский СС
 
     def _get_turn_sign(self, target_point):
         assert target_point is not None
