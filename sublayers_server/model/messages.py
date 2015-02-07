@@ -129,7 +129,17 @@ class Update(Message):
 
     def as_dict(self):
         d = super(Update, self).as_dict()
-        d.update(object=self.obj.as_dict())
+        # d.update(object=self.obj.as_dict())
+        obj = self.obj
+        dict_update = dict(
+            uid=obj.uid,
+            state=obj.state.export(),
+            hp_state=obj.hp_state.export()
+        )
+        if self.agent == obj.agent:
+            if obj.cur_motion_task is not None:
+                dict_update.update(target_point=obj.cur_motion_task.target_point)
+        d.update(object=dict_update)
         return d
 
 

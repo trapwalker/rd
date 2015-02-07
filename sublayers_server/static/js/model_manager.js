@@ -202,7 +202,6 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Update');
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
-        var owner = this._getOwner(event.object);
 
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
@@ -216,6 +215,11 @@ var ClientManager = (function () {
 
         car.setState(motion_state);
         car.setHPState(hp_state);
+
+        // если своя машинка, то считать таргет поинт и активировать виджет таргет_поинта
+        if (car == user.userCar){
+            console.log('Update: Target Point is:', event.object.target_point)
+        }
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
 
         if (cookieStorage.enableMarkerUpdate()) {
