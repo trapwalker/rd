@@ -219,6 +219,9 @@ var MapManager = (function(_super){
         // добавление в визуалменеджер для своих виджетов (зум виджет например)
         this.addToVisualManager();
         //this._init();
+
+        // Виджеты карты: виджеты-синглеты, находятся на карте, хранятся здесь для быстрого доступа
+        this.widget_target_point = null; // инициализируется при получении своей машинки
     }
 
     MapManager.prototype._init = function () {

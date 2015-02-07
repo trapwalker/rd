@@ -11,9 +11,9 @@ var WMapPosition = (function (_super) {
         this.change(clock.getCurrentTime())
     }
 
-    WMapPosition.prototype.change = function(time){
+    WMapPosition.prototype.change = function(t){
         //console.log('WMapPosition.prototype.change');
-        time = clock.getCurrentTime();
+        var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         //map.panTo(tempLatLng, {animate: false});

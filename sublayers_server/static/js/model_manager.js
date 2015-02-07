@@ -181,6 +181,7 @@ var ClientManager = (function () {
             new WHPSlider(mcar);     // виджет HP
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
+            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
 
 
 
@@ -207,7 +208,7 @@ var ClientManager = (function () {
         var car = visualManager.getModelObject(uid);
 
         if (!car) {
-            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка!');
+            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка! uid=', uid);
             return;
         }
 
@@ -218,7 +219,12 @@ var ClientManager = (function () {
 
         // если своя машинка, то считать таргет поинт и активировать виджет таргет_поинта
         if (car == user.userCar){
-            console.log('Update: Target Point is:', event.object.target_point)
+            var tp = event.object.target_point;
+            if(tp != undefined && tp != null)
+                mapManager.widget_target_point.activate(tp);
+            else
+                mapManager.widget_target_point.deactivate();
+
         }
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
 
