@@ -183,6 +183,7 @@ var ClientManager = (function () {
             new WFireSectors(mcar, fireSectors);  // виджет секторов
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             new WFlashlightController(mcar); // виджет-контроллер вспышек
+            new WRumble(mcar); // виджет-тряски
 
 
 

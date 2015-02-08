@@ -226,6 +226,7 @@ class Bang(Subjective):
                  end_duration=self.end_duration)
         return d
 
+
 class FireDischarge(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] side={self.side}>'
     def __init__(self, side, t_rch, **kw):
@@ -243,3 +244,6 @@ class FireDischarge(Message):
             t_rch=self.t_rch,
         )
         return d
+
+
+
