@@ -132,8 +132,18 @@ function onKeyDownMap(event) {
             }
             break;
         case 32:
-            clientManager.sendRocket();
+            //clientManager.sendRocket();
             //new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+            var coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            for(var i = 0; i < 50; i++){
+                var r_x = Math.random() * 100 - 50.;
+                var r_y = Math.random() * 100 - 50.;
+                //var r = Math.random() * 6;
+                var r = 4;
+                var delay = Math.random() * 10; // задержка в секндах
+                var flash = new EFlashLight(new Point(coord.x + r_x, coord.y + r_y), r);
+                timeManager.addTimeoutEvent(flash, 'start', delay * 1000);
+            }
             break;
         case 84: // T // Crazy Click Timer
             if (crazy_timer){
