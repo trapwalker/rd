@@ -67,7 +67,6 @@ var EFlashLight = (function(){
         }
     };
 
-
     EFlashLight.prototype.finish = function(){
         map.removeLayer(this.marker)
     };

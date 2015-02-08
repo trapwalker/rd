@@ -182,6 +182,7 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            new WFlashlightController(mcar); // виджет-контроллер вспышек
 
 
 
@@ -291,6 +292,7 @@ var ClientManager = (function () {
 
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
+            new WFlashlightController(car); // виджет-контроллер вспышек
 
 
             /*
