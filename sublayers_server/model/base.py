@@ -6,7 +6,9 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from inventory import Inventory
 import messages
-from events import ContactSee, ContactOut, Init, Delete, Event, SearchContacts
+from events import ContactSee, ContactOut, Init, Delete, SearchContacts
+from parameters import Parameter
+from balance import BALANCE
 
 from abc import ABCMeta
 from counterset import CounterSet
@@ -178,8 +180,9 @@ class Heap(VisibleObject):
 
 class Observer(VisibleObject):
 
-    def __init__(self, observing_range=0.0, **kw):
+    def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
         self._r = observing_range
+        self.p_r = Parameter(original=observing_range)
         super(Observer, self).__init__(**kw)
         self.watched_agents = CounterSet()
         self.visible_objects = []

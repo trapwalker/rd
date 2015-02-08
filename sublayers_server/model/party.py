@@ -138,9 +138,7 @@ class Role(object):
         params.update(self.car_params)
         if override_params:
             params.update(override_params)
-
         cls = params.pop('cls')
-
         car = cls(
             server=agent.server,
             owner=agent,

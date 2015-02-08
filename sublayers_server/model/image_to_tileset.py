@@ -85,13 +85,6 @@ def TilesetToImage(tileset, file_name, fillcolor=None, pencolor=None):
 
 
 def TilesetToMongoDB(tileset, collection, color, ts_name):
-    u"""
-    color: для отрисовки в эдиторе. Используется:
-        #555555 - дороги
-        #00FF00 - леса
-        #0000FF - вода
-    """
-
     count = 0
     for leaf in tileset.iter_leafs():
         if leaf[1] == 1:
@@ -125,20 +118,32 @@ def MongoDBToTilesets(collection):
 
 
 if __name__ == '__main__':
-    '''
-    ts = ImageToTileset(directory=r'C:/_tiles/scrub', zoom=12,
-                        x_start=759, y_start=1645, x_finish=767, y_finish=1653,
+    ts = ImageToTileset(directory=r'C:/_tiles_test', zoom=11,
+                        x_start=1173, y_start=652, x_finish=1189, y_finish=666,
                         color=(0, 0, 0))
     #ts = Tileset(open('d:/ts_wood_11'))
     print ts.level
-    ts.save(open('d:/ts_scrub_12', 'w'))
+    ts.save(open('d:/ts_wood_11', 'w'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
     '''
     db_connection = Connection()
     db = db_connection.maindb
-    ts = Tileset(open('d:/ts_road_12'))
-    print TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road')
-    ts = Tileset(open('d:/ts_water_12'))
-    print TilesetToMongoDB(ts, db.tile_sets, '#0000FF', 'water')
-    ts = Tileset(open('d:/ts_wood_12'))
-    print TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood')
+
+    #print TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road')
+    ts = MongoDBToTilesets(db.tile_sets)
+
+    print ts['wood'].level
+    print ts.keys()
+
+    #ts.save(open('d:/ts_wood2_11', 'w'))
+
+    #for e in db.tile_sets.find():
+    #    print e
+    '''
+
+
+    '''
+    ts = Tileset(open('d:/ts'))
+    print ts.level
+    TilesetToImage(ts, r"d:/temp_image4.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
+    '''

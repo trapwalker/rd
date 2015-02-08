@@ -11,17 +11,27 @@ class BalanceSettingsABS:
 class BALANCE(BalanceSettingsABS):
     """Gameplay balancing settings"""
 
-    class Unit(BalanceSettingsABS):
+    class Observer(BalanceSettingsABS):
+        observing_range = 1000.0
+
+    class Unit(Observer):
         defence = 1.0
+        max_hp = 100.0
+        direction = -pi/2
 
     class Station(Unit):
-        observing_range = 5000.0
         max_hp = 1000.0
 
-    class Bot(Unit):
-        observing_range = 5000.0
+    class Mobile(Unit):
+        r_min = 10
+        ac_max = 10.0
+        v_max = 30.0
+        a_accelerate = 4.0
+        a_braking = -8.0
+        max_control_speed = 30.0  # max_control_speed <= v_max
+
+    class Bot(Mobile):
         velocity = 100.0  # m/s
-        max_hp = 100.0
 
         @staticmethod
         def rv_relation(v):
@@ -61,16 +71,17 @@ class BALANCE(BalanceSettingsABS):
         width = pi / 2
         time_recharge = 6
 
-    class Rocket:
-        observing_range = 100.0 # очень небольшой радиус. думаю от 100 до 300 должен быть
+    class Rocket(Mobile):
+        observing_range = 100.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
         max_hp = 10.0
         life_time = 6.0  # s  (время полёта ракеты до заканчивания её топлива)
-        a_accelerate = 200  # ускорение ракеты
+        a_accelerate = 100.0  # ускорение ракеты
         a_braking = -50.0   # торможение ракеты ... будто она упала на землю
-        velocity = 300.0         # максимальная скорость ракеты
-        ac_max = 10.0         # на будущее
+        v_max = 200.0         # максимальная скорость ракеты
+        ac_max = 1000.0         # на будущее
+        max_control_speed = 200.0
 
     class RocketBang:
-        duration = 2000 # ms задавать в милисекундах - время расплывания круга
-        end_duration = 1000  #ms    длдительность затухания круга
+        duration = 2000  # ms задавать в милисекундах - время расплывания круга
+        end_duration = 1000  # ms длдительность затухания круга
         bang_power = 50  # px - радиус взрыва в пикселях на экране... сейчас не засисит от зума

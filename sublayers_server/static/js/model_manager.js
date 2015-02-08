@@ -181,6 +181,9 @@ var ClientManager = (function () {
             new WHPSlider(mcar);     // виджет HP
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
+            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            new WFlashlightController(mcar); // виджет-контроллер вспышек
+            new WRumble(mcar); // виджет-тряски
 
 
 
@@ -202,13 +205,12 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Update');
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
-        var owner = this._getOwner(event.object);
 
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
 
         if (!car) {
-            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка!');
+            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка! uid=', uid);
             return;
         }
 
@@ -216,21 +218,30 @@ var ClientManager = (function () {
 
         car.setState(motion_state);
         car.setHPState(hp_state);
+
+        // если своя машинка, то считать таргет поинт и активировать виджет таргет_поинта
+        if (car == user.userCar){
+            var tp = event.object.target_point;
+            if(tp != undefined && tp != null)
+                mapManager.widget_target_point.activate(tp);
+            else
+                mapManager.widget_target_point.deactivate();
+
+        }
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        /*
+
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
                     .setRadius(3)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
-                        'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'comment: ' + event.comment + '</br>'
                 )
                     .addTo(myMap)
             );
-
+            /*
             if (event.object.state.c)
                 debugMapList.push(
                     L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
@@ -243,8 +254,8 @@ var ClientManager = (function () {
                     )
                         .addTo(myMap)
                 );
+             */
         }
-        */
 
     };
 
@@ -277,10 +288,12 @@ var ClientManager = (function () {
             car.cls = event.object.cls;
 
             // todo: обсудить работу с овнерами
-            aOwner.bindCar(car);
+            if (aOwner)
+                aOwner.bindCar(car);
 
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
+            new WFlashlightController(car); // виджет-контроллер вспышек
 
 
             /*
@@ -316,7 +329,6 @@ var ClientManager = (function () {
                     .setRadius(8)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
-                        'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'subject_id: ' + event.subject_id + '</br>'
                 )
@@ -352,6 +364,9 @@ var ClientManager = (function () {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
+            if (car.owner)
+                car.owner.unbindCar(car);
+
             var list_vo = visualManager.getVobjsByMobj(car);
             for(var i = 0; i< list_vo.length; i++)
                 list_vo[i].delFromVisualManager();

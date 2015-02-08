@@ -28,7 +28,8 @@ def assert_time_in_state(f):
 
 class BaseState(object):
 
-    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, r_min=10.0, ac_max=10.0, c = None, turn = 0.0, sp_m = 0.0, sp_fi0 = 0.0, rv_fi = 0.0):
+    def __init__(self, t, p, fi=0.0, v=0.0, a=0.0, r_min=10.0, ac_max=10.0, c=None, turn=0.0, sp_m=0.0, sp_fi0=0.0,
+                 rv_fi=0.0):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
@@ -121,9 +122,8 @@ class State(BaseState):
     ):
         assert (v_max > 0) and (v <= v_max)
         assert (a_accelerate > 0) and (a_braking < 0)
-
         self.owner = owner
-        super(State, self).__init__(t, p, fi, v, r_min, ac_max)
+        super(State, self).__init__(t=t, p=p, fi=fi, v=v, r_min=r_min, ac_max=ac_max)
         self.v_max = v_max
         assert (a_accelerate < 0.5 * self.ac_max)
         self.a_accelerate = a_accelerate
@@ -132,6 +132,7 @@ class State(BaseState):
         self.t_max = None
         self.target_point = None
         self.update(cc=cc, turn=turn)
+        self.u_cc = None  # пользовательский СС
 
     def _get_turn_sign(self, target_point):
         assert target_point is not None

@@ -5,11 +5,15 @@
 
 
 //Путь к карте на сервере
-var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+//var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
+var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
 //Путь к карте в локальном каталоге
 var ConstMapPathLocal = '';
+
+//Максимальный и минимальный зумы карты
+var ConstMaxMapZoom = 18;
+var ConstMinMapZoom = 0;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -34,14 +38,16 @@ function onMouseUpMap(mouseEventObject) {
     //if (radialMenu.isHide && myMap._mouseDowned) {
     //    if (user.userCar)
         //clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
-            clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+            clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    //console.log(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+
     //} else {
         // было вызвано меню, значит нужно обработать выход из меню и спрятать его
         //radialMenu.hideMenu(true);
         //userCarMarker.sectorsView.setSelectedToNormalState();
     //}
     // фолсим флаг нажатия
-    myMap._mouseDowned = false;
+    map._mouseDowned = false;
 }
 
 function onMouseMoveMap(mouseEventObject) {
@@ -127,7 +133,17 @@ function onKeyDownMap(event) {
             break;
         case 32:
             //clientManager.sendRocket();
-            new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+            //new Bang(user.userCar.getCurrentCoord(clock.getCurrentTime())).start();
+            var coord = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            for(var i = 0; i < 50; i++){
+                var r_x = Math.random() * 100 - 50.;
+                var r_y = Math.random() * 100 - 50.;
+                //var r = Math.random() * 6;
+                var r = 4;
+                var delay = Math.random() * 10; // задержка в секндах
+                var flash = new EFlashLight(new Point(coord.x + r_x, coord.y + r_y), r);
+                timeManager.addTimeoutEvent(flash, 'start', delay * 1000);
+            }
             break;
         case 84: // T // Crazy Click Timer
             if (crazy_timer){
@@ -213,6 +229,9 @@ var MapManager = (function(_super){
         // добавление в визуалменеджер для своих виджетов (зум виджет например)
         this.addToVisualManager();
         //this._init();
+
+        // Виджеты карты: виджеты-синглеты, находятся на карте, хранятся здесь для быстрого доступа
+        this.widget_target_point = null; // инициализируется при получении своей машинки
     }
 
     MapManager.prototype._init = function () {
@@ -223,8 +242,8 @@ var MapManager = (function(_super){
 
         map = L.map('map',
             {
-                minZoom: 3,
-                maxZoom: 7,
+                minZoom: ConstMinMapZoom,
+                maxZoom: ConstMaxMapZoom,
                 zoomControl: false,
                 attributionControl: false,
                 scrollWheelZoom: "center",
@@ -246,9 +265,9 @@ var MapManager = (function(_super){
 
         // Обработчики событий карты
         pressedKey = false;
-        //map.on('click', onMouseClickMap);
-        map.on('mousedown', onMouseDownMap);
-        map.on('mouseup', onMouseUpMap);
+        map.on('click', onMouseUpMap);
+        //map.on('mousedown', onMouseDownMap);
+        //map.on('mouseup', onMouseUpMap);
         map.on('mousemove', onMouseMoveMap);
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
@@ -265,7 +284,7 @@ var MapManager = (function(_super){
         //console.log('MapManager.prototype.createTileLayer');
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
-                maxZoom: 7,
+                maxZoom: ConstMaxMapZoom,
                 continuousWorld: true,
                 opacity: 0.5,
                 storage: storage});
@@ -274,7 +293,7 @@ var MapManager = (function(_super){
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
                 opacity: 0.5,
-                maxZoom: 7});
+                maxZoom: ConstMaxMapZoom});
         }
         if(cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);
