@@ -180,6 +180,7 @@ function onKeyDownMap(event) {
             break;
         case 90:  // Z
             //clientManager.Die();
+            //mapManager.widget_fire_radial_grid.test();
             break;
     }
 }
@@ -232,6 +233,7 @@ var MapManager = (function(_super){
 
         // Виджеты карты: виджеты-синглеты, находятся на карте, хранятся здесь для быстрого доступа
         this.widget_target_point = null; // инициализируется при получении своей машинки
+        this.widget_fire_radial_grid = null; // инициализируется при получении своей машинки
     }
 
     MapManager.prototype._init = function () {

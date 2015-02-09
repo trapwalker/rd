@@ -184,6 +184,7 @@ var ClientManager = (function () {
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             new WFlashlightController(mcar); // виджет-контроллер вспышек
             new WRumble(mcar); // виджет-тряски
+            //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
 
 
 
