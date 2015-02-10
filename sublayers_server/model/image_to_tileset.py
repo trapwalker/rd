@@ -4,7 +4,6 @@
 from tileset import Tileset
 from tileid import Tileid
 from tileid2 import Tileid2
-from pymongo import Connection
 
 
 
@@ -126,6 +125,7 @@ if __name__ == '__main__':
     ts.save(open('d:/ts_wood_11', 'w'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
     '''
+    from pymongo import Connection
     db_connection = Connection()
     db = db_connection.maindb
 

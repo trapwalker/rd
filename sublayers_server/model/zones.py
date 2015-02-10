@@ -2,7 +2,6 @@
 
 import logging
 import os
-from pymongo import Connection
 from image_to_tileset import MongoDBToTilesets
 from tileset import Tileset
 from tileid import Tileid
@@ -32,6 +31,7 @@ def init_zones_on_server(server):
     """
     # Считывание из Mongo
     log.info("Read zones tileset from Mongo.")
+    from pymongo import Connection
     self.db_connection = Connection()
     self.db_collections = self.db_connection.maindb
     self.tss = MongoDBToTilesets(self.db_collections.tile_sets)
