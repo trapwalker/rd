@@ -54,9 +54,16 @@ class Party(object):
         if old_party:
             old_party.exclude(agent, silent=True)
 
-        log.info('Agent %s including to %s. Cars=%s', agent, self, agent.cars)
-        '''
+        self.on_include(agent)
+        self.members.append(agent)
+        agent.party = self
+        log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
+        #agent.on_change_party(old=old_party)  todo: realize
+
+    def on_include(self, agent):
         # todo: fix it
+        if len(self.members) == 0:
+            return
         old_agent_observers = agent.observers[:]
         old_member_observers = self.members[0].observers[:]
 
@@ -66,11 +73,9 @@ class Party(object):
         for a in self.members:
             for o in old_agent_observers:
                 a.add_observer(o)
-        #'''
 
-        self.members.append(agent)
-        agent.party = self
-        #agent.on_change_party(old=old_party)  todo: realize
+    def on_exclude(self, agent):
+        pass
 
     def invite(self, user):
         if user not in self.invites:
@@ -79,11 +84,14 @@ class Party(object):
 
     def exclude(self, agent, silent=False):
         if agent.party is not self:
+            log.warning('Trying to exclude unaffilated agent (%s) from party %s', agent, self)
             return
 
         agent.party = None
         self.members.remove(agent)
-        #if not silent: agent.on_change_party(self)  todo: realize
+        self.on_exclude(agent)
+        log.info('Agent %s excluded from party %s', agent, self)
+        #if not silent: agent.on_change_party(self)  # todo: realize
 
     def __len__(self):
         return len(self.members)
