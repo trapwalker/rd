@@ -216,8 +216,6 @@ function TileLaterSet() {
         map.removeLayer(mapManager.tileLayer);
 }
 
-
-
 var MapManager = (function(_super){
     __extends(MapManager, _super);
 
@@ -340,9 +338,6 @@ var MapManager = (function(_super){
 
     return MapManager;
 })(ClientObject);
-
-
-
 
 var map;
 var mapManager = new MapManager();

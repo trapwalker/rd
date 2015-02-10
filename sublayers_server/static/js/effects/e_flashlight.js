@@ -1,4 +1,4 @@
-var ConstDurationScale = 50;   // Длительность расширения вспышки, ms
+var ConstDurationScale = 50;    // Длительность расширения вспышки, ms
 var ConstDurationHiding = 100;  // Длительность затухания вспышки, ms
 var ConstDurationShow = 50;     // Время замирания вспышки после расширения, ms
 var ConstMinRadius = 0.2;       // Относительный радиус ядра вспышки (должен быть меньше 1)

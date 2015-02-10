@@ -41,7 +41,8 @@ var ClientManager = (function () {
                 data.t0,
                 data.max_hp,
                 data.hp0,
-                data.dps
+                data.dps,
+                data.dhp
             );
         return null;
     };
@@ -135,7 +136,6 @@ var ClientManager = (function () {
 
     };
 
-
     // Входящие сообщения
 
     // Входящий от сервера Init для машинки
@@ -182,12 +182,9 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             new WFlashlightController(mcar); // виджет-контроллер вспышек
-            new WRumble(mcar); // виджет-тряски
             //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
-
-
-
 
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
@@ -215,22 +212,25 @@ var ClientManager = (function () {
             return;
         }
 
-        // обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
-
+        // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
 
-        // если своя машинка, то считать таргет поинт и активировать виджет таргет_поинта
-        if (car == user.userCar){
+        // Если своя машинка
+        if (car == user.userCar) {
+            // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
-            if(tp != undefined && tp != null)
+            if (tp != undefined && tp != null)
                 mapManager.widget_target_point.activate(tp);
             else
                 mapManager.widget_target_point.deactivate();
 
+            // При попадании залповым орудием включить эффект тряски
+            if (hp_state.dhp)
+                mapManager.widget_rumble.startDischargeRumble();
         }
-        // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
 
+        // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
@@ -243,18 +243,18 @@ var ClientManager = (function () {
                     .addTo(myMap)
             );
             /*
-            if (event.object.state.c)
-                debugMapList.push(
-                    L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
-                        .setRadius(6)
-                        .bindPopup(
-                            'Тип сообщения: ' + event.cls + '</br>' +
-                            'Server-Time: ' + servtime / 1000. + '</br>' +
-                            'uid объекта: ' + event.object.uid + '</br>' +
-                            'comment: ' + event.comment + '</br>'
-                    )
-                        .addTo(myMap)
-                );
+             if (event.object.state.c)
+             debugMapList.push(
+             L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
+             .setRadius(6)
+             .bindPopup(
+             'Тип сообщения: ' + event.cls + '</br>' +
+             'Server-Time: ' + servtime / 1000. + '</br>' +
+             'uid объекта: ' + event.object.uid + '</br>' +
+             'comment: ' + event.comment + '</br>'
+             )
+             .addTo(myMap)
+             );
              */
         }
 
