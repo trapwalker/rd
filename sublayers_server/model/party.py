@@ -75,7 +75,18 @@ class Party(object):
                 a.add_observer(o)
 
     def on_exclude(self, agent):
-        pass
+        # todo: fix it
+        if len(self.members) == 0:
+            return
+        old_agent_observers = agent.observers[:]
+        old_member_observers = self.members[0].observers[:]
+
+        for o in old_member_observers:
+            agent.drop_observer(o)
+
+        for a in self.members:
+            for obs in old_agent_observers:
+                a.drop_observer(obs)
 
     def invite(self, user):
         if user not in self.invites:
