@@ -67,17 +67,38 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getWeapons = function (data) {
+        var weapons = [];
+        data.forEach(function (weapon, index) {
+            this.weapons.push(new Weapon({
+                cls: weapon.cls,
+                dps: weapon.dps ? weapon.dps : 0,
+                dmg: weapon.dmg ? weapon.dmg : 0,
+                recharge: weapon.time_recharge ? weapon.time_recharge : 0,
+                radius: weapon.radius,
+                width: weapon.width
+            }));
+        }, {weapons: weapons});
+        return weapons;
+    };
+
     ClientManager.prototype._getSectors = function (data) {
         var sectors = [];
+        var self = this;
         data.forEach(function (sector, index) {
-            this.sectors.push({
-                fi: sector.fi,
-                radius: sector.radius,
-                side: sector.side,
+            var weapons = self._getWeapons(sector.weapons);
+            var fs = new FireSector({
                 width: sector.width,
-                is_auto: sector.weapons[0].cls == "WeaponAuto"
+                radius: sector.radius,
+                direction: sector.fi
             });
-        }, {sectors: sectors});
+            for(var i = 0; i < weapons.length; i++)
+                fs.addWeapon(weapons[i]);
+            this.sectors.push({
+                sector: fs,
+                side: sector.side
+            });
+        }, {sectors: sectors, self: self});
         return sectors;
     };
 
@@ -168,6 +189,8 @@ var ClientManager = (function () {
                 state,
                 hp_state
             );
+            for (var i = 0; i < fireSectors.length; i++)
+                mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
 
             user.userCar = mcar;
 
@@ -180,7 +203,7 @@ var ClientManager = (function () {
             new WSpeedSlider(mcar);  // виджет круиз контроля
             new WHPSlider(mcar);     // виджет HP
             // todo: сделать также зависимось от бортов
-            new WFireSectors(mcar, fireSectors);  // виджет секторов
+            //new WFireSectors(mcar, fireSectors);  // виджет секторов
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             new WFlashlightController(mcar); // виджет-контроллер вспышек
@@ -309,7 +332,6 @@ var ClientManager = (function () {
                     //    car.track.speedV = new Point(0, 0);
 
                 } else { // Если такая машинка уже есть, то установить все переменные
-                    //listMapObject.setCarHP(uid, aHP);
                     //listMapObject.setState(uid, aState);
                 }
                 // После добавления машинки или её апдейта, проверяем сколько у неё хп
@@ -450,7 +472,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGoto = function (target) {
-        //console.log('sendGoto', user.userCar.getLastSpeed());
+        //console.log('ClientManager.prototype.sendGoto', user.userCar.getLastSpeed());
         this.sendMotion(target, user.userCar.getLastSpeed(), null);
     };
 

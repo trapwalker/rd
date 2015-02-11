@@ -10,43 +10,23 @@ var ListMapObject = (function () {
         this.objects = [];
     }
 
-
     ListMapObject.prototype.add = function (aObject) {
         this.objects[aObject.ID] = aObject;
     };
-
 
     ListMapObject.prototype.del = function (aID) {
         delete this.objects[aID];
     };
 
-
     ListMapObject.prototype.exist = function (aID) {
         return this.objects[aID] != null
     };
-
-
-    ListMapObject.prototype.setCarHP = function (aID, aHP) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
-            this.objects[aID].hp = aHP;
-        }
-    };
-
-
-    ListMapObject.prototype.getCarHP = function (aID) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("hp"))) {
-            return this.objects[aID].hp;
-        }
-        return null;
-    };
-
 
     ListMapObject.prototype.setState = function (aID, aState) {
         if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("state"))) {
             this.objects[aID].state = aState;
         }
     };
-
 
     return ListMapObject;
 })();
@@ -125,7 +105,7 @@ var DynamicObject = (function (_super) {
         return this._hp_state.hp(time);
     };
 
-    DynamicObject.prototype.change = function(time){
+    DynamicObject.prototype.change = function(){
         visualManager.changeModelObject(this);
         // todo: Сделать оптимизацию: расчёты p(t), fi(t), v(t) проводить здесь.
         // а по тем методам отдавать данные расчитанные здесь!
@@ -169,43 +149,95 @@ var MapCar = (function (_super) {
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
-
     function UserCar(aID, aMaxSpeed, aState, aHPState) {
         _super.call(this, aID, aState, aHPState);
         this.maxSpeed = aMaxSpeed;
         this._lastSpeed = 0.75 * aMaxSpeed;
+        this.fireSidesMng = new FireSideMng();
     }
-
-    UserCar.prototype.getGround = function () {
-        // todo: правильно обработать тип местности
-        return null;
-    };
 
     UserCar.prototype.setLastSpeed = function (speed) {
         this._lastSpeed = speed;
     };
 
-
     UserCar.prototype.getLastSpeed = function () {
         return this._lastSpeed;
     };
-
-
 
     return UserCar;
 })(MapCar);
 
 
-var FireSector = (function () {
-    function FireSector(aDirectionAngle, aWidthAngle, aRadius, aUid, aRecharge) {
-        this.directionAngle = aDirectionAngle;
-        this.widthAngle = aWidthAngle;
-        this.radius = aRadius;
-        this.uid = aUid;
-        this.recharge = aRecharge;
+var FireSideMng = (function () {
+    function FireSideMng() {
+        this.sides = {
+            front: new FireSide(),
+            back: new FireSide(),
+            left: new FireSide(),
+            right: new FireSide()
+        }
     }
 
+    FireSideMng.prototype.addSector = function (aFireSector, aSide) {
+        if (aSide in this.sides)
+            this.sides[aSide].addSector(aFireSector)
+    };
+
+    return FireSideMng;
+})();
+
+
+var FireSide = (function () {
+    function FireSide() {
+        this.sectors = [];
+        this.sideRadius = 0;
+        this.sideWidth = 0;
+        this.sideRecharge = 0;
+    }
+
+    FireSide.prototype.addSector = function (aFireSector) {
+        this.sectors.push(aFireSector);
+        this.sideRadius = Math.max(this.sideRadius, aFireSector.radius);
+        this.sideWidth = Math.max(this.sideWidth, aFireSector.width);
+        this.sideRecharge = Math.max(this.sideRecharge, aFireSector.recharge);
+    };
+
+    return FireSide;
+})();
+
+
+var FireSector = (function () {
+    function FireSector(options) {
+        this.weapons = [];
+        this.width = 0;
+        this.radius = 0;
+        this.direction = 0;
+        this.uid = 0;
+        if (options) setOptions(options, this);
+        this.recharge = 0;
+    }
+
+    FireSector.prototype.addWeapon = function (aWeapon) {
+        this.weapons.push(aWeapon);
+        this.recharge = Math.max(this.recharge, aWeapon.recharge);
+    };
+
     return FireSector;
+})();
+
+
+var Weapon = (function () {
+    function Weapon(options) {
+        this.cls = "WeaponDischarge";
+        this.dmg = 0;
+        this.dps = 0;
+        this.recharge = 0;
+        this.radius = 0;
+        this.width = 0;
+        if (options) setOptions(options, this);
+    }
+
+    return Weapon;
 })();
 
 
