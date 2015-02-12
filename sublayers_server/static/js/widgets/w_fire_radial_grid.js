@@ -17,11 +17,21 @@ var WFireRadialGrid = (function (_super) {
     }
 
     WFireRadialGrid.prototype.init_marker = function(t){
+        var max_circles = 6; // todo: сделать зависимость от зума
         var time = clock.getCurrentTime();
+        var pi = Math.PI;
+        var i = 0; // тут будет много циклов
         var position = this.car.getCurrentCoord(time);
-        var size = 200; // радиус квадрата (ДАДА!!!!)
+        var sides = this.car.fireSidesMng.sides;
+        // todo: сделать зависимость от зума
+        var max_radius = Math.max(
+            sides.front.sideRadius,
+            sides.back.sideRadius,
+            sides.left.sideRadius,
+            sides.right.sideRadius);
+        var size = max_radius + 50; // радиус квадрата (ДАДА!!!!)
         this.size_of_icon = size;
-        var max_radius = 180;
+
         this.div_id = 'WFireRadialGrid' + (-generator_ID.getID());
         var myIcon = L.divIcon({
             className: 'my-effect-icon',
@@ -40,11 +50,12 @@ var WFireRadialGrid = (function (_super) {
         // попытка вставить всё в группу
         var g = draw.group();
 
-        var rect_of_size = g.rect(2 * size, 2 * size)
-            .fill('transparent')
-            .stroke({width: 8, color: '#a00'});
+        //var rect_of_size = g.rect(2 * size, 2 * size)
+        //    .fill('transparent')
+        //    .stroke({width: 8, color: '#a00'});
 
-        //var circle = draw.polygon([[0, 0], [50, 0], [0, 50]])
+
+        /*
         var circle = g.circle(0);
             circle.radius(max_radius)
                 .center(size, size)
@@ -52,10 +63,52 @@ var WFireRadialGrid = (function (_super) {
                 .stroke({width: 2, color: '#5f5'});
         //.opacity(0.3);
         //circle.center(size, size)
+        */
 
-        this.big_circle = circle;
+        //g.line(0,0, size, size).stroke({width: 4, color: '#a00'});
 
-        g.line(0,0, size, size).stroke({width: 4, color: '#a00'});
+        // Добавление кружочков, уменьшая радиус
+        for (i = 1; i <= max_circles; i++)
+            g.circle(0).radius(max_radius * i / max_circles)
+                .center(size, size)
+                .fill('transparent')
+                .stroke({width: 1, color: '#5f5', opacity: 0.4});
+
+        // добавление 45 градусных линий-отметок
+        console.log(max_radius, max_circles, pi);
+        var p1 = new Point(max_radius, 0);
+        var p2 = new Point(max_radius - max_radius / max_circles, 0);
+        //var p2 = new Point(0, 0);
+        console.log(p1, p2);
+        var line_grad_1 = g.gradient('linear', function(stop) {
+            stop.at({ offset: 0, color: '#0f0' , opacity: 0.0});
+            stop.at({ offset: 1, color: '#0f0' , opacity: 0.7});
+        });
+
+        for (i = 0; i < 4; i++)
+            g.line(p1.x, p1.y, p2.x + 0.1, p2.y + 0.1)
+                .stroke({
+                    width: 1,
+                    color: line_grad_1
+                })
+                .dmove(size, size)
+                .transform({rotation: 45 + i * 90, cx: size, cy: size});
+
+
+        // Добавление радиальных точек
+        var point_radius = 2;
+        for (i = 1; i <= max_circles; i++)
+            for (var y = 0; y < 4; y++)
+                g.circle(0).radius(point_radius)
+                    .stroke({
+                        width: 0
+                    }).
+                    fill({color: '#0f0', opacity: 1.0})
+                    .dmove(size + max_radius * i / max_circles, size)
+                    .transform({rotation: y * 90, cx: size, cy: size});
+
+
+
         this.g = g;
     };
 
@@ -72,6 +125,8 @@ var WFireRadialGrid = (function (_super) {
         // Установка новых координат маркера);
         this.marker.setLatLng(tempLatLng);
         this.rotate(radToGrad(angle));
+        // запрос и установка перезарядки для каждой из сторон
+
 
     };
 
