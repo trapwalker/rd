@@ -183,6 +183,28 @@ var FireSideMng = (function () {
             this.sides[aSide].addSector(aFireSector)
     };
 
+    FireSideMng.prototype.getSectors = function (filterSides, isDischarge) {
+        // filterSides = строка перечисления бортов, которые нужно отправить, например: 'front, back, right, left'
+        // isDischarge = true - для залповых секторов, false для автоматических
+
+        var res = [];
+        if (filterSides == "" || filterSides == null)
+            filterSides = ["front", "back", "right", "left"];
+
+        for(var i = 0; i < filterSides.length; i++)
+            res = res.concat(this.sides[filterSides[i]].getSectorsByType(isDischarge));
+
+        return res;
+    };
+
+    FireSideMng.prototype.getAllSectors = function () {
+        // filterSides = строка перечисления бортов, которые нужно отправить, например: 'front, back, right, left'
+        // isDischarge = true - для залповых секторов, false для автоматических
+        var res = [];
+        return res.concat(this.getSectors('', true), this.getSectors('', false));
+    };
+
+
     return FireSideMng;
 })();
 
@@ -202,6 +224,16 @@ var FireSide = (function () {
         this.sideRecharge = Math.max(this.sideRecharge, aFireSector.recharge);
     };
 
+    FireSide.prototype.getSectorsByType = function (isDischarge) {
+        var res = [];
+        for(var i = 0; i< this.sectors.length; i++){
+            var sector_disc = this.sectors[i].isDischarge();
+            if ( (isDischarge && sector_disc) || !(isDischarge || sector_disc) )
+                res.push(this.sectors[i]);
+        }
+        return res;
+    };
+
     return FireSide;
 })();
 
@@ -213,13 +245,18 @@ var FireSector = (function () {
         this.radius = 0;
         this.direction = 0;
         this.uid = 0;
+        this.side = "";
+        this.recharge = 0.0;
         if (options) setOptions(options, this);
-        this.recharge = 0;
     }
 
     FireSector.prototype.addWeapon = function (aWeapon) {
         this.weapons.push(aWeapon);
         this.recharge = Math.max(this.recharge, aWeapon.recharge);
+    };
+
+    FireSector.prototype.isDischarge = function () {
+       return this.recharge > 0.0;
     };
 
     return FireSector;

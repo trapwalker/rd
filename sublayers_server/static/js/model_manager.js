@@ -90,7 +90,8 @@ var ClientManager = (function () {
             var fs = new FireSector({
                 width: sector.width,
                 radius: sector.radius,
-                direction: sector.fi
+                direction: sector.fi,
+                side: sector.side
             });
             for(var i = 0; i < weapons.length; i++)
                 fs.addWeapon(weapons[i]);
