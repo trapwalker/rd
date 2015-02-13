@@ -13,7 +13,7 @@ var ConstMapPathLocal = '';
 
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 0;
+var ConstMinMapZoom = 8;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -282,8 +282,9 @@ var MapManager = (function(_super){
 
 
         // Отображение квадрата всей карты
-        var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
-        L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
+        // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
+        //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
+        //L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
@@ -333,10 +334,20 @@ var MapManager = (function(_super){
          // Изменение радиуса круга обзора
          //userCarMarker.setNewZoom();
          */
+
+        //todo: сектора на сетке появляются с новым зумом
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.zoomEnd();
     };
 
     MapManager.prototype.onZoomStart = function(event) {
+        console.log('MapManager.prototype.onZoomStart');
         timeManager.timerStop();
+
+        //todo: сектора на сетке типа с помехами исчезают
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.zoomStart();
+
     };
 
 

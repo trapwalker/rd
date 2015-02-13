@@ -65,14 +65,26 @@ var WFireRadialGrid = (function (_super) {
                 .stroke(this.svg_params.circles.stroke);
 
         // добавление 45 градусных линий-отметок
-        // todo: около этих точек влево и вправо рисовать ARC угасающий
         var p1 = new Point(max_radius, 0);
         var p2 = new Point(max_radius - (max_radius / max_circles) * 0.75, 0);
-        for (i = 0; i < 4; i++)
+        var p31 = rotateVector(new Point(max_radius, 0), gradToRad(10.0));
+        var p32 = rotateVector(new Point(max_radius, 0), -gradToRad(10.0));
+        for (i = 0; i < 4; i++) {
             g.line(p1.x, p1.y, p2.x + 0.1, p2.y + 0.1)
                 .stroke(this.svg_params.lines_45.stroke)
                 .dmove(size, size)
                 .transform({rotation: 45 + i * 90, cx: size, cy: size});
+            g.path('M ' + p1.x + ' ' + p1.y + 'A ' + max_radius + ' ' + max_radius + ' 0 0 0 ' + p31.x + ' ' + p31.y)
+                .stroke(this.svg_params.lines_45.stroke)
+                .dmove(size, size)
+                .transform({rotation: 45 + i * 90, cx: size, cy: size})
+                .fill(this.svg_params.lines_45.radial_fill);
+            g.path('M ' + p1.x + ' ' + p1.y + 'A ' + max_radius + ' ' + max_radius + ' 0 0 0 ' + p32.x + ' ' + p32.y)
+                .stroke(this.svg_params.lines_45.stroke)
+                .dmove(size, size)
+                .transform({rotation: 45 + i * 90, cx: size, cy: size})
+                .fill(this.svg_params.lines_45.radial_fill);
+        }
 
         // Добавление радиальных точек
         var point_radius = 1.3;
@@ -109,12 +121,13 @@ var WFireRadialGrid = (function (_super) {
             // настройка 45 градусных линий
             lines_45: {
                 stroke: {
-                    width: 1,
+                    width: 1.0,
                     color: g.gradient('linear', function(stop) {
                         stop.at({ offset: 0, color: self.svg_colors.main , opacity: 0.0});
-                        stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.4});
+                        stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.65});
                     })
-                }
+                },
+                radial_fill: 'transparent'
             },
             // настройка расходящихся точек
             radial_point: {
@@ -175,11 +188,13 @@ var WFireRadialGrid = (function (_super) {
         var first_radius = this.max_radius / this.max_circles;
         var second_radius = this.max_radius * 2/ this.max_circles;
 
+        var scale_map = Math.pow(2., map.getMaxZoom() - map.getZoom()); // учёт зуммирования
+
         // Добавление залповых секторов (только сектора, без привязки к стронам)
         var sectors = this.car.fireSidesMng.getSectors('', true);
         for(i=0; i< sectors.length; i++){
             var sector = sectors[i];
-            var sect_radius = sector.radius; // todo: поделить на 2 в степени maxZoom - currentZoom  (Math.pow())
+            var sect_radius = sector.radius / scale_map;
             // сектор состоит из двух частей:
             // 1) градиентное начало между первыми двумя кругами
             // 2) цельное, не градиентное окончание, между вторым кругом и далее
@@ -191,7 +206,8 @@ var WFireRadialGrid = (function (_super) {
                         this.svg_params.disc_sectors.norm_color));
                 }
                 else{ // сектор лежит между первым и вторым кругом
-                    this.elem_zoom.push(this._drawOneSector(first_radius, sect_radius, sector.width, sector.direction, line_grad_2));
+                    this.elem_zoom.push(this._drawOneSector(first_radius, sect_radius, sector.width, sector.direction,
+                        this.svg_params.disc_sectors.gradient));
                 }
             }
         }
@@ -201,32 +217,33 @@ var WFireRadialGrid = (function (_super) {
         var auto_sectors = this.car.fireSidesMng.getSectors('', false);
         for(i=0; i< auto_sectors.length; i++){
             var asector = auto_sectors[i];
-            var asect_radius = asector.radius; // todo: поделить на 2 в степени maxZoom - currentZoom  (Math.pow())
+            var asect_radius = asector.radius / scale_map;
             if (asect_radius > first_radius) // значит сектор можно рисовать впринципе
                this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
         }
 
 
+        // todo: меньше какого радиуса рисовать или не рисовать эти зацепы.
         // Добавление бортов - просто линии, указывающие направление борта
         var sides = this.car.fireSidesMng.sides;
-        var max_disch_radius = sides.front.getMaxDischargeRadius();
+        var max_disch_radius = sides.front.getMaxDischargeRadius() / scale_map;
         var max_disch_width = sides.front.getMaxDischargeWidth();
-        if (max_disch_radius > 0 && max_disch_width > 0)
+        if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0));
 
-        max_disch_radius = sides.back.getMaxDischargeRadius();
+        max_disch_radius = sides.back.getMaxDischargeRadius() / scale_map;
         max_disch_width = sides.back.getMaxDischargeWidth();
-        if (max_disch_radius > 0 && max_disch_width > 0)
+        if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI));
 
-        max_disch_radius = sides.left.getMaxDischargeRadius();
+        max_disch_radius = sides.left.getMaxDischargeRadius() / scale_map;
         max_disch_width = sides.left.getMaxDischargeWidth();
-        if (max_disch_radius > 0 && max_disch_width > 0)
+        if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.));
 
-        max_disch_radius = sides.right.getMaxDischargeRadius();
+        max_disch_radius = sides.right.getMaxDischargeRadius() / scale_map;
         max_disch_width = sides.right.getMaxDischargeWidth();
-        if (max_disch_radius > 0 && max_disch_width > 0)
+        if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.));
 
 
@@ -349,6 +366,19 @@ var WFireRadialGrid = (function (_super) {
         // запрос и установка перезарядки для каждой из сторон
 
     };
+
+    WFireRadialGrid.prototype.zoomStart = function(){
+        console.log('WFireRadialGrid.prototype.zoomStart');
+        while (this.elem_zoom.length)
+            this.elem_zoom.pop().remove();
+    };
+
+
+    WFireRadialGrid.prototype.zoomEnd = function(){
+        //console.log('WFireRadialGrid.prototype.zoomEnd');
+        this._drawSectors();
+    };
+
 
 
     WFireRadialGrid.prototype.test = function () {
