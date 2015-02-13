@@ -64,8 +64,8 @@ class Party(object):
         # todo: fix it
         if len(self.members) == 0:
             return
-        old_agent_observers = agent.observers[:]
-        old_member_observers = self.members[0].observers[:]
+        old_agent_observers = agent.observers.keys()
+        old_member_observers = self.members[0].observers.keys()
 
         for o in old_member_observers:
             agent.add_observer(o)
@@ -78,8 +78,8 @@ class Party(object):
         # todo: fix it
         if len(self.members) == 0:
             return
-        old_agent_observers = agent.observers[:]
-        old_member_observers = self.members[0].observers[:]
+        old_agent_observers = agent.observers.keys()
+        old_member_observers = self.members[0].observers.keys()
 
         for o in old_member_observers:
             agent.drop_observer(o)
