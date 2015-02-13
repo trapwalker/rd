@@ -171,10 +171,10 @@ var UserCar = (function (_super) {
 var FireSideMng = (function () {
     function FireSideMng() {
         this.sides = {
-            front: new FireSide(),
-            back: new FireSide(),
-            left: new FireSide(),
-            right: new FireSide()
+            front: new FireSide(0),
+            right: new FireSide(0.5 * Math.PI),
+            back: new FireSide(Math.PI),
+            left: new FireSide(1.5 * Math.PI)
         }
     }
 
@@ -198,19 +198,29 @@ var FireSideMng = (function () {
     };
 
     FireSideMng.prototype.getAllSectors = function () {
-        // filterSides = строка перечисления бортов, которые нужно отправить, например: 'front, back, right, left'
-        // isDischarge = true - для залповых секторов, false для автоматических
         var res = [];
         return res.concat(this.getSectors('', true), this.getSectors('', false));
     };
 
+    FireSideMng.prototype.getAllSides = function (onlyUsed) {
+        if (onlyUsed) {
+            var res = [];
+            if (this.sides.front.sectors.length > 0) res.push(this.sides.front);
+            if (this.sides.right.sectors.length > 0) res.push(this.sides.right);
+            if (this.sides.back.sectors.length > 0) res.push(this.sides.back);
+            if (this.sides.left.sectors.length > 0) res.push(this.sides.left);
+            return res;
+        }
+        return [this.sides.front, this.sides.right, this.sides.back, this.sides.left];
+    };
 
     return FireSideMng;
 })();
 
 
 var FireSide = (function () {
-    function FireSide() {
+    function FireSide(direction) {
+        this.direction = direction;
         this.sectors = [];
         this.sideRadius = 0;
         this.sideWidth = 0;

@@ -2,18 +2,6 @@ var FireControl = (function () {
     function FireControl(options) {
     };
 
-    FireControl.prototype.setRotated = function (aRotated) {
-        if (this.options._rotated !== aRotated) {
-            this.options._rotated = aRotated;
-            if (this.options._rotated) this._setRotate(this.options.rotateAngle);
-            else this._setRotate(- Math.PI / 2);
-        }
-    };
-
-    FireControl.prototype.getRotate = function () {
-        return this.options._rotated;
-    };
-
     FireControl.prototype._getSectorByID = function(fireSectorID){
         for (var i = 0; i < this.sectors.length; i++) {
             if (this.sectors[i]._fireSector.uid == fireSectorID)
@@ -60,18 +48,6 @@ var FireControl = (function () {
         }
     };
 
-    FireControl.prototype._setRotate = function (angle) {
-        this.SVGSectorsGroup.setAttribute('transform', 'rotate(' +
-                radToGrad(angle) + ', ' + this.center.x + ', ' + this.center.y + ')'
-        );
-    };
-
-    FireControl.prototype.setRotate = function (angle) {
-        if (Math.abs(this.options.rotateAngle - angle) < 0.03) return;
-        this.options.rotateAngle = angle;
-        if (this.options._visible && this.options._rotated) this._setRotate(angle);
-    };
-
     // Реализация радара - вынесена сюда, т.к. только тут есть radiusIn и radiusOut
     // Добавление Точки в сектор
     FireControl.prototype.addCarInSector = function(aSector, relativeRadius, relativeAngle, visibleMode) {
@@ -111,32 +87,6 @@ var FireControl = (function () {
     FireControl.prototype.deleteCarInSector = function(pathSVG) {
         $(pathSVG).remove();
         return null;
-    };
-
-    FireControl.prototype._allFireEvent = function(event){
-        var obj = event.data.self;
-        if(typeof(obj.options.allCallBack) === 'function'){
-            // obj.options.allCallBack();
-            // TODO выстрел из всех орудий: когда будет проверяться на сервере, просто передать null в качестве id сектора
-            // Выстрелить из всех секторов
-            for(var i in obj.sectors){
-                if(! obj.sectors[i].recharged){ // Если сектор не в перезарядке
-                    if (typeof(obj.sectors[i]._cbSectorShootRequest) === 'function')
-                        obj.sectors[i]._cbSectorShootRequest(obj.sectors[i]._fireSector.uid);
-                }
-            }
-        }
-    };
-
-    FireControl.prototype._fireSectorEvent = function(event) {
-        // Получить сектор, для которого вызвано событие
-        var sector = event.data.sector;
-        // уйти в перезарядку
-        if(! sector.recharged) {
-            // Вызвать колл-бек на запрос разрешения стрельбы
-            if (typeof(sector._cbSectorShootRequest) === 'function')
-                sector._cbSectorShootRequest(sector._fireSector.uid);
-        }
     };
 
     return FireControl;
