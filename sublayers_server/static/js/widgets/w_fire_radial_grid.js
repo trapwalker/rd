@@ -55,48 +55,113 @@ var WFireRadialGrid = (function (_super) {
         var g = draw.group();
         this.g = g;
 
-
+        this._init_svg_parametrs();
 
         // Добавление кружочков, уменьшая радиус
         for (i = 1; i <= max_circles; i++)
             g.circle(0.0).radius(max_radius * i / max_circles)
                 .center(size, size)
-                .fill('transparent')
-                .stroke({width: 1, color: '#5f5', opacity: 0.4});
+                .fill(this.svg_params.circles.fill)
+                .stroke(this.svg_params.circles.stroke);
 
         // добавление 45 градусных линий-отметок
-        console.log(max_radius, max_circles, pi);
         var p1 = new Point(max_radius, 0);
-        var p2 = new Point(max_radius - max_radius / max_circles, 0);
-        var line_grad_1 = g.gradient('linear', function(stop) {
-            stop.at({ offset: 0, color: '#0f0' , opacity: 0.0});
-            stop.at({ offset: 1, color: '#0f0' , opacity: 0.7});
-        });
-
+        var p2 = new Point(max_radius - (max_radius / max_circles) * 0.75, 0);
         for (i = 0; i < 4; i++)
             g.line(p1.x, p1.y, p2.x + 0.1, p2.y + 0.1)
-                .stroke({
-                    width: 1,
-                    color: line_grad_1
-                })
+                .stroke(this.svg_params.lines_45.stroke)
                 .dmove(size, size)
                 .transform({rotation: 45 + i * 90, cx: size, cy: size});
-
 
         // Добавление радиальных точек
         var point_radius = 1.3;
         for (i = 1; i <= max_circles; i++)
             for (var y = 0; y < 4; y++)
                 g.circle(0.0).radius(point_radius)
-                    .stroke({
-                        width: 0
-                    }).
-                    fill({color: '#0f0', opacity: 1.0})
+                    .stroke(this.svg_params.radial_point.stroke)
+                    .fill(this.svg_params.radial_point.fill)
                     .dmove(size + max_radius * i / max_circles, size)
                     .transform({rotation: y * 90, cx: size, cy: size});
 
 
         this._drawSectors();
+
+    };
+
+
+    WFireRadialGrid.prototype._init_svg_parametrs = function () {
+        var g = this.g;
+        this.svg_colors = {
+            main: '#5f5'
+        };
+
+        var self = this;
+
+        this.svg_params = {
+            // настройка кругов
+            circles: {
+                // характеристики границ окружностей
+                stroke: {width: 1, color: this.svg_colors.main, opacity: 0.4},
+                // заливка кругов
+                fill: 'transparent'
+            },
+            // настройка 45 градусных линий
+            lines_45: {
+                stroke: {
+                    width: 1,
+                    color: g.gradient('linear', function(stop) {
+                        stop.at({ offset: 0, color: self.svg_colors.main , opacity: 0.0});
+                        stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.4});
+                    })
+                }
+            },
+            // настройка расходящихся точек
+            radial_point: {
+                stroke: {width: 0},
+                fill: {color: this.svg_colors.main, opacity: 1.0}
+            },
+            // настройка залповых секторов
+            disc_sectors: {
+                gradient: g.gradient('linear', function(stop) {
+                    stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.0});
+                    stop.at({ offset: 1, color: self.svg_colors.main, opacity: 0.2});
+                }),
+                norm_color: {color: this.svg_colors.main, opacity: 0.2},
+                stroke: {width: 0}
+
+            },
+            // настройка бортов
+            sides: {
+                line_gradient: g.gradient('linear', function(stop) {
+                    stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.0});
+                    stop.at({ offset: 0.25, color: self.svg_colors.main, opacity: 0.0});
+                    stop.at({ offset: 0.5, color: self.svg_colors.main, opacity: 0.2});
+                    stop.at({ offset: 1, color: self.svg_colors.main, opacity: 0.6});
+                }),
+                rad_gradient: g.gradient('linear', function(stop) {
+                    stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.6});
+                    stop.at({ offset: 0.5, color: self.svg_colors.main, opacity: 0.0});
+                }),
+                width: 1.4,
+                stroke_of_norm_line: {width: 1.4, color: this.svg_colors.main, opacity: 0.6},
+                radial_fill: 'transparent'
+            },
+
+
+            // настройка автоматических секторов
+            auto_sectors: {
+                gradient_for_lines: g.gradient('linear', function(stop) {
+                    stop.at({ offset: 0, color: self.svg_colors.main , opacity: 0.0});
+                    stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.6});
+                }),
+                width_of_line: 1.4,
+                radial_stroke: {width: 3, color: self.svg_colors.main},
+                radial_fill: 'transparent'
+            }
+
+
+        };
+
 
     };
 
@@ -110,24 +175,19 @@ var WFireRadialGrid = (function (_super) {
         var second_radius = this.max_radius * 2/ this.max_circles;
 
         // Добавление залповых секторов (только сектора, без привязки к стронам)
-        // получение списка секторов
-        //var sectors = this.car.fireSidesMng.getSectors('', true);
-        var sectors = this.car.fireSidesMng.getAllSectors();
+        var sectors = this.car.fireSidesMng.getSectors('', true);
         for(i=0; i< sectors.length; i++){
             var sector = sectors[i];
-            var line_grad_2 = g.gradient('linear', function(stop) {
-                stop.at({ offset: 0, color: '#0f0' , opacity: 0.0});
-                stop.at({ offset: 1, color: '#0f0' , opacity: 0.2});
-            });
-            var sect_norm_color = {color: '#0f0' , opacity: 0.2};
             var sect_radius = sector.radius; // todo: поделить на 2 в степени maxZoom - currentZoom  (Math.pow())
             // сектор состоит из двух частей:
             // 1) градиентное начало между первыми двумя кругами
             // 2) цельное, не градиентное окончание, между вторым кругом и далее
             if (sect_radius > first_radius){ // значит сектор можно рисовать впринципе
-                if (sect_radius > second_radius){ // значит сектор состоит из двух частей
-                    this.elem_zoom.push(this._drawOneSector(first_radius, second_radius, sector.width, sector.direction, line_grad_2));
-                    this.elem_zoom.push(this._drawOneSector(second_radius, sect_radius, sector.width, sector.direction, sect_norm_color));
+                if (sect_radius > second_radius) { // значит сектор состоит из двух частей
+                    this.elem_zoom.push(this._drawOneSector(first_radius, second_radius, sector.width, sector.direction,
+                        this.svg_params.disc_sectors.gradient));
+                    this.elem_zoom.push(this._drawOneSector(second_radius, sect_radius, sector.width, sector.direction,
+                        this.svg_params.disc_sectors.norm_color));
                 }
                 else{ // сектор лежит между первым и вторым кругом
                     this.elem_zoom.push(this._drawOneSector(first_radius, sect_radius, sector.width, sector.direction, line_grad_2));
@@ -136,40 +196,38 @@ var WFireRadialGrid = (function (_super) {
         }
 
 
-
-
+        // Добавление автоматических секторов (только сектора, без привязки к стронам)
+        var auto_sectors = this.car.fireSidesMng.getSectors('', false);
+        for(i=0; i< auto_sectors.length; i++){
+            var asector = auto_sectors[i];
+            var asect_radius = asector.radius; // todo: поделить на 2 в степени maxZoom - currentZoom  (Math.pow())
+            if (asect_radius > first_radius) // значит сектор можно рисовать впринципе
+               this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
+        }
 
 
         // Добавление бортов - просто линии, указывающие направление борта
         var sides = this.car.fireSidesMng.sides;
+        var max_disch_radius = sides.front.getMaxDischargeRadius();
+        var max_disch_width = sides.front.getMaxDischargeWidth();
+        if (max_disch_radius > 0 && max_disch_width > 0)
+            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0));
 
-        if (sides.front.sectors.length)
-            this._drawOneSide(second_radius,
-                this.car.fireSidesMng.sides.front.sideRadius,
-                this.car.fireSidesMng.sides.front.sideWidth,
-                0.0
-            );
+        max_disch_radius = sides.back.getMaxDischargeRadius();
+        max_disch_width = sides.back.getMaxDischargeWidth();
+        if (max_disch_radius > 0 && max_disch_width > 0)
+            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI));
 
-        if (sides.back.sectors.length)
-            this._drawOneSide(second_radius,
-                this.car.fireSidesMng.sides.back.sideRadius,
-                this.car.fireSidesMng.sides.back.sideWidth,
-                -Math.PI
-            );
+        max_disch_radius = sides.left.getMaxDischargeRadius();
+        max_disch_width = sides.left.getMaxDischargeWidth();
+        if (max_disch_radius > 0 && max_disch_width > 0)
+            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.));
 
-        if (sides.left.sectors.length)
-            this._drawOneSide(second_radius,
-                this.car.fireSidesMng.sides.left.sideRadius,
-                this.car.fireSidesMng.sides.left.sideWidth,
-                Math.PI / 2.
-            );
+        max_disch_radius = sides.right.getMaxDischargeRadius();
+        max_disch_width = sides.right.getMaxDischargeWidth();
+        if (max_disch_radius > 0 && max_disch_width > 0)
+            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.));
 
-        if (sides.right.sectors.length)
-            this._drawOneSide(second_radius,
-                this.car.fireSidesMng.sides.right.sideRadius,
-                this.car.fireSidesMng.sides.right.sideWidth,
-                - Math.PI / 2.
-            );
 
     };
 
@@ -194,7 +252,7 @@ var WFireRadialGrid = (function (_super) {
         return this.g.path(path_str)
             .dmove(size, size)
             .transform({rotation: radToGrad(direction), cx: size, cy: size})
-            .stroke({width: 0})
+            .stroke(this.svg_params.disc_sectors.stroke)
             .fill(fillColor);
     };
 
@@ -212,28 +270,14 @@ var WFireRadialGrid = (function (_super) {
         var sp21 = rotateVector(new Point(maxRadius, 0), width /2.);
         var sp22 = rotateVector(new Point(maxRadius, 0), - width /2.);
 
-        var line_grad_for_side = g.gradient('linear', function(stop) {
-            stop.at({ offset: 0, color: '#0f0' , opacity: 0.0});
-            stop.at({ offset: 0.25, color: '#0f0' , opacity: 0.0});
-            stop.at({ offset: 0.5, color: '#0f0' , opacity: 0.2});
-            stop.at({ offset: 1, color: '#0f0' , opacity: 0.6});
-        });
-
-        var line_grad_for_side_end = g.gradient('linear', function(stop) {
-            stop.at({ offset: 0, color: '#0f0' , opacity: 0.6});
-            stop.at({ offset: 0.4, color: '#0f0' , opacity: 0.0});
-            stop.at({ offset: 0.6, color: '#0f0' , opacity: 0.0});
-            stop.at({ offset: 1, color: '#0f0' , opacity: 0.6});
-        });
-
         g.line(p0.x, p0.y, sp11.x, sp11.y)
-            .stroke({width: 1.4, color: line_grad_for_side});
+            .stroke({width: this.svg_params.sides.width, color: this.svg_params.sides.line_gradient});
         g.line(p0.x, p0.y, sp12.x, sp12.y)
-            .stroke({width: 1.4, color: line_grad_for_side});
+            .stroke({width: this.svg_params.sides.width, color: this.svg_params.sides.line_gradient});
         g.line(sp11.x, sp11.y, sp21.x, sp21.y)
-            .stroke({width: 1.4, color: '#0f0', opacity: 0.6});
+            .stroke(this.svg_params.sides.stroke_of_norm_line);
         g.line(sp12.x, sp12.y, sp22.x, sp22.y)
-            .stroke({width: 1.4, color: '#0f0', opacity: 0.6});
+            .stroke(this.svg_params.sides.stroke_of_norm_line);
 
         // градиентная оконтовка окончания угла
         var path_str =
@@ -241,15 +285,50 @@ var WFireRadialGrid = (function (_super) {
             'A ' + maxRadius + ' ' + maxRadius + ' 0 0 0 ' + sp22.x + ' ' + sp22.y;
 
         g.path(path_str)
-            .stroke({width: 3, color: line_grad_for_side_end})
-            .fill('transparent');
+            .stroke({width: this.svg_params.sides.width, color: this.svg_params.sides.rad_gradient})
+            .fill(this.svg_params.sides.radial_fill);
 
         g.transform({rotation: radToGrad(direction), cx: size, cy: size});
         g.dmove(size, size);
-
+        return g;
 
     };
 
+
+    WFireRadialGrid.prototype._drawOneAutoSector = function(radius, width, direction){
+        // todo: если ширина сектора больше 180, то: http://www.w3.org/TR/SVG/paths.html#PathData
+        // Пример с красным кружком
+
+        var size = this.size_of_icon;
+        var g = this.g.group();
+
+        var sp11 = rotateVector(new Point(radius - 10.0, 0), width /2.);
+        var sp12 = rotateVector(new Point(radius - 10.0, 0), - width /2.);
+        var sp21 = rotateVector(new Point(radius, 0), width /2.);
+        var sp22 = rotateVector(new Point(radius, 0), - width /2.);
+
+        g.line(sp11.x, sp11.y, sp21.x, sp21.y)
+            .stroke({width: this.svg_params.auto_sectors.width_of_line,
+                color: this.svg_params.auto_sectors.gradient_for_lines
+            });
+        g.line(sp12.x, sp12.y, sp22.x, sp22.y)
+            .stroke({width: this.svg_params.auto_sectors.width_of_line,
+                color: this.svg_params.auto_sectors.gradient_for_lines
+            });
+
+        // градиентная оконтовка окончания угла
+        var path_str =
+            'M ' + sp21.x + ' ' + sp21.y +
+            'A ' + radius + ' ' + radius + ' 0 0 0 ' + sp22.x + ' ' + sp22.y;
+
+        g.path(path_str)
+            .stroke(this.svg_params.auto_sectors.radial_stroke)
+            .fill(this.svg_params.auto_sectors.radial_fill);
+
+        g.transform({rotation: radToGrad(direction), cx: size, cy: size});
+        g.dmove(size, size);
+        return g;
+    };
 
 
     WFireRadialGrid.prototype.change = function(t){
@@ -267,20 +346,24 @@ var WFireRadialGrid = (function (_super) {
         this.rotate(radToGrad(angle));
         // запрос и установка перезарядки для каждой из сторон
 
-
     };
 
 
-    WFireRadialGrid.prototype.test = function(){
+    WFireRadialGrid.prototype.test = function () {
         console.log('WFireRadialGrid.prototype.test');
 
-        this.g.transform({rotation: 45, cx: 200, cy: 200});
+        while (this.elem_zoom.length)
+            this.elem_zoom.pop().remove();
 
-        this.big_circle.fill('#5f5');
-        this.big_circle.animate().opacity(0.0).after(function(){
-            this.fill('transparent');
-            this.opacity(1.0);
-        })
+        /*
+         this.g.transform({rotation: 45, cx: 200, cy: 200});
+
+         this.big_circle.fill('#5f5');
+         this.big_circle.animate().opacity(0.0).after(function(){
+         this.fill('transparent');
+         this.opacity(1.0);
+         })
+         */
     }
 
     WFireRadialGrid.prototype.rotate = function(angle_in_degrees){
