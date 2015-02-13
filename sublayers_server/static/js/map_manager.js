@@ -180,7 +180,8 @@ function onKeyDownMap(event) {
             break;
         case 90:  // Z
             //clientManager.Die();
-            //mapManager.widget_fire_radial_grid.test();
+            console.log('ZZZZZZZZZZZZZZZ');
+            mapManager.widget_fire_radial_grid.test();
             break;
     }
 }

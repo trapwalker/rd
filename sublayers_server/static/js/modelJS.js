@@ -244,6 +244,23 @@ var FireSide = (function () {
         return res;
     };
 
+    FireSide.prototype.getMaxDischargeRadius = function (){
+        var r = 0;
+        for (var i = 0; i < this.sectors.length; i++)
+            if (this.sectors[i].isDischarge())
+                r = Math.max(r, this.sectors[i].radius);
+        return r;
+    };
+
+    FireSide.prototype.getMaxDischargeWidth = function (){
+        var w = 0;
+        for (var i = 0; i < this.sectors.length; i++)
+            if (this.sectors[i].isDischarge())
+                w = Math.max(w, this.sectors[i].width);
+        return w;
+    };
+
+
     return FireSide;
 })();
 
