@@ -204,11 +204,11 @@ var ClientManager = (function () {
             new WHPSlider(mcar);     // виджет HP
             // todo: сделать также зависимось от бортов
             //new WFireSectors(mcar, fireSectors);  // виджет секторов
+            new WFlashlightController(mcar); // виджет-контроллер вспышек
+            new WFireController(mcar);
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
-            new WFlashlightController(mcar); // виджет-контроллер вспышек
             //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
-
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
 
