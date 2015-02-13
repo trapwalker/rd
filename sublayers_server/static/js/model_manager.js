@@ -90,7 +90,8 @@ var ClientManager = (function () {
             var fs = new FireSector({
                 width: sector.width,
                 radius: sector.radius,
-                direction: sector.fi
+                direction: sector.fi,
+                side: sector.side
             });
             for(var i = 0; i < weapons.length; i++)
                 fs.addWeapon(weapons[i]);
@@ -208,7 +209,7 @@ var ClientManager = (function () {
             new WFireController(mcar);
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
-            //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
+            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
 
