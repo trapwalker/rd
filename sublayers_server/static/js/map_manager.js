@@ -279,6 +279,11 @@ var MapManager = (function(_super){
 
         // Bнициализация виджетов карты
         new WZoomSlider(this);
+
+
+        // Отображение квадрата всей карты
+        var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
+        L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
@@ -333,6 +338,8 @@ var MapManager = (function(_super){
     MapManager.prototype.onZoomStart = function(event) {
         timeManager.timerStop();
     };
+
+
 
 
 

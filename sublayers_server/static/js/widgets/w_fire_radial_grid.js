@@ -65,6 +65,7 @@ var WFireRadialGrid = (function (_super) {
                 .stroke(this.svg_params.circles.stroke);
 
         // добавление 45 градусных линий-отметок
+        // todo: около этих точек влево и вправо рисовать ARC угасающий
         var p1 = new Point(max_radius, 0);
         var p2 = new Point(max_radius - (max_radius / max_circles) * 0.75, 0);
         for (i = 0; i < 4; i++)
@@ -147,7 +148,6 @@ var WFireRadialGrid = (function (_super) {
                 radial_fill: 'transparent'
             },
 
-
             // настройка автоматических секторов
             auto_sectors: {
                 gradient_for_lines: g.gradient('linear', function(stop) {
@@ -155,8 +155,9 @@ var WFireRadialGrid = (function (_super) {
                     stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.6});
                 }),
                 width_of_line: 1.4,
-                radial_stroke: {width: 3, color: self.svg_colors.main},
-                radial_fill: 'transparent'
+                radial_stroke: {width: 2, color: self.svg_colors.main},
+                radial_fill: 'transparent',
+                dash_array: '5, 5'
             }
 
 
@@ -323,7 +324,8 @@ var WFireRadialGrid = (function (_super) {
 
         g.path(path_str)
             .stroke(this.svg_params.auto_sectors.radial_stroke)
-            .fill(this.svg_params.auto_sectors.radial_fill);
+            .fill(this.svg_params.auto_sectors.radial_fill)
+            .attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);
 
         g.transform({rotation: radToGrad(direction), cx: size, cy: size});
         g.dmove(size, size);
@@ -364,7 +366,8 @@ var WFireRadialGrid = (function (_super) {
          this.opacity(1.0);
          })
          */
-    }
+    };
+
 
     WFireRadialGrid.prototype.rotate = function(angle_in_degrees){
         this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
