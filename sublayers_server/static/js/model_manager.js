@@ -206,7 +206,7 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             //new WFireSectors(mcar, fireSectors);  // виджет секторов
             new WFlashlightController(mcar); // виджет-контроллер вспышек
-            new WFireController(mcar);
+            //new WFireController(mcar);
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки

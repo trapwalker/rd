@@ -274,6 +274,8 @@ var FireSideMng = (function () {
     };
 
     FireSideMng.prototype.getRechargeStates = function (time) {
+        // todo: РОМАН !!! этот метод возвращает список объектов {борт, часть_перезарядки(от 0 до 1), время ДО окончания перезарядки}
+        // вроде больше ничего не должно понадобиться
         var rez = [];
         var sides = this.sides;
         for (var side in sides)
