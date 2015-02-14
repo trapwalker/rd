@@ -335,16 +335,16 @@ var MapManager = (function(_super){
          //userCarMarker.setNewZoom();
          */
 
-        //todo: сектора на сетке появляются с новым зумом
+        //сектора на сетке появляются с новым зумом
         if (mapManager.widget_fire_radial_grid)
             mapManager.widget_fire_radial_grid.zoomEnd();
     };
 
     MapManager.prototype.onZoomStart = function(event) {
-        console.log('MapManager.prototype.onZoomStart');
+        //console.log('MapManager.prototype.onZoomStart');
         timeManager.timerStop();
 
-        //todo: сектора на сетке типа с помехами исчезают
+        //сектора на сетке исчезают
         if (mapManager.widget_fire_radial_grid)
             mapManager.widget_fire_radial_grid.zoomStart();
 

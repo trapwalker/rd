@@ -183,6 +183,11 @@ var FireSideMng = (function () {
             this.sides[aSide].addSector(aFireSector)
     };
 
+    FireSideMng.prototype.setShootTime = function(aSideStr, shoot_time) {
+        this.sides[aSideStr].setShootTime(shoot_time);
+        // добавить в тайм-менеджер, чтобы оно начало обновляться!!!
+    };
+
     FireSideMng.prototype.getSectors = function (filterSides, isDischarge) {
         // filterSides = строка перечисления бортов, которые нужно отправить, например: 'front, back, right, left'
         // isDischarge = true - для залповых секторов, false для автоматических
@@ -225,6 +230,7 @@ var FireSide = (function () {
         this.sideRadius = 0;
         this.sideWidth = 0;
         this.sideRecharge = 0;
+        this.last_shoot = 0.0;
     }
 
     FireSide.prototype.addSector = function (aFireSector) {
@@ -232,6 +238,26 @@ var FireSide = (function () {
         this.sideRadius = Math.max(this.sideRadius, aFireSector.radius);
         this.sideWidth = Math.max(this.sideWidth, aFireSector.width);
         this.sideRecharge = Math.max(this.sideRecharge, aFireSector.recharge);
+    };
+
+    FireSide.prototype.setShootTime = function(shoot_time) {
+        this.last_shoot = shoot_time;
+    };
+
+    FireSide.prototype.getRechargeState = function(time){
+        // вернуть нужно проценты до окончания перезарядки + время до окончания перезарядки
+        var rch_finish = this.last_shoot + this.sideRecharge;
+        var dt = rch_finish - time;
+        if(dt <= 0.0) return {
+            prc: 1.,
+            time: 0.0
+        };
+        if(dt > this.sideRecharge){ console.error(' !!!! Логическая ошибка !!!!'); return null;}
+        return {
+            prc: dt / this.sideRecharge,
+            time: dt
+        }
+
     };
 
     FireSide.prototype.getSectorsByType = function (isDischarge) {

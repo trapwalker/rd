@@ -429,7 +429,18 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.FireDischarge = function (event) {
-        console.log('ClientManager.prototype.FireDischarge ');
+        //console.log('ClientManager.prototype.FireDischarge ', event);
+
+        console.log('etime = ', event.time, '    ctime = ', clock.getCurrentTime());
+
+        // установка last_shoot
+        var etime = event.time / 1000.;
+        if (etime > clock.getCurrentTime()) console.error('Серверное время больше клиентского при выстреле.');
+        // todo: отфильтровать, так как могло прийти не для своей машинки
+        user.userCar.fireSidesMng.setShootTime(event.side, etime);
+
+
+
         var dir_side = null;
         switch (event.side) {
             case 'front':
