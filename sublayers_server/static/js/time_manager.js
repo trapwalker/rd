@@ -104,8 +104,8 @@ var TimeManager = (function () {
         var time2 = clock.getCurrentTime() - time;
         if (time2 > this.render_time)
             this.render_time = time2;
-        this._FPSInterval += time2;
-        if (time2 > this._interval)
+        this._FPSInterval += (time2 * 1000.); // переводим в миллисекунды
+        if ((time2 * 1000.) > this._interval)
             console.log('Таймер не успел отработать! Время работы: ', time2,  '      Желаемое время: ', this._interval);
         this._FPSCount++;
     };

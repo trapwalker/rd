@@ -140,8 +140,9 @@ var WFireRadialGrid = (function (_super) {
         var self = this;
 
         // необходимо для вывода текста перезарядки вдоль дуги
-        var d_rech_darius = 35;
-        var radius = this.max_radius + d_rech_darius;
+        var d_rech_darius = 35; // определяет дальность полоски перезарядки
+        var d_rech_text_radius = 25; // определяет высоту текста относительно полоски перезарядки
+        var radius = this.max_radius + d_rech_darius + d_rech_text_radius;
         var sp1 = summVector(rotateVector(new Point(radius, 0), - Math.PI /4.), new Point(this.size_of_icon, this.size_of_icon));
         var sp2 = summVector(rotateVector(new Point(radius, 0), Math.PI /4.), new Point(this.size_of_icon, this.size_of_icon));
         var text_rech_path = 'M ' + sp1.x + ' ' + sp1.y + 'A ' + radius + ' ' + radius + ' 0 0 1 ' + sp2.x + ' ' + sp2.y;
@@ -542,22 +543,6 @@ var WFireRadialGrid = (function (_super) {
             .path(this.svg_params.rechArea.text_path);
         text.textPath.attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
 
-
-        var abc = this;
-        setTimeout(function(){
-
-            var prc = 0.0;
-            var t = setInterval(function(){
-                abc._recharging({side_str: 'front', prc: prc});
-                prc +=0.003
-            }, 50);
-
-            setTimeout(function(){
-                clearInterval(t);
-            }, 20000);
-        },5000);
-
-
         this.rechAreas[side_str] = {
             rech_arc: rech,
             width: width,
@@ -569,7 +554,7 @@ var WFireRadialGrid = (function (_super) {
 
 
     WFireRadialGrid.prototype._recharging = function(options){
-        // todo: добавить время как входной параметр
+        // todo: добавить время как входной параметр (просто считывать из options.time)
         var prc = options.prc;
         var side_str = options.side_str;
         if (! this.rechAreas[side_str]) return;
@@ -639,6 +624,11 @@ var WFireRadialGrid = (function (_super) {
         this.rotate(radToGrad(angle));
         // запрос и установка перезарядки для каждой из сторон
 
+        var options = this.car.fireSidesMng.getRechargeStates(t);
+        for(var i = 0; i < options.length; i++)
+            this._recharging(options[i]);
+
+
     };
 
     WFireRadialGrid.prototype.zoomStart = function(){
@@ -658,19 +648,6 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype.test = function () {
         console.log('WFireRadialGrid.prototype.test');
-
-        while (this.elem_zoom.length)
-            this.elem_zoom.pop().remove();
-
-        /*
-         this.g.transform({rotation: 45, cx: 200, cy: 200});
-
-         this.big_circle.fill('#5f5');
-         this.big_circle.animate().opacity(0.0).after(function(){
-         this.fill('transparent');
-         this.opacity(1.0);
-         })
-         */
     };
 
 

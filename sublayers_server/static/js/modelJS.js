@@ -1,9 +1,12 @@
 var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
+        for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+        function __() {
+            this.constructor = d;
+        }
+
+        __.prototype = b.prototype;
+        d.prototype = new __();
+    };
 
 var ListMapObject = (function () {
     function ListMapObject() {
@@ -74,6 +77,7 @@ var DynamicObject = (function (_super) {
     };
 
     DynamicObject.prototype._manage_tm = function () {
+        // вызывается только из апдейтов (setState и setHPState)
         var hp_changed = this._hp_state.is_changed();
         var motion_changed = this._motion_state.is_moving();
 
@@ -101,14 +105,16 @@ var DynamicObject = (function (_super) {
         visualManager.changeModelObject(this);
     };
 
-    DynamicObject.prototype.getCurrentHP = function(time){
+    DynamicObject.prototype.getCurrentHP = function (time) {
         return this._hp_state.hp(time);
     };
 
-    DynamicObject.prototype.change = function(){
+    DynamicObject.prototype.change = function () {
         visualManager.changeModelObject(this);
         // todo: Сделать оптимизацию: расчёты p(t), fi(t), v(t) проводить здесь.
         // а по тем методам отдавать данные расчитанные здесь!
+
+        // Если перезарядки нет, то убрать из таймера
     };
 
     return DynamicObject;
@@ -156,6 +162,47 @@ var UserCar = (function (_super) {
         this.fireSidesMng = new FireSideMng();
     }
 
+    UserCar.prototype._manage_tm = function () {
+        // вызывается только из апдейтов (setState и setHPState)
+        var hp_changed = this._hp_state.is_changed();
+        var motion_changed = this._motion_state.is_moving();
+
+        if (this._in_tm && !(motion_changed || hp_changed)) {
+            // если в timeManager и стейты не меняются, то удалиться из таймменеджера
+            // при условии, что все борта перезаряжены
+            if (!this.fireSidesMng.inRecharge(clock.getCurrentTime())) {
+                timeManager.delTimerEvent(this, 'change');
+                this._in_tm = false;
+            }
+        }
+        if (!this._in_tm && (motion_changed || hp_changed)) {
+            // если не в timeManager и хоть один стейт меняется, то добавиться в таймменеджер
+            timeManager.addTimerEvent(this, 'change');
+            this._in_tm = true;
+        }
+    };
+
+    UserCar.prototype.change = function () {
+        _super.prototype.change.call(this);
+        // Если перезарядки нет и мы не движемся
+        // todo: переделать это условие. Возможно стоит обойтись setTimeout, чтобы удаляться из таймера
+        if (!this.fireSidesMng.inRecharge(clock.getCurrentTime())
+            && !this._hp_state.is_changed()
+            && !this._motion_state.is_moving()) {
+            timeManager.delTimerEvent(this, 'change');
+            this._in_tm = false;
+        }
+    };
+
+    UserCar.prototype.setShootTime = function (aSideStr, shoot_time) {
+        this.fireSidesMng.setShootTime(aSideStr, shoot_time);
+        // добавить в тайм-менеджер, чтобы оно начало обновляться
+        if (this.fireSidesMng.inRecharge(clock.getCurrentTime()) && !this._in_tm) {
+            timeManager.addTimerEvent(this, 'change');
+            this._in_tm = true;
+        }
+    };
+
     UserCar.prototype.setLastSpeed = function (speed) {
         this._lastSpeed = speed;
     };
@@ -183,9 +230,8 @@ var FireSideMng = (function () {
             this.sides[aSide].addSector(aFireSector)
     };
 
-    FireSideMng.prototype.setShootTime = function(aSideStr, shoot_time) {
+    FireSideMng.prototype.setShootTime = function (aSideStr, shoot_time) {
         this.sides[aSideStr].setShootTime(shoot_time);
-        // добавить в тайм-менеджер, чтобы оно начало обновляться!!!
     };
 
     FireSideMng.prototype.getSectors = function (filterSides, isDischarge) {
@@ -196,7 +242,7 @@ var FireSideMng = (function () {
         if (filterSides == "" || filterSides == null)
             filterSides = ["front", "back", "right", "left"];
 
-        for(var i = 0; i < filterSides.length; i++)
+        for (var i = 0; i < filterSides.length; i++)
             res = res.concat(this.sides[filterSides[i]].getSectorsByType(isDischarge));
 
         return res;
@@ -217,6 +263,29 @@ var FireSideMng = (function () {
             return res;
         }
         return [this.sides.front, this.sides.right, this.sides.back, this.sides.left];
+    };
+
+    FireSideMng.prototype.inRecharge = function (time) {
+        // возвращает TRUE если хоть одна сторона в перезарядке
+        return this.sides.front.inRecharge(time)
+            || this.sides.back.inRecharge(time)
+            || this.sides.left.inRecharge(time)
+            || this.sides.right.inRecharge(time);
+    };
+
+    FireSideMng.prototype.getRechargeStates = function (time) {
+        var rez = [];
+        var sides = this.sides;
+        for (var side in sides)
+            if (sides[side].isDischarge()) {
+                var value = sides[side].getRechargeState(time);
+                rez.push({
+                    prc: value.prc,
+                    time: value.time,
+                    side_str: side
+                });
+            }
+        return rez;
     };
 
     return FireSideMng;
@@ -240,37 +309,46 @@ var FireSide = (function () {
         this.sideRecharge = Math.max(this.sideRecharge, aFireSector.recharge);
     };
 
-    FireSide.prototype.setShootTime = function(shoot_time) {
+    FireSide.prototype.setShootTime = function (shoot_time) {
         this.last_shoot = shoot_time;
     };
 
-    FireSide.prototype.getRechargeState = function(time){
+    FireSide.prototype.getRechargeState = function (time) {
         // вернуть нужно проценты до окончания перезарядки + время до окончания перезарядки
         var rch_finish = this.last_shoot + this.sideRecharge;
         var dt = rch_finish - time;
-        if(dt <= 0.0) return {
+        if (dt <= 0.0) return {
             prc: 1.,
             time: 0.0
         };
-        if(dt > this.sideRecharge){ console.error(' !!!! Логическая ошибка !!!!'); return null;}
+        if (dt - this.sideRecharge > 0.1) {
+            // todo: разобраться с синхронизацией времени, иначе будут проблемы!!!
+            console.error(' !!!! Логическая ошибка !!!! dt > sideRecharge');
+            console.log(' dt            = ', dt);
+            console.log(' sideRecharge  = ', this.sideRecharge);
+            return null;
+        }
         return {
-            prc: dt / this.sideRecharge,
+            prc: 1. - (dt / this.sideRecharge),
             time: dt
         }
+    };
 
+    FireSide.prototype.inRecharge = function (time) {
+        return this.sideRecharge + this.last_shoot > time;
     };
 
     FireSide.prototype.getSectorsByType = function (isDischarge) {
         var res = [];
-        for(var i = 0; i< this.sectors.length; i++){
+        for (var i = 0; i < this.sectors.length; i++) {
             var sector_disc = this.sectors[i].isDischarge();
-            if ( (isDischarge && sector_disc) || !(isDischarge || sector_disc) )
+            if ((isDischarge && sector_disc) || !(isDischarge || sector_disc))
                 res.push(this.sectors[i]);
         }
         return res;
     };
 
-    FireSide.prototype.getMaxDischargeRadius = function (){
+    FireSide.prototype.getMaxDischargeRadius = function () {
         var r = 0;
         for (var i = 0; i < this.sectors.length; i++)
             if (this.sectors[i].isDischarge())
@@ -278,13 +356,17 @@ var FireSide = (function () {
         return r;
     };
 
-    FireSide.prototype.getMaxDischargeWidth = function (){
+    FireSide.prototype.getMaxDischargeWidth = function () {
         var w = 0;
         for (var i = 0; i < this.sectors.length; i++)
             if (this.sectors[i].isDischarge())
                 w = Math.max(w, this.sectors[i].width);
         return w;
     };
+
+    FireSide.prototype.isDischarge = function(){
+        return this.sideRecharge > 0;
+    }
 
 
     return FireSide;
@@ -309,7 +391,7 @@ var FireSector = (function () {
     };
 
     FireSector.prototype.isDischarge = function () {
-       return this.recharge > 0.0;
+        return this.recharge > 0.0;
     };
 
     return FireSector;
@@ -347,34 +429,34 @@ var State = (function () {
         this._rv_fi = _rv_fi;
     }
 
-    State.prototype.s = function(t) {
+    State.prototype.s = function (t) {
         var dt = t - this.t0;
         return this.v0 * dt + 0.5 * this.a * (dt * dt);
     };
 
-    State.prototype.v = function(t) {
+    State.prototype.v = function (t) {
         var dt = t - this.t0;
         return this.v0 + this.a * dt;
     };
 
-    State.prototype.r = function(t) {
+    State.prototype.r = function (t) {
         if (this.a <= 0)
             return Math.pow(this.v0, 2) / this.ac_max + this.r_min;
         return Math.pow(this.v(t), 2) / this.ac_max + this.r_min
     };
 
-    State.prototype.sp_fi = function(t) {
+    State.prototype.sp_fi = function (t) {
         return Math.log(this.r(t) / this.r_min) / this._sp_m
     };
 
-    State.prototype.fi = function(t) {
+    State.prototype.fi = function (t) {
         if (!this._c) return this.fi0;
         if (this.a <= 0.0)
             return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
         return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
     };
 
-    State.prototype.p = function(t) {
+    State.prototype.p = function (t) {
         if (!this._c)
             return summVector(this.p0, polarPoint(this.s(t), this.fi0));
         return summVector(this._c, polarPoint(this.r(t), this.fi(t) + this._turn_sign * this._rv_fi));
@@ -397,11 +479,11 @@ var HPState = (function () {
         this.dhp = dhp;
     }
 
-    HPState.prototype.hp = function(t) {
+    HPState.prototype.hp = function (t) {
         return Math.min(this.max_hp, this.hp0 - this.dps * (t - this.t0));
     };
 
-    HPState.prototype.is_changed = function() {
+    HPState.prototype.is_changed = function () {
         return this.dps != 0.0;
     };
 

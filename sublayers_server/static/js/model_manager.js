@@ -431,13 +431,19 @@ var ClientManager = (function () {
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 
-        console.log('etime = ', event.time, '    ctime = ', clock.getCurrentTime());
+        //console.log('etime = ', event.time, '    ctime = ', clock.getClientMS());
 
         // установка last_shoot
         var etime = event.time / 1000.;
-        if (etime > clock.getCurrentTime()) console.error('Серверное время больше клиентского при выстреле.');
+        // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
+        if ((event.time > clock.getClientMS()) && (etime > clock.getCurrentTime())) {
+            console.error('Серверное время больше клиентского при выстреле.');
+            console.error('server event time = ', etime);
+            console.error('client pure  time = ', clock.getClientMS() / 1000.);
+            console.error('clnt with dt time = ', clock.getCurrentTime());
+        }
         // todo: отфильтровать, так как могло прийти не для своей машинки
-        user.userCar.fireSidesMng.setShootTime(event.side, etime);
+        user.userCar.setShootTime(event.side, etime);
 
 
 
