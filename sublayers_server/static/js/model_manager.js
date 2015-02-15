@@ -277,7 +277,8 @@ var ClientManager = (function () {
             car.cls = event.object.cls;
 
             // todo: обсудить работу с овнерами
-            aOwner.bindCar(car);
+            if (aOwner)
+                aOwner.bindCar(car);
 
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
@@ -352,6 +353,9 @@ var ClientManager = (function () {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
+            if (car.owner)
+                car.owner.unbindCar(car);
+
             var list_vo = visualManager.getVobjsByMobj(car);
             for(var i = 0; i< list_vo.length; i++)
                 list_vo[i].delFromVisualManager();

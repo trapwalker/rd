@@ -22,7 +22,6 @@ var WViewRadius = (function (_super) {
         });
         this.marker.setRadius(this._calcRadius());
         this.marker.addTo(map);
-        console.log(this._calcRadius());
         this.change(clock.getCurrentTime());
     }
 
@@ -42,7 +41,6 @@ var WViewRadius = (function (_super) {
         if(map.getZoom() != this.lastZoom) {
             this.lastZoom = map.getZoom();
             var r = this._calcRadius();
-            console.log('r = ', r);
             this.marker.setRadius(r);
         }
     };
