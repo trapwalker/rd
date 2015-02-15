@@ -181,8 +181,7 @@ var ClientManager = (function () {
             new WHPSlider(mcar);     // виджет HP
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
-
-
+            new WViewRadius(mcar, radius_visible); // виджет радиуса видимости
 
 
             // Инициализация радиального меню - установка правильных id секторов
@@ -255,6 +254,7 @@ var ClientManager = (function () {
             var hp_state = this._getHPState(event.object.hp_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
+            var radius_visible = event.object.r;
 
 
             var car = visualManager.getModelObject(uid);
@@ -281,7 +281,7 @@ var ClientManager = (function () {
 
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
-
+            new WViewRadius(car, radius_visible);    // виджет области обзора
 
             /*
             else { // если не своя, то проверить есть ли такая в модели
