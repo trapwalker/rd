@@ -1,12 +1,12 @@
 var __extends = this.__extends || function (d, b) {
-        for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-        function __() {
-            this.constructor = d;
-        }
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() {
+        this.constructor = d;
+    }
 
-        __.prototype = b.prototype;
-        d.prototype = new __();
-    };
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 
 var ListMapObject = (function () {
     function ListMapObject() {
@@ -113,8 +113,6 @@ var DynamicObject = (function (_super) {
         visualManager.changeModelObject(this);
         // todo: Сделать оптимизацию: расчёты p(t), fi(t), v(t) проводить здесь.
         // а по тем методам отдавать данные расчитанные здесь!
-
-        // Если перезарядки нет, то убрать из таймера
     };
 
     return DynamicObject;
@@ -218,20 +216,20 @@ var UserCar = (function (_super) {
 var FireSideMng = (function () {
     function FireSideMng() {
         this.sides = {
-            front: new FireSide(0),
-            right: new FireSide(0.5 * Math.PI),
-            back: new FireSide(Math.PI),
-            left: new FireSide(1.5 * Math.PI)
+            front: new FireSide(0, 'front'),
+            right: new FireSide(0.5 * Math.PI, 'right'),
+            back: new FireSide(Math.PI, 'back'),
+            left: new FireSide(1.5 * Math.PI, 'left')
         }
     }
 
-    FireSideMng.prototype.addSector = function (aFireSector, aSide) {
-        if (aSide in this.sides)
-            this.sides[aSide].addSector(aFireSector)
+    FireSideMng.prototype.addSector = function (fireSector, side) {
+        if (side in this.sides)
+            this.sides[side].addSector(fireSector)
     };
 
-    FireSideMng.prototype.setShootTime = function (aSideStr, shoot_time) {
-        this.sides[aSideStr].setShootTime(shoot_time);
+    FireSideMng.prototype.setShootTime = function (sideStr, shoot_time) {
+        this.sides[sideStr].setShootTime(shoot_time);
     };
 
     FireSideMng.prototype.getSectors = function (filterSides, isDischarge) {
@@ -295,8 +293,9 @@ var FireSideMng = (function () {
 
 
 var FireSide = (function () {
-    function FireSide(direction) {
+    function FireSide(direction, sideStr) {
         this.direction = direction;
+        this.sideStr = sideStr;
         this.sectors = [];
         this.sideRadius = 0;
         this.sideWidth = 0;
@@ -304,11 +303,11 @@ var FireSide = (function () {
         this.last_shoot = 0.0;
     }
 
-    FireSide.prototype.addSector = function (aFireSector) {
-        this.sectors.push(aFireSector);
-        this.sideRadius = Math.max(this.sideRadius, aFireSector.radius);
-        this.sideWidth = Math.max(this.sideWidth, aFireSector.width);
-        this.sideRecharge = Math.max(this.sideRecharge, aFireSector.recharge);
+    FireSide.prototype.addSector = function (fireSector) {
+        this.sectors.push(fireSector);
+        this.sideRadius = Math.max(this.sideRadius, fireSector.radius);
+        this.sideWidth = Math.max(this.sideWidth, fireSector.width);
+        this.sideRecharge = Math.max(this.sideRecharge, fireSector.recharge);
     };
 
     FireSide.prototype.setShootTime = function (shoot_time) {
@@ -366,10 +365,9 @@ var FireSide = (function () {
         return w;
     };
 
-    FireSide.prototype.isDischarge = function(){
+    FireSide.prototype.isDischarge = function () {
         return this.sideRecharge > 0;
-    }
-
+    };
 
     return FireSide;
 })();

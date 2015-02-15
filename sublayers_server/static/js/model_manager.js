@@ -14,17 +14,17 @@ var ClientManager = (function () {
         });
     }
 
-    // вспомогательные методы для парсинга
-    // Считывает параметры для создания состояние и возвращает его.
+    // Вспомогательные методы для парсинга
+
     ClientManager.prototype._getState = function (data) {
         if (data)
             return new State(
-                data.t0,                                 // Время
-                new Point(data.p0.x, data.p0.y),          // Позиция
-                data.fi0,                                // Направление
-                data.v0,                                 // Скорость - число
-                data.a,                                 // Ускорение - число
-                data.c ? (new Point(data.c.x, data.c.y)) : null,     // Центр поворота, которого может не быть
+                data.t0,                                          // Время
+                new Point(data.p0.x, data.p0.y),                  // Позиция
+                data.fi0,                                         // Направление
+                data.v0,                                          // Скорость - число
+                data.a,                                           // Ускорение - число
+                data.c ? (new Point(data.c.x, data.c.y)) : null,  // Центр поворота, которого может не быть
                 data.turn,
                 data.ac_max,
                 data.r_min,
@@ -160,7 +160,6 @@ var ClientManager = (function () {
 
     // Входящие сообщения
 
-    // Входящий от сервера Init для машинки
     ClientManager.prototype.Init = function (event) {
         //console.log('ClientManager.prototype.Init');
         var servtime = event.time;
@@ -206,15 +205,13 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             //new WFireSectors(mcar, fireSectors);  // виджет секторов
             new WFlashlightController(mcar); // виджет-контроллер вспышек
-            //new WFireController(mcar);
+            wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
-
         }
-
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
         setTitleOnPage();
@@ -286,29 +283,25 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Contact = function (event) {
         //console.log('ClientManager.prototype.Contact');
-        if (event.is_first) { // Только если первый раз добавляется машинка
+        if (event.is_first) { // только если первый раз добавляется машинка
             var state = this._getState(event.object.state);
             var hp_state = this._getHPState(event.object.hp_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
 
-
+            // Проверка: нет ли уже такой машинки.
             var car = visualManager.getModelObject(uid);
-
             if (car) {
                 console.error('Contact Error: Такая машинка уже есть на клиенте! Ошибка!');
                 return;
             }
-
             if (car == user.userCar) {
                 console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
                 return;
             }
 
-            // создание новой машинки
-
+            // Создание новой машинки
             car = new MapCar(uid, state, hp_state);
-
             car.role = event.object.role;
             car.cls = event.object.cls;
 
@@ -316,35 +309,11 @@ var ClientManager = (function () {
             if (aOwner)
                 aOwner.bindCar(car);
 
-            // создание виджетов новой машинки
-            new WCarMarker(car);    // виджет маркера
-            new WFlashlightController(car); // виджет-контроллер вспышек
-
-
-            /*
-            else { // если не своя, то проверить есть ли такая в модели
-                if (!listMapObject.exist(uid)) {  // добавить машинку, если её нет
-                    var car = new MapCar(uid, aHP, aState);
-                    // установить роль
-                    car.role = event.object.role;
-                    car.cls = event.object.cls;
-                    carMarkerList.add(car, aOwner);
-                    //if(aHP == 0)// поставить стоп-трек
-                    //    car.track.speedV = new Point(0, 0);
-
-                } else { // Если такая машинка уже есть, то установить все переменные
-                    //listMapObject.setState(uid, aState);
-                }
-                // После добавления машинки или её апдейта, проверяем сколько у неё хп
-                if (listMapObject.objects[uid].hp == 0) {
-                    listMapObject.objects[uid].marker.setIcon(iconsLeaflet.icon_killed_V2);
-                }
-            }
-
-            */
+            // Создание/инициализация виджетов
+            new WCarMarker(car);                 // виджет маркера
+            new WFlashlightController(car);      // виджет-контроллер вспышек
+            wFireController.addModelObject(car); // добавить себя в радар
         }
-
-
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerContact())
@@ -379,8 +348,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Out = function (event) {
-        console.log('ClientManager.prototype.Out');
-        if(event.is_last) { // Только если машинку нужно совсем убирать
+        //console.log('ClientManager.prototype.Out');
+        if(event.is_last) { // только если машинку нужно совсем убирать
             // очистить все виджеты машинки
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
@@ -393,13 +362,10 @@ var ClientManager = (function () {
 
             var list_vo = visualManager.getVobjsByMobj(car);
             for(var i = 0; i< list_vo.length; i++)
-                list_vo[i].delFromVisualManager();
+                list_vo[i].delModelObject(car);
 
             // убрать саму машинку из визуалменеджера
             visualManager.delModelObject(car);
-
-
-
 
             // стирание линий
             //carMarkerList.delContactLine(event.subject_id, event.object_id);
@@ -417,7 +383,6 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.Chat');
         //chat.addMessage(-1, '', getOwner(event.author), event.text);
     };
-
 
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
@@ -444,8 +409,6 @@ var ClientManager = (function () {
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime);
-
-
 
         var dir_side = null;
         switch (event.side) {

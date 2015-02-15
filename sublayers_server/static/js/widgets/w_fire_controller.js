@@ -1,7 +1,7 @@
 /*
  * Виджет стрельбы
  */
-var ConstSectorWidth = 60;     // Ширина сектора, которая будет отображаться в виджете (в градусах)
+var ConstSectorWidth = 70;     // Ширина сектора, которая будет отображаться в виджете (в градусах)
 var ConstSectorDiameter = 150; // Диаметр виджета (в пикселях)
 
 var WFireController = (function (_super) {
@@ -10,13 +10,9 @@ var WFireController = (function (_super) {
     function WFireController(car) {
         _super.call(this, [car]);
         this.car = car;
-
-        this.options = {
-            parent: 'fireControlArea',
-            intervalRecharge: 50
-        };
-
-        this.sectors = [];
+        this.cars = [];
+        this.autoShoot = false;
+        this.sides = [];
         this.visible = true;
         this.rotateAngle = 0;
         this.diameter = ConstSectorDiameter;
@@ -29,7 +25,7 @@ var WFireController = (function (_super) {
             y: this.diameter / 2
         };
 
-        var mainParent = $('#' + this.options.parent);
+        var mainParent = $('#fireControlArea');
         mainParent.addClass('fire-control-parent');
         mainParent.append('<div id="fireControlAreaRumble"></div>');
         var parent = $('#fireControlAreaRumble');
@@ -80,7 +76,10 @@ var WFireController = (function (_super) {
         this.SVGSectorsGroup = document.createElementNS(this.NS, 'g');
         this.SVG.appendChild(this.SVGSectorsGroup);
 
-        this._initSectors();
+        // Создание SVG для нормального сектора
+        this.normalPath = this._getSVGPathSide(1.);
+
+        this._initSides();
         this.change();
     }
 
@@ -113,8 +112,24 @@ var WFireController = (function (_super) {
         return this.visible;
     };
 
-    WFireController.prototype.changeAutoShootingEnable = function (event) {
-
+    WFireController.prototype.changeAutoShootingEnable = function () {
+        //console.log('WFireController.prototype.changeAutoShootingEnable');
+        if (this.autoShoot) {
+            //console.log('WFireController.prototype.changeAutoShootingEnable', 'OFF');
+            clientManager.sendFireAutoEnable('front', false);
+            clientManager.sendFireAutoEnable('back', false);
+            clientManager.sendFireAutoEnable('right', false);
+            clientManager.sendFireAutoEnable('left', false);
+            this.autoShoot = false;
+        }
+        else {
+            //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
+            clientManager.sendFireAutoEnable('front', true);
+            clientManager.sendFireAutoEnable('back', true);
+            clientManager.sendFireAutoEnable('right', true);
+            clientManager.sendFireAutoEnable('left', true);
+            this.autoShoot = true;
+        }
     };
 
     WFireController.prototype._getSVGPathSide = function (radiusPath) {
@@ -134,58 +149,54 @@ var WFireController = (function (_super) {
                'Z';
     };
 
-    WFireController.prototype._initSectors = function () {
-        this._clearSectors();
+    WFireController.prototype._initSides = function () {
+        this._clearSides();
         var sides = this.car.fireSidesMng.getAllSides(true);
         for (var i = 0; i < sides.length; i++) {
             // Создание объекта в котором будет вся информация о секторе
-            var sector = {};
-            // Сохранить pathStr нормального состояния сектора
-            sector.normalPath = this._getSVGPathSide(1);
+            var side = {};
 
             // Создание и добавление группы для сектора
-            sector.SVGGroup = document.createElementNS(this.NS, "g");
-            this.SVGSectorsGroup.appendChild(sector.SVGGroup);
-            sector.SVGGroup.setAttribute('transform', 'translate(' + this.center.x + ', ' + this.center.y + ') ' +
+            side.SVGGroup = document.createElementNS(this.NS, "g");
+            this.SVGSectorsGroup.appendChild(side.SVGGroup);
+            side.SVGGroup.setAttribute('transform', 'translate(' + this.center.x + ', ' + this.center.y + ') ' +
                                          'rotate(' + radToGrad(sides[i].direction) + ')');
 
             // Рисование серого статического сектора
-            sector.SVGPathShadow = document.createElementNS(this.NS, "path");
-            sector.SVGPathShadow.setAttribute('class', 'fire-control-sector-shadow');
-            sector.SVGPathShadow.setAttribute('d', sector.normalPath);
-            sector.SVGGroup.appendChild(sector.SVGPathShadow);
+            side.SVGPathShadow = document.createElementNS(this.NS, "path");
+            side.SVGPathShadow.setAttribute('class', 'fire-control-sector-shadow');
+            side.SVGPathShadow.setAttribute('d', this.normalPath);
+            side.SVGGroup.appendChild(side.SVGPathShadow);
 
             // Рисование
-            sector.SVGPath = document.createElementNS(this.NS, "path");
-            sector.SVGPath.setAttribute('class', 'fire-control-sector sublayers-clickable');
-            sector.SVGPath.setAttribute('d', sector.normalPath);
-            sector.SVGGroup.appendChild(sector.SVGPath);
+            side.SVGPath = document.createElementNS(this.NS, "path");
+            side.SVGPath.setAttribute('class', 'fire-control-sector sublayers-clickable');
+            side.SVGPath.setAttribute('d', this.normalPath);
+            side.SVGGroup.appendChild(side.SVGPath);
 
             // Добавить в сектор ссылку на side
-            sector.side = sides[i];
-            console.log(sector.side);
+            side.side = sides[i];
 
             // Устанавливаем флаг речарджа сектора в false
-            sector.recharged = false;
+            side.recharged = false;
 
             // Вешаем на сектор обработчик клика данного сектора
-            $(sector.SVGPath).on('click', {sector: sector}, this.shootBySide);
+            $(side.SVGPath).on('click', {side: side}, this.shootBySide);
 
             // Помещаем сектор в массив секторов данного объекта
-            this.sectors.push(sector);
+            this.sides.push(side);
         }
     };
 
-    WFireController.prototype._clearSectors = function () {
-        for (; this.sectors.length > 0;) {
-            var sector = this.sectors.pop();
-            $(sector.SVGPath).off('click', this._fireSectorEvent);
-            $(sector.SVGPath).remove();
-            $(sector.SVGPathShadow).remove();
-            $(sector.SVGGroup).remove();
-            // todo: точки с радара удаляются раньше, очищая backLightList в carMarkerList?
+    WFireController.prototype._clearSides = function () {
+        for (; this.sides.length > 0;) {
+            var side = this.sides.pop();
+            $(sides.SVGPath).off('click', this._fireSectorEvent);
+            $(sides.SVGPath).remove();
+            $(sides.SVGPathShadow).remove();
+            $(sides.SVGGroup).remove();
         }
-        this.sectors = [];
+        this.sides = [];
     };
 
     WFireController.prototype._setRotation = function (angle) {
@@ -196,12 +207,121 @@ var WFireController = (function (_super) {
                                               this.center.x + ', ' + this.center.y + ')');
     };
 
-    WFireController.prototype.change = function () {
-        console.log('WFireController.prototype.change');
-        var time = clock.getCurrentTime();
-        // Вращаем виджет
-        this._setRotation(this.car.getCurrentDirection(time));
+    WFireController.prototype._addCarPoint = function(side, car) {
+        //console.log('WFireController.prototype._addCarPoint');
+        // Вычислить точку для отрисовки
+        var relativeRadius = car.distance / side.side.sideRadius;
+        var relativeAngle = - car.fi;
+        var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        var p = rotateVector(new Point(radius, 0), ((2 * relativeAngle * this.halfSectorWidth) / side.side.sideWidth));
+        // Нарисовать точку
+        car.svg = document.createElementNS(this.NS, 'circle');
+        // Добавить точку в сектор
+        car.svg.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
+        car.svg.setAttribute('r', 2);
+        car.svg.setAttribute('cx', p.x);
+        car.svg.setAttribute('cy', p.y);
+        side.SVGGroup.appendChild(car.svg);
     };
+
+    WFireController.prototype._updateCarPoint = function(side, car) {
+        //console.log('WFireController.prototype._updateCarPoint');
+        // Вычислить точку для отрисовки
+        var relativeRadius = car.distance / side.side.sideRadius;
+        var relativeAngle = - car.fi;
+        var radius = this.radiusIn + ((this.radiusOut - this.radiusIn) * relativeRadius);
+        var p = rotateVector(new Point(radius, 0), ((2 * relativeAngle * this.halfSectorWidth) / side.side.sideWidth));
+        // Обновить центр точки точку
+        car.svg.setAttribute('cx', p.x);
+        car.svg.setAttribute('cy', p.y);
+    };
+
+    WFireController.prototype._deleteCarPoint = function(car) {
+        //console.log('WFireController.prototype._deleteCarPoint');
+        if (car.svg)
+            $(car.svg).remove();
+        car.svg = null;
+    };
+
+    WFireController.prototype._carInSide = function(car, side, uCarPos, uCarDir) {
+        car.fi = getDiffAngle((uCarDir + side.side.direction), car.angle);
+        var distBool = car.distance <= side.side.sideRadius;
+        var fiBool = Math.abs(car.fi) <= (side.side.sideWidth / 2.);
+        return (distBool && fiBool);
+        // todo: усложнить проверку (проверять попадание в сектор)
+    };
+
+    WFireController.prototype.change = function () {
+        //console.log('WFireController.prototype.change');
+        var time = clock.getCurrentTime();
+
+        // Вращаем виджет
+        var userCarDirection = this.car.getCurrentDirection(time);
+        this._setRotation(userCarDirection);
+
+        // Анимация перезарядки
+        for (var i = 0; i < this.sides.length; i++) {
+            var side = this.sides[i];
+            var sideState = side.side.getRechargeState(time);
+            if (sideState.prc == 1)
+                side.SVGPath.setAttribute('d', this.normalPath);
+            else {
+                var pathstr = this._getSVGPathSide(sideState.prc);
+                side.SVGPath.setAttribute('d', pathstr);
+            }
+        }
+
+        // Анимация радара
+        var userCarPosition = this.car.getCurrentCoord(time);
+        for (var i = 0; i < this.cars.length; i++) {
+            var car = this.cars[i];
+            var carPosition = car.mobj.getCurrentCoord(time);
+            var distance = distancePoints(userCarPosition, carPosition);
+            var angle = angleVectorRadCCW(subVector(carPosition, userCarPosition));
+            if ((car.angle == angle) && (car.distance == distance)) continue;
+            car.angle = angle;
+            car.distance = distance;
+            this._deleteCarPoint(car);
+            for (var j = 0; j < this.sides.length; j++) {
+                var side = this.sides[j];
+                if (this._carInSide(car, side, userCarPosition, userCarDirection)) {
+                    if (car.svg) this._updateCarPoint(side, car);
+                    else this._addCarPoint(side, car);
+                }
+            }
+        }
+    };
+
+    WFireController.prototype.shootBySide = function(event) {
+        clientManager.sendFireDischarge(event.data.side.side.sideStr);
+    };
+
+    WFireController.prototype.addModelObject = function (mobj) {
+        //console.log('WFireController.prototype.addModelObject');
+        if (_super.prototype.addModelObject.call(this, mobj)) {
+            var car = {
+                mobj: mobj,
+                svg: null,
+                distance: 0,
+                angle: 0,
+                fi: 0
+            };
+            this.cars.push(car);
+            this.change();
+        }
+    };
+
+    WFireController.prototype.delModelObject = function (mobj) {
+        //console.log('WFireController.prototype.delModelObject');
+        var isSelf = mobj == this.car;
+        if (_super.prototype.delModelObject.call(this, mobj) && !isSelf) {
+            var i = 0;
+            while ((i < this.cars.length) && (this.cars[i].mobj != mobj)) i++;
+            if (i >= this._model_objects.length) return false;
+            this._deleteCarPoint(this.cars[i]);
+            this.cars.splice(i, 1);
+        }
+};
 
     WFireController.prototype.delFromVisualManager = function () {
         //console.log('WFireController.prototype.delFromVisualManager');
@@ -209,11 +329,7 @@ var WFireController = (function (_super) {
         _super.prototype.delFromVisualManager.call(this);
     };
 
-    WFireController.prototype.shootBySide = function(event) {
-        // Получить сектор, для которого вызвано событие
-        var sector = event.data.sector;
-        alert(sector.side.direction);
-    };
-
     return WFireController;
-})(VisualObject);
+}) (VisualObject);
+
+var wFireController;
