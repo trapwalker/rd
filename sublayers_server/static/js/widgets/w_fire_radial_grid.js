@@ -18,13 +18,11 @@ var WFireRadialGrid = (function (_super) {
     }
 
     WFireRadialGrid.prototype.init_marker = function(t){
-        var max_circles = 6; // todo: сделать зависимость от зума
+        var max_circles = 6; // кол-во кругов сетки
         var time = clock.getCurrentTime();
-        var pi = Math.PI;
-        var i = 0; // тут будет много циклов
+        var i = 0; // для циклов
         var position = this.car.getCurrentCoord(time);
         var sides = this.car.fireSidesMng.sides;
-        // todo: сделать зависимость от зума
         var max_radius = Math.max(
             sides.front.sideRadius,
             sides.back.sideRadius,
@@ -35,7 +33,7 @@ var WFireRadialGrid = (function (_super) {
         this.max_circles = max_circles;
         this.max_radius = max_radius;
 
-
+        // создание иконки и маркера
         this.div_id = 'WFireRadialGrid' + (-generator_ID.getID());
         var myIcon = L.divIcon({
             className: 'my-effect-icon',
@@ -54,23 +52,24 @@ var WFireRadialGrid = (function (_super) {
 
         map.addLayer(this.marker);
 
+        // работа с SVG
         var draw = SVG(this.div_id);
         this.draw = draw;
 
-        // попытка вставить всё в группу
+        // группа: для вращения
         var g = draw.group();
         this.g = g;
-
+        // после инициализации SVG можно задать все параметры: цвеат, градиенты и тд
         this._init_svg_parametrs();
 
-        // Добавление кружочков, уменьшая радиус
+        // Добавление радиальных кружков, уменьшая радиус
         for (i = 1; i <= max_circles; i++)
             g.circle(0.0).radius(max_radius * i / max_circles)
                 .center(size, size)
                 .fill(this.svg_params.circles.fill)
                 .stroke(this.svg_params.circles.stroke);
 
-        // добавление 45 градусных линий-отметок
+        // добавление 45 градусных линий-отметок (их длинна сейчас по 10 градусов...изменяема)
         var p1 = new Point(max_radius, 0);
         var p2 = new Point(max_radius - (max_radius / max_circles) * 0.75, 0);
         var p31 = rotateVector(new Point(max_radius, 0), gradToRad(10.0));
@@ -114,7 +113,6 @@ var WFireRadialGrid = (function (_super) {
             this.zoomatorsPoints.push(pz); // сохраняем точку, чтобы потом вокруг неё вращать текст
         }
 
-
         // вывод для каждого из бортов его области перезарядки
         this.rechAreas = {};
         this._drawRechargeArea('front');
@@ -122,22 +120,16 @@ var WFireRadialGrid = (function (_super) {
         this._drawRechargeArea('left');
         this._drawRechargeArea('right');
 
-
-
-
-
-
         // вывод текста зумматора
         this._drawZoomatorsText();
 
         // вывод секторов
         this._drawSectors();
-
     };
-
 
     WFireRadialGrid.prototype._init_svg_parametrs = function () {
         var g = this.g;
+        // основные цвета сетки
         this.svg_colors = {
             main: '#5f5'
         };
@@ -155,8 +147,6 @@ var WFireRadialGrid = (function (_super) {
         var path = g.path(text_rech_path);
         var lpath = path.length();
         path.remove();
-
-
 
         this.svg_params = {
             // настройка кругов
@@ -268,12 +258,8 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-
     WFireRadialGrid.prototype._drawSectors = function(){
-        // отрисовывает все сектора на сетку, зависит от зума
-
         // Подготовка для отрисовки секторов и бортов
-        var g = this.g;
         var first_radius = this.max_radius / this.max_circles;
         var second_radius = this.max_radius * 2/ this.max_circles;
 
@@ -301,7 +287,6 @@ var WFireRadialGrid = (function (_super) {
             }
         }
 
-
         // Добавление автоматических секторов (только сектора, без привязки к стронам)
         var auto_sectors = this.car.fireSidesMng.getSectors('', false);
         for(i=0; i< auto_sectors.length; i++){
@@ -310,7 +295,6 @@ var WFireRadialGrid = (function (_super) {
             if (asect_radius > first_radius) // значит сектор можно рисовать впринципе
                this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
         }
-
 
         // todo: меньше какого радиуса рисовать или не рисовать эти зацепы.
         // Добавление бортов - просто линии, указывающие направление борта
@@ -508,8 +492,6 @@ var WFireRadialGrid = (function (_super) {
         }
     };
 
-
-
     WFireRadialGrid.prototype._drawRechargeArea = function(side_str){
         var side = this.car.fireSidesMng.sides[side_str];
         var width = side.getMaxDischargeWidth();
@@ -537,7 +519,8 @@ var WFireRadialGrid = (function (_super) {
             .stroke(this.svg_params.rechArea.rech_arc.stroke)
             .fill(this.svg_params.rechArea.rech_arc.fill)
             .transform({rotation: radToGrad(direction), cx: size, cy: size})
-            .dmove(size, size);
+            .dmove(size, size)
+            .attr('stroke-linecap', 'round');
 
         // вывод текста по дуге
         var text = g.text(this.svg_params.rechArea.rech_text.tready);
@@ -553,13 +536,12 @@ var WFireRadialGrid = (function (_super) {
             width: width,
             rech_text: text,
             rech_flag: false
-            // todo: добавить сюда ссылки на текст (релоад или реади) и время в секундах
+            // todo: добавить сюда ссылку на текст времени в секундах
         }
     };
 
-
     WFireRadialGrid.prototype._recharging = function(options){
-        // todo: добавить время как входной параметр (просто считывать из options.time)
+        // todo: считать время как входной параметр (просто считывать из options.time)
         var prc = options.prc;
         var side_str = options.side_str;
         if (! this.rechAreas[side_str]) return;
@@ -602,7 +584,6 @@ var WFireRadialGrid = (function (_super) {
         }
     };
 
-
     WFireRadialGrid.prototype._setRechText = function(side_str, rech_text){
         // todo: передать сюда ещё текст времени, чтобы обнулить его (сделать равным  "")
         var text = this.rechAreas[side_str].rech_text;
@@ -610,15 +591,8 @@ var WFireRadialGrid = (function (_super) {
         text.textPath.attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
     };
 
-
-
-
-
     WFireRadialGrid.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
-        // todo: считать и установить позицию и направление
-        // todo: считать и установить проценты перезарядки и время перезарядки
-
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
@@ -627,20 +601,17 @@ var WFireRadialGrid = (function (_super) {
         // Установка новых координат маркера);
         this.marker.setLatLng(tempLatLng);
         this.rotate(radToGrad(angle));
-        // запрос и установка перезарядки для каждой из сторон
 
+        // запрос и установка перезарядки для каждой из сторон
         var options = this.car.fireSidesMng.getRechargeStates(t);
         for(var i = 0; i < options.length; i++)
             this._recharging(options[i]);
-
-
     };
 
     WFireRadialGrid.prototype.zoomStart = function(){
         //console.log('WFireRadialGrid.prototype.zoomStart');
         this._clearSectors();
         this._clearZoomatorsText();
-
     };
 
     WFireRadialGrid.prototype.zoomEnd = function(){
@@ -649,18 +620,10 @@ var WFireRadialGrid = (function (_super) {
         this._drawZoomatorsText();
     };
 
-
-
-    WFireRadialGrid.prototype.test = function () {
-        console.log('WFireRadialGrid.prototype.test');
-    };
-
-
     WFireRadialGrid.prototype.rotate = function(angle_in_degrees){
         this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
         this._rotateZoomatorsText(angle_in_degrees);
     };
-
 
     WFireRadialGrid.prototype.delFromVisualManager = function () {
         //console.log('WFireRadialGrid.prototype.delFromVisualManager');
