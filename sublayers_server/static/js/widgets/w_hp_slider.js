@@ -14,10 +14,14 @@ var WHPSlider = (function (_super) {
             max: car._hp_state.max_hp
         };
 
-        var parent = $('#' + this.options.parent);
+        var mainParent = $('#' + this.options.parent);
+        mainParent.append('<div id="divScaleCarHealthRumble"></div>');
+        var parent = $('#divScaleCarHealthRumble');
         this.koeff = 100 / this.options.max;
         // Добавление класса для родителя
-        parent.addClass('pbar-hp-parent');
+        mainParent.addClass('pbar-hp-parent');
+
+
         // создать 2 дива: левый и правый
         var nodeParentLeft = '<div id="pbarHPLeft"></div>';
         var nodeParentRight = '<div id="pbarHPRight"></div>';

@@ -267,11 +267,12 @@ var State = (function () {
 
 
 var HPState = (function () {
-    function HPState(t, max_hp, hp0, dps) {
+    function HPState(t, max_hp, hp0, dps, dhp) {
         this.t0 = t;
         this.max_hp = max_hp;
         this.hp0 = hp0;
         this.dps = dps;
+        this.dhp = dhp;
     }
 
     HPState.prototype.hp = function(t) {

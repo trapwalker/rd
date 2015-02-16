@@ -21,6 +21,8 @@ var WCarMarker = (function (_super) {
 
         // todo: сделать доступ к иконнке через car.cls
         marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
+        if(car.cls == 'Rocket')
+            marker.setIcon(iconsLeaflet.getIcon('icon_rocket_V1'));
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
         if (car.owner || car == user.userCar) {
@@ -42,9 +44,9 @@ var WCarMarker = (function (_super) {
         this.marker = marker;
     };
 
-    WCarMarker.prototype.change = function(time){
+    WCarMarker.prototype.change = function(t){
         //console.log('WCarMarker.prototype.change');
-        time = clock.getCurrentTime();
+        var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера

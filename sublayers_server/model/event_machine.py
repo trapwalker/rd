@@ -13,6 +13,7 @@ from time import sleep
 from threading import Thread
 from pprint import pprint as pp
 from collections import deque
+from zones import init_zones_on_server
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -35,6 +36,8 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
         self.parties = PartyDispatcher()
+        self.zones = []
+        init_zones_on_server(server=self)
 
     @staticmethod
     def get_time():

@@ -21,13 +21,16 @@ var WSpeedSlider = (function (_super) {
         };
 
         // сразу же применить родительскую css для родительского дива
-        $('#' + this.options.parent).addClass(this.options.parentCss);
+        var mainParent = $('#' + this.options.parent);
+        mainParent.addClass(this.options.parentCss);
+        mainParent.append('<div id="speedSetDivForSpeedSliderRumble"></div>');
+        var parent = $('#speedSetDivForSpeedSliderRumble');
 
         // создание и добавление двух главных дивов - правого и левого.
         var nodeParentLeft = '<div id="sliderSpeedLeft" class="slider-speed-left-main"></div>';
         var nodeParentRight = '<div id="sliderSpeedRight"class="slider-speed-right-main"></div>';
-        $('#' + this.options.parent).append(nodeParentLeft);
-        $('#' + this.options.parent).append(nodeParentRight);
+        parent.append(nodeParentLeft);
+        parent.append(nodeParentRight);
 
         // создание левых дивов-картинок
         var nodeLeft1 = '<div id="slider-speed-left-hwy"></div>';
@@ -111,9 +114,8 @@ var WSpeedSlider = (function (_super) {
             'Cruise Control</span>';
         var spanSpeedLimitsText = '<span id="spanSpeedLimitsText" class="control-zoom-speed-vertical-text">' +
             'Limits</span>';
-        $('#' + this.options.parent).append(spanSpeedCruiseControlText);
-        $('#' + this.options.parent).append(spanSpeedLimitsText);
-
+        parent.append(spanSpeedCruiseControlText);
+        parent.append(spanSpeedLimitsText);
 
         this._slide(null, {value: (this.options.max * 0.75).toFixed(0)});
         this.change(clock.getCurrentTime());

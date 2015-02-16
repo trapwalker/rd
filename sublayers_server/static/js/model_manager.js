@@ -41,7 +41,8 @@ var ClientManager = (function () {
                 data.t0,
                 data.max_hp,
                 data.hp0,
-                data.dps
+                data.dps,
+                data.dhp
             );
         return null;
     };
@@ -135,7 +136,6 @@ var ClientManager = (function () {
 
     };
 
-
     // Входящие сообщения
 
     // Входящий от сервера Init для машинки
@@ -182,7 +182,10 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             new WFireSectors(mcar, fireSectors);  // виджет секторов
             new WViewRadius(mcar, radius_visible); // виджет радиуса видимости
-
+            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
+            new WFlashlightController(mcar); // виджет-контроллер вспышек
+            //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
 
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
@@ -201,49 +204,60 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Update');
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
-        var owner = this._getOwner(event.object);
 
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
 
         if (!car) {
-            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка!');
+            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка! uid=', uid);
             return;
         }
 
-        // обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
-
+        // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
+
+        // Если своя машинка
+        if (car == user.userCar) {
+            // Считать таргет поинт и включить/выключить виджет таргет_поинта
+            var tp = event.object.target_point;
+            if (tp != undefined && tp != null)
+                mapManager.widget_target_point.activate(tp);
+            else
+                mapManager.widget_target_point.deactivate();
+
+            // При попадании залповым орудием включить эффект тряски
+            if (hp_state.dhp)
+                mapManager.widget_rumble.startDischargeRumble();
+        }
+
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        /*
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
                     .setRadius(3)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
-                        'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'comment: ' + event.comment + '</br>'
                 )
                     .addTo(myMap)
             );
-
-            if (event.object.state.c)
-                debugMapList.push(
-                    L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
-                        .setRadius(6)
-                        .bindPopup(
-                            'Тип сообщения: ' + event.cls + '</br>' +
-                            'Server-Time: ' + servtime / 1000. + '</br>' +
-                            'uid объекта: ' + event.object.uid + '</br>' +
-                            'comment: ' + event.comment + '</br>'
-                    )
-                        .addTo(myMap)
-                );
+            /*
+             if (event.object.state.c)
+             debugMapList.push(
+             L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
+             .setRadius(6)
+             .bindPopup(
+             'Тип сообщения: ' + event.cls + '</br>' +
+             'Server-Time: ' + servtime / 1000. + '</br>' +
+             'uid объекта: ' + event.object.uid + '</br>' +
+             'comment: ' + event.comment + '</br>'
+             )
+             .addTo(myMap)
+             );
+             */
         }
-        */
 
     };
 
@@ -283,6 +297,7 @@ var ClientManager = (function () {
             // создание виджетов новой машинки
             new WCarMarker(car);    // виджет маркера
             new WViewRadius(car, radius_visible);    // виджет области обзора
+            new WFlashlightController(car); // виджет-контроллер вспышек
 
             /*
             else { // если не своя, то проверить есть ли такая в модели
@@ -317,7 +332,6 @@ var ClientManager = (function () {
                     .setRadius(8)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
-                        'Server-Time: ' + servtime / 1000. + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'subject_id: ' + event.subject_id + '</br>'
                 )

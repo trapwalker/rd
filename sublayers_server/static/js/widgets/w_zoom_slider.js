@@ -18,10 +18,12 @@ var WZoomSlider = (function (_super) {
             width: 5,    // px
             onChange: ''
         };
-        var parent = $('#' + this.options.parentDiv);
+        var mainParent = $('#' + this.options.parentDiv);
+        mainParent.append('<div id="zoomSetDivForZoomSliderRumble"></div>');
+        var parent = $('#zoomSetDivForZoomSliderRumble');
 
         // сразу же применение стиля для зум-парент
-        parent.addClass('slider-zoom-parent sublayers-clickable');
+        mainParent.addClass('slider-zoom-parent sublayers-clickable');
 
         // создание 4 дивов
         var nodePlus = '<div id="Zoom_btnPlus"></div>';

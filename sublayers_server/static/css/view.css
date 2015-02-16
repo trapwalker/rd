@@ -183,6 +183,10 @@ input:focus {
 
 }
 
+.my-effect-icon {
+    background-color: transparent;
+}
+
 ::-webkit-scrollbar {
     width: 16px;
 }

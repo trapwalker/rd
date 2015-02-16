@@ -29,6 +29,7 @@ class HPState(object):
         self.hp0 = hp
         self.dps = dps  # отрицательный dps => хил
         self.update(self.t0)
+        self.dhp = 0
 
     def fix(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
@@ -44,6 +45,7 @@ class HPState(object):
     def update(self, t=None, dt=0.0, dhp=None, dps=None):
         self.fix(t=t, dt=dt)
         self.t_die = None
+        self.dhp = dhp
         if dhp:
             self.hp0 -= dhp
             if self.hp0 <= 0:
@@ -68,6 +70,7 @@ class HPState(object):
             max_hp=self.max_hp,
             hp0=self.hp0,
             dps=self.dps,
+            dhp=self.dhp,
         )
 
     def __copy__(self):
