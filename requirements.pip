@@ -4,3 +4,4 @@ debug
 pymongo
 sleekxmpp
 #PIL
+#pyzmq
