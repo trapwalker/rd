@@ -78,8 +78,8 @@ class Corp(RoleParty):
                         v_max=(40 * 1000 / 3600),
                         observing_range=1500,
                         weapons=[
-                            dict(fi=pi/2, is_auto=True, radius=100, width=radians(45), dps=8),
-                            dict(fi=-pi/2, is_auto=True, radius=100, width=radians(45), dps=8),
+                            dict(fi=pi/2, is_auto=False, radius=250, width=radians(45), dmg=10, time_recharge=5),
+                            dict(fi=-pi/2, is_auto=False, radius=150, width=radians(45), dmg=10, time_recharge=5),
                             dict(fi=pi, is_auto=False, radius=200, width=radians(60), dmg=10, time_recharge=5),
                         ],
                      ),
