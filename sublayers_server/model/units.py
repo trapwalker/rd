@@ -146,10 +146,31 @@ class Unit(Observer):
         for zone in self.server.zones:
             zone.test_in_zone(obj=self)
 
-    def on_contact_out(self, time, obj, **kw):
-        super(Unit, self).on_contact_out(time=time, obj=obj, **kw)
+    def on_contact_in(self, obj, **kw):
+        super(Unit, self).on_contact_in(obj=obj, **kw)
+        if isinstance(obj, Unit):
+            for agent in self.watched_agents:
+                for shooter in obj.hp_state.shooters:
+                    messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=True).post()
+                for sector in obj.fire_sectors:
+                    for weapon in sector.weapon_list:
+                        if isinstance(weapon, WeaponAuto):
+                            for target in weapon.targets:
+                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target, action=True, side=sector.side).post()
+
+    def on_contact_out(self, obj, **kw):
+        super(Unit, self).on_contact_out(obj=obj, **kw)
         for sector in self.fire_sectors:
             sector.out_car(target=obj)
+        if isinstance(obj, Unit):
+            for agent in self.watched_agents:
+                for shooter in obj.hp_state.shooters:
+                    messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=False).post()
+                for sector in obj.fire_sectors:
+                    for weapon in sector.weapon_list:
+                        if isinstance(weapon, WeaponAuto):
+                            for target in weapon.targets:
+                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target, action=False, side=sector.side).post()
 
     def on_die(self, event):
         super(Unit, self).on_die(event)

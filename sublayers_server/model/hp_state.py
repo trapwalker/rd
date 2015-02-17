@@ -23,6 +23,7 @@ def assert_time_in_hpstate(f):
 class HPState(object):
     def __init__(self, t, max_hp=100.0, hp=100.0, dps=0.0):
         assert (max_hp > 0) and (max_hp >= hp)
+        self.shooters = []
         self.t0 = t
         self.t_die = None
         self.max_hp = max_hp
@@ -41,11 +42,17 @@ class HPState(object):
         # Мин нужен для хила, хп не увеличится больше чем max_hp
         return min(self.hp0 - self.dps * (t - self.t0), self.max_hp)
 
+    def add_shooter(self, shooter):
+        self.shooters.append(shooter)
+
+    def del_shooter(self, shooter):
+        assert shooter in self.shooters
+        self.shooters.remove(shooter)
+
     @assert_time_in_hpstate
     def update(self, t=None, dt=0.0, dhp=None, dps=None):
         self.fix(t=t, dt=dt)
         self.t_die = None
-        self.dhp = dhp
         if dhp:
             self.hp0 -= dhp
             if self.hp0 <= 0:
@@ -70,7 +77,6 @@ class HPState(object):
             max_hp=self.max_hp,
             hp0=self.hp0,
             dps=self.dps,
-            dhp=self.dhp,
         )
 
     def __copy__(self):

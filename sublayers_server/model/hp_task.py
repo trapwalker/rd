@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 from tasks import TaskPerformEvent, TaskSingleton
 from copy import copy
 from events import Die
+from messages import FireAutoEffect
 
 
 class HPTaskEvent(TaskPerformEvent):
@@ -16,11 +17,13 @@ class HPTaskEvent(TaskPerformEvent):
 
 
 class HPTask(TaskSingleton):
-    def __init__(self, dhp=None, dps=None, **kw):
+    def __init__(self, dhp=None, dps=None, add_shooter=None, del_shooter=None, **kw):
         super(HPTask, self).__init__(**kw)
         assert self.owner.hp_state is not None
         self.dhp = dhp
         self.dps = dps
+        self.add_shooter = add_shooter
+        self.del_shooter = del_shooter
 
     def _update_state(self, event):
         owner = self.owner
@@ -38,6 +41,16 @@ class HPTask(TaskSingleton):
     def on_start(self, event):
         super(HPTask, self).on_start(event=event)
         owner = self.owner
+
+        if self.add_shooter:
+            owner.hp_state.add_shooter(self.add_shooter)
+            for agent in self.owner.subscribed_agents:
+                FireAutoEffect(agent=agent, subj=self.add_shooter, obj=self.owner, action=True).post()
+        if self.del_shooter:
+            owner.hp_state.del_shooter(self.del_shooter)
+            for agent in self.owner.subscribed_agents:
+                FireAutoEffect(agent=agent, subj=self.del_shooter, obj=self.owner, action=False).post()
+
         time = event.time
         time_die = copy(owner.hp_state).update(t=time, dhp=self.dhp, dps=self.dps)
         if time_die == time:  # если время дамага совпадает с временем смерти, то один евент
