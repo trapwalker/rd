@@ -69,7 +69,7 @@ function angleVectorRad(aPoint1, aPoint2) {
     return Math.acos(mulScalVectors(aPoint1, aPoint2) / (aPoint1.abs() * aPoint2.abs()));
 }
 
-// Возвращает угол против часовой стрелки от положительного направления оси X
+// Возвращает угол по часовой стрелке от положительного направления оси X
 function angleVectorRadCCW(aPoint) {
     var angle = angleVectorRad(aPoint, new Point(1, 0));
     if (aPoint.y < 0)
@@ -133,6 +133,3 @@ function stopEvent(event) {
     else // Вариант Internet Explorer:
         event.cancelBubble = true
 }
-
-
-// Генератор отрицательных ID

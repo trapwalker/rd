@@ -13,7 +13,7 @@ var ConstMapPathLocal = '';
 
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 0;
+var ConstMinMapZoom = 8;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -180,7 +180,16 @@ function onKeyDownMap(event) {
             break;
         case 90:  // Z
             //clientManager.Die();
-            //mapManager.widget_fire_radial_grid.test();
+            console.log('ZZZZZZZZZZZZZZZ');
+            var p = user.userCar.getCurrentCoord(clock.getCurrentTime());
+            var random_point = new Point(
+                Math.random() * 400 - 200,
+                Math.random() * 400 - 200
+            );
+            var p2 = summVector(p, random_point);
+            new EPointsTracer(p, p2, 120, 8, function(pos){
+                new EFlashLight(pos, 6).start();
+            }).start();
             break;
     }
 }
@@ -278,6 +287,12 @@ var MapManager = (function(_super){
 
         // Bнициализация виджетов карты
         new WZoomSlider(this);
+
+
+        // Отображение квадрата всей карты
+        // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
+        //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
+        //L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
@@ -327,11 +342,23 @@ var MapManager = (function(_super){
          // Изменение радиуса круга обзора
          //userCarMarker.setNewZoom();
          */
+
+        //сектора на сетке появляются с новым зумом
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.zoomEnd();
     };
 
     MapManager.prototype.onZoomStart = function(event) {
+        //console.log('MapManager.prototype.onZoomStart');
         timeManager.timerStop();
+
+        //сектора на сетке исчезают
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.zoomStart();
+
     };
+
+
 
 
 
