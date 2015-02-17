@@ -99,6 +99,7 @@ var WAutoFireOnShooter = (function (_super) {
 
 
     WAutoFireOnShooter.prototype.change = function(t){
+        // todo: продолжать стрелять чтобы не случиолсь !
         //console.log('WAutoFireOnShooter.prototype.change');
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
