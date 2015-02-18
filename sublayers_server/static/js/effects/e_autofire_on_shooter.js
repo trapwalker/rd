@@ -1,25 +1,22 @@
 /*
-* Виджетпредназначен для рисования факта автоматической стрельбы у машинки
-* Виджет - потому что он должен быть подписан на ту машинку, для которой создан
+* Эффект предназначен для рисования факта автоматической стрельбы у машинки
 * */
 
-var WAutoFireOnShooter = (function (_super) {
-    __extends(WAutoFireOnShooter, _super);
+var EAutoFireOnShooter = (function () {
 
-    function WAutoFireOnShooter(car, side){
-        _super.call(this, [car]);
+    function EAutoFireOnShooter(car, side){
         this.car = car;
         this.marker = null;
-        this.direction = car.fireSidesMng.sides[side].direction;
+        // todo: сделать вычисление direction правильным способом!
+        this.direction = user.userCar.fireSidesMng.sides[side].direction;
         this.icons = [];
         this.currentIcon = null;
-        this.summ_duration = 0.0;
+        this.duration = 0.0;
         this.time_start = null;
-        this._createMarker();
-        this.change(clock.getCurrentTime());
+
     }
 
-    WAutoFireOnShooter.prototype._createMarker = function(){
+    EAutoFireOnShooter.prototype._createMarker = function(){
         var marker;
         marker = L.rotatedMarker([0, 0]);
 
@@ -30,7 +27,7 @@ var WAutoFireOnShooter = (function (_super) {
             html: '<svg height="100px" width="100px"'+
             'xmlns="http://www.w3.org/2000/svg" version="1.1"'+
             'xmlns:xlink="http://www.w3.org/1999/xlink">' +
-            '<path d="M75 30 A 35 35 0 0 1 75 70" stroke="red" stroke-width="8" fill="transparent"' +
+            '<path d="M75 30 A 35 35 0 0 1 75 70" stroke="#0f0" stroke-width="4" fill="transparent"' +
             '/path>'+
             '</svg>'
         });
@@ -42,7 +39,7 @@ var WAutoFireOnShooter = (function (_super) {
             html: '<svg height="100px" width="100px"'+
             'xmlns="http://www.w3.org/2000/svg" version="1.1"'+
             'xmlns:xlink="http://www.w3.org/1999/xlink">' +
-            '<path d="M75 30 A 35 35 0 0 1 75 70" stroke="white" stroke-width="8" fill="transparent"' +
+            '<path d="M75 30 A 35 35 0 0 1 75 70" stroke="#0f0" stroke-width="4" opacity="0.5" fill="transparent"' +
             '/path>'+
             '</svg>'
         });
@@ -80,7 +77,7 @@ var WAutoFireOnShooter = (function (_super) {
 
     };
 
-    WAutoFireOnShooter.prototype._getIconByTime = function(time){
+    EAutoFireOnShooter.prototype._getIconByTime = function(time){
         var t = (time - this.time_start + 10.) % this.duration;
         for(var i = 0; i < this.icons.length; i++)
             if (t < this.icons[i].dur_before)
@@ -88,7 +85,7 @@ var WAutoFireOnShooter = (function (_super) {
         return this.icons[this.icons.length - 1];
     };
 
-    WAutoFireOnShooter.prototype._setIconByTime = function(time){
+    EAutoFireOnShooter.prototype._setIconByTime = function(time){
         var icon = this._getIconByTime(time);
         if (icon != this.currentIcon){
             this.currentIcon = icon;
@@ -97,10 +94,9 @@ var WAutoFireOnShooter = (function (_super) {
     };
 
 
-
-    WAutoFireOnShooter.prototype.change = function(t){
+    EAutoFireOnShooter.prototype.change = function(t){
         // todo: продолжать стрелять чтобы не случиолсь !
-        //console.log('WAutoFireOnShooter.prototype.change');
+        //console.log('EAutoFireOnShooter.prototype.change');
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
@@ -112,18 +108,17 @@ var WAutoFireOnShooter = (function (_super) {
         this.marker.setLatLng(tempLatLng);
     };
 
-    WAutoFireOnShooter.prototype.off = function(){
-        this.delFromVisualManager();
-    }
+    EAutoFireOnShooter.prototype.start = function () {
+        this._createMarker();
+        timeManager.addTimerEvent(this, 'change');
+        return this
+    };
 
-    WAutoFireOnShooter.prototype.delFromVisualManager = function () {
-        //console.log('WAutoFireOnShooter.prototype.delFromVisualManager');
-        this.car = null;
+    EAutoFireOnShooter.prototype.finish = function () {
+        timeManager.delTimerEvent(this, 'change');
         map.removeLayer(this.marker);
-        _super.prototype.delFromVisualManager.call(this);
     };
 
 
-
-    return WAutoFireOnShooter
-})(VisualObject);
+    return EAutoFireOnShooter
+})();

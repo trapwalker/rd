@@ -48,11 +48,11 @@ class FireSector(Sector):
         fi = self.fi
         pi4 = pi / 4.
         if pi4 < fi < 3 * pi4:
-            return 'left'
+            return 'right'
         if 3 * pi4 <= fi <= 5 * pi4:
             return 'back'
         if 5 * pi4 < fi < 7 * pi4:
-            return 'right'
+            return 'left'
         return 'front'
 
     def _fire_auto_start(self, target):
