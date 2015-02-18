@@ -79,7 +79,7 @@ var WFireRadialGrid = (function (_super) {
                 .stroke(this.svg_params.lines_45.stroke)
                 .dmove(size, size)
                 .transform({rotation: 45 + i * 90, cx: size, cy: size});
-            g.path('M ' + p1.x + ' ' + p1.y + 'A ' + max_radius + ' ' + max_radius + ' 0 0 0 ' + p31.x + ' ' + p31.y)
+            g.path('M ' + p1.x + ' ' + p1.y + 'A ' + max_radius + ' ' + max_radius + ' 0 0 1 ' + p31.x + ' ' + p31.y)
                 .stroke(this.svg_params.lines_45.stroke)
                 .dmove(size, size)
                 .transform({rotation: 45 + i * 90, cx: size, cy: size})
@@ -204,7 +204,7 @@ var WFireRadialGrid = (function (_super) {
             auto_sectors: {
                 gradient_for_lines: g.gradient('linear', function(stop) {
                     stop.at({ offset: 0, color: self.svg_colors.main , opacity: 0.0});
-                    stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.6});
+                    stop.at({ offset: 1, color: self.svg_colors.main , opacity: 0.9});
                 }),
                 width_of_line: 1.4,
                 radial_stroke: {width: 2, color: self.svg_colors.main},
@@ -394,9 +394,9 @@ var WFireRadialGrid = (function (_super) {
 
         var size = this.size_of_icon;
         var g = this.g.group();
-
-        var sp11 = rotateVector(new Point(radius - 10.0, 0), width /2.);
-        var sp12 = rotateVector(new Point(radius - 10.0, 0), - width /2.);
+        var diffrent = 30.0; // todo: сделать зависимость от зума и размера этих зацепов
+        var sp11 = rotateVector(new Point(radius - diffrent, 0), width /2.);
+        var sp12 = rotateVector(new Point(radius - diffrent, 0), - width /2.);
         var sp21 = rotateVector(new Point(radius, 0), width /2.);
         var sp22 = rotateVector(new Point(radius, 0), - width /2.);
 
@@ -404,10 +404,12 @@ var WFireRadialGrid = (function (_super) {
             .stroke({width: this.svg_params.auto_sectors.width_of_line,
                 color: this.svg_params.auto_sectors.gradient_for_lines
             });
+            //.attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);;
         g.line(sp12.x, sp12.y, sp22.x, sp22.y)
             .stroke({width: this.svg_params.auto_sectors.width_of_line,
                 color: this.svg_params.auto_sectors.gradient_for_lines
             });
+            //.attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);;
 
         // дуга
         var path_str =

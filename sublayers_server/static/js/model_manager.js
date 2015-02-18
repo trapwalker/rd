@@ -433,6 +433,21 @@ var ClientManager = (function () {
                     user.userCar.getCurrentDirection(clock.getCurrentTime()) + dir_side).start();
     };
 
+    ClientManager.prototype.FireAutoEffect = function (event) {
+        //console.log('ClientManager.prototype.FireAutoEffect', event)
+        if (event.action)
+            fireAutoEffectManager.addController({
+                subj: event.subj,
+                obj: event.obj,
+                side: event.side
+            });
+        else
+            fireAutoEffectManager.delController({
+                subj: event.subj,
+                obj: event.obj,
+                side: event.side
+            });
+    };
 
     // Исходящие сообщения
 

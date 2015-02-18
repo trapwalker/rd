@@ -246,4 +246,20 @@ class FireDischarge(Message):
         return d
 
 
+class FireAutoEffect(Message):
+    def __init__(self, subj, obj, side=None, action=True, **kw):
+        super(FireAutoEffect, self).__init__(**kw)
+        self.subj = subj
+        self.obj = obj
+        self.side = side
+        self.action = action
 
+    def as_dict(self):
+        d = super(FireAutoEffect, self).as_dict()
+        d.update(
+            subj=self.subj.uid,
+            obj=self.obj.uid,
+            side=self.side,
+            action=self.action,
+        )
+        return d

@@ -181,15 +181,8 @@ function onKeyDownMap(event) {
         case 90:  // Z
             //clientManager.Die();
             console.log('ZZZZZZZZZZZZZZZ');
-            var p = user.userCar.getCurrentCoord(clock.getCurrentTime());
-            var random_point = new Point(
-                Math.random() * 400 - 200,
-                Math.random() * 400 - 200
-            );
-            var p2 = summVector(p, random_point);
-            new EPointsTracer(p, p2, 120, 8, function(pos){
-                new EFlashLight(pos, 6).start();
-            }).start();
+
+
             break;
     }
 }

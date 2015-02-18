@@ -1,7 +1,9 @@
 /*
 * Еффект трассера между двумя точками с заданной скоростью и размерами трассера
 * по завершениею эффекта вызовется коллбек, в который передастся последняя позиция трассера
-* */
+*/
+
+var ConstStartDistance = 20; // Расстояние от центра машинки до начальной точки трассера (px)
 
 
 var EPointsTracer = (function(){
@@ -11,7 +13,7 @@ var EPointsTracer = (function(){
         var dist_track = track_vect.abs();
         if(dist_track < 20) return; // todo не рисовать, если очень близко. можно сразу рисовать вспышки
         // на сколько нужно сдвинутся по вектору (сейчас lenght / 2.)
-        var d_vect = 20; // можно изменить, чтобы трассер начинался не из машинки, а рядом
+        var d_vect = ConstStartDistance; // можно изменить, чтобы трассер начинался не из машинки, а рядом
         this.length = length;
         // расчёт начальной точки
         var p11 = summVector(mulScalVector(track_vect, d_vect / dist_track), p1);
@@ -77,7 +79,17 @@ var EPointsTracer = (function(){
                 color: this.svg_params.stroke_color,
                 opacity: this.svg_params.stroke_opacity
             })
-            .attr('stroke-linecap', 'round')
+            .attr('stroke-linecap', 'round');
+        draw.circle(0).radius(1)
+            .center(l2, l2)
+            .dmove(l2, 0)
+            .transform({rotation: radToGrad(this.direction), cx: l2, cy: l2})
+            .stroke({
+                width: this.svg_params.stroke_width,
+                color: this.svg_params.stroke_color,
+                opacity: this.svg_params.stroke_opacity
+            })
+            .fill(this.svg_params.stroke_color)
     };
 
     EPointsTracer.prototype.start = function () {
