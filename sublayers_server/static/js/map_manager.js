@@ -184,6 +184,26 @@ function onKeyDownMap(event) {
 
 
             break;
+
+        case 49:  // 1
+            console.log('111111111111');
+            if(map.getZoom() < ConstMaxMapZoom){
+                var zoom = map.getZoom() + 1;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
+
+        case 50:  // 2
+            console.log('22222222222');
+            if(map.getZoom() > ConstMinMapZoom){
+                var zoom = map.getZoom() - 1;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
     }
 }
 
@@ -338,16 +358,16 @@ var MapManager = (function(_super){
 
         //сектора на сетке появляются с новым зумом
         if (mapManager.widget_fire_radial_grid)
-            mapManager.widget_fire_radial_grid.zoomEnd();
+            mapManager.widget_fire_radial_grid.zoomEnd(event);
     };
 
     MapManager.prototype.onZoomStart = function(event) {
-        //console.log('MapManager.prototype.onZoomStart');
+        //console.log('MapManager.prototype.onZoomStart', event);
         timeManager.timerStop();
 
         //сектора на сетке исчезают
         if (mapManager.widget_fire_radial_grid)
-            mapManager.widget_fire_radial_grid.zoomStart();
+            mapManager.widget_fire_radial_grid.zoomStart(event);
 
     };
 

@@ -205,10 +205,10 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             //new WFireSectors(mcar, fireSectors);  // виджет секторов
             new WFlashlightController(mcar); // виджет-контроллер вспышек
-            wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
+            //wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
-            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
+            mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
         }
