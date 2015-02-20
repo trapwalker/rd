@@ -5,14 +5,18 @@ var ConstCountFlashlightPerSecond = 10;  // Количество трасеро�
 var ConstFlashlightPrecision = 50;       // Радиус разлёта вспышек около машинки (px);
 var ConstFlashlightRadius = 2;           // Размер вспышки (px);
 
+var ConstRangeFireDischargeFlashlight = 30;   // Разлет вспышек взрывов при залповой стрельбе (px);
+var ConstCountFireDischargeFlashlight = 3;   // Количество вспышек взрывов при залповой стрельбе (px);
+var ConstDelayFireDischargeFlashlight = 300; // Задержка между дульным пламенем и вспышкой взрыва при залповой стрельбе (ms);
+var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки взрыва при залповой стрельбе (px);
 
-var FireAutoEffectManager = (function () {
-    function FireAutoEffectManager() {
+var FireEffectManager = (function () {
+    function FireEffectManager() {
         this.controllers_list = []; // хранятся объекты {ctrl: FireAutoEffectController, count: int}
         timeManager.addTimerEvent(this, 'perform');
     }
 
-    FireAutoEffectManager.prototype._findController = function (options) {
+    FireEffectManager.prototype._findController = function (options) {
         var i = 0;
         while ((i < this.controllers_list.length) &&
             ((this.controllers_list[i].ctrl.subj != options.subj) ||
@@ -23,7 +27,7 @@ var FireAutoEffectManager = (function () {
             return i;
     };
 
-    FireAutoEffectManager.prototype.addController = function (options) {
+    FireEffectManager.prototype.addController = function (options) {
         var index = this._findController(options);
         if (index != null) {
             this.controllers_list[index].count++;
@@ -36,7 +40,7 @@ var FireAutoEffectManager = (function () {
             });
     };
 
-    FireAutoEffectManager.prototype.delController = function (options) {
+    FireEffectManager.prototype.delController = function (options) {
         var index = this._findController(options);
         if (index != null) {
             this.controllers_list[index].count--;
@@ -49,12 +53,22 @@ var FireAutoEffectManager = (function () {
             console.error('Попытка удалить несуществующий контроллер автоматической стрельбы!', options);
     };
 
-    FireAutoEffectManager.prototype.perform = function () {
+    FireEffectManager.prototype.fireDischargeEffect = function (options) {
+        var direction = angleVectorRadCCW(subVector(options.pos_obj, options.pos_subj));
+        new EDischargeFire(options.pos_subj, direction).start();
+        setTimeout(function(){
+            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
+                new EFlashLight(getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight),
+                                ConstFireDischargeFlashlightRadius).start();
+        }, ConstDelayFireDischargeFlashlight);
+    };
+
+    FireEffectManager.prototype.perform = function () {
         for (var i = 0; i < this.controllers_list.length; i++)
             this.controllers_list[i].ctrl.change();
     };
     
-    return FireAutoEffectManager;
+    return FireEffectManager;
 })();
 
 
@@ -120,4 +134,4 @@ var FireAutoEffectController = (function () {
     return FireAutoEffectController;
 })();
 
-var fireAutoEffectManager = new FireAutoEffectManager();
+var fireEffectManager = new FireEffectManager();

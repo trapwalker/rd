@@ -12,7 +12,7 @@ from motion_task import MotionTask
 from hp_task import HPTask
 from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
-from events import FireDischargeEvent, FireAutoEnableEvent
+from events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent
 from parameters import Parameter
 from effects_zone import EffectDirt
 import messages
@@ -112,14 +112,15 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             if sector.side == side:
                 if not sector.can_discharge_fire(time=time):
-                    # todo: отправить на клиент сообщение о том, что орудия ещё в перезарядке
                     return
         t_rch = 0
         for sector in self.fire_sectors:
             if sector.side == side:
                 t_rch = max(t_rch, sector.fire_discharge(time=time))
-        # todo: отправить на клиент маскимальную перезарядку данного борта (нельзя всем отправлять свою перезарядку! НЕЛЬЗЯ) !!!!
-        # todo:  нужно отправить всем сообщение о выстреле
+
+        # евент залповая стрельба
+        FireDischargeEffectEvent(obj=self, side=side).post()
+
         # для себя: side, time, t_rch
         if t_rch > 0.0:
             # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки

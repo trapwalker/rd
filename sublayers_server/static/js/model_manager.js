@@ -204,11 +204,11 @@ var ClientManager = (function () {
             new WHPSlider(mcar);     // виджет HP
             // todo: сделать также зависимось от бортов
             //new WFireSectors(mcar, fireSectors);  // виджет секторов
-            new WFlashlightController(mcar); // виджет-контроллер вспышек
-            //wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
+            wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
-            mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
+            //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
+            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
         }
@@ -311,7 +311,6 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             new WCarMarker(car);                 // виджет маркера
-            new WFlashlightController(car);      // виджет-контроллер вспышек
             wFireController.addModelObject(car); // добавить себя в радар
         }
 
@@ -409,7 +408,7 @@ var ClientManager = (function () {
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime);
-
+/*
         var dir_side = null;
         switch (event.side) {
             case 'front':
@@ -431,22 +430,31 @@ var ClientManager = (function () {
         if (dir_side != null)
             new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
                     user.userCar.getCurrentDirection(clock.getCurrentTime()) + dir_side).start();
+*/
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
         //console.log('ClientManager.prototype.FireAutoEffect', event)
         if (event.action)
-            fireAutoEffectManager.addController({
+            fireEffectManager.addController({
                 subj: event.subj,
                 obj: event.obj,
                 side: event.side
             });
         else
-            fireAutoEffectManager.delController({
+            fireEffectManager.delController({
                 subj: event.subj,
                 obj: event.obj,
                 side: event.side
             });
+    };
+
+    ClientManager.prototype.FireDischargeEffect = function (event) {
+        //console.log('ClientManager.prototype.FireDischargeEffect', event);
+        fireEffectManager.fireDischargeEffect({
+            pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
+            pos_obj: new Point(event.pos_obj.x, event.pos_obj.y)
+        });
     };
 
     // Исходящие сообщения

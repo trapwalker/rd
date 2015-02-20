@@ -105,6 +105,7 @@ class FireSector(Sector):
             for vo in self.owner.visible_objects:
                 if self._test_target_in_sector(vo):
                     cars.append(vo)
+            self.target_list = cars
         t_rch = 0
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):

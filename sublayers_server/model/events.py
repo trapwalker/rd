@@ -5,9 +5,8 @@ log = logging.getLogger(__name__)
 log.info('\n\n\n')
 
 from functools import total_ordering
-
 from utils import time_log_format
-
+from messages import FireDischargeEffect
 
 @total_ordering
 class Event(object):
@@ -190,6 +189,26 @@ class FireDischargeEvent(Objective):
     def on_perform(self):
         super(FireDischargeEvent, self).on_perform()
         self.obj.on_fire_discharge(self)
+
+
+class FireDischargeEffectEvent(Objective):
+    def __init__(self, side, **kw):
+        super(FireDischargeEffectEvent, self).__init__(**kw)
+        self.side = side
+
+    def on_perform(self):
+        super(FireDischargeEffectEvent, self).on_perform()
+        targets = []
+        for sector in self.obj.fire_sectors:
+            if sector.side == self.side:
+                for target in sector.target_list:
+                    targets.append(target.position)
+
+        # todo: добавить гео-позиционный фильтр агентов
+        subj_position = self.obj.position
+        for agent in self.server.agents.values():
+            for target in targets:
+                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target).post()
 
 
 class FireAutoEnableEvent(Objective):
