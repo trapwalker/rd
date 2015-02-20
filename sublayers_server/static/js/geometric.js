@@ -133,3 +133,8 @@ function stopEvent(event) {
     else // Вариант Internet Explorer:
         event.cancelBubble = true
 }
+
+// Получить рандомную точку в заданной окрестности
+function getRadialRandomPoint(point, radius) {
+    return summVector(point, polarPoint(radius * Math.random(), 2 * Math.PI * Math.random()))
+}

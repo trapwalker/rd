@@ -228,7 +228,6 @@ class Bang(Subjective):
 
 
 class FireDischarge(Message):
-    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] side={self.side}>'
     def __init__(self, side, t_rch, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
@@ -242,6 +241,24 @@ class FireDischarge(Message):
         d.update(
             side=self.side,
             t_rch=self.t_rch,
+        )
+        return d
+
+
+class FireDischargeEffect(Message):
+    def __init__(self, pos_subj, pos_obj, **kw):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        """
+        super(FireDischargeEffect, self).__init__(**kw)
+        self.pos_subj = pos_subj
+        self.pos_obj = pos_obj
+
+    def as_dict(self):
+        d = super(FireDischargeEffect, self).as_dict()
+        d.update(
+            pos_subj=self.pos_subj,
+            pos_obj=self.pos_obj,
         )
         return d
 

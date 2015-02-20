@@ -190,8 +190,8 @@ var WSConnector = (function(_super){
 
         var self = this;
         setInterval(function () {
-            console.log('Максимальное время обработки сообщения от сервера: ', self.max_time, '   Всего получено сообщений за период: ', self.count);
-            console.log('Максимальное время разбора сообщения от сервера: ', self.decode_time);
+           // console.log('Максимальное время обработки сообщения от сервера: ', self.max_time, '   Всего получено сообщений за период: ', self.count);
+           // console.log('Максимальное время разбора сообщения от сервера: ', self.decode_time);
             self.max_time = 0;
             self.decode_time = 0;
             self.count = 0;

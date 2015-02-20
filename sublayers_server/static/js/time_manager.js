@@ -67,7 +67,7 @@ var TimeManager = (function () {
 
         var self = this;
         setInterval(function () {
-            console.log('Максимальное время отрисовки: ', self.render_time);
+            //console.log('Максимальное время отрисовки: ', self.render_time);
             self.render_time = 0;
         }, 10000)
     }
