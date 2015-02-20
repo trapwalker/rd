@@ -204,6 +204,26 @@ function onKeyDownMap(event) {
             }
 
             break;
+
+        case 51:  // 3
+            console.log('3333333333');
+            if(map.getZoom() < ConstMaxMapZoom - 1){
+                var zoom = map.getZoom() + 2;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
+
+        case 52:  // 4
+            console.log('4444444444');
+            if(map.getZoom() > ConstMinMapZoom + 1){
+                var zoom = map.getZoom() - 2;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
     }
 }
 
@@ -254,6 +274,7 @@ var MapManager = (function(_super){
         // Виджеты карты: виджеты-синглеты, находятся на карте, хранятся здесь для быстрого доступа
         this.widget_target_point = null; // инициализируется при получении своей машинки
         this.widget_fire_radial_grid = null; // инициализируется при получении своей машинки
+        this.widget_fire_sectors = null; // инициализируется при получении своей машинки
     }
 
     MapManager.prototype._init = function () {
@@ -357,8 +378,8 @@ var MapManager = (function(_super){
          */
 
         //сектора на сетке появляются с новым зумом
-        if (mapManager.widget_fire_radial_grid)
-            mapManager.widget_fire_radial_grid.zoomEnd(event);
+        if (mapManager.widget_fire_sectors)
+            mapManager.widget_fire_sectors.zoomEnd(event);
     };
 
     MapManager.prototype.onZoomStart = function(event) {
@@ -366,8 +387,8 @@ var MapManager = (function(_super){
         timeManager.timerStop();
 
         //сектора на сетке исчезают
-        if (mapManager.widget_fire_radial_grid)
-            mapManager.widget_fire_radial_grid.zoomStart(event);
+        if (mapManager.widget_fire_sectors)
+            mapManager.widget_fire_sectors.zoomStart(event);
 
     };
 

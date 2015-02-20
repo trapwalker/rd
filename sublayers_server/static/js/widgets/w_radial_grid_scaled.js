@@ -64,14 +64,15 @@ var WRadialGridScaled = (function (_super) {
         this._init_svg_parametrs();
 
         this.circles = [];
-
+        this.def_radius = [];
         // Добавление радиальных кружков, уменьшая радиус
         for (i = 1; i <= max_circles; i++) {
             var r = max_radius * i / max_circles;
+            this.def_radius.push(r);
             var c = g.circle(0.0).radius(r)
                 .center(size, size)
                 .fill(this.svg_params.circles.fill)
-                .stroke(this.svg_params.circles.stroke)
+                .stroke(this.svg_params.circles.stroke);
             this.circles.push({
                     radius: r,
                     circle: c
@@ -239,25 +240,68 @@ var WRadialGridScaled = (function (_super) {
         this.zoom = map.getZoom();
     };
 
+    WRadialGridScaled.prototype._testRadius = function (r, rlist) {
+        var eps = 0.1;
+        for (var i = 0; i < rlist.length; i++)
+            if (Math.abs(rlist[i] - r) < eps)
+                return true;
+        return false;
+    };
+
+
     WRadialGridScaled.prototype.setZoom = function(new_zoom){
+        var rs = this.def_radius;
+        var new_rs = [];
+        var zoomAnimateTime = 350;
+        var circles = this.circles;
         var last_zoom = this.zoom;
         var diff_zoom = new_zoom - last_zoom;
         var k_radius = Math.pow(2, diff_zoom);
-        for(var i = 0; i < this.circles.length; i++){
-            var circle = this.circles[i].circle;
-            var radius = this.circles[i].radius;
+        var g = this.g;
+
+        this.zoom = new_zoom;
+
+        if (diff_zoom == 0)
+            console.error('Вызвано с неизменённым зумом! Ошибка!', new_zoom);
+
+        // обработка старых кругов
+        var indexes_remove_circles = [];
+        for(var i = 0; i < circles.length; i++){
+            var circle = circles[i].circle;
+            var radius = circles[i].radius;
             var new_radius = radius * k_radius;
-
-            // if (new_radius >= 15 && new_radius >= this.size_of_icon / 2.){
-            circle.animate(300).radius(new_radius);
-            this.circles[i].radius = new_radius;
-
-            //  }
-            //  else
-            //     circle.remove();
-
+            if (this._testRadius(new_radius, rs)) {
+                circle.animate(zoomAnimateTime).radius(new_radius);
+                circles[i].radius = new_radius;
+                new_rs.push(new_radius);
+            }
+            else {
+                circle.animate(zoomAnimateTime).radius(new_radius).attr({opacity: 0}).after(function () {
+                    this.remove();
+                });
+                indexes_remove_circles.push(i);
+            }
         }
-    }
+
+        while(indexes_remove_circles.circle)
+                circles.splice(indexes_remove_circles.pop(), 1);
+
+        // добавление новых кругов
+        for(var i = 0; i < rs.length; i++){
+            var rr = rs[i];
+            if (! this._testRadius(rr, new_rs)){
+                var c = g.circle(0.0).radius(rr / k_radius)
+                    .center(this.size_of_icon, this.size_of_icon)
+                    .fill(this.svg_params.circles.fill)
+                    .stroke(this.svg_params.circles.stroke);
+                c.animate(zoomAnimateTime).radius(rr);
+                circles.push({
+                    radius: rr,
+                    circle: c
+                });
+            }
+        }
+    };
 
     WRadialGridScaled.prototype.rotate = function(angle_in_degrees){
         this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
