@@ -118,11 +118,10 @@ class Unit(Observer):
             if sector.side == side:
                 t_rch = max(t_rch, sector.fire_discharge(time=time))
 
-        # евент залповая стрельба
-        FireDischargeEffectEvent(obj=self, side=side).post()
-
         # для себя: side, time, t_rch
         if t_rch > 0.0:
+            # евент залповая стрельба
+            FireDischargeEffectEvent(obj=self, side=side).post()
             # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
             for agent in self.watched_agents:
                 messages.FireDischarge(
@@ -141,7 +140,7 @@ class Unit(Observer):
     def contact_test(self, obj):
         super(Unit, self).contact_test(obj=obj)
         for sector in self.fire_sectors:
-            if sector.is_auto:
+            if sector.is_auto():
                 sector.fire_auto(target=obj)
         # зонирование
         for zone in self.server.zones:

@@ -453,7 +453,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.FireDischargeEffect', event);
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
-            pos_obj: new Point(event.pos_obj.x, event.pos_obj.y)
+            pos_obj: new Point(event.pos_obj.x, event.pos_obj.y),
+            is_fake: event.is_fake
         });
     };
 

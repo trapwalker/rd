@@ -54,13 +54,25 @@ var FireEffectManager = (function () {
     };
 
     FireEffectManager.prototype.fireDischargeEffect = function (options) {
-        var direction = angleVectorRadCCW(subVector(options.pos_obj, options.pos_subj));
-        new EDischargeFire(options.pos_subj, direction).start();
-        setTimeout(function(){
+        var vekt = subVector(options.pos_obj, options.pos_subj);
+        var direction = angleVectorRadCCW(vekt);
+        if (! options.is_fake) {
+            new EDischargeFire(options.pos_subj, direction).start();
             for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
                 new EFlashLight(getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight),
-                                ConstFireDischargeFlashlightRadius).start();
-        }, ConstDelayFireDischargeFlashlight);
+                    ConstFireDischargeFlashlightRadius).start(ConstDelayFireDischargeFlashlight);
+        }
+        else {
+            new EDischargeFire(options.pos_subj, direction).start();
+            var temp = 1 / ConstCountFireDischargeFlashlight;
+            var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
+            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++) {
+                new EFlashLight(getRadialRandomPoint(
+                        summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
+                        ConstRangeFireDischargeFlashlight),
+                    ConstFireDischargeFlashlightRadius).start(i * tempDuration + tempDuration * Math.random());
+            }
+        }
     };
 
     FireEffectManager.prototype.perform = function () {
@@ -133,5 +145,6 @@ var FireAutoEffectController = (function () {
 
     return FireAutoEffectController;
 })();
+
 
 var fireEffectManager = new FireEffectManager();
