@@ -1,0 +1,9 @@
+
+
+
+.w-hp-radial-parent {
+    position: absolute;
+    bottom: 100px;
+    right: 200px;
+    pointer-events: none;
+}
