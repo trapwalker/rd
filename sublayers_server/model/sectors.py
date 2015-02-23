@@ -18,9 +18,13 @@ class Sector(object):
         self.fi = normalize_angle(fi)  # угол относительно машинки
         self.half_width = width / 2.
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
     def as_dict(self):
         return dict(
-            cls=self.__class__.__name__,
+            cls=self.classname,
             radius=self.radius,
             width=self.width,
             fi=self.fi,

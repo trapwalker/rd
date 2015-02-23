@@ -12,7 +12,7 @@ from collections import Counter
 
 
 class Agent(Object):
-    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login}>'
 
     def __init__(self, login, connection=None, party=None, **kw):
         super(Agent, self).__init__(**kw)

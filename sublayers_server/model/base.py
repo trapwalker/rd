@@ -21,7 +21,7 @@ from functools import update_wrapper
 
 class Object(object):
     __metaclass__ = ABCMeta
-    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
     def __init__(self, server):
         """
@@ -80,7 +80,7 @@ class Object(object):
 
 
 class PointObject(Object):
-    __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
     def __init__(self, position, **kw):
         """

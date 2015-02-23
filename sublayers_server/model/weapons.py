@@ -17,9 +17,13 @@ class Weapon(object):
         self.radius = radius
         self.width = width
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
     def as_dict(self, **kw):
         return dict(
-            cls=self.__class__.__name__,
+            cls=self.classname,
             radius=self.radius,
             width=self.width,
         )

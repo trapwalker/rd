@@ -17,7 +17,7 @@ class Party(object):
 
     def __init__(self, owner=None, name=None):
         if name is None:
-            name = self.__class__.__name__
+            name = self.classname
 
         while name in self.parties:
             name = inc_name_number(name)
@@ -31,6 +31,10 @@ class Party(object):
         """@type list[agents.Agent]"""
         if owner is not None:
             self.include(owner)  # todo: may be async call?
+
+    @property
+    def classname(self):
+        return self.__class__.__name__
 
     @classmethod
     def search(cls, name):

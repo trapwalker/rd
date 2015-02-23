@@ -61,7 +61,7 @@ class Zone(object):
         obj.zones.remove(self)
 
         for effect in obj.effects:
-            if effect.__class__ in self.effects:
+            if effect.__class__ in self.effects:  # todo: replace 'obj.__class__' to 'type(obj)'
                 effect.done()
 
     def test_in_zone(self, obj):

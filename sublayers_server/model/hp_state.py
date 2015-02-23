@@ -31,6 +31,10 @@ class HPState(object):
         self.update(self.t0)
         self.dhp = 0
 
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
     def fix(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
         if t != self.t0:
@@ -65,7 +69,7 @@ class HPState(object):
 
     def export(self):
         return dict(
-            cls=self.__class__.__name__,
+            cls=self.classname,
             t0=self.t0,
             max_hp=self.max_hp,
             hp0=self.hp0,
