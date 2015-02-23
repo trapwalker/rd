@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="css/third_party/leadlet_label.css"/>
     <link rel="stylesheet" href="css/controls/radialMenu.css"/>
     <link rel="stylesheet" href="css/modal_window.css"/>
-    <link rel="stylesheet" href="css/widgets_css/w_health_radial.css"/>
+    <link rel="stylesheet" href="css/w_radial.css"/>
     <script src="js/third_party/leaflet-src.js"></script>
     <script src="js/third_party/jquery.min.js"></script>
     <script src="js/third_party/jquery-ui.min.js"></script>
@@ -62,7 +62,9 @@
     <script src="js/widgets/w_fire_controller.js"></script>
     <script src="js/widgets/w_radial_grid_scaled.js"></script>
     <script src="js/widgets/w_health_radial.js"></script>
-
+    <script src="js/widgets/w_fuel_radial.js"></script>
+    <script src="js/widgets/w_radiation_radial.js"></script>
+    <script src="js/widgets/w_wind_radial.js"></script>
 
     <script src="js/effects/rocket_bang.js"></script>
     <script src="js/effects/e_fire_discharge.js"></script>
@@ -95,8 +97,14 @@
         <div id="buttonFullScreen" class="buttonFullScreenOn"></div>
         <div id="buttonOptions" class="sublayers-clickable"></div>
     </div>
-    <div id="divScaleCarFuel"></div>
-    <div id="divScaleCarHealth"></div>
+    <div id="divForHpAndFuelRadials">
+        <div id="divScaleCarFuel"></div>
+        <div id="divScaleCarHealth"></div>
+    </div>
+    <div id="divForRadAndWindRadials">
+        <div id="divScaleRadiation"></div>
+        <div id="divScaleWind"></div>
+    </div>
     <div id="buttonConnectServer" class="sublayers-clickable"></div>
     <div id="chatArea"></div>
     <div id="fireControlArea"></div>

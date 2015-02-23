@@ -1,17 +1,17 @@
 /*
-* Виджет, показывающий ХП
-* */
+ * Виджет, показывающий Радиацию
+ * */
 
-var WHPRadial = (function (_super) {
-    __extends(WHPRadial, _super);
+var WRadiationRadial = (function (_super) {
+    __extends(WRadiationRadial, _super);
 
-    function WHPRadial(car, div_parent) {
+    function WRadiationRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
-        this.div_id = 'WHPRadial' + (-generator_ID.getID());
-        $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-hp-radial-parent"></div>');
+        this.div_id = 'WRadiationRadial' + (-generator_ID.getID());
+        $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-radiation-radial-parent"></div>');
 
         var draw = SVG(this.div_id);
         this.draw = draw;
@@ -71,10 +71,10 @@ var WHPRadial = (function (_super) {
             .fill(this.svg_params.text_prc.fill)
             .dmove(size, size - 3 * this.d_radius);
 
-        // текст HEALTH
-        draw.text("HEALTH")
-            .font(this.svg_params.text_HEALTH.font)
-            .fill(this.svg_params.text_HEALTH.fill)
+        // текст RAD
+        draw.text("RAD")
+            .font(this.svg_params.text_RAD.font)
+            .fill(this.svg_params.text_RAD.fill)
             .dmove(size, size - this.d_radius);
 
         // текст 0
@@ -84,23 +84,23 @@ var WHPRadial = (function (_super) {
             .dmove(size - this.max_r - this.d_radius * 1.5, size);
 
         // текст 100
-        draw.text("100")
+        draw.text("10")
             .font(this.svg_params.text_digits_font)
             .fill(this.svg_params.text_digits_fill)
             .dmove(size + this.max_r + this.d_radius * 1.5, size);
 
         // текст 50
-        draw.text("50")
+        draw.text("5")
             .font(this.svg_params.text_digits_font)
             .fill(this.svg_params.text_digits_fill)
             .dmove(size, size - this.max_r - this.d_radius / 2.);
 
-        this.draw_fill_area(0.0);
+        this.draw_fill_area(0.75);
 
         this.change(clock.getCurrentTime());
     }
 
-    WHPRadial.prototype._init_params = function(){
+    WRadiationRadial.prototype._init_params = function(){
         var draw = this.draw;
         // основные цвета сетки
         this.svg_colors = {
@@ -134,9 +134,9 @@ var WHPRadial = (function (_super) {
                 cl_stroke_color: this.svg_colors.main,
                 cl_stroke_width: 1.2,
                 cl_stroke_grad1: draw.gradient('linear', function (stop) {
-                        stop.at({offset: 0, color: self.svg_colors.main, opacity: 1});
-                        stop.at({offset: 1, color: self.svg_colors.main, opacity: 0});
-                    }),
+                    stop.at({offset: 0, color: self.svg_colors.main, opacity: 1});
+                    stop.at({offset: 1, color: self.svg_colors.main, opacity: 0});
+                }),
                 cl_stroke_grad2: draw.gradient('linear', function (stop) {
                     stop.at({offset: 0, color: self.svg_colors.main, opacity: 0});
                     stop.at({offset: 1, color: self.svg_colors.main, opacity: 1});
@@ -152,7 +152,7 @@ var WHPRadial = (function (_super) {
                 },
                 fill: {color: this.svg_colors.main, opacity: 1}
             },
-            text_HEALTH: {
+            text_RAD: {
                 font: {
                     family:   'Arial',
                     size:     11,
@@ -171,7 +171,7 @@ var WHPRadial = (function (_super) {
         };
     };
 
-    WHPRadial.prototype.draw_fill_area = function(prc) {
+    WRadiationRadial.prototype.draw_fill_area = function(prc) {
         if (prc > 1.0) prc = 1.0;
         if (prc < 0.0) prc = 0.0;
         var size = this.center;
@@ -219,22 +219,20 @@ var WHPRadial = (function (_super) {
                 });
 
         // Изменение текста (проценты)
-        this.text_prc.text(Math.round(prc * 100) + '%');
-
-
+        this.text_prc.text((prc * 10).toFixed(1) + ' Sv');
     };
 
-    WHPRadial.prototype.change = function () {
-        var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
+    WRadiationRadial.prototype.change = function () {
+        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
-        this.draw_fill_area(prc);
+        //this.draw_fill_area(prc);
     };
 
-    WHPRadial.prototype.delFromVisualManager = function () {
+    WRadiationRadial.prototype.delFromVisualManager = function () {
         // todo: удалить свою вёрстку (просто удалить $('#' + this.div_id), по идее)
         this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };
 
-    return WHPRadial;
+    return WRadiationRadial;
 })(VisualObject);

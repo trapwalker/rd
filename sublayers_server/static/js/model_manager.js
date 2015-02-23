@@ -201,8 +201,10 @@ var ClientManager = (function () {
             new WCarMarker(mcar);    // виджет маркера
             new WMapPosition(mcar);  // виджет позиционирования карты
             new WSpeedSlider(mcar);  // виджет круиз контроля
-            //new WHPSlider(mcar);     // виджет HP
             new WHPRadial(mcar, 'divScaleCarHealth');
+            new WFuelRadial(mcar, 'divScaleCarFuel');
+            new WRadiationRadial(mcar, 'divScaleRadiation');
+            new WWindRadial(mcar, 'divScaleWind');
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения

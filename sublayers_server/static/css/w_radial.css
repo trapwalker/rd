@@ -1,0 +1,45 @@
+#divForHpAndFuelRadials {
+    position: absolute;
+    bottom: -70px;
+    right: 60px;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+}
+
+#divForRadAndWindRadials {
+    position: absolute;
+    bottom: -70px;
+    right: 200px;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+}
+
+.w-hp-radial-parent {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    pointer-events: none;
+}
+
+.w-fuel-radial-parent {
+    position: absolute;
+    bottom: 7px;
+    right: 0;
+    pointer-events: none;
+}
+
+.w-radiation-radial-parent {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    pointer-events: none;
+}
+
+.w-wind-radial-parent {
+    position: absolute;
+    bottom: 7px;
+    right: 0;
+    pointer-events: none;
+}
