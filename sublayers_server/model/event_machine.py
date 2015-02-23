@@ -9,6 +9,7 @@ import events
 import errors
 from party import PartyDispatcher
 
+import sys
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
@@ -61,6 +62,8 @@ class Server(object):
         """
         for event in events_list:
             self.post_event(event)
+
+    memsize = sys.getsizeof
 
 
 class EServerAlreadyStarted(errors.EIllegal):

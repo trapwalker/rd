@@ -10,6 +10,7 @@ from events import ContactSee, ContactOut, Init, Delete, SearchContacts
 from parameters import Parameter
 from balance import BALANCE
 
+import sys
 from abc import ABCMeta
 from counterset import CounterSet
 from functools import update_wrapper
@@ -61,6 +62,7 @@ class Object(object):
         Delete(obj=self, time=time).post()
 
     id = property(id)
+    memsize = sys.getsizeof
 
     @property
     def classname(self):
