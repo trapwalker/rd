@@ -215,17 +215,8 @@ class Observer(VisibleObject):
         self.visible_objects.append(obj)
         obj.subscribed_observers.append(self)
         # add all subscribed _agents_ into to the _visible object_
-        # vo.subscribed_agents.update(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
-            is_first = obj.subscribed_agents.inc(agent) == 1
-            messages.See(
-                agent=agent,
-                time=time,
-                subj=self,
-                obj=obj,
-                is_boundary=is_boundary,
-                is_first=is_first,
-            ).post()
+            agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
     # todo: check calls
     def on_contact_out(self, time, obj, is_boundary, comment=None):
@@ -236,17 +227,8 @@ class Observer(VisibleObject):
         @param str comment: debug comment
         """
         # remove all subscribed _agents_ from _visible object_
-        # vo.subscribed_agents.subtract(self.watched_agents)  # todo: may be optimize
         for agent in self.watched_agents:
-            is_last = obj.subscribed_agents.dec(agent) == 0
-            messages.Out(
-                agent=agent,
-                time=time,
-                subj=self,
-                obj=obj,
-                is_boundary=is_boundary,
-                is_last=is_last,
-            ).post()
+            agent.on_out(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)

@@ -4,6 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import Object
+import messages
+
 from collections import Counter
 
 # todo: make agent offline status possible
@@ -30,25 +32,43 @@ class Agent(Object):
     def is_online(self):
         return self._connection is not None
 
-    def add_observer(self, observer):
+    def add_observer(self, observer, time=None):
         # add _self_ into to the all _visible objects_ by _observer_
-        # todo: send contact (with observer) message to agent
-        # todo: send contacts (with observed VO) messages to agent
         self.observers[observer] += 1
         observer.watched_agents[self] += 1
-        observer.subscribed_agents[self] += 1
+        self.on_see(time=time, subj=observer, obj=observer, is_boundary=False)
         for vo in observer.visible_objects:
-            vo.subscribed_agents[self] += 1
+            self.on_see(time=time, subj=observer, obj=vo, is_boundary=False)
 
-    def drop_observer(self, observer):
+    def drop_observer(self, observer, time=None):
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.visible_objects:
-            vo.subscribed_agents[self] -= 1
-        observer.subscribed_agents[self] -= 1
+            self.on_out(time=time, subj=observer, obj=vo, is_boundary=False)
+        self.on_out(time=time, subj=observer, obj=observer, is_boundary=False)
         observer.watched_agents[self] -= 1
         self.observers[observer] -= 1
-        # todo: send contacts-off (with observed VO) messages to agent
-        # todo: send contact-off (with observer) message to agent
+
+    def on_see(self, time, subj, obj, is_boundary):
+        is_first = obj.subscribed_agents.inc(self) == 1
+        messages.See(
+            agent=self,
+            time=time or self.server.get_time(),  # todo: check it
+            subj=subj,
+            obj=obj,
+            is_boundary=is_boundary,
+            is_first=is_first,
+        ).post()
+
+    def on_out(self, time, subj, obj, is_boundary):
+        is_last = obj.subscribed_agents.dec(self) == 0
+        messages.Out(
+            agent=self,
+            time=time or self.server.get_time(),  # todo: check it
+            subj=subj,
+            obj=obj,
+            is_boundary=is_boundary,
+            is_last=is_last,
+        ).post()
 
     def as_dict(self, *av, **kw):
         d = super(Agent, self).as_dict(*av, **kw)

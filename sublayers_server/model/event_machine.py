@@ -141,7 +141,7 @@ class LocalServer(Server):
     def start(self):
         if self.thread:
             raise EServerAlreadyStarted()
-        self.debug_console_start()
+        #self.debug_console_start()
         self.start_time = self.get_time()
         self.thread = Thread(target=self.event_loop)
         self.thread.start()
