@@ -81,6 +81,26 @@ def serialize(obj):
     return json.dumps(obj, sort_keys=True, indent=4, default=special_type_serialize_prepare)
 
 
+class AttrPreserve(object):
+    '''Proxy object '''
+    def __init__(self, obj, na_errors=None, hide_errors=(Exception,)):
+        self._covered_object = obj
+        self._na_errors = na_errors
+        self._hide_errors = hide_errors
+
+    @property
+    def classname(self):
+        return self._covered_object.__class__.__name__
+
+    def __getattr__(self, name):
+        try:
+            return getattr(self._covered_object, name)
+        except (AttributeError,) + (self._na_errors or ()):
+            return '#NA'
+        except self._hide_errors or ():
+            return '#ERROR'
+
+
 class TimeFormatter(object):
     def __init__(self, fmt='{:%Y-%m-%d %H:%M:%S.%f}'):
         self.fmt = fmt
