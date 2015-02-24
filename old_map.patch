@@ -1,0 +1,23 @@
+diff -r 2aaae18fdd28 sublayers_server/model/first_mission_parties.py
+--- a/sublayers_server/model/first_mission_parties.py	Tue Feb 24 03:02:57 2015 +0300
++++ b/sublayers_server/model/first_mission_parties.py	Tue Feb 24 03:03:55 2015 +0300
+@@ -69,7 +69,8 @@
+     def __init__(self):
+         # todo: add role unit class to params
+         super(Corp, self).__init__(
+-            base_point=Point(12535178, 27032679),
++            #base_point=Point(12535178, 27032679),
++            base_point=Point(2**7/2*256+256, 2**7/2*256+256),
+             roles=[
+                 Role('Cargo',
+                     car_params=dict(
+@@ -129,7 +130,8 @@
+ class Band(RoleParty):
+     def __init__(self):
+         super(Band, self).__init__(
+-            base_point=Point(12535178, 27032679),
++            #base_point=Point(12535178, 27032679),
++            base_point=Point(2**7/2*256, 2**7/2*256),
+             roles=[
+                 Role('Rover',
+                     car_params=dict(
