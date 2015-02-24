@@ -61,7 +61,25 @@ var WHPRadial = (function (_super) {
         this.out_r = this.max_r - d_radius;
         this.in_r = this.max_r - 2 * d_radius;
 
-        // todo: добавление треугольничков
+        var triangle_dy = size - this.out_r - 1;
+        var triangle_str = 'M 0 0 L -2.5 -4.33 L 2.5 -4.33 Z';
+        // добавление треугольничков
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main);
+
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main)
+            .transform({rotation: 90, cx: size, cy: size});
+
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main)
+         .transform({rotation: -90, cx: size, cy: size});
 
 
         // Добавление текстов виджета

@@ -64,8 +64,26 @@ var WAltmetrRadial = (function (_super) {
         this.out_r = max_r;
         this.in_r = max_r - d_radius;
 
-        // todo: добавление треугольничков
+        // добавление треугольничков
+        var triangle_dy = size - this.out_r - 1;
+        var triangle_str = 'M 0 0 L -2.5 -4.33 L 2.5 -4.33 Z';
+        // добавление треугольничков
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main);
 
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main)
+            .transform({rotation: 135, cx: size, cy: size});
+
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main)
+            .transform({rotation: -135, cx: size, cy: size});
 
         // Добавление текста метров
         this.text_prc = draw.text("0%")

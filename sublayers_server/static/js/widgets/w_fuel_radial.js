@@ -13,7 +13,9 @@ var WFuelRadial = (function (_super) {
         this.div_id = 'WFuelRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-fuel-radial-parent"></div>');
 
-        var draw = SVG(this.div_id);
+        var draw_main = SVG(this.div_id);
+        this.draw_main = draw_main;
+        var draw = draw_main.group();
         this.draw = draw;
 
         this._init_params();
@@ -61,8 +63,26 @@ var WFuelRadial = (function (_super) {
         this.out_r = this.max_r - d_radius;
         this.in_r = this.max_r - 2 * d_radius;
 
-        // todo: добавление треугольничков
+        // добавление треугольничков
+        var triangle_dy = this.out_r + 1;
+        var triangle_str = 'M 0 0 L -2.5 4.33 L 2.5 4.33 Z';
+        // добавление треугольничков
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main);
 
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main)
+            .transform({rotation: 90, cx: size, cy: 0});
+
+        draw.path(triangle_str)
+            .dmove(size, triangle_dy)
+            .stroke({width: 0})
+            .fill(this.svg_colors.main)
+            .transform({rotation: -90, cx: size, cy: 0});
 
         // Добавление текстов виджета
         // Добавление текста процентов ХП
@@ -97,7 +117,14 @@ var WFuelRadial = (function (_super) {
 
         this.draw_fill_area(0.75);
 
+        var prc = 0.0;
+        var self =  this;
+        setInterval(function(){
+            self.draw_fill_area(prc);
+            prc += 0.001
+        }, 70);
 
+        draw.dmove(0, 2);
 
         this.change(clock.getCurrentTime());
     }
