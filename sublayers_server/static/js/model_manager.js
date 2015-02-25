@@ -211,7 +211,8 @@ var ClientManager = (function () {
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
-            mapManager.widget_fire_sectors = new WFireSectors(mcar);
+            //mapManager.widget_fire_sectors = new WFireSectors(mcar);
+            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);
             //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);

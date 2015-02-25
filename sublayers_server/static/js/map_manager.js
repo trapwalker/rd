@@ -191,6 +191,7 @@ function onKeyDownMap(event) {
             if(map.getZoom() < ConstMaxMapZoom){
                 var zoom = map.getZoom() + 1;
                 setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
                 setTimeout(function(){map.setZoom(zoom)}, 0);
             }
 
@@ -201,6 +202,7 @@ function onKeyDownMap(event) {
             if(map.getZoom() > ConstMinMapZoom){
                 var zoom = map.getZoom() - 1;
                 setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
                 setTimeout(function(){map.setZoom(zoom)}, 0);
             }
 
@@ -211,6 +213,7 @@ function onKeyDownMap(event) {
             if(map.getZoom() < ConstMaxMapZoom - 1){
                 var zoom = map.getZoom() + 2;
                 setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
                 setTimeout(function(){map.setZoom(zoom)}, 0);
             }
 
@@ -221,6 +224,7 @@ function onKeyDownMap(event) {
             if(map.getZoom() > ConstMinMapZoom + 1){
                 var zoom = map.getZoom() - 2;
                 setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
                 setTimeout(function(){map.setZoom(zoom)}, 0);
             }
 

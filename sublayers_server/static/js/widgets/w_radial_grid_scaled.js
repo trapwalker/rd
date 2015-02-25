@@ -27,7 +27,7 @@ var WRadialGridScaled = (function (_super) {
             sides.back.sideRadius,
             sides.left.sideRadius,
             sides.right.sideRadius);
-        var size = max_radius + 75; // радиус квадрата (ДАДА!!!!)
+        var size = max_radius + 200; // радиус квадрата (ДАДА!!!!)
         this.size_of_icon = size;
         this.max_circles = max_circles;
         this.max_radius = max_radius;
@@ -259,7 +259,7 @@ var WRadialGridScaled = (function (_super) {
     WRadialGridScaled.prototype.setZoom = function(new_zoom){
         var rs = this.def_radius;
         var new_rs = [];
-        var zoomAnimateTime = 350;
+        var zoomAnimateTime = 300;
         var circles = this.circles;
         var last_zoom = this.zoom;
         var diff_zoom = new_zoom - last_zoom;
