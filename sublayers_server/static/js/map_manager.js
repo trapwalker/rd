@@ -6,7 +6,8 @@
 
 //Путь к карте на сервере
 //var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
+//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
 //Путь к карте в локальном каталоге
 var ConstMapPathLocal = '';
@@ -335,13 +336,15 @@ var MapManager = (function(_super){
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
                 maxZoom: ConstMaxMapZoom,
                 continuousWorld: true,
-                opacity: 0.5,
+                opacity: 1.0,
+                errorTileUrl: 'http://sublayers.net/map/404.jpg',
                 storage: storage});
         }
         else {
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
-                opacity: 0.5,
+                opacity: 1.0,
+                errorTileUrl: 'http://sublayers.net/map/404.jpg',
                 maxZoom: ConstMaxMapZoom});
         }
         if(cookieStorage.optionsMapTileVisible)
