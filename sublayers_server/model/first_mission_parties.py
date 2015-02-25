@@ -80,8 +80,8 @@ class Corp(RoleParty):
                         weapons=[
                             dict(fi=pi/2, is_auto=True, radius=100, width=radians(45), dps=0.5),
                             dict(fi=-pi/2, is_auto=True, radius=100, width=radians(45), dps=0.5),
-                            dict(fi=pi, is_auto=False, radius=200, width=radians(60), dmg=5, time_recharge=5),
-                            dict(fi=pi, is_auto=False, radius=100, width=radians(40), dmg=10, time_recharge=8),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(40), dmg=5, time_recharge=5),
+                            dict(fi=pi, is_auto=False, radius=100, width=radians(60), dmg=10, time_recharge=8),
                         ],
                      ),
                      max_count=1,

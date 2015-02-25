@@ -251,10 +251,13 @@ var WFireController = (function (_super) {
 
     WFireController.prototype._carInSide = function(car, side, uCarPos, uCarDir) {
         car.fi = getDiffAngle((uCarDir + side.side.direction), car.angle);
-        var distBool = car.distance <= side.side.sideRadius;
-        var fiBool = Math.abs(car.fi) <= (side.side.sideWidth / 2.);
-        return (distBool && fiBool);
-        // todo: усложнить проверку (проверять попадание в сектор)
+        var inSide = false;
+        for (var i = 0; i < side.side.sectors.length; i++) {
+            var sector = side.side.sectors[i];
+            inSide = (car.distance <= sector.radius) && (Math.abs(car.fi) <= (sector.width / 2.));
+            if (inSide) break;
+        }
+        return inSide;
     };
 
     WFireController.prototype.change = function () {
