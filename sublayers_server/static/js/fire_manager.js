@@ -57,13 +57,15 @@ var FireEffectManager = (function () {
         var vekt = subVector(options.pos_obj, options.pos_subj);
         var direction = angleVectorRadCCW(vekt);
         if (! options.is_fake) {
-            new EDischargeFire(options.pos_subj, direction).start();
+            //new EDischargeFire(options.pos_subj, direction).start();
+            new EDischargeFirePNG_1(options.pos_subj, direction).start();
             for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
                 new EFlashLight(getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight),
                     ConstFireDischargeFlashlightRadius).start(ConstDelayFireDischargeFlashlight);
         }
         else {
-            new EDischargeFire(options.pos_subj, direction).start();
+            //new EDischargeFire(options.pos_subj, direction).start();
+            new EDischargeFirePNG_2(options.pos_subj, direction).start();
             var temp = 1 / ConstCountFireDischargeFlashlight;
             var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
             for (var i = 0; i < ConstCountFireDischargeFlashlight; i++) {
