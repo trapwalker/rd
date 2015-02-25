@@ -84,6 +84,7 @@ var WFireController = (function (_super) {
     }
 
     WFireController.prototype.changeVisible = function (event) {
+        console.log('WFireController.prototype.changeVisible');
         var self = event.data.self;
         self.fCT.slideToggle("slow", function () {
             if (self.visible) {
@@ -97,7 +98,6 @@ var WFireController = (function (_super) {
                 self.fCSB.removeClass('fire-control-slide-button-hide');
                 self.fCSB.addClass('fire-control-slide-button-show');
                 self.SVG.setAttribute('display', 'block');
-                self._setRotate((self.getRotate() ? self.options.rotateAngle : (- Math.PI / 2)));
             }
         });
     };

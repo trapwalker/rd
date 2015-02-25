@@ -542,13 +542,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
-
-
-
-
-
-
     ClientManager.prototype.sendRocket = function () {
         var mes = {
             call: "send_rocket",
@@ -558,7 +551,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     return ClientManager;
 })();

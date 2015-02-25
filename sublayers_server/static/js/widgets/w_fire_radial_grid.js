@@ -266,7 +266,7 @@ var WFireRadialGrid = (function (_super) {
         var scale_map = Math.pow(2., map.getMaxZoom() - map.getZoom()); // учёт зуммирования
 
         // Добавление залповых секторов (только сектора, без привязки к стронам)
-        var sectors = this.car.fireSidesMng.getSectors('', true);
+        var sectors = this.car.fireSidesMng.getSectors('', true, false);
         for(i=0; i< sectors.length; i++){
             var sector = sectors[i];
             var sect_radius = sector.radius / scale_map;
@@ -288,7 +288,7 @@ var WFireRadialGrid = (function (_super) {
         }
 
         // Добавление автоматических секторов (только сектора, без привязки к стронам)
-        var auto_sectors = this.car.fireSidesMng.getSectors('', false);
+        var auto_sectors = this.car.fireSidesMng.getSectors('', false, true);
         for(i=0; i< auto_sectors.length; i++){
             var asector = auto_sectors[i];
             var asect_radius = asector.radius / scale_map;
@@ -299,23 +299,23 @@ var WFireRadialGrid = (function (_super) {
         // todo: меньше какого радиуса рисовать или не рисовать эти зацепы.
         // Добавление бортов - просто линии, указывающие направление борта
         var sides = this.car.fireSidesMng.sides;
-        var max_disch_radius = sides.front.getMaxDischargeRadius() / scale_map;
-        var max_disch_width = sides.front.getMaxDischargeWidth();
+        var max_disch_radius = sides.front.sideDischargeRadius / scale_map;
+        var max_disch_width = sides.front.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0));
 
-        max_disch_radius = sides.back.getMaxDischargeRadius() / scale_map;
-        max_disch_width = sides.back.getMaxDischargeWidth();
+        max_disch_radius = sides.back.sideDischargeRadius / scale_map;
+        max_disch_width = sides.back.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI));
 
-        max_disch_radius = sides.left.getMaxDischargeRadius() / scale_map;
-        max_disch_width = sides.left.getMaxDischargeWidth();
+        max_disch_radius = sides.left.sideDischargeRadius / scale_map;
+        max_disch_width = sides.left.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.));
 
-        max_disch_radius = sides.right.getMaxDischargeRadius() / scale_map;
-        max_disch_width = sides.right.getMaxDischargeWidth();
+        max_disch_radius = sides.right.sideDischargeRadius / scale_map;
+        max_disch_width = sides.right.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0)
             this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.));
 
@@ -496,7 +496,7 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype._drawRechargeArea = function(side_str){
         var side = this.car.fireSidesMng.sides[side_str];
-        var width = side.getMaxDischargeWidth();
+        var width = side.sideDischargeWidth;
         if (width <= 0) return;
         var g = this.g;
         var direction = side.direction;
