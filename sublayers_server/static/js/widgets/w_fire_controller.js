@@ -84,6 +84,7 @@ var WFireController = (function (_super) {
     }
 
     WFireController.prototype.changeVisible = function (event) {
+        //console.log('WFireController.prototype.changeVisible');
         var self = event.data.self;
         self.fCT.slideToggle("slow", function () {
             if (self.visible) {
@@ -97,7 +98,6 @@ var WFireController = (function (_super) {
                 self.fCSB.removeClass('fire-control-slide-button-hide');
                 self.fCSB.addClass('fire-control-slide-button-show');
                 self.SVG.setAttribute('display', 'block');
-                self._setRotate((self.getRotate() ? self.options.rotateAngle : (- Math.PI / 2)));
             }
         });
     };
@@ -132,7 +132,7 @@ var WFireController = (function (_super) {
         }
     };
 
-    WFireController.prototype._getSVGPathSide = function (radiusPath) {
+    WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {
         var tempWidth = this.halfSectorWidth;
         var radiusOut = this.radiusIn + ((this.radiusOut - this.radiusIn) * radiusPath);
         var vertVOut = new Point(radiusOut, 0);
@@ -160,7 +160,7 @@ var WFireController = (function (_super) {
             side.SVGGroup = document.createElementNS(this.NS, "g");
             this.SVGSectorsGroup.appendChild(side.SVGGroup);
             side.SVGGroup.setAttribute('transform', 'translate(' + this.center.x + ', ' + this.center.y + ') ' +
-                                         'rotate(' + radToGrad(sides[i].direction) + ')');
+                                       'rotate(' + radToGrad(sides[i].direction) + ')');
 
             // Рисование серого статического сектора
             side.SVGPathShadow = document.createElementNS(this.NS, "path");
@@ -168,10 +168,16 @@ var WFireController = (function (_super) {
             side.SVGPathShadow.setAttribute('d', this.normalPath);
             side.SVGGroup.appendChild(side.SVGPathShadow);
 
-            // Рисование
+            // Рисование самого сектора
             side.SVGPath = document.createElementNS(this.NS, "path");
-            side.SVGPath.setAttribute('class', 'fire-control-sector sublayers-clickable');
-            side.SVGPath.setAttribute('d', this.normalPath);
+            if (sides[i].isDischarge && sides[i].isAuto) {
+                side.SVGPath.setAttribute('class', 'fire-control-sector-discharge-auto sublayers-clickable');
+            }
+            else {
+                if (sides[i].isDischarge) side.SVGPath.setAttribute('class', 'fire-control-sector-discharge sublayers-clickable');
+                if (sides[i].isAuto) side.SVGPath.setAttribute('class', 'fire-control-sector-auto');
+            }
+            side.SVGPath.setAttribute('d', this._getSVGPathSide(1., true, true));
             side.SVGGroup.appendChild(side.SVGPath);
 
             // Добавить в сектор ссылку на side

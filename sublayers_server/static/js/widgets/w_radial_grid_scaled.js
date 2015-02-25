@@ -27,7 +27,7 @@ var WRadialGridScaled = (function (_super) {
             sides.back.sideRadius,
             sides.left.sideRadius,
             sides.right.sideRadius);
-        var size = max_radius + 75; // радиус квадрата (ДАДА!!!!)
+        var size = max_radius + 200; // радиус квадрата (ДАДА!!!!)
         this.size_of_icon = size;
         this.max_circles = max_circles;
         this.max_radius = max_radius;
@@ -72,7 +72,11 @@ var WRadialGridScaled = (function (_super) {
             var c = g.circle(0.0).radius(r)
                 .center(size, size)
                 .fill(this.svg_params.circles.fill)
-                .stroke(this.svg_params.circles.stroke);
+                .stroke({
+                    stroke: this.svg_params.circles.stroke_width,
+                    color: this.svg_params.circles.stroke_color,
+                    opacity: this.svg_params.circles.stroke_opacity
+                });
             this.circles.push({
                     radius: r,
                     circle: c
@@ -109,6 +113,9 @@ var WRadialGridScaled = (function (_super) {
             circles: {
                 // характеристики границ окружностей
                 stroke: {width: 1, color: this.svg_colors.main, opacity: 0.4},
+                stroke_width: 1,
+                stroke_color: this.svg_colors.main,
+                stroke_opacity: 0.4,
                 // заливка кругов
                 fill: 'transparent'
             },
@@ -252,7 +259,7 @@ var WRadialGridScaled = (function (_super) {
     WRadialGridScaled.prototype.setZoom = function(new_zoom){
         var rs = this.def_radius;
         var new_rs = [];
-        var zoomAnimateTime = 350;
+        var zoomAnimateTime = 300;
         var circles = this.circles;
         var last_zoom = this.zoom;
         var diff_zoom = new_zoom - last_zoom;
@@ -293,8 +300,12 @@ var WRadialGridScaled = (function (_super) {
                 var c = g.circle(0.0).radius(rr / k_radius)
                     .center(this.size_of_icon, this.size_of_icon)
                     .fill(this.svg_params.circles.fill)
-                    .stroke(this.svg_params.circles.stroke);
-                c.animate(zoomAnimateTime).radius(rr);
+                    .stroke({
+                        stroke: this.svg_params.circles.stroke_width,
+                        color: this.svg_params.circles.stroke_color,
+                        opacity: 0.0
+                    });
+                c.animate(zoomAnimateTime).stroke({opacity: this.svg_params.circles.stroke_opacity}).radius(rr);//.opacity(0.9).radius(rr);
                 circles.push({
                     radius: rr,
                     circle: c

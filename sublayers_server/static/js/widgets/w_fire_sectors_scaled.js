@@ -3,10 +3,10 @@
  * Ссылка на него находится в мап менеджере, так как при зумировании он должен исчезать
  */
 
-var WFireRadialGrid = (function (_super) {
-    __extends(WFireRadialGrid, _super);
+var WFireSectorsScaled = (function (_super) {
+    __extends(WFireSectorsScaled, _super);
 
-    function WFireRadialGrid(car) {
+    function WFireSectorsScaled(car) {
         _super.call(this, [car]);
         this.car = car;
         this.marker = null; // это непосредственно маркер, в котором будет свг-иконка
@@ -17,7 +17,7 @@ var WFireRadialGrid = (function (_super) {
         this.change(clock.getCurrentTime());
     }
 
-    WFireRadialGrid.prototype.init_marker = function(t){
+    WFireSectorsScaled.prototype.init_marker = function(t){
         var max_circles = 6; // кол-во кругов сетки
         var time = clock.getCurrentTime();
         var i = 0; // для циклов
@@ -32,6 +32,7 @@ var WFireRadialGrid = (function (_super) {
         this.size_of_icon = size;
         this.max_circles = max_circles;
         this.max_radius = max_radius;
+        this.zoom = map.getZoom(); // начальный зум, относительно которого и построены все сектора
 
         // создание иконки и маркера
         this.div_id = 'WFireRadialGrid' + (-generator_ID.getID());
@@ -62,72 +63,11 @@ var WFireRadialGrid = (function (_super) {
         // после инициализации SVG можно задать все параметры: цвеат, градиенты и тд
         this._init_svg_parametrs();
 
-        // Добавление радиальных кружков, уменьшая радиус
-        for (i = 1; i <= max_circles; i++)
-            g.circle(0.0).radius(max_radius * i / max_circles)
-                .center(size, size)
-                .fill(this.svg_params.circles.fill)
-                .stroke(this.svg_params.circles.stroke);
-
-        // добавление 45 градусных линий-отметок (их длинна сейчас по 10 градусов...изменяема)
-        var p1 = new Point(max_radius, 0);
-        var p2 = new Point(max_radius - (max_radius / max_circles) * 0.75, 0);
-        var p31 = rotateVector(new Point(max_radius, 0), gradToRad(10.0));
-        var p32 = rotateVector(new Point(max_radius, 0), -gradToRad(10.0));
-        for (i = 0; i < 4; i++) {
-            g.line(p1.x, p1.y, p2.x + 0.1, p2.y + 0.1)
-                .stroke(this.svg_params.lines_45.stroke)
-                .dmove(size, size)
-                .transform({rotation: 45 + i * 90, cx: size, cy: size});
-            g.path('M ' + p1.x + ' ' + p1.y + 'A ' + max_radius + ' ' + max_radius + ' 0 0 1 ' + p31.x + ' ' + p31.y)
-                .stroke(this.svg_params.lines_45.stroke)
-                .dmove(size, size)
-                .transform({rotation: 45 + i * 90, cx: size, cy: size})
-                .fill(this.svg_params.lines_45.radial_fill);
-            g.path('M ' + p1.x + ' ' + p1.y + 'A ' + max_radius + ' ' + max_radius + ' 0 0 0 ' + p32.x + ' ' + p32.y)
-                .stroke(this.svg_params.lines_45.stroke)
-                .dmove(size, size)
-                .transform({rotation: 45 + i * 90, cx: size, cy: size})
-                .fill(this.svg_params.lines_45.radial_fill);
-        }
-
-        // Добавление радиальных точек
-        for (i = 1; i <= max_circles; i++)
-            for (var y = 0; y < 4; y++)
-                g.circle(0.0).radius(this.svg_params.radial_point.radius)
-                    .stroke(this.svg_params.radial_point.stroke)
-                    .fill(this.svg_params.radial_point.fill)
-                    .dmove(size + max_radius * i / max_circles, size)
-                    .transform({rotation: y * 90, cx: size, cy: size});
-
-        // Добавление точек-зумматоров (слева сзади от машинки), их координаты нужно сохранить
-        this.zoomatorsPoints = [];
-        this.zoomatorsText = [];
-        for (i = 1; i <= max_circles; i++){
-            var pz = rotateVector(new Point(max_radius * i / max_circles, 0), - 3. * Math.PI / 4.);
-            pz = summVector(pz, new Point(size, size));
-            g.circle(0.0).radius(this.svg_params.zoomators.radius)
-                .stroke(this.svg_params.zoomators.stroke)
-                .fill(this.svg_params.zoomators.fill)
-                .dmove(pz.x, pz.y);
-            this.zoomatorsPoints.push(pz); // сохраняем точку, чтобы потом вокруг неё вращать текст
-        }
-
-        // вывод для каждого из бортов его области перезарядки
-        this.rechAreas = {};
-        this._drawRechargeArea('front');
-        this._drawRechargeArea('back');
-        this._drawRechargeArea('left');
-        this._drawRechargeArea('right');
-
-        // вывод текста зумматора
-        this._drawZoomatorsText();
-
         // вывод секторов
         this._drawSectors();
     };
 
-    WFireRadialGrid.prototype._init_svg_parametrs = function () {
+    WFireSectorsScaled.prototype._init_svg_parametrs = function () {
         var g = this.g;
         // основные цвета сетки
         this.svg_colors = {
@@ -258,7 +198,7 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-    WFireRadialGrid.prototype._drawSectors = function(){
+    WFireSectorsScaled.prototype._drawSectors = function(){
         // Подготовка для отрисовки секторов и бортов
         var first_radius = this.max_radius / this.max_circles;
         var second_radius = this.max_radius * 2/ this.max_circles;
@@ -293,7 +233,7 @@ var WFireRadialGrid = (function (_super) {
             var asector = auto_sectors[i];
             var asect_radius = asector.radius / scale_map;
             if (asect_radius > first_radius) // значит сектор можно рисовать впринципе
-               this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
+                this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
         }
 
         // todo: меньше какого радиуса рисовать или не рисовать эти зацепы.
@@ -322,12 +262,12 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-    WFireRadialGrid.prototype._clearSectors = function(){
+    WFireSectorsScaled.prototype._clearSectors = function(){
         while (this.elem_zoom.length)
             this.elem_zoom.pop().remove();
     };
 
-    WFireRadialGrid.prototype._drawOneSector = function(minRadius, maxRadius, width, direction, fillColor){
+    WFireSectorsScaled.prototype._drawOneSector = function(minRadius, maxRadius, width, direction, fillColor){
         // todo: если ширина сектора больше 180, то: http://www.w3.org/TR/SVG/paths.html#PathData
         // Пример с красным кружком
 
@@ -351,7 +291,7 @@ var WFireRadialGrid = (function (_super) {
             .fill(fillColor);
     };
 
-    WFireRadialGrid.prototype._drawOneSide = function(minRadius, maxRadius, width, direction){
+    WFireSectorsScaled.prototype._drawOneSide = function(minRadius, maxRadius, width, direction){
         // todo: если ширина сектора больше 180, то: http://www.w3.org/TR/SVG/paths.html#PathData
         // Пример с красным кружком
 
@@ -388,7 +328,7 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-    WFireRadialGrid.prototype._drawOneAutoSector = function(radius, width, direction){
+    WFireSectorsScaled.prototype._drawOneAutoSector = function(radius, width, direction){
         // todo: если ширина сектора больше 180, то: http://www.w3.org/TR/SVG/paths.html#PathData
         // Пример с красным кружком
 
@@ -404,12 +344,12 @@ var WFireRadialGrid = (function (_super) {
             .stroke({width: this.svg_params.auto_sectors.width_of_line,
                 color: this.svg_params.auto_sectors.gradient_for_lines
             });
-            //.attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);;
+        //.attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);;
         g.line(sp12.x, sp12.y, sp22.x, sp22.y)
             .stroke({width: this.svg_params.auto_sectors.width_of_line,
                 color: this.svg_params.auto_sectors.gradient_for_lines
             });
-            //.attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);;
+        //.attr('stroke-dasharray', this.svg_params.auto_sectors.dash_array);;
 
         // дуга
         var path_str =
@@ -426,7 +366,7 @@ var WFireRadialGrid = (function (_super) {
         return g;
     };
 
-    WFireRadialGrid.prototype._drawZoomatorsText = function(){
+    WFireSectorsScaled.prototype._drawZoomatorsText = function(){
         // текст относится к группе и вертится вместе с ней
         if (this.zoomatorsText.length > 0 ) console.error('не удалён старый текст!!!!');
         var max_circles = this.max_circles;
@@ -447,7 +387,7 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-    WFireRadialGrid.prototype._drawZoomatorsText2 = function(){
+    WFireSectorsScaled.prototype._drawZoomatorsText2 = function(){
         // текст относится к draw и НЕ вертится вместе с гуппой, а просто перемещается на нужную точку
         if (this.zoomatorsText.length > 0 ) console.error('не удалён старый текст!!!!');
         var max_circles = this.max_circles;
@@ -467,12 +407,12 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-    WFireRadialGrid.prototype._clearZoomatorsText = function(){
+    WFireSectorsScaled.prototype._clearZoomatorsText = function(){
         while (this.zoomatorsText.length)
             this.zoomatorsText.pop().remove();
     };
 
-    WFireRadialGrid.prototype._rotateZoomatorsText = function(angle_in_degrees){
+    WFireSectorsScaled.prototype._rotateZoomatorsText = function(angle_in_degrees){
         var max_circles = this.max_circles;
         for (var i = 0; i < max_circles; i++) {
             var p = this.zoomatorsPoints[i];
@@ -481,7 +421,7 @@ var WFireRadialGrid = (function (_super) {
         }
     };
 
-    WFireRadialGrid.prototype._rotateZoomatorsText2 = function(angle_in_degrees){
+    WFireSectorsScaled.prototype._rotateZoomatorsText2 = function(angle_in_degrees){
         // перемещение текста, а не его вращение
         var max_circles = this.max_circles;
         for (var i = 0; i < max_circles; i++) {
@@ -494,7 +434,7 @@ var WFireRadialGrid = (function (_super) {
         }
     };
 
-    WFireRadialGrid.prototype._drawRechargeArea = function(side_str){
+    WFireSectorsScaled.prototype._drawRechargeArea = function(side_str){
         var side = this.car.fireSidesMng.sides[side_str];
         var width = side.sideDischargeWidth;
         if (width <= 0) return;
@@ -542,7 +482,7 @@ var WFireRadialGrid = (function (_super) {
         }
     };
 
-    WFireRadialGrid.prototype._recharging = function(options){
+    WFireSectorsScaled.prototype._recharging = function(options){
         // todo: считать время как входной параметр (просто считывать из options.time)
         var prc = options.prc;
         var side_str = options.side_str;
@@ -586,14 +526,14 @@ var WFireRadialGrid = (function (_super) {
         }
     };
 
-    WFireRadialGrid.prototype._setRechText = function(side_str, rech_text){
+    WFireSectorsScaled.prototype._setRechText = function(side_str, rech_text){
         // todo: передать сюда ещё текст времени, чтобы обнулить его (сделать равным  "")
         var text = this.rechAreas[side_str].rech_text;
         text.text(rech_text);
         text.textPath.attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
     };
 
-    WFireRadialGrid.prototype.change = function(t){
+    WFireSectorsScaled.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
@@ -605,35 +545,60 @@ var WFireRadialGrid = (function (_super) {
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
-        var options = this.car.fireSidesMng.getRechargeStates(t);
-        for(var i = 0; i < options.length; i++)
-            this._recharging(options[i]);
+      //  var options = this.car.fireSidesMng.getRechargeStates(t);
+      //  for(var i = 0; i < options.length; i++)
+      //      this._recharging(options[i]);
     };
 
-    WFireRadialGrid.prototype.zoomStart = function(){
+    WFireSectorsScaled.prototype.zoomStart = function(){
         //console.log('WFireRadialGrid.prototype.zoomStart');
-        this._clearSectors();
-        this._clearZoomatorsText();
+        //this._clearSectors();
+        //this._clearZoomatorsText();
     };
 
-    WFireRadialGrid.prototype.zoomEnd = function(){
+    WFireSectorsScaled.prototype.zoomEnd = function(){
         //console.log('WFireRadialGrid.prototype.zoomEnd');
-        this._drawSectors();
-        this._drawZoomatorsText();
+        //this._drawSectors();
+        //this._drawZoomatorsText();
     };
 
-    WFireRadialGrid.prototype.rotate = function(angle_in_degrees){
+    WFireSectorsScaled.prototype.setZoom = function(new_zoom){
+        var zoomAnimateTime = 300;
+        var size = this.size_of_icon;
+        //var diff_zoom = new_zoom - last_zoom;
+        var diff_zoom = new_zoom - this.zoom;
+        var k_radius = Math.pow(2, diff_zoom);
+        var g = this.g;
+        var scale_center = size - size * k_radius;
+
+
+        var matrix_str = k_radius + ", 0, 0, " + k_radius + ", "+ (scale_center) + ", "+ (scale_center);
+        console.log(matrix_str);
+/*
+        for(var i = 0; i < this.elem_zoom.length; i++) {
+            var elem = this.elem_zoom[i];
+            //elem.scale(k_radius, k_radius);
+            elem.animate(zoomAnimateTime).transform({matrix: matrix_str});
+
+        }
+*/
+        g.animate(zoomAnimateTime).transform({matrix: matrix_str});
+        //g.animate(zoomAnimateTime).scale(k_radius, k_radius, size, size);
+
+    };
+
+
+    WFireSectorsScaled.prototype.rotate = function(angle_in_degrees){
         this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
-        this._rotateZoomatorsText(angle_in_degrees);
+        //this._rotateZoomatorsText(angle_in_degrees);
     };
 
-    WFireRadialGrid.prototype.delFromVisualManager = function () {
+    WFireSectorsScaled.prototype.delFromVisualManager = function () {
         //console.log('WFireRadialGrid.prototype.delFromVisualManager');
         this.car = null;
         map.removeLayer(this.marker);
         _super.prototype.delFromVisualManager.call(this);
     };
 
-    return WFireRadialGrid;
+    return WFireSectorsScaled;
 })(VisualObject);
-

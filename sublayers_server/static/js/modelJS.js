@@ -229,26 +229,21 @@ var FireSideMng = (function () {
     };
 
     FireSideMng.prototype.setShootTime = function (sideStr, shoot_time) {
-        this.sides[sideStr].setShootTime(shoot_time);
+        this.sides[sideStr].last_shoot = shoot_time;
     };
 
-    FireSideMng.prototype.getSectors = function (filterSides, isDischarge) {
+    FireSideMng.prototype.getSectors = function (filterSides, isDischarge, isAuto) {
         // filterSides = строка перечисления бортов, которые нужно отправить, например: 'front, back, right, left'
-        // isDischarge = true - для залповых секторов, false для автоматических
-
+        // isDischarge = true - внести в результат залповые сектора
+        // isAuto = true - внести в результат автоматические сетора
         var res = [];
         if (filterSides == "" || filterSides == null)
             filterSides = ["front", "back", "right", "left"];
-
+        if (isDischarge == undefined) isDischarge = False;
+        if (isAuto == undefined) isAuto = False;
         for (var i = 0; i < filterSides.length; i++)
-            res = res.concat(this.sides[filterSides[i]].getSectorsByType(isDischarge));
-
+            res = res.concat(this.sides[filterSides[i]].getSectorsByType(isDischarge, isAuto));
         return res;
-    };
-
-    FireSideMng.prototype.getAllSectors = function () {
-        var res = [];
-        return res.concat(this.getSectors('', true), this.getSectors('', false));
     };
 
     FireSideMng.prototype.getAllSides = function (onlyUsed) {
@@ -277,7 +272,7 @@ var FireSideMng = (function () {
         var rez = [];
         var sides = this.sides;
         for (var side in sides)
-            if (sides[side].isDischarge()) {
+            if (sides[side].isDischarge) {
                 var value = sides[side].getRechargeState(time);
                 rez.push({
                     prc: value.prc,
@@ -299,8 +294,12 @@ var FireSide = (function () {
         this.sectors = [];
         this.sideRadius = 0;
         this.sideWidth = 0;
+        this.sideDischargeRadius = 0;
+        this.sideDischargeWidth = 0;
         this.sideRecharge = 0;
         this.last_shoot = 0.0;
+        this.isDischarge = false;
+        this.isAuto = false;
     }
 
     FireSide.prototype.addSector = function (fireSector) {
@@ -308,10 +307,12 @@ var FireSide = (function () {
         this.sideRadius = Math.max(this.sideRadius, fireSector.radius);
         this.sideWidth = Math.max(this.sideWidth, fireSector.width);
         this.sideRecharge = Math.max(this.sideRecharge, fireSector.recharge);
-    };
-
-    FireSide.prototype.setShootTime = function (shoot_time) {
-        this.last_shoot = shoot_time;
+        if (fireSector.isDischarge) {
+            this.sideDischargeRadius = Math.max(this.sideDischargeRadius, fireSector.radius);
+            this.sideDischargeWidth = Math.max(this.sideDischargeWidth, fireSector.width);
+        }
+        this.isDischarge = this.isDischarge || fireSector.isDischarge;
+        this.isAuto = this.isAuto || fireSector.isAuto;
     };
 
     FireSide.prototype.getRechargeState = function (time) {
@@ -339,34 +340,18 @@ var FireSide = (function () {
         return this.sideRecharge + this.last_shoot > time;
     };
 
-    FireSide.prototype.getSectorsByType = function (isDischarge) {
+    FireSide.prototype.getSectorsByType = function (isDischarge, isAuto) {
+        // Установкой флагов можно регулировать результат (если оба True, то вернутся все сектора)
+        if (isDischarge == undefined) isDischarge = False;
+        if (isAuto == undefined) isAuto = False;
         var res = [];
         for (var i = 0; i < this.sectors.length; i++) {
-            var sector_disc = this.sectors[i].isDischarge();
-            if ((isDischarge && sector_disc) || !(isDischarge || sector_disc))
+            var s_disc = this.sectors[i].isDischarge;
+            var s_auto = this.sectors[i].isAuto;
+            if ((isAuto && s_auto) || (isDischarge && s_disc))
                 res.push(this.sectors[i]);
         }
         return res;
-    };
-
-    FireSide.prototype.getMaxDischargeRadius = function () {
-        var r = 0;
-        for (var i = 0; i < this.sectors.length; i++)
-            if (this.sectors[i].isDischarge())
-                r = Math.max(r, this.sectors[i].radius);
-        return r;
-    };
-
-    FireSide.prototype.getMaxDischargeWidth = function () {
-        var w = 0;
-        for (var i = 0; i < this.sectors.length; i++)
-            if (this.sectors[i].isDischarge())
-                w = Math.max(w, this.sectors[i].width);
-        return w;
-    };
-
-    FireSide.prototype.isDischarge = function () {
-        return this.sideRecharge > 0;
     };
 
     return FireSide;
@@ -382,16 +367,16 @@ var FireSector = (function () {
         this.uid = 0;
         this.side = "";
         this.recharge = 0.0;
+        this.isDischarge = false;
+        this.isAuto = false;
         if (options) setOptions(options, this);
     }
 
-    FireSector.prototype.addWeapon = function (aWeapon) {
-        this.weapons.push(aWeapon);
-        this.recharge = Math.max(this.recharge, aWeapon.recharge);
-    };
-
-    FireSector.prototype.isDischarge = function () {
-        return this.recharge > 0.0;
+    FireSector.prototype.addWeapon = function (weapon) {
+        this.weapons.push(weapon);
+        this.recharge = Math.max(this.recharge, weapon.recharge);
+        this.isDischarge = this.isDischarge || (weapon.cls == "WeaponDischarge");
+        this.isAuto = this.isAuto || (weapon.cls == "WeaponAuto");
     };
 
     return FireSector;

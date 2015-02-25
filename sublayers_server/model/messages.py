@@ -246,19 +246,21 @@ class FireDischarge(Message):
 
 
 class FireDischargeEffect(Message):
-    def __init__(self, pos_subj, pos_obj, **kw):
+    def __init__(self, pos_subj, pos_obj, is_fake=False, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
         """
         super(FireDischargeEffect, self).__init__(**kw)
         self.pos_subj = pos_subj
         self.pos_obj = pos_obj
+        self.is_fake = is_fake
 
     def as_dict(self):
         d = super(FireDischargeEffect, self).as_dict()
         d.update(
             pos_subj=self.pos_subj,
             pos_obj=self.pos_obj,
+            is_fake=self.is_fake,
         )
         return d
 

@@ -201,13 +201,18 @@ var ClientManager = (function () {
             new WCarMarker(mcar);    // виджет маркера
             new WMapPosition(mcar);  // виджет позиционирования карты
             new WSpeedSlider(mcar);  // виджет круиз контроля
-            new WHPSlider(mcar);     // виджет HP
+            new WHPRadial(mcar, 'divScaleCarHealth');
+            new WFuelRadial(mcar, 'divScaleCarFuel');
+            new WRadiationRadial(mcar, 'divScaleRadiation');
+            new WWindRadial(mcar, 'divScaleWind');
+            new WAltmetrRadial(mcar, 'divForAltmetrRadial');
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
-            mapManager.widget_fire_sectors = new WFireSectors(mcar);
+            //mapManager.widget_fire_sectors = new WFireSectors(mcar);
+            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);
             //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
             // Инициализация радиального меню - установка правильных id секторов
             //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
@@ -453,7 +458,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.FireDischargeEffect', event);
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
-            pos_obj: new Point(event.pos_obj.x, event.pos_obj.y)
+            pos_obj: new Point(event.pos_obj.x, event.pos_obj.y),
+            is_fake: event.is_fake
         });
     };
 
@@ -537,13 +543,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
-
-
-
-
-
-
     ClientManager.prototype.sendRocket = function () {
         var mes = {
             call: "send_rocket",
@@ -553,7 +552,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     return ClientManager;
 })();
