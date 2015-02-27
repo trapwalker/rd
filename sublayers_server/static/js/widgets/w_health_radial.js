@@ -8,6 +8,7 @@ var WHPRadial = (function (_super) {
     function WHPRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
+        this.value_prc = 0.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WHPRadial' + (-generator_ID.getID());
@@ -245,7 +246,10 @@ var WHPRadial = (function (_super) {
     WHPRadial.prototype.change = function () {
         var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
-        this.draw_fill_area(prc);
+        if (Math.abs(this.value_prc - prc) > 0.005) {
+            this.value_prc = prc;
+            this.draw_fill_area(prc);
+        }
     };
 
     WHPRadial.prototype.delFromVisualManager = function () {

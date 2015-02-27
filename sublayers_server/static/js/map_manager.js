@@ -297,7 +297,8 @@ var MapManager = (function(_super){
                 scrollWheelZoom: "center",
                 dragging: false,
                 doubleClickZoom: false
-            }).setView([50.595, 36.59], cookieStorage.zoom);
+            //}).setView([50.595, 36.59], cookieStorage.zoom);
+            }).setView([50.595, 36.59], 18);
 
         myMap = map;
 

@@ -97,16 +97,7 @@ var WAltmetrRadial = (function (_super) {
             .fill(this.svg_params.text_HEALTH.fill)
             .dmove(size, size - 2 * this.d_radius);
 
-
-
         this.draw_fill_area(0.5);
-
-        var prc = 0.0;
-        var self =  this;
-        setInterval(function(){
-            self.draw_fill_area(prc);
-            prc += 0.001
-        }, 30);
 
         this.change(clock.getCurrentTime());
     }
@@ -240,7 +231,7 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype.change = function () {
-        var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
+        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
         //this.draw_fill_area(prc);
     };

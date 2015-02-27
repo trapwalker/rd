@@ -117,12 +117,6 @@ var WWindRadial = (function (_super) {
             .dmove(size, this.max_r);
 
         this.draw_fill_area(0.75);
-        var prc = 1.0;
-        var self =  this;
-        setInterval(function(){
-            self.draw_fill_area(prc);
-            prc -= 0.001
-        }, 30);
 
         draw.dmove(0, 2);
 

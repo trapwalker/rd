@@ -115,12 +115,6 @@ var WRadiationRadial = (function (_super) {
             .dmove(size, size - this.max_r - this.d_radius / 2.);
 
         this.draw_fill_area(0.75);
-        var prc = 1.0;
-        var self =  this;
-        setInterval(function(){
-            self.draw_fill_area(prc);
-            prc -= 0.001
-        }, 60);
 
         this.change(clock.getCurrentTime());
     }

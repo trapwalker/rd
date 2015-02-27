@@ -117,13 +117,6 @@ var WFuelRadial = (function (_super) {
 
         this.draw_fill_area(0.75);
 
-        var prc = 0.0;
-        var self =  this;
-        setInterval(function(){
-            self.draw_fill_area(prc);
-            prc += 0.001
-        }, 70);
-
         draw.dmove(0, 2);
 
         this.change(clock.getCurrentTime());

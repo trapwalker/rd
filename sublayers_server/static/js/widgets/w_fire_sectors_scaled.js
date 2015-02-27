@@ -573,7 +573,7 @@ var WFireSectorsScaled = (function (_super) {
 
 
         var matrix_str = k_radius + ", 0, 0, " + k_radius + ", "+ (scale_center) + ", "+ (scale_center);
-        console.log(matrix_str);
+        //console.log(matrix_str);
 /*
         for(var i = 0; i < this.elem_zoom.length; i++) {
             var elem = this.elem_zoom[i];
