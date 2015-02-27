@@ -125,7 +125,7 @@ var EAutoFirePNG = (function (_super) {
         this.direction = user.userCar.fireSidesMng.sides[side].direction;
         _super.call(this, car.getCurrentCoord(clock.getCurrentTime()), this.direction);
         this.frame_count = 2;
-        this.time_of_frame = 50;
+        this.time_of_frame = 100;
         this._offset = 20;
         this.icon_size_x = 20;
         this.icon_size_y = 32;
@@ -218,7 +218,7 @@ var ELightBangPNG_2 = (function (_super) {
 
     function ELightBangPNG_2(position, direction){
         _super.call(this, position, direction);
-        this.duration = 3000;
+        this.duration = 300;
         this.frame_count = 3;
         this.time_of_frame = this.duration / this.frame_count;
         this._offset = 22;
@@ -228,4 +228,42 @@ var ELightBangPNG_2 = (function (_super) {
     }
 
     return ELightBangPNG_2
+})(EAnimationPNG);
+
+
+var EHeavyBangOrientedPNG_1 = (function (_super) {
+    __extends(EHeavyBangOrientedPNG_1, _super);
+
+    function EHeavyBangOrientedPNG_1(position, direction){
+        _super.call(this, position, direction);
+        this.duration = 1200;
+        this.frame_count = 12;
+        this.time_of_frame = this.duration / this.frame_count;
+        this._offset = 107;
+        this.icon_size_x = 107;
+        this.icon_size_y = 107;
+        this.div_class = "effect-heavy-bang-oriented-png-1";
+        this.icon_offset = -35;
+    }
+
+    return EHeavyBangOrientedPNG_1
+})(EAnimationPNG);
+
+
+var EHeavyBangOrientedPNG_2 = (function (_super) {
+    __extends(EHeavyBangOrientedPNG_2, _super);
+
+    function EHeavyBangOrientedPNG_2(position, direction){
+        _super.call(this, position, direction);
+        this.duration = 1200;
+        this.frame_count = 12;
+        this.time_of_frame = this.duration / this.frame_count;
+        this._offset = 107;
+        this.icon_size_x = 107;
+        this.icon_size_y = 107;
+        this.div_class = "effect-heavy-bang-oriented-png-2";
+        this.icon_offset = -35;
+    }
+
+    return EHeavyBangOrientedPNG_2
 })(EAnimationPNG);

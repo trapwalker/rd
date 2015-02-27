@@ -48,3 +48,17 @@
     background-image: url('/static/img/fire_effects/bangs/light_damage_right_stripe_3frames.png');
     background-position: 0px 0px;
 }
+
+.effect-heavy-bang-oriented-png-1 {
+    height: 107px;
+    width: 107px;
+    background-image: url('/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-heavy-bang-oriented-png-2 {
+    height: 107px;
+    width: 107px;
+    background-image: url('/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png');
+    background-position: 0px 0px;
+}
