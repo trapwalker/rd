@@ -3,7 +3,7 @@ var ConstTracerSpeed = 120;              // Скорость полета тра
 var ConstTracerLength = 8;               // Длина трасера (px);
 var ConstCountFlashlightPerSecond = 10;  // Количество трасеров в секунду;
 var ConstFlashlightPrecision = 50;       // Радиус разлёта вспышек около машинки (px);
-var ConstFlashlightRadius = 2;           // Размер вспышки (px);
+var ConstFlashlightOrientedRadius = 20;  // Радиус в котором вспышка будет направленной (px);
 
 var ConstRangeFireDischargeFlashlight = 30;   // Разлет вспышек взрывов при залповой стрельбе (px);
 var ConstCountFireDischargeFlashlight = 3;   // Количество вспышек взрывов при залповой стрельбе (px);
@@ -59,21 +59,19 @@ var FireEffectManager = (function () {
         if (! options.is_fake) {
             //new EDischargeFire(options.pos_subj, direction).start();
             new EDischargeFirePNG_1(options.pos_subj, direction).start();
-            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
-                new EFlashLight(getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight),
-                    ConstFireDischargeFlashlightRadius).start(ConstDelayFireDischargeFlashlight);
+            //for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
+                new EHeavyBangPNG_2(getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight))
+                    .start(ConstDelayFireDischargeFlashlight);
         }
         else {
             //new EDischargeFire(options.pos_subj, direction).start();
             new EDischargeFirePNG_2(options.pos_subj, direction).start();
             var temp = 1 / ConstCountFireDischargeFlashlight;
             var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
-            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++) {
-                new EFlashLight(getRadialRandomPoint(
-                        summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
-                        ConstRangeFireDischargeFlashlight),
-                    ConstFireDischargeFlashlightRadius).start(i * tempDuration + tempDuration * Math.random());
-            }
+            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
+                new EHeavyBangPNG_1(getRadialRandomPoint(summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
+                                                         ConstRangeFireDischargeFlashlight))
+                    .start(i * tempDuration + tempDuration * Math.random());
         }
     };
 
@@ -102,7 +100,7 @@ var FireAutoEffectController = (function () {
 
         if (subj) {
             if (!this.muzzle_flash && this.side)
-                this.muzzle_flash = new EAutoFireOnShooter(subj, this.side).start();
+                this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
         }
         else if (this.muzzle_flash)
             this.muzzle_flash.finish();
@@ -112,26 +110,25 @@ var FireAutoEffectController = (function () {
                 this.last_time = time;
                 var p_subj = subj.getCurrentCoord(time);
                 var p2 = obj.getCurrentCoord(time);
-                var random_point = new Point(
-                        Math.random() * ConstFlashlightPrecision - ConstFlashlightPrecision / 2.,
-                        Math.random() * ConstFlashlightPrecision - ConstFlashlightPrecision / 2.
-                );
-                var p_obj = summVector(p2, random_point);
-                new EPointsTracer(p_subj, p_obj, ConstTracerSpeed, ConstTracerLength, function (pos) {
-                    new EFlashLight(pos, ConstFlashlightRadius).start();
-                }).start();
+                var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
+                if (distancePoints(p2, p_obj) > ConstFlashlightOrientedRadius)
+                    new EPointsTracer(p_subj, p_obj, ConstTracerSpeed, ConstTracerLength, function (pos) {
+                        new ELightBangPNG_1(pos).start();
+                    }).start();
+                else {
+                    var dir = angleVectorRadCCW(subVector(p_subj, p_obj)) + Math.PI;
+                    new EPointsTracer(p_subj, p_obj, ConstTracerSpeed, ConstTracerLength, function (pos) {
+                        new ELightBangPNG_2(pos, dir).start();
+                    }).start();
+                }
             }
 
         if (!subj && obj)
             if ((time - this.last_time) > this.d_time_fl) {
                 this.last_time = time;
                 var p2 = obj.getCurrentCoord(time);
-                var random_point = new Point(
-                        Math.random() * ConstFlashlightPrecision - ConstFlashlightPrecision / 2.,
-                        Math.random() * ConstFlashlightPrecision - ConstFlashlightPrecision / 2.
-                );
-                var p_obj = summVector(p2, random_point);
-                new EFlashLight(p_obj, ConstFlashlightRadius).start();
+                var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
+                new ELightBangPNG_1(p_obj).start();
             }
     };
 
