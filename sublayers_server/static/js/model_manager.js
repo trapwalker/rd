@@ -405,10 +405,10 @@ var ClientManager = (function () {
         // установка last_shoot
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
-        if ((event.time > clock.getClientMS()) && (etime > clock.getCurrentTime())) {
+        if ((event.time > clock.getClientTime()) && (etime > clock.getCurrentTime())) {
             console.error('Серверное время больше клиентского при выстреле.');
             console.error('server event time = ', etime);
-            console.error('client pure  time = ', clock.getClientMS() / 1000.);
+            console.error('client pure  time = ', clock.getClientTime() / 1000.);
             console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
