@@ -563,7 +563,7 @@ var WFireSectorsScaled = (function (_super) {
     };
 
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
-        var zoomAnimateTime = 300;
+        var zoomAnimateTime = 250;
         var size = this.size_of_icon;
         //var diff_zoom = new_zoom - last_zoom;
         var diff_zoom = new_zoom - this.zoom;

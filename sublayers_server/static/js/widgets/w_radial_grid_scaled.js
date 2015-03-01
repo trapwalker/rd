@@ -237,9 +237,11 @@ var WRadialGridScaled = (function (_super) {
 
     WRadialGridScaled.prototype.zoomStart = function(event){
         // todo: не берётся правильно зум! Хотя в евенте правильно выводится, будто евент меняется ПОСЛЕ
-       // console.log('WRadialGridScaled.prototype.zoomStart', event);
-       // var new_zoom = event.target._zoom;
-       // console.log('new_zoom', event.target._zoom, '   ___ animateZoom = ', event.target._animateToZoom);
+        var new_zoom = event.target._zoom;
+        console.log('WRadialGridScaled.prototype.zoomStart', event.target);
+        console.log('new_zoom = ', event.target._zoom, '   ___ animateZoom = ', event.target._animateToZoom);
+        new_zoom = event.target._zoom;
+        console.log('new_zoom = ', event.target._zoom, '   ___ animateZoom = ', event.target._animateToZoom);
     };
 
     WRadialGridScaled.prototype.zoomEnd = function(event){
@@ -257,9 +259,10 @@ var WRadialGridScaled = (function (_super) {
 
 
     WRadialGridScaled.prototype.setZoom = function(new_zoom){
+        //console.log('WRadialGridScaled.prototype.setZoom ', new_zoom);
         var rs = this.def_radius;
         var new_rs = [];
-        var zoomAnimateTime = 300;
+        var zoomAnimateTime = 250;
         var circles = this.circles;
         var last_zoom = this.zoom;
         var diff_zoom = new_zoom - last_zoom;
@@ -267,7 +270,6 @@ var WRadialGridScaled = (function (_super) {
         var g = this.g;
 
         this.zoom = new_zoom;
-
         if (diff_zoom == 0)
             console.error('Вызвано с неизменённым зумом! Ошибка!', new_zoom);
 

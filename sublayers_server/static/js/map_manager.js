@@ -180,54 +180,19 @@ function onKeyDownMap(event) {
             clientManager.sendFireAutoEnable('left', false);
             break;
         case 90:  // Z
-            //clientManager.Die();
-            console.log('ZZZZZZZZZZZZZZZ');
-
-
+            //console.log('Was pressed: Z');
             break;
-
         case 49:  // 1
-            console.log('111111111111');
-            if(map.getZoom() < ConstMaxMapZoom){
-                var zoom = map.getZoom() + 1;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 1');
             break;
-
         case 50:  // 2
-            console.log('22222222222');
-            if(map.getZoom() > ConstMinMapZoom){
-                var zoom = map.getZoom() - 1;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 2');
             break;
-
         case 51:  // 3
-            console.log('3333333333');
-            if(map.getZoom() < ConstMaxMapZoom - 1){
-                var zoom = map.getZoom() + 2;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 3');
             break;
-
         case 52:  // 4
-            console.log('4444444444');
-            if(map.getZoom() > ConstMinMapZoom + 1){
-                var zoom = map.getZoom() - 2;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 4');
             break;
     }
 }
@@ -296,6 +261,7 @@ var MapManager = (function(_super){
                 attributionControl: false,
                 scrollWheelZoom: "center",
                 dragging: false,
+                zoomAnimationThreshold: 8,
                 doubleClickZoom: false
             //}).setView([50.595, 36.59], cookieStorage.zoom);
             }).setView([50.595, 36.59], 18);
@@ -321,6 +287,8 @@ var MapManager = (function(_super){
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
         map.on('zoomend', this.onZoomEnd);
+        map.on('zoomanim', this.onZoomAnimation);
+
         document.getElementById('map').onkeydown = onKeyDownMap;
         document.getElementById('map').onkeyup = onKeyUpMap;
         map.keyboard.disable();
@@ -367,43 +335,31 @@ var MapManager = (function(_super){
         map.setZoom(zoom);
     };
 
-    MapManager.prototype.onZoomEnd = function(event) {
-        // Не знает про this !
-        timeManager.timerStart();
-        visualManager.changeModelObject(mapManager);
-        //if (controllers.isActive)  // чтобы при изменении зума карты  менялся и слайдер.
-        //    controllers.zoomSetSlider.setZoom(myMap.getZoom());
-        /*
-         // если мы отдалились далеко, то скрыть все лейблы и показывать их только по наведению
-        var noHide = cookieStorage.visibleLabel();
-        for (var i in listMapObject.objects) {
-            if (listMapObject.exist(i)) {
-                listMapObject.objects[i].marker.setLabelNoHide(noHide);
-            }
-        }
-         // Изменение радиуса круга обзора
-         //userCarMarker.setNewZoom();
-         */
-
-        //сектора на сетке появляются с новым зумом
+    MapManager.prototype.onZoomAnimation = function(event) {
+        //console.log('MapManager.prototype.zoomAnim', event);
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.setZoom(event.zoom);
         if (mapManager.widget_fire_sectors)
-            mapManager.widget_fire_sectors.zoomEnd(event);
+            mapManager.widget_fire_sectors.setZoom(event.zoom)
     };
 
     MapManager.prototype.onZoomStart = function(event) {
         //console.log('MapManager.prototype.onZoomStart', event);
         timeManager.timerStop();
 
-        //сектора на сетке исчезают
-        if (mapManager.widget_fire_sectors)
-            mapManager.widget_fire_sectors.zoomStart(event);
+        //if (mapManager.widget_fire_radial_grid)
+        //    mapManager.widget_fire_radial_grid.zoomStart(event);
 
     };
 
+    MapManager.prototype.onZoomEnd = function(event) {
+        // Не знает про this !
+        timeManager.timerStart();
+        visualManager.changeModelObject(mapManager);
 
-
-
-
+      //  if (mapManager.widget_fire_radial_grid)
+      //      mapManager.widget_fire_radial_grid.zoomEnd(event);
+    };
 
     return MapManager;
 })(ClientObject);
