@@ -5,9 +5,8 @@ log = logging.getLogger(__name__)
 log.info('\n\n\n')
 
 from functools import total_ordering
-
 from utils import time_log_format
-
+from messages import FireDischargeEffect
 
 @total_ordering
 class Event(object):
@@ -190,6 +189,38 @@ class FireDischargeEvent(Objective):
     def on_perform(self):
         super(FireDischargeEvent, self).on_perform()
         self.obj.on_fire_discharge(self)
+
+
+class FireDischargeEffectEvent(Objective):
+    def __init__(self, side, **kw):
+        super(FireDischargeEffectEvent, self).__init__(**kw)
+        self.side = side
+
+    def on_perform(self):
+        # todo: правильно ли это?
+        from vectors import Point
+        from sectors import get_angle_by_side
+
+        super(FireDischargeEffectEvent, self).on_perform()
+        targets = []
+        max_radius = 0
+        for sector in self.obj.fire_sectors:
+            if (sector.side == self.side) and sector.is_discharge():
+                max_radius = max(max_radius, sector.radius)
+                for target in sector.target_list:
+                    targets.append(target.position)
+
+        # todo: добавить гео-позиционный фильтр агентов
+        subj_position = self.obj.position
+        fake_position = None
+        if len(targets) == 0:
+            fake_position = Point.polar(max_radius, self.obj.direction + get_angle_by_side(self.side)) + subj_position
+        for agent in self.server.agents.values():
+            if len(targets) > 0:
+                for target in targets:
+                    FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target).post()
+            else:
+                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=fake_position, is_fake=True).post()
 
 
 class FireAutoEnableEvent(Objective):

@@ -71,8 +71,44 @@ var VisualManager = (function () {
         }
     };
 
-    // Проходит по всем визуальным объектам и при необходимости перерисовывает их
-    // (автоматически вызывается из timeManager)
+    // Привязать модельный объект к визуальному объекту
+    VisualManager.prototype.bindMobjToVobj = function (vobj, mobj) {
+        // Получаем внутренний vobj
+        var i = 0;
+        while ((i < this._visual_list.length) && (this._visual_list[i].obj != vobj)) i++;
+        if (i >= this._visual_list.length) return;
+        var vo = this._visual_list[i];
+
+        // Получаем внутренний список подписанных на mobj vobj'ей
+        if (this._model_list.hasOwnProperty(mobj.ID)) {
+            var mo_list = this._model_list[mobj.ID].list;
+
+            // Предварительно проверяем нет ли уже такой подписки
+            var k = 0;
+            while ((k < mo_list.length) && (mo_list[k] != vo)) k++;
+            if (k >= mo_list.length) mo_list.push(vo); // подписываемся
+        }
+    };
+
+    // Отвязать модельный объект от визуального объекта
+    VisualManager.prototype.unbindMobjToVobj = function (vobj, mobj) {
+        // Получаем внутренний vobj
+        var i = 0;
+        while ((i < this._visual_list.length) && (this._visual_list[i].obj != vobj)) i++;
+        if (i >= this._visual_list.length) return;
+        var vo = this._visual_list[i];
+
+        // Получаем внутренний список подписанных на mobj vobj'ей
+        if (this._model_list.hasOwnProperty(mobj.ID)) {
+            var mo_list = this._model_list[mobj.ID].list;
+            // Ищем подписку
+            var k = 0;
+            while ((k < mo_list.length) && (mo_list[k] != vo)) k++;
+            if (k < mo_list.length) mo_list.splice(k, 1); // отписываемся
+        }
+    };
+
+    // Проходит по всем визуальным объектам и при необходимости перерисовывает их (автоматически вызывается из timeManager)
     VisualManager.prototype.perform = function (time) {
         for (var i = 0; i < this._visual_list.length; i++) {
             e = this._visual_list[i];

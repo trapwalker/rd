@@ -252,62 +252,6 @@ var CarMarkerList = (function () {
         }
     };
 
-    // Метод, который управляет добавлением/удалением/апдейтом машинок в секторах радара
-    // Сделано тут, т.к. для перерисовки нужны distance и угол fi - а они тут сразу и вычисляются
-    CarMarkerList.prototype.drawCarInSector = function(car, position) {
-        // Проверить на вхождение в сектора
-        var distance = distancePoints(userCarMarker.currentUserCarPoint, position);
-        var targetAngle = angleVectorRadCCW(subVector(position, userCarMarker.currentUserCarPoint));
-
-        for (var i = 0; i < user.userCar.fireSectors.length; i++) {
-            var sector = user.userCar.fireSectors[i];
-            var fi = getDiffAngle((userCarMarker.currentUserCarAngle + sector.directionAngle), targetAngle);
-
-            var distBool = distance <= sector.radius;
-            var fiBool = Math.abs(fi) <= (sector.widthAngle / 2.);
-
-
-            if (distBool && fiBool) {
-                // Добавляем объект в car, чтобы быстро можно было посчитать его вхождение в сектор или крит-сектор
-                car.inSector = {
-                    dist: distance,
-                    fi: fi,
-                    sector: sector
-                };
-                // если машинка в секторе, то... если её там раньше не было, то добавить (и только добавить!)
-                if (!car.pathSVG[sector.uid]) {
-                    // visibleMode - свой/чужой/пати
-                    var visibleMode;
-                    if(car.backLight){
-                        if (car.owner.party.id == user.party.id)
-                            visibleMode = 'party';
-                        else
-                            visibleMode = 'friend';
-                    }
-                    else
-                        visibleMode = null;
-                    // добавление SVG-path в fireControl
-                    car.pathSVG[sector.uid] = controllers.fireControl.addCarInSector(sector, (distance / sector.radius), -fi, visibleMode);
-                    return;
-                } else {
-                    // Отрисовать машинку в радаре с новыми относительными координатами
-                    controllers.fireControl.updateCarInSector(sector, car.pathSVG[sector.uid], (distance / sector.radius), -fi);
-                    return;
-                }
-            }
-            else {
-                // Если машинка вне сектора, то если она там была, убрать её оттуда
-                if (car.pathSVG[sector.uid]) {
-                    // удаление SVG-path из fireControl
-                    car.pathSVG[sector.uid] = controllers.fireControl.deleteCarInSector(car.pathSVG[sector.uid]);
-                    // очищаем объект быстрого определения вхождения в сектор
-                    car.inSector = null;
-                    return;
-                }
-            }
-        }
-    };
-
     CarMarkerList.prototype.getListIDsForShoot = function (sectorUid) {
         var listIDs = [];
         // Для всех машинок

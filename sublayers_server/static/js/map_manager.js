@@ -6,14 +6,15 @@
 
 //Путь к карте на сервере
 //var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
+//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
 //Путь к карте в локальном каталоге
 var ConstMapPathLocal = '';
 
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 0;
+var ConstMinMapZoom = 8;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -180,7 +181,53 @@ function onKeyDownMap(event) {
             break;
         case 90:  // Z
             //clientManager.Die();
-            //mapManager.widget_fire_radial_grid.test();
+            console.log('ZZZZZZZZZZZZZZZ');
+
+
+            break;
+
+        case 49:  // 1
+            console.log('111111111111');
+            if(map.getZoom() < ConstMaxMapZoom){
+                var zoom = map.getZoom() + 1;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
+
+        case 50:  // 2
+            console.log('22222222222');
+            if(map.getZoom() > ConstMinMapZoom){
+                var zoom = map.getZoom() - 1;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
+
+        case 51:  // 3
+            console.log('3333333333');
+            if(map.getZoom() < ConstMaxMapZoom - 1){
+                var zoom = map.getZoom() + 2;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
+            break;
+
+        case 52:  // 4
+            console.log('4444444444');
+            if(map.getZoom() > ConstMinMapZoom + 1){
+                var zoom = map.getZoom() - 2;
+                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
+                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
+                setTimeout(function(){map.setZoom(zoom)}, 0);
+            }
+
             break;
     }
 }
@@ -232,6 +279,7 @@ var MapManager = (function(_super){
         // Виджеты карты: виджеты-синглеты, находятся на карте, хранятся здесь для быстрого доступа
         this.widget_target_point = null; // инициализируется при получении своей машинки
         this.widget_fire_radial_grid = null; // инициализируется при получении своей машинки
+        this.widget_fire_sectors = null; // инициализируется при получении своей машинки
     }
 
     MapManager.prototype._init = function () {
@@ -249,7 +297,8 @@ var MapManager = (function(_super){
                 scrollWheelZoom: "center",
                 dragging: false,
                 doubleClickZoom: false
-            }).setView([50.595, 36.59], cookieStorage.zoom);
+            //}).setView([50.595, 36.59], cookieStorage.zoom);
+            }).setView([50.595, 36.59], 18);
 
         myMap = map;
 
@@ -278,6 +327,12 @@ var MapManager = (function(_super){
 
         // Bнициализация виджетов карты
         new WZoomSlider(this);
+
+
+        // Отображение квадрата всей карты
+        // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
+        //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
+        //L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
@@ -286,13 +341,15 @@ var MapManager = (function(_super){
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
                 maxZoom: ConstMaxMapZoom,
                 continuousWorld: true,
-                opacity: 0.5,
+                opacity: 1.0,
+                errorTileUrl: 'http://sublayers.net/map/404.jpg',
                 storage: storage});
         }
         else {
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
-                opacity: 0.5,
+                opacity: 1.0,
+                errorTileUrl: 'http://sublayers.net/map/404.jpg',
                 maxZoom: ConstMaxMapZoom});
         }
         if(cookieStorage.optionsMapTileVisible)
@@ -327,11 +384,23 @@ var MapManager = (function(_super){
          // Изменение радиуса круга обзора
          //userCarMarker.setNewZoom();
          */
+
+        //сектора на сетке появляются с новым зумом
+        if (mapManager.widget_fire_sectors)
+            mapManager.widget_fire_sectors.zoomEnd(event);
     };
 
     MapManager.prototype.onZoomStart = function(event) {
+        //console.log('MapManager.prototype.onZoomStart', event);
         timeManager.timerStop();
+
+        //сектора на сетке исчезают
+        if (mapManager.widget_fire_sectors)
+            mapManager.widget_fire_sectors.zoomStart(event);
+
     };
+
+
 
 
 

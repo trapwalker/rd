@@ -78,48 +78,50 @@
 
 .fire-control-sector-shadow {
     fill: gray;
-    stroke: limegreen;
-    stroke-width: 2;
     opacity: 0.2;
     pointer-events: auto;
 }
 
-.fire-control-sector {
-    fill: green;
+.fire-control-sector-discharge {
+    fill: rgba(0, 128, 0, 0.4);
     stroke: limegreen;
-    stroke-width: 2;
-    opacity: 0.4;
+    stroke-width: 1;
     pointer-events: auto;
 }
 
-.fire-control-sector-recharge {
-    fill: green;
-    stroke: limegreen;
-    stroke-width: 2;
-    opacity: 0.4;
-    pointer-events: none;
+.fire-control-sector-discharge:hover {
+    fill: rgba(0, 128, 0, 0.6);
 }
 
-.fire-control-sector:hover {
-    fill: green;
+.fire-control-sector-auto {
+    fill: transparent;
     stroke: limegreen;
-    stroke-width: 2;
-    opacity: 0.6;
+    stroke-width: 1;
+    stroke-dasharray: 5%;
+    pointer-events: auto;
+}
+
+.fire-control-sector-discharge-auto {
+    fill: rgba(0, 128, 0, 0.4);
+    stroke: limegreen;
+    stroke-width: 1;
+    stroke-dasharray: 5%;
+    pointer-events: auto;
+}
+
+.fire-control-sector-discharge-auto:hover {
+    fill: rgba(0, 128, 0, 0.6);
 }
 
 .fire-control-all {
-    fill: limegreen;
+    fill: rgba(0, 128, 0, 0.4);
     stroke: lime;
-    stroke-width: 2;
-    opacity: 0.4;
+    stroke-width: 1;
     pointer-events: auto;
 }
 
 .fire-control-all:hover {
-    fill: limegreen;
-    stroke: lime;
-    stroke-width: 2;
-    opacity: 0.6;
+    fill: rgba(0, 128, 0, 0.6);
 }
 
 .fire-control-radar-point {
@@ -142,4 +144,3 @@
     stroke-width: 2;
     opacity: 0.4;
 }
-

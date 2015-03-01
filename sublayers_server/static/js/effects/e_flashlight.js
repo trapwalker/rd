@@ -59,12 +59,19 @@ var EFlashLight = (function(){
         gen_flashlight(this.radius);
     };
 
-    EFlashLight.prototype.start = function(){
+    EFlashLight.prototype._start = function() {
         if(this.marker) {
             this.marker.addTo(map);
             this.on_start();
             timeManager.addTimeoutEvent(this, 'finish', this.duration);
         }
+    };
+
+    EFlashLight.prototype.start = function(delay){
+        if (delay)
+            timeManager.addTimeoutEvent(this, '_start', delay);
+        else
+            this._start();
     };
 
     EFlashLight.prototype.finish = function(){

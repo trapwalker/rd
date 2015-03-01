@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from balance import BALANCE
 from hp_task import HPTask
+from messages import FireAutoEffect
 
 
 class Weapon(object):
@@ -32,6 +33,7 @@ class Weapon(object):
 class WeaponAuto(Weapon):
     def __init__(self, dps=BALANCE.Weapon.dps, **kw):
         super(WeaponAuto, self).__init__(**kw)
+        self.targets = []
         self.dps = dps
         self._enable = False
 
@@ -45,12 +47,18 @@ class WeaponAuto(Weapon):
 
     def _start(self, car):
         #todo: создать таск на патроны, который отменит дамаг и сделает стоп стрельбы
-        HPTask(owner=car, dps=self.dps).start()
+        self.targets.append(car)
+        HPTask(owner=car, dps=self.dps, add_shooter=self.owner).start()
+        for agent in self.owner.subscribed_agents:
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=True).post()
 
     def _end(self, car):
-        if not car.is_died:  # если цель мертва, то нет смысла снимать с неё дамаг
-            HPTask(owner=car, dps=-self.dps).start()
         # todo: остановить списывание патронов пулемёта
+        self.targets.remove(car)
+        if not car.is_died:  # если цель мертва, то нет смысла снимать с неё дамаг
+            HPTask(owner=car, dps=-self.dps, del_shooter=self.owner).start()
+        for agent in self.owner.subscribed_agents:
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=False).post()
 
     def start(self, car):
         if self._enable:

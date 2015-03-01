@@ -228,7 +228,6 @@ class Bang(Subjective):
 
 
 class FireDischarge(Message):
-    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] side={self.side}>'
     def __init__(self, side, t_rch, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
@@ -246,4 +245,40 @@ class FireDischarge(Message):
         return d
 
 
+class FireDischargeEffect(Message):
+    def __init__(self, pos_subj, pos_obj, is_fake=False, **kw):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        """
+        super(FireDischargeEffect, self).__init__(**kw)
+        self.pos_subj = pos_subj
+        self.pos_obj = pos_obj
+        self.is_fake = is_fake
 
+    def as_dict(self):
+        d = super(FireDischargeEffect, self).as_dict()
+        d.update(
+            pos_subj=self.pos_subj,
+            pos_obj=self.pos_obj,
+            is_fake=self.is_fake,
+        )
+        return d
+
+
+class FireAutoEffect(Message):
+    def __init__(self, subj, obj, side=None, action=True, **kw):
+        super(FireAutoEffect, self).__init__(**kw)
+        self.subj = subj
+        self.obj = obj
+        self.side = side
+        self.action = action
+
+    def as_dict(self):
+        d = super(FireAutoEffect, self).as_dict()
+        d.update(
+            subj=self.subj.uid,
+            obj=self.obj.uid,
+            side=self.side,
+            action=self.action,
+        )
+        return d

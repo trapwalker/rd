@@ -122,7 +122,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			/*========================================================*/
 			$this.bind({
 				'startRumble': function(e){
-                    console.log(speed);
 					e.stopPropagation();
 					clearInterval(interval);
                     speed = (_this.rumble_speed === 0) ? 1 : _this.rumble_speed;

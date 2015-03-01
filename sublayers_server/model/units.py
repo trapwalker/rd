@@ -12,7 +12,7 @@ from motion_task import MotionTask
 from hp_task import HPTask
 from sectors import FireSector
 from weapons import WeaponDischarge, WeaponAuto
-from events import FireDischargeEvent, FireAutoEnableEvent
+from events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent
 from parameters import Parameter
 from effects_zone import EffectDirt
 import messages
@@ -112,16 +112,16 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             if sector.side == side:
                 if not sector.can_discharge_fire(time=time):
-                    # todo: отправить на клиент сообщение о том, что орудия ещё в перезарядке
                     return
         t_rch = 0
         for sector in self.fire_sectors:
             if sector.side == side:
                 t_rch = max(t_rch, sector.fire_discharge(time=time))
-        # todo: отправить на клиент маскимальную перезарядку данного борта (нельзя всем отправлять свою перезарядку! НЕЛЬЗЯ) !!!!
-        # todo:  нужно отправить всем сообщение о выстреле
+
         # для себя: side, time, t_rch
         if t_rch > 0.0:
+            # евент залповая стрельба
+            FireDischargeEffectEvent(obj=self, side=side).post()
             # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
             for agent in self.watched_agents:
                 messages.FireDischarge(
@@ -140,16 +140,37 @@ class Unit(Observer):
     def contact_test(self, obj):
         super(Unit, self).contact_test(obj=obj)
         for sector in self.fire_sectors:
-            if sector.is_auto:
+            if sector.is_auto():
                 sector.fire_auto(target=obj)
         # зонирование
         for zone in self.server.zones:
             zone.test_in_zone(obj=self)
 
-    def on_contact_out(self, time, obj, **kw):
-        super(Unit, self).on_contact_out(time=time, obj=obj, **kw)
+    def on_contact_in(self, obj, **kw):
+        super(Unit, self).on_contact_in(obj=obj, **kw)
+        if isinstance(obj, Unit):
+            for agent in self.watched_agents:
+                for shooter in obj.hp_state.shooters:
+                    messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=True).post()
+                for sector in obj.fire_sectors:
+                    for weapon in sector.weapon_list:
+                        if isinstance(weapon, WeaponAuto):
+                            for target in weapon.targets:
+                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target, action=True, side=sector.side).post()
+
+    def on_contact_out(self, obj, **kw):
+        super(Unit, self).on_contact_out(obj=obj, **kw)
         for sector in self.fire_sectors:
             sector.out_car(target=obj)
+        if isinstance(obj, Unit):
+            for agent in self.watched_agents:
+                for shooter in obj.hp_state.shooters:
+                    messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=False).post()
+                for sector in obj.fire_sectors:
+                    for weapon in sector.weapon_list:
+                        if isinstance(weapon, WeaponAuto):
+                            for target in weapon.targets:
+                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target, action=False, side=sector.side).post()
 
     def on_die(self, event):
         super(Unit, self).on_die(event)

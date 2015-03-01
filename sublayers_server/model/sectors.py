@@ -9,6 +9,29 @@ from math import pi
 from vectors import shortest_angle, normalize_angle
 
 
+def get_angle_by_side(side):
+    if side == 'front':
+        return 0.0
+    elif side == 'right':
+        return pi / 2.
+    elif side == 'back':
+        return pi
+    elif side == 'left':
+        return 3 * pi / 2.
+    return None
+
+
+def get_side_by_angle(angle):
+    pi4 = pi / 4.
+    if pi4 < angle < 3 * pi4:
+        return 'right'
+    if 3 * pi4 <= angle <= 5 * pi4:
+        return 'back'
+    if 5 * pi4 < angle < 7 * pi4:
+        return 'left'
+    return 'front'
+
+
 class Sector(object):
     def __init__(self, owner, radius, width, fi):
         super(Sector, self).__init__()
@@ -36,8 +59,9 @@ class FireSector(Sector):
         super(FireSector, self).__init__(**kw)
         self.weapon_list = []
         self.target_list = []
-        self.is_auto = 0
-        self.side = self._check_side()
+        self._is_auto = 0
+        self._is_discharge = 0
+        self.side = get_side_by_angle(self.fi)
         self.owner.fire_sectors.append(self)
 
     def as_dict(self):
@@ -47,17 +71,6 @@ class FireSector(Sector):
             weapons=[weapon.as_dict() for weapon in self.weapon_list],
         )
         return d
-
-    def _check_side(self):
-        fi = self.fi
-        pi4 = pi / 4.
-        if pi4 < fi < 3 * pi4:
-            return 'left'
-        if 3 * pi4 <= fi <= 5 * pi4:
-            return 'back'
-        if 5 * pi4 < fi < 7 * pi4:
-            return 'right'
-        return 'front'
 
     def _fire_auto_start(self, target):
         for w in self.weapon_list:
@@ -73,14 +86,18 @@ class FireSector(Sector):
         assert not (weapon in self.weapon_list)
         self.weapon_list.append(weapon)
         if isinstance(weapon, WeaponAuto):
-            self.is_auto += 1
+            self._is_auto += 1
+        else:
+            self._is_discharge += 1
 
     def del_weapon(self, weapon):
         if weapon in self.weapon_list:
             self.weapon_list.remove(weapon)
         if isinstance(weapon, WeaponAuto):
-            self.is_auto -= 1
-        assert self.is_auto >= 0
+            self._is_auto -= 1
+        else:
+            self.is_discharge -= 1
+        assert (self._is_auto >= 0) and (self.is_discharge >= 0)
 
     def _test_target_in_sector(self, target):
         if not self.owner.is_target(target):
@@ -103,12 +120,13 @@ class FireSector(Sector):
 
     def fire_discharge(self, time):
         cars = []
-        if self.is_auto:
+        if self._is_auto:
             cars = self.target_list
         else:
             for vo in self.owner.visible_objects:
                 if self._test_target_in_sector(vo):
                     cars.append(vo)
+            self.target_list = cars
         t_rch = 0
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
@@ -132,3 +150,9 @@ class FireSector(Sector):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable, self.target_list)
+
+    def is_discharge(self):
+        return self._is_discharge > 0
+
+    def is_auto(self):
+        return self._is_auto > 0

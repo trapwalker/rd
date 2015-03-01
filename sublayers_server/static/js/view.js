@@ -193,8 +193,6 @@ function RunPrefixMethod(obj, method) {
 var myMap;
 var map = myMap;
 
-
-
 var chat;
 var userCarMarker;
 var rpcCallList;
@@ -206,9 +204,6 @@ var cookieStorage;
 var clientManager;
 var j_connector;
 var ws_connector;
-
-
-
 
 var user;
 var listMapObject;
@@ -222,11 +217,6 @@ var radialMenuTimeout;
 
 // модальное окно
 var modalWindow;
-
-
-
-
-
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];

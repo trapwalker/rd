@@ -69,7 +69,7 @@ class Corp(RoleParty):
     def __init__(self):
         # todo: add role unit class to params
         super(Corp, self).__init__(
-            base_point=Point(12535178, 27032679),
+            base_point=Point(12485304, 27019365),
             roles=[
                 Role('Cargo',
                     car_params=dict(
@@ -78,9 +78,10 @@ class Corp(RoleParty):
                         v_max=(40 * 1000 / 3600),
                         observing_range=1500,
                         weapons=[
-                            dict(fi=pi/2, is_auto=True, radius=100, width=radians(45), dps=8),
-                            dict(fi=-pi/2, is_auto=True, radius=100, width=radians(45), dps=8),
-                            dict(fi=pi, is_auto=False, radius=200, width=radians(60), dmg=10, time_recharge=5),
+                            dict(fi=pi/2, is_auto=True, radius=100, width=radians(45), dps=0.5),
+                            dict(fi=-pi/2, is_auto=True, radius=100, width=radians(45), dps=0.5),
+                            dict(fi=pi, is_auto=False, radius=200, width=radians(40), dmg=5, time_recharge=5),
+                            dict(fi=pi, is_auto=False, radius=100, width=radians(60), dmg=10, time_recharge=8),
                         ],
                      ),
                      max_count=1,
@@ -93,8 +94,8 @@ class Corp(RoleParty):
                         observing_range=1200,
                         weapons=[
                             dict(fi=0, is_auto=False, radius=200, width=radians(40), dmg=10, time_recharge=5),
-                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(30), dps=20),
-                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(30), dps=20),
+                            dict(fi=pi/2, is_auto=True, radius=180, width=radians(30), dps=0.3),
+                            dict(fi=-pi/2, is_auto=True, radius=180, width=radians(30), dps=0.3),
                         ],
                      ),
                      weight=1,
@@ -106,18 +107,7 @@ class Corp(RoleParty):
                         observing_range=2000,
                         weapons=[
                             dict(fi=0, is_auto=False, radius=150, width=radians(40), dmg=5, time_recharge=3),
-                            dict(fi=0, is_auto=True, radius=300, width=radians(30), dps=2),
-                        ],
-                     ),
-                     weight=1,
-                ),
-                Role('Tank',
-                    car_params=dict(
-                        max_hp=180,
-                        v_max=(45 * 1000 / 3600),
-                        observing_range=1000,
-                        weapons=[
-                            dict(fi=0, is_auto=False, radius=200, width=radians(270), dmg=10, time_recharge=5),
+                            dict(fi=0, is_auto=True, radius=300, width=radians(30), dps=0.8),
                         ],
                      ),
                      weight=1,
@@ -129,7 +119,7 @@ class Corp(RoleParty):
 class Band(RoleParty):
     def __init__(self):
         super(Band, self).__init__(
-            base_point=Point(12535178, 27032679),
+            base_point=Point(12485304, 27019365),
             roles=[
                 Role('Rover',
                     car_params=dict(
@@ -138,8 +128,8 @@ class Band(RoleParty):
                         observing_range=1200,
                         weapons=[
                             dict(fi=0, is_auto=False, radius=200, width=radians(40), dmg=10, time_recharge=5),
-                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(30), dps=20),
-                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(30), dps=20),
+                            dict(fi=pi/2, is_auto=True, radius=200, width=radians(30), dps=0.5),
+                            dict(fi=-pi/2, is_auto=True, radius=200, width=radians(30), dps=0.5),
                         ],
                      ),
                      weight=1,
@@ -151,18 +141,7 @@ class Band(RoleParty):
                         observing_range=2000,
                         weapons=[
                             dict(fi=0, is_auto=False, radius=150, width=radians(40), dmg=5, time_recharge=3),
-                            dict(fi=0, is_auto=True, radius=300, width=radians(30), dps=2),
-                        ],
-                     ),
-                     weight=1,
-                ),
-                Role('Tank',
-                    car_params=dict(
-                        max_hp=180,
-                        v_max=(45 * 1000 / 3600),
-                        observing_range=1000,
-                        weapons=[
-                            dict(fi=0, is_auto=False, radius=200, width=radians(270), dmg=10, time_recharge=5),
+                            dict(fi=0, is_auto=True, radius=300, width=radians(30), dps=0.8),
                         ],
                      ),
                      weight=1,
