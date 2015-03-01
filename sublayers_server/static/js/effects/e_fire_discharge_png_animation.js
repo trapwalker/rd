@@ -163,7 +163,7 @@ var EHeavyBangPNG_1 = (function (_super) {
     __extends(EHeavyBangPNG_1, _super);
 
     function EHeavyBangPNG_1(position){
-        _super.call(this, position, 0);
+        _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 1200;
         this.frame_count = 12;
         this.time_of_frame = this.duration / this.frame_count;
@@ -181,7 +181,7 @@ var EHeavyBangPNG_2 = (function (_super) {
     __extends(EHeavyBangPNG_2, _super);
 
     function EHeavyBangPNG_2(position){
-        _super.call(this, position, 0);
+        _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 1200;
         this.frame_count = 12;
         this.time_of_frame = this.duration / this.frame_count;
@@ -199,7 +199,7 @@ var ELightBangPNG_1 = (function (_super) {
     __extends(ELightBangPNG_1, _super);
 
     function ELightBangPNG_1(position){
-        _super.call(this, position, 0);
+        _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 300;
         this.frame_count = 3;
         this.time_of_frame = this.duration / this.frame_count;
