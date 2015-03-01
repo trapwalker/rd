@@ -11,7 +11,8 @@ var WCarMarker = (function (_super) {
         this.car = car;
         this.marker = null;
         this._createMarker();
-        this.change(clock.getCurrentTime());
+        this._lastRotateAngle = 0.0;
+        this.change();
     }
 
     WCarMarker.prototype._createMarker = function(){
@@ -42,19 +43,23 @@ var WCarMarker = (function (_super) {
         marker.on('mouseout', onMouseOutForLabels);
         marker.addTo(map);
         marker.carID = car.ID;
-
         this.marker = marker;
     };
 
-    WCarMarker.prototype.change = function(t){
+    WCarMarker.prototype.change = function(){
         //console.log('WCarMarker.prototype.change');
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
-        // Установка угла для поворота иконки маркера
-        this.marker.options.angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        var tempAngle = this.car.getCurrentDirection(time);
+        if (Math.abs(this._lastRotateAngle - tempAngle) > 0.01) {
+            this.marker.options.angle = tempAngle;
+            this._lastRotateAngle = tempAngle;
+        }
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
     };
 
     WCarMarker.prototype.delFromVisualManager = function () {

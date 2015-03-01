@@ -234,6 +234,7 @@ var MapManager = (function(_super){
     function MapManager(){
         _super.call(this);
 
+        this.inZoomChange = false;
         this.tileLayerPath = '';
         this.tileLayer = null;
 
@@ -345,20 +346,13 @@ var MapManager = (function(_super){
 
     MapManager.prototype.onZoomStart = function(event) {
         //console.log('MapManager.prototype.onZoomStart', event);
-        timeManager.timerStop();
-
-        //if (mapManager.widget_fire_radial_grid)
-        //    mapManager.widget_fire_radial_grid.zoomStart(event);
-
+        mapManager.inZoomChange = true;
     };
 
     MapManager.prototype.onZoomEnd = function(event) {
-        // Не знает про this !
-        timeManager.timerStart();
+        //console.log('MapManager.prototype.onZoomEnd', event);
+        mapManager.inZoomChange = false;
         visualManager.changeModelObject(mapManager);
-
-      //  if (mapManager.widget_fire_radial_grid)
-      //      mapManager.widget_fire_radial_grid.zoomEnd(event);
     };
 
     return MapManager;

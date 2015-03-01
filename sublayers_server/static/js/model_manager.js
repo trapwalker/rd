@@ -208,14 +208,12 @@ var ClientManager = (function () {
             new WAltmetrRadial(mcar, 'divForAltmetrRadial');
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            //mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
-            //mapManager.widget_fire_sectors = new WFireSectors(mcar);
             mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);
+            //mapManager.widget_fire_sectors = new WFireSectors(mcar);
             //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
-            // Инициализация радиального меню - установка правильных id секторов
-            //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
@@ -246,10 +244,12 @@ var ClientManager = (function () {
         if (car == user.userCar) {
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
-            if (tp != undefined && tp != null)
-                mapManager.widget_target_point.activate(tp);
-            else
-                mapManager.widget_target_point.deactivate();
+            if (mapManager.widget_target_point) {
+                if (tp != undefined && tp != null)
+                    mapManager.widget_target_point.activate(tp);
+                else
+                    mapManager.widget_target_point.deactivate();
+            }
 
             // При попадании залповым орудием включить эффект тряски
             if (hp_state.dhp)
@@ -316,7 +316,7 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             new WCarMarker(car);                 // виджет маркера
-            wFireController.addModelObject(car); // добавить себя в радар
+            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом

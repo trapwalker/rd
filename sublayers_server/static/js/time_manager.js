@@ -69,7 +69,7 @@ var TimeManager = (function () {
 
         var self = this;
         setInterval(function () {
-            //console.log('Максимальное время отрисовки: ', self.render_time);
+            console.log('Максимальное время отрисовки: ', self.render_time);
             self.render_time = 0;
         }, 10000)
     }
@@ -78,6 +78,7 @@ var TimeManager = (function () {
 
     // Запуск таймера
     TimeManager.prototype.timerStart = function () {
+        console.log('TimeManager.prototype.timerStart');
         var self = this;
         this._timer = setInterval(function () {
             self._interval_perform();
@@ -86,6 +87,7 @@ var TimeManager = (function () {
 
     // Остановка таймера
     TimeManager.prototype.timerStop = function () {
+        console.log('TimeManager.prototype.timerStop');
         clearInterval(this._timer);
     };
 
@@ -118,7 +120,7 @@ var TimeManager = (function () {
     // Установка интервала таймера
     TimeManager.prototype.setIntervalTimer = function (interval) {
         if(this._interval == interval) return;
-        console.log('TimeManager.prototype.setIntervalTimer', interval);
+        console.log('Установлено новое время перерисовки кадра = ', interval, ' мс');
         this.timerStop();
         this._interval = interval;
         this.timerStart();
@@ -155,7 +157,7 @@ var TimeManager = (function () {
     TimeManager.prototype._autoFPSPerform = function () {
         //console.log(this._FPSInterval, '          ',  this._FPSCount);
         var value_interval = this._FPSInterval / this._FPSCount;
-        if (value_interval <= ConstTimerInterval) {
+        if (value_interval >= ConstTimerInterval) {
             var abs_diff = Math.abs(this._interval - value_interval);
             if (abs_diff > ConstIntervalTimeEps) {
                 //console.log('Изменение ФПС --- abs_diff =  ', abs_diff, '    interval = ', value_interval);

@@ -15,6 +15,8 @@ var WFireSectorsScaled = (function (_super) {
 
         this.init_marker();
 
+        this._lastRotateAngle = 0.0;
+
         this.change(clock.getCurrentTime());
     }
 
@@ -602,8 +604,11 @@ var WFireSectorsScaled = (function (_super) {
 
 
     WFireSectorsScaled.prototype.rotate = function(angle_in_degrees){
-        this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
-        //this._rotateZoomatorsText(angle_in_degrees);
+        if (Math.abs(this._lastRotateAngle - angle_in_degrees) > 0.1) {
+            this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
+            //this._rotateZoomatorsText(angle_in_degrees);
+            this._lastRotateAngle = angle_in_degrees;
+        }
     };
 
     WFireSectorsScaled.prototype.delFromVisualManager = function () {
