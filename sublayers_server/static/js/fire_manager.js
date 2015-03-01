@@ -1,4 +1,4 @@
-var ConstCountTracerPerSecond = 5;      // Количество трасеров в секунду;
+var ConstCountTracerPerSecond = 15;      // Количество трасеров в секунду;
 var ConstTracerSpeed = 120;              // Скорость полета трасера (px / s);
 var ConstTracerLength = 8;               // Длина трасера (px);
 var ConstCountFlashlightPerSecond = 10;  // Количество трасеров в секунду;

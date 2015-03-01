@@ -11,6 +11,7 @@ var WFireSectorsScaled = (function (_super) {
         this.car = car;
         this.marker = null; // это непосредственно маркер, в котором будет свг-иконка
         this.elem_zoom = []; // элементы, зависящие от зума, которые нужно перерисовывать
+        this.stroke_zoom_elements = [];
 
         this.init_marker();
 
@@ -232,32 +233,49 @@ var WFireSectorsScaled = (function (_super) {
         for(i=0; i< auto_sectors.length; i++){
             var asector = auto_sectors[i];
             var asect_radius = asector.radius / scale_map;
-            if (asect_radius > first_radius) // значит сектор можно рисовать впринципе
-                this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
+            if (asect_radius > first_radius) { // значит сектор можно рисовать впринципе
+                var auto_sector = this._drawOneAutoSector(asect_radius, asector.width, asector.direction);
+                this.elem_zoom.push(auto_sector);
+                this.stroke_zoom_elements.push(auto_sector)
+            }
         }
 
         // todo: меньше какого радиуса рисовать или не рисовать эти зацепы.
         // Добавление бортов - просто линии, указывающие направление борта
+        var side_elem = null;
         var sides = this.car.fireSidesMng.sides;
         var max_disch_radius = sides.front.sideDischargeRadius / scale_map;
         var max_disch_width = sides.front.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0);
+            this.elem_zoom.push(side_elem);
+            this.stroke_zoom_elements.push(side_elem);
+        }
+
 
         max_disch_radius = sides.back.sideDischargeRadius / scale_map;
         max_disch_width = sides.back.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI);
+            this.elem_zoom.push(side_elem);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
         max_disch_radius = sides.left.sideDischargeRadius / scale_map;
         max_disch_width = sides.left.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.);
+            this.elem_zoom.push(side_elem);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
         max_disch_radius = sides.right.sideDischargeRadius / scale_map;
         max_disch_width = sides.right.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.);
+            this.elem_zoom.push(side_elem);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
 
     };
@@ -550,17 +568,6 @@ var WFireSectorsScaled = (function (_super) {
       //      this._recharging(options[i]);
     };
 
-    WFireSectorsScaled.prototype.zoomStart = function(){
-        //console.log('WFireRadialGrid.prototype.zoomStart');
-        //this._clearSectors();
-        //this._clearZoomatorsText();
-    };
-
-    WFireSectorsScaled.prototype.zoomEnd = function(){
-        //console.log('WFireRadialGrid.prototype.zoomEnd');
-        //this._drawSectors();
-        //this._drawZoomatorsText();
-    };
 
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
         var zoomAnimateTime = 250;
@@ -571,19 +578,25 @@ var WFireSectorsScaled = (function (_super) {
         var g = this.g;
         var scale_center = size - size * k_radius;
 
-
+        // анимация изменения размера секторов
         var matrix_str = k_radius + ", 0, 0, " + k_radius + ", "+ (scale_center) + ", "+ (scale_center);
-        //console.log(matrix_str);
-/*
-        for(var i = 0; i < this.elem_zoom.length; i++) {
-            var elem = this.elem_zoom[i];
-            //elem.scale(k_radius, k_radius);
-            elem.animate(zoomAnimateTime).transform({matrix: matrix_str});
+        g.animate(zoomAnimateTime).transform({matrix: matrix_str});
+
+        // анимация изменения толщины линий
+        //console.log(1.4 / k_radius);
+        for(var i = 0; i < this.stroke_zoom_elements.length; i++) {
+            var elem = this.stroke_zoom_elements[i];
+            var elem_childs = elem.children();
+            for (var y = 0; y < elem_childs.length; y++){
+                var child = elem_childs[y];
+                //var str_w = child.attr('stroke-width');
+                //console.log(str_w / k_radius);
+                //console.log(child.attr('id'));
+                // todo: где-то сохранить оригинальное значение stroke (например с помощью child.attr('id')), чтобы здесь с ним работать
+                child.animate(zoomAnimateTime).stroke({width:  1.4 / k_radius});
+            }
 
         }
-*/
-        g.animate(zoomAnimateTime).transform({matrix: matrix_str});
-        //g.animate(zoomAnimateTime).scale(k_radius, k_radius, size, size);
 
     };
 
