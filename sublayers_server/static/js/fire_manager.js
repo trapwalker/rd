@@ -116,12 +116,12 @@ var FireAutoEffectController = (function () {
                 var p2 = obj.getCurrentCoord(time);
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
                 if (distancePoints(p2, p_obj) > ConstFlashlightOrientedRadius)
-                    new EPointsTracer(p_subj, p_obj, ConstTracerSpeed, ConstTracerLength, function (pos) {
+                    new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
                         new ELightBangPNG_1(pos).start();
                     }).start();
                 else {
                     var dir = angleVectorRadCCW(subVector(p_subj, p_obj)) + Math.PI;
-                    new EPointsTracer(p_subj, p_obj, ConstTracerSpeed, ConstTracerLength, function (pos) {
+                    new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
                         new ELightBangPNG_2(pos, dir).start();
                     }).start();
                 }
