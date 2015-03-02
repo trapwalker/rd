@@ -9,12 +9,9 @@
 var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
 //var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
-//Путь к карте в локальном каталоге
-var ConstMapPathLocal = '';
-
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 8;
+var ConstMinMapZoom = 10;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -249,10 +246,8 @@ var MapManager = (function(_super){
     }
 
     MapManager.prototype._init = function () {
-        //Если есть файл map_base_local.js, то брать карту из локального каталога
-        if (ConstMapPathLocal === '') this.tileLayerPath = ConstMapPath;
-        else this.tileLayerPath = ConstMapPathLocal;
 
+        this.tileLayerPath = ConstMapPath;
 
         map = L.map('map',
             {
@@ -269,15 +264,12 @@ var MapManager = (function(_super){
 
         myMap = map;
 
-        var cbForStorage =  this.createTileLayer;
-
-        //var storage = getIndexedDBStorage(cbForStorage) || getWebSqlStorage(cbForStorage);
-        //var storage = getIndexedDBStorage(cbForStorage) || getWebSqlStorage(cbForStorage) || this.createTileLayer(null);
-        //if (!storage) console.log('Storage not loading!');
-
-        //var storage = null;
-        this.createTileLayer(null);
-
+      //  var storage = getIndexedDBStorage('createTileLayer', this) ||
+      //       getWebSqlStorage('createTileLayer', this);
+      //  if (!storage) {
+      //      alert('Storage not loading!');
+            this.createTileLayer(null);
+      //  }
 
         // Обработчики событий карты
         pressedKey = false;
@@ -297,7 +289,6 @@ var MapManager = (function(_super){
         // Bнициализация виджетов карты
         new WZoomSlider(this);
 
-
         // Отображение квадрата всей карты
         // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
         //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
@@ -305,7 +296,7 @@ var MapManager = (function(_super){
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
-        //console.log('MapManager.prototype.createTileLayer');
+        //console.log('MapManager.prototype.createTileLayer', storage);
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
                 maxZoom: ConstMaxMapZoom,
@@ -323,6 +314,7 @@ var MapManager = (function(_super){
         }
         if(cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);
+        return true;
     };
 
     // =============================== Zoom

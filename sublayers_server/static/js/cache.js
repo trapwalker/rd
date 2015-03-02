@@ -1,4 +1,4 @@
-var getIndexedDBStorage = function (callback) {
+var getIndexedDBStorage = function (callback, obj_callback) {
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
     var IndexedDBImpl = function () {
@@ -8,7 +8,7 @@ var getIndexedDBStorage = function (callback) {
 
         request.onsuccess = function() {
             db = this.result;
-            callback(self);
+            obj_callback[callback].call(obj_callback, self);
         };
 
         request.onerror = function (error) {
@@ -46,7 +46,7 @@ var getIndexedDBStorage = function (callback) {
     return indexedDB ? new IndexedDBImpl() : null;
 };
 
-var getWebSqlStorage = function (callback) {
+var getWebSqlStorage = function (callback, obj_callback) {
     var openDatabase = window.openDatabase;
 
     var WebSqlImpl = function () {
@@ -54,7 +54,7 @@ var getWebSqlStorage = function (callback) {
         var db = openDatabase('TileStorage', '1.0', 'Tile Storage', 5 * 1024 * 1024);
         db.transaction(function (tx) {
             tx.executeSql('CREATE TABLE IF NOT EXISTS tile (key TEXT PRIMARY KEY, value TEXT)', [], function () {
-                callback(self);
+                obj_callback[callback].call(obj_callback, self);
             });
         });
 
