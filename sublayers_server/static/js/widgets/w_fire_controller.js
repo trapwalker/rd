@@ -94,6 +94,7 @@ var WFireController = (function (_super) {
         this.SVG.appendChild(this.SVGRadarCirle);
 
         this.change();
+        // todo: сделать это правильно
         timeManager.addTimerEvent(this, 'change');
     }
 
@@ -334,10 +335,8 @@ var WFireController = (function (_super) {
             var carPosition = car.mobj.getCurrentCoord(time);
             var distance = distancePoints(userCarPosition, carPosition);
             var angle = angleVectorRadCCW(subVector(carPosition, userCarPosition));
-            if ((car.angle == angle) && (car.distance == distance)) continue;
             car.angle = angle;
             car.distance = distance;
-
             if (car.svg)
                 if (this._carInSide(car, car._wfc_side, userCarPosition, userCarDirection))
                     this._updateCarPoint(car._wfc_side, car);
