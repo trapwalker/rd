@@ -163,6 +163,7 @@ var EPointsTracerPNG = (function(){
     };
 
     EPointsTracerPNG.prototype.change = function (time) {
+        if (mapManager.inZoomChange) return;
         var pos = this.get_position(time);
         var tempLatLng = map.unproject([pos.x, pos.y], map.getMaxZoom());
         this.marker.setLatLng(tempLatLng);
