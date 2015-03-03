@@ -135,7 +135,6 @@
     fill: lime;
     stroke: lime;
     stroke-width: 2;
-    opacity: 0.3;
 }
 
 .fire-control-radar-point-party {
@@ -143,4 +142,10 @@
     stroke: #ffd961;
     stroke-width: 2;
     opacity: 0.4;
+}
+
+.fire-control-radar-circle {
+    fill: transparent;
+    stroke: rgba(0, 255, 0, 0.1);
+    stroke-width: 5;
 }
