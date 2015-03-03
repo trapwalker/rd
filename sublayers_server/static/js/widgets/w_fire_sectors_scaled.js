@@ -49,7 +49,7 @@ var WFireSectorsScaled = (function (_super) {
         this.marker = L.marker(myMap.unproject([position.x, position.y], map.getMaxZoom()),
             {
                 icon: myIcon,
-                zIndexOffset: 10,
+                zIndexOffset: -999,
                 clickable: false,
                 keyboard: false
             });

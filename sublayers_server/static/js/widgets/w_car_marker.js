@@ -18,7 +18,7 @@ var WCarMarker = (function (_super) {
     WCarMarker.prototype._createMarker = function(){
         var car = this.car;
         var marker;
-        marker = L.rotatedMarker([0, 0]);
+        marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
 
         // todo: сделать доступ к иконнке через car.cls
         marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
@@ -26,7 +26,7 @@ var WCarMarker = (function (_super) {
             marker.setIcon(iconsLeaflet.getIcon('icon_rocket_V1'));
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
-        /*
+
         if (car.owner || car == user.userCar) {
             var owner = car.owner || user;
             var party_str = "";
@@ -37,7 +37,7 @@ var WCarMarker = (function (_super) {
         else {
             marker.bindLabel(car.ID.toString(), {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
         }
-        */
+
 
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
