@@ -18,7 +18,7 @@ var WCarMarker = (function (_super) {
     WCarMarker.prototype._createMarker = function(){
         var car = this.car;
         var marker;
-        marker = L.rotatedMarker([0, 0]);
+        marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
 
         // todo: сделать доступ к иконнке через car.cls
         marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
@@ -26,7 +26,7 @@ var WCarMarker = (function (_super) {
             marker.setIcon(iconsLeaflet.getIcon('icon_rocket_V1'));
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
-        /*
+
         if (car.owner || car == user.userCar) {
             var owner = car.owner || user;
             var party_str = "";
@@ -37,7 +37,7 @@ var WCarMarker = (function (_super) {
         else {
             marker.bindLabel(car.ID.toString(), {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
         }
-        */
+
 
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
@@ -48,6 +48,8 @@ var WCarMarker = (function (_super) {
 
     WCarMarker.prototype.change = function(){
         //console.log('WCarMarker.prototype.change');
+        if (mapManager.inZoomChange && this.car != user.userCar) return;
+
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
@@ -56,10 +58,8 @@ var WCarMarker = (function (_super) {
             this.marker.options.angle = tempAngle;
             this._lastRotateAngle = tempAngle;
         }
-        if (!mapManager.inZoomChange)
-            this.marker.setLatLng(tempLatLng);
-        else
-            this.marker.update();
+        this.marker.setLatLng(tempLatLng);
+
     };
 
     WCarMarker.prototype.delFromVisualManager = function () {
