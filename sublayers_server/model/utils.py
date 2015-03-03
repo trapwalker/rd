@@ -86,7 +86,12 @@ class TimeFormatter(object):
         self.fmt = fmt
 
     def __call__(self, t):
-        dt = datetime.fromtimestamp(t)
+        try:
+            dt = datetime.fromtimestamp(t)
+        except VlueError as e:
+            log.exception('Wrong time: %r', t)
+            raise e
+
         s = self.fmt.format(dt)
         if self.fmt.endswith('%f}'):
             s = s[:-3]
