@@ -70,14 +70,18 @@ var WFireSectorsScaled = (function (_super) {
         // после инициализации SVG можно задать все параметры: цвеат, градиенты и тд
         this._init_svg_parametrs();
 
-        // вывод секторов
-        this._drawSectors();
-
+        // вывод зоны речарджа
         this.rechAreas = {};
         this._drawRechargeArea('front');
         this._drawRechargeArea('back');
         this._drawRechargeArea('left');
         this._drawRechargeArea('right');
+
+        // вывод секторов
+        this._drawSectors();
+
+        // todo: ввести флаг на анимацию для этого метода, и здесь передавать "без анимации"
+        this.setZoom(map.getZoom());
     };
 
     WFireSectorsScaled.prototype._init_svg_parametrs = function () {
@@ -305,11 +309,7 @@ var WFireSectorsScaled = (function (_super) {
             this.stroke_zoom_elements.push(side_elem);
         }
 
-        // todo: ввести флаг на анимацию для этого метода, и здесь передавать "без анимации"
-        this.setZoom(map.getZoom());
-
     };
-
 
     WFireSectorsScaled.prototype._drawOneSector = function(minRadius, maxRadius, width, direction, fillColor){
         // todo: если ширина сектора больше 180, то: http://www.w3.org/TR/SVG/paths.html#PathData
@@ -458,7 +458,7 @@ var WFireSectorsScaled = (function (_super) {
         var side = this.car.fireSidesMng.sides[side_str];
         var width = side.sideDischargeWidth;
         if (width <= 0) return;
-        var g = this.rech_g;
+        var g = this.rech_g.group();
         var direction = side.direction;
         var size = this.size_of_icon;
         var radius = this.max_radius + this.svg_params.rechArea.d_radius;
@@ -495,10 +495,12 @@ var WFireSectorsScaled = (function (_super) {
 
         this.rechAreas[side_str] = {
             rech_arc: rech,
+            g: g,
             width: width,
             rech_text: text,
             rech_flag: false,
-            rech_prc: 1
+            rech_prc: 1,
+            visible: true
             // todo: добавить сюда ссылку на текст времени в секундах
         }
     };
@@ -616,6 +618,23 @@ var WFireSectorsScaled = (function (_super) {
                 this.sectors_groups[j].visible = true;
             }
         }
+
+        // скрываем и показываем зоны перезарядки
+        var sides = this.car.fireSidesMng.sides;
+        //var max_disch_radius = sides.front.sideDischargeRadius;
+        for (var key in sides)
+            if (sides.hasOwnProperty(key) && this.rechAreas[key]) {
+                var side_r = sides[key].sideDischargeRadius;
+                var side_v = this.rechAreas[key].visible;
+                if (side_r * k_radius < 30 && sect_v) { // если меньше и видмый, то скрыть
+                    this.rechAreas[key].g.animate(zoomAnimateTime).opacity(0);
+                    this.rechAreas[key].visible = false;
+                }
+                if (side_r * k_radius > 30 && !sect_v) { // если больше 30 и не видимый, то показать
+                    this.rechAreas[key].g.animate(zoomAnimateTime).opacity(1);
+                    this.rechAreas[key].visible = true;
+                }
+            }
 
     };
 
