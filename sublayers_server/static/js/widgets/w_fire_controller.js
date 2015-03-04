@@ -55,6 +55,12 @@ var WFireController = (function (_super) {
         //this.SVG.setAttribute('class', 'fire-control-svg');
         this.SVG.setAttribute('height', this.diameter);
         this.SVG.setAttribute('width', this.diameter);
+        this.SVG.innerHTML = '<defs>' +
+                             '   <radialGradient id="fcRadarCircleGradient" r="52%" spreadMethod="pad">' +
+                             '       <stop offset="0.8" stop-color="#008800" stop-opacity="0"></stop>' +
+                             '       <stop offset="1" stop-color="#008800" stop-opacity="0.8"></stop>' +
+                             '   </radialGradient>' +
+                             '</defs>';
         this.dFSVG.append(this.SVG);
 
         // Создание unclickable фона для контроллера (прозрачного круга)
@@ -91,8 +97,8 @@ var WFireController = (function (_super) {
         this.SVGRadarCirle.setAttribute('r', this._radarCircleAbsRadius);
         this.SVGRadarCirle.setAttribute('cx', this.center.x);
         this.SVGRadarCirle.setAttribute('cy', this.center.y);
+        this.SVGRadarCirle.setAttribute('fill', 'url(#fcRadarCircleGradient)');
         this.SVG.appendChild(this.SVGRadarCirle);
-
         this.change();
         // todo: сделать это правильно
         timeManager.addTimerEvent(this, 'change');
