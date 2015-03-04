@@ -517,7 +517,7 @@ var WFireSectorsScaled = (function (_super) {
         var side_str = options.side_str;
         if (! this.rechAreas[side_str]) return; // если такой стороны нет в данном виджете
         var side = this.rechAreas[side_str];
-        if (Math.abs(prc - side.rech_prc) < 0.005) return; // если не было изменений более чем на пол процента
+        if (Math.abs(prc - side.rech_prc) < 0.005 && prc < 1.) return; // если не было изменений более чем на пол процента
         side.rech_prc = prc;
         if(prc < 1.) { // если ещё перезарядка
             if(! side.rech_flag){ // если до этого не перезаряжались, то установить текст перезарядки
@@ -581,7 +581,6 @@ var WFireSectorsScaled = (function (_super) {
             this._recharging(options[i]);
     };
 
-
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
         var zoomAnimateTime = 250;
         var size = this.size_of_icon;
@@ -596,7 +595,6 @@ var WFireSectorsScaled = (function (_super) {
         g.animate(zoomAnimateTime).transform({matrix: matrix_str});
 
         // анимация изменения толщины линий
-        //console.log(1.4 / k_radius);
         for(var i = 0; i < this.stroke_zoom_elements.length; i++) {
             var elem = this.stroke_zoom_elements[i];
             var elem_childs = elem.children();
