@@ -4,7 +4,7 @@ var LocalCookieStorage = (function(){
             flagDebug: false,
             chatVisible: true,
             chatActiveID: 0,
-            zoom: 17,
+            zoom: 18,
             // Новые опции
             optionsChatPush: true,
             optionsChatRPC: true,
