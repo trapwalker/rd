@@ -208,7 +208,7 @@ var ClientManager = (function () {
             new WAltmetrRadial(mcar, 'divForAltmetrRadial');
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            //mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
             mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
             mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);

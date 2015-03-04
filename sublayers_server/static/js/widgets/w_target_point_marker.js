@@ -28,6 +28,7 @@ var WTargetPointMarker = (function (_super) {
     WTargetPointMarker.prototype.change = function(t){
         //console.log('WMapPosition.prototype.change');
         if(! this.active) return;
+        if (mapManager.inZoomChange) return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var carLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
