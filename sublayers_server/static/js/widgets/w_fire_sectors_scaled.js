@@ -61,17 +61,25 @@ var WFireSectorsScaled = (function (_super) {
         this.draw = draw;
 
         // группа: для вращения
-        var g = draw.group();
-        this.g = g;
+        this.main_g = draw.group(); // главная группа
+        this.rotate_g = this.main_g.group(); // группа для вращения
+        this.zoom_g = this.rotate_g.group(); // группа для зумирования
+        this.rech_g = this.rotate_g.group(); // группа для области перезарядки
         // после инициализации SVG можно задать все параметры: цвеат, градиенты и тд
         this._init_svg_parametrs();
 
         // вывод секторов
         this._drawSectors();
+
+        this.rechAreas = {};
+        this._drawRechargeArea('front');
+        this._drawRechargeArea('back');
+        this._drawRechargeArea('left');
+        this._drawRechargeArea('right');
     };
 
     WFireSectorsScaled.prototype._init_svg_parametrs = function () {
-        var g = this.g;
+        var g = this.main_g;
         // основные цвета сетки
         this.svg_colors = {
             main: '#5f5'
@@ -304,7 +312,7 @@ var WFireSectorsScaled = (function (_super) {
             'A ' + minRadius + ' ' + minRadius + ' 0 0 1 ' + sp11.x + ' ' + sp11.y +
             'Z';
 
-        return this.g.path(path_str)
+        return this.zoom_g.path(path_str)
             .dmove(size, size)
             .transform({rotation: radToGrad(direction), cx: size, cy: size})
             .stroke(this.svg_params.disc_sectors.stroke)
@@ -316,7 +324,7 @@ var WFireSectorsScaled = (function (_super) {
         // Пример с красным кружком
 
         var size = this.size_of_icon;
-        var g = this.g.group();
+        var g = this.zoom_g.group();
 
         var p0 = new Point(0, 0);
         var sp11 = rotateVector(new Point(minRadius, 0), width /2.);
@@ -353,7 +361,7 @@ var WFireSectorsScaled = (function (_super) {
         // Пример с красным кружком
 
         var size = this.size_of_icon;
-        var g = this.g.group();
+        var g = this.zoom_g.group();
         var diffrent = 30.0; // todo: сделать зависимость от зума и размера этих зацепов
         var sp11 = rotateVector(new Point(radius - diffrent, 0), width /2.);
         var sp12 = rotateVector(new Point(radius - diffrent, 0), - width /2.);
@@ -458,7 +466,7 @@ var WFireSectorsScaled = (function (_super) {
         var side = this.car.fireSidesMng.sides[side_str];
         var width = side.sideDischargeWidth;
         if (width <= 0) return;
-        var g = this.g;
+        var g = this.rech_g;
         var direction = side.direction;
         var size = this.size_of_icon;
         var radius = this.max_radius + this.svg_params.rechArea.d_radius;
@@ -497,7 +505,8 @@ var WFireSectorsScaled = (function (_super) {
             rech_arc: rech,
             width: width,
             rech_text: text,
-            rech_flag: false
+            rech_flag: false,
+            rech_prc: 1
             // todo: добавить сюда ссылку на текст времени в секундах
         }
     };
@@ -506,8 +515,10 @@ var WFireSectorsScaled = (function (_super) {
         // todo: считать время как входной параметр (просто считывать из options.time)
         var prc = options.prc;
         var side_str = options.side_str;
-        if (! this.rechAreas[side_str]) return;
+        if (! this.rechAreas[side_str]) return; // если такой стороны нет в данном виджете
         var side = this.rechAreas[side_str];
+        if (Math.abs(prc - side.rech_prc) < 0.005) return; // если не было изменений более чем на пол процента
+        side.rech_prc = prc;
         if(prc < 1.) { // если ещё перезарядка
             if(! side.rech_flag){ // если до этого не перезаряжались, то установить текст перезарядки
                 this._setRechText(side_str, this.svg_params.rechArea.rech_text.trech);
@@ -565,9 +576,9 @@ var WFireSectorsScaled = (function (_super) {
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
-      //  var options = this.car.fireSidesMng.getRechargeStates(t);
-      //  for(var i = 0; i < options.length; i++)
-      //      this._recharging(options[i]);
+        var options = this.car.fireSidesMng.getRechargeStates(t);
+        for(var i = 0; i < options.length; i++)
+            this._recharging(options[i]);
     };
 
 
@@ -577,7 +588,7 @@ var WFireSectorsScaled = (function (_super) {
         //var diff_zoom = new_zoom - last_zoom;
         var diff_zoom = new_zoom - this.zoom;
         var k_radius = Math.pow(2, diff_zoom);
-        var g = this.g;
+        var g = this.zoom_g;
         var scale_center = size - size * k_radius;
 
         // анимация изменения размера секторов
@@ -605,7 +616,7 @@ var WFireSectorsScaled = (function (_super) {
 
     WFireSectorsScaled.prototype.rotate = function(angle_in_degrees){
         if (Math.abs(this._lastRotateAngle - angle_in_degrees) > 0.1) {
-            this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
+            this.rotate_g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
             //this._rotateZoomatorsText(angle_in_degrees);
             this._lastRotateAngle = angle_in_degrees;
         }
