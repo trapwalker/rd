@@ -137,7 +137,7 @@ var EPointsTracerPNG = (function(){
         this.marker = L.rotatedMarker(myMap.unproject([p11.x, p11.y], map.getMaxZoom()),
             {
                 icon: myIcon,
-                zIndexOffset: 10,
+                zIndexOffset: -999,
                 clickable: false
             });
 

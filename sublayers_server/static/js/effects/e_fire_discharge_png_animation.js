@@ -24,7 +24,11 @@ var EAnimationPNG = (function () {
         var marker;
         var pos = summVector(this.position, polarPoint(this.icon_offset, this.direction));
 
-        marker = L.rotatedMarker(map.unproject([pos.x, pos.y], map.getMaxZoom()));
+        marker = L.rotatedMarker(map.unproject([pos.x, pos.y], map.getMaxZoom()),
+            {
+                zIndexOffset: -999,
+                clickable: false
+            });
         marker.options.angle = this.direction;
         this.div_id = 'EAnimationPNG' + (-generator_ID.getID());
         var myIcon1 = L.divIcon({

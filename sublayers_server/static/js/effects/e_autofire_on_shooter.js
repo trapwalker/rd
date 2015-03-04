@@ -18,7 +18,11 @@ var EAutoFireOnShooter = (function () {
 
     EAutoFireOnShooter.prototype._createMarker = function(){
         var marker;
-        marker = L.rotatedMarker([0, 0]);
+        marker = L.rotatedMarker([0, 0],
+            {
+                zIndexOffset: -999,
+                clickable: false
+            });
 
         var myIcon1 = L.divIcon({
             className: 'my-effect-icon',

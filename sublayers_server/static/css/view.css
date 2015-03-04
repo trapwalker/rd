@@ -185,6 +185,7 @@ input:focus {
 
 .my-effect-icon {
     background-color: transparent;
+    pointer-events: none;
 }
 
 .my-effect-icon-debug {
