@@ -251,6 +251,12 @@ class Observer(VisibleObject):
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)
 
+    def on_before_delete(self, event):
+        super(Observer, self).on_before_delete(event=event)
+        for obs in self.visible_objects:
+            if not obs.limbo:
+                ContactOut(subj=self, obj=obs).post()
+
     @property
     def r(self):
         return self._r
