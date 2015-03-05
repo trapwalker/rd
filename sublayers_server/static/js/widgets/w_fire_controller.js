@@ -57,8 +57,8 @@ var WFireController = (function (_super) {
         this.SVG.setAttribute('width', this.diameter);
         this.SVG.innerHTML = '<defs>' +
                              '   <radialGradient id="fcRadarCircleGradient" r="52%" spreadMethod="pad">' +
-                             '       <stop offset="0.8" stop-color="#008800" stop-opacity="0"></stop>' +
-                             '       <stop offset="1" stop-color="#008800" stop-opacity="0.8"></stop>' +
+                             '       <stop offset="0.8" stop-color="#00FF00" stop-opacity="0"></stop>' +
+                             '       <stop offset="1" stop-color="#00FF00" stop-opacity="0.2"></stop>' +
                              '   </radialGradient>' +
                              '</defs>';
         this.dFSVG.append(this.SVG);

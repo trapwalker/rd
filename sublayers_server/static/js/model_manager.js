@@ -381,6 +381,7 @@ var ClientManager = (function () {
     ClientManager.prototype.Die = function (event) {
         console.log('ClientManager.prototype.Die');
         this._setClientState('death_car');
+        timeManager.timerStop();
     };
 
     ClientManager.prototype.Chat = function (event){
