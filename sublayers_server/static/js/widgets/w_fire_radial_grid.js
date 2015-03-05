@@ -446,7 +446,9 @@ var WFireRadialGrid = (function (_super) {
                 .font(this.svg_params.zoomators.text.font)
                 .fill(this.svg_params.zoomators.text.fill)
                 .dmove(p.x, p.y-25)
-                .transform({rotation: -angle_of_car, cx: p.x, cy: p.y});
+                .transform({rotation: -angle_of_car, cx: p.x, cy: p.y})
+                .opacity(0);
+            text.animate(300).opacity(1);
             this.zoomatorsText.push(text);
         }
 
@@ -476,7 +478,10 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype._clearZoomatorsText = function(){
         while (this.zoomatorsText.length)
-            this.zoomatorsText.pop().remove();
+            this.zoomatorsText.pop().animate(300).opacity(0).after(function(){
+                this.remove();
+            })
+
     };
 
     WFireRadialGrid.prototype._rotateZoomatorsText = function(angle_in_degrees){
