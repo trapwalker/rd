@@ -12,6 +12,7 @@ var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
+var ConstDurationAnimation = 500;
 
 
 function onMouseDownMap(mouseEventObject){

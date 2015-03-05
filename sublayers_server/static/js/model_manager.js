@@ -213,7 +213,7 @@ var ClientManager = (function () {
             //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
             mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);
             //mapManager.widget_fire_sectors = new WFireSectors(mcar);
-            //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
+            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
