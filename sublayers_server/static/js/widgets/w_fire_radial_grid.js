@@ -34,6 +34,7 @@ var WFireRadialGrid = (function (_super) {
         this.size_of_icon = size;
         this.max_circles = max_circles;
         this.max_radius = max_radius;
+        this.zoom = map.getMaxZoom();
 
         // создание иконки и маркера
         this.div_id = 'WFireRadialGrid' + (-generator_ID.getID());
@@ -437,7 +438,7 @@ var WFireRadialGrid = (function (_super) {
         var points = this.zoomatorsPoints;
         var angle_of_car = radToGrad(this.car.getCurrentDirection(clock.getCurrentTime()));
         var g = this.g;
-        var scale_map = Math.pow(2., map.getMaxZoom() - map.getZoom()); // учёт зуммирования
+        var scale_map = Math.pow(2., map.getMaxZoom() - this.zoom); // учёт зуммирования
         for (var i = 0; i < max_circles; i++) {
             var p = points[i];
             var digit_str = (Math.round((i+1) * scale_map)).toString();
@@ -617,12 +618,13 @@ var WFireRadialGrid = (function (_super) {
         //    this._recharging(options[i]);
     };
 
-    WFireRadialGrid.prototype.setZoom = function(new_zoom){
+    WFireRadialGrid.prototype.setZoom = function(new_zoom) {
         //console.log('WFireRadialGrid.prototype.zoomStart');
+        this.zoom = new_zoom;
         this.zoomStart();
         if(this.kostil_event)
             timeManager.delTimeoutEvent(this.kostil_event);
-        this.kostil_event = timeManager.addTimeoutEvent(this, 'zoomEnd', ConstDurationAnimation);
+        this.kostil_event = timeManager.addTimeoutEvent(this, 'zoomEnd', ConstDurationAnimation + 10);
     };
 
     WFireRadialGrid.prototype.zoomStart = function(){
