@@ -264,12 +264,12 @@ var MapManager = (function(_super){
 
         myMap = map;
 
-      //  var storage = getIndexedDBStorage('createTileLayer', this) ||
-      //       getWebSqlStorage('createTileLayer', this);
-      //  if (!storage) {
-      //      alert('Storage not loading!');
+        var storage = getWebSqlStorage('createTileLayer', this)
+             || getIndexedDBStorage('createTileLayer', this);
+        if (!storage) {
+            alert('Storage not loading!');
             this.createTileLayer(null);
-      //  }
+        }
 
         // Обработчики событий карты
         pressedKey = false;
