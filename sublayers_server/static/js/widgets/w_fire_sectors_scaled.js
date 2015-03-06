@@ -10,9 +10,14 @@ var WFireSectorsScaled = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
         this.marker = null; // это непосредственно маркер, в котором будет свг-иконка
-        this.elem_zoom = []; // элементы, зависящие от зума, которые нужно перерисовывать
+        this.sectors_groups = []; // секторы
+        this.stroke_zoom_elements = [];
+
+        this.sectors_is_hide = false;
 
         this.init_marker();
+
+        this._lastRotateAngle = 0.0;
 
         this.change(clock.getCurrentTime());
     }
@@ -32,7 +37,7 @@ var WFireSectorsScaled = (function (_super) {
         this.size_of_icon = size;
         this.max_circles = max_circles;
         this.max_radius = max_radius;
-        this.zoom = map.getZoom(); // начальный зум, относительно которого и построены все сектора
+        this.zoom = map.getMaxZoom(); // начальный зум, относительно которого и построены все сектора
 
         // создание иконки и маркера
         this.div_id = 'WFireRadialGrid' + (-generator_ID.getID());
@@ -46,7 +51,7 @@ var WFireSectorsScaled = (function (_super) {
         this.marker = L.marker(myMap.unproject([position.x, position.y], map.getMaxZoom()),
             {
                 icon: myIcon,
-                zIndexOffset: 10,
+                zIndexOffset: -999,
                 clickable: false,
                 keyboard: false
             });
@@ -58,17 +63,29 @@ var WFireSectorsScaled = (function (_super) {
         this.draw = draw;
 
         // группа: для вращения
-        var g = draw.group();
-        this.g = g;
+        this.main_g = draw.group(); // главная группа
+        this.rotate_g = this.main_g.group(); // группа для вращения
+        this.zoom_g = this.rotate_g.group(); // группа для зумирования
+        this.rech_g = this.rotate_g.group(); // группа для области перезарядки
         // после инициализации SVG можно задать все параметры: цвеат, градиенты и тд
         this._init_svg_parametrs();
 
+        // вывод зоны речарджа
+        this.rechAreas = {};
+        this._drawRechargeArea('front');
+        this._drawRechargeArea('back');
+        this._drawRechargeArea('left');
+        this._drawRechargeArea('right');
+
         // вывод секторов
         this._drawSectors();
+
+        // todo: ввести флаг на анимацию для этого метода, и здесь передавать "без анимации"
+        this.setZoom(map.getZoom());
     };
 
     WFireSectorsScaled.prototype._init_svg_parametrs = function () {
-        var g = this.g;
+        var g = this.main_g;
         // основные цвета сетки
         this.svg_colors = {
             main: '#5f5'
@@ -117,7 +134,7 @@ var WFireSectorsScaled = (function (_super) {
             disc_sectors: {
                 gradient: g.gradient('linear', function(stop) {
                     stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.0});
-                    stop.at({ offset: 1, color: self.svg_colors.main, opacity: 0.2});
+                    stop.at({ offset: 0.33, color: self.svg_colors.main, opacity: 0.2});
                 }),
                 norm_color: {color: this.svg_colors.main, opacity: 0.2},
                 stroke: {width: 0}
@@ -203,68 +220,95 @@ var WFireSectorsScaled = (function (_super) {
         var first_radius = this.max_radius / this.max_circles;
         var second_radius = this.max_radius * 2/ this.max_circles;
 
-        var scale_map = Math.pow(2., map.getMaxZoom() - map.getZoom()); // учёт зуммирования
-
         // Добавление залповых секторов (только сектора, без привязки к стронам)
         var sectors = this.car.fireSidesMng.getSectors('', true, false);
         for(i=0; i< sectors.length; i++){
             var sector = sectors[i];
-            var sect_radius = sector.radius / scale_map;
-            // сектор состоит из двух частей:
-            // 1) градиентное начало между первыми двумя кругами
-            // 2) цельное, не градиентное окончание, между вторым кругом и далее
-            if (sect_radius > first_radius){ // значит сектор можно рисовать впринципе
-                if (sect_radius > second_radius) { // значит сектор состоит из двух частей
-                    this.elem_zoom.push(this._drawOneSector(first_radius, second_radius, sector.width, sector.direction,
-                        this.svg_params.disc_sectors.gradient));
-                    this.elem_zoom.push(this._drawOneSector(second_radius, sect_radius, sector.width, sector.direction,
-                        this.svg_params.disc_sectors.norm_color));
-                }
-                else{ // сектор лежит между первым и вторым кругом
-                    this.elem_zoom.push(this._drawOneSector(first_radius, sect_radius, sector.width, sector.direction,
-                        this.svg_params.disc_sectors.gradient));
-                }
-            }
+            var sect_radius = sector.radius;
+            var d_sect = this._drawOneSector(first_radius, sect_radius, sector.width, sector.direction,
+                        this.svg_params.disc_sectors.gradient);
+            var d_sect_obj = {
+                g: d_sect,
+                radius: sect_radius,
+                visible: true
+            };
+            this.sectors_groups.push(d_sect_obj);
+
         }
 
         // Добавление автоматических секторов (только сектора, без привязки к стронам)
         var auto_sectors = this.car.fireSidesMng.getSectors('', false, true);
-        for(i=0; i< auto_sectors.length; i++){
+        for (i = 0; i < auto_sectors.length; i++) {
             var asector = auto_sectors[i];
-            var asect_radius = asector.radius / scale_map;
-            if (asect_radius > first_radius) // значит сектор можно рисовать впринципе
-                this.elem_zoom.push(this._drawOneAutoSector(asect_radius, asector.width, asector.direction));
+            var asect_radius = asector.radius;
+            var auto_sector = this._drawOneAutoSector(asect_radius, asector.width, asector.direction);
+            var auto_sect_obj = {
+                g: auto_sector,
+                radius: asect_radius,
+                visible: true
+            };
+            this.sectors_groups.push(auto_sect_obj);
+            this.stroke_zoom_elements.push(auto_sector);
         }
 
         // todo: меньше какого радиуса рисовать или не рисовать эти зацепы.
         // Добавление бортов - просто линии, указывающие направление борта
+        var side_elem = null;
+        var side_obj = null;
         var sides = this.car.fireSidesMng.sides;
-        var max_disch_radius = sides.front.sideDischargeRadius / scale_map;
+        var max_disch_radius = sides.front.sideDischargeRadius;
         var max_disch_width = sides.front.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, 0.0);
+            side_obj = {
+                g: side_elem,
+                radius: max_disch_radius,
+                visible: true
+            };
+            this.sectors_groups.push(side_obj);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
-        max_disch_radius = sides.back.sideDischargeRadius / scale_map;
+
+        max_disch_radius = sides.back.sideDischargeRadius;
         max_disch_width = sides.back.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI);
+            side_obj = {
+                g: side_elem,
+                radius: max_disch_radius,
+                visible: true
+            };
+            this.sectors_groups.push(side_obj);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
-        max_disch_radius = sides.left.sideDischargeRadius / scale_map;
+        max_disch_radius = sides.left.sideDischargeRadius;
         max_disch_width = sides.left.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.);
+            side_obj = {
+                g: side_elem,
+                radius: max_disch_radius,
+                visible: true
+            };
+            this.sectors_groups.push(side_obj);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
-        max_disch_radius = sides.right.sideDischargeRadius / scale_map;
+        max_disch_radius = sides.right.sideDischargeRadius;
         max_disch_width = sides.right.sideDischargeWidth;
-        if (max_disch_radius > second_radius && max_disch_width > 0)
-            this.elem_zoom.push(this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.));
+        if (max_disch_radius > second_radius && max_disch_width > 0) {
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.);
+            side_obj = {
+                g: side_elem,
+                radius: max_disch_radius,
+                visible: true
+            };
+            this.sectors_groups.push(side_obj);
+            this.stroke_zoom_elements.push(side_elem);
+        }
 
-
-    };
-
-    WFireSectorsScaled.prototype._clearSectors = function(){
-        while (this.elem_zoom.length)
-            this.elem_zoom.pop().remove();
     };
 
     WFireSectorsScaled.prototype._drawOneSector = function(minRadius, maxRadius, width, direction, fillColor){
@@ -272,6 +316,7 @@ var WFireSectorsScaled = (function (_super) {
         // Пример с красным кружком
 
         var size = this.size_of_icon;
+        var g = this.zoom_g.group();
         var sp11 = rotateVector(new Point(minRadius, 0), width /2.);
         var sp12 = rotateVector(new Point(minRadius, 0), - width /2.);
         var sp21 = rotateVector(new Point(maxRadius, 0), width /2.);
@@ -284,11 +329,12 @@ var WFireSectorsScaled = (function (_super) {
             'A ' + minRadius + ' ' + minRadius + ' 0 0 1 ' + sp11.x + ' ' + sp11.y +
             'Z';
 
-        return this.g.path(path_str)
+        g.path(path_str)
             .dmove(size, size)
             .transform({rotation: radToGrad(direction), cx: size, cy: size})
             .stroke(this.svg_params.disc_sectors.stroke)
             .fill(fillColor);
+        return g;
     };
 
     WFireSectorsScaled.prototype._drawOneSide = function(minRadius, maxRadius, width, direction){
@@ -296,7 +342,7 @@ var WFireSectorsScaled = (function (_super) {
         // Пример с красным кружком
 
         var size = this.size_of_icon;
-        var g = this.g.group();
+        var g = this.zoom_g.group();
 
         var p0 = new Point(0, 0);
         var sp11 = rotateVector(new Point(minRadius, 0), width /2.);
@@ -333,7 +379,7 @@ var WFireSectorsScaled = (function (_super) {
         // Пример с красным кружком
 
         var size = this.size_of_icon;
-        var g = this.g.group();
+        var g = this.zoom_g.group();
         var diffrent = 30.0; // todo: сделать зависимость от зума и размера этих зацепов
         var sp11 = rotateVector(new Point(radius - diffrent, 0), width /2.);
         var sp12 = rotateVector(new Point(radius - diffrent, 0), - width /2.);
@@ -407,38 +453,12 @@ var WFireSectorsScaled = (function (_super) {
 
     };
 
-    WFireSectorsScaled.prototype._clearZoomatorsText = function(){
-        while (this.zoomatorsText.length)
-            this.zoomatorsText.pop().remove();
-    };
-
-    WFireSectorsScaled.prototype._rotateZoomatorsText = function(angle_in_degrees){
-        var max_circles = this.max_circles;
-        for (var i = 0; i < max_circles; i++) {
-            var p = this.zoomatorsPoints[i];
-            var text = this.zoomatorsText[i];
-            text.transform({rotation: -angle_in_degrees, cx: p.x, cy: p.y});
-        }
-    };
-
-    WFireSectorsScaled.prototype._rotateZoomatorsText2 = function(angle_in_degrees){
-        // перемещение текста, а не его вращение
-        var max_circles = this.max_circles;
-        for (var i = 0; i < max_circles; i++) {
-            var p = this.zoomatorsPoints[i];
-            p = subVector(p, new Point(this.size_of_icon, this.size_of_icon));
-            p = rotateVector(p, gradToRad(angle_in_degrees));
-            p = summVector(p, new Point(this.size_of_icon, this.size_of_icon));
-            var text = this.zoomatorsText[i];
-            text.move(p.x, p.y - 20.);
-        }
-    };
 
     WFireSectorsScaled.prototype._drawRechargeArea = function(side_str){
         var side = this.car.fireSidesMng.sides[side_str];
         var width = side.sideDischargeWidth;
         if (width <= 0) return;
-        var g = this.g;
+        var g = this.rech_g.group();
         var direction = side.direction;
         var size = this.size_of_icon;
         var radius = this.max_radius + this.svg_params.rechArea.d_radius;
@@ -475,9 +495,12 @@ var WFireSectorsScaled = (function (_super) {
 
         this.rechAreas[side_str] = {
             rech_arc: rech,
+            g: g,
             width: width,
             rech_text: text,
-            rech_flag: false
+            rech_flag: false,
+            rech_prc: 1,
+            visible: true
             // todo: добавить сюда ссылку на текст времени в секундах
         }
     };
@@ -486,8 +509,10 @@ var WFireSectorsScaled = (function (_super) {
         // todo: считать время как входной параметр (просто считывать из options.time)
         var prc = options.prc;
         var side_str = options.side_str;
-        if (! this.rechAreas[side_str]) return;
+        if (! this.rechAreas[side_str]) return; // если такой стороны нет в данном виджете
         var side = this.rechAreas[side_str];
+        if (Math.abs(prc - side.rech_prc) < 0.005 && prc < 1.) return; // если не было изменений более чем на пол процента
+        side.rech_prc = prc;
         if(prc < 1.) { // если ещё перезарядка
             if(! side.rech_flag){ // если до этого не перезаряжались, то установить текст перезарядки
                 this._setRechText(side_str, this.svg_params.rechArea.rech_text.trech);
@@ -535,62 +560,97 @@ var WFireSectorsScaled = (function (_super) {
 
     WFireSectorsScaled.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
+
+
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
+
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
-      //  var options = this.car.fireSidesMng.getRechargeStates(t);
-      //  for(var i = 0; i < options.length; i++)
-      //      this._recharging(options[i]);
-    };
-
-    WFireSectorsScaled.prototype.zoomStart = function(){
-        //console.log('WFireRadialGrid.prototype.zoomStart');
-        //this._clearSectors();
-        //this._clearZoomatorsText();
-    };
-
-    WFireSectorsScaled.prototype.zoomEnd = function(){
-        //console.log('WFireRadialGrid.prototype.zoomEnd');
-        //this._drawSectors();
-        //this._drawZoomatorsText();
+        var options = this.car.fireSidesMng.getRechargeStates(t);
+        for(var i = 0; i < options.length; i++)
+            this._recharging(options[i]);
     };
 
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
-        var zoomAnimateTime = 300;
+        var zoomAnimateTime = ConstDurationAnimation;
         var size = this.size_of_icon;
         //var diff_zoom = new_zoom - last_zoom;
         var diff_zoom = new_zoom - this.zoom;
         var k_radius = Math.pow(2, diff_zoom);
-        var g = this.g;
+        var g = this.zoom_g;
         var scale_center = size - size * k_radius;
 
-
+        // анимация изменения размера секторов
         var matrix_str = k_radius + ", 0, 0, " + k_radius + ", "+ (scale_center) + ", "+ (scale_center);
-        //console.log(matrix_str);
-/*
-        for(var i = 0; i < this.elem_zoom.length; i++) {
-            var elem = this.elem_zoom[i];
-            //elem.scale(k_radius, k_radius);
-            elem.animate(zoomAnimateTime).transform({matrix: matrix_str});
+        g.animate(zoomAnimateTime).transform({matrix: matrix_str});
+
+        // анимация изменения толщины линий
+        for(var i = 0; i < this.stroke_zoom_elements.length; i++) {
+            var elem = this.stroke_zoom_elements[i];
+            var elem_childs = elem.children();
+            for (var y = 0; y < elem_childs.length; y++){
+                var child = elem_childs[y];
+                //var str_w = child.attr('stroke-width');
+                //console.log(str_w / k_radius);
+                //console.log(child.attr('id'));
+                // todo: где-то сохранить оригинальное значение stroke (например с помощью child.attr('id')), чтобы здесь с ним работать
+                child.animate(zoomAnimateTime).stroke({width:  1.4 / k_radius});
+            }
 
         }
-*/
-        g.animate(zoomAnimateTime).transform({matrix: matrix_str});
-        //g.animate(zoomAnimateTime).scale(k_radius, k_radius, size, size);
+
+
+        // анимация скрывания и показывания секторов при маленьком размере их радиуса
+        for(var j = 0; j < this.sectors_groups.length; j++){
+            var sect_g = this.sectors_groups[j].g;
+            var sect_r = this.sectors_groups[j].radius;
+            var sect_v = this.sectors_groups[j].visible;
+            if (sect_r * k_radius < 30 && sect_v) { // если меньше и видмый, то скрыть
+                sect_g.animate(zoomAnimateTime).opacity(0);
+                this.sectors_groups[j].visible = false;
+            }
+            if (sect_r * k_radius > 30 && !sect_v) { // если больше 30 и не видимый, то показать
+                sect_g.animate(zoomAnimateTime).opacity(1);
+                this.sectors_groups[j].visible = true;
+            }
+        }
+
+        // скрываем и показываем зоны перезарядки
+        var sides = this.car.fireSidesMng.sides;
+        //var max_disch_radius = sides.front.sideDischargeRadius;
+        for (var key in sides)
+            if (sides.hasOwnProperty(key) && this.rechAreas[key]) {
+                var side_r = sides[key].sideDischargeRadius;
+                var side_v = this.rechAreas[key].visible;
+                if (side_r * k_radius < 30 && sect_v) { // если меньше и видмый, то скрыть
+                    this.rechAreas[key].g.animate(zoomAnimateTime).opacity(0);
+                    this.rechAreas[key].visible = false;
+                }
+                if (side_r * k_radius > 30 && !sect_v) { // если больше 30 и не видимый, то показать
+                    this.rechAreas[key].g.animate(zoomAnimateTime).opacity(1);
+                    this.rechAreas[key].visible = true;
+                }
+            }
 
     };
 
 
     WFireSectorsScaled.prototype.rotate = function(angle_in_degrees){
-        this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
-        //this._rotateZoomatorsText(angle_in_degrees);
+        if (Math.abs(this._lastRotateAngle - angle_in_degrees) > 0.1) {
+            this.rotate_g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
+            //this._rotateZoomatorsText(angle_in_degrees);
+            this._lastRotateAngle = angle_in_degrees;
+        }
     };
 
     WFireSectorsScaled.prototype.delFromVisualManager = function () {

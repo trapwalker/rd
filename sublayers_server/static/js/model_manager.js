@@ -211,12 +211,12 @@ var ClientManager = (function () {
             new WViewRadius(mcar, radius_visible); // виджет радиуса видимости
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
-            mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
-            //mapManager.widget_fire_sectors = new WFireSectors(mcar);
-            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);
-            //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
-            // Инициализация радиального меню - установка правильных id секторов
-            //radialMenu.setIDSectorsWithAngle(user.userCar.fireSectors);
+
+
+            //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
+            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
+            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
+            //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
@@ -247,10 +247,12 @@ var ClientManager = (function () {
         if (car == user.userCar) {
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
-            if (tp != undefined && tp != null)
-                mapManager.widget_target_point.activate(tp);
-            else
-                mapManager.widget_target_point.deactivate();
+            if (mapManager.widget_target_point) {
+                if (tp != undefined && tp != null)
+                    mapManager.widget_target_point.activate(tp);
+                else
+                    mapManager.widget_target_point.deactivate();
+            }
 
             // При попадании залповым орудием включить эффект тряски
             if (hp_state.dhp)
@@ -318,7 +320,7 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             new WCarMarker(car);                 // виджет маркера
-            wFireController.addModelObject(car); // добавить себя в радар
+            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -383,6 +385,7 @@ var ClientManager = (function () {
     ClientManager.prototype.Die = function (event) {
         console.log('ClientManager.prototype.Die');
         this._setClientState('death_car');
+        timeManager.timerStop();
     };
 
     ClientManager.prototype.Chat = function (event){
@@ -407,10 +410,10 @@ var ClientManager = (function () {
         // установка last_shoot
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
-        if ((event.time > clock.getClientMS()) && (etime > clock.getCurrentTime())) {
+        if ((event.time > clock.getClientTime()) && (etime > clock.getCurrentTime())) {
             console.error('Серверное время больше клиентского при выстреле.');
             console.error('server event time = ', etime);
-            console.error('client pure  time = ', clock.getClientMS() / 1000.);
+            console.error('client pure  time = ', clock.getClientTime() / 1000.);
             console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки

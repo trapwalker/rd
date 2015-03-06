@@ -9,12 +9,10 @@
 var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
 //var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
 
-//Путь к карте в локальном каталоге
-var ConstMapPathLocal = '';
-
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 8;
+var ConstMinMapZoom = 10;
+var ConstDurationAnimation = 500;
 
 
 function onMouseDownMap(mouseEventObject){
@@ -180,54 +178,19 @@ function onKeyDownMap(event) {
             clientManager.sendFireAutoEnable('left', false);
             break;
         case 90:  // Z
-            //clientManager.Die();
-            console.log('ZZZZZZZZZZZZZZZ');
-
-
+            //console.log('Was pressed: Z');
             break;
-
         case 49:  // 1
-            console.log('111111111111');
-            if(map.getZoom() < ConstMaxMapZoom){
-                var zoom = map.getZoom() + 1;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 1');
             break;
-
         case 50:  // 2
-            console.log('22222222222');
-            if(map.getZoom() > ConstMinMapZoom){
-                var zoom = map.getZoom() - 1;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 2');
             break;
-
         case 51:  // 3
-            console.log('3333333333');
-            if(map.getZoom() < ConstMaxMapZoom - 1){
-                var zoom = map.getZoom() + 2;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 3');
             break;
-
         case 52:  // 4
-            console.log('4444444444');
-            if(map.getZoom() > ConstMinMapZoom + 1){
-                var zoom = map.getZoom() - 2;
-                setTimeout(function(){mapManager.widget_fire_radial_grid.setZoom(zoom)}, 0);
-                setTimeout(function(){mapManager.widget_fire_sectors.setZoom(zoom)}, 0);
-                setTimeout(function(){map.setZoom(zoom)}, 0);
-            }
-
+            //console.log('Was pressed: 4');
             break;
     }
 }
@@ -269,6 +232,7 @@ var MapManager = (function(_super){
     function MapManager(){
         _super.call(this);
 
+        this.inZoomChange = false;
         this.tileLayerPath = '';
         this.tileLayer = null;
 
@@ -283,10 +247,8 @@ var MapManager = (function(_super){
     }
 
     MapManager.prototype._init = function () {
-        //Если есть файл map_base_local.js, то брать карту из локального каталога
-        if (ConstMapPathLocal === '') this.tileLayerPath = ConstMapPath;
-        else this.tileLayerPath = ConstMapPathLocal;
 
+        this.tileLayerPath = ConstMapPath;
 
         map = L.map('map',
             {
@@ -296,21 +258,18 @@ var MapManager = (function(_super){
                 attributionControl: false,
                 scrollWheelZoom: "center",
                 dragging: false,
+                zoomAnimationThreshold: 8,
                 doubleClickZoom: false
-            //}).setView([50.595, 36.59], cookieStorage.zoom);
-            }).setView([50.595, 36.59], 18);
+            }).setView([50.595, 36.59], cookieStorage.zoom);
 
         myMap = map;
 
-        var cbForStorage =  this.createTileLayer;
-
-        //var storage = getIndexedDBStorage(cbForStorage) || getWebSqlStorage(cbForStorage);
-        //var storage = getIndexedDBStorage(cbForStorage) || getWebSqlStorage(cbForStorage) || this.createTileLayer(null);
-        //if (!storage) console.log('Storage not loading!');
-
-        //var storage = null;
-        this.createTileLayer(null);
-
+        var storage = getWebSqlStorage('createTileLayer', this)
+             || getIndexedDBStorage('createTileLayer', this);
+        if (!storage) {
+            alert('Storage not loading!');
+            this.createTileLayer(null);
+        }
 
         // Обработчики событий карты
         pressedKey = false;
@@ -321,13 +280,14 @@ var MapManager = (function(_super){
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
         map.on('zoomend', this.onZoomEnd);
+        map.on('zoomanim', this.onZoomAnimation);
+
         document.getElementById('map').onkeydown = onKeyDownMap;
         document.getElementById('map').onkeyup = onKeyUpMap;
         map.keyboard.disable();
 
         // Bнициализация виджетов карты
         new WZoomSlider(this);
-
 
         // Отображение квадрата всей карты
         // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
@@ -336,7 +296,7 @@ var MapManager = (function(_super){
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
-        //console.log('MapManager.prototype.createTileLayer');
+        //console.log('MapManager.prototype.createTileLayer', storage);
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
                 maxZoom: ConstMaxMapZoom,
@@ -354,6 +314,7 @@ var MapManager = (function(_super){
         }
         if(cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);
+        return true;
     };
 
     // =============================== Zoom
@@ -367,43 +328,24 @@ var MapManager = (function(_super){
         map.setZoom(zoom);
     };
 
-    MapManager.prototype.onZoomEnd = function(event) {
-        // Не знает про this !
-        timeManager.timerStart();
+    MapManager.prototype.onZoomAnimation = function(event) {
+        //console.log('MapManager.prototype.zoomAnim', event);
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.setZoom(event.zoom);
+        if (mapManager.widget_fire_sectors)
+            mapManager.widget_fire_sectors.setZoom(event.zoom)
+    };
+
+    MapManager.prototype.onZoomStart = function (event) {
+        //console.log('MapManager.prototype.onZoomStart');
+        mapManager.inZoomChange = true;
+    };
+
+    MapManager.prototype.onZoomEnd = function (event) {
+        //console.log('MapManager.prototype.onZoomEnd');
+        mapManager.inZoomChange = false;
         visualManager.changeModelObject(mapManager);
-        //if (controllers.isActive)  // чтобы при изменении зума карты  менялся и слайдер.
-        //    controllers.zoomSetSlider.setZoom(myMap.getZoom());
-        /*
-         // если мы отдалились далеко, то скрыть все лейблы и показывать их только по наведению
-        var noHide = cookieStorage.visibleLabel();
-        for (var i in listMapObject.objects) {
-            if (listMapObject.exist(i)) {
-                listMapObject.objects[i].marker.setLabelNoHide(noHide);
-            }
-        }
-         // Изменение радиуса круга обзора
-         //userCarMarker.setNewZoom();
-         */
-
-        //сектора на сетке появляются с новым зумом
-        if (mapManager.widget_fire_sectors)
-            mapManager.widget_fire_sectors.zoomEnd(event);
     };
-
-    MapManager.prototype.onZoomStart = function(event) {
-        //console.log('MapManager.prototype.onZoomStart', event);
-        timeManager.timerStop();
-
-        //сектора на сетке исчезают
-        if (mapManager.widget_fire_sectors)
-            mapManager.widget_fire_sectors.zoomStart(event);
-
-    };
-
-
-
-
-
 
     return MapManager;
 })(ClientObject);

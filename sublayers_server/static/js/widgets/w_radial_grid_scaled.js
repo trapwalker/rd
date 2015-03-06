@@ -13,6 +13,8 @@ var WRadialGridScaled = (function (_super) {
 
         this.init_marker();
 
+        this._lastRotateAngle = 0.0;
+
         this.change(clock.getCurrentTime());
     }
 
@@ -46,7 +48,7 @@ var WRadialGridScaled = (function (_super) {
         this.marker = L.marker(myMap.unproject([position.x, position.y], map.getMaxZoom()),
             {
                 icon: myIcon,
-                zIndexOffset: 10,
+                zIndexOffset: -999,
                 clickable: false,
                 keyboard: false
             });
@@ -230,16 +232,22 @@ var WRadialGridScaled = (function (_super) {
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
         this.rotate(radToGrad(angle));
+
     };
 
     WRadialGridScaled.prototype.zoomStart = function(event){
         // todo: не берётся правильно зум! Хотя в евенте правильно выводится, будто евент меняется ПОСЛЕ
-       // console.log('WRadialGridScaled.prototype.zoomStart', event);
-       // var new_zoom = event.target._zoom;
-       // console.log('new_zoom', event.target._zoom, '   ___ animateZoom = ', event.target._animateToZoom);
+        var new_zoom = event.target._zoom;
+        console.log('WRadialGridScaled.prototype.zoomStart', event.target);
+        console.log('new_zoom = ', event.target._zoom, '   ___ animateZoom = ', event.target._animateToZoom);
+        new_zoom = event.target._zoom;
+        console.log('new_zoom = ', event.target._zoom, '   ___ animateZoom = ', event.target._animateToZoom);
     };
 
     WRadialGridScaled.prototype.zoomEnd = function(event){
@@ -257,9 +265,10 @@ var WRadialGridScaled = (function (_super) {
 
 
     WRadialGridScaled.prototype.setZoom = function(new_zoom){
+        //console.log('WRadialGridScaled.prototype.setZoom ', new_zoom);
         var rs = this.def_radius;
         var new_rs = [];
-        var zoomAnimateTime = 300;
+        var zoomAnimateTime = ConstDurationAnimation;
         var circles = this.circles;
         var last_zoom = this.zoom;
         var diff_zoom = new_zoom - last_zoom;
@@ -267,7 +276,6 @@ var WRadialGridScaled = (function (_super) {
         var g = this.g;
 
         this.zoom = new_zoom;
-
         if (diff_zoom == 0)
             console.error('Вызвано с неизменённым зумом! Ошибка!', new_zoom);
 
@@ -315,7 +323,10 @@ var WRadialGridScaled = (function (_super) {
     };
 
     WRadialGridScaled.prototype.rotate = function(angle_in_degrees){
-        this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
+        if (Math.abs(this._lastRotateAngle - angle_in_degrees) > 0.1) {
+            this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
+            this._lastRotateAngle = angle_in_degrees;
+        }
     };
 
     WRadialGridScaled.prototype.delFromVisualManager = function () {

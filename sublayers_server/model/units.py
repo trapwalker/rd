@@ -164,8 +164,10 @@ class Unit(Observer):
             sector.out_car(target=obj)
         if isinstance(obj, Unit):
             for agent in self.watched_agents:
+                # Убрать все эффекты стрельбы в ЭТУ машинку (в obj)
                 for shooter in obj.hp_state.shooters:
                     messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=False).post()
+                # Убрать все эффекты стрельбы ЭТОЙ машинки
                 for sector in obj.fire_sectors:
                     for weapon in sector.weapon_list:
                         if isinstance(weapon, WeaponAuto):

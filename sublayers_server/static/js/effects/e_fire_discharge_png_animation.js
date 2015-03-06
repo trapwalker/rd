@@ -24,7 +24,11 @@ var EAnimationPNG = (function () {
         var marker;
         var pos = summVector(this.position, polarPoint(this.icon_offset, this.direction));
 
-        marker = L.rotatedMarker(map.unproject([pos.x, pos.y], map.getMaxZoom()));
+        marker = L.rotatedMarker(map.unproject([pos.x, pos.y], map.getMaxZoom()),
+            {
+                zIndexOffset: -999,
+                clickable: false
+            });
         marker.options.angle = this.direction;
         this.div_id = 'EAnimationPNG' + (-generator_ID.getID());
         var myIcon1 = L.divIcon({
@@ -134,18 +138,27 @@ var EAutoFirePNG = (function (_super) {
             this.icon_offset = 35;
         else
             this.icon_offset = 20;
+        this._lastRotateAngle = 0.0;
     }
 
     EAutoFirePNG.prototype.change = function() {
         //console.log('EAutoFirePNG.prototype.change');
+        if (mapManager.inZoomChange && this.car != user.userCar) return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var dir = this.car.getCurrentDirection(time) + this.direction;
 
         var pos = summVector(tempPoint, polarPoint(this.icon_offset, dir));
         var tempLatLng = map.unproject([pos.x, pos.y], map.getMaxZoom());
-        this.marker.options.angle = dir;
-        this.marker.setLatLng(tempLatLng);
+
+        if (Math.abs(this._lastRotateAngle - dir) > 0.01) {
+            this.marker.options.angle = dir;
+            this._lastRotateAngle = dir;
+        }
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
     };
 
     EAutoFirePNG.prototype.start = function (delay) {
@@ -163,7 +176,7 @@ var EHeavyBangPNG_1 = (function (_super) {
     __extends(EHeavyBangPNG_1, _super);
 
     function EHeavyBangPNG_1(position){
-        _super.call(this, position, 0);
+        _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 1200;
         this.frame_count = 12;
         this.time_of_frame = this.duration / this.frame_count;
@@ -181,7 +194,7 @@ var EHeavyBangPNG_2 = (function (_super) {
     __extends(EHeavyBangPNG_2, _super);
 
     function EHeavyBangPNG_2(position){
-        _super.call(this, position, 0);
+        _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 1200;
         this.frame_count = 12;
         this.time_of_frame = this.duration / this.frame_count;
@@ -199,7 +212,7 @@ var ELightBangPNG_1 = (function (_super) {
     __extends(ELightBangPNG_1, _super);
 
     function ELightBangPNG_1(position){
-        _super.call(this, position, 0);
+        _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 300;
         this.frame_count = 3;
         this.time_of_frame = this.duration / this.frame_count;

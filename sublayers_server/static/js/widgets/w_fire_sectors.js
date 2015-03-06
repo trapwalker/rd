@@ -13,6 +13,7 @@ var WFireSectors = (function (_super) {
         this.elem_zoom = []; // элементы, зависящие от зума, которые нужно перерисовывать
 
         this.init_marker();
+        this._lastRotateAngle = 0.0;
 
         this.change(clock.getCurrentTime());
     }
@@ -45,7 +46,7 @@ var WFireSectors = (function (_super) {
         this.marker = L.marker(myMap.unproject([position.x, position.y], map.getMaxZoom()),
             {
                 icon: myIcon,
-                zIndexOffset: 10,
+                zIndexOffset: -999,
                 clickable: false,
                 keyboard: false
             });
@@ -600,14 +601,26 @@ var WFireSectors = (function (_super) {
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
         var options = this.car.fireSidesMng.getRechargeStates(t);
         for(var i = 0; i < options.length; i++)
             this._recharging(options[i]);
+    };
+
+    WFireSectors.prototype.setZoom = function(new_zoom) {
+        //console.log('WFireRadialGrid.prototype.zoomStart');
+        this.zoom = new_zoom;
+        this.zoomStart();
+        if(this.kostil_event)
+            timeManager.delTimeoutEvent(this.kostil_event);
+        this.kostil_event = timeManager.addTimeoutEvent(this, 'zoomEnd', ConstDurationAnimation + 10);
     };
 
     WFireSectors.prototype.zoomStart = function(){
@@ -623,8 +636,11 @@ var WFireSectors = (function (_super) {
     };
 
     WFireSectors.prototype.rotate = function(angle_in_degrees){
-        this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
-        //this._rotateZoomatorsText(angle_in_degrees);
+        if (Math.abs(this._lastRotateAngle - angle_in_degrees) > 0.1) {
+            this.g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
+            this._lastRotateAngle = angle_in_degrees;
+            //this._rotateZoomatorsText(angle_in_degrees);
+        }
     };
 
     WFireSectors.prototype.delFromVisualManager = function () {
