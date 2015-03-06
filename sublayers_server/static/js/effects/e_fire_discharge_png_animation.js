@@ -138,18 +138,27 @@ var EAutoFirePNG = (function (_super) {
             this.icon_offset = 35;
         else
             this.icon_offset = 20;
+        this._lastRotateAngle = 0.0;
     }
 
     EAutoFirePNG.prototype.change = function() {
         //console.log('EAutoFirePNG.prototype.change');
+        if (mapManager.inZoomChange && this.car != user.userCar) return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var dir = this.car.getCurrentDirection(time) + this.direction;
 
         var pos = summVector(tempPoint, polarPoint(this.icon_offset, dir));
         var tempLatLng = map.unproject([pos.x, pos.y], map.getMaxZoom());
-        this.marker.options.angle = dir;
-        this.marker.setLatLng(tempLatLng);
+
+        if (Math.abs(this._lastRotateAngle - dir) > 0.01) {
+            this.marker.options.angle = dir;
+            this._lastRotateAngle = dir;
+        }
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
     };
 
     EAutoFirePNG.prototype.start = function (delay) {
