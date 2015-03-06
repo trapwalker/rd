@@ -266,12 +266,12 @@ var MapManager = (function(_super){
         myMap = map;
         this.anim_zoom = map.getZoom();
 
-        var storage = getWebSqlStorage('createTileLayer', this)
-             || getIndexedDBStorage('createTileLayer', this);
-        if (!storage) {
-            alert('Storage not loading!');
+        //var storage = getWebSqlStorage('createTileLayer', this)
+        //     || getIndexedDBStorage('createTileLayer', this);
+        //if (!storage) {
+        //    alert('Storage not loading!');
             this.createTileLayer(null);
-        }
+        //}
 
         // Обработчики событий карты
         pressedKey = false;
