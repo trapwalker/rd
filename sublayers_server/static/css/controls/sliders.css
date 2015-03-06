@@ -1,11 +1,16 @@
 /*Настройка трёх главных дивов*/
-.slider-speed-main {
+.cruise-control-main {
     position: absolute;
-    bottom: 450px;
-    right: 20px;
-    width: 90px;
+    bottom: 0px;
+    right: 0px;
+    width: 110px;
+    height: 400px;
+    background-color: rgba(45, 169, 89, 0.3);
     pointer-events: none;
 }
+
+
+
 
 .slider-speed-left-main {
     position: absolute;

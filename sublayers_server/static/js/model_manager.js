@@ -200,7 +200,7 @@ var ClientManager = (function () {
             // Виджеты:
             new WCarMarker(mcar);    // виджет маркера
             new WMapPosition(mcar);  // виджет позиционирования карты
-            new WSpeedSlider(mcar);  // виджет круиз контроля
+            new WCruiseControl(mcar);  // виджет круиз контроля
             new WHPRadial(mcar, 'divScaleCarHealth');
             new WFuelRadial(mcar, 'divScaleCarFuel');
             new WRadiationRadial(mcar, 'divScaleRadiation');
