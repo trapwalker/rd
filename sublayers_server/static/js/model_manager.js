@@ -210,10 +210,12 @@ var ClientManager = (function () {
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
-            //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // прототип нового виджета сетки
-            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar);
-            //mapManager.widget_fire_sectors = new WFireSectors(mcar);
-            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // прототип нового виджета сетки
+
+
+            //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
+            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
+            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
+            //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати

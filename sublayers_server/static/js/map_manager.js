@@ -336,13 +336,13 @@ var MapManager = (function(_super){
             mapManager.widget_fire_sectors.setZoom(event.zoom)
     };
 
-    MapManager.prototype.onZoomStart = function(event) {
-        //console.log('MapManager.prototype.onZoomStart', event);
+    MapManager.prototype.onZoomStart = function (event) {
+        //console.log('MapManager.prototype.onZoomStart');
         mapManager.inZoomChange = true;
     };
 
-    MapManager.prototype.onZoomEnd = function(event) {
-        //console.log('MapManager.prototype.onZoomEnd', event);
+    MapManager.prototype.onZoomEnd = function (event) {
+        //console.log('MapManager.prototype.onZoomEnd');
         mapManager.inZoomChange = false;
         visualManager.changeModelObject(mapManager);
     };

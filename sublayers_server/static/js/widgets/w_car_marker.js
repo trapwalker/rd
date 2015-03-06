@@ -58,7 +58,10 @@ var WCarMarker = (function (_super) {
             this.marker.options.angle = tempAngle;
             this._lastRotateAngle = tempAngle;
         }
-        this.marker.setLatLng(tempLatLng);
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
 
     };
 
