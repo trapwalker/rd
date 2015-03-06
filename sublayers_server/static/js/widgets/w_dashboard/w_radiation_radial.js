@@ -18,9 +18,9 @@ var WRadiationRadial = (function (_super) {
 
         this._init_params();
 
-        var max_r = 50;
+        var max_r = 45;
         this.max_r = max_r;
-        var d_radius = 8;
+        var d_radius = 6;
         this.d_radius = d_radius;
         var size = max_r + 20; // максимальный радиус + 20 пикселей запаса
         this.center = size;

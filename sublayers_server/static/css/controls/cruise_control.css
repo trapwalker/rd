@@ -1,0 +1,128 @@
+.cruise-control-main {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    pointer-events: none;
+}
+
+.cruise-control-glass {
+    position: absolute;
+    width: 563px;
+    height: 503px;
+    bottom: 0px;
+    right: 0px;
+    background: transparent url('/static/img/cruise/cruise_glass.png') 100% 100% no-repeat;
+    background-position: bottom right;
+}
+
+.cruise-control-hardware {
+    position: absolute;
+    width: 28px;
+    height: 596px;
+    bottom: 0px;
+    right: 0px;
+    background: transparent url('/static/img/cruise/cruise_port.png') 100% 100% no-repeat;
+    background-position: bottom right;
+}
+
+
+
+.cruise-control-speedMain {
+    position: absolute;
+    bottom: 20px;
+    right: 16px;
+    width: 134px;
+    height: 433px;
+    pointer-events: auto;
+}
+
+.cruise-control-top {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background-color: #14807e;
+}
+
+.cruise-control-medium {
+    position: relative;
+    width: 100%;
+    height: 360px;
+}
+
+.cruise-control-speedHandleArea {
+    position: relative;
+    float:left;
+    width: 64px;
+    height: 100%;
+    background-color: rgba(255, 250, 35, 0.11);
+}
+
+.cruise-control-speedHandle {
+    position: absolute;
+    width: 100%;
+    height: 27px;
+    background: transparent url('/static/img/cruise/speed_mark.png') 100% 100% no-repeat;
+    font-family: Gruppo-Regular;
+    color: lime;
+    text-align: center;
+}
+
+#cruiseControlSpeedHandleSpan1 {
+    font-size: 14pt;
+    font-weight: bold;
+    text-align: right;
+    right: 50%;
+}
+
+#cruiseControlSpeedHandleSpan2 {
+    width: 8px;
+    font-weight: bold;
+    font-size: 10pt;
+    text-align: left;
+    right: 0px;
+
+}
+
+.cruise-control-scaleArea {
+    position: relative;
+    float: left;
+    width: 24px;
+    height: 100%;
+    background-color: #8e3fff;
+}
+
+.cruise-control-zoneArea {
+    position: relative;
+    float:left;
+    width: 56px;
+    height: 100%;
+    background-color: #ff639a;
+}
+
+
+
+.cruise-control-bottom {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background-color: #243b80;
+    pointer-events: none;
+}
+
+.cruise-control-reverse {
+    position: relative;
+    float:left;
+    width: 50%;
+    height: 100%;
+    background-color: #ff1a1a;
+    pointer-events: none;
+}
+
+.cruise-control-stop {
+    position: relative;
+    float:left;
+    width: 50%;
+    height: 100%;
+    background-color: #ff51e8;
+    pointer-events: none;
+}

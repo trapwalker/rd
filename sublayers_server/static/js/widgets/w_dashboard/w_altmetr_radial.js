@@ -10,7 +10,7 @@ var WAltmetrRadial = (function (_super) {
         this.car = car;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
-        this.div_id = 'WHPRadial' + (-generator_ID.getID());
+        this.div_id = 'WAltmetrRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-alt-radial-parent"></div>');
 
         var draw = SVG(this.div_id);
@@ -18,8 +18,8 @@ var WAltmetrRadial = (function (_super) {
 
         this._init_params();
 
-        var max_r = 35;
-        var d_radius = 7;
+        var max_r = 30;
+        var d_radius = 6;
         this.d_radius = d_radius;
         var size = max_r + 20; // максимальный радиус + 20 пикселей запаса
         this.center = size;

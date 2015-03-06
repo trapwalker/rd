@@ -1,61 +1,59 @@
 #divForHpAndFuelRadials {
     position: absolute;
-    bottom: -70px;
-    right: 60px;
-    width: 200px;
-    height: 200px;
+    bottom: 0px;
+    right: 150px;
+    width: 150px;
+    height: 150px;
     pointer-events: none;
 }
 
 #divForRadAndWindRadials {
     position: absolute;
-    bottom: -70px;
-    right: 200px;
-    width: 200px;
-    height: 200px;
+    bottom: 0px;
+    right: 275px;
+    width: 150px;
+    height: 150px;
     pointer-events: none;
 }
 
 #divForAltmetrRadial {
     position: absolute;
-    bottom: -80px;
-    right: 310px;
-    width: 200px;
-    height: 200px;
+    bottom: -35px;
+    right: 365px;
+    width: 150px;
+    height: 150px;
     pointer-events: none;
 }
 
 .w-hp-radial-parent {
     position: absolute;
-    bottom: 80px;
     right: 0;
     pointer-events: none;
 }
 
 .w-fuel-radial-parent {
     position: absolute;
-    bottom: 7px;
+    top: 68px;
     right: 0;
     pointer-events: none;
 }
 
 .w-radiation-radial-parent {
     position: absolute;
-    bottom: 80px;
     right: 0;
     pointer-events: none;
 }
 
 .w-wind-radial-parent {
     position: absolute;
-    bottom: 7px;
+    top: 68px;
     right: 0;
     pointer-events: none;
 }
 
 .w-alt-radial-parent {
     position: absolute;
-    bottom: 50px;
+    bottom: 0;
     right: 0;
     pointer-events: none;
 }

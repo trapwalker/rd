@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>NUKE Navigator v5.51</title>
 
+    <style>
+        @font-face {
+            font-family: Gruppo-Regular; /* Гарнитура шрифта */
+            src: local(Gruppo-Regular), url(fonts/Gruppo-Regular.ttf); /* Для остальных браузеров */
+        }
+    </style>
+
     <!-- <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/> -->
     <!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/> -->
     <!-- <script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
@@ -22,6 +29,7 @@
     <link rel="stylesheet" href="css/modal_window.css"/>
     <link rel="stylesheet" href="css/w_radial.css"/>
     <link rel="stylesheet" href="css/fire_effects.css"/>
+    <link rel="stylesheet" href="css/controls/cruise_control.css"/>
 
     <script src="js/third_party/leaflet-src.js"></script>
     <script src="js/third_party/jquery.min.js"></script>
@@ -101,19 +109,24 @@
         <div id="buttonFullScreen" class="buttonFullScreenOn"></div>
         <div id="buttonOptions" class="sublayers-clickable"></div>
     </div>
-    <div id="divForHpAndFuelRadials">
-        <div id="divScaleCarFuel"></div>
-        <div id="divScaleCarHealth"></div>
+
+    <div id="cruiseControlMainDiv" class="cruise-control-main">
+        <div id="cruiseControlGlassDiv" class="cruise-control-glass">
+            <div id="divForRadAndWindRadials"></div>
+            <div id="divForHpAndFuelRadials"></div>
+            <div id="divForAltmetrRadial"></div>
+        </div>
+        <div id="cruiseControlHardwareDiv" class="cruise-control-hardware"></div>
     </div>
-    <div id="divForRadAndWindRadials">
-        <div id="divScaleRadiation"></div>
-        <div id="divScaleWind"></div>
-    </div>
-    <div id="divForAltmetrRadial"></div>
+
+
+
+    <div id="speedSetDivForSpeedSlider"></div>
+
     <div id="buttonConnectServer" class="sublayers-clickable"></div>
     <div id="chatArea"></div>
     <div id="fireControlArea"></div>
-    <div id="speedSetDivForSpeedSlider"></div>
+
     <div id="zoomSetDivForZoomSlider"></div>
     <div id="radialMenuDiv" style="position:absolute;">
         <svg id="radialMenuSVG">

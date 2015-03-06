@@ -1,135 +1,92 @@
 /*
  * Виджет круиз контроля
  */
-
 var WCruiseControl = (function (_super) {
     __extends(WCruiseControl, _super);
 
-    function WCruiseControl(car) {
+    function WCruiseControl(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
 
-        this.parentDiv = $('#speedSetDivForSpeedSlider');
-        this.parentDiv.addClass('cruise-control-main');
-        this.mainDiv = $("<div id='mainCruiseDiv' class='sublayers-unclickable'></div>");
+        this.parentDiv = $('#' + div_parent);
+        this.mainDiv = $("<div id='cruiseControlMainDiv' class='cruise-control-speedMain'></div>");
         this.parentDiv.append(this.mainDiv);
 
+        // Верхний див (индикатор текущей скорости)
+        this.topDiv = $("<div id='cruiseControlTopDiv' class='cruise-control-top'></div>");
+        this.mainDiv.append(this.topDiv);
 
+        // Средний див (слайдер)
+        this.mediumDiv = $("<div id='cruiseControlMediumDiv' class='cruise-control-medium'></div>");
+        this.mainDiv.append(this.mediumDiv);
 
+        // Каретка
+        this.speedHandleAreaDiv = $("<div id='cruiseControlSpeedHandleAreaDiv' class='cruise-control-speedHandleArea '></div>");
+        this.mediumDiv.append(this.speedHandleAreaDiv);
+        this.speedHandleAreaDiv.click(this, this.onClickSpeedHandleArea);
 
+        this.speedHandleDiv = $("<div id='cruiseControlSpeedHandleDiv' class='cruise-control-speedHandle'></div>");
+        this.speedHandleAreaDiv.append(this.speedHandleDiv);
+        this.speedHandleDiv.draggable({
+            axis: "y",
+            containment: "parent",
+            scroll: false
+        });
 
+        this.speedHandleSpan1 = $("<span id='cruiseControlSpeedHandleSpan1'></span>");
+        this.speedHandleSpan2 = $("<span id='cruiseControlSpeedHandleSpan2'></span>");
 
-        /*
-        // создание слайдера скорости
-        this.options = {
-            orientation: 'vertical',
-            height: 320,
-            max: car.maxSpeed,
-            min: 1,
-            step: 1
-        };
+        this.speedHandleDiv.append(this.speedHandleSpan1);
+        this.speedHandleDiv.append(this.speedHandleSpan2);
 
-        // сразу же применить родительскую css для родительского дива
-        var mainParent = $('#' + this.options.parent);
+        this.speedHandleDiv.bind( "dragstart", this, this.onStartSpeedHandle);
+        this.speedHandleDiv.bind( "drag", this, this.onMoveSpeedHandle);
+        this.speedHandleDiv.bind( "dragstop", this, this.onStopSpeedHandle);
 
-        mainParent.append('<div id="speedSetDivForSpeedSliderRumble"></div>');
-        var parent = $('#speedSetDivForSpeedSliderRumble');
+        // Шкала
+        this.scaleArea = $("<div id='cruiseControlScaleArea' class='cruise-control-scaleArea sublayers-unclickable'></div>");
+        this.mediumDiv.append(this.scaleArea);
 
-        // создание и добавление двух главных дивов - правого и левого.
-        var nodeParentLeft = '<div id="sliderSpeedLeft" class="slider-speed-left-main"></div>';
-        var nodeParentRight = '<div id="sliderSpeedRight"class="slider-speed-right-main"></div>';
-        parent.append(nodeParentLeft);
-        parent.append(nodeParentRight);
+        // Ограничитель зон
+        this.zoneArea = $("<div id='cruiseControlZoneArea' class='cruise-control-zoneArea sublayers-unclickable'></div>");
+        this.mediumDiv.append(this.zoneArea);
 
-        // создание левых дивов-картинок
-        var nodeLeft1 = '<div id="slider-speed-left-hwy"></div>';
-        var nodeLeft2 = '<div id="slider-speed-left-rd"></div>';
-        var nodeLeft3 = '<div id="slider-speed-left-drt"></div>';
-        var nodeLeft4 = '<div id="slider-speed-left-frst"></div>';
+        // Нижний див (кнопка стоп и и задний ход)
+        this.bottomDiv = $("<div id='cruiseControlBottomDiv' class='cruise-control-bottom sublayers-unclickable'></div>");
+        this.mainDiv.append(this.bottomDiv);
 
-        // добавление всех дивов-картинок
-        $('#sliderSpeedLeft').append(nodeLeft1).append(nodeLeft2).append(nodeLeft3).append(nodeLeft4);
-        this.options.leftIcons = [];
-        this.options.leftIcons[0] = 'slider-speed-left-hwy';
-        this.options.leftIcons[1] = 'slider-speed-left-rd';
-        this.options.leftIcons[2] = 'slider-speed-left-drt';
-        this.options.leftIcons[3] = 'slider-speed-left-frst';
-        this._setGround(1);
+        // Кнопка "задний ход"
+        this.reverseDiv = $("<div id='cruiseControlReverseDiv' class='cruise-control-reverse'></div>");
+        this.bottomDiv.append(this.reverseDiv);
 
-        // создание дива Цифровой реальной скорости
-        var nodeDigitalSpeed = '<div class="slider-speed-digital-main">' +
-            '<div class="slider-speed-digital-value"><span id="speedRealValue">0</span></div>' +
-            '<div class="slider-speed-digital-label"><span>KM/H</span></div>' +
-            '</div>';
-
-        // Создание дива слайдера
-        var nodeSlider = '<div id="sliderSpeedSlider""></div>';
-
-        // добавление дивов скорости в правый див
-        $('#sliderSpeedRight').append(nodeDigitalSpeed);
-        $('#sliderSpeedRight').append(nodeSlider);
-
-
-        // создание слайдера
-        $('#sliderSpeedSlider').slider({
-            max: this.options.max,
-            min: this.options.min,
-            orientation: this.options.orientation,
-            step: this.options.step,
-            value: (this.options.max * 0.75).toFixed(0)
-        })
-            .on('slidechange', {self: this}, this._slidechange) // отправка сообщений серверу
-            .on('slide', this._slide);                          // чтобы менялись циферки внутри каретки
-
-        // настройка слайдера
-        $('#sliderSpeedSlider').addClass('slider-speed-slider sublayers-clickable');
-        $('#sliderSpeedSlider').css("height", this.options.height);
-        $('#sliderSpeedSlider').css("width", '31px');
-        $('#sliderSpeedSlider').css("border", '0px');
-        $('#sliderSpeedSlider').css("border-radius", '0px');
-        $('#sliderSpeedSlider').removeClass('ui-widget-content');
-        $('#sliderSpeedSlider').css("z-index", '4');
-
-        // Изменение ползунка
-        $('#sliderSpeedSlider span:first-child').addClass('slider-speed-carriage');
-        $('#sliderSpeedSlider span:first-child').css('width', '39px');
-        $('#sliderSpeedSlider span:first-child').css('height', '31px');
-        //$('#sliderSpeedSlider span:first-child').css('background', 'transparent url(./img/CruiseControl/if_spd_slider.png) 50% 50% no-repeat');
-        $('#sliderSpeedSlider span:first-child').css('border', '0px');
-        $('#sliderSpeedSlider span:first-child').css('margin-left', '1px');
-        $('#sliderSpeedSlider span:first-child').css('margin-bottom', '-15.5px');
-        $('#sliderSpeedSlider span:first-child').css("z-index", '5');
-        $('#sliderSpeedSlider span:first-child').css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
-
-        var newSpan = '<span id="sliderSpeedCarriageLabel" class="slider-speed-carriage-label sublayers-clickable">0</span>';
-        $('#sliderSpeedSlider span:first-child').append(newSpan);
-
-        // Создание и добавление фона шкалы
-        var nodeSliderBarFillerMain = '<div class="slider-speed-filler-main sublayers-clickable">' +
-            '<div id="slider-speed-filler-arrow"></div>' +
-            '<div id="slider-speed-filler"></div>' +
-            '</div>';
-        $('#sliderSpeedSlider').append(nodeSliderBarFillerMain);
-        this._setRealSpeed(0);
-
-        // Создание кнопки стоп
-        var nodeStopMain = '<div id="sliderSpeedStopButton" class="slider-speed-stop-main sublayers-clickable"></div>';
-        // добавление дива кнопки стоп в правый див
-        $('#sliderSpeedRight').append(nodeStopMain);
-        $('#sliderSpeedStopButton').on('click', {self: this}, this._onStop);
-
-        // создание и расстановка текста
-        var spanSpeedCruiseControlText = '<span id="spanSpeedCruiseControlText" class="control-zoom-speed-vertical-text">' +
-            'Cruise Control</span>';
-        var spanSpeedLimitsText = '<span id="spanSpeedLimitsText" class="control-zoom-speed-vertical-text">' +
-            'Limits</span>';
-        parent.append(spanSpeedCruiseControlText);
-        parent.append(spanSpeedLimitsText);
-
-        this._slide(null, {value: (this.options.max * 0.75).toFixed(0)});
-        this.change(clock.getCurrentTime());
-        */
+        // Кнопка "стоп"
+        this.stopDiv = $("<div id='cruiseControlStopDiv' class='cruise-control-stop'></div>");
+        this.bottomDiv.append(this.stopDiv);
     }
+
+    WCruiseControl.prototype.onClickSpeedHandleArea = function (event) {
+        console.log('WCruiseControl.prototype.onClickSpeedHandleArea', event.data);
+    };
+
+    WCruiseControl.prototype.onStartSpeedHandle = function (event, ui) {
+        //console.log('WCruiseControl.prototype.onStartSpeedHandle', ui.position.top);
+    };
+
+    WCruiseControl.prototype.onMoveSpeedHandle = function (event, ui) {
+        //console.log('WCruiseControl.prototype.onMoveSpeedHandle', user.userCar.maxSpeed / 1000 * 3600);
+        var currentSpeed = (user.userCar.maxSpeed / 1000 * 3600) * (1 - (ui.position.top / 333));
+        event.data.speedHandleSpan1.text(Math.floor(currentSpeed) + '.');
+        event.data.speedHandleSpan2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
+    };
+
+    WCruiseControl.prototype.onStopSpeedHandle = function (event, ui) {
+        //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
+    };
+
+
+
+
+
 
     WCruiseControl.prototype._getCC = function () {
         //return $('#sliderSpeedSlider').slider("value");
@@ -196,4 +153,3 @@ var WCruiseControl = (function (_super) {
 
     return WCruiseControl;
 })(VisualObject);
-
