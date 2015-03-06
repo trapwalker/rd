@@ -1,20 +1,29 @@
 /*
-* Виджет слайдер круиз контроля
-*/
+ * Виджет круиз контроля
+ */
 
-var WSpeedSlider = (function (_super) {
-    __extends(WSpeedSlider, _super);
+var WCruiseControl = (function (_super) {
+    __extends(WCruiseControl, _super);
 
-    function WSpeedSlider(car) {
+    function WCruiseControl(car) {
         _super.call(this, [car]);
         this.car = car;
 
+        this.parentDiv = $('#speedSetDivForSpeedSlider');
+        this.parentDiv.addClass('cruise-control-main');
+        this.mainDiv = $("<div id='mainCruiseDiv' class='sublayers-unclickable'></div>");
+        this.parentDiv.append(this.mainDiv);
+
+
+
+
+
+
+        /*
         // создание слайдера скорости
         this.options = {
-            parent: "speedSetDivForSpeedSlider",
             orientation: 'vertical',
             height: 320,
-            parentCss: 'slider-speed-main',
             max: car.maxSpeed,
             min: 1,
             step: 1
@@ -22,7 +31,7 @@ var WSpeedSlider = (function (_super) {
 
         // сразу же применить родительскую css для родительского дива
         var mainParent = $('#' + this.options.parent);
-        mainParent.addClass(this.options.parentCss);
+
         mainParent.append('<div id="speedSetDivForSpeedSliderRumble"></div>');
         var parent = $('#speedSetDivForSpeedSliderRumble');
 
@@ -119,24 +128,25 @@ var WSpeedSlider = (function (_super) {
 
         this._slide(null, {value: (this.options.max * 0.75).toFixed(0)});
         this.change(clock.getCurrentTime());
+        */
     }
 
-    WSpeedSlider.prototype._getCC = function () {
-        return $('#sliderSpeedSlider').slider("value");
+    WCruiseControl.prototype._getCC = function () {
+        //return $('#sliderSpeedSlider').slider("value");
     };
 
-    WSpeedSlider.prototype._slidechange = function (event) {
+    WCruiseControl.prototype._slidechange = function (event) {
         //console.log('WSpeedSlider.prototype._slidechange');
-        var slider = event.data.self;
-        clientManager.sendSetSpeed(slider._getCC());
+        //var slider = event.data.self;
+        //clientManager.sendSetSpeed(slider._getCC());
     };
 
-    WSpeedSlider.prototype._slide = function (event, ui) {
-        $('#sliderSpeedCarriageLabel').text((ui.value / 1000. * 3600).toFixed(0));
+    WCruiseControl.prototype._slide = function (event, ui) {
+       // $('#sliderSpeedCarriageLabel').text((ui.value / 1000. * 3600).toFixed(0));
     };
 
-    WSpeedSlider.prototype._setRealSpeed = function (newSpeed) {
-        var prc = (newSpeed * 100) / this.options.max;
+    WCruiseControl.prototype._setRealSpeed = function (newSpeed) {
+        /*var prc = (newSpeed * 100) / this.options.max;
         if (prc > 99) prc = 99;
         if (prc < 0) prc = 0;
         // если сделать ниже не 99,5; а 100, то не видно стрелки при стоящей машине, если сделать 99, то она сливается со шкалой.
@@ -144,44 +154,46 @@ var WSpeedSlider = (function (_super) {
         $('#slider-speed-filler-arrow').css('top', prc + '%');
         $('#slider-speed-filler').css('top', prc + '%');
         $('#speedRealValue').text((newSpeed  / 1000. * 3600).toFixed(1));
+        */
     };
 
-    WSpeedSlider.prototype._setGround = function (newGround) {
-        for (var i = 0; i < 4; i++)
-            $('#' + this.options.leftIcons[i]).css('opacity', 0.4);
-        $('#' + this.options.leftIcons[newGround]).css('opacity', 1);
+    WCruiseControl.prototype._setGround = function (newGround) {
+        //for (var i = 0; i < 4; i++)
+        //    $('#' + this.options.leftIcons[i]).css('opacity', 0.4);
+        //$('#' + this.options.leftIcons[newGround]).css('opacity', 1);
     };
 
-    WSpeedSlider.prototype._onStop = function () {
-        clientManager.sendStopCar();
+    WCruiseControl.prototype._onStop = function () {
+        //clientManager.sendStopCar();
     };
 
     // todo: методы для переинициализации. Расскоментить при необходимости
     /*
-    WSpeedSlider.prototype.setSpeed = function (value) {
-        //console.log('WSpeedSlider.prototype.setSpeed');
-        return $('#sliderSpeedSlider').slider("value", value);
-    };
+     WSpeedSlider.prototype.setSpeed = function (value) {
+     //console.log('WSpeedSlider.prototype.setSpeed');
+     return $('#sliderSpeedSlider').slider("value", value);
+     };
 
-    WSpeedSlider.prototype.setMaxSpeed = function (max_speed) {
-        console.log('WSpeedSlider.prototype.setMaxSpeed');
-        $('#sliderSpeedSlider').slider("option", "max", max_speed);
-        this.options.max = max_speed;
-        return this;
-    };
-    */
+     WSpeedSlider.prototype.setMaxSpeed = function (max_speed) {
+     console.log('WSpeedSlider.prototype.setMaxSpeed');
+     $('#sliderSpeedSlider').slider("option", "max", max_speed);
+     this.options.max = max_speed;
+     return this;
+     };
+     */
 
-    WSpeedSlider.prototype.change = function(time){
+    WCruiseControl.prototype.change = function(time){
         //console.log('WSpeedSlider.prototype.change');
-        this._setRealSpeed(this.car.getCurrentSpeed(time));
+        //this._setRealSpeed(this.car.getCurrentSpeed(time));
         // todo: запросить тип местности
     };
 
-    WSpeedSlider.prototype.delFromVisualManager = function () {
+    WCruiseControl.prototype.delFromVisualManager = function () {
         // todo: удалить свою вёрстку
         this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };
 
-    return WSpeedSlider;
+    return WCruiseControl;
 })(VisualObject);
+
