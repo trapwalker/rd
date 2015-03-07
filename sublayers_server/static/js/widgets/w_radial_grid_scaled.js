@@ -232,9 +232,13 @@ var WRadialGridScaled = (function (_super) {
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
         this.rotate(radToGrad(angle));
+
     };
 
     WRadialGridScaled.prototype.zoomStart = function(event){
@@ -264,7 +268,7 @@ var WRadialGridScaled = (function (_super) {
         //console.log('WRadialGridScaled.prototype.setZoom ', new_zoom);
         var rs = this.def_radius;
         var new_rs = [];
-        var zoomAnimateTime = 250;
+        var zoomAnimateTime = ConstDurationAnimation;
         var circles = this.circles;
         var last_zoom = this.zoom;
         var diff_zoom = new_zoom - last_zoom;

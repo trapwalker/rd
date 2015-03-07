@@ -601,14 +601,26 @@ var WFireSectors = (function (_super) {
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
         var options = this.car.fireSidesMng.getRechargeStates(t);
         for(var i = 0; i < options.length; i++)
             this._recharging(options[i]);
+    };
+
+    WFireSectors.prototype.setZoom = function(new_zoom) {
+        //console.log('WFireRadialGrid.prototype.zoomStart');
+        this.zoom = new_zoom;
+        this.zoomStart();
+        if(this.kostil_event)
+            timeManager.delTimeoutEvent(this.kostil_event);
+        this.kostil_event = timeManager.addTimeoutEvent(this, 'zoomEnd', ConstDurationAnimation + 10);
     };
 
     WFireSectors.prototype.zoomStart = function(){

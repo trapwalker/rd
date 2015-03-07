@@ -2,13 +2,10 @@
  * Виджет слайдер зума
 */
 
-var WZoomSlider = (function (_super) {
-    __extends(WZoomSlider, _super);
-
-    function WZoomSlider(mapMng) {
-        _super.call(this, [mapMng]);
-        this.mapMng = mapMng;
-
+var WZoomSlider = (function () {
+    function WZoomSlider() {
+        this.mapMng = mapManager;
+        this.points_in_step = 10;
         this.options = {
             parentDiv: "zoomSetDivForZoomSlider",
             max: map.getMaxZoom(),
@@ -42,10 +39,11 @@ var WZoomSlider = (function (_super) {
 
         // создание слайдера
         $('#Zoom_slider').slider({
-            max: this.options.max,
-            min: this.options.min,
+            max: this.options.max * this.points_in_step,
+            min: this.options.min * this.points_in_step,
             orientation: 'vertical',
-            step: this.options.step
+            step: this.options.step,
+            animate: ConstDurationAnimation
         }).on('slidechange', {self: this}, this.slidechange);
 
         // Изменение размеров ползунка
@@ -64,12 +62,12 @@ var WZoomSlider = (function (_super) {
             'Zoom</span>';
         parent.append(spanZoomZoomText);
 
-        this.change();
+        this.setZoom(this.mapMng.getZoom());
     }
 
-    WZoomSlider.prototype.change = function(){
-        //console.log('WZoomSlider.prototype.change');
-        $('#Zoom_slider').slider("value", this.mapMng.getZoom());
+    WZoomSlider.prototype.setZoom = function(new_zoom){
+        //console.log('WZoomSlider.prototype.setZoom');
+        $('#Zoom_slider').slider("value", new_zoom * this.points_in_step);
     };
 
     WZoomSlider.prototype.plusFunc = function (event) {
@@ -83,15 +81,16 @@ var WZoomSlider = (function (_super) {
     };
 
     WZoomSlider.prototype.slidechange = function (event) {
+        // отрабатывает мгновенно, значение value у слайдера уже установлено до начала анимации
+        //console.log('WZoomSlider.prototype.slidechange');
         var slider = event.data.self;
-        var zoom = $('#Zoom_slider').slider("value");
-        slider.mapMng.setZoom(zoom);
-    };
-
-    WZoomSlider.prototype.delFromVisualManager = function () {
-        // todo: удалить свою вёрстку
-        _super.prototype.delFromVisualManager.call(this);
+        var value = $('#Zoom_slider').slider("value");
+        var zoom = Math.round(value / slider.points_in_step);
+        if (zoom != slider.mapMng.anim_zoom)
+            slider.mapMng.setZoom(zoom);
+        if (value != zoom * slider.points_in_step)
+            slider.setZoom(zoom);
     };
 
     return WZoomSlider;
-})(VisualObject);
+})();

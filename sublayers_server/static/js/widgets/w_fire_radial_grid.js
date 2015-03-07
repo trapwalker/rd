@@ -34,6 +34,7 @@ var WFireRadialGrid = (function (_super) {
         this.size_of_icon = size;
         this.max_circles = max_circles;
         this.max_radius = max_radius;
+        this.zoom = map.getMaxZoom();
 
         // создание иконки и маркера
         this.div_id = 'WFireRadialGrid' + (-generator_ID.getID());
@@ -116,17 +117,17 @@ var WFireRadialGrid = (function (_super) {
         }
 
         // вывод для каждого из бортов его области перезарядки
-        this.rechAreas = {};
-        this._drawRechargeArea('front');
-        this._drawRechargeArea('back');
-        this._drawRechargeArea('left');
-        this._drawRechargeArea('right');
+       // this.rechAreas = {};
+       // this._drawRechargeArea('front');
+      //  this._drawRechargeArea('back');
+       // this._drawRechargeArea('left');
+      //  this._drawRechargeArea('right');
 
         // вывод текста зумматора
         this._drawZoomatorsText();
 
         // вывод секторов
-        this._drawSectors();
+        //this._drawSectors();
     };
 
     WFireRadialGrid.prototype._init_svg_parametrs = function () {
@@ -430,12 +431,14 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype._drawZoomatorsText = function(){
         // текст относится к группе и вертится вместе с ней
-        if (this.zoomatorsText.length > 0 ) console.error('не удалён старый текст!!!!');
+        if (this.zoomatorsText.length > 0) {  console.error('не удалён старый текст!!!!');
+            this._clearZoomatorsText();
+        }
         var max_circles = this.max_circles;
         var points = this.zoomatorsPoints;
         var angle_of_car = radToGrad(this.car.getCurrentDirection(clock.getCurrentTime()));
         var g = this.g;
-        var scale_map = Math.pow(2., map.getMaxZoom() - map.getZoom()); // учёт зуммирования
+        var scale_map = Math.pow(2., map.getMaxZoom() - this.zoom); // учёт зуммирования
         for (var i = 0; i < max_circles; i++) {
             var p = points[i];
             var digit_str = (Math.round((i+1) * scale_map)).toString();
@@ -443,7 +446,9 @@ var WFireRadialGrid = (function (_super) {
                 .font(this.svg_params.zoomators.text.font)
                 .fill(this.svg_params.zoomators.text.fill)
                 .dmove(p.x, p.y-25)
-                .transform({rotation: -angle_of_car, cx: p.x, cy: p.y});
+                .transform({rotation: -angle_of_car, cx: p.x, cy: p.y})
+                .opacity(0);
+            text.animate(300).opacity(1);
             this.zoomatorsText.push(text);
         }
 
@@ -451,7 +456,9 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype._drawZoomatorsText2 = function(){
         // текст относится к draw и НЕ вертится вместе с гуппой, а просто перемещается на нужную точку
-        if (this.zoomatorsText.length > 0 ) console.error('не удалён старый текст!!!!');
+        if (this.zoomatorsText.length > 0) {  console.error('не удалён старый текст!!!!');
+            this._clearZoomatorsText();
+        }
         var max_circles = this.max_circles;
         var points = this.zoomatorsPoints;
         var angle_of_car = radToGrad(this.car.getCurrentDirection(clock.getCurrentTime()));
@@ -471,7 +478,10 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype._clearZoomatorsText = function(){
         while (this.zoomatorsText.length)
-            this.zoomatorsText.pop().remove();
+            this.zoomatorsText.pop().animate(300).opacity(0).after(function(){
+                this.remove();
+            })
+
     };
 
     WFireRadialGrid.prototype._rotateZoomatorsText = function(angle_in_degrees){
@@ -479,7 +489,8 @@ var WFireRadialGrid = (function (_super) {
         for (var i = 0; i < max_circles; i++) {
             var p = this.zoomatorsPoints[i];
             var text = this.zoomatorsText[i];
-            text.transform({rotation: -angle_in_degrees, cx: p.x, cy: p.y});
+            if (text)
+                text.transform({rotation: -angle_in_degrees, cx: p.x, cy: p.y});
         }
     };
 
@@ -602,25 +613,37 @@ var WFireRadialGrid = (function (_super) {
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
-        var options = this.car.fireSidesMng.getRechargeStates(t);
-        for(var i = 0; i < options.length; i++)
-            this._recharging(options[i]);
+        //var options = this.car.fireSidesMng.getRechargeStates(t);
+        //for(var i = 0; i < options.length; i++)
+        //    this._recharging(options[i]);
+    };
+
+    WFireRadialGrid.prototype.setZoom = function(new_zoom) {
+        //console.log('WFireRadialGrid.prototype.zoomStart');
+        this.zoom = new_zoom;
+        this.zoomStart();
+        if(this.kostil_event)
+            timeManager.delTimeoutEvent(this.kostil_event);
+        this.kostil_event = timeManager.addTimeoutEvent(this, 'zoomEnd', ConstDurationAnimation + 10);
     };
 
     WFireRadialGrid.prototype.zoomStart = function(){
         //console.log('WFireRadialGrid.prototype.zoomStart');
-        this._clearSectors();
+        //this._clearSectors();
         this._clearZoomatorsText();
     };
 
     WFireRadialGrid.prototype.zoomEnd = function(){
         //console.log('WFireRadialGrid.prototype.zoomEnd');
-        this._drawSectors();
+        //this._drawSectors();
         this._drawZoomatorsText();
     };
 

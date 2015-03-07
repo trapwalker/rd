@@ -13,6 +13,7 @@ var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки вз
 var FireEffectManager = (function () {
     function FireEffectManager() {
         this.controllers_list = []; // хранятся объекты {ctrl: FireAutoEffectController, count: int}
+        this.muzzle_flashs = {}; // хранятся FireAutoMuzzleFlashController's
         timeManager.addTimerEvent(this, 'perform');
     }
 
@@ -38,6 +39,14 @@ var FireEffectManager = (function () {
                 ctrl: new FireAutoEffectController(options),
                 count: 1
             });
+
+        if (options.side && options.subj) {
+            if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
+                this.muzzle_flashs[options.subj + options.side].update(1);
+            else
+                this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
+        }
+
     };
 
     FireEffectManager.prototype.delController = function (options) {
@@ -51,6 +60,11 @@ var FireEffectManager = (function () {
         }
         else
             console.error('Попытка удалить несуществующий контроллер автоматической стрельбы!', options);
+        if (options.side && options.subj) {
+            if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
+                this.muzzle_flashs[options.subj + options.side].update(-1);
+            else  console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
+        }
     };
 
     FireEffectManager.prototype.fireDischargeEffect = function (options) {
@@ -101,14 +115,14 @@ var FireAutoEffectController = (function () {
         var time = clock.getCurrentTime();
         var subj = visualManager.getModelObject(this.subj);
         var obj = visualManager.getModelObject(this.obj);
-
+/*
         if (subj) {
             if (!this.muzzle_flash && this.side)
                 this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
         }
         else if (this.muzzle_flash)
             this.muzzle_flash.finish();
-
+*/
         if (subj && obj)
             if ((time - this.last_time) > this.d_time_t) {
                 this.last_time = time;
@@ -147,6 +161,37 @@ var FireAutoEffectController = (function () {
     };
 
     return FireAutoEffectController;
+})();
+
+
+var FireAutoMuzzleFlashController = (function () {
+    function FireAutoMuzzleFlashController(options) {
+        setOptions(options, this);
+        this.count = 0;
+        this.muzzle_flash = null;
+        this.update(1);
+    }
+
+    FireAutoMuzzleFlashController.prototype.start = function () {
+        var subj = visualManager.getModelObject(this.subj);
+        if (subj && !this.muzzle_flash && this.side)
+            this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
+    };
+
+    FireAutoMuzzleFlashController.prototype.finish = function (options) {
+        if (this.muzzle_flash) {
+            this.muzzle_flash.finish();
+            this.muzzle_flash = null;
+        }
+    };
+
+    FireAutoMuzzleFlashController.prototype.update = function (count_diff) {
+        this.count += count_diff;
+        if (this.count > 0 && !this.muzzle_flash) this.start();
+        if (this.count <=0 && this.muzzle_flash) this.finish();
+    };
+
+    return FireAutoMuzzleFlashController;
 })();
 
 

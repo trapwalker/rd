@@ -560,13 +560,19 @@ var WFireSectorsScaled = (function (_super) {
 
     WFireSectorsScaled.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
+
+
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        // Установка новых координат маркера или просто обновление угла;
+        if (!mapManager.inZoomChange)
+            this.marker.setLatLng(tempLatLng);
+        else
+            this.marker.update();
+
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон
@@ -576,7 +582,7 @@ var WFireSectorsScaled = (function (_super) {
     };
 
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
-        var zoomAnimateTime = 250;
+        var zoomAnimateTime = ConstDurationAnimation;
         var size = this.size_of_icon;
         //var diff_zoom = new_zoom - last_zoom;
         var diff_zoom = new_zoom - this.zoom;
