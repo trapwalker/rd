@@ -89,8 +89,9 @@ def main():
         print e
     else:
         tornado.ioloop.IOLoop.instance().start()
-
-    globals().update(app=app, srv=app.srv)
+    finally:
+        app.srv.stop()
+        globals().update(app=app, srv=app.srv)
 
 
 if __name__ == "__main__":
