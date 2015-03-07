@@ -68,18 +68,18 @@ var WRadiationRadial = (function (_super) {
         draw.path(triangle_str)
             .dmove(size, triangle_dy)
             .stroke({width: 0})
-            .fill(this.svg_colors.main);
+            .fill(this.svg_params.triangle_fill);
 
         draw.path(triangle_str)
             .dmove(size, triangle_dy)
             .stroke({width: 0})
-            .fill(this.svg_colors.main)
+            .fill(this.svg_params.triangle_fill)
             .transform({rotation: 90, cx: size, cy: size});
 
         draw.path(triangle_str)
             .dmove(size, triangle_dy)
             .stroke({width: 0})
-            .fill(this.svg_colors.main)
+            .fill(this.svg_params.triangle_fill)
             .transform({rotation: -90, cx: size, cy: size});
 
 
@@ -123,7 +123,8 @@ var WRadiationRadial = (function (_super) {
         var draw = this.draw;
         // основные цвета сетки
         this.svg_colors = {
-            main: '#5f5'
+            main: '#00ff54', // все stroke
+            main2: '#2afd0a' // все заливки и текст
         };
 
         var self = this;
@@ -132,15 +133,15 @@ var WRadiationRadial = (function (_super) {
             circles: {
                 // характеристики границ окружностей
                 stroke_width: 1,
-                stroke_opacity: 0.8,
+                stroke_opacity: 0.45,
                 fill: 'transparent',
                 stroke_color_main: this.svg_colors.main,
                 stroke_color_grad1: draw.gradient('linear', function(stop) {
                     stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.0});
-                    stop.at({ offset: 1, color: self.svg_colors.main, opacity: 0.8});
+                    stop.at({ offset: 1, color: self.svg_colors.main, opacity: 0.45});
                 }),
                 stroke_color_grad2: draw.gradient('linear', function(stop) {
-                    stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.8});
+                    stop.at({ offset: 0, color: self.svg_colors.main, opacity: 0.45});
                     stop.at({ offset: 1, color: self.svg_colors.main, opacity: 0.0});
                 })
 
@@ -148,45 +149,46 @@ var WRadiationRadial = (function (_super) {
             // настройка заливки
             fill_area: {
                 stroke: {width: 0.0},
-                fill: {color: this.svg_colors.main, opacity: 0.3},
+                fill: {color: this.svg_colors.main2, opacity: 0.1},
                 cl_stroke_opacity: 1,
-                cl_stroke_color: this.svg_colors.main,
+                cl_stroke_color: this.svg_colors.main2,
                 cl_stroke_width: 1.2,
                 cl_stroke_grad1: draw.gradient('linear', function (stop) {
-                    stop.at({offset: 0, color: self.svg_colors.main, opacity: 1});
-                    stop.at({offset: 1, color: self.svg_colors.main, opacity: 0});
+                    stop.at({offset: 0, color: self.svg_colors.main2, opacity: 1});
+                    stop.at({offset: 1, color: self.svg_colors.main2, opacity: 0});
                 }),
                 cl_stroke_grad2: draw.gradient('linear', function (stop) {
-                    stop.at({offset: 0, color: self.svg_colors.main, opacity: 0});
-                    stop.at({offset: 1, color: self.svg_colors.main, opacity: 1});
+                    stop.at({offset: 0, color: self.svg_colors.main2, opacity: 0});
+                    stop.at({offset: 1, color: self.svg_colors.main2, opacity: 1});
                 })
 
             },
             text_prc: {
                 font: {
-                    family:   'Arial',
-                    size:     11,
+                    family:   'MICRADI',
+                    size:     9,
                     anchor:   'middle',
                     leading:  '0.5em'
                 },
-                fill: {color: this.svg_colors.main, opacity: 1}
+                fill: {color: this.svg_colors.main2, opacity: 1}
             },
             text_RAD: {
                 font: {
-                    family:   'Arial',
-                    size:     11,
+                    family:   'MICRADI',
+                    size:     9,
                     anchor:   'middle',
                     leading:  '0.5em'
                 },
-                fill: {color: this.svg_colors.main, opacity: 0.4}
+                fill: {color: this.svg_colors.main2, opacity: 0.5}
             },
-            text_digits_fill: {color: this.svg_colors.main, opacity: 0.4},
+            text_digits_fill: {color: this.svg_colors.main2, opacity: 0.5},
             text_digits_font: {
-                family: 'Arial',
-                size: 10,
+                family: 'MICRADI',
+                size: 8,
                 anchor: 'middle',
                 leading: '-0.2em'
-            }
+            },
+            triangle_fill: {color: this.svg_colors.main2, opacity: 0.5}
         };
     };
 
