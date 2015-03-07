@@ -202,7 +202,7 @@ var ClientManager = (function () {
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз
-            new WCruiseControl(mcar, 'cruiseControlGlassDiv');
+            wCruiseControl = new WCruiseControl(mcar, 'cruiseControlGlassDiv');
             new WAltmetrRadial(mcar, 'divForAltmetrRadial');
             new WHPRadial(mcar, 'divForHpAndFuelRadials');
             new WFuelRadial(mcar, 'divForHpAndFuelRadials');
@@ -489,7 +489,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto', user.userCar.getLastSpeed());
-        this.sendMotion(target, user.userCar.getLastSpeed(), null);
+        this.sendMotion(target, wCruiseControl.getSpeedHandleValue(), null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {

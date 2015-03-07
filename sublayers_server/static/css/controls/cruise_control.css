@@ -31,7 +31,7 @@
     right: 150px;
     pointer-events: auto;
     color: lime;
-    font-family: Gruppo-Regular;
+    font-family: MICRADI;
 }
 
 #cruiseControlTopDiv {
@@ -61,8 +61,7 @@
 
 #cruiseControlTopTextDiv1 {
     position: relative;
-    font-size: 14pt;
-    font-weight: bold;
+    font-size: 9pt;
     text-align: right;
     right: 0px;
     top: 23px;
@@ -70,8 +69,7 @@
 
 #cruiseControlTopTextDiv2 {
     position: relative;
-    font-weight: bold;
-    font-size: 10pt;
+    font-size: 6pt;
     text-align: left;
     left: 2px;
     top: 27px;
@@ -100,22 +98,20 @@
 }
 
 #cruiseControlSpeedHandleDiv1 {
-    font-size: 14pt;
-    font-weight: bold;
+    font-size: 9pt;
     text-align: right;
     right: 50%;
     position: absolute;
-    top: 3px;
+    top: 6px;
 }
 
 #cruiseControlSpeedHandleDiv2 {
     width: 8px;
-    font-weight: bold;
-    font-size: 10pt;
+    font-size: 6pt;
     text-align: left;
     position: absolute;
     right: 20px;
-    top: 7px;
+    top: 9px;
 }
 
 .cruise-control-scaleArea {
@@ -132,28 +128,56 @@
     height: 100%;
 }
 
-#cruiseControlBottomDiv {
+#cruiseControlReverseDiv {
     position: absolute;
-    width: 100%;
-    height: 50px;
-    background-color: #243b80;
-    pointer-events: none;
+    top: 397px;
+    left: 18px;
+    width: 33px;
+    height: 32px;
+    background: transparent url('/static/img/cruise/r_btn.png') 100% 100% no-repeat;
 }
 
-.cruise-control-reverse {
-    position: relative;
-    float:left;
-    width: 50%;
-    height: 100%;
-    background-color: #ff1a1a;
-    pointer-events: none;
+#cruiseControlReverseDiv:hover {
+    background: transparent url('/static/img/cruise/r_btn_over.png') 100% 100% no-repeat;
 }
 
-.cruise-control-stop {
-    position: relative;
-    float:left;
-    width: 50%;
-    height: 100%;
-    background-color: #ff51e8;
-    pointer-events: none;
+#cruiseControlReverseDiv:active {
+    background: transparent url('/static/img/cruise/r_btn_pressed.png') 100% 100% no-repeat;
+}
+
+#cruiseControlStopDiv {
+    position: absolute;
+    top: 390px;
+    left: 60px;
+    width: 70px;
+    height: 39px;
+    background: transparent url('/static/img/cruise/stop_btn.png') 100% 100% no-repeat;
+}
+
+#cruiseControlStopDiv:hover {
+    background: transparent url('/static/img/cruise/stop_btn_over.png') 100% 100% no-repeat;
+}
+
+#cruiseControlStopDiv:active {
+    background: transparent url('/static/img/cruise/stop_btn_pressed.png') 100% 100% no-repeat;
+}
+
+#spanZoomZoomText1 {
+    position: absolute;
+    top: 296px;
+    right: -117px;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+#spanZoomZoomText2 {
+    position: absolute;
+    top: 370px;
+    right: -92px;
+    white-space: nowrap;
+    font: 7pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
 }
