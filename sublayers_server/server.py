@@ -87,10 +87,13 @@ def main():
     except socket.error as e:
         log.critical(e)
         print e
+    except Exception as e:
+        log.critical(e)
+        print e
     else:
         tornado.ioloop.IOLoop.instance().start()
     finally:
-        app.srv.stop()
+        app.stop()
         globals().update(app=app, srv=app.srv)
 
 
