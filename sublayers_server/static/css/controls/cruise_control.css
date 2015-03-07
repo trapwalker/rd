@@ -12,7 +12,7 @@
     bottom: 0px;
     right: 0px;
     background: transparent url('/static/img/cruise/cruise_glass.png') 100% 100% no-repeat;
-    background-position: bottom right;
+    background-position: center;
 }
 
 .cruise-control-hardware {
@@ -22,31 +22,66 @@
     bottom: 0px;
     right: 0px;
     background: transparent url('/static/img/cruise/cruise_port.png') 100% 100% no-repeat;
-    background-position: bottom right;
+    background-position: center;
 }
 
-
-
-.cruise-control-speedMain {
+#cruiseControlSpeedMainDiv {
     position: absolute;
-    bottom: 20px;
-    right: 16px;
-    width: 134px;
-    height: 433px;
+    bottom: 450px;
+    right: 150px;
     pointer-events: auto;
+    color: lime;
+    font-family: Gruppo-Regular;
 }
 
-.cruise-control-top {
-    position: relative;
-    width: 100%;
-    height: 50px;
-    background-color: #14807e;
+#cruiseControlTopDiv {
+    position: absolute;
+    width: 56px;
+    height: 63px;
+    left: 43px;
+    background: transparent url('/static/img/cruise/dgigits_back_glow.png') 100% 100% no-repeat;
+    background-position: center;
 }
 
-.cruise-control-medium {
+
+
+#cruiseControlTopTextPositionDiv1 {
     position: relative;
+    float: left;
+    width: 60%;
+    height: 100%;
+}
+
+#cruiseControlTopTextPositionDiv2 {
+    position: relative;
+    float: left;
+    width: 40%;
+    height: 100%;
+}
+
+#cruiseControlTopTextDiv1 {
+    position: relative;
+    font-size: 14pt;
+    font-weight: bold;
+    text-align: right;
+    right: 0px;
+    top: 23px;
+}
+
+#cruiseControlTopTextDiv2 {
+    position: relative;
+    font-weight: bold;
+    font-size: 10pt;
+    text-align: left;
+    left: 2px;
+    top: 27px;
+}
+
+#cruiseControlMediumDiv {
+    position: absolute;
+    top: 30px;
     width: 100%;
-    height: 360px;
+    height: 352px;
 }
 
 .cruise-control-speedHandleArea {
@@ -54,7 +89,6 @@
     float:left;
     width: 64px;
     height: 100%;
-    background-color: rgba(255, 250, 35, 0.11);
 }
 
 .cruise-control-speedHandle {
@@ -62,33 +96,33 @@
     width: 100%;
     height: 27px;
     background: transparent url('/static/img/cruise/speed_mark.png') 100% 100% no-repeat;
-    font-family: Gruppo-Regular;
-    color: lime;
     text-align: center;
 }
 
-#cruiseControlSpeedHandleSpan1 {
+#cruiseControlSpeedHandleDiv1 {
     font-size: 14pt;
     font-weight: bold;
     text-align: right;
     right: 50%;
+    position: absolute;
+    top: 3px;
 }
 
-#cruiseControlSpeedHandleSpan2 {
+#cruiseControlSpeedHandleDiv2 {
     width: 8px;
     font-weight: bold;
     font-size: 10pt;
     text-align: left;
-    right: 0px;
-
+    position: absolute;
+    right: 20px;
+    top: 7px;
 }
 
 .cruise-control-scaleArea {
-    position: relative;
-    float: left;
-    width: 24px;
+    position: absolute;
+    left: 54px;
+    width: 44px;
     height: 100%;
-    background-color: #8e3fff;
 }
 
 .cruise-control-zoneArea {
@@ -96,13 +130,10 @@
     float:left;
     width: 56px;
     height: 100%;
-    background-color: #ff639a;
 }
 
-
-
-.cruise-control-bottom {
-    position: relative;
+#cruiseControlBottomDiv {
+    position: absolute;
     width: 100%;
     height: 50px;
     background-color: #243b80;
