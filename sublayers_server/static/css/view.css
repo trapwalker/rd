@@ -147,7 +147,7 @@ input:focus {
 #buttonConnectServer {
     position: absolute;
     top: 35px;
-    left: 15px;
+    left: 150px;
     width: 62px;
     height: 62px;
     background: transparent url('/static/img/misc_button/btn_connection2_normal.png') 100% 100% no-repeat;

@@ -60,14 +60,8 @@ $(document).ready(function () {
     clientManager = new ClientManager();
 
 
-    // Включение/Выключение полноэранного режима
-    buttonFullScreen.onclick = FullScreenToggle;
-
     // Включение/Выключение отображения настроек игры
     buttonOptions.onclick = funcModalOptionsShow;
-
-    // Кнопка подключения к серверу (пока просто перезагружает страницу)
-    buttonConnectServer.onclick = ConnectServerToggle;
 
 
     // создание чата
@@ -111,22 +105,6 @@ $(document).ready(function () {
 });
 
 
-//Переключение в полноэкранный режим и обратно по кнопке
-function FullScreenToggle() {
-    var html = document.documentElement;
-    var jSelector = $('#buttonFullScreen');
-
-    if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
-        RunPrefixMethod(document, "CancelFullScreen");
-        jSelector.removeClass('buttonFullScreenOff');
-        jSelector.addClass('buttonFullScreenOn');
-    }
-    else {
-        RunPrefixMethod(html, "RequestFullScreen");
-        jSelector.removeClass('buttonFullScreenOn');
-        jSelector.addClass('buttonFullScreenOff');
-    }
-}
 
 function funcModalOptionsShow(){
     modalWindow.modalOptionsShow();
@@ -170,24 +148,7 @@ function setTitleOnPage(){
 }
 
 
-//Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
-function RunPrefixMethod(obj, method) {
-    var p = 0, m, t;
-    while (p < pfx.length && !obj[m]) {
-        m = method;
-        if (pfx[p] == "") {
-            m = m.substr(0, 1).toLowerCase() + m.substr(1);
-        }
-        m = pfx[p] + m;
-        t = typeof obj[m];
-        if (t) {
-            pfx = [pfx[p]];
-            return (t == "function" ? obj[m]() : obj[m]);
-        }
-        p++;
-    }
 
-}
 
 // todo: снести myMap
 var myMap;
