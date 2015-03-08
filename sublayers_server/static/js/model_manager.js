@@ -469,6 +469,12 @@ var ClientManager = (function () {
         });
     };
 
+    ClientManager.prototype.ZoneEffectMessage = function (event) {
+        console.log('ClientManager.prototype.ZoneEffectMessage', event);
+
+    };
+
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
