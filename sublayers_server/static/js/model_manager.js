@@ -472,10 +472,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ZoneEffectMessage = function (event) {
-        console.log('ClientManager.prototype.ZoneEffectMessage', event);
-
+        console.log('ClientManager.prototype.ZoneEffectMessage');
+        wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
     };
-
 
     // Исходящие сообщения
 

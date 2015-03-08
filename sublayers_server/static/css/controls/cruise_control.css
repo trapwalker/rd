@@ -124,11 +124,100 @@
 }
 
 .cruise-control-zoneArea {
-    position: relative;
-    float:left;
+    position: absolute;
     width: 56px;
+    left: 85px;
     height: 100%;
 }
+
+#cruiseControlZoneHandleDiv {
+    position: absolute;
+    width: 56px;
+}
+
+#cruiseControlZoneHandleArrow {
+    position: absolute;
+    float: left;
+    top: 0px;
+    bottom: 0px;
+    margin: auto;
+    width: 18px;
+    height: 31px;
+    background: transparent url('/static/img/cruise/limit_arrow.png') 100% 100% no-repeat;
+}
+
+#cruiseControlZoneIconAreaDiv {
+    position: relative;
+    left: 23px;
+    width: 25px;
+}
+
+#cruiseControlZoneDirtIconDiv {
+    position: relative;
+    display: none;
+    width: 21px;
+    height: 6px;
+    background: transparent url('/static/img/cruise/limit_dirt.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#cruiseControlZoneWoodIconDiv {
+    position: relative;
+    display: none;
+    width: 21px;
+    height: 15px;
+    background: transparent url('/static/img/cruise/limit_wood.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#cruiseControlZoneRoadIconDiv {
+    position: relative;
+    display: none;
+    width: 21px;
+    height: 13px;
+    background: transparent url('/static/img/cruise/limit_road.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#cruiseControlZoneWaterIconDiv {
+    position: relative;
+    display: none;
+    width: 21px;
+    height: 7px;
+    background: transparent url('/static/img/cruise/limit_water.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#spanLimitText1 {
+    position: absolute;
+    top: 304px;
+    right: 20px;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+#spanLimitText2 {
+    position: absolute;
+    height: 20px;
+    width: 200px;
+    top: 224px;
+    right: -77px;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgb(42, 253, 10);
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+
+
 
 #cruiseControlReverseDiv {
     position: absolute;

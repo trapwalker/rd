@@ -103,6 +103,53 @@ var WCruiseControl = (function (_super) {
         this.zoneArea = $("<div id='cruiseControlZoneArea' class='cruise-control-zoneArea sublayers-unclickable'></div>");
         this.mediumDiv.append(this.zoneArea);
 
+        // Каретка зон
+        this.zoneHandleDiv = $("<div id='cruiseControlZoneHandleDiv'></div>");
+        this.zoneArea.append(this.zoneHandleDiv);
+        this.zoneHandleDiv.append($("<div id='cruiseControlZoneHandleArrow'></div>"));
+
+        this.zoneIconAreaDiv = $("<div id='cruiseControlZoneIconAreaDiv'></div>");
+        this.zoneHandleDiv.append(this.zoneIconAreaDiv);
+
+        this.zoneDirtIconDiv = $("<div id='cruiseControlZoneDirtIconDiv'></div>");
+        this.zoneWoodIconDiv = $("<div id='cruiseControlZoneWoodIconDiv'></div>");
+        this.zoneRoadIconDiv = $("<div id='cruiseControlZoneRoadIconDiv'></div>");
+        this.zoneWaterIconDiv = $("<div id='cruiseControlZoneWaterIconDiv'></div>");
+
+        this.zoneIconAreaDiv.append(this.zoneDirtIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneWoodIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneRoadIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneWaterIconDiv);
+
+        this.zones = {
+            EffectDirt: {
+                jqselector: this.zoneDirtIconDiv,
+                zoneName: "dirt",
+                active: false
+            },
+            EffectWood: {
+                jqselector: this.zoneWoodIconDiv,
+                zoneName: "wood",
+                active: false
+            },
+            EffectWater: {
+                jqselector: this.zoneWaterIconDiv,
+                zoneName: "water",
+                active: false
+            },
+            EffectRoad: {
+                jqselector: this.zoneRoadIconDiv,
+                zoneName: "road",
+                active: false
+            }
+        };
+        this.zoneCount = 0;
+
+        // Создание и добавление текстов
+        this.zoneArea.append('<span id="spanLimitText1">LIMITS:</span>');
+        this.zoneArea.append('<span id="spanLimitText2"></span>');
+        this.zoneLimitText = $('#spanLimitText2');
+
         // Кнопка "задний ход"
         this.reverseDiv = $("<div id='cruiseControlReverseDiv' class='sublayers-clickable'></div>");
         this.reverseDiv.click(this, this._onClickR);
@@ -216,6 +263,34 @@ var WCruiseControl = (function (_super) {
 
         this.close_line = this.svgScaleArea.line(topLeft.x, topLeft.y, topRight.x, topRight.y + 0.0001)
             .stroke({width: 1, color: this.svg_params.gradients.line_grad3});
+    };
+
+    WCruiseControl.prototype.setZoneState = function(zoneName, zoneState, speedRange) {
+        //console.log('WCruiseControl.prototype.setZoneState');
+        if (zoneState) {
+            this.zones[zoneName].jqselector.css({display: "block"});
+            this.zones[zoneName].active = true;
+            this.zoneCount++;
+        }
+        else {
+            this.zones[zoneName].jqselector.css({display: "none"});
+            this.zones[zoneName].active = false;
+            this.zoneCount--;
+        }
+        if (this.zoneCount > 1) {
+            this.zoneDirtIconDiv.css({display: "none"});
+            var limit_str = "";
+            for(var key in this.zones)
+                if (key != 'EffectDirt' && this.zones[key].active)
+                    limit_str = limit_str + '  ' + this.zones[key].zoneName;
+            this.zoneLimitText.text(limit_str);
+        }
+        else {
+            this.zoneDirtIconDiv.css({display: "block"});
+            this.zoneLimitText.text("dirt");
+        }
+        var topValue = (1 - speedRange) * this.constScaleHeight + this.svgScaleDY - this.zoneHandleDiv.height() / 2;
+        this.zoneHandleDiv.css({top: topValue});
     };
 
     WCruiseControl.prototype.getSpeedHandleValue = function() {
