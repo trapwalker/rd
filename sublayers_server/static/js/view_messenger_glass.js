@@ -475,6 +475,7 @@ var ViewMessengerGlass = (function () {
 
     // вывод входящих ws-сообщений в лог
     ViewMessengerGlass.prototype.receiveMessageFromWS = function(msg){
+        /*
         //console.log('ViewMessengerGlass.prototype.receiveMessageFromWS');
         if (msg.message_type == "push") {
             //if (cookieStorage.enableLogPushMessage())
@@ -485,6 +486,7 @@ var ViewMessengerGlass = (function () {
             this._addMessageToLog('new answer form server!', 'answer');
             //if (cookieStorage.enableLogAnswerMessage())
                 //this._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
+                */
         return true;
     };
 
@@ -493,7 +495,7 @@ var ViewMessengerGlass = (function () {
         //alert('ViewMessenger receiveMessageFromModelManager');
        // if(cookieStorage.enableLogRPCMessage())
        //     this._addMessageToLog(JSON.stringify(msg, null, 4), 'rpc');
-        this._addMessageToLog('отправка сообщения на сервер ', 'rpc');
+       // this._addMessageToLog('отправка сообщения на сервер ', 'rpc');
         return true;
     };
 
