@@ -380,7 +380,7 @@ var ViewMessengerGlass = (function () {
     // TODO: при установке сообщения переместить картеку в конец строки
     ViewMessengerGlass.prototype._setInputHistoryMessage = function () {
         if ((this._historyIndex >= 0) && (this._history.length > 0)) {
-            chat.vMI.val(this._history[this._historyIndex]).focus();
+            chat.main_input.val(this._history[this._historyIndex]).focus();
             // Установка каретки в конец сообщения
             //var len = this._history[this._historyIndex].length;
             //alert(len);
@@ -391,7 +391,7 @@ var ViewMessengerGlass = (function () {
             //  });
         }
         else {
-            chat.vMI.val('').focus();
+            chat.main_input.val('').focus();
         }
     };
 
@@ -420,20 +420,25 @@ var ViewMessengerGlass = (function () {
 
         var str = chat.main_input.val();
         if (str.length) {
-            var active = chat.getActiveChat();
-            if (active)
-            // TODO: переделать здесь как-нибудь иначе
-                if (active.id != -1)  // если это не лог-чат
+            if (str[0] === '#' || str[0] === '\\' || str[0] === '/') {
+                sendServConsole(str);
+            }
+            else {
+                var active = chat.getActiveChat();
+                if (active)
                     chat.options.stream_mes.sendMessage(
                         {
                             type: 'send_chat_message',
                             body: {
                                 to: chat.getActiveChat().id,
                                 body: str
-                            }}
+                            }
+                        }
                     );
                 else
                     sendServConsole(str); // попробовать отправить команду на сервер
+
+            }
             chat.main_input.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);
@@ -515,19 +520,28 @@ var ViewMessengerGlass = (function () {
 
 
     ViewMessengerGlass.prototype.party_invite = function (event) {
-        alert('Окно приглашения в пати');
+        //alert('Окно приглашения в пати');
+        var temp_str = chat.main_input.val();
+        chat.main_input.val('/invite ' + temp_str).focus();
     };
 
     ViewMessengerGlass.prototype.party_create = function (event) {
-        alert('Окно создания пати');
+        //alert('Окно создания пати');
+        var temp_str = chat.main_input.val();
+        chat.main_input.val('/create ' + temp_str).focus();
     };
 
     ViewMessengerGlass.prototype.party_kick = function (event) {
-        alert('Окно выбора участника(ов) пати для кика');
+        //alert('Окно выбора участника(ов) пати для кика');
+        var temp_str = chat.main_input.val();
+        chat.main_input.val('/kick ' + temp_str).focus();
+
     };
 
     ViewMessengerGlass.prototype.party_leave = function (event) {
-        alert('Окно для подтверждения выхода из пати');
+        //alert('Окно для подтверждения выхода из пати');
+        sendServConsole('\leave');
+        chat.main_input.focus();
     };
 
 
