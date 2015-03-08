@@ -470,7 +470,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ZoneEffectMessage = function (event) {
-        console.log('ClientManager.prototype.ZoneEffectMessage');
+        //console.log('ClientManager.prototype.ZoneEffectMessage');
         wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
     };
 
@@ -534,6 +534,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireDischarge = function (side) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if(! wFireController.visible) return;
         var mes = {
             call: "fire_discharge",
             rpc_call_id: rpcCallList.getID(),
