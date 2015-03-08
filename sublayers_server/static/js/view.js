@@ -65,6 +65,7 @@ $(document).ready(function () {
 
 
     // создание чата
+/*
     chat = new ViewMessenger({
             parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
@@ -79,7 +80,11 @@ $(document).ready(function () {
     chat.addChat(-1, "-= L O G =-");
     chat.setActiveChat(-1);
     chat.setVisible(cookieStorage.chatVisible);
+*/
 
+    chat = new ViewMessengerGlass({
+        stream_mes: message_stream
+    });
 
 
     //carMarkerList = new CarMarkerList({_map: myMap});

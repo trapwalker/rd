@@ -7,7 +7,7 @@
     <style>
         @font-face {
             font-family: MICRADI; /* Гарнитура шрифта */
-            src: local(MICRADI), url(fonts/MICRADI.ttf); /* Для остальных браузеров */
+            src: local(MICRADI), url(/static/fonts/MICRADI.ttf); /* Для остальных браузеров */
         }
     </style>
 
@@ -31,6 +31,8 @@
     <link rel="stylesheet" href="css/fire_effects.css"/>
     <link rel="stylesheet" href="css/controls/cruise_control.css"/>
     <link rel="stylesheet" href="css/controls/zoom_slider.css"/>
+    <link rel="stylesheet" href="css/view_messenger_glass.css"/>
+
 
     <script src="js/third_party/leaflet-src.js"></script>
     <script src="js/third_party/jquery.min.js"></script>
@@ -92,6 +94,7 @@
     <script src="js/wsjson.js"></script>
     <script src="js/view.js"></script>
     <script src="js/view_messenger.js"></script>
+    <script src="js/view_messenger_glass.js"></script>
     <script src="js/controls/sliders.js"></script>
     <script src="js/cache.js"></script>
     <script src="js/userCarMarker.js"></script>
@@ -126,13 +129,12 @@
     <div id="speedSetDivForSpeedSlider"></div>
 
     <div id="chatArea"></div>
+
+    <div id="chatAreaGlass"></div>
+
     <div id="fireControlArea"></div>
 
 
-    <div id="radialMenuDiv" style="position:absolute;">
-        <svg id="radialMenuSVG">
-        </svg>
-    </div>
     <div id="modalDiv">
         <div id="modalBack"></div>
         <div id="modalWelcome"></div>

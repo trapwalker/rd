@@ -87,16 +87,13 @@ var WZoomSlider = (function () {
         this.zomm_circle = $('#ZoomDivInsideSpanCarriage');
 
         // Создание и добавление текста
-        var spanZoomZoomText = '<span id="spanZoomZoomText" class="sublayers-unclickable">' +
-            'zoom</span>';
+        var spanZoomZoomText = '<span id="spanZoomZoomText" class="sublayers-unclickable">zoom</span>';
         parent.append(spanZoomZoomText);
 
         // создание SVG шкалы
         this.drawScale();
 
-
         this.setZoom(this.mapMng.getZoom());
-
 
     }
 
