@@ -116,6 +116,14 @@
     fill: rgba(0, 128, 0, 0.6);
 }
 
+.fire-control-all-active {
+    fill: rgba(0, 255, 0, 0.53);
+}
+
+.fire-control-all-active:hover {
+    fill: rgba(0, 255, 0, 0.6);
+}
+
 .fire-control-radar-point {
     fill: lime;
     stroke: lime;

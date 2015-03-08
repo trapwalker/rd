@@ -156,11 +156,14 @@ var WFireController = (function (_super) {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'OFF');
             self.autoShoot = false;
             self._setAutoShootingEnable(false);
+            //self.allFire.removeClass('fire-control-all-active');
+            self.allFire.setAttribute('class', 'fire-control-all sublayers-clickable');
         }
         else {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
             self.autoShoot = true;
             self._setAutoShootingEnable(true);
+            self.allFire.setAttribute('class', 'fire-control-all sublayers-clickable fire-control-all-active');
         }
         document.getElementById('map').focus();
     };
