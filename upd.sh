@@ -9,4 +9,4 @@ hg update
 
 REV2=`hg identify | awk '{print $1}'`
 
-[ "$REV1" = "$REV2" ] && echo 'no changes' || echo 'update'
+[ "$REV1" = "$REV2" ] && echo 'no changes' || service sl restart
