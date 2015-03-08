@@ -200,8 +200,8 @@ var WFireSectorsScaled = (function (_super) {
                 },
                 rech_text: {
                     font: {
-                        family:   'Helvetica',
-                        size:     13,
+                        family:   'MICRADI',
+                        size:     11,
                         anchor:   'start',
                         leading:  '1.5em'
                     },

@@ -223,8 +223,8 @@ var WFireRadialGrid = (function (_super) {
                 fill: {color: this.svg_colors.main, opacity: 1.0},
                 text: {
                     font: {
-                        family:   'Helvetica',
-                        size:     10,
+                        family:   'MICRADI',
+                        size:     8,
                         anchor:   'middle',
                         leading:  '1.5em'
                     },
