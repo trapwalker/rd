@@ -489,7 +489,12 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto', user.userCar.getLastSpeed());
-        this.sendMotion(target, wCruiseControl.getSpeedHandleValue(), null);
+        var currentSpeed = wCruiseControl.getSpeedHandleValue();
+        if (currentSpeed == 0) {
+            currentSpeed = user.userCar.maxSpeed * 0.2;
+            wCruiseControl._setSpeedHandle(0.2);
+        }
+        this.sendMotion(target, currentSpeed, null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {

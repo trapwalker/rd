@@ -105,6 +105,7 @@ var WCruiseControl = (function (_super) {
 
         // Кнопка "задний ход"
         this.reverseDiv = $("<div id='cruiseControlReverseDiv' class='sublayers-clickable'></div>");
+        this.reverseDiv.click(this, this._onClickR);
         this.mainDiv.append(this.reverseDiv);
 
         // Кнопка "стоп"
@@ -177,12 +178,19 @@ var WCruiseControl = (function (_super) {
         //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
         var currentSpeed = user.userCar.maxSpeed * (1 - (ui.position.top / event.data.constScaleHeight));
         clientManager.sendSetSpeed(currentSpeed);
+        document.getElementById('map').focus();
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
         //console.log('WCruiseControl.prototype._onClickStop');
         clientManager.sendStopCar();
         event.data._setSpeedHandle(0);
+        document.getElementById('map').focus();
+    };
+
+    WCruiseControl.prototype._onClickR = function (event) {
+        //console.log('WCruiseControl.prototype._onClickR');
+        document.getElementById('map').focus();
     };
 
     WCruiseControl.prototype._drawFillArea = function (prc) {

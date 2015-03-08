@@ -71,7 +71,7 @@
 .fire-control-sector-shadow {
     fill: gray;
     opacity: 0.2;
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 .fire-control-sector-discharge {
