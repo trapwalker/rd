@@ -124,10 +124,60 @@
 }
 
 .cruise-control-zoneArea {
-    position: relative;
-    float:left;
+    position: absolute;
     width: 56px;
+    left: 85px;
     height: 100%;
+}
+
+#cruiseControlZoneHandleDiv {
+    position: absolute;
+    width: 56px;
+}
+
+#cruiseControlZoneHandleArrow {
+    position: absolute;
+    float: left;
+    top: 0px;
+    bottom: 0px;
+    margin: auto;
+    width: 18px;
+    height: 31px;
+    background: transparent url('/static/img/cruise/limit_arrow.png') 100% 100% no-repeat;
+}
+
+#cruiseControlZoneIconAreaDiv {
+    position: relative;
+    left: 23px;
+    width: 25px;
+}
+
+#cruiseControlZoneDirtIconDiv {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    background-color: red;
+}
+
+#cruiseControlZoneWoodIconDiv {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    background-color: #87b9ff;
+}
+
+#cruiseControlZoneRoadIconDiv {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    background-color: #ff5c8e;
+}
+
+#cruiseControlZoneWaterIconDiv {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    background-color: #fff54c;
 }
 
 #cruiseControlReverseDiv {

@@ -103,6 +103,24 @@ var WCruiseControl = (function (_super) {
         this.zoneArea = $("<div id='cruiseControlZoneArea' class='cruise-control-zoneArea sublayers-unclickable'></div>");
         this.mediumDiv.append(this.zoneArea);
 
+        // Каретка зон
+        this.zoneHandleDiv = $("<div id='cruiseControlZoneHandleDiv'></div>");
+        this.zoneArea.append(this.zoneHandleDiv);
+        this.zoneHandleDiv.append($("<div id='cruiseControlZoneHandleArrow'></div>"));
+
+        this.zoneIconAreaDiv = $("<div id='cruiseControlZoneIconAreaDiv'></div>");
+        this.zoneHandleDiv.append(this.zoneIconAreaDiv);
+
+        this.zoneDirtIconDiv = $("<div id='cruiseControlZoneDirtIconDiv'></div>");
+        this.zoneWoodIconDiv = $("<div id='cruiseControlZoneWoodIconDiv'></div>");
+        this.zoneRoadIconDiv = $("<div id='cruiseControlZoneRoadIconDiv'></div>");
+        this.zoneWaterIconDiv = $("<div id='cruiseControlZoneWaterIconDiv'></div>");
+
+        this.zoneIconAreaDiv.append(this.zoneDirtIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneWoodIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneRoadIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneWaterIconDiv);
+
         // Кнопка "задний ход"
         this.reverseDiv = $("<div id='cruiseControlReverseDiv' class='sublayers-clickable'></div>");
         this.reverseDiv.click(this, this._onClickR);
