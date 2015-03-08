@@ -154,31 +154,70 @@
 
 #cruiseControlZoneDirtIconDiv {
     position: relative;
-    width: 25px;
-    height: 25px;
-    background-color: red;
+    display: none;
+    width: 21px;
+    height: 6px;
+    background: transparent url('/static/img/cruise/limit_dirt.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 #cruiseControlZoneWoodIconDiv {
     position: relative;
-    width: 25px;
-    height: 25px;
-    background-color: #87b9ff;
+    display: none;
+    width: 21px;
+    height: 15px;
+    background: transparent url('/static/img/cruise/limit_wood.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 #cruiseControlZoneRoadIconDiv {
     position: relative;
-    width: 25px;
-    height: 25px;
-    background-color: #ff5c8e;
+    display: none;
+    width: 21px;
+    height: 13px;
+    background: transparent url('/static/img/cruise/limit_road.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 #cruiseControlZoneWaterIconDiv {
     position: relative;
-    width: 25px;
-    height: 25px;
-    background-color: #fff54c;
+    display: none;
+    width: 21px;
+    height: 7px;
+    background: transparent url('/static/img/cruise/limit_water.png') 100% 100% no-repeat;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
+
+#spanLimitText1 {
+    position: absolute;
+    top: 304px;
+    right: 20px;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+#spanLimitText2 {
+    position: absolute;
+    height: 20px;
+    width: 200px;
+    top: 224px;
+    right: -77px;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgb(42, 253, 10);
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+
+
 
 #cruiseControlReverseDiv {
     position: absolute;
