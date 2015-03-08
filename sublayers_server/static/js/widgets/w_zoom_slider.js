@@ -190,6 +190,10 @@ var WZoomSlider = (function () {
         }
         if (Math.abs(value - zoom * slider.points_in_step) > 1)
             slider.setZoom(zoom);
+
+        // установить фокус на карту
+        document.getElementById('map').focus();
+
     };
 
     WZoomSlider.prototype.fullscr = function (event) {
@@ -208,6 +212,9 @@ var WZoomSlider = (function () {
             //jSelector.removeClass('buttonFullScreenOn');
             //jSelector.addClass('buttonFullScreenOff');
         }
+
+        // установить фокус на карту
+        document.getElementById('map').focus();
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
