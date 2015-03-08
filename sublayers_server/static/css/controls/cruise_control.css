@@ -29,9 +29,8 @@
     position: absolute;
     bottom: 450px;
     right: 150px;
-    pointer-events: auto;
-    color: lime;
-    font-family: MICRADI;
+    color: #2afd0a;
+    font-family: Gruppo-Regular;
 }
 
 #cruiseControlTopDiv {
@@ -42,8 +41,6 @@
     background: transparent url('/static/img/cruise/dgigits_back_glow.png') 100% 100% no-repeat;
     background-position: center;
 }
-
-
 
 #cruiseControlTopTextPositionDiv1 {
     position: relative;
@@ -61,7 +58,8 @@
 
 #cruiseControlTopTextDiv1 {
     position: relative;
-    font-size: 9pt;
+    font-size: 16pt;
+    font-weight: bold;
     text-align: right;
     right: 0px;
     top: 23px;
@@ -69,10 +67,11 @@
 
 #cruiseControlTopTextDiv2 {
     position: relative;
-    font-size: 6pt;
+    font-size: 13pt;
+    font-weight: bold;
     text-align: left;
     left: 2px;
-    top: 27px;
+    top: 26px;
 }
 
 #cruiseControlMediumDiv {
@@ -95,23 +94,26 @@
     height: 27px;
     background: transparent url('/static/img/cruise/speed_mark.png') 100% 100% no-repeat;
     text-align: center;
+    pointer-events: auto;
 }
 
 #cruiseControlSpeedHandleDiv1 {
-    font-size: 9pt;
+    position: absolute;
+    font-size: 16pt;
+    font-weight: bold;
     text-align: right;
     right: 50%;
-    position: absolute;
-    top: 6px;
+    top: 2px
 }
 
 #cruiseControlSpeedHandleDiv2 {
-    width: 8px;
-    font-size: 6pt;
-    text-align: left;
     position: absolute;
+    width: 8px;
+    font-size: 13pt;
+    font-weight: bold;
+    text-align: left;
     right: 20px;
-    top: 9px;
+    top: 5px;
 }
 
 .cruise-control-scaleArea {
@@ -135,6 +137,7 @@
     width: 33px;
     height: 32px;
     background: transparent url('/static/img/cruise/r_btn.png') 100% 100% no-repeat;
+    pointer-events: auto;
 }
 
 #cruiseControlReverseDiv:hover {
@@ -152,6 +155,7 @@
     width: 70px;
     height: 39px;
     background: transparent url('/static/img/cruise/stop_btn.png') 100% 100% no-repeat;
+    pointer-events: auto;
 }
 
 #cruiseControlStopDiv:hover {

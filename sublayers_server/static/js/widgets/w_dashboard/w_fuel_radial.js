@@ -13,6 +13,11 @@ var WFuelRadial = (function (_super) {
         this.div_id = 'WFuelRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-fuel-radial-parent"></div>');
 
+        // Лампочка тревоги
+        this.alarmLamp = $("<div id='fuelAlarmLamp' class='fuelAlarmLamp-off'></div>");
+        this.alarmLampState = false;
+        $('#' + div_parent).append(this.alarmLamp);
+
         var draw_main = SVG(this.div_id);
         this.draw_main = draw_main;
         var draw = draw_main.group();
@@ -193,6 +198,17 @@ var WFuelRadial = (function (_super) {
             },
             triangle_fill: {color: this.svg_colors.main2, opacity: 0.5}
         };
+    };
+
+    WFuelRadial.prototype.draw_alarmLamp = function() {
+        if (this.alarmLampState) {
+            this.alarmLamp.removeClass('fuelAlarmLamp-off');
+            this.alarmLamp.addClass('fuelAlarmLamp-on');
+        }
+        else {
+            this.alarmLamp.removeClass('fuelAlarmLamp-on');
+            this.alarmLamp.addClass('fuelAlarmLamp-off');
+        }
     };
 
     WFuelRadial.prototype.draw_fill_area = function(prc) {

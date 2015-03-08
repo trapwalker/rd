@@ -13,6 +13,11 @@ var WRadiationRadial = (function (_super) {
         this.div_id = 'WRadiationRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-radiation-radial-parent"></div>');
 
+        // Лампочка тревоги
+        this.alarmLamp = $("<div id='radiationAlarmLamp' class='radiationAlarmLamp-off'></div>");
+        this.alarmLampState = false;
+        $('#' + div_parent).append(this.alarmLamp);
+
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -190,6 +195,17 @@ var WRadiationRadial = (function (_super) {
             },
             triangle_fill: {color: this.svg_colors.main2, opacity: 0.5}
         };
+    };
+
+    WRadiationRadial.prototype.draw_alarmLamp = function() {
+        if (this.alarmLampState) {
+            this.alarmLamp.removeClass('radiationAlarmLamp-off');
+            this.alarmLamp.addClass('radiationAlarmLamp-on');
+        }
+        else {
+            this.alarmLamp.removeClass('radiationAlarmLamp-on');
+            this.alarmLamp.addClass('radiationAlarmLamp-off');
+        }
     };
 
     WRadiationRadial.prototype.draw_fill_area = function(prc) {

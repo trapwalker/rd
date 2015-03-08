@@ -31,11 +31,43 @@
     pointer-events: none;
 }
 
+#healthAlarmLamp {
+    position: absolute;
+    top: 100px;
+    left: 5px;
+    width: 39px;
+    height: 33px;
+}
+
+.healthAlarmLamp-off {
+    background: transparent url('/static/img/cruise/health_lamp_off.png') 100% 100% no-repeat;
+}
+
+.healthAlarmLamp-on {
+    background: transparent url('/static/img/cruise/health_lamp_on.png') 100% 100% no-repeat;
+}
+
 .w-fuel-radial-parent {
     position: absolute;
     top: 68px;
     right: 0;
     pointer-events: none;
+}
+
+#fuelAlarmLamp {
+    position: absolute;
+    top: 100px;
+    left: 86px;
+    width: 39px;
+    height: 33px;
+}
+
+.fuelAlarmLamp-off {
+    background: transparent url('/static/img/cruise/fuel_lamp_off.png') 100% 100% no-repeat;
+}
+
+.fuelAlarmLamp-on {
+    background: transparent url('/static/img/cruise/fuel_lamp_on.png') 100% 100% no-repeat;
 }
 
 .w-radiation-radial-parent {
@@ -44,11 +76,43 @@
     pointer-events: none;
 }
 
+#radiationAlarmLamp {
+    position: absolute;
+    top: 100px;
+    left: 86px;
+    width: 39px;
+    height: 33px;
+}
+
+.radiationAlarmLamp-off {
+    background: transparent url('/static/img/cruise/rad_lamp_off.png') 100% 100% no-repeat;
+}
+
+.radiationAlarmLamp-on {
+    background: transparent url('/static/img/cruise/rad_lamp_on.png') 100% 100% no-repeat;
+}
+
 .w-wind-radial-parent {
     position: absolute;
     top: 68px;
     right: 0;
     pointer-events: none;
+}
+
+#windAlarmLamp {
+    position: absolute;
+    top: 100px;
+    left: 5px;
+    width: 39px;
+    height: 33px;
+}
+
+.windAlarmLamp-off {
+    background: transparent url('/static/img/cruise/wind_lamp_off.png') 100% 100% no-repeat;
+}
+
+.windAlarmLamp-on {
+    background: transparent url('/static/img/cruise/wind_lamp_on.png') 100% 100% no-repeat;
 }
 
 .w-alt-radial-parent {

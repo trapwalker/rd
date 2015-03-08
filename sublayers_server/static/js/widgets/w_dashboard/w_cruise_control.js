@@ -42,7 +42,7 @@ var WCruiseControl = (function (_super) {
         this.speedHandleAreaDiv = $("<div id='cruiseControlSpeedHandleAreaDiv' class='cruise-control-speedHandleArea '></div>");
         this.mediumDiv.append(this.speedHandleAreaDiv);
 
-        this.speedHandleDiv = $("<div id='cruiseControlSpeedHandleDiv' class='cruise-control-speedHandle'></div>");
+        this.speedHandleDiv = $("<div id='cruiseControlSpeedHandleDiv' class='cruise-control-speedHandle sublayers-clickable'></div>");
         this.speedHandleAreaDiv.append(this.speedHandleDiv);
         this.speedHandleDiv.draggable({
             axis: "y",
@@ -73,7 +73,7 @@ var WCruiseControl = (function (_super) {
         // Вертикальная линия
         this.svgScaleArea.line(this.svgScaleDX, this.svgScaleDY,
                                this.svgScaleDX, this.constScaleHeight + this.svgScaleDY)
-                         .stroke({width: 2, color: this.svg_color});
+                         .stroke({width: 1, color: this.svg_colors.line});
 
         // Верхняя заглушка
         this.svgScaleArea.line(0, this.svgScaleDY,
@@ -121,32 +121,37 @@ var WCruiseControl = (function (_super) {
     }
 
     WCruiseControl.prototype._init_params = function() {
-        this.svg_color = "#00FF54";
+        this.svg_colors = {
+            fill: "#2afd0a",
+            line: "#00ff54"
+        };
+
         var self = this;
         this.svg_params = {
             // градиенты
             gradients: {
                 line_grad1: this.svgScaleArea.gradient('linear', function(stop) {
-                    stop.at({ offset: 0, color: self.svg_color, opacity: 1});
-                    stop.at({ offset: 0.5, color: self.svg_color, opacity: 1});
-                    stop.at({ offset: 1, color: self.svg_color, opacity: 0});
+                    stop.at({ offset: 0, color: self.svg_colors.line, opacity: 0.45});
+                    stop.at({ offset: 0.5, color: self.svg_colors.line, opacity: 0.45});
+                    stop.at({ offset: 1, color: self.svg_colors.line, opacity: 0.22});
                 }),
                 line_grad2: this.svgScaleArea.gradient('linear', function(stop) {
-                    stop.at({ offset: 0, color: self.svg_color, opacity: 0});
-                    stop.at({ offset: 0.2, color: self.svg_color, opacity: 1});
-                    stop.at({ offset: 0.8, color: self.svg_color, opacity: 1});
-                    stop.at({ offset: 1, color: self.svg_color, opacity: 0});
+                    stop.at({ offset: 0, color: self.svg_colors.line, opacity: 0.22});
+                    stop.at({ offset: 0.2, color: self.svg_colors.line, opacity: 0.45});
+                    stop.at({ offset: 0.8, color: self.svg_colors.line, opacity: 0.45});
+                    stop.at({ offset: 1, color: self.svg_colors.line, opacity: 0.22});
+                }),
+                line_grad3: this.svgScaleArea.gradient('linear', function(stop) {
+                    stop.at({ offset: 0, color: self.svg_colors.line, opacity: 1});
+                    stop.at({ offset: 0.5, color: self.svg_colors.line, opacity: 1});
+                    stop.at({ offset: 1, color: self.svg_colors.line, opacity: 0.2});
                 })
             },
 
             // настройка заливки
             fill_area: {
                 stroke: {width: 0.0},
-                fill: {color: this.svg_color, opacity: 0.3},
-                cl_stroke: {
-                    opacity: 1,
-                    color: this.svg_color
-                }
+                fill: {color: this.svg_colors.fill, opacity: 0.2}
             }
         };
     };
@@ -201,8 +206,8 @@ var WCruiseControl = (function (_super) {
             .fill(this.svg_params.fill_area.fill)
             .stroke(this.svg_params.fill_area.stroke);
 
-        this.close_line = this.svgScaleArea.line(topLeft.x, topLeft.y, topRight.x, topRight.y)
-            .stroke(this.svg_params.fill_area.cl_stroke);
+        this.close_line = this.svgScaleArea.line(topLeft.x, topLeft.y, topRight.x, topRight.y + 0.0001)
+            .stroke({width: 1, color: this.svg_params.gradients.line_grad3});
     };
 
     WCruiseControl.prototype.getSpeedHandleValue = function() {
@@ -211,12 +216,12 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype.startKeyboardControl = function() {
-        console.log('WCruiseControl.prototype.startKeyboardControl');
+        //console.log('WCruiseControl.prototype.startKeyboardControl');
         this.keyBoardControl = true;
     };
 
     WCruiseControl.prototype.stopKeyboardControl = function() {
-        console.log('WCruiseControl.prototype.stopKeyboardControl');
+        //console.log('WCruiseControl.prototype.stopKeyboardControl');
         this.keyBoardControl = false;
     };
 

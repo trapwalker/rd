@@ -14,6 +14,11 @@ var WHPRadial = (function (_super) {
         this.div_id = 'WHPRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-hp-radial-parent"></div>');
 
+        // Лампочка тревоги
+        this.alarmLamp = $("<div id='healthAlarmLamp' class='healthAlarmLamp-off'></div>");
+        this.alarmLampState = false;
+        $('#' + div_parent).append(this.alarmLamp);
+
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -192,6 +197,17 @@ var WHPRadial = (function (_super) {
         };
     };
 
+    WHPRadial.prototype.draw_alarmLamp = function() {
+        if (this.alarmLampState) {
+            this.alarmLamp.removeClass('healthAlarmLamp-off');
+            this.alarmLamp.addClass('healthAlarmLamp-on');
+        }
+        else {
+            this.alarmLamp.removeClass('healthAlarmLamp-on');
+            this.alarmLamp.addClass('healthAlarmLamp-off');
+        }
+    };
+
     WHPRadial.prototype.draw_fill_area = function(prc) {
         if (prc > 1.0) prc = 1.0;
         if (prc < 0.0) prc = 0.0;
@@ -241,8 +257,6 @@ var WHPRadial = (function (_super) {
 
         // Изменение текста (проценты)
         this.text_prc.text(Math.round(prc * 100) + '%');
-
-
     };
 
     WHPRadial.prototype.change = function () {
@@ -251,6 +265,14 @@ var WHPRadial = (function (_super) {
         if (Math.abs(this.value_prc - prc) > 0.005) {
             this.value_prc = prc;
             this.draw_fill_area(prc);
+            if ((prc > 0.1) && (this.alarmLampState)) {
+                this.alarmLampState = false;
+                this.draw_alarmLamp();
+            }
+            if ((prc <= 0.1) && (!this.alarmLampState)) {
+                this.alarmLampState = true;
+                this.draw_alarmLamp();
+            }
         }
     };
 

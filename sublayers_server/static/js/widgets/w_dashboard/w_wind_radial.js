@@ -13,6 +13,11 @@ var WWindRadial = (function (_super) {
         this.div_id = 'WFuelRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-wind-radial-parent"></div>');
 
+        // Лампочка тревоги
+        this.alarmLamp = $("<div id='windAlarmLamp' class='windAlarmLamp-off'></div>");
+        this.alarmLampState = false;
+        $('#' + div_parent).append(this.alarmLamp);
+
         var draw_main = SVG(this.div_id);
         this.draw_main = draw_main;
         var draw = draw_main.group();
@@ -194,6 +199,17 @@ var WWindRadial = (function (_super) {
             },
             triangle_fill: {color: this.svg_colors.main2, opacity: 0.5}
         };
+    };
+
+    WWindRadial.prototype.draw_alarmLamp = function() {
+        if (this.alarmLampState) {
+            this.alarmLamp.removeClass('windAlarmLamp-off');
+            this.alarmLamp.addClass('windAlarmLamp-on');
+        }
+        else {
+            this.alarmLamp.removeClass('windAlarmLamp-on');
+            this.alarmLamp.addClass('windAlarmLamp-off');
+        }
     };
 
     WWindRadial.prototype.draw_fill_area = function(prc) {
