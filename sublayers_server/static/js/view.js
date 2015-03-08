@@ -115,7 +115,7 @@ $(document).ready(function () {
 
     ws_connector.connect();
 
-
+    document.getElementById('map').focus();
     //alert(window.location);
 
     // Не показывать окно приветствия в debug режиме
