@@ -70,6 +70,9 @@ var WFireController = (function (_super) {
         this.backgroundCircle.setAttribute('cx', this.center.x);
         this.backgroundCircle.setAttribute('cy', this.center.y);
         this.SVG.appendChild(this.backgroundCircle);
+        $(this.backgroundCircle).on('click', function(){
+            document.getElementById('map').focus();
+        });
 
         // Кнопка All
         this.allFire = document.createElementNS(this.NS, 'circle');
@@ -121,6 +124,7 @@ var WFireController = (function (_super) {
                 self.SVG.setAttribute('display', 'block');
             }
         });
+        document.getElementById('map').focus();
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
@@ -151,6 +155,7 @@ var WFireController = (function (_super) {
             clientManager.sendFireAutoEnable('left', true);
             this.autoShoot = true;
         }
+        document.getElementById('map').focus();
     };
 
     WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {
@@ -358,6 +363,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.shootBySide = function(event) {
         clientManager.sendFireDischarge(event.data.side.side.sideStr);
+        document.getElementById('map').focus();
     };
 
     WFireController.prototype.addModelObject = function (mobj) {

@@ -1,0 +1,187 @@
+.cruise-control-main {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    pointer-events: none;
+}
+
+.cruise-control-glass {
+    position: absolute;
+    width: 563px;
+    height: 503px;
+    bottom: 0px;
+    right: 0px;
+    background: transparent url('/static/img/cruise/cruise_glass.png') 100% 100% no-repeat;
+    background-position: center;
+}
+
+.cruise-control-hardware {
+    position: absolute;
+    width: 28px;
+    height: 596px;
+    bottom: 0px;
+    right: 0px;
+    background: transparent url('/static/img/cruise/cruise_port.png') 100% 100% no-repeat;
+    background-position: center;
+}
+
+#cruiseControlSpeedMainDiv {
+    position: absolute;
+    bottom: 450px;
+    right: 150px;
+    color: #2afd0a;
+    font-family: Gruppo-Regular;
+}
+
+#cruiseControlTopDiv {
+    position: absolute;
+    width: 56px;
+    height: 63px;
+    left: 43px;
+    background: transparent url('/static/img/cruise/dgigits_back_glow.png') 100% 100% no-repeat;
+    background-position: center;
+}
+
+#cruiseControlTopTextPositionDiv1 {
+    position: relative;
+    float: left;
+    width: 60%;
+    height: 100%;
+}
+
+#cruiseControlTopTextPositionDiv2 {
+    position: relative;
+    float: left;
+    width: 40%;
+    height: 100%;
+}
+
+#cruiseControlTopTextDiv1 {
+    position: relative;
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: right;
+    right: 0px;
+    top: 23px;
+}
+
+#cruiseControlTopTextDiv2 {
+    position: relative;
+    font-size: 13pt;
+    font-weight: bold;
+    text-align: left;
+    left: 2px;
+    top: 26px;
+}
+
+#cruiseControlMediumDiv {
+    position: absolute;
+    top: 30px;
+    width: 100%;
+    height: 352px;
+}
+
+.cruise-control-speedHandleArea {
+    position: relative;
+    float:left;
+    width: 64px;
+    height: 100%;
+}
+
+.cruise-control-speedHandle {
+    position: absolute;
+    width: 100%;
+    height: 27px;
+    background: transparent url('/static/img/cruise/speed_mark.png') 100% 100% no-repeat;
+    text-align: center;
+    pointer-events: auto;
+}
+
+#cruiseControlSpeedHandleDiv1 {
+    position: absolute;
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: right;
+    right: 50%;
+    top: 2px
+}
+
+#cruiseControlSpeedHandleDiv2 {
+    position: absolute;
+    width: 8px;
+    font-size: 13pt;
+    font-weight: bold;
+    text-align: left;
+    right: 20px;
+    top: 5px;
+}
+
+.cruise-control-scaleArea {
+    position: absolute;
+    left: 54px;
+    width: 44px;
+    height: 100%;
+}
+
+.cruise-control-zoneArea {
+    position: relative;
+    float:left;
+    width: 56px;
+    height: 100%;
+}
+
+#cruiseControlReverseDiv {
+    position: absolute;
+    top: 397px;
+    left: 18px;
+    width: 33px;
+    height: 32px;
+    background: transparent url('/static/img/cruise/r_btn.png') 100% 100% no-repeat;
+    pointer-events: auto;
+}
+
+#cruiseControlReverseDiv:hover {
+    background: transparent url('/static/img/cruise/r_btn_over.png') 100% 100% no-repeat;
+}
+
+#cruiseControlReverseDiv:active {
+    background: transparent url('/static/img/cruise/r_btn_pressed.png') 100% 100% no-repeat;
+}
+
+#cruiseControlStopDiv {
+    position: absolute;
+    top: 390px;
+    left: 60px;
+    width: 70px;
+    height: 39px;
+    background: transparent url('/static/img/cruise/stop_btn.png') 100% 100% no-repeat;
+    pointer-events: auto;
+}
+
+#cruiseControlStopDiv:hover {
+    background: transparent url('/static/img/cruise/stop_btn_over.png') 100% 100% no-repeat;
+}
+
+#cruiseControlStopDiv:active {
+    background: transparent url('/static/img/cruise/stop_btn_pressed.png') 100% 100% no-repeat;
+}
+
+#spanZoomZoomText1 {
+    position: absolute;
+    top: 296px;
+    right: -117px;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+#spanZoomZoomText2 {
+    position: absolute;
+    top: 370px;
+    right: -92px;
+    white-space: nowrap;
+    font: 7pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
+}
