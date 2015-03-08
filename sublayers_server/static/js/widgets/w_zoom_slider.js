@@ -92,9 +92,7 @@ var WZoomSlider = (function () {
 
         // создание SVG шкалы
         this.drawScale();
-
         this.setZoom(this.mapMng.getZoom());
-
     }
 
     WZoomSlider.prototype.drawScale = function(){

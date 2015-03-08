@@ -1,7 +1,7 @@
 #divForHpAndFuelRadials {
     position: absolute;
     bottom: 0px;
-    right: 150px;
+    right: 138px;
     width: 150px;
     height: 150px;
     pointer-events: none;
@@ -10,7 +10,7 @@
 #divForRadAndWindRadials {
     position: absolute;
     bottom: 0px;
-    right: 275px;
+    right: 268px;
     width: 150px;
     height: 150px;
     pointer-events: none;

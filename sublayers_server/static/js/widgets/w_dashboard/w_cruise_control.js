@@ -8,9 +8,13 @@ var WCruiseControl = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
 
-        this.parentDiv = $('#' + div_parent);
-        this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
-        this.parentDiv.append(this.mainDiv);
+        this.keyBoardControl = false;
+        this.lastSpeed = -100;
+
+        {   this.parentDiv = $('#' + div_parent);
+            this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
+            this.parentDiv.append(this.mainDiv);
+        }
 
         // Верхний див (индикатор текущей скорости)
         this.topDiv = $("<div id='cruiseControlTopDiv'></div>");
@@ -52,8 +56,8 @@ var WCruiseControl = (function (_super) {
         this.speedHandleDiv.append(this.speedHandleDiv1);
         this.speedHandleDiv.append(this.speedHandleDiv2);
 
-        this.speedHandleDiv.bind( "drag", this, this.onMoveSpeedHandle);
-        this.speedHandleDiv.bind( "dragstop", this, this.onStopSpeedHandle);
+        this.speedHandleDiv.bind( "drag", this, this._onMoveSpeedHandle);
+        this.speedHandleDiv.bind( "dragstop", this, this._onStopSpeedHandle);
 
         // Шкала
         this.scaleArea = $("<div id='cruiseControlScaleArea' class='cruise-control-scaleArea sublayers-unclickable'></div>");
@@ -99,23 +103,25 @@ var WCruiseControl = (function (_super) {
         this.zoneArea = $("<div id='cruiseControlZoneArea' class='cruise-control-zoneArea sublayers-unclickable'></div>");
         this.mediumDiv.append(this.zoneArea);
 
-        // Нижний див (кнопка стоп и и задний ход)
-        this.bottomDiv = $("<div id='cruiseControlBottomDiv' class='sublayers-unclickable'></div>");
-        this.mainDiv.append(this.bottomDiv);
-
         // Кнопка "задний ход"
-        this.reverseDiv = $("<div id='cruiseControlReverseDiv' class='cruise-control-reverse'></div>");
-        this.bottomDiv.append(this.reverseDiv);
+        this.reverseDiv = $("<div id='cruiseControlReverseDiv' class='sublayers-clickable'></div>");
+        this.mainDiv.append(this.reverseDiv);
 
         // Кнопка "стоп"
-        this.stopDiv = $("<div id='cruiseControlStopDiv' class='cruise-control-stop'></div>");
-        this.bottomDiv.append(this.stopDiv);
+        this.stopDiv = $("<div id='cruiseControlStopDiv' class='sublayers-clickable'></div>");
+        this.stopDiv.click(this, this._onClickStop);
+        this.mainDiv.append(this.stopDiv);
 
-        this.change()
+        // Создание и добавление текстов
+        this.mainDiv.append('<span id="spanZoomZoomText1">CRUISE CONTROL</span>');
+        this.mainDiv.append('<span id="spanZoomZoomText2">km/h</span>');
+
+        this.change();
+        this._setSpeedHandle(0);
     }
 
     WCruiseControl.prototype._init_params = function() {
-        this.svg_color = "#00FF00";
+        this.svg_color = "#00FF54";
         var self = this;
         this.svg_params = {
             // градиенты
@@ -145,18 +151,36 @@ var WCruiseControl = (function (_super) {
         };
     };
 
-    WCruiseControl.prototype.onMoveSpeedHandle = function (event, ui) {
+    WCruiseControl.prototype._setSpeedHandleText = function(prc) {
+        var currentSpeed = (user.userCar.maxSpeed / 1000 * 3600) * prc;
+        this.speedHandleDiv1.text(Math.floor(currentSpeed) + '.');
+        this.speedHandleDiv2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
+    };
+
+    WCruiseControl.prototype._setSpeedHandle = function(prc) {
+        var topValue = (1 - prc) * this.constScaleHeight;
+        this.speedHandleDiv.css({top: topValue});
+        this._setSpeedHandleText(prc);
+    };
+
+    WCruiseControl.prototype._onMoveSpeedHandle = function (event, ui) {
         //console.log('WCruiseControl.prototype.onMoveSpeedHandle');
-        var currentSpeed = (user.userCar.maxSpeed / 1000 * 3600) * (1 - (ui.position.top / event.data.constScaleHeight));
-        event.data.speedHandleDiv1.text(Math.floor(currentSpeed) + '.');
-        event.data.speedHandleDiv2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
+        event.data._setSpeedHandleText(1 - (ui.position.top / event.data.constScaleHeight));
     };
 
-    WCruiseControl.prototype.onStopSpeedHandle = function (event, ui) {
+    WCruiseControl.prototype._onStopSpeedHandle = function (event, ui) {
         //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
+        var currentSpeed = user.userCar.maxSpeed * (1 - (ui.position.top / event.data.constScaleHeight));
+        clientManager.sendSetSpeed(currentSpeed);
     };
 
-    WCruiseControl.prototype.drawFillArea = function (prc) {
+    WCruiseControl.prototype._onClickStop = function (event) {
+        //console.log('WCruiseControl.prototype._onClickStop');
+        clientManager.sendStopCar();
+        event.data._setSpeedHandle(0);
+    };
+
+    WCruiseControl.prototype._drawFillArea = function (prc) {
         //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
         if (prc > 1.0) prc = 1.0;
         if (prc < 0.0) prc = 0.0;
@@ -181,15 +205,42 @@ var WCruiseControl = (function (_super) {
             .stroke(this.svg_params.fill_area.cl_stroke);
     };
 
+    WCruiseControl.prototype.getSpeedHandleValue = function() {
+        //console.log('WCruiseControl.prototype.getSpeedHandleValue');
+        return user.userCar.maxSpeed * (1 - (this.speedHandleDiv.position().top / this.constScaleHeight))
+    };
+
+    WCruiseControl.prototype.startKeyboardControl = function() {
+        console.log('WCruiseControl.prototype.startKeyboardControl');
+        this.keyBoardControl = true;
+    };
+
+    WCruiseControl.prototype.stopKeyboardControl = function() {
+        console.log('WCruiseControl.prototype.stopKeyboardControl');
+        this.keyBoardControl = false;
+    };
+
     WCruiseControl.prototype.change = function() {
         //console.log('WCruiseControl.prototype.change');
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
-        var prc = currentSpeed / user.userCar.maxSpeed;
-        this.drawFillArea(prc);
-        currentSpeed = (currentSpeed / 1000 * 3600);
-        this.topTextDiv1.text(Math.floor(currentSpeed) + '.');
-        this.topTextDiv2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
+        if (Math.abs(currentSpeed - this.lastSpeed) > 0.01) {
+            // Обновление шкалы скорости
+            var prc = currentSpeed / user.userCar.maxSpeed;
+            this._drawFillArea(prc);
+
+            // Вывод текущей скорости
+            currentSpeed = (currentSpeed / 1000 * 3600);
+            this.topTextDiv1.text(Math.floor(currentSpeed) + '.');
+            this.topTextDiv2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
+
+            if (this.keyBoardControl) this._setSpeedHandle(prc);
+
+            // Сохраняем последнюю скорость
+            this.lastSpeed = currentSpeed;
+        }
     };
 
     return WCruiseControl;
 })(VisualObject);
+
+var wCruiseControl;
