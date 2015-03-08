@@ -282,3 +282,22 @@ class FireAutoEffect(Message):
             action=self.action,
         )
         return d
+
+
+class ZoneEffectMessage(Message):
+    def __init__(self, subj, in_zone, zone_effect, **kw):
+        super(ZoneEffectMessage, self).__init__(**kw)
+        self.subj = subj
+        self.in_zone = in_zone
+        self.zone_effect = zone_effect
+
+    def as_dict(self):
+        d = super(ZoneEffectMessage, self).as_dict()
+        d.update(
+            subj=self.subj.uid,
+            in_zone=self.in_zone,
+            zone_effect=self.zone_effect,
+            subj_cc=self.subj.p_cc.current,
+            subj_r=self.subj._r
+        )
+        return d

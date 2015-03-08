@@ -1,0 +1,290 @@
+#chatAreaGlass {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    pointer-events: none;
+    width: 555px;
+    height: 457px;
+}
+
+#VMGDivHardware {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 28px;
+    height: 457px;
+    overflow: hidden;
+    background: transparent url('/static/img/chat/chat_port.png') 50% 50% no-repeat;
+}
+
+#VMGMainDivGlass {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 555px;
+    height: 377px;
+    overflow: hidden;
+    background: transparent url('/static/img/chat/chat_glass.png') 50% 50% no-repeat;
+}
+
+#VMGMainDivChat {
+    width: 480px;
+    height: 310px;
+    position: absolute;
+    bottom: 0;
+    background-color: transparent;
+    margin: 10px;
+}
+
+#VMGPageControlArea {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    position: relative;
+    top: 0;
+    left: 0;
+    padding-top: 6px;
+    background-color: transparent;
+}
+
+#VMGDynamicAreaForBorder {
+    height: 260px;
+    width: 450px;
+    left: 0;
+    border: 1px #00ff55 solid;
+    border-radius: 2px;
+    margin-left: 10px;
+    margin-bottom: 15px;
+    position: relative;
+    background-color: transparent;
+}
+
+#VMGDynamicArea {
+    height: 230px;
+    width: 100%;
+    left: 0;
+    position: relative;
+    background-color: transparent;
+    box-sizing: border-box;
+}
+
+#VMGFooterArea {
+    height: 30px;
+    width: 100%;
+    left: 0;
+    position: relative;
+    background-color: transparent;
+    pointer-events: auto;
+    box-sizing: border-box;
+    border-image-slice: 1 0 0 0;
+    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: linear-gradient(to right, transparent, lime, transparent);
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-top: 1px;
+    margin-top: 0;
+}
+
+#VMGEnterButtonDIV {
+    position: absolute;
+    margin-top: 0;
+    right: 3px;
+    top: 4px;
+    width: 50px;
+    height: 20px;
+    border-radius: 2px;
+    border: 1px #00ff55 solid;
+    background-color: rgba(42, 253, 10, 0.20);
+}
+
+#VMGEnterButton {
+    color: #2afd0a;
+    font: 14pt MICRADI;
+    text-align: center;
+    margin-top: -4px;
+}
+
+#VMGInputArea {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 390px;
+    height: 25px;
+    background-color: transparent;
+}
+
+#VMGMainInput {
+    border: 0px solid #000000;
+    height: 100%;
+    width: 99%;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background-color: transparent;
+    padding-left: 4px;
+    color: #2afd0a;
+    font: 10pt MICRADI;
+}
+
+#VMGTextArea {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.VMGChatOutArea {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    display: none;
+}
+
+.VMGChatOutAreaActive {
+    display: block;
+}
+
+.VMGtextOutArea {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+}
+
+.VMGtextOutAreaActive {
+    display: block;
+}
+
+
+
+.VMGMessageOutArea {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.VMGpageButton {
+    opacity: 0.5;
+    float: left;
+    position: relative;
+    color: #2afd0a;
+    border: solid lime 0px;
+    border-radius: 3px;
+    margin: 3px;
+    padding: 3px 5px 3px 5px;
+    font: 11pt MICRADI;
+    pointer-events: auto;
+}
+
+.VMGpageButtonActive {
+    opacity: 1;
+}
+
+.VMGpageButtonActive:before {
+    content: "< ";
+}
+
+.VMGpageButtonActive:after {
+    content: " >";
+}
+
+.VMGtriangle-left {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-right: 10px solid red;
+    border-bottom: 5px solid transparent;
+}
+
+.VMGtriangle-right {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-left: 10px solid red;
+    border-bottom: 5px solid transparent;
+}
+
+.VMGPartytextOutArea {
+    height: 200px;
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    background-color: transparent;
+}
+
+.VMGPartyPageControl {
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    position: relative;
+    top: 0;
+    left: 0;
+    padding-top: 2px;
+    background-color: transparent;
+    border-image-slice: 0 0 1 0;
+    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: linear-gradient(to right, transparent, lime, transparent);
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 1px;
+    margin-top: 0;
+}
+
+
+.VMGPartypageButton {
+    opacity: 0.5;
+    float: left;
+    position: relative;
+    color: #2afd0a;
+    border: solid lime 0px;
+    border-radius: 3px;
+    margin: 3px;
+    padding: 3px 5px 3px 5px;
+    font: 8pt MICRADI;
+    pointer-events: auto;
+}
+
+.VMGPartypageButton:hover {
+    opacity: 1;
+}
+
+
+.VMG-message-message {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.VMG-message-text-time {
+    color: #2afd0a;
+    font: 6pt MICRADI;
+}
+
+.VMG-message-text-user {
+    color: #2afd0a;
+    font: 10pt MICRADI;
+}
+
+.VMG-message-text-my-user {
+    color: #2afd0a;
+    font: 11pt MICRADI;
+}
+
+.VMG-message-text-text {
+    color: #2afd0a;
+    font: 8pt MICRADI;
+}

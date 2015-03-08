@@ -205,6 +205,14 @@ class Unit(Observer):
             if isinstance(task, HPTask):
                 task.done()
 
+    def zone_changed(self, zone_effect, in_zone):
+        for agent in self.watched_agents:
+            messages.ZoneEffectMessage(
+                agent=agent,
+                subj=self,
+                in_zone=in_zone,
+                zone_effect=zone_effect.as_dict(),
+            ).post()
 
 class Station(Unit):
     u"""Class of buildings"""

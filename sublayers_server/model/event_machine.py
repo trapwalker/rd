@@ -156,8 +156,8 @@ class LocalServer(Server):
         self.thread.join(timeout)
         self.thread = None
         self.is_terminated = False
-        if self.app:
-            self.app.stop()
+        #if self.app:
+        #    self.app.stop()  # todo: checkit
 
     # todo: pause
 

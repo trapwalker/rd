@@ -60,17 +60,12 @@ $(document).ready(function () {
     clientManager = new ClientManager();
 
 
-    // Включение/Выключение полноэранного режима
-    buttonFullScreen.onclick = FullScreenToggle;
-
     // Включение/Выключение отображения настроек игры
     buttonOptions.onclick = funcModalOptionsShow;
 
-    // Кнопка подключения к серверу (пока просто перезагружает страницу)
-    buttonConnectServer.onclick = ConnectServerToggle;
-
 
     // создание чата
+/*
     chat = new ViewMessenger({
             parentDiv: 'bodydiv',
             height: (cookieStorage.flagDebug ? 550 : 250),
@@ -85,8 +80,27 @@ $(document).ready(function () {
     chat.addChat(-1, "-= L O G =-");
     chat.setActiveChat(-1);
     chat.setVisible(cookieStorage.chatVisible);
+*/
+
+    chat = new ViewMessengerGlass({
+        stream_mes: message_stream
+    });
 
 
+    // тестовые сообщения, просто чтобы видеть как они будут выглядеть
+    setTimeout(function() {
+        chat.addMessage(-2, '', {login: 'Ivan'}, 'Привет! Это тестовое сообщение в пати!');
+        chat.addMessage(-2, '', {login: user.login}, 'Привет! Это мой браузер!');
+
+        chat.addMessage(-1, '', {login: user.login}, 'Городской чат говорите? Рация значит ловит.');
+        chat.addMessage(-1, '', {login: 'Vasiliy'}, 'аааа, город! хаха! я в городе');
+
+        chat.addMessage(-3, '', {login: 'game'}, 'Система загружена. Вы можете начать движение.');
+        chat.addMessage(-3, '', {login: 'game'}, 'Для начала движения выставьте круиз контроль на желаемое значение.');
+
+        chat.addMessage(-4, '', {login: 'system'}, 'На сервере игроков ххх.');
+        chat.addMessage(-4, '', {login: 'game'}, 'Мы рады сообщить Вам, что здесь будет всякий флуд от сервера');
+    }, 5000);
 
     //carMarkerList = new CarMarkerList({_map: myMap});
 
@@ -101,7 +115,7 @@ $(document).ready(function () {
 
     ws_connector.connect();
 
-
+    document.getElementById('map').focus();
     //alert(window.location);
 
     // Не показывать окно приветствия в debug режиме
@@ -111,22 +125,6 @@ $(document).ready(function () {
 });
 
 
-//Переключение в полноэкранный режим и обратно по кнопке
-function FullScreenToggle() {
-    var html = document.documentElement;
-    var jSelector = $('#buttonFullScreen');
-
-    if (RunPrefixMethod(document, "FullScreen") || RunPrefixMethod(document, "IsFullScreen")) {
-        RunPrefixMethod(document, "CancelFullScreen");
-        jSelector.removeClass('buttonFullScreenOff');
-        jSelector.addClass('buttonFullScreenOn');
-    }
-    else {
-        RunPrefixMethod(html, "RequestFullScreen");
-        jSelector.removeClass('buttonFullScreenOn');
-        jSelector.addClass('buttonFullScreenOff');
-    }
-}
 
 function funcModalOptionsShow(){
     modalWindow.modalOptionsShow();
@@ -170,24 +168,7 @@ function setTitleOnPage(){
 }
 
 
-//Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
-function RunPrefixMethod(obj, method) {
-    var p = 0, m, t;
-    while (p < pfx.length && !obj[m]) {
-        m = method;
-        if (pfx[p] == "") {
-            m = m.substr(0, 1).toLowerCase() + m.substr(1);
-        }
-        m = pfx[p] + m;
-        t = typeof obj[m];
-        if (t) {
-            pfx = [pfx[p]];
-            return (t == "function" ? obj[m]() : obj[m]);
-        }
-        p++;
-    }
 
-}
 
 // todo: снести myMap
 var myMap;

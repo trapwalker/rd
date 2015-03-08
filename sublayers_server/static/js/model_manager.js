@@ -200,12 +200,15 @@ var ClientManager = (function () {
             // Виджеты:
             new WCarMarker(mcar);    // виджет маркера
             new WMapPosition(mcar);  // виджет позиционирования карты
-            new WSpeedSlider(mcar);  // виджет круиз контроля
-            new WHPRadial(mcar, 'divScaleCarHealth');
-            new WFuelRadial(mcar, 'divScaleCarFuel');
-            new WRadiationRadial(mcar, 'divScaleRadiation');
-            new WWindRadial(mcar, 'divScaleWind');
+
+            // Круиз
+            wCruiseControl = new WCruiseControl(mcar, 'cruiseControlGlassDiv');
             new WAltmetrRadial(mcar, 'divForAltmetrRadial');
+            new WHPRadial(mcar, 'divForHpAndFuelRadials');
+            new WFuelRadial(mcar, 'divForHpAndFuelRadials');
+            new WRadiationRadial(mcar, 'divForRadAndWindRadials');
+            new WWindRadial(mcar, 'divForRadAndWindRadials');
+
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             new WViewRadius(mcar, radius_visible); // виджет радиуса видимости
@@ -468,6 +471,12 @@ var ClientManager = (function () {
         });
     };
 
+    ClientManager.prototype.ZoneEffectMessage = function (event) {
+        console.log('ClientManager.prototype.ZoneEffectMessage', event);
+
+    };
+
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
@@ -488,7 +497,12 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto', user.userCar.getLastSpeed());
-        this.sendMotion(target, user.userCar.getLastSpeed(), null);
+        var currentSpeed = wCruiseControl.getSpeedHandleValue();
+        if (currentSpeed == 0) {
+            currentSpeed = user.userCar.maxSpeed * 0.2;
+            wCruiseControl._setSpeedHandle(0.2);
+        }
+        this.sendMotion(target, currentSpeed, null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {

@@ -44,6 +44,10 @@ var WCarMarker = (function (_super) {
         marker.addTo(map);
         marker.carID = car.ID;
         this.marker = marker;
+
+        //if (car == user.userCar)
+        marker.on('click', onClickUserCarMarker);
+        marker.on('contextmenu', function(){alert('Номер текущей иконки: ' + this._old_icon_id)});
     };
 
     WCarMarker.prototype.change = function(){
@@ -84,5 +88,14 @@ function onMouseOverForLabels(){
 
 function onMouseOutForLabels(){
     this.setLabelNoHide(cookieStorage.visibleLabel());
+}
+
+
+function onClickUserCarMarker(){
+    //alert('click to my marker');
+    if(! this._old_icon_id) this._old_icon_id = 0;
+    this._old_icon_id++;
+    this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
+
 }
 

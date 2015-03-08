@@ -156,7 +156,7 @@ var UserCar = (function (_super) {
     function UserCar(aID, aMaxSpeed, aState, aHPState) {
         _super.call(this, aID, aState, aHPState);
         this.maxSpeed = aMaxSpeed;
-        this._lastSpeed = 0.75 * aMaxSpeed;
+        this._lastSpeed = 0;
         this.fireSidesMng = new FireSideMng();
     }
 
