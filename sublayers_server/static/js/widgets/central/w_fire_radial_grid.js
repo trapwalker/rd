@@ -11,6 +11,7 @@ var WFireRadialGrid = (function (_super) {
         this.car = car;
         this.marker = null; // это непосредственно маркер, в котором будет свг-иконка
         this.elem_zoom = []; // элементы, зависящие от зума, которые нужно перерисовывать
+        this._visible = true;
 
         this.init_marker();
 
@@ -222,8 +223,8 @@ var WFireRadialGrid = (function (_super) {
                 fill: {color: this.svg_colors.main, opacity: 1.0},
                 text: {
                     font: {
-                        family:   'Helvetica',
-                        size:     10,
+                        family:   'MICRADI',
+                        size:     8,
                         anchor:   'middle',
                         leading:  '1.5em'
                     },
@@ -654,6 +655,23 @@ var WFireRadialGrid = (function (_super) {
             this._lastRotateAngle = angle_in_degrees;
         }
     };
+
+    WFireRadialGrid.prototype.setVisible = function (visible) {
+        if (this._visible != visible){
+            this._visible = visible;
+            if (visible){
+                // показать
+                this.g.animate(500).opacity(1);
+            }
+            else {
+                // скрыть
+                this.g.animate(500).opacity(0);
+            }
+        }
+
+    };
+
+
 
     WFireRadialGrid.prototype.delFromVisualManager = function () {
         //console.log('WFireRadialGrid.prototype.delFromVisualManager');

@@ -168,16 +168,20 @@ function onKeyDownMap(event) {
             clientManager.sendFireDischarge('right');
             break;
         case 69:  // E
+            /*
             clientManager.sendFireAutoEnable('front', true);
             clientManager.sendFireAutoEnable('back', true);
             clientManager.sendFireAutoEnable('right', true);
             clientManager.sendFireAutoEnable('left', true);
+            */
             break;
         case 81:  // Q
+            /*
             clientManager.sendFireAutoEnable('front', false);
             clientManager.sendFireAutoEnable('back', false);
             clientManager.sendFireAutoEnable('right', false);
             clientManager.sendFireAutoEnable('left', false);
+            */
             break;
         case 90:  // Z
             //console.log('Was pressed: Z');
@@ -346,6 +350,17 @@ var MapManager = (function(_super){
             mapManager.widget_fire_sectors.setZoom(mapManager.anim_zoom);
         if (mapManager.zoomSlider)
             mapManager.zoomSlider.setZoom(mapManager.anim_zoom);
+
+        if (event.zoom) {
+            if (event.zoom < 15) {
+                // убрать боевой режим
+                wFireController.setVisible(false);
+            }
+            else {
+                // показать боевой режим
+                wFireController.setVisible(true);
+            }
+        }
     };
 
     MapManager.prototype.onZoomStart = function (event) {

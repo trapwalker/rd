@@ -116,15 +116,19 @@ var WFireController = (function (_super) {
                 self.SVG.setAttribute('display', 'none');
                 self.fCSB.removeClass('fire-control-slide-button-show');
                 self.fCSB.addClass('fire-control-slide-button-hide');
+                self._setAutoShootingEnable(false);
             }
             else {
                 self.visible = true;
                 self.fCSB.removeClass('fire-control-slide-button-hide');
                 self.fCSB.addClass('fire-control-slide-button-show');
                 self.SVG.setAttribute('display', 'block');
+                self._setAutoShootingEnable(self.autoShoot);
             }
         });
         document.getElementById('map').focus();
+        mapManager.widget_fire_radial_grid.setVisible(!self.visible);
+        mapManager.widget_fire_sectors.setVisible(!self.visible);
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
@@ -137,23 +141,29 @@ var WFireController = (function (_super) {
         return this.visible;
     };
 
-    WFireController.prototype.changeAutoShootingEnable = function () {
+    WFireController.prototype._setAutoShootingEnable = function (enable) {
+        //console.log('WFireController.prototype._setAutoShootingEnable', enable);
+        clientManager.sendFireAutoEnable('front', enable);
+        clientManager.sendFireAutoEnable('back', enable);
+        clientManager.sendFireAutoEnable('right', enable);
+        clientManager.sendFireAutoEnable('left', enable);
+    };
+
+    WFireController.prototype.changeAutoShootingEnable = function (event) {
         //console.log('WFireController.prototype.changeAutoShootingEnable');
-        if (this.autoShoot) {
+        var self = event.data.self;
+        if (self.autoShoot) {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'OFF');
-            clientManager.sendFireAutoEnable('front', false);
-            clientManager.sendFireAutoEnable('back', false);
-            clientManager.sendFireAutoEnable('right', false);
-            clientManager.sendFireAutoEnable('left', false);
-            this.autoShoot = false;
+            self.autoShoot = false;
+            self._setAutoShootingEnable(false);
+            //self.allFire.removeClass('fire-control-all-active');
+            self.allFire.setAttribute('class', 'fire-control-all sublayers-clickable');
         }
         else {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
-            clientManager.sendFireAutoEnable('front', true);
-            clientManager.sendFireAutoEnable('back', true);
-            clientManager.sendFireAutoEnable('right', true);
-            clientManager.sendFireAutoEnable('left', true);
-            this.autoShoot = true;
+            self.autoShoot = true;
+            self._setAutoShootingEnable(true);
+            self.allFire.setAttribute('class', 'fire-control-all sublayers-clickable fire-control-all-active');
         }
         document.getElementById('map').focus();
     };

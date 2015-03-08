@@ -12,6 +12,7 @@ var WFireSectorsScaled = (function (_super) {
         this.marker = null; // это непосредственно маркер, в котором будет свг-иконка
         this.sectors_groups = []; // секторы
         this.stroke_zoom_elements = [];
+        this._visible = true;
 
         this.sectors_is_hide = false;
 
@@ -199,8 +200,8 @@ var WFireSectorsScaled = (function (_super) {
                 },
                 rech_text: {
                     font: {
-                        family:   'Helvetica',
-                        size:     13,
+                        family:   'MICRADI',
+                        size:     11,
                         anchor:   'start',
                         leading:  '1.5em'
                     },
@@ -453,7 +454,6 @@ var WFireSectorsScaled = (function (_super) {
 
     };
 
-
     WFireSectorsScaled.prototype._drawRechargeArea = function(side_str){
         var side = this.car.fireSidesMng.sides[side_str];
         var width = side.sideDischargeWidth;
@@ -644,13 +644,29 @@ var WFireSectorsScaled = (function (_super) {
 
     };
 
-
     WFireSectorsScaled.prototype.rotate = function(angle_in_degrees){
         if (Math.abs(this._lastRotateAngle - angle_in_degrees) > 0.1) {
             this.rotate_g.transform({rotation: angle_in_degrees, cx: this.size_of_icon, cy: this.size_of_icon});
             //this._rotateZoomatorsText(angle_in_degrees);
             this._lastRotateAngle = angle_in_degrees;
         }
+    };
+
+    WFireSectorsScaled.prototype.setVisible = function (visible) {
+        if (this._visible != visible){
+            this._visible = visible;
+            if (visible){
+                // показать
+                //console.log('показать сектора');
+                this.main_g.animate(500).opacity(1);
+            }
+            else {
+                // скрыть
+                //console.log('скрыть сектора');
+                this.main_g.animate(500).opacity(0);
+            }
+        }
+
     };
 
     WFireSectorsScaled.prototype.delFromVisualManager = function () {
