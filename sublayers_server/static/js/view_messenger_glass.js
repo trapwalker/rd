@@ -13,6 +13,7 @@ var ViewMessengerGlass = (function () {
 
         this.chats = [];
         this.log_index = 0;
+        this.chat_visible = true;
 
 
         //  Вёрстка !
@@ -107,6 +108,12 @@ var ViewMessengerGlass = (function () {
             cbFunc: 'receiveMessageFromModelManager',
             subject: this
         });
+
+
+        // кнопка сворачивания дива
+        $('#VMGDivHardware').append('<div id="VMGPortHideBtn" class="hideBtnDownLeft"></div>');
+        this.btn_hide =  $('#VMGPortHideBtn');
+        this.btn_hide.on('click', {self: this}, this.btnHideReaction);
 
 
         // Создание чатов. Сразу все 4 чата
@@ -548,6 +555,36 @@ var ViewMessengerGlass = (function () {
         //alert('Окно для подтверждения выхода из пати');
         sendServConsole('\leave');
         chat.main_input.focus();
+    };
+
+
+    ViewMessengerGlass.prototype.btnHideReaction = function(event) {
+        var self = event.data.self;
+        self.changeVisible(!self.chat_visible);
+        document.getElementById('map').focus();
+    };
+
+    ViewMessengerGlass.prototype.changeVisible = function(visible) {
+        //console.log('WZoomSlider.prototype.changeVisible', visible);
+        var self = this;
+        if (visible != this.chat_visible) {
+            this.chat_visible = visible;
+            if (visible) { // нужно показать
+                self.parentGlass.css({display: 'block'});
+                this.parentGlass.animate({left: 0}, 1000, function () {
+                    self.btn_hide.removeClass('hideBtnUpLeft');
+                    self.btn_hide.addClass('hideBtnDownLeft');
+                    self.parentGlass.css({display: 'block'});
+                });
+            }
+            else { // нужно скрыть
+                this.parentGlass.animate({left: -555}, 1000, function () {
+                    self.btn_hide.removeClass('hideBtnDownLeft');
+                    self.btn_hide.addClass('hideBtnUpLeft');
+                    self.parentGlass.css({display: 'none'});
+                });
+            }
+        }
     };
 
 
