@@ -60,8 +60,9 @@ var WCruiseControl = (function (_super) {
         this.speedHandleDiv.bind( "dragstop", this, this._onStopSpeedHandle);
 
         // Шкала
-        this.scaleArea = $("<div id='cruiseControlScaleArea' class='cruise-control-scaleArea sublayers-unclickable'></div>");
+        this.scaleArea = $("<div id='cruiseControlScaleArea' class='sublayers-clickable'></div>");
         this.mediumDiv.append(this.scaleArea);
+        this.scaleArea.click(this, this._onClickScaleArea);
 
         // Рисуем SVG шкалу
         this.svgScaleArea = SVG('cruiseControlScaleArea');
@@ -228,6 +229,16 @@ var WCruiseControl = (function (_super) {
         document.getElementById('map').focus();
     };
 
+    WCruiseControl.prototype._onClickScaleArea = function (event) {
+        //console.log('WCruiseControl.prototype._onClickScaleArea');
+        var prc = (event.data.constScaleHeight + event.data.constSpeedHandleHeight) - event.offsetY - event.data.svgScaleDY;
+        if (prc < 0) prc = 0;
+        if (prc > event.data.constScaleHeight) prc = event.data.constScaleHeight;
+        prc /= event.data.constScaleHeight;
+        event.data._setSpeedHandle(prc);
+        clientManager.sendSetSpeed(user.userCar.maxSpeed * prc);
+    };
+
     WCruiseControl.prototype._onClickStop = function (event) {
         //console.log('WCruiseControl.prototype._onClickStop');
         clientManager.sendStopCar();
@@ -259,7 +270,12 @@ var WCruiseControl = (function (_super) {
                     'L ' + topLeft.x + ' ' + topLeft.y +
                     'Z')
             .fill(this.svg_params.fill_area.fill)
-            .stroke(this.svg_params.fill_area.stroke);
+            .stroke(this.svg_params.fill_area.stroke)
+            .style('pointer-events: none');
+
+
+        //this.fill_area.setAttribute('class', 'cruise-control-fill-area');
+
 
         this.close_line = this.svgScaleArea.line(topLeft.x, topLeft.y, topRight.x, topRight.y + 0.0001)
             .stroke({width: 1, color: this.svg_params.gradients.line_grad3});
