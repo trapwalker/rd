@@ -16,9 +16,9 @@ var WTargetPointMarker = (function (_super) {
         var temp_coord = car.getCurrentCoord(clock.getCurrentTime());
         var carLatLng = map.unproject([temp_coord.x, temp_coord.y], map.getMaxZoom());
         this.line = L.polyline([carLatLng, carLatLng], {
-            color: 'green',
+            color: '#00ff54',
             weight: 2,
-            opacity: 1.0,
+            opacity: 0.2,
             clickable: false,
             lineCap: 'round',
             dashArray: '8, 5' // для пунктира
