@@ -25,6 +25,47 @@
     background-position: center;
 }
 
+
+#cruiseControlVisibleButtonDiv {
+    pointer-events: auto;
+    position: absolute;
+    top: 40px;
+    left: -2px;
+}
+
+.hideBtnDownRight {
+    height: 36px;
+    width: 27px;
+    background: transparent url('/static/img/misc_button/down_hide_normal.png') 50% 50% no-repeat;
+    transform: rotate(90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+.hideBtnDownRight:hover {
+    background: transparent url('/static/img/misc_button/down_hide_hover.png') 50% 50% no-repeat;
+}
+
+.hideBtnDownRight:active {
+    background: transparent url('/static/img/misc_button/down_hide_active.png') 50% 50% no-repeat;
+}
+
+
+.hideBtnUpRight {
+    height: 36px;
+    width: 27px;
+    background: transparent url('/static/img/misc_button/up_hide_normal.png') 50% 50% no-repeat;
+    transform: rotate(90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+.hideBtnUpRight:hover {
+    background: transparent url('/static/img/misc_button/up_hide_hover.png') 50% 50% no-repeat;
+}
+
+.hideBtnUpRight:active {
+    background: transparent url('/static/img/misc_button/up_hide_active.png') 50% 50% no-repeat;
+}
+
 #cruiseControlSpeedMainDiv {
     position: absolute;
     bottom: 450px;

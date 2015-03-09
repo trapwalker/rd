@@ -11,10 +11,19 @@ var WCruiseControl = (function (_super) {
         this.keyBoardControl = false;
         this.lastSpeed = -100;
 
-        {   this.parentDiv = $('#' + div_parent);
-            this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
-            this.parentDiv.append(this.mainDiv);
-        }
+
+        // Механизм скрытия
+        this.visible = true;
+        this.glassDiv = $('#cruiseControlGlassDiv');
+        this.hardWareDiv = $('#cruiseControlHardwareDiv');
+        this.visibleButtonDiv = $("<div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>");
+        this.hardWareDiv.append(this.visibleButtonDiv);
+        this.visibleButtonDiv.click(this, this._onClickChangeVisible);
+
+
+        this.parentDiv = $('#' + div_parent);
+        this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
+        this.parentDiv.append(this.mainDiv);
 
         // Верхний див (индикатор текущей скорости)
         this.topDiv = $("<div id='cruiseControlTopDiv'></div>");
@@ -168,6 +177,35 @@ var WCruiseControl = (function (_super) {
         this.change();
         this._setSpeedHandle(0);
     }
+
+    WCruiseControl.prototype._onClickChangeVisible = function (event) {
+        //console.log('WCruiseControl.prototype._onClickChangeVisible');
+        event.data.changeVisible(!event.data.visible);
+        document.getElementById('map').focus();
+    };
+
+    WCruiseControl.prototype.changeVisible = function (visible) {
+        //console.log('WCruiseControl.prototype.changeVisible');
+        if (visible == this.visible) return;
+        var self = this;
+        if (this.visible) {
+            this.visible = false;
+            this.glassDiv.animate({right: -560}, 1000, function () {
+                self.visibleButtonDiv.removeClass('hideBtnDownRight');
+                self.visibleButtonDiv.addClass('hideBtnUpRight');
+                self.glassDiv.css({display: 'none'});
+            });
+        }
+        else {
+            this.visible = true;
+            this.glassDiv.css({display: 'block'});
+            this.glassDiv.animate({right: 0}, 1000, function () {
+                self.visibleButtonDiv.removeClass('hideBtnUpRight');
+                self.visibleButtonDiv.addClass('hideBtnDownRight');
+                self.glassDiv.css({display: 'block'});
+            });
+        }
+    };
 
     WCruiseControl.prototype._init_params = function() {
         this.svg_colors = {
