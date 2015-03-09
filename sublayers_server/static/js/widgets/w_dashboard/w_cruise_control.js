@@ -169,6 +169,36 @@ var WCruiseControl = (function (_super) {
         this._setSpeedHandle(0);
     }
 
+    WFireController.prototype.changeCombatState = function(event){
+        var self = event.data.self;
+        self.combatState = !self.combatState;
+        self.setVisible(self.combatState);
+    };
+
+    WFireController.prototype.changeVisible = function (event) {
+        //console.log('WFireController.prototype.changeVisible');
+        var self = event.data.self;
+        self.fCT.slideToggle("slow", function () {
+            if (self.visible) {
+                self.visible = false;
+                self.SVG.setAttribute('display', 'none');
+                self.fCSB.removeClass('fire-control-slide-button-show');
+                self.fCSB.addClass('fire-control-slide-button-hide');
+                self._setAutoShootingEnable(false);
+            }
+            else {
+                self.visible = true;
+                self.fCSB.removeClass('fire-control-slide-button-hide');
+                self.fCSB.addClass('fire-control-slide-button-show');
+                self.SVG.setAttribute('display', 'block');
+                self._setAutoShootingEnable(self.autoShoot);
+            }
+        });
+        document.getElementById('map').focus();
+        mapManager.widget_fire_radial_grid.setVisible(!self.visible);
+        mapManager.widget_fire_sectors.setVisible(!self.visible);
+    };
+
     WCruiseControl.prototype._init_params = function() {
         this.svg_colors = {
             fill: "#2afd0a",
