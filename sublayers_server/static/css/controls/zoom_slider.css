@@ -127,10 +127,10 @@
     position: relative;
     height: 10px;
     width: 10px;
-    top: 8px;
+    top: 9px;
     left: 21px;
     background-color: #2afd0a;
-    border-radius: 50%;
+    border-radius: 30%;
 }
 
 
@@ -156,10 +156,11 @@
 #spanZoomZoomText {
     position: absolute;
     top: 185px;
-    left: 0px;
+    left: -5px;
     white-space: nowrap;
     pointer-events: none;
     font: 10pt MICRADI;
+    letter-spacing: 2px;
     color: rgba(42, 253, 10, 0.50);
     transform: rotate(-90deg);
     -webkit-transform: rotate(-90deg);
@@ -168,21 +169,26 @@
 /* Настройка слайдера зума завершена */
 #DivForBtnSVALLInsideZoom {
     pointer-events: auto;
-    height: 28px;
+    height: 32px;
     width: 70px;
     color: #2afd0a;
     border: 1px #00ff55 solid;
+    box-sizing: border-box;
     border-radius: 1px;
     position: relative;
-    background-color: rgba(0, 255, 85, 0.10);
+    background: rgba(0, 255, 85, 0.10) url('/static/img/control_zoom/hide_gadgets.png') 50% 50% no-repeat;
     left: 17px;
     top: 8px;
-
 }
+
+#DivForBtnSVALLInsideZoom:hover {
+    background-color: rgba(0, 255, 85, 0.20);
+}
+
 
 #DivForBtnFSCRInsideZoom {
     pointer-events: auto;
-    height: 28px;
+    height: 32px;
     width: 70px;
     color: #2afd0a;
     border: 1px #00ff55 solid;
@@ -190,9 +196,26 @@
     border-radius: 1px;
     text-align: center;
     box-sizing: border-box;
-    padding-top: 4px;
+    padding-top: 5px;
     position: relative;
     background-color: rgba(0, 255, 85, 0.10);
     left: 17px;
     top: 15px;
+}
+
+#DivForBtnFSCRInsideZoom:hover {
+    background-color: rgba(0, 255, 85, 0.20);
+}
+
+#DivForBtnSVALLRazvrInsideZoom {
+    pointer-events: auto;
+    height: 28px;
+    width: 70px;
+    color: #2afd0a;
+    border: 1px #00ff55 solid;
+    border-radius: 1px;
+    position: relative;
+    left: 17px;
+    top: 8px;
+    background: rgba(0, 255, 85, 0.10) url('/static/img/control_zoom/unhide_gadgets.png') 50% 50% no-repeat;
 }

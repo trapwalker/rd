@@ -122,6 +122,7 @@ body{
     width: 62px;
     height: 62px;
     background: transparent url('/static/img/misc_button/btn_options_normal.png') 100% 100% no-repeat;
+    display: none;
 }
 
 #buttonOptions:hover {
