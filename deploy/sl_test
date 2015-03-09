@@ -19,10 +19,10 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Sublayers start-stop test daemon"
 NAME=sl
 DAEMON=/usr/bin/python
-DAEMON_ARGS="/home/sl/sublayers/sublayers_server_test/server.py"
+DAEMON_ARGS="/home/sl/sublayers_test/sublayers_server/server.py"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
-WORK_DIR=/home/sl/sublayers/sublayers_server_test
+WORK_DIR=/home/sl/sublayers_test/sublayers_server
 
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0
