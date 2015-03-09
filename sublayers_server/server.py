@@ -10,7 +10,9 @@ import tornado.options
 import tornado.web
 import tornado.websocket
 import os.path
+import signal
 import os
+import sys
 from tornado.options import define, options
 
 from model.event_machine import LocalServer
@@ -48,8 +50,13 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
 
     def stop(self):
-        self.srv.stop()
+        log.debug('====== ioloop before stop')
         tornado.ioloop.IOLoop.instance().stop()
+        log.debug('====== ioloop after stop')
+
+    def on_stop(self):
+        if self.srv.is_active:
+            self.srv.stop()
 
     def init_scene(self):
         #from model.units import Bot
@@ -75,6 +82,15 @@ class MainHandler(tornado.web.RequestHandler):
 
 def main():
     import socket
+
+    def on_exit(sig, func=None):
+        print '====== terminate'
+        log.debug('====== exit handler triggered')
+        #sys.exit(1)
+        app.stop()
+
+    signal.signal(signal.SIGTERM, on_exit)
+
     tornado.options.parse_config_file('server.conf', final=False)
     try:
         tornado.options.parse_config_file('server.local.conf', final=False)
@@ -105,10 +121,13 @@ def main():
         log.critical(e)
         print e
     else:
+        log.debug('====== ioloop before start')
         tornado.ioloop.IOLoop.instance().start()
+        log.debug('====== ioloop after start')
     finally:
+        log.debug('====== finally before stop')
         app.stop()
-        globals().update(app=app, srv=app.srv)
+        log.debug('====== finally after stop')
 
 
 if __name__ == "__main__":
