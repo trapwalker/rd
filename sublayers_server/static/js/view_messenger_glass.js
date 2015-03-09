@@ -480,8 +480,8 @@ var ViewMessengerGlass = (function () {
 
     // вывод входящих ws-сообщений в лог
     ViewMessengerGlass.prototype.receiveMessageFromWS = function(msg){
+        //console.log('ViewMessengerGlass.prototype.receiveMessageFromWS', msg);
         /*
-        //console.log('ViewMessengerGlass.prototype.receiveMessageFromWS');
         if (msg.message_type == "push") {
             //if (cookieStorage.enableLogPushMessage())
             this._addMessageToLog('new push form server! SEE this!!!', 'push');
@@ -492,6 +492,12 @@ var ViewMessengerGlass = (function () {
             //if (cookieStorage.enableLogAnswerMessage())
                 //this._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
                 */
+        if(msg.events) {
+            var event = msg.events[0];
+            if (event.cls === 'Chat')
+                this.addMessage(-1, '', event.author, event.text);
+        }
+
         return true;
     };
 
