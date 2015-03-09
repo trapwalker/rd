@@ -10,12 +10,14 @@ import tornado.options
 import tornado.web
 import tornado.websocket
 import os.path
+import os
 from tornado.options import define, options
 
 from model.event_machine import LocalServer
 
 from client_connector import AgentSocketHandler
 
+define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
 # todo: logging config file path define as tornado option
 
@@ -81,6 +83,18 @@ def main():
     else:
         log.info('Local configuration file load OK')
     tornado.options.parse_command_line(final=True)
+
+    pid = os.getpid()
+    log.info('Service started with PID=%s', pid)
+    if options.pidfile:
+        try:
+            with open(options.pidfile, 'w') as f_pid:
+                f_pid.write(str(pid))
+        except Exception as e:
+            log.error("[FAIL] Can't store PID into the file '%s': %s", options.pidfile, e)
+        else:
+            log.info("[DONE] PID stored into the file '%s'", options.pidfile)
+
     app = Application()
     try:
         app.listen(options.port)
