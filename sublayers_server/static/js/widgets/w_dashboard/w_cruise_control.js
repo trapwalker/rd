@@ -237,6 +237,7 @@ var WCruiseControl = (function (_super) {
         prc /= event.data.constScaleHeight;
         event.data._setSpeedHandle(prc);
         clientManager.sendSetSpeed(user.userCar.maxSpeed * prc);
+        document.getElementById('map').focus();
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
