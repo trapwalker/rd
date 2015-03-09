@@ -25,6 +25,47 @@
     background-position: center;
 }
 
+
+#cruiseControlVisibleButtonDiv {
+    pointer-events: auto;
+    position: absolute;
+    top: 40px;
+    left: -2px;
+}
+
+.hideBtnDownRight {
+    height: 36px;
+    width: 27px;
+    background: transparent url('/static/img/misc_button/down_hide_normal.png') 50% 50% no-repeat;
+    transform: rotate(90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+.hideBtnDownRight:hover {
+    background: transparent url('/static/img/misc_button/down_hide_hover.png') 50% 50% no-repeat;
+}
+
+.hideBtnDownRight:active {
+    background: transparent url('/static/img/misc_button/down_hide_active.png') 50% 50% no-repeat;
+}
+
+
+.hideBtnUpRight {
+    height: 36px;
+    width: 27px;
+    background: transparent url('/static/img/misc_button/up_hide_normal.png') 50% 50% no-repeat;
+    transform: rotate(90deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+.hideBtnUpRight:hover {
+    background: transparent url('/static/img/misc_button/up_hide_hover.png') 50% 50% no-repeat;
+}
+
+.hideBtnUpRight:active {
+    background: transparent url('/static/img/misc_button/up_hide_active.png') 50% 50% no-repeat;
+}
+
 #cruiseControlSpeedMainDiv {
     position: absolute;
     bottom: 450px;
@@ -35,6 +76,7 @@
 
 #cruiseControlTopDiv {
     position: absolute;
+    top: -5px;
     width: 56px;
     height: 63px;
     left: 43px;
@@ -116,11 +158,16 @@
     top: 5px;
 }
 
-.cruise-control-scaleArea {
+#cruiseControlScaleArea {
     position: absolute;
     left: 54px;
     width: 44px;
     height: 100%;
+    pointer-events: auto;
+}
+
+.cruise-control-fill-area {
+    pointer-events: none;
 }
 
 .cruise-control-zoneArea {
@@ -205,19 +252,17 @@
 
 #spanLimitText2 {
     position: absolute;
+    letter-spacing: 1px;
     height: 20px;
     width: 200px;
     top: 224px;
     right: -77px;
     white-space: nowrap;
-    font: 8pt MICRADI;
+    font-size: 9pt;
     color: rgb(42, 253, 10);
     transform: rotate(-90deg);
     -webkit-transform: rotate(-90deg);
 }
-
-
-
 
 #cruiseControlReverseDiv {
     position: absolute;

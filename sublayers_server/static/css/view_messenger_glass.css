@@ -17,6 +17,13 @@
     background: transparent url('/static/img/chat/chat_port.png') 50% 50% no-repeat;
 }
 
+#VMGPortHideBtn{
+    pointer-events: auto;
+    position: absolute;
+    bottom: 397px;
+    left: 2px;
+}
+
 #VMGMainDivGlass {
     position: absolute;
     left: 0;
@@ -272,19 +279,23 @@
 .VMG-message-text-time {
     color: #2afd0a;
     font: 6pt MICRADI;
+    letter-spacing: 1px;
 }
 
 .VMG-message-text-user {
     color: #2afd0a;
     font: 10pt MICRADI;
+    letter-spacing: 1px;
 }
 
 .VMG-message-text-my-user {
     color: #2afd0a;
     font: 11pt MICRADI;
+    letter-spacing: 1px;
 }
 
 .VMG-message-text-text {
     color: #2afd0a;
     font: 8pt MICRADI;
+    letter-spacing: 1px;
 }

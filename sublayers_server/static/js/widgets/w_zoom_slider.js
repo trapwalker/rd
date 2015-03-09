@@ -11,6 +11,7 @@ var WZoomSlider = (function () {
         this.count_zoom = map.getMaxZoom() - map.getMinZoom();
         this.px_on_zoom = ConstZoomHeightOfScale / (this.count_zoom);
         this.points_in_step = ConstZoomHeightOfScale / (this.count_zoom);
+        this.zoom_visible = true;
 
         this.options = {
             parentDiv: "zoomSetDivForZoomSlider",
@@ -26,12 +27,14 @@ var WZoomSlider = (function () {
         mainParent.append('<div id="zoomSliderMainDivGlass"></div>');
         mainParent.addClass('slider-zoom-parent sublayers-clickable');
         var parentGlass = $('#zoomSliderMainDivGlass');
+        var parentPort = $('#zoomSliderMainDivHardware');
+        this.parentGlass = parentGlass;
 
         // Добавление кнопок "Свернуть всё" и "FSCR"
         parentGlass.append('<div id="DivForBtnSVALLInsideZoom"></div>');
         parentGlass.append('<div id="DivForBtnFSCRInsideZoom">FSCR</div>');
 
-        $('#DivForBtnSVALLInsideZoom').on('click', {self: this}, this.sverAll);
+        $('#DivForBtnSVALLInsideZoom').click(this, this.sverAll);
         $('#DivForBtnFSCRInsideZoom').on('click', {self: this}, this.fullscr);
 
         parentGlass.append('<div id="zoomSliderMainDivWrapper"></div>');
@@ -93,6 +96,12 @@ var WZoomSlider = (function () {
         // создание SVG шкалы
         this.drawScale();
         this.setZoom(this.mapMng.getZoom());
+
+
+        // кнопка сворачивания дива
+        parentPort.append('<div id="ZoomPortHideBtn" class="hideBtnDownLeft"></div>');
+        this.btn_hide =  $('#ZoomPortHideBtn');
+        this.btn_hide.on('click', {self: this}, this.btnHideReaction);
     }
 
     WZoomSlider.prototype.drawScale = function(){
@@ -218,8 +227,40 @@ var WZoomSlider = (function () {
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
-        var slider = event.data.self;
-        alert('Свернуть все гаджеты-стекляшки');
+        var slider = event.data;
+        //alert('Свернуть все гаджеты-стекляшки');
+        wCruiseControl.changeVisible(false);
+        chat.changeVisible(false);
+        slider.changeVisible(false);
+    };
+
+    WZoomSlider.prototype.btnHideReaction = function(event) {
+        var self = event.data.self;
+        self.changeVisible(!self.zoom_visible);
+        document.getElementById('map').focus();
+    };
+
+    WZoomSlider.prototype.changeVisible = function(visible) {
+        //console.log('WZoomSlider.prototype.changeVisible', visible);
+        var self = this;
+        if (visible != this.zoom_visible) {
+            this.zoom_visible = visible;
+            if (visible) { // нужно показать
+                self.parentGlass.css({display: 'block'});
+                this.parentGlass.animate({left: 0}, 500, function () {
+                    self.btn_hide.removeClass('hideBtnUpLeft');
+                    self.btn_hide.addClass('hideBtnDownLeft');
+                    self.parentGlass.css({display: 'block'});
+                });
+            }
+            else { // нужно скрыть
+                this.parentGlass.animate({left: -200}, 500, function () {
+                    self.btn_hide.removeClass('hideBtnDownLeft');
+                    self.btn_hide.addClass('hideBtnUpLeft');
+                    self.parentGlass.css({display: 'none'});
+                });
+            }
+        }
     };
 
     return WZoomSlider;

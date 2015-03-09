@@ -11,10 +11,19 @@ var WCruiseControl = (function (_super) {
         this.keyBoardControl = false;
         this.lastSpeed = -100;
 
-        {   this.parentDiv = $('#' + div_parent);
-            this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
-            this.parentDiv.append(this.mainDiv);
-        }
+
+        // Механизм скрытия
+        this.visible = true;
+        this.glassDiv = $('#cruiseControlGlassDiv');
+        this.hardWareDiv = $('#cruiseControlHardwareDiv');
+        this.visibleButtonDiv = $("<div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>");
+        this.hardWareDiv.append(this.visibleButtonDiv);
+        this.visibleButtonDiv.click(this, this._onClickChangeVisible);
+
+
+        this.parentDiv = $('#' + div_parent);
+        this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
+        this.parentDiv.append(this.mainDiv);
 
         // Верхний див (индикатор текущей скорости)
         this.topDiv = $("<div id='cruiseControlTopDiv'></div>");
@@ -60,8 +69,9 @@ var WCruiseControl = (function (_super) {
         this.speedHandleDiv.bind( "dragstop", this, this._onStopSpeedHandle);
 
         // Шкала
-        this.scaleArea = $("<div id='cruiseControlScaleArea' class='cruise-control-scaleArea sublayers-unclickable'></div>");
+        this.scaleArea = $("<div id='cruiseControlScaleArea' class='sublayers-clickable'></div>");
         this.mediumDiv.append(this.scaleArea);
+        this.scaleArea.click(this, this._onClickScaleArea);
 
         // Рисуем SVG шкалу
         this.svgScaleArea = SVG('cruiseControlScaleArea');
@@ -168,6 +178,35 @@ var WCruiseControl = (function (_super) {
         this._setSpeedHandle(0);
     }
 
+    WCruiseControl.prototype._onClickChangeVisible = function (event) {
+        //console.log('WCruiseControl.prototype._onClickChangeVisible');
+        event.data.changeVisible(!event.data.visible);
+        document.getElementById('map').focus();
+    };
+
+    WCruiseControl.prototype.changeVisible = function (visible) {
+        //console.log('WCruiseControl.prototype.changeVisible');
+        if (visible == this.visible) return;
+        var self = this;
+        if (this.visible) {
+            this.visible = false;
+            this.glassDiv.animate({right: -560}, 1000, function () {
+                self.visibleButtonDiv.removeClass('hideBtnDownRight');
+                self.visibleButtonDiv.addClass('hideBtnUpRight');
+                self.glassDiv.css({display: 'none'});
+            });
+        }
+        else {
+            this.visible = true;
+            this.glassDiv.css({display: 'block'});
+            this.glassDiv.animate({right: 0}, 1000, function () {
+                self.visibleButtonDiv.removeClass('hideBtnUpRight');
+                self.visibleButtonDiv.addClass('hideBtnDownRight');
+                self.glassDiv.css({display: 'block'});
+            });
+        }
+    };
+
     WCruiseControl.prototype._init_params = function() {
         this.svg_colors = {
             fill: "#2afd0a",
@@ -228,6 +267,17 @@ var WCruiseControl = (function (_super) {
         document.getElementById('map').focus();
     };
 
+    WCruiseControl.prototype._onClickScaleArea = function (event) {
+        //console.log('WCruiseControl.prototype._onClickScaleArea');
+        var prc = (event.data.constScaleHeight + event.data.constSpeedHandleHeight) - event.offsetY - event.data.svgScaleDY;
+        if (prc < 0) prc = 0;
+        if (prc > event.data.constScaleHeight) prc = event.data.constScaleHeight;
+        prc /= event.data.constScaleHeight;
+        event.data._setSpeedHandle(prc);
+        clientManager.sendSetSpeed(user.userCar.maxSpeed * prc);
+        document.getElementById('map').focus();
+    };
+
     WCruiseControl.prototype._onClickStop = function (event) {
         //console.log('WCruiseControl.prototype._onClickStop');
         clientManager.sendStopCar();
@@ -259,7 +309,12 @@ var WCruiseControl = (function (_super) {
                     'L ' + topLeft.x + ' ' + topLeft.y +
                     'Z')
             .fill(this.svg_params.fill_area.fill)
-            .stroke(this.svg_params.fill_area.stroke);
+            .stroke(this.svg_params.fill_area.stroke)
+            .style('pointer-events: none');
+
+
+        //this.fill_area.setAttribute('class', 'cruise-control-fill-area');
+
 
         this.close_line = this.svgScaleArea.line(topLeft.x, topLeft.y, topRight.x, topRight.y + 0.0001)
             .stroke({width: 1, color: this.svg_params.gradients.line_grad3});

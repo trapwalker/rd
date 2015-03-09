@@ -13,6 +13,7 @@ var ViewMessengerGlass = (function () {
 
         this.chats = [];
         this.log_index = 0;
+        this.chat_visible = true;
 
 
         //  Вёрстка !
@@ -109,6 +110,12 @@ var ViewMessengerGlass = (function () {
         });
 
 
+        // кнопка сворачивания дива
+        $('#VMGDivHardware').append('<div id="VMGPortHideBtn" class="hideBtnDownLeft"></div>');
+        this.btn_hide =  $('#VMGPortHideBtn');
+        this.btn_hide.on('click', {self: this}, this.btnHideReaction);
+
+
         // Создание чатов. Сразу все 4 чата
         this.addChat(-1, 'global', true); // глобальный чат
         this.addPartyChat(-2, 'party', false); // глобальный чат
@@ -122,27 +129,6 @@ var ViewMessengerGlass = (function () {
         this.showWindow();
         // todo: придумать как учесть размеры границ (box-sizing)
         this.setNewSize(this.vMA.height() + 4, this.vMA.width() + 4);
-    };
-
-
-    ViewMessengerGlass.prototype.changeVisible = function (event) {
-        var self = event.data.self;
-        self.vMDA.slideToggle("slow", function () {
-            if (self.options._visible) {
-                self.options._visible = false;
-                self.vMSB.removeClass('viewMessengerSlideButtonShowed');
-                self.vMSB.addClass('viewMessengerSlideButtonHided');
-            }
-            else {
-                self.options._visible = true;
-                self.vMSB.removeClass('viewMessengerSlideButtonHided');
-                self.vMSB.addClass('viewMessengerSlideButtonShowed');
-            }
-
-            // todo: придумать как учесть размеры границ (box-sizing)
-            self.setNewSize(self.vMA.height() + 4, self.vMA.width() + 4);
-        });
-
     };
 
 
@@ -480,8 +466,8 @@ var ViewMessengerGlass = (function () {
 
     // вывод входящих ws-сообщений в лог
     ViewMessengerGlass.prototype.receiveMessageFromWS = function(msg){
+        //console.log('ViewMessengerGlass.prototype.receiveMessageFromWS', msg);
         /*
-        //console.log('ViewMessengerGlass.prototype.receiveMessageFromWS');
         if (msg.message_type == "push") {
             //if (cookieStorage.enableLogPushMessage())
             this._addMessageToLog('new push form server! SEE this!!!', 'push');
@@ -492,6 +478,12 @@ var ViewMessengerGlass = (function () {
             //if (cookieStorage.enableLogAnswerMessage())
                 //this._addMessageToLog(JSON.stringify(msg, null, 4), 'answer');
                 */
+        if(msg.events) {
+            var event = msg.events[0];
+            if (event.cls === 'Chat')
+                this.addMessage(-1, '', event.author, event.text);
+        }
+
         return true;
     };
 
@@ -542,6 +534,36 @@ var ViewMessengerGlass = (function () {
         //alert('Окно для подтверждения выхода из пати');
         sendServConsole('\leave');
         chat.main_input.focus();
+    };
+
+
+    ViewMessengerGlass.prototype.btnHideReaction = function(event) {
+        var self = event.data.self;
+        self.changeVisible(!self.chat_visible);
+        document.getElementById('map').focus();
+    };
+
+    ViewMessengerGlass.prototype.changeVisible = function(visible) {
+        //console.log('WZoomSlider.prototype.changeVisible', visible);
+        var self = this;
+        if (visible != this.chat_visible) {
+            this.chat_visible = visible;
+            if (visible) { // нужно показать
+                self.parentGlass.css({display: 'block'});
+                this.parentGlass.animate({left: 0}, 1000, function () {
+                    self.btn_hide.removeClass('hideBtnUpLeft');
+                    self.btn_hide.addClass('hideBtnDownLeft');
+                    self.parentGlass.css({display: 'block'});
+                });
+            }
+            else { // нужно скрыть
+                this.parentGlass.animate({left: -555}, 1000, function () {
+                    self.btn_hide.removeClass('hideBtnDownLeft');
+                    self.btn_hide.addClass('hideBtnUpLeft');
+                    self.parentGlass.css({display: 'none'});
+                });
+            }
+        }
     };
 
 

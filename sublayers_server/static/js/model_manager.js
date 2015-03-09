@@ -392,8 +392,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Chat = function (event){
-        console.log('ClientManager.prototype.Chat');
+        //console.log('ClientManager.prototype.Chat', event);
         //chat.addMessage(-1, '', getOwner(event.author), event.text);
+        //chat.addMessage(-1, '', event.author, event.text);
     };
 
     // todo: эффекты вынести потом в отдельный модуль

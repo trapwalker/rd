@@ -231,8 +231,12 @@ var WSConnector = (function(_super){
                 key: 'ws_message_send',
                 cbFunc: 'sendMessage',
                 subject: self
+            });
+            message_stream.addOutEvent({
+                key: 'send_chat_message',
+                cbFunc: 'sendMessageChat',
+                subject: self
             })
-
         };
     };
 
@@ -244,8 +248,25 @@ var WSConnector = (function(_super){
         return true;
     };
 
+    WSConnector.prototype.sendMessageChat = function(msg){
+        //console.log('WSConnector.prototype.sendMessageChat', msg);
+        //this.connection.send(JSON.stringify(mes));
+
+        var mes = {
+            call: "chat_message",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                text: msg.body
+            }
+        };
+
+        this.connection.send(JSON.stringify(mes));
+
+        return true;
+    };
+
     WSConnector.prototype.receiveMessage = function(msg){
-        //console.log('WSConnector receiveMessage');
+        //console.log('WSConnector receiveMessage', msg);
         // раскодировать входящее от сервера сообщение
         var time_start = clock.getCurrentTime();
         var mes = this.decodeMessage(msg);

@@ -89,18 +89,18 @@ $(document).ready(function () {
 
     // тестовые сообщения, просто чтобы видеть как они будут выглядеть
     setTimeout(function() {
-        chat.addMessage(-2, '', {login: 'Ivan'}, 'Привет! Это тестовое сообщение в пати!');
-        chat.addMessage(-2, '', {login: user.login}, 'Привет! Это мой браузер!');
+       // chat.addMessage(-2, '', {login: 'Ivan'}, 'Привет! Это тестовое сообщение в пати!');
+       // chat.addMessage(-2, '', {login: user.login}, 'Привет! Это мой браузер!');
 
-        chat.addMessage(-1, '', {login: user.login}, 'Городской чат говорите? Рация значит ловит.');
-        chat.addMessage(-1, '', {login: 'Vasiliy'}, 'аааа, город! хаха! я в городе');
+        chat.addMessage(-1, '', {login: 'system'}, 'Городской чат говорите? Рация значит ловит.');
+      //  chat.addMessage(-1, '', {login: 'Vasiliy'}, 'аааа, город! хаха! я в городе');
 
         chat.addMessage(-3, '', {login: 'game'}, 'Система загружена. Вы можете начать движение.');
         chat.addMessage(-3, '', {login: 'game'}, 'Для начала движения выставьте круиз контроль на желаемое значение.');
 
         chat.addMessage(-4, '', {login: 'system'}, 'На сервере игроков ххх.');
         chat.addMessage(-4, '', {login: 'game'}, 'Мы рады сообщить Вам, что здесь будет всякий флуд от сервера');
-    }, 5000);
+    }, 0);
 
     //carMarkerList = new CarMarkerList({_map: myMap});
 
@@ -122,8 +122,21 @@ $(document).ready(function () {
    // if (!cookieStorage.debugMode())
    //     modalWindow.modalWelcomeShow();
 
+
+    // Повесить на кнопки меню возврат фокуса на карту
+    document.getElementById('divMainMenuBtnCharacter').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnCar').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnNucoil').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnMain').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 });
 
+
+function returnFocusToMap() {
+    document.getElementById('map').focus();
+}
 
 
 function funcModalOptionsShow(){

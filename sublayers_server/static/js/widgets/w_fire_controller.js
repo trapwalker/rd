@@ -15,6 +15,7 @@ var WFireController = (function (_super) {
         this.autoShoot = false;
         this.sides = [];
         this.visible = true;
+        this.combatState = true;
         this.rotateAngle = 0;
         this.diameter = ConstFireControllerSectorDiameter;
         this.halfSectorWidth = gradToRad(ConstFireControllerSectorWidth / 2.);
@@ -43,7 +44,7 @@ var WFireController = (function (_super) {
         // Добавление дива с кнопкой
         this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show sublayers-clickable'></div>");
         this.fCB.append(this.fCSB);
-        this.fCSB.on('click', {self: this}, this.changeVisible);
+        this.fCSB.on('click', {self: this}, this.changeCombatState);
 
         // Создание дива под SVG полотно
         this.dFSVG = $("<div id='divForSVG'></div>");
@@ -57,8 +58,9 @@ var WFireController = (function (_super) {
         this.SVG.setAttribute('width', this.diameter);
         this.SVG.innerHTML = '<defs>' +
                              '   <radialGradient id="fcRadarCircleGradient" r="52%" spreadMethod="pad">' +
+                            '        <stop offset="0.0" stop-color="#00FF00" stop-opacity="0"></stop>' +
                              '       <stop offset="0.8" stop-color="#00FF00" stop-opacity="0"></stop>' +
-                             '       <stop offset="1" stop-color="#00FF00" stop-opacity="0.2"></stop>' +
+                             '       <stop offset="1.0" stop-color="#00FF00" stop-opacity="0.2"></stop>' +
                              '   </radialGradient>' +
                              '</defs>';
         this.dFSVG.append(this.SVG);
@@ -106,6 +108,12 @@ var WFireController = (function (_super) {
         // todo: сделать это правильно
         timeManager.addTimerEvent(this, 'change');
     }
+
+    WFireController.prototype.changeCombatState = function(event){
+        var self = event.data.self;
+        self.combatState = !self.combatState;
+        self.setVisible(self.combatState);
+    };
 
     WFireController.prototype.changeVisible = function (event) {
         //console.log('WFireController.prototype.changeVisible');

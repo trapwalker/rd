@@ -358,7 +358,7 @@ var MapManager = (function(_super){
             }
             else {
                 // показать боевой режим
-                wFireController.setVisible(true);
+                wFireController.setVisible(wFireController.combatState);
             }
         }
     };
