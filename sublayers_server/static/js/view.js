@@ -122,8 +122,21 @@ $(document).ready(function () {
    // if (!cookieStorage.debugMode())
    //     modalWindow.modalWelcomeShow();
 
+
+    // Повесить на кнопки меню возврат фокуса на карту
+    document.getElementById('divMainMenuBtnCharacter').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnCar').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnNucoil').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnMain').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 });
 
+
+function returnFocusToMap() {
+    document.getElementById('map').focus();
+}
 
 
 function funcModalOptionsShow(){

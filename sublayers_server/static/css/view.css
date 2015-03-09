@@ -212,3 +212,30 @@ input:focus {
 ::-webkit-scrollbar-track {
     background: transparent;
 }
+
+
+#divMainMenu {
+    position: absolute;
+    left: 120px;
+    top: 35px;
+    pointer-events: none;
+}
+
+.main-menu-btn-up {
+    font: 10pt MICRADI;
+    color: rgba(42, 253, 10, 0.51);
+    letter-spacing: 1px;
+    position: relative;
+    float: left;
+    margin: 0 15px 0 15px;
+    pointer-events: auto;
+}
+
+.main-menu-btn-up:hover {
+    color: rgb(42, 253, 10);
+}
+
+
+.main-menu-btn-up:active {
+    color: rgba(42, 253, 10, 0.3);
+}
