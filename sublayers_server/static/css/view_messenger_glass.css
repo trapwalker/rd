@@ -272,19 +272,23 @@
 .VMG-message-text-time {
     color: #2afd0a;
     font: 6pt MICRADI;
+    letter-spacing: 1px;
 }
 
 .VMG-message-text-user {
     color: #2afd0a;
     font: 10pt MICRADI;
+    letter-spacing: 1px;
 }
 
 .VMG-message-text-my-user {
     color: #2afd0a;
     font: 11pt MICRADI;
+    letter-spacing: 1px;
 }
 
 .VMG-message-text-text {
     color: #2afd0a;
     font: 8pt MICRADI;
+    letter-spacing: 1px;
 }
