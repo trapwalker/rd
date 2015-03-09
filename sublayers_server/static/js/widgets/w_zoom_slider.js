@@ -34,7 +34,7 @@ var WZoomSlider = (function () {
         parentGlass.append('<div id="DivForBtnSVALLInsideZoom"></div>');
         parentGlass.append('<div id="DivForBtnFSCRInsideZoom">FSCR</div>');
 
-        $('#DivForBtnSVALLInsideZoom').on('click', {self: this}, this.sverAll);
+        $('#DivForBtnSVALLInsideZoom').click(this, this.sverAll);
         $('#DivForBtnFSCRInsideZoom').on('click', {self: this}, this.fullscr);
 
         parentGlass.append('<div id="zoomSliderMainDivWrapper"></div>');
@@ -227,8 +227,11 @@ var WZoomSlider = (function () {
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
-        var slider = event.data.self;
-        alert('Свернуть все гаджеты-стекляшки');
+        var slider = event.data;
+        //alert('Свернуть все гаджеты-стекляшки');
+        wCruiseControl.changeVisible(false);
+        chat.changeVisible(false);
+        slider.changeVisible(false);
     };
 
     WZoomSlider.prototype.btnHideReaction = function(event) {

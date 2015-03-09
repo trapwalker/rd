@@ -132,27 +132,6 @@ var ViewMessengerGlass = (function () {
     };
 
 
-    ViewMessengerGlass.prototype.changeVisible = function (event) {
-        var self = event.data.self;
-        self.vMDA.slideToggle("slow", function () {
-            if (self.options._visible) {
-                self.options._visible = false;
-                self.vMSB.removeClass('viewMessengerSlideButtonShowed');
-                self.vMSB.addClass('viewMessengerSlideButtonHided');
-            }
-            else {
-                self.options._visible = true;
-                self.vMSB.removeClass('viewMessengerSlideButtonHided');
-                self.vMSB.addClass('viewMessengerSlideButtonShowed');
-            }
-
-            // todo: придумать как учесть размеры границ (box-sizing)
-            self.setNewSize(self.vMA.height() + 4, self.vMA.width() + 4);
-        });
-
-    };
-
-
     ViewMessengerGlass.prototype.setVisible = function (aVisible) {
         if (this.options._visible !== aVisible) {
             this.changeVisible({ data: {self: this}})
