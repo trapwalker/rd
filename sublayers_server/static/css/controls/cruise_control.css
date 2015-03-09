@@ -35,6 +35,7 @@
 
 #cruiseControlTopDiv {
     position: absolute;
+    top: -5px;
     width: 56px;
     height: 63px;
     left: 43px;
@@ -116,11 +117,16 @@
     top: 5px;
 }
 
-.cruise-control-scaleArea {
+#cruiseControlScaleArea {
     position: absolute;
     left: 54px;
     width: 44px;
     height: 100%;
+    pointer-events: auto;
+}
+
+.cruise-control-fill-area {
+    pointer-events: none;
 }
 
 .cruise-control-zoneArea {
@@ -205,19 +211,17 @@
 
 #spanLimitText2 {
     position: absolute;
+    letter-spacing: 1px;
     height: 20px;
     width: 200px;
     top: 224px;
     right: -77px;
     white-space: nowrap;
-    font: 8pt MICRADI;
+    font-size: 9pt;
     color: rgb(42, 253, 10);
     transform: rotate(-90deg);
     -webkit-transform: rotate(-90deg);
 }
-
-
-
 
 #cruiseControlReverseDiv {
     position: absolute;
