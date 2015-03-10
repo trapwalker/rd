@@ -353,12 +353,16 @@ var MapManager = (function(_super){
 
         if (event.zoom) {
             if (event.zoom < 15) {
-                // убрать боевой режим
-                wFireController.setVisible(false);
+                // убрать сетку и секутора
+                //wFireController.setVisible(false);
+                mapManager.widget_fire_radial_grid.setVisible(false);
+                mapManager.widget_fire_sectors.setVisible(false);
             }
             else {
-                // показать боевой режим
-                wFireController.setVisible(wFireController.combatState);
+                // показать сетку и сектора, если боевой режим
+                //wFireController.setVisible(wFireController.combatState);
+                mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
+                mapManager.widget_fire_sectors.setVisible(wFireController.visible);
             }
         }
     };

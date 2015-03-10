@@ -135,8 +135,9 @@ var WFireController = (function (_super) {
             }
         });
         document.getElementById('map').focus();
-        mapManager.widget_fire_radial_grid.setVisible(!self.visible);
-        mapManager.widget_fire_sectors.setVisible(!self.visible);
+        var is_show_central = !self.visible && (map.getZoom() >= 14);
+        mapManager.widget_fire_radial_grid.setVisible(is_show_central);
+        mapManager.widget_fire_sectors.setVisible(is_show_central);
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
