@@ -7,7 +7,7 @@ cd /home/sl/sublayers_test
 REV1=`hg identify | awk '{print $1}'`
 
 hg pull
-hg update default -C
+hg update default
 
 REV2=`hg identify | awk '{print $1}'`
 
