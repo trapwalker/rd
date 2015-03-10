@@ -79,10 +79,10 @@ do_stop()
 	# that waits for the process to drop all resources that could be
 	# needed by services started subsequently.  A last resort is to
 	# sleep for some time.
-    #start-stop-daemon --stop --quiet --oknodo --retry=0/3/KILL/5 --exec $DAEMON
+	#start-stop-daemon --stop --quiet --oknodo --retry=0/3/KILL/5 --exec $DAEMON
     pid=`ps -ef | grep $WORK_DIR[/] | awk '{print $2}'`
     echo killproc pid: $pid
-    kill $pid
+    kill -9 $pid
 
 	[ "$?" = 2 ] && return 2
 	# Many daemons don't delete their pidfiles when they exit.
