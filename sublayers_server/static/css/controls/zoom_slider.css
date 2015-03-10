@@ -283,6 +283,15 @@
     position: relative;
     background: transparent url('/static/img/control_zoom/unhide_gadgets.png') 50% 50% no-repeat;
     left: 10px;
+    opacity: 0.5;
+}
+
+#DivForBtnRazverALLInsideZoomCompact:hover {
+    opacity: 1;
+}
+
+#DivForBtnRazverALLInsideZoomCompact:active {
+    opacity: 0.3;
 }
 
 #DivForBtnFSCRInsideZoomCompact {
@@ -299,8 +308,16 @@
     background-color: transparent;
     margin-top: 5px;
     left: 10px;
+    opacity: 0.5;
 }
 
+#DivForBtnFSCRInsideZoomCompact:hover {
+    opacity: 1;
+}
+
+#DivForBtnFSCRInsideZoomCompact:active {
+    opacity: 0.3;
+}
 
 #DivForBtnPlusZoomCompact {
     height: 15px;
@@ -321,6 +338,7 @@
 .classForBtnZoomCompactText {
     pointer-events: auto;
     position: absolute;
+    opacity: 0.5;
     height: 100%;
     width: 100%;
     top: -5px;
@@ -330,11 +348,11 @@
 }
 
 .classForBtnZoomCompactText:hover {
-    color: white;
+    opacity: 1;
 }
 
 .classForBtnZoomCompactText:active {
-    opacity: 0.5;
+    opacity: 0.3;
 }
 
 
@@ -347,4 +365,6 @@
 #ZoomTextZoomValueCompact {
     font: 10pt MICRADI;
     color: #2afd0a;
+    opacity: 0.5;
+    /*Если что, то смотреть прозрачность в коде, так как она там стоит = 0.5!!! Функция зуммирования!*/
 }

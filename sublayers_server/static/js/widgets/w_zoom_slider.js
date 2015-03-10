@@ -197,7 +197,7 @@ var WZoomSlider = (function () {
 
             text_compact.animate({opacity: 0}, ConstDurationAnimation / 2., function(){
                 text_compact.text(new_str)
-                    .animate({opacity: 1}, ConstDurationAnimation / 2.);
+                    .animate({opacity: 0.5}, ConstDurationAnimation / 2.);
             });
 
             var zoom_circle = this.zomm_circle;
