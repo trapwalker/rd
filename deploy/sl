@@ -15,14 +15,17 @@
 # Do NOT "set -e"
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
+SERV_TYPE=""
+BASE_DIR=/home/sl/sublayers$SERV_TYPE
+
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="Sublayers start-stop daemon"
-NAME=sl
+DESC="Sublayers start-stop daemon $SERV_TYPE"
+NAME=sl$SERV_TYPE
 DAEMON=/usr/bin/python
-DAEMON_ARGS="/home/sl/sublayers/sublayers_server/server.py"
-PIDFILE=/var/run/$NAME.pid
+WORK_DIR=$BASE_DIR/sublayers_server
+DAEMON_ARGS=$WORK_DIR/server.py
+PIDFILE=$WORK_DIR/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
-WORK_DIR=/home/sl/sublayers/sublayers_server
 
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0
