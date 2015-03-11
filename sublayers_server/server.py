@@ -9,16 +9,17 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
-import os.path
 import signal
 import os
-import sys
 from tornado.options import define, options
 
+from website.static import StaticFileHandlerPub
+from website.main import MainHandler
 from model.event_machine import LocalServer
 
 from client_connector import AgentSocketHandler
 
+define("static_path", default=os.path.join(os.path.dirname(__file__), "static"), help="path to static files", type=str)
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
 # todo: logging config file path define as tornado option
@@ -36,15 +37,16 @@ class Application(tornado.web.Application):
         self.init_scene()
 
         handlers = [
-            #(r"/", MainHandler),
+            (r"/", MainHandler),
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html"}),
-            (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
+            #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/ws", AgentSocketHandler),
-            (r"/static/(.*)", StaticFileHandlerPub, {"path": os.path.join(os.path.dirname(__file__), "static")}),
+            (r"/static/(.*)", StaticFileHandlerPub),
         ]
         settings = dict(
             cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
+            static_path=options.static_path,
             xsrf_cookies=True,
         )
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -69,24 +71,12 @@ class Application(tornado.web.Application):
         #b.goto(Point(1000, 1500))
 
 
-class StaticFileHandlerPub(tornado.web.StaticFileHandler):
-    def set_extra_headers(self, path):
-        super(StaticFileHandlerPub, self).set_extra_headers(path)
-        self.set_header("Access-Control-Allow-Origin", "*")
-
-
-class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render("index.html", messages=[])
-
-
 def main():
     import socket
 
     def on_exit(sig, func=None):
-        print '====== terminate'
+        print '====== terminate', sig, func
         log.debug('====== exit handler triggered')
-        #sys.exit(1)
         app.stop()
 
     signal.signal(signal.SIGTERM, on_exit)
