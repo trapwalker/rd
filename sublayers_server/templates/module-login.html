@@ -4,7 +4,7 @@
       <h1>Регистрация</h1>
       <fieldset>
       <p class="login-msg"></p>
-        <form action="{{ request.path }}" method="post">
+        <form action="{{ request.path }}" method="post" autocomplete="on">
           <input type="email" name="email" placeholder="Введите Ваш email адрес..." required />
           <input type="password" name="password" placeholder="Ваш сложный пароль..." required />
           <input type="text" name="username" placeholder="Имя пользователя" required />
