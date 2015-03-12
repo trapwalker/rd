@@ -1,0 +1,33 @@
+﻿<div id="login">
+  <div class="flip flipped">
+    <div class="form-signup">
+      <h1>Регистрация</h1>
+      <fieldset>
+      <p class="login-msg"></p>
+        <form action="{{ request.path }}" method="post">
+          <input type="email" name="email" placeholder="Введите Ваш email адрес..." required />
+          <input type="password" name="password" placeholder="Ваш сложный пароль..." required />
+          <input type="text" name="username" placeholder="Имя пользователя" required />
+          <input type="submit" value="Зарегистрироваться" />
+          {% raw xsrf_form_html() %}
+        </form>
+        <p>Войти через: <span class="social fb">Facebook</span> <span class="social gp">Google +</span></p>
+        <a href="#" class="flipper">Уже зарегистрированы? Войти.</a>
+      </fieldset>
+    </div>
+    <div class="form-login">
+      <h1>Авторизация</h1>
+      <fieldset>
+        <form action="{{ request.path }}" method="post">
+          <input type="email" name="username" placeholder="Логин или Email" required />
+          <input type="password" name="password" placeholder="Пароль" required />
+          <input type="submit" value="ВОЙТИ" />
+          {% raw xsrf_form_html() %}
+        </form>
+        <p>Войти через: <span class="social fb">Facebook</span> <span class="social gp">Google +</span></p>
+        <p><a href="#" class="flipper">Нет аккаунта? Регистрация.</a><br>
+        <a href="#">Забыли пароль?</a></p>
+      </fieldset>
+    </div>
+  </div>
+</div>

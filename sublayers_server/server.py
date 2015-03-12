@@ -15,6 +15,7 @@ from tornado.options import define, options
 
 from website.static import StaticFileHandlerPub
 from website.main import MainHandler
+from website import uimodules
 from model.event_machine import LocalServer
 
 from client_connector import AgentSocketHandler
@@ -48,6 +49,7 @@ class Application(tornado.web.Application):
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=options.static_path,
             xsrf_cookies=True,
+            ui_modules = uimodules,
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
