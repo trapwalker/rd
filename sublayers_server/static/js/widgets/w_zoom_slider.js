@@ -282,6 +282,8 @@ var WZoomSlider = (function () {
 
     WZoomSlider.prototype.changeVisible = function(visible) {
         //console.log('WZoomSlider.prototype.changeVisible', visible);
+        this.parentGlass.stop(true, true);
+        this.mainCompact.stop(true, true);
         var self = this;
         if (visible != this.zoom_visible) {
             this.zoom_visible = visible;

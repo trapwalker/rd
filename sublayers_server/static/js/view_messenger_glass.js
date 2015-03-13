@@ -588,6 +588,8 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.changeVisible = function(visible) {
         //console.log('WZoomSlider.prototype.changeVisible', visible);
+        this.parentGlass.stop(true, true);
+        this.mainCompact.stop(true, true);
         var self = this;
         if (visible != this.chat_visible) {
             this.chat_visible = visible;
