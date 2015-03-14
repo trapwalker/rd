@@ -19,6 +19,9 @@ var WHPRadial = (function (_super) {
         this.alarmLampState = false;
         $('#' + div_parent).append(this.alarmLamp);
 
+        // Компакт режим
+        this.compactText = $('#cruiseControlCompactViewHealthTextDiv');
+
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -257,6 +260,7 @@ var WHPRadial = (function (_super) {
 
         // Изменение текста (проценты)
         this.text_prc.text(Math.round(prc * 100) + '%');
+        this.compactText.text(Math.round(prc * 100) + '%')
     };
 
     WHPRadial.prototype.change = function () {

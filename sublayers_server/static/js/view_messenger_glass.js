@@ -122,6 +122,18 @@ var ViewMessengerGlass = (function () {
         this.addChat(-3, 'gamelog', false); // игровой лог
         this.addChat(-4, 'systemlog', false); // системный лог
 
+
+        // портативная версия чата. Главный див.
+        mainParent.append('<div id="VGMMainDivCompact"></div>');
+        this.mainCompact = $('#VGMMainDivCompact');
+
+        // зона для сообщений портативной версии
+
+        this.mainCompact.append('<div id="VGMtextAreaCompact"></div>');
+        this.textAreaCompact = $('#VGMtextAreaCompact');
+
+        this.compactVisibleOptions = null; // Объект, содержащий какие именно сообщения отображать в компактной версии
+
     }
 
 
@@ -290,6 +302,34 @@ var ViewMessengerGlass = (function () {
         return null;
     };
 
+    ViewMessengerGlass.prototype.addMessageToCompact = function(chatID, chatName, aUser, aText){
+        var self = this;
+        // если компактная версия скрыта, то ничего не делать
+        if(this.chat_visible) return;
+        // todo: здесь проверка по опциям - какие из сообщений выводить (использовать chatID)
+
+        // создать див сообщения и спаны
+        var mesDiv = $('<div class="VGM-message-compact"></div>');
+        var spanUser = $('<span class="VMG-message-text-user">' + aUser.login + '</span>');
+        var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
+        // Добавить, предварительно скрыв
+        mesDiv.hide();
+        this.textAreaCompact.append(mesDiv);
+        mesDiv.append(spanUser);
+        mesDiv.append(spanText);
+
+
+        // Показать сообщение, опустив скрол дива
+        self.textAreaCompact.scrollTop(99999999);
+        mesDiv.slideDown('fast',function() {self.textAreaCompact.scrollTop(99999999)});
+
+        mesDiv.animate({opacity: 0}, 3000, function(){
+            this.remove();
+        })
+
+
+    };
+
 
     ViewMessengerGlass.prototype.addMessage = function (chatID, chatName, aUser, aText) {
         // Найти чат для добавления в него сообщения
@@ -297,6 +337,9 @@ var ViewMessengerGlass = (function () {
 
         if(! chat) //chat = this.addChat(chatID, chatName, false);
             console.error('Попытка записать сообщение в несуществующий чат');
+
+        this.addMessageToCompact(chatID, chatName, aUser, aText);
+
         var messageID = chat.mesCount++;
         // получить локальное время
         var tempTime = new Date().toLocaleTimeString();
@@ -545,6 +588,8 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.changeVisible = function(visible) {
         //console.log('WZoomSlider.prototype.changeVisible', visible);
+        this.parentGlass.stop(true, true);
+        this.mainCompact.stop(true, true);
         var self = this;
         if (visible != this.chat_visible) {
             this.chat_visible = visible;
@@ -555,6 +600,10 @@ var ViewMessengerGlass = (function () {
                     self.btn_hide.addClass('hideBtnDownLeft');
                     self.parentGlass.css({display: 'block'});
                 });
+                // и нужно скрыть портативную версию
+                self.mainCompact.animate({opacity: 0}, 300, function () {
+                    self.mainCompact.css({display: 'none'});
+                });
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -555}, 1000, function () {
@@ -562,6 +611,9 @@ var ViewMessengerGlass = (function () {
                     self.btn_hide.addClass('hideBtnUpLeft');
                     self.parentGlass.css({display: 'none'});
                 });
+                // и нужно показать портативную версию
+                self.mainCompact.css({display: 'block'});
+                self.mainCompact.animate({opacity: 1}, 300);
             }
         }
     };

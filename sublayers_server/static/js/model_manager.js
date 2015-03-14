@@ -500,7 +500,7 @@ var ClientManager = (function () {
         var currentSpeed = wCruiseControl.getSpeedHandleValue();
         if (currentSpeed == 0) {
             currentSpeed = user.userCar.maxSpeed * 0.2;
-            wCruiseControl._setSpeedHandle(0.2);
+            wCruiseControl.setSpeedHandleValue(0.2);
         }
         this.sendMotion(target, currentSpeed, null);
     };

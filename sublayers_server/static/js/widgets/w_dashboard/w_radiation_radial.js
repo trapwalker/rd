@@ -18,6 +18,9 @@ var WRadiationRadial = (function (_super) {
         this.alarmLampState = false;
         $('#' + div_parent).append(this.alarmLamp);
 
+        // Компакт режим
+        this.compactText = $('#cruiseControlCompactViewRadiationTextDiv');
+
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -257,6 +260,7 @@ var WRadiationRadial = (function (_super) {
 
         // Изменение текста (проценты)
         this.text_prc.text((prc * 10).toFixed(1) + ' Sv');
+        this.compactText.text((prc * 10).toFixed(1) + ' Sv');
     };
 
     WRadiationRadial.prototype.change = function () {
