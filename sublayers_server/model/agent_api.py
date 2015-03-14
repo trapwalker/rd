@@ -65,7 +65,7 @@ class AgentAPI(API):
         # todo: autogenerate party name
         log.info('%s try to set or create party %s', self.agent.login, name)
         if name is None:
-            if self.agent.party and self.agent.party.owner is not self.agent:
+            if self.agent.party:
                 self.agent.party.exclude(self.agent)
         else:
             party = Party.search(name)
@@ -164,9 +164,11 @@ class AgentAPI(API):
             self.crazy(target)
         elif command == 'sepuku':
             self.change_car()  # todo: починить смену машинки
-        elif command == 'party':
+        elif command == '/create':
             # todo: options of party create
             self.set_party(name=args[0] if args else None)
+        elif command == '/leave':
+            self.set_party()
         elif command == 'invite':
             for name in args:
                 self.send_invite(username=name)

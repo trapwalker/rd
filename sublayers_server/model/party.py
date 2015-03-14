@@ -25,6 +25,7 @@ class Party(object):
 
         self.name = name
         self.owner = owner
+        self.share_obs = []
         self.members = []  # todo: may be set of agents?
         """@type list[agents.Agent]"""
         self.invites = []  # todo: may be set of agents?
@@ -65,32 +66,44 @@ class Party(object):
         #agent.on_change_party(old=old_party)  todo: realize
 
     def on_include(self, agent):
-        # todo: fix it
-        if len(self.members) == 0:
-            return
-        old_agent_observers = agent.observers.keys()
-        old_member_observers = self.members[0].observers.keys()
+        log.info('==============Start include')
+        log.info(len(self.share_obs))
+        agent_observers = agent.observers.keys()
 
-        for o in old_member_observers:
+        for obs in agent_observers:
+            if agent.observers[obs] > 0:
+                self.share_obs.append(obs)
+
+        for agt in self.members:
+            for obs in agent_observers:
+                if agent.observers[obs] > 0:
+                    agt.add_observer(obs)
+
+        for o in self.share_obs:
             agent.add_observer(o)
-
-        for a in self.members:
-            for o in old_agent_observers:
-                a.add_observer(o)
+        log.info(len(self.share_obs))
+        log.info('==============End include')
 
     def on_exclude(self, agent):
-        # todo: fix it
-        if len(self.members) == 0:
-            return
-        old_agent_observers = agent.observers.keys()
-        old_member_observers = self.members[0].observers.keys()
+        log.info('---------------Start exclude')
+        log.info(len(self.share_obs))
 
-        for o in old_member_observers:
+        for o in self.share_obs:
             agent.drop_observer(o)
 
+        agent_observers = agent.observers.keys()
         for a in self.members:
-            for obs in old_agent_observers:
-                a.drop_observer(obs)
+            for obs in agent_observers:
+                if agent.observers[obs] > 0:
+                    a.drop_observer(obs)
+
+        for obs in agent_observers:
+            if agent.observers[obs] > 0:
+                self.share_obs.remove(obs)
+
+
+        log.info(len(self.share_obs))
+        log.info('---------------End exclude')
 
     def invite(self, user):
         if user not in self.invites:

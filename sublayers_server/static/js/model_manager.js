@@ -293,7 +293,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact');
+        console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+
+        if (user.userCar == null) {
+            console.warn('Контакт ивент до инициализации своей машинки!');
+            return;
+        }
         if (event.is_first) { // только если первый раз добавляется машинка
             var state = this._getState(event.object.state);
             var hp_state = this._getHPState(event.object.hp_state);
@@ -359,7 +364,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Out = function (event) {
-        //console.log('ClientManager.prototype.Out');
+        console.log('ClientManager.prototype.Out', event.is_last, event.subject_id, event.object_id);
         if(event.is_last) { // только если машинку нужно совсем убирать
             // очистить все виджеты машинки
             var uid = event.object_id;

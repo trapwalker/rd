@@ -108,6 +108,8 @@ $(document).ready(function () {
         cookieStorage.save();
     };
 
+    chat.setActiveChat(-2);
+
 
     // Когда всё загружено и создано вызвать коннекты к серверу
     //j_connector.connect();
@@ -174,10 +176,10 @@ function crazyShooting(){
 
 // Установка текста в верху страницы - вывод своего ника и своей пати
 function setTitleOnPage(){
-    if (cookieStorage.optionsShowID)
+   // if (cookieStorage.optionsShowID)
         $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + '] ' + user.userCar.ID);
-    else
-        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
+   // else
+   //     $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
 }
 
 

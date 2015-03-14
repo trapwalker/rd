@@ -575,7 +575,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.party_leave = function (event) {
         //alert('Окно для подтверждения выхода из пати');
-        sendServConsole('\leave');
+        sendServConsole('/leave');
         chat.main_input.focus();
     };
 

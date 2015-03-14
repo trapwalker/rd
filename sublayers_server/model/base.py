@@ -218,7 +218,8 @@ class Observer(VisibleObject):
         obj.subscribed_observers.append(self)
         # add all subscribed _agents_ into to the _visible object_
         for agent in self.watched_agents:
-            agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
+            for i in xrange(self.watched_agents[agent]):
+                agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
     # todo: check calls
     def on_contact_out(self, time, obj, is_boundary, comment=None):
@@ -230,7 +231,8 @@ class Observer(VisibleObject):
         """
         # remove all subscribed _agents_ from _visible object_
         for agent in self.watched_agents:
-            agent.on_out(time=time, subj=self, obj=obj, is_boundary=is_boundary)
+            for i in xrange(self.watched_agents[agent]):
+                agent.on_out(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)
