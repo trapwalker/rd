@@ -52,11 +52,8 @@ class AgentAPI(API):
         messages.Init(agent=self.agent, time=None).post()
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
-        self.car = self.agent.party.init_car(
-            agent=self.agent,
-            override_params=dict(position=Point.random_gauss(position, position_sigma)) if position else None,
-            default_params=dict(cls=units.Bot),
-        )
+        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent)
+        self.agent.append_car(self.car)
 
     @public_method
     def set_party(self, name=None, id=None):

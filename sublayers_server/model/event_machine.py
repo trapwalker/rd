@@ -15,9 +15,9 @@ from threading import Thread
 from pprint import pprint as pp
 from collections import deque
 from zones import init_zones_on_server
+from first_mission_parties import RandomCarList
 
 MAX_SERVER_SLEEP_TIME = 0.1
-
 
 class Server(object):
 
@@ -36,6 +36,8 @@ class Server(object):
         self.start_time = None
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
+
+        self.randomCarList = RandomCarList()
         self.parties = PartyDispatcher()
         self.zones = []
         init_zones_on_server(server=self)

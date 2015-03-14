@@ -74,7 +74,7 @@ class Agent(Object):
         d = super(Agent, self).as_dict(*av, **kw)
         d.update(
             login=self.login,
-            party=self.party.as_dict(),
+            party=self.party.as_dict() if self.party else None,
         )
         return d
 

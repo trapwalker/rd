@@ -161,7 +161,7 @@ var ClientManager = (function () {
     // Входящие сообщения
 
     ClientManager.prototype.Init = function (event) {
-        //console.log('ClientManager.prototype.Init');
+        console.log('ClientManager.prototype.Init', event);
         var servtime = event.time;
         var max_speed = event.cars[0].max_velocity;
         var radius_visible = event.cars[0].r;
