@@ -20,6 +20,7 @@ from model.event_machine import LocalServer
 
 from client_connector import AgentSocketHandler
 
+define("cookie_secret", help="cookie secret key", type=str)
 define("static_path", default=os.path.join(os.path.dirname(__file__), "static"), help="path to static files", type=str)
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
@@ -45,7 +46,7 @@ class Application(tornado.web.Application):
             (r"/static/(.*)", StaticFileHandlerPub),
         ]
         settings = dict(
-            cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
+            cookie_secret=options.cookie_secret,
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=options.static_path,
             xsrf_cookies=True,
