@@ -14,7 +14,7 @@ import os
 from tornado.options import define, options
 
 from static import StaticFileHandlerPub
-from main import MainHandler
+from main import MainHandler, AuthLoginHandler, AuthLogoutHandler
 import uimodules
 
 define("cookie_secret", help="cookie secret key", type=str)
@@ -34,8 +34,8 @@ class Application(tornado.web.Application):
             #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/static/(.*)", StaticFileHandlerPub),
 
-            #(r"/auth/login", AuthLoginHandler),
-            #(r"/auth/logout", AuthLogoutHandler),
+            (r"/auth/login", AuthLoginHandler),
+            (r"/auth/logout", AuthLogoutHandler),
         ]
         settings = dict(
             cookie_secret=options.cookie_secret,

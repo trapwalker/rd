@@ -2,7 +2,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tornado.web import RequestHandler, authenticated, asynchronous, GoogleMixin
+from tornado.web import RequestHandler, authenticated, asynchronous
+import tornado.auth
 
 
 class BaseHandler(RequestHandler):
@@ -25,7 +26,7 @@ class PlayHandler(BaseHandler):
         self.render("play.html")
 
 
-class AuthLoginHandler(BaseHandler, GoogleMixin):
+class AuthLoginHandler(BaseHandler, tornado.auth.GoogleMixin):
     @asynchronous
     def get(self):
         if self.get_argument("openid.mode", None):
