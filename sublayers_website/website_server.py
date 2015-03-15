@@ -14,7 +14,8 @@ import os
 from tornado.options import define, options
 
 from static import StaticFileHandlerPub
-from main import MainHandler, AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
+from main import MainHandler
+from auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
 import uimodules
 
 define("cookie_secret", help="cookie secret key", type=str)
