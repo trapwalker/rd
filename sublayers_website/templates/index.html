@@ -4,7 +4,9 @@
           {% if current_user %}
             Hello, <b>{{ current_user }}</b>, you can <a href="/auth/logout?next={{ url_escape(request.uri) }}">{{ _("Sign out") }}</a>
           {% else %}
-            <a href="/auth/login?next={{ url_escape(request.uri) }}">{{ _("Sign in") }}</a>
+            <a href="/auth/login?next={{ url_escape(request.uri) }}">{{ _("Sign in (Google)") }}</a>
+            {% raw modules.LoginForm() %}
+
           {% end %}
 
     <!-- raw modules.LoginForm() %}-->

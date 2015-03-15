@@ -14,7 +14,7 @@ import os
 from tornado.options import define, options
 
 from static import StaticFileHandlerPub
-from main import MainHandler, AuthLoginHandler, AuthLogoutHandler
+from main import MainHandler, AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
 import uimodules
 
 define("cookie_secret", help="cookie secret key", type=str)
@@ -35,6 +35,7 @@ class Application(tornado.web.Application):
             (r"/static/(.*)", StaticFileHandlerPub),
 
             (r"/auth/login", AuthLoginHandler),
+            (r"/auth/login/google", AuthGoogleHandler),
             (r"/auth/logout", AuthLogoutHandler),
         ]
         settings = dict(
@@ -42,7 +43,7 @@ class Application(tornado.web.Application):
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=options.static_path,
             xsrf_cookies=True,
-            ui_modules = uimodules,
+            ui_modules=uimodules,
             login_url="/auth/login",
             debug=True,
         )

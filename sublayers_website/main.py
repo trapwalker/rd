@@ -26,7 +26,11 @@ class PlayHandler(BaseHandler):
         self.render("play.html")
 
 
-class AuthLoginHandler(BaseHandler, tornado.auth.GoogleMixin):
+class BaseAuthHandler(BaseHandler):
+    pass
+
+
+class AuthGoogleHandler(BaseAuthHandler, tornado.auth.GoogleMixin):
     @asynchronous
     def get(self):
         if self.get_argument("openid.mode", None):
@@ -39,6 +43,22 @@ class AuthLoginHandler(BaseHandler, tornado.auth.GoogleMixin):
             raise tornado.web.HTTPError(500, "Google auth failed")
 
         user_id = user["email"]
+        self.set_secure_cookie("user", str(user_id))
+        self.redirect(self.get_argument("next", "/"))
+
+
+class AuthLoginHandler(BaseAuthHandler):
+
+    def post(self):
+        user_id = self.get_argument('login')
+        self.set_secure_cookie("user", str(user_id))
+        self.redirect(self.get_argument("next", "/"))
+
+
+class AuthRegHandler(BaseAuthHandler):
+
+    def post(self):
+        user_id = self.get_argument('login')
         self.set_secure_cookie("user", str(user_id))
         self.redirect(self.get_argument("next", "/"))
 

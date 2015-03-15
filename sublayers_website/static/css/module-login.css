@@ -14,6 +14,8 @@
 #login .social.gp:before { background: url('../img/fc-webicon-googleplus.svg') no-repeat; }
 #login .social:hover { color: #333; background: #eee; box-shadow: 1px 1px 1px #bbb; }
 
+#login .fb {display: none; }
+
 #login fieldset {	display: block; margin: 0; padding: 20px; background: #fff; border: 1px solid rgba(0,0,0,.3); border-top: 0; border-radius: 0 0 5px 5px; box-shadow: 0 1px 2px #aaa; }
 #login input { width: 238px; margin: 0; padding: 12px 10px; border: 1px solid #ccc; outline: none; font-size: 14px; }
 #login input:focus { background: #fafafa; box-shadow: inset 0 1px 7px #ddd;}
