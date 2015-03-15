@@ -113,6 +113,18 @@ class Party(object):
         log.info(len(self.share_obs))
         log.info('---------------End exclude')
 
+    def drop_observer_from_party(self, observer):
+        if observer in self.share_obs:
+            self.share_obs.remove(observer)
+        for member in self.members:
+            member.drop_observer(observer)
+
+    def add_observer_to_party(self, observer):
+        if not (observer in self.share_obs):
+            self.share_obs.append(observer)
+        for member in self.members:
+            member.add_observer(observer)
+
     def invite(self, user):
         if user not in self.invites:
             self.invites.append(user)

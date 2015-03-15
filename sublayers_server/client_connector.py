@@ -36,8 +36,9 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.application.clients.remove(self)
         self.agent.connection = None
         while self.agent.cars:
-            car = self.agent.cars.pop()
+            car = self.agent.cars[0]
             if car.is_alive:
+                self.agent.drop_car(car)
                 car.delete()
 
     def on_message(self, message):

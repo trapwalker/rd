@@ -64,7 +64,8 @@ class Agent(Object):
 
     def on_out(self, time, subj, obj, is_boundary):
         is_last = obj.subscribed_agents.dec(self) == 0
-        log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s out by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])
+        if self.cars:
+            log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s out by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])
         messages.Out(
             agent=self,
             time=time or self.server.get_time(),  # todo: check it
@@ -95,9 +96,15 @@ class Agent(Object):
             self.cars.append(car)
             car.agent = self
             self.add_observer(car)
+            if self.party:
+                # сообщить пати, что этот обсёрвер теперь добавлен на карту
+                self.party.add_observer_to_party(car)
 
     def drop_car(self, car):
         if car in self.cars:
+            if self.party:
+                # сообщить пати, что этот обсёрвер теперь убран с карты
+                self.party.drop_observer_from_party(car)
             self.drop_observer(car)
             car.agent = None
             self.cars.remove(car)
@@ -108,27 +115,33 @@ class Agent(Object):
     def on_disconnect(self, connection):
         pass
 
-
     def party_before_include(self, party, new_member):
         # party - куда включают, agent - кого включают
+        if not self.connection:
+            return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
         car.fire_auto_enable_all(enable=False)
 
     def party_after_include(self, party, new_member, old_enable=True):
         # party - куда включили, agent - кого включили
+        if not self.connection:
+            return
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
 
     def party_before_exclude(self, party, old_member):
         # party - откуда исключабт, agent - кого исключают
+        if not self.connection:
+            return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
         car.fire_auto_enable_all(enable=False)
 
     def party_after_exclude(self, party, old_member):
         # party - откуда исключили, agent - кого исключили
+        if not self.connection:
+            return
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
-
 
 
 class User(Agent):
