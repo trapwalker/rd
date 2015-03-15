@@ -42,6 +42,7 @@ class Application(tornado.web.Application):
             (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
+            (r"/play", MainHandler),
         ]
         settings = dict(
             cookie_secret=options.cookie_secret,
@@ -49,7 +50,7 @@ class Application(tornado.web.Application):
             static_path=options.static_path,
             xsrf_cookies=True,
             #ui_modules = uimodules,
-            login_url="/auth/login",
+            login_url="/",
             debug=True,
         )
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -72,6 +73,16 @@ class Application(tornado.web.Application):
 
         #b = Bot(server=self.srv, position=Point(0, 0))
         #b.goto(Point(1000, 1500))
+
+
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+
+
+class MainHandler(BaseHandler):
+    def get(self):
+        self.render("index.html")
 
 
 def main():
