@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
 {% block body %}
-    {% raw modules.LoginForm() %}
+          {% if current_user %}
+            <a href="/auth/logout?next={{ url_escape(request.uri) }}">{{ _("Sign out") }}</a>
+          {% else %}
+            <a href="/auth/login?next={{ url_escape(request.uri) }}">{{ _("Sign in") }</a>
+          {% end %}
+
+    <!-- raw modules.LoginForm() %}-->
 {% end %}
