@@ -55,6 +55,10 @@ class Party(object):
         old_party = agent.party
         if old_party is self:
             return
+        # before include for members and agent
+        agent.party_before_include(new_member=agent, party=self)
+        for member in self.members:
+            member.party_before_include(new_member=agent, party=self)
 
         if old_party:
             old_party.exclude(agent, silent=True)
@@ -64,6 +68,10 @@ class Party(object):
         agent.party = self
         log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
         #agent.on_change_party(old=old_party)  todo: realize
+
+        # after include for members
+        for member in self.members:
+            member.party_after_include(new_member=agent, party=self)
 
     def on_include(self, agent):
         log.info('==============Start include')
@@ -115,11 +123,20 @@ class Party(object):
             log.warning('Trying to exclude unaffilated agent (%s) from party %s', agent, self)
             return
 
+        # before exclude for members
+        for member in self.members:
+            member.party_before_exclude(old_member=agent, party=self)
+
         agent.party = None
         self.members.remove(agent)
         self.on_exclude(agent)
         log.info('Agent %s excluded from party %s', agent, self)
         #if not silent: agent.on_change_party(self)  # todo: realize
+
+        # after exclude for members and agent
+        agent.party_after_exclude(old_member=agent, party=self)
+        for member in self.members:
+            member.party_after_exclude(old_member=agent, party=self)
 
     def __len__(self):
         return len(self.members)

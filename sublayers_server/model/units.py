@@ -93,7 +93,12 @@ class Unit(Observer):
 
     def is_target(self, target):
         # todo: проверить объект на партийность
-        return isinstance(target, Unit)
+        if isinstance(target, Unit):
+            if target.owner and self.owner:
+                if target.owner.party and self.owner.party:
+                    if target.owner.party == self.owner.party:
+                        return False
+        return True
 
     def takeoff_weapon(self, weapon):
         # todo: продумать меанизм снятия оружия
@@ -102,8 +107,15 @@ class Unit(Observer):
     def fire_discharge(self, side):
         FireDischargeEvent(obj=self, side=side).post()
 
-    def fire_auto_enable(self, side, enable):
-        FireAutoEnableEvent(obj=self, side=side, enable=enable).post()
+    def fire_auto_enable(self, side, enable, time=None):
+        FireAutoEnableEvent(time=time, obj=self, side=side, enable=enable).post()
+
+    def fire_auto_enable_all(self, enable, time=None):
+        log.info('%s  fire_auto_enable_all is %s    in time: %s', self.uid, enable, time)
+        self.fire_auto_enable(time=time, side='front', enable=enable)
+        self.fire_auto_enable(time=time, side='back', enable=enable)
+        self.fire_auto_enable(time=time, side='left', enable=enable)
+        self.fire_auto_enable(time=time, side='right', enable=enable)
 
     def on_fire_discharge(self, event):
         time = event.time
@@ -213,6 +225,12 @@ class Unit(Observer):
                 in_zone=in_zone,
                 zone_effect=zone_effect.as_dict(),
             ).post()
+
+    def is_auto_fire_enable(self):
+        for sector in self.fire_sectors:
+            if sector.is_auto_enable():
+                return True
+        return False
 
 class Station(Unit):
     u"""Class of buildings"""

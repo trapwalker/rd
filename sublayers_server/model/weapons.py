@@ -79,6 +79,9 @@ class WeaponAuto(Weapon):
                 else:
                     self._end(car)
 
+    def get_enable(self):
+        return self._enable
+
 
 class WeaponDischarge(Weapon):
     def __init__(self, dmg=BALANCE.Weapon.dmg, time_recharge=BALANCE.Weapon.time_recharge, **kw):

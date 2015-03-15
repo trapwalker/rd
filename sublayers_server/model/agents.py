@@ -28,6 +28,8 @@ class Agent(Object):
         if party is not None:
             party.include(self)
 
+        self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
+
     @property
     def is_online(self):
         return self._connection is not None
@@ -105,6 +107,28 @@ class Agent(Object):
 
     def on_disconnect(self, connection):
         pass
+
+
+    def party_before_include(self, party, new_member):
+        # party - куда включают, agent - кого включают
+        car = self.cars[0]
+        self._auto_fire_enable = car.is_auto_fire_enable()
+        car.fire_auto_enable_all(enable=False)
+
+    def party_after_include(self, party, new_member, old_enable=True):
+        # party - куда включают, agent - кого включили
+        self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
+
+    def party_before_exclude(self, party, old_member):
+        # party - куда включают, agent - кого включают
+        car = self.cars[0]
+        self._auto_fire_enable = car.is_auto_fire_enable()
+        car.fire_auto_enable_all(enable=False)
+
+    def party_after_exclude(self, party, old_member):
+        # party - куда включают, agent - кого включают
+        self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
+
 
 
 class User(Agent):
