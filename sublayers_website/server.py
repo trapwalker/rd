@@ -14,9 +14,8 @@ import os
 from tornado.options import define, options
 
 from static import StaticFileHandlerPub
-from model.event_machine import LocalServer
-
-from client_connector import AgentSocketHandler
+from main import MainHandler
+import uimodules
 
 define("cookie_secret", help="cookie secret key", type=str)
 define("static_path", default=os.path.join(os.path.dirname(__file__), "static"), help="path to static files", type=str)
@@ -27,28 +26,23 @@ define("port", default=80, help="run on the given port", type=int)
 
 class Application(tornado.web.Application):
     def __init__(self):
-        log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED\n' + '--' * 70)
-        self.srv = LocalServer(app=self)
-        self.srv.start()
-        self.clients = []
-        self.chat = []
-        # todo: tuncate chat history
-
-        self.init_scene()
+        log.info('\n' + '=-' * 70 + '\nWEBSITE SERVICE STARTED\n' + '--' * 70)
 
         handlers = [
-            #(r"/", MainHandler),
-            (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
-            (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
-            (r"/ws", AgentSocketHandler),
+            (r"/", MainHandler),
+            (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html"}),
+            #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html"}),
             (r"/static/(.*)", StaticFileHandlerPub),
+
+            #(r"/auth/login", AuthLoginHandler),
+            #(r"/auth/logout", AuthLogoutHandler),
         ]
         settings = dict(
             cookie_secret=options.cookie_secret,
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=options.static_path,
             xsrf_cookies=True,
-            #ui_modules = uimodules,
+            ui_modules = uimodules,
             login_url="/auth/login",
             debug=True,
         )
@@ -60,20 +54,9 @@ class Application(tornado.web.Application):
         log.debug('====== ioloop after stop')
 
     def on_stop(self):
-        if self.srv.is_active:
-            self.srv.stop()
+        pass
 
-    def init_scene(self):
-        #from model.units import Bot
-        from model.vectors import Point
-        from model.first_mission_parties import WinTrigger
-        WinTrigger(server=self.srv, position=Point(29527, 14612), observing_range=600)
-        # todo: map metadata store to DB
-
-        #b = Bot(server=self.srv, position=Point(0, 0))
-        #b.goto(Point(1000, 1500))
-
-
+        
 def main():
     import socket
 

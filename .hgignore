@@ -34,3 +34,5 @@ deploy/python/
 sublayers_server/server.local.conf
 sublayers_server/static/js/map_base_local.js
 *.pid
+.hgrc
+*.local.conf

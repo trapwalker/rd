@@ -10,8 +10,8 @@
 #login p { margin: 0;}
 #login .social { display: inline-block; height: 20px; margin-left: 7px; padding: 0 2px; cursor: pointer; border-radius: 3px; }
 #login .social:before { content: ""; display: inline-block; width: 15px; height: 15px; vertical-align: top; margin: 3px 5px 0 0; }
-#login .social.fb:before { background: url('../../img/website/fc-webicon-facebook.svg') no-repeat; }
-#login .social.gp:before { background: url('../../img/website/fc-webicon-googleplus.svg') no-repeat; }
+#login .social.fb:before { background: url('../img/fc-webicon-facebook.svg') no-repeat; }
+#login .social.gp:before { background: url('../img/fc-webicon-googleplus.svg') no-repeat; }
 #login .social:hover { color: #333; background: #eee; box-shadow: 1px 1px 1px #bbb; }
 
 #login fieldset {	display: block; margin: 0; padding: 20px; background: #fff; border: 1px solid rgba(0,0,0,.3); border-top: 0; border-radius: 0 0 5px 5px; box-shadow: 0 1px 2px #aaa; }
