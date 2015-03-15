@@ -188,11 +188,12 @@ class Unit(Observer):
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
+        # todo: перенести в более правильное место. Временно тут!
+        messages.Die(agent=self.owner).post()
         # перестать стрелять своими автоматическими секторами
-        self.fire_auto_enable(side='front', enable=False)
-        self.fire_auto_enable(side='back', enable=False)
-        self.fire_auto_enable(side='left', enable=False)
-        self.fire_auto_enable(side='right', enable=False)
+        self.fire_auto_enable_all(enable=False)
+        # вроде как нельзя делать в delete, так как при дисконнекте делается ДО удаления
+        self.owner.drop_car(self)
         # todo: удалить себя и на этом месте создать обломки
         self.delete()
 

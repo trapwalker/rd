@@ -35,6 +35,8 @@ class Agent(Object):
         return self._connection is not None
 
     def add_observer(self, observer, time=None):
+        if not self.is_online:
+            return
         # add _self_ into to the all _visible objects_ by _observer_
         self.observers[observer] += 1
         observer.watched_agents[self] += 1
@@ -43,6 +45,8 @@ class Agent(Object):
             self.on_see(time=time, subj=observer, obj=vo, is_boundary=False)
 
     def drop_observer(self, observer, time=None):
+        if not self.is_online:
+            return
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.visible_objects:
             self.on_out(time=time, subj=observer, obj=vo, is_boundary=False)
@@ -117,7 +121,7 @@ class Agent(Object):
 
     def party_before_include(self, party, new_member):
         # party - куда включают, agent - кого включают
-        if not self.connection:
+        if not self.is_online:
             return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
@@ -125,13 +129,13 @@ class Agent(Object):
 
     def party_after_include(self, party, new_member, old_enable=True):
         # party - куда включили, agent - кого включили
-        if not self.connection:
+        if not self.is_online:
             return
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
 
     def party_before_exclude(self, party, old_member):
         # party - откуда исключабт, agent - кого исключают
-        if not self.connection:
+        if not self.is_online:
             return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
@@ -139,7 +143,7 @@ class Agent(Object):
 
     def party_after_exclude(self, party, old_member):
         # party - откуда исключили, agent - кого исключили
-        if not self.connection:
+        if not self.is_online:
             return
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
 

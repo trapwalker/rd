@@ -253,8 +253,4 @@ class Observer(VisibleObject):
         return d
 
     def on_die(self, event):
-        # todo: перенести в более правильное место. Временно тут!
-        for agent in self.watched_agents:
-            messages.Die(
-                agent=agent
-            ).post()
+        pass
