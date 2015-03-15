@@ -116,17 +116,17 @@ class Agent(Object):
         car.fire_auto_enable_all(enable=False)
 
     def party_after_include(self, party, new_member, old_enable=True):
-        # party - куда включают, agent - кого включили
+        # party - куда включили, agent - кого включили
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
 
     def party_before_exclude(self, party, old_member):
-        # party - куда включают, agent - кого включают
+        # party - откуда исключабт, agent - кого исключают
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
         car.fire_auto_enable_all(enable=False)
 
     def party_after_exclude(self, party, old_member):
-        # party - куда включают, agent - кого включают
+        # party - откуда исключили, agent - кого исключили
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
 
 
