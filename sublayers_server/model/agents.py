@@ -10,7 +10,6 @@ from collections import Counter
 
 # todo: make agent offline status possible
 
-
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login}>'
 

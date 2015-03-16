@@ -8,6 +8,7 @@ from functools import total_ordering
 from utils import time_log_format
 from messages import FireDischargeEffect
 
+
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
@@ -232,4 +233,3 @@ class FireAutoEnableEvent(Objective):
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
         self.obj.on_fire_auto_enable(self)
-

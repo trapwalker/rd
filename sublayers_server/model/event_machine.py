@@ -7,8 +7,6 @@ from server_api import ServerAPI
 from utils import get_uid, TimelineQueue, get_time, time_log_format
 import events
 import errors
-from party import PartyDispatcher
-
 import sys
 from time import sleep
 from threading import Thread
@@ -38,7 +36,6 @@ class Server(object):
         # todo: blocking of init of servers with same uid
 
         self.randomCarList = RandomCarList()
-        self.parties = PartyDispatcher()
         self.zones = []
         init_zones_on_server(server=self)
 

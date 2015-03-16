@@ -27,17 +27,14 @@ class Unit(Observer):
                  direction=BALANCE.Unit.direction,
                  defence=BALANCE.Unit.defence,
                  weapons=None,
-                 role=None,
                  **kw):
         """
         @param sublayers_server.model.agents.Agent owner: Object owner
         @param float max_hp: Maximum health level
         @param float direction: Direction angle of unit
         @param list[sublayers_server.model.weapons.weapon] weapons: Set of weapon
-        @param sublayers_server.model.party.Role role: role of unit into the party of agent
         """
         super(Unit, self).__init__(**kw)
-        self.role = role
         self.owner = owner
         time = self.server.get_time()
         self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
@@ -205,15 +202,11 @@ class Unit(Observer):
             direction=self.direction,
             hp_state=self.hp_state.export(),
             fire_sectors=[sector.as_dict() for sector in self.fire_sectors],
-            role=None if self.role is None else self.role.name,
         )
         return d
 
     def on_before_delete(self, **kw):
         super(Unit, self).on_before_delete(**kw)
-        if self.role:
-            self.role.remove_car(self)
-            # todo: rename
         for task in self.tasks:
             if isinstance(task, HPTask):
                 task.done()
@@ -232,6 +225,7 @@ class Unit(Observer):
             if sector.is_auto_enable():
                 return True
         return False
+
 
 class Station(Unit):
     u"""Class of buildings"""
