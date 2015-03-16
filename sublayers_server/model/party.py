@@ -3,8 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from vectors import Point
 from events import Event
+from messages import PartyInviteMessage, PartyIncludeMessage, PartyExcludeMessage
 
 
 def inc_name_number(name):
@@ -35,6 +35,53 @@ class PartyExcludeEvent(Event):
     def on_perform(self):
         super(PartyExcludeEvent, self).on_perform()
         self.party.on_exclude(self.agent)
+
+
+class PartyInviteTimeOutEvent(Event):
+    def __init__(self, invite, **kw):
+        assert (invite is not None)
+        super(PartyInviteTimeOutEvent, self).__init__(server=invite.party.owner.server, **kw)
+        self.invite = invite
+
+    def on_perform(self):
+        super(PartyInviteTimeOutEvent, self).on_perform()
+        self.invite.delete_by_time()
+
+
+class Invite(object):
+    def __init__(self, sender, recipient, party):
+        assert (recipient is not None) and (party is not None)
+        self.sender = sender
+        self.recipient = recipient
+        self.party = party
+
+        # Все члены пати должны знать кого пригласили
+        for member in self.party.members:
+            PartyInviteMessage(agent=member, sender=sender, recipient=recipient, party=party).post()
+
+        # Приглашенный тоже должен об этом узнать
+        PartyInviteMessage(agent=recipient, sender=sender, recipient=recipient, party=party).post()
+
+        # Добавляем приглашение в список приглашений party
+        self.party.invites.append(self)
+
+        # Создаем ивент истечения срока действия приглашения
+        # todo: вынести время жизни приглашения в баланс
+        self.time_out_event = PartyInviteTimeOutEvent(invite=self,
+                                                      time=(self.party.owner.server.get_time() + 300)).post()
+
+    def delete_by_user(self):
+        # Отменяем ивент истечения срока действия приглашения
+        self.time_out_event.cancel()
+        self.time_out_event = None
+        self._delete()
+
+    def delete_by_time(self):
+        self._delete()
+
+    def _delete(self):
+        if self in self.party.invites:
+            self.party.invites.remove(self)
 
 
 class Party(object):
@@ -83,6 +130,7 @@ class Party(object):
         old_party = agent.party
         if old_party is self:
             return
+
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self)
         for member in self.members:
@@ -93,6 +141,11 @@ class Party(object):
 
         self._on_include(agent)
         self.members.append(agent)
+
+        # Рассылка всем сообщения о новом члене пати
+        #for member in self.members:
+        #    PartyIncludeMessage(agent=member, subj=agent, party=self).post()
+
         agent.party = self
         log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
         #agent.on_change_party(old=old_party)  todo: realize
@@ -132,8 +185,13 @@ class Party(object):
         for member in self.members:
             member.party_before_exclude(old_member=agent, party=self)
 
+        # Рассылка всем сообщения о вышедшем из пати агенте
+        #for member in self.members:
+        #    PartyExcludeMessage(agent=member, subj=agent, party=self).post()
+
         agent.party = None
         self.members.remove(agent)
+
         self._on_exclude(agent)
         log.info('Agent %s excluded from party %s', agent, self)
         #if not silent: agent.on_change_party(self)  # todo: realize

@@ -301,3 +301,50 @@ class ZoneEffectMessage(Message):
             subj_r=self.subj._r
         )
         return d
+
+
+class PartyIncludeMessage(Message):
+    def __init__(self, subj, party, **kw):
+        super(PartyIncludeMessage, self).__init__(**kw)
+        self.subj = subj
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyIncludeMessage, self).as_dict()
+        d.update(
+            subj=self.subj.uid,
+            party=self.party,
+        )
+        return d
+
+
+class PartyExcludeMessage(Message):
+    def __init__(self, subj, party, **kw):
+        super(PartyExcludeMessage, self).__init__(**kw)
+        self.subj = subj
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyExcludeMessage, self).as_dict()
+        d.update(
+            subj=self.subj.uid,
+            party=self.party,
+        )
+        return d
+
+
+class PartyInviteMessage(Message):
+    def __init__(self, sender, recipient, party, **kw):
+        super(PartyInviteMessage, self).__init__(**kw)
+        self.sender = sender
+        self.recipient = recipient
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyInviteMessage, self).as_dict()
+        d.update(
+            sender=self.sender.uid,
+            recipient=self.recipient.uid,
+            party=self.party,
+        )
+        return d

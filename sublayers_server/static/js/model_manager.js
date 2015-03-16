@@ -482,6 +482,10 @@ var ClientManager = (function () {
         wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
     };
 
+    ClientManager.prototype.PartyIncludeMessage = function (event) {
+        console.log('ClientManager.prototype.PartyIncludeMessage');
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
