@@ -37,17 +37,6 @@ class PartyExcludeEvent(Event):
         self.party.on_exclude(self.agent)
 
 
-class PartyInviteTimeOutEvent(Event):
-    def __init__(self, invite, **kw):
-        assert (invite is not None)
-        super(PartyInviteTimeOutEvent, self).__init__(server=invite.party.owner.server, **kw)
-        self.invite = invite
-
-    def on_perform(self):
-        super(PartyInviteTimeOutEvent, self).on_perform()
-        self.invite.delete_by_time()
-
-
 class Invite(object):
     def __init__(self, sender, recipient, party):
         assert (recipient is not None) and (party is not None)
@@ -65,23 +54,38 @@ class Invite(object):
         # Добавляем приглашение в список приглашений party
         self.party.invites.append(self)
 
-        # Создаем ивент истечения срока действия приглашения
-        # todo: вынести время жизни приглашения в баланс
-        self.time_out_event = PartyInviteTimeOutEvent(invite=self,
-                                                      time=(self.party.owner.server.get_time() + 300)).post()
-
-    def delete_by_user(self):
-        # Отменяем ивент истечения срока действия приглашения
-        self.time_out_event.cancel()
-        self.time_out_event = None
-        self._delete()
-
-    def delete_by_time(self):
-        self._delete()
-
-    def _delete(self):
+    def delete(self):
         if self in self.party.invites:
             self.party.invites.remove(self)
+
+
+class PartyMember(object):
+
+    # Распределение ролей в пати:
+    #       'Owner' - глава пати
+    #       'Admin' - заместитель главы пати
+    #       'Normal' - обычный участник
+
+    def __init__(self, agent, party, role='Normal'):
+        assert (agent is not None) and (party is not None)
+        self.agent = agent
+        self.party = party
+        self.role = None
+        self.set_role(role)
+        # Рассылка всем сообщения о новом члене пати
+        for member in self.party.members:
+            PartyIncludeMessage(agent=member.agent, subj=self.agent, party=self.party).post()
+        party.members.append(self)
+
+    def out_from_party(self):
+        # Рассылка всем сообщения о вышедшем из пати агенте
+        for member in self.party.members:
+            PartyExcludeMessage(agent=member.agent, subj=self.agent, party=self.party).post()
+        self.party.members.remove(self)
+
+    def set_role(self, role):
+        self.role = role
+        # todo: сообщение о присвоении роли
 
 
 class Party(object):
@@ -90,18 +94,14 @@ class Party(object):
     def __init__(self, owner=None, name=None):
         if name is None:
             name = self.classname
-
         while name in self.parties:
             name = inc_name_number(name)
         self.parties[name] = self
-
         self.name = name
         self.owner = owner
         self.share_obs = []
-        self.members = []  # todo: may be set of agents?
-        """@type list[agents.Agent]"""
-        self.invites = []  # todo: may be set of agents?
-        """@type list[agents.Agent]"""
+        self.members = []
+        self.invites = []
         if owner is not None:
             self.include(owner)
 
@@ -123,6 +123,12 @@ class Party(object):
             id=self.id,
         )
 
+    def get_member_by_agent(self, agent):
+        for member in self.members:
+            if member.agent == agent:
+                return member
+        return None
+
     def include(self, agent):
         PartyIncludeEvent(party=self, agent=agent).post()
 
@@ -134,42 +140,37 @@ class Party(object):
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self)
         for member in self.members:
-            member.party_before_include(new_member=agent, party=self)
+            member.agent.party_before_include(new_member=agent, party=self)
 
         if old_party:
             old_party.exclude(agent)
 
         self._on_include(agent)
-        self.members.append(agent)
-
-        # Рассылка всем сообщения о новом члене пати
-        #for member in self.members:
-        #    PartyIncludeMessage(agent=member, subj=agent, party=self).post()
-
+        PartyMember(agent=agent, party=self, role=('Owner' if self.owner == agent else None))
         agent.party = self
         log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
-        #agent.on_change_party(old=old_party)  todo: realize
 
         # after include for members
         for member in self.members:
-            member.party_after_include(new_member=agent, party=self)
+            member.agent.party_after_include(new_member=agent, party=self)
 
     def _on_include(self, agent):
         #log.info('==============Start include')
         #log.info(len(self.share_obs))
-        agent_observers = agent.observers.keys()
 
+        agent_observers = agent.observers.keys()
         for obs in agent_observers:
             if agent.observers[obs] > 0:
                 self.share_obs.append(obs)
 
-        for agt in self.members:
+        for member in self.members:
             for obs in agent_observers:
                 if agent.observers[obs] > 0:
-                    agt.add_observer(obs)
+                    member.agent.add_observer(obs)
 
-        for o in self.share_obs:
-            agent.add_observer(o)
+        for obs in self.share_obs:
+            agent.add_observer(obs)
+
         #log.info(len(self.share_obs))
         #log.info('==============End include')
 
@@ -177,42 +178,37 @@ class Party(object):
         PartyExcludeEvent(party=self, agent=agent).post()
 
     def on_exclude(self, agent):
-        if agent.party is not self:
+        out_member = self.get_member_by_agent(agent)
+        if (agent.party is not self) or (out_member is None):
             log.warning('Trying to exclude unaffilated agent (%s) from party %s', agent, self)
             return
 
         # before exclude for members
         for member in self.members:
-            member.party_before_exclude(old_member=agent, party=self)
-
-        # Рассылка всем сообщения о вышедшем из пати агенте
-        #for member in self.members:
-        #    PartyExcludeMessage(agent=member, subj=agent, party=self).post()
+            member.agent.party_before_exclude(old_member=agent, party=self)
 
         agent.party = None
-        self.members.remove(agent)
-
+        out_member.out_from_party()
         self._on_exclude(agent)
         log.info('Agent %s excluded from party %s', agent, self)
-        #if not silent: agent.on_change_party(self)  # todo: realize
 
         # after exclude for members and agent
         agent.party_after_exclude(old_member=agent, party=self)
         for member in self.members:
-            member.party_after_exclude(old_member=agent, party=self)
+            member.agent.party_after_exclude(old_member=agent, party=self)
 
     def _on_exclude(self, agent):
         #log.info('---------------Start exclude')
         #log.info(len(self.share_obs))
 
-        for o in self.share_obs:
-            agent.drop_observer(o)
+        for obs in self.share_obs:
+            agent.drop_observer(obs)
 
         agent_observers = agent.observers.keys()
-        for a in self.members:
+        for member in self.members:
             for obs in agent_observers:
                 if agent.observers[obs] > 0:
-                    a.drop_observer(obs)
+                    member.agent.drop_observer(obs)
 
         for obs in agent_observers:
             if agent.observers[obs] > 0:
@@ -225,18 +221,16 @@ class Party(object):
         if observer in self.share_obs:
             self.share_obs.remove(observer)
         for member in self.members:
-            member.drop_observer(observer)
+            member.agent.drop_observer(observer)
 
     def add_observer_to_party(self, observer):
         if not (observer in self.share_obs):
             self.share_obs.append(observer)
         for member in self.members:
-            member.add_observer(observer)
+            member.agent.add_observer(observer)
 
     def invite(self, user):
-        if user not in self.invites:
-            self.invites.append(user)
-            # todo: send invitation message
+        pass
 
     def __len__(self):
         return len(self.members)

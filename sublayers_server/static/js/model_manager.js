@@ -483,7 +483,11 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PartyIncludeMessage = function (event) {
-        console.log('ClientManager.prototype.PartyIncludeMessage');
+        console.log('ClientManager.prototype.PartyIncludeMessage', event);
+    };
+
+    ClientManager.prototype.PartyExcludeMessage = function (event) {
+        console.log('ClientManager.prototype.PartyExcludeMessage', event);
     };
 
     // Исходящие сообщения

@@ -312,8 +312,8 @@ class PartyIncludeMessage(Message):
     def as_dict(self):
         d = super(PartyIncludeMessage, self).as_dict()
         d.update(
-            subj=self.subj.uid,
-            party=self.party,
+            subj=self.subj.as_dict(),
+            party=self.party.as_dict(),
         )
         return d
 
@@ -327,8 +327,8 @@ class PartyExcludeMessage(Message):
     def as_dict(self):
         d = super(PartyExcludeMessage, self).as_dict()
         d.update(
-            subj=self.subj.uid,
-            party=self.party,
+            subj=self.subj.as_dict(),
+            party=self.party.as_dict(),
         )
         return d
 
