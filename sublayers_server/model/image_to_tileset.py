@@ -6,7 +6,6 @@ from tileid import Tileid
 from tileid2 import Tileid2
 
 
-
 #TODO: Если выбранный файл (тайл) полностью одного цвета - учесть это специальным вызовом ts.set_tile
 
 def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finish=None, color=(0, 0, 0)):

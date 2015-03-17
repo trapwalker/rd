@@ -5,10 +5,10 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
-from sublayers_server.model import events
-from sublayers_server.model import errors
 from sublayers_server.model.party import PartyDispatcher
 from sublayers_server.model.zones import init_zones_on_server
+from sublayers_server.model import events
+from sublayers_server.model import errors
 
 from time import sleep
 from threading import Thread

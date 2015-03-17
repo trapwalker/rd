@@ -6,10 +6,10 @@ from math import pi
 
 log = logging.getLogger(__name__)
 
-import sublayers_server.model.units
+from sublayers_server.model import units
+from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
-from sublayers_server.model import messages
 from sublayers_server.model.rocket import Rocket
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party

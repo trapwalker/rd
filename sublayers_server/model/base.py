@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 #from utils import get_uid, serialize
+from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory
-import sublayers_server.model.messages
 from sublayers_server.model.events import ContactSee, ContactOut, Init, Delete, SearchContacts
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
