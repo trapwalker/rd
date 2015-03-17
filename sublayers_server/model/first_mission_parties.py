@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from party import RoleParty, Role
-from vectors import Point
-from units import Bot
-from events import Event
-from trigger import Trigger
-from messages import Message
+from sublayers_server.model.party import RoleParty, Role
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.units import Bot
+from sublayers_server.model.events import Event
+from sublayers_server.model.trigger import Trigger
+from sublayers_server.model.messages import Message
 
 from math import pi, radians
 

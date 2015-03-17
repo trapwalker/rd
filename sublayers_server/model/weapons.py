@@ -3,9 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-from balance import BALANCE
-from hp_task import HPTask
-from messages import FireAutoEffect
+from sublayers_server.model.balance import BALANCE
+from sublayers_server.model.hp_task import HPTask
+from sublayers_server.model.messages import FireAutoEffect
 
 
 class Weapon(object):

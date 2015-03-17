@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tasks import TaskPerformEvent, TaskSingleton
-from state import EPS
-from vectors import Point
+from sublayers_server.model.tasks import TaskPerformEvent, TaskSingleton
+from sublayers_server.model.state import EPS
+from sublayers_server.model.vectors import Point
+
 from copy import copy
 import math
-
 
 
 class MotionTaskEvent(TaskPerformEvent):

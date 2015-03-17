@@ -15,7 +15,7 @@ except ImportError as e:
     from json import loads as json_decode
     
 
-from utils import serialize
+from sublayers_server.model.utils import serialize
 
 
 class EAPIError(Exception):

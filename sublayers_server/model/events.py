@@ -5,8 +5,9 @@ log = logging.getLogger(__name__)
 log.info('\n\n\n')
 
 from functools import total_ordering
-from utils import time_log_format
-from messages import FireDischargeEffect
+
+from sublayers_server.model.utils import time_log_format
+from sublayers_server.model.messages import FireDischargeEffect
 
 @total_ordering
 class Event(object):
@@ -198,8 +199,8 @@ class FireDischargeEffectEvent(Objective):
 
     def on_perform(self):
         # todo: правильно ли это?
-        from vectors import Point
-        from sectors import get_angle_by_side
+        from sublayers_server.model.vectors import Point
+        from sublayers_server.model.sectors import get_angle_by_side
 
         super(FireDischargeEffectEvent, self).on_perform()
         targets = []

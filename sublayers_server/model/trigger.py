@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import Observer
+from sublayers_server.model.base import Observer
 
 
 class Trigger(Observer):

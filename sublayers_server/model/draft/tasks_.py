@@ -3,14 +3,15 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_server.model.events import ContactSee, ContactOut, TaskEnd
+from sublayers_server.model.utils import time_log_format
+from sublayers_server.model.base import Observer
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.trajectory import build_trajectory
+
 from math import sqrt
 from abc import ABCMeta
 
-from events import ContactSee, ContactOut, TaskEnd
-from utils import time_log_format
-from base import Observer
-from vectors import Point
-from trajectory import build_trajectory
 
 DEFAULT_STANDING_DURATION = 60 * 60  # 1 hour
 # todo: need review

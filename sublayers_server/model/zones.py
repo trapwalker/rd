@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-from image_to_tileset import MongoDBToTilesets
-from tileset import Tileset
-from tileid import Tileid
-from effects_zone import EffectRoad, EffectWater, EffectWood
-
-
-
 log = logging.getLogger(__name__)
+
+from sublayers_server.model.image_to_tileset import MongoDBToTilesets
+from sublayers_server.model.tileset import Tileset
+from sublayers_server.model.tileid import Tileid
+from sublayers_server.model.effects_zone import EffectRoad, EffectWater, EffectWood
+
+import os
+
 
 def init_zones_on_server(server):
     def read_ts_from_file(file_name, server, effects):
