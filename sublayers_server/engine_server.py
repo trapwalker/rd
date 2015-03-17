@@ -11,7 +11,6 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
-import os
 
 import settings
 import service_tools
@@ -19,6 +18,8 @@ import service_tools
 from handlers.static import StaticFileHandlerPub
 from handlers.client_connector import AgentSocketHandler
 from handlers.pages import MainHandler
+from handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
+import uimodules
 
 from model.event_machine import LocalServer
 
@@ -41,13 +42,17 @@ class Application(tornado.web.Application):
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", MainHandler),
+
+            (r"/auth/login", AuthLoginHandler),
+            (r"/auth/login/google", AuthGoogleHandler),
+            (r"/auth/logout", AuthLogoutHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,
-            template_path=os.path.join(os.path.dirname(__file__), "templates"),
+            template_path=options.template_path,
             static_path=options.static_path,
             xsrf_cookies=True,
-            #ui_modules = uimodules,
+            ui_modules=uimodules,
             login_url="/",
             debug=True,
         )

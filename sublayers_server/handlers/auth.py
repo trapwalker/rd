@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 import tornado.web
 import tornado.auth
 
-from main import BaseHandler
+from .base import BaseHandler
 
 
 class BaseAuthHandler(BaseHandler):
