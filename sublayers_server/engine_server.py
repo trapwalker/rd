@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
 
-import sys, os; sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import sys, os
+
+def parent_folder(fn):
+    return os.path.abspath(os.path.join(os.path.dirname(fn), '..'))
+
+sys.path.append(parent_folder(__file__))
 
 import logging.config
 logging.config.fileConfig("logging.conf")
