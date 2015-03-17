@@ -282,7 +282,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+        //console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -352,7 +352,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Out = function (event) {
-        console.log('ClientManager.prototype.Out', event.is_last, event.subject_id, event.object_id);
+        //console.log('ClientManager.prototype.Out', event.is_last, event.subject_id, event.object_id);
         if(event.is_last) { // только если машинку нужно совсем убирать
             // очистить все виджеты машинки
             var uid = event.object_id;
@@ -499,6 +499,14 @@ var ClientManager = (function () {
         widget_marker.updateLabel();
 
         // изменить иконки машинок для всех бывших мемберов пати
+    };
+
+    ClientManager.prototype.PartyInviteMessage = function (event) {
+        console.log('ClientManager.prototype.PartyInviteMessage', event);
+    };
+
+    ClientManager.prototype.PartyErrorMessage = function (event) {
+        console.log('ClientManager.prototype.PartyErrorMessage', event);
     };
 
     // Исходящие сообщения

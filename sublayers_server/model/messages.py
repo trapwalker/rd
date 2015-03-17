@@ -356,8 +356,12 @@ class PartyInviteMessage(Message):
     def as_dict(self):
         d = super(PartyInviteMessage, self).as_dict()
         d.update(
-            sender=self.sender.uid,
-            recipient=self.recipient.uid,
-            party=self.party,
+            sender=self.sender.as_dict(),
+            recipient=self.recipient.as_dict(),
+            party=self.party.as_dict(),
         )
         return d
+
+
+class PartyErrorMessage(Message):
+    pass

@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from events import Event
 from messages import PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded, \
-    PartyIncludeMessageForIncluded
+    PartyIncludeMessageForIncluded, PartyErrorMessage
 
 
 def inc_name_number(name):
@@ -39,6 +39,18 @@ class PartyExcludeEvent(Event):
         self.party.on_exclude(self.agent)
 
 
+class PartyInviteEvent(Event):
+    def __init__(self, party, sender, recipient, **kw):
+        super(PartyInviteEvent, self).__init__(server=sender.server, **kw)
+        self.party = party
+        self.sender = sender
+        self.recipient = recipient
+
+    def on_perform(self):
+        super(PartyInviteEvent, self).on_perform()
+        self.party.on_invite(event=self)
+
+
 class Invite(object):
     def __init__(self, sender, recipient, party):
         assert (recipient is not None) and (party is not None)
@@ -48,7 +60,7 @@ class Invite(object):
 
         # Все члены пати должны знать кого пригласили
         for member in self.party.members:
-            PartyInviteMessage(agent=member, sender=sender, recipient=recipient, party=party).post()
+            PartyInviteMessage(agent=member.agent, sender=sender, recipient=recipient, party=party).post()
 
         # Приглашенный тоже должен об этом узнать
         PartyInviteMessage(agent=recipient, sender=sender, recipient=recipient, party=party).post()
@@ -56,9 +68,10 @@ class Invite(object):
         # Добавляем приглашение в список приглашений party
         self.party.invites.append(self)
 
-    def delete(self):
+    def delete_invite(self):
         if self in self.party.invites:
             self.party.invites.remove(self)
+        # todo: отправить сообщение об неактуальности инвайта
 
 
 class PartyMember(object):
@@ -140,6 +153,18 @@ class Party(object):
     def search_or_create(cls, name):
         return cls.search(name) or cls(name)
 
+    def _has_invite(self, agent):
+        for inv in self.invites:
+            if inv.recipient == agent:
+                return True
+        return False
+
+    def _del_invites_by_agent(self, agent):
+        temp_invites = self.invites[:]
+        for inv in temp_invites:
+            if inv.recipient == agent:
+                inv.delete_invite()
+
     def as_dict(self, with_members=False):
         d = dict(
             name=self.name,
@@ -165,6 +190,13 @@ class Party(object):
         if old_party is self:
             return
 
+        # проверка по инвайтам
+        if agent != self.owner:
+            if not self._has_invite(agent):
+                PartyErrorMessage(agent=agent, comment='You do not have invite for this party').post()
+                return
+            self._del_invites_by_agent(agent)
+
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self)
         for member in self.members:
@@ -174,7 +206,7 @@ class Party(object):
             old_party.exclude(agent)
 
         self._on_include(agent)
-        PartyMember(agent=agent, party=self, role=('Owner' if self.owner == agent else None))
+        PartyMember(agent=agent, party=self, role=('Owner' if self.owner == agent else 'Normal'))
         agent.party = self
         log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
 
@@ -257,8 +289,27 @@ class Party(object):
         for member in self.members:
             member.agent.add_observer(observer)
 
-    def invite(self, user):
-        pass
+    def invite(self, sender, recipient):
+        PartyInviteEvent(party=self, sender=sender, recipient=recipient, time=sender.server.get_time() + 0.01).post()
+
+    def on_invite(self, event):
+        sender = event.sender
+        recipient = event.recipient
+        if not sender in self:
+            PartyErrorMessage(agent=sender, comment='Sender not in party').post()
+            return
+        if recipient in self:
+            PartyErrorMessage(agent=sender, comment='Recipient in party').post()
+            return
+        member_sender = self.get_member_by_agent(sender)
+        if member_sender.role == 'Normal':
+            PartyErrorMessage(agent=sender, comment='Sender do not have rights').post()
+            return
+        for inv in self.invites:
+            if (inv.sender == sender) and (inv.recipient == recipient):
+                PartyErrorMessage(agent=sender, comment='Invite already exists').post()
+                return
+        Invite(sender=sender, recipient=recipient, party=self)
 
     def __len__(self):
         return len(self.members)
@@ -269,4 +320,7 @@ class Party(object):
     id = property(id)
 
     def __contains__(self, agent):
-        return agent in self.members
+        for member in self.members:
+            if member.agent == agent:
+                return True
+        return False

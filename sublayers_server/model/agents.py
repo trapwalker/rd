@@ -55,7 +55,9 @@ class Agent(Object):
 
     def on_see(self, time, subj, obj, is_boundary):
         is_first = obj.subscribed_agents.inc(self) == 1
-        log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s see by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])
+        #log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s see by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])
+        if not is_first:
+            return
         messages.See(
             agent=self,
             time=time or self.server.get_time(),  # todo: check it
@@ -67,8 +69,10 @@ class Agent(Object):
 
     def on_out(self, time, subj, obj, is_boundary):
         is_last = obj.subscribed_agents.dec(self) == 0
-        if self.cars:
-            log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s out by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])
+        #if self.cars:
+            #log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s out by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])
+        if not is_last:
+            return
         messages.Out(
             agent=self,
             time=time or self.server.get_time(),  # todo: check it

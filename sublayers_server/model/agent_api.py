@@ -81,18 +81,12 @@ class AgentAPI(API):
         log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         user = self.agent.server.agents.get(username)
         if user is None:
-            return  # todo: raise legal exception
-
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient').post()
+            return
         party = self.agent.party
-        if party is not None:
-            if party.owner is not self.agent:
-                party.exclude(self.agent)  # todo: may be generate legal exception for explicit excluding
-                party = None
-
         if party is None:
             party = Party(owner=self.agent)
-
-        party.invite(user)
+        party.invite(sender=self.agent, recipient=user)
 
     @public_method
     def change_car(self):
@@ -169,7 +163,7 @@ class AgentAPI(API):
             self.set_party(name=args[0] if args else None)
         elif command == '/leave':
             self.set_party()
-        elif command == 'invite':
+        elif command == '/invite':
             for name in args:
                 self.send_invite(username=name)
         else:
