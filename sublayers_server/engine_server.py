@@ -16,10 +16,11 @@ import os
 import settings
 import service_tools
 
-from static import StaticFileHandlerPub
-from model.event_machine import LocalServer
+from handlers.static import StaticFileHandlerPub
+from handlers.client_connector import AgentSocketHandler
+from handlers.pages import MainHandler
 
-from client_connector import AgentSocketHandler
+from model.event_machine import LocalServer
 
 
 class Application(tornado.web.Application):
@@ -67,16 +68,6 @@ class Application(tornado.web.Application):
         from model.first_mission_parties import WinTrigger
         WinTrigger(server=self.srv, position=Point(29527, 14612), observing_range=600)
         # todo: map metadata store to DB
-
-
-class BaseHandler(tornado.web.RequestHandler):
-    def get_current_user(self):
-        return self.get_secure_cookie("user")
-
-
-class MainHandler(BaseHandler):
-    def get(self):
-        self.render("index.html")
 
 
 def main():
