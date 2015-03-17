@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-from model.agent_api import AgentAPI
-from model import messages
+from sublayers_server.model.agent_api import AgentAPI
+from sublayers_server.model import messages
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
 
 import logging.config
 logging.config.fileConfig("logging.conf")
@@ -12,16 +13,16 @@ import tornado.options
 from tornado.options import options
 import socket
 
-import settings
-import service_tools
+from sublayers_server import settings
+from sublayers_server import service_tools
 
-from handlers.static import StaticFileHandlerPub
-from handlers.client_connector import AgentSocketHandler
-from handlers.pages import MainHandler
-from handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
-import uimodules
+from sublayers_server.handlers.static import StaticFileHandlerPub
+from sublayers_server.handlers.client_connector import AgentSocketHandler
+from sublayers_server.handlers.pages import MainHandler
+from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
+from sublayers_server import uimodules
 
-from model.event_machine import LocalServer
+from sublayers_server.model.event_machine import LocalServer
 
 
 class Application(tornado.web.Application):
@@ -69,8 +70,8 @@ class Application(tornado.web.Application):
 
     def init_scene(self):
         #from model.units import Bot
-        from model.vectors import Point
-        from model.first_mission_parties import WinTrigger
+        from sublayers_server.model.vectors import Point
+        from sublayers_server.model.first_mission_parties import WinTrigger
         WinTrigger(server=self.srv, position=Point(29527, 14612), observing_range=600)
         # todo: map metadata store to DB
 
