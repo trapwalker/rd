@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 log = logging.getLogger(__name__)
 
 from events import Event
-from messages import PartyInviteMessage, PartyIncludeMessage, PartyExcludeMessage
+from messages import PartyInviteMessage, PartyIncludeMessage, PartyExcludeMessage, PartyExcludeMessageForExcluded, \
+    PartyIncludeMessageForIncluded
 
 
 def inc_name_number(name):
@@ -70,22 +72,40 @@ class PartyMember(object):
         assert (agent is not None) and (party is not None)
         self.agent = agent
         self.party = party
+        self.description = None
         self.role = None
         self.set_role(role)
-        # Рассылка всем сообщения о новом члене пати
+        # Рассылка всем мемберам сообщения о новом члене пати
         for member in self.party.members:
-            PartyIncludeMessage(agent=member.agent, subj=self.agent, party=self.party).post()
+            PartyIncludeMessage(agent=member.agent, subj=self.agent, party=party).post()
+        # Включение в мемберы пати нового мембера
         party.members.append(self)
+        # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
+        PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party).post()
 
     def out_from_party(self):
+        # Исключение мембера из пати
+        self.party.members.remove(self)
+        # Отправка специального сообщения исключённому (вышедшему) агенту
+        PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party).post()
         # Рассылка всем сообщения о вышедшем из пати агенте
         for member in self.party.members:
             PartyExcludeMessage(agent=member.agent, subj=self.agent, party=self.party).post()
-        self.party.members.remove(self)
 
     def set_role(self, role):
         self.role = role
         # todo: сообщение о присвоении роли
+
+    def set_description(self, new_description):
+        self.description = new_description
+
+    def as_dict(self):
+        return dict(
+            agent_name=self.agent.login,
+            agent_uid=self.agent.uid,
+            description=self.description,
+            role=self.role
+        )
 
 
 class Party(object):
@@ -117,11 +137,16 @@ class Party(object):
     def search_or_create(cls, name):
         return cls.search(name) or cls(name)
 
-    def as_dict(self):
-        return dict(
+    def as_dict(self, with_members=False):
+        d = dict(
             name=self.name,
             id=self.id,
         )
+        if with_members:
+            d.update(
+                members=[member.as_dict() for member in self.members]
+            )
+        return d
 
     def get_member_by_agent(self, agent):
         for member in self.members:

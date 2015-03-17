@@ -333,6 +333,36 @@ class PartyExcludeMessage(Message):
         return d
 
 
+class PartyIncludeMessageForIncluded(Message):
+    def __init__(self, subj, party, **kw):
+        super(PartyIncludeMessageForIncluded, self).__init__(**kw)
+        self.subj = subj
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyIncludeMessageForIncluded, self).as_dict()
+        d.update(
+            subj=self.subj.as_dict(),
+            party=self.party.as_dict(with_members=True),
+        )
+        return d
+
+
+class PartyExcludeMessageForExcluded(Message):
+    def __init__(self, subj, party, **kw):
+        super(PartyExcludeMessageForExcluded, self).__init__(**kw)
+        self.subj = subj
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyExcludeMessageForExcluded, self).as_dict()
+        d.update(
+            subj=self.subj.as_dict(),
+            party=self.party.as_dict(),
+        )
+        return d
+
+
 class PartyInviteMessage(Message):
     def __init__(self, sender, recipient, party, **kw):
         super(PartyInviteMessage, self).__init__(**kw)

@@ -490,6 +490,14 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.PartyExcludeMessage', event);
     };
 
+    ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
+        console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+    };
+
+    ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
+        console.log('ClientManager.prototype.PartyExcludeMessageForExcluded', event);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
