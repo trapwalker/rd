@@ -26,9 +26,14 @@ def load(filename, local_filename=None):
     log.info('Options load DONE')
 
 
+def _rel(*folders):
+    return os.path.join(os.path.dirname(__file__), *folders)
+
+
 # Options definintion block:
 
 define("cookie_secret", help="cookie secret key", type=str)
-define("static_path", default=os.path.join(os.path.dirname(__file__), "static"), help="path to static files", type=str)
+define("static_path", default=_rel("static"), help="path to static files", type=str)
+define("template_path", default=_rel("templates"), help="path to static files", type=str)
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
