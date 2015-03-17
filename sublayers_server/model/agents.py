@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import Object
+from sublayers_server.model.base import Object
+
 from collections import Counter
 
+
 # todo: make agent offline status possible
-
-
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.__class__.__name__} #{self.id} AKA {self.login}>'
 

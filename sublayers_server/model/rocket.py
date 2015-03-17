@@ -3,10 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
-from units import Mobile
-from balance import BALANCE
-import messages
-from hp_task import HPTask
+from sublayers_server.model.units import Mobile
+from sublayers_server.model.balance import BALANCE
+from sublayers_server.model.hp_task import HPTask
+from sublayers_server.model import messages
 
 
 class Rocket(Mobile):

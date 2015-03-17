@@ -2,6 +2,8 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_server.model.vectors import Point
+
 from Queue import PriorityQueue, Full
 from time import time as _time
 from datetime import datetime
@@ -13,8 +15,6 @@ import json
 from uuid import uuid1 as get_uid, UUID
 from time import time as get_time  # todo: integer vs float time
 import random
-
-from vectors import Point
 
 
 TimeClass = get_time().__class__

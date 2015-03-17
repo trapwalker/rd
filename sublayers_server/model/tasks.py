@@ -3,8 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_server.model import events
+
 from abc import ABCMeta
-import events
 
 
 class TaskError(Exception):

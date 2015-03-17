@@ -2,10 +2,12 @@
 
 import logging
 log = logging.getLogger(__name__)
-from tasks import TaskPerformEvent, TaskSingleton
+
+from sublayers_server.model.tasks import TaskPerformEvent, TaskSingleton
+from sublayers_server.model.events import Die
+from sublayers_server.model.messages import FireAutoEffect
+
 from copy import copy
-from events import Die
-from messages import FireAutoEffect
 
 
 class HPTaskEvent(TaskPerformEvent):

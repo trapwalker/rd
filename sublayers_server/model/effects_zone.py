@@ -2,8 +2,9 @@
 
 import logging
 log = logging.getLogger(__name__)
-from effects import Effect
-from hp_task import HPTask
+
+from sublayers_server.model.effects import Effect
+from sublayers_server.model.hp_task import HPTask
 
 
 class EffectWood(Effect):

@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from vectors import Point
+from sublayers_server.model.vectors import Point
 
 
 def inc_name_number(name):
@@ -90,7 +90,7 @@ class PartyDispatcher(dict):
 
     def __init__(self, parties=None):
         super(PartyDispatcher, self).__init__()
-        from first_mission_parties import Corp, Band
+        from sublayers_server.model.first_mission_parties import Corp, Band
         if parties is None:
             parties = [Corp(), Band()]
 
