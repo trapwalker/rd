@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
 
+import sys, os; sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import logging.config
 logging.config.fileConfig("logging.conf")
 log = logging.getLogger(__name__)
@@ -16,11 +18,11 @@ import socket
 from sublayers_server import settings
 from sublayers_server import service_tools
 
+from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import MainHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
-from sublayers_server import uimodules
 
 from sublayers_server.model.event_machine import LocalServer
 
