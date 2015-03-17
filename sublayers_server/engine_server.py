@@ -6,23 +6,20 @@ log = logging.getLogger(__name__)
 
 import tornado.escape
 import tornado.ioloop
-import tornado.options
 import tornado.web
 import tornado.websocket
-import signal
+import tornado.options
+from tornado.options import options
+import socket
 import os
-from tornado.options import define, options
+
+import settings
+import service_tools
 
 from static import StaticFileHandlerPub
 from model.event_machine import LocalServer
 
 from client_connector import AgentSocketHandler
-
-define("cookie_secret", help="cookie secret key", type=str)
-define("static_path", default=os.path.join(os.path.dirname(__file__), "static"), help="path to static files", type=str)
-define("pidfile", default=None, help="filename for pid store", type=str)
-define("port", default=80, help="run on the given port", type=int)
-# todo: logging config file path define as tornado option
 
 
 class Application(tornado.web.Application):
@@ -44,7 +41,7 @@ class Application(tornado.web.Application):
             (r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", MainHandler),
         ]
-        settings = dict(
+        app_settings = dict(
             cookie_secret=options.cookie_secret,
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=options.static_path,
@@ -53,7 +50,7 @@ class Application(tornado.web.Application):
             login_url="/",
             debug=True,
         )
-        tornado.web.Application.__init__(self, handlers, **settings)
+        tornado.web.Application.__init__(self, handlers, **app_settings)
 
     def stop(self):
         log.debug('====== ioloop before stop')
@@ -71,9 +68,6 @@ class Application(tornado.web.Application):
         WinTrigger(server=self.srv, position=Point(29527, 14612), observing_range=600)
         # todo: map metadata store to DB
 
-        #b = Bot(server=self.srv, position=Point(0, 0))
-        #b.goto(Point(1000, 1500))
-
 
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -86,36 +80,10 @@ class MainHandler(BaseHandler):
 
 
 def main():
-    import socket
-
-    def on_exit(sig, func=None):
-        print '====== terminate', sig, func
-        log.debug('====== exit handler triggered')
-        app.stop()
-
-    signal.signal(signal.SIGTERM, on_exit)
-
-    tornado.options.parse_config_file('server.conf', final=False)
-    try:
-        tornado.options.parse_config_file('server.local.conf', final=False)
-    except IOError as e:
-        log.warning('Local configuration file load FAIL: %s', e)
-    else:
-        log.info('Local configuration file load OK')
-    tornado.options.parse_command_line(final=True)
-
-    pid = os.getpid()
-    log.info('Service started with PID=%s', pid)
-    if options.pidfile:
-        try:
-            with open(options.pidfile, 'w') as f_pid:
-                f_pid.write(str(pid))
-        except Exception as e:
-            log.error("[FAIL] Can't store PID into the file '%s': %s", options.pidfile, e)
-        else:
-            log.info("[DONE] PID stored into the file '%s'", options.pidfile)
-
+    settings.load('server.conf')
+    service_tools.pidfile_save(options.pidfile)
     app = Application()
+    #service_tools.set_terminate_handler(app.stop)
     try:
         app.listen(options.port)
     except socket.error as e:
