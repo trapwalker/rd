@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-import events
+from sublayers_server.model import events
 
 
 class EffectStartEvent(events.Event):

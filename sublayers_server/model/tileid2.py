@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-
 from collections import Counter
+
 
 class ETileException(Exception):
     pass
+
 
 ROOTBIN = 0 # самый первый тайл, с координатами 0 0 0
 MAX_BIT_COUNT = 63 # не рекомендуется использовать большее значение, т.к. Python переходит на вещественные числа
 MAX_BIT_ZOOM = 5    # под хранения z отводится 5 бит (32 уровня глубины)
 MAX_TILE = (MAX_BIT_COUNT - MAX_BIT_ZOOM) >> 1 # определяет сколько относится к
 MAX_ZOOM = 2**MAX_BIT_ZOOM - 1 # допустимые значениядля z    2^n-1
-
 
 
 def xyz2bin(x, y, z):

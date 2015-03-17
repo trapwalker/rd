@@ -3,8 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tasks import TaskSingleton, TaskPerformEvent
-from vectors import Point
+from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
+from sublayers_server.model.vectors import Point
+
 import random
 
 

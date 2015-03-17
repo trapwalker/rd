@@ -3,17 +3,18 @@
 import logging.config
 log = logging.getLogger(__name__)
 
-from server_api import ServerAPI
-from utils import get_uid, TimelineQueue, get_time, time_log_format
-import events
-import errors
-import sys
+from sublayers_server.model.server_api import ServerAPI
+from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
+from sublayers_server.model.party import PartyDispatcher
+from sublayers_server.model.zones import init_zones_on_server
+from sublayers_server.model.first_mission_parties import RandomCarList
+from sublayers_server.model import events
+from sublayers_server.model import errors
+
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
 from collections import deque
-from zones import init_zones_on_server
-from first_mission_parties import RandomCarList
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -168,9 +169,9 @@ class LocalServer(Server):
 def main():
     log.info('==== Start logging ' + '=' * 50)
 
-    from units import Station, Bot
-    from agents import User
-    from vectors import Point
+    from sublayers_server.model.units import Station, Bot
+    from sublayers_server.model.agents import User
+    from sublayers_server.model.vectors import Point
 
     def inspect(event=None):
         events.Event(time=srv.get_time() + 1, callback_before=inspect).post()

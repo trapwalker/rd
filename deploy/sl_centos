@@ -23,7 +23,7 @@
 USER="root"
 APPNAME="sublayers"
 APPBIN="/home/sl/projects/sublayers/env/bin/python"
-APPARGS="/home/sl/projects/sublayers/sublayers_server/server.py"
+APPARGS="/home/sl/projects/sublayers/sublayers_server/engine_server.py"
 LOGFILE="/var/log/$APPNAME/error.log"
 LOCKFILE="/var/lock/subsys/$APPNAME"
 WORKDIR="/home/sl/projects/sublayers/sublayers_server"

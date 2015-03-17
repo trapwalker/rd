@@ -4,9 +4,9 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from events import Event
-from messages import PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded, \
-    PartyIncludeMessageForIncluded, PartyErrorMessage
+from sublayers_server.model.events import Event
+from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
+    PartyIncludeMessageForIncluded, PartyErrorMessage)
 
 
 def inc_name_number(name):

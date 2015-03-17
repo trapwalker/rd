@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-from model.agent_api import AgentAPI
-from model import messages
+
+from sublayers_server.model.agent_api import AgentAPI
+from sublayers_server.model import messages
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler):
@@ -18,6 +20,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         # todo: make agent_init event
         self.user_id = self.get_secure_cookie("user")
         log.info('!!! Open User connection: %s', self.user_id)
+        log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
         agent = srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
         self.agent = agent

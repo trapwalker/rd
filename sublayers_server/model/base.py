@@ -4,11 +4,11 @@ import logging
 log = logging.getLogger(__name__)
 
 #from utils import get_uid, serialize
-from inventory import Inventory
-import messages
-from events import ContactSee, ContactOut, Init, Delete, SearchContacts
-from parameters import Parameter
-from balance import BALANCE
+from sublayers_server.model import messages
+from sublayers_server.model.inventory import Inventory
+from sublayers_server.model.events import ContactSee, ContactOut, Init, Delete, SearchContacts
+from sublayers_server.model.parameters import Parameter
+from sublayers_server.model.balance import BALANCE
 
 import sys
 from abc import ABCMeta

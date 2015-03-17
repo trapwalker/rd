@@ -3,19 +3,20 @@
 import logging
 log = logging.getLogger(__name__)
 
-from state import State
-from hp_state import HPState
-from base import Observer
-from balance import BALANCE
+from sublayers_server.model.state import State
+from sublayers_server.model.hp_state import HPState
+from sublayers_server.model.base import Observer
+from sublayers_server.model.balance import BALANCE
+from sublayers_server.model.motion_task import MotionTask
+from sublayers_server.model.hp_task import HPTask
+from sublayers_server.model.sectors import FireSector
+from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
+from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent
+from sublayers_server.model.parameters import Parameter
+from sublayers_server.model.effects_zone import EffectDirt
+from sublayers_server.model import messages
+
 from math import pi
-from motion_task import MotionTask
-from hp_task import HPTask
-from sectors import FireSector
-from weapons import WeaponDischarge, WeaponAuto
-from events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent
-from parameters import Parameter
-from effects_zone import EffectDirt
-import messages
 
 
 class Unit(Observer):

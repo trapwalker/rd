@@ -3,8 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from vectors import Point
-from units import Bot
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.units import Bot
 from math import pi, radians
 
 

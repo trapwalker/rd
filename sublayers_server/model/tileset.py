@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from tileid import Tileid, ROOT
-from tileid2 import Tileid2
-from math import tan, pi
-import copy
-
 import logging.config
 log = logging.getLogger(__name__)
+
+from sublayers_server.model.tileid import Tileid, ROOT
+from sublayers_server.model.tileid2 import Tileid2
+
+from math import tan, pi
+import copy
 
 
 try:

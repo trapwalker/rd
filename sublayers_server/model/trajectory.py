@@ -3,13 +3,15 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.balance import BALANCE
+
 from math import copysign, pi, sqrt, acos, ceil
 
-from vectors import Point
-from balance import BALANCE
 
 EPS = 1e-6
 CIRCLE_ACCURACY = 16
+
 
 def pfmt(x, indent=0, indent_filling='  '):
     if not x:

@@ -3,6 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
+
 class Shell(object):
     def __init__(self, global_context, local_context=None):
         self.global_context = global_context

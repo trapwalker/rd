@@ -3,8 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
-from vectors import Point, normalize_angle
+from sublayers_server.model.vectors import Point, normalize_angle
+
 from math import degrees, pi, sqrt, log as ln, acos
+
 
 EPS = 1e-5
 

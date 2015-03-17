@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 import logging
 from math import pi
 
 log = logging.getLogger(__name__)
 
-import units
-from vectors import Point
-from api_tools import API, public_method
-import messages
-from rocket import Rocket
-from console import Shell
-from party import Party
+from sublayers_server.model import units
+from sublayers_server.model import messages
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.api_tools import API, public_method
+from sublayers_server.model.rocket import Rocket
+from sublayers_server.model.console import Shell
+from sublayers_server.model.party import Party
 
 
 class AgentAPI(API):
@@ -109,7 +110,7 @@ class AgentAPI(API):
     @public_method
     def crazy(self, target_id=None):
         # todo: identify target by name too
-        from task_tools import CrazyTask
+        from sublayers_server.model.task_tools import CrazyTask
         CrazyTask(owner=self.car, target_id=target_id).start()
 
     @public_method

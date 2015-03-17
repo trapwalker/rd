@@ -4,9 +4,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from weapons import WeaponAuto, WeaponDischarge
+from sublayers_server.model.weapons import WeaponAuto, WeaponDischarge
+from sublayers_server.model.vectors import shortest_angle, normalize_angle
+
 from math import pi
-from vectors import shortest_angle, normalize_angle
 
 
 def get_angle_by_side(side):
