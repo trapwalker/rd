@@ -561,7 +561,7 @@ var OwnerList = (function () {
         // если овнер уже был, но по какой-то приничине не было ника или пати или они отличаются, то заменить
         if (exstOwner.login != owner.login)
             exstOwner.login = owner.login;
-        if (owner.party)
+        if (exstOwner.party != owner.party)
             exstOwner.setParty(owner.party);
         return exstOwner;
     };

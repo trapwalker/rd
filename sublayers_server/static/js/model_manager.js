@@ -311,7 +311,6 @@ var ClientManager = (function () {
             car.role = event.object.role;
             car.cls = event.object.cls;
 
-            // todo: обсудить работу с овнерами
             if (aOwner)
                 aOwner.bindCar(car);
 
@@ -471,12 +470,15 @@ var ClientManager = (function () {
         wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
     };
 
-    ClientManager.prototype.PartyIncludeMessage = function (event) {
-        console.log('ClientManager.prototype.PartyIncludeMessage', event);
-    };
+    ClientManager.prototype.AgentPartyChangeMessage = function (event) {
+        console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
+        if(event.subj.uid == user.ID) return;
+        var owner = this._getOwner(event.subj);
+        for (var i = 0; i < owner.cars.length; i++) {
+            var widget_marker = visualManager.getVobjByType(owner.cars[i], WCarMarker);
+            widget_marker.updateLabel();
+        }
 
-    ClientManager.prototype.PartyExcludeMessage = function (event) {
-        console.log('ClientManager.prototype.PartyExcludeMessage', event);
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {

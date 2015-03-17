@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from events import Event
-from messages import PartyInviteMessage, PartyIncludeMessage, PartyExcludeMessage, PartyExcludeMessageForExcluded, \
+from messages import PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded, \
     PartyIncludeMessageForIncluded
 
 
@@ -75,9 +75,10 @@ class PartyMember(object):
         self.description = None
         self.role = None
         self.set_role(role)
-        # Рассылка всем мемберам сообщения о новом члене пати
-        for member in self.party.members:
-            PartyIncludeMessage(agent=member.agent, subj=self.agent, party=party).post()
+        # Рассылка всем агентам, которые видят машинки добавляемого агента
+        for car in agent.cars:
+            for sbscr_agent in car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent).post()
         # Включение в мемберы пати нового мембера
         party.members.append(self)
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
@@ -88,9 +89,10 @@ class PartyMember(object):
         self.party.members.remove(self)
         # Отправка специального сообщения исключённому (вышедшему) агенту
         PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party).post()
-        # Рассылка всем сообщения о вышедшем из пати агенте
-        for member in self.party.members:
-            PartyExcludeMessage(agent=member.agent, subj=self.agent, party=self.party).post()
+        # Рассылка всем агентам, которые видят машинки удаляемого агента
+        for car in self.agent.cars:
+            for sbscr_agent in car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
 
     def set_role(self, role):
         self.role = role
@@ -98,6 +100,7 @@ class PartyMember(object):
 
     def set_description(self, new_description):
         self.description = new_description
+        # todo: рассылка сообщений мемберам пати
 
     def as_dict(self):
         return dict(

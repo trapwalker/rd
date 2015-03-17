@@ -64,13 +64,13 @@ var WCarMarker = (function (_super) {
         this.marker.unbindLabel();
 
         if(new_label){ // если нужно просто что-то написать, то передаём это сюда
-
+            this.marker.bindLabel(new_label, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
         }else { // иначе будет установлена стандартная надпись
             if (this.car.owner || this.car == user.userCar) {
                 var owner = this.car.owner || user;
                 var party_str = "";
                 if(owner.party != null) {
-                    console.log(owner.party);
+                    //console.log(owner.party);
                     party_str = '[' + owner.party.name + ']';
                 }
                 this.marker.bindLabel(owner.login + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());

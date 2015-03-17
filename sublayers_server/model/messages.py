@@ -303,32 +303,15 @@ class ZoneEffectMessage(Message):
         return d
 
 
-class PartyIncludeMessage(Message):
-    def __init__(self, subj, party, **kw):
-        super(PartyIncludeMessage, self).__init__(**kw)
+class AgentPartyChangeMessage(Message):
+    def __init__(self, subj, **kw):
+        super(AgentPartyChangeMessage, self).__init__(**kw)
         self.subj = subj
-        self.party = party
 
     def as_dict(self):
-        d = super(PartyIncludeMessage, self).as_dict()
+        d = super(AgentPartyChangeMessage, self).as_dict()
         d.update(
             subj=self.subj.as_dict(),
-            party=self.party.as_dict(),
-        )
-        return d
-
-
-class PartyExcludeMessage(Message):
-    def __init__(self, subj, party, **kw):
-        super(PartyExcludeMessage, self).__init__(**kw)
-        self.subj = subj
-        self.party = party
-
-    def as_dict(self):
-        d = super(PartyExcludeMessage, self).as_dict()
-        d.update(
-            subj=self.subj.as_dict(),
-            party=self.party.as_dict(),
         )
         return d
 

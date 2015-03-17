@@ -579,6 +579,50 @@ var ViewMessengerGlass = (function () {
         chat.main_input.focus();
     };
 
+    // отображение в партийном чате прихода инвайта
+    ViewMessengerGlass.prototype.party_invite_show = function (event) {
+        //console.log('ViewMessengerGlass.prototype.party_invite_show');
+       // ViewMessengerGlass.prototype.addMessage = function (chatID, chatName, aUser, aText) {
+            // Найти чат для добавления в него сообщения
+            var chat = this._getChat(-2);
+
+            if(! chat) //chat = this.addChat(chatID, chatName, false);
+                console.error('Попытка записать сообщение в несуществующий чат');
+
+            this.addMessageToCompact(chatID, chatName, aUser, aText);
+
+            var messageID = chat.mesCount++;
+            // получить локальное время
+            var tempTime = new Date().toLocaleTimeString();
+            // создать див сообщения и спаны
+            var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="VMG-message-message"></div>');
+            var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
+            var spanUser = $('<span class="VMG-message-text-user sublayers-clickable">' + aUser.login + '</span>');
+            var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
+            // Добавить, предварительно скрыв
+            mesDiv.hide();
+            chat.textArea.append(mesDiv);
+            mesDiv.append(spanTime);
+            mesDiv.append(spanUser);
+            mesDiv.append(spanText);
+            // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
+            spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
+            // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
+            if(aUser.login == user.login)
+                spanUser.addClass("VMG-message-text-my-user");
+            // Показать сообщение, опустив скрол дива
+            mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+            // Добавить mesDiv и spanUser в mesList для этого chat
+            chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
+            // Удалить старые сообщения, предварительно сняв с них всё
+            if(chat.mesList.length > this.options.mesCountInChat){
+                var dmessage = chat.mesList.shift();
+                dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
+                dmessage.mesDiv.remove();
+            }
+
+    };
+
 
     ViewMessengerGlass.prototype.btnHideReaction = function(event) {
         var self = event.data.self;
