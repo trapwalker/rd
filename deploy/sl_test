@@ -23,7 +23,7 @@ DESC="Sublayers start-stop daemon $SERV_TYPE"
 NAME=sl$SERV_TYPE
 DAEMON=/usr/bin/python
 WORK_DIR=$BASE_DIR/sublayers_server
-DAEMON_ARGS=$WORK_DIR/server.py
+DAEMON_ARGS=$WORK_DIR/engine_server.py
 PIDFILE=$WORK_DIR/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
