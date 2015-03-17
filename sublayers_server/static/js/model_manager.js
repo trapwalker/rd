@@ -50,19 +50,11 @@ var ClientManager = (function () {
     ClientManager.prototype._getOwner = function (data) {
         if(data)
             if (data.cls === "User") {
-                var party;
+                var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                else
-                    party = new OwnerParty(0, "");
                 var owner = new Owner(data.uid, data.login, party);
-                if (owner) {
-                    owner = ownerList.add(owner);
-                    // Если даже мы его не добавили, то обновить owner'у его пати
-                    if (owner.party.id !== party.id) owner.party = party;
-                    //
-                    return owner;
-                }
+                return ownerList.add(owner);
             }
         return null;
     };
@@ -193,9 +185,6 @@ var ClientManager = (function () {
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
 
             user.userCar = mcar;
-
-            // Присвоение роли
-            user.role = role;
 
             // Виджеты:
             new WCarMarker(mcar);    // виджет маркера
@@ -492,10 +481,22 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
         console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+        // изменить настройки своей пати для своего клиента
+        if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
+        user.party = new OwnerParty(event.party.id, event.party.name);
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
+        widget_marker.updateLabel();
+
+        // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
         console.log('ClientManager.prototype.PartyExcludeMessageForExcluded', event);
+        user.party = null;
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
+        widget_marker.updateLabel();
+
+        // изменить иконки машинок для всех бывших мемберов пати
     };
 
     // Исходящие сообщения

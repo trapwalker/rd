@@ -480,7 +480,9 @@ var HPState = (function () {
 var User = (function () {
     function User(aID) {
         this.ID = aID;
-        this.party = new OwnerParty(0, "");
+        this.party = null;
+        this.login = null;
+        this.userCar = null;
     }
 
 
@@ -494,7 +496,7 @@ var Owner = (function () {
         this.uid = uid;
         this.login = login;
         this.cars = [];
-        this.party = aParty ? aParty : new OwnerParty(0, "");
+        this.party = aParty;
     }
 
 
@@ -556,6 +558,11 @@ var OwnerList = (function () {
             this.owners.push(owner);
             return owner;
         }
+        // если овнер уже был, но по какой-то приничине не было ника или пати или они отличаются, то заменить
+        if (exstOwner.login != owner.login)
+            exstOwner.login = owner.login;
+        if (owner.party)
+            exstOwner.setParty(owner.party);
         return exstOwner;
     };
 

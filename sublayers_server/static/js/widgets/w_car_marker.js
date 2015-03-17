@@ -19,6 +19,7 @@ var WCarMarker = (function (_super) {
         var car = this.car;
         var marker;
         marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
+        this.marker = marker;
 
         // todo: сделать доступ к иконнке через car.cls
         marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
@@ -27,23 +28,13 @@ var WCarMarker = (function (_super) {
 
         // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
 
-        if (car.owner || car == user.userCar) {
-            var owner = car.owner || user;
-            var party_str = "";
-            if (owner.party.name.length > 2)
-                party_str = '[' + (car.role || user.role)+ '@' + owner.party.name + ']';
-            marker.bindLabel(owner.login + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
-        }
-        else {
-            marker.bindLabel(car.ID.toString(), {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
-        }
-
+        this.updateLabel();
 
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
         marker.addTo(map);
         marker.carID = car.ID;
-        this.marker = marker;
+
 
         //if (car == user.userCar)
         marker.on('click', onClickUserCarMarker);
@@ -67,6 +58,26 @@ var WCarMarker = (function (_super) {
         else
             this.marker.update();
 
+    };
+
+    WCarMarker.prototype.updateLabel = function(new_label){
+        this.marker.unbindLabel();
+
+        if(new_label){ // если нужно просто что-то написать, то передаём это сюда
+
+        }else { // иначе будет установлена стандартная надпись
+            if (this.car.owner || this.car == user.userCar) {
+                var owner = this.car.owner || user;
+                var party_str = "";
+                if(owner.party != null) {
+                    console.log(owner.party);
+                    party_str = '[' + owner.party.name + ']';
+                }
+                this.marker.bindLabel(owner.login + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+            }
+            else
+                this.marker.bindLabel(this.car.ID.toString(), {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+        }
     };
 
     WCarMarker.prototype.delFromVisualManager = function () {

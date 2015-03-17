@@ -176,10 +176,11 @@ function crazyShooting(){
 
 // Установка текста в верху страницы - вывод своего ника и своей пати
 function setTitleOnPage(){
-   // if (cookieStorage.optionsShowID)
-        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + '] ' + user.userCar.ID);
-   // else
-   //     $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + ' [' + user.role + '@' + user.party.name + ']');
+    var party_str = user.party ? (' [' + user.party.name + '] ') : "/";
+    //if (cookieStorage.optionsShowID)
+        $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + party_str + user.userCar.ID);
+    //else
+    //     $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + party_str);
 }
 
 
