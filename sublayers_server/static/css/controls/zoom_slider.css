@@ -267,16 +267,104 @@
 
 /* Настройка портативного (свёрнутого) режима зума */
 
+#zoomSliderMainDivCompact {
+    pointer-events: none;
+    left: 20px;
+    top: 30px;
+    position: absolute;
+    display: none;
+}
 
-#DivForBtnSVALLRazvrInsideZoom {
+#DivForBtnRazverALLInsideZoomCompact {
     pointer-events: auto;
-    height: 28px;
-    width: 70px;
+    height: 20px;
+    width: 40px;
     color: #2afd0a;
-    border: 1px #00ff55 solid;
-    border-radius: 1px;
     position: relative;
-    left: 17px;
-    top: 8px;
-    background: rgba(0, 255, 85, 0.10) url('/static/img/control_zoom/unhide_gadgets.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/control_zoom/unhide_gadgets.png') 50% 50% no-repeat;
+    left: 10px;
+    opacity: 0.5;
+}
+
+#DivForBtnRazverALLInsideZoomCompact:hover {
+    opacity: 1;
+}
+
+#DivForBtnRazverALLInsideZoomCompact:active {
+    opacity: 0.3;
+}
+
+#DivForBtnFSCRInsideZoomCompact {
+    pointer-events: auto;
+    height: 20px;
+    width: 40px;
+    color: #2afd0a;
+    font: 7pt MICRADI;
+    border-radius: 1px;
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 5px;
+    position: relative;
+    background-color: transparent;
+    margin-top: 5px;
+    left: 10px;
+    opacity: 0.5;
+}
+
+#DivForBtnFSCRInsideZoomCompact:hover {
+    opacity: 1;
+}
+
+#DivForBtnFSCRInsideZoomCompact:active {
+    opacity: 0.3;
+}
+
+#DivForBtnPlusZoomCompact {
+    height: 15px;
+    width: 25px;
+    position: relative;
+    background-color: transparent;
+    margin-top: 5px;
+}
+
+#DivForBtnMinusZoomCompact {
+    height: 15px;
+    width: 25px;
+    position: relative;
+    background-color: transparent;
+    margin-top: 2px;
+}
+
+.classForBtnZoomCompactText {
+    pointer-events: auto;
+    position: absolute;
+    opacity: 0.5;
+    height: 100%;
+    width: 100%;
+    top: -5px;
+    text-align: center;
+    color: #2afd0a;
+    font: 15pt Arial;
+}
+
+.classForBtnZoomCompactText:hover {
+    opacity: 1;
+}
+
+.classForBtnZoomCompactText:active {
+    opacity: 0.3;
+}
+
+
+#ZoomTextDivCompact {
+    position: absolute;
+    left: 24px;
+    top: 54px;
+}
+
+#ZoomTextZoomValueCompact {
+    font: 10pt MICRADI;
+    color: #2afd0a;
+    opacity: 0.5;
+    /*Если что, то смотреть прозрачность в коде, так как она там стоит = 0.5!!! Функция зуммирования!*/
 }

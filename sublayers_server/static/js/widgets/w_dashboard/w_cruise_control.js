@@ -11,7 +11,6 @@ var WCruiseControl = (function (_super) {
         this.keyBoardControl = false;
         this.lastSpeed = -100;
 
-
         // Механизм скрытия
         this.visible = true;
         this.glassDiv = $('#cruiseControlGlassDiv');
@@ -20,7 +19,45 @@ var WCruiseControl = (function (_super) {
         this.hardWareDiv.append(this.visibleButtonDiv);
         this.visibleButtonDiv.click(this, this._onClickChangeVisible);
 
+        // Компактный вид
+        this.compactView = $("<div id='cruiseControlCompactView' class='sublayers-unclickable'></div>");
+        $('#cruiseControlMainDiv').append(this.compactView);
 
+        var compactViewSpeedDiv = $("<div id='cruiseControlCompactViewSpeedDiv' class='compactViewDiv'></div>");
+        var compactViewLimitDiv = $("<div id='cruiseControlCompactViewLimitDiv' class='compactViewDiv'></div>");
+        var compactViewHealthDiv = $("<div id='cruiseControlCompactViewHealthDiv' class='compactViewDiv'></div>");
+        var compactViewFuelDiv = $("<div id='cruiseControlCompactViewFuelDiv' class='compactViewDiv'></div>");
+        var compactViewRadiationDiv = $("<div id='cruiseControlCompactViewRadiationDiv' class='compactViewDiv'></div>");
+        var compactViewWindDiv = $("<div id='cruiseControlCompactViewWindDiv' class='compactViewDiv'></div>");
+        var compactViewAltitudeDiv = $("<div id='cruiseControlCompactViewAltitudeDiv' class='compactViewDiv'></div>");
+
+        this.compactViewSpeedTextDiv = $("<div id='cruiseControlCompactViewSpeedTextDiv' class='compactViewTextDiv'> ---- </div>");
+        this.compactViewLimitTextDiv = $("<div id='cruiseControlCompactViewLimitTextDiv' class='compactViewTextDiv'> ---- </div>");
+        compactViewSpeedDiv.append(this.compactViewSpeedTextDiv);
+        compactViewLimitDiv.append(this.compactViewLimitTextDiv);
+        compactViewHealthDiv.append($("<div id='cruiseControlCompactViewHealthTextDiv' class='compactViewTextDiv'> ---- </div>"));
+        compactViewFuelDiv.append($("<div id='cruiseControlCompactViewFuelTextDiv' class='compactViewTextDiv'> ---- </div>"));
+        compactViewRadiationDiv.append($("<div id='cruiseControlCompactViewRadiationTextDiv' class='compactViewTextDiv'> ---- </div>"));
+        compactViewWindDiv.append($("<div id='cruiseControlCompactViewWindTextDiv' class='compactViewTextDiv'> ---- </div>"));
+        compactViewAltitudeDiv.append($("<div id='cruiseControlCompactViewAltitudeTextDiv' class='compactViewTextDiv'> ---- </div>"));
+
+        compactViewSpeedDiv.append($("<div id='cruiseControlCompactViewSpeedHeaderDiv' class='compactViewHeaderDiv'>speed:</div>"));
+        compactViewLimitDiv.append($("<div id='cruiseControlCompactViewLimitHeaderDiv' class='compactViewHeaderDiv'>limit:</div>"));
+        compactViewHealthDiv.append($("<div id='cruiseControlCompactViewHealthHeaderDiv' class='compactViewHeaderDiv'>health:</div>"));
+        compactViewFuelDiv.append($("<div id='cruiseControlCompactViewFuelHeaderDiv' class='compactViewHeaderDiv'>fuel:</div>"));
+        compactViewRadiationDiv.append($("<div id='cruiseControlCompactViewRadiationHeaderDiv' class='compactViewHeaderDiv'>radiation:</div>"));
+        compactViewWindDiv.append($("<div id='cruiseControlCompactViewWindHeaderDiv' class='compactViewHeaderDiv'>wind:</div>"));
+        compactViewAltitudeDiv.append($("<div id='cruiseControlCompactViewAltitudeHeaderDiv' class='compactViewHeaderDiv'>altitude:</div>"));
+
+        this.compactView.append(compactViewSpeedDiv);
+        this.compactView.append(compactViewLimitDiv);
+        this.compactView.append(compactViewHealthDiv);
+        this.compactView.append(compactViewFuelDiv);
+        this.compactView.append(compactViewRadiationDiv);
+        this.compactView.append(compactViewWindDiv);
+        this.compactView.append(compactViewAltitudeDiv);
+
+        // Добавление основного дива круиз-контрола
         this.parentDiv = $('#' + div_parent);
         this.mainDiv = $("<div id='cruiseControlSpeedMainDiv'></div>");
         this.parentDiv.append(this.mainDiv);
@@ -175,7 +212,7 @@ var WCruiseControl = (function (_super) {
         this.mainDiv.append('<span id="spanZoomZoomText2">km/h</span>');
 
         this.change();
-        this._setSpeedHandle(0);
+        this.setSpeedHandleValue(0);
     }
 
     WCruiseControl.prototype._onClickChangeVisible = function (event) {
@@ -194,6 +231,8 @@ var WCruiseControl = (function (_super) {
                 self.visibleButtonDiv.removeClass('hideBtnDownRight');
                 self.visibleButtonDiv.addClass('hideBtnUpRight');
                 self.glassDiv.css({display: 'none'});
+                self.compactView.css({display: 'block'});
+                self.compactView.animate({opacity: 1}, 500);
             });
         }
         else {
@@ -203,6 +242,9 @@ var WCruiseControl = (function (_super) {
                 self.visibleButtonDiv.removeClass('hideBtnUpRight');
                 self.visibleButtonDiv.addClass('hideBtnDownRight');
                 self.glassDiv.css({display: 'block'});
+            });
+            self.compactView.animate({opacity: 0}, 500, function () {
+                self.compactView.css({display: 'none'});
             });
         }
     };
@@ -245,14 +287,21 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype._setSpeedHandleText = function(prc) {
         var currentSpeed = (user.userCar.maxSpeed / 1000 * 3600) * prc;
-        this.speedHandleDiv1.text(Math.floor(currentSpeed) + '.');
-        this.speedHandleDiv2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
+        currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
+        this.speedHandleDiv1.text(currentSpeedWords[0] + '.');
+        this.speedHandleDiv2.text(currentSpeedWords[1]);
     };
 
-    WCruiseControl.prototype._setSpeedHandle = function(prc) {
+    WCruiseControl.prototype.setSpeedHandleValue = function(prc) {
         var topValue = (1 - prc) * this.constScaleHeight;
+        this.speedHandlePrc = prc;
         this.speedHandleDiv.css({top: topValue});
         this._setSpeedHandleText(prc);
+    };
+
+    WCruiseControl.prototype.getSpeedHandleValue = function() {
+        //console.log('WCruiseControl.prototype.getSpeedHandleValue');
+        return user.userCar.maxSpeed * this.speedHandlePrc;
     };
 
     WCruiseControl.prototype._onMoveSpeedHandle = function (event, ui) {
@@ -273,7 +322,7 @@ var WCruiseControl = (function (_super) {
         if (prc < 0) prc = 0;
         if (prc > event.data.constScaleHeight) prc = event.data.constScaleHeight;
         prc /= event.data.constScaleHeight;
-        event.data._setSpeedHandle(prc);
+        event.data.setSpeedHandleValue(prc);
         clientManager.sendSetSpeed(user.userCar.maxSpeed * prc);
         document.getElementById('map').focus();
     };
@@ -281,7 +330,7 @@ var WCruiseControl = (function (_super) {
     WCruiseControl.prototype._onClickStop = function (event) {
         //console.log('WCruiseControl.prototype._onClickStop');
         clientManager.sendStopCar();
-        event.data._setSpeedHandle(0);
+        event.data.setSpeedHandleValue(0);
         document.getElementById('map').focus();
     };
 
@@ -339,18 +388,15 @@ var WCruiseControl = (function (_super) {
                 if (key != 'EffectDirt' && this.zones[key].active)
                     limit_str = limit_str + '  ' + this.zones[key].zoneName;
             this.zoneLimitText.text(limit_str);
+            this.compactViewLimitTextDiv.text(limit_str);
         }
         else {
             this.zoneDirtIconDiv.css({display: "block"});
             this.zoneLimitText.text("dirt");
+            this.compactViewLimitTextDiv.text("dirt");
         }
         var topValue = (1 - speedRange) * this.constScaleHeight + this.svgScaleDY - this.zoneHandleDiv.height() / 2;
         this.zoneHandleDiv.css({top: topValue});
-    };
-
-    WCruiseControl.prototype.getSpeedHandleValue = function() {
-        //console.log('WCruiseControl.prototype.getSpeedHandleValue');
-        return user.userCar.maxSpeed * (1 - (this.speedHandleDiv.position().top / this.constScaleHeight))
     };
 
     WCruiseControl.prototype.startKeyboardControl = function() {
@@ -373,10 +419,11 @@ var WCruiseControl = (function (_super) {
 
             // Вывод текущей скорости
             currentSpeed = (currentSpeed / 1000 * 3600);
-            this.topTextDiv1.text(Math.floor(currentSpeed) + '.');
-            this.topTextDiv2.text(Math.floor((currentSpeed - Math.floor(currentSpeed)) * 10));
-
-            if (this.keyBoardControl) this._setSpeedHandle(prc);
+            currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
+            this.topTextDiv1.text(currentSpeedWords[0] + '.');
+            this.topTextDiv2.text(currentSpeedWords[1]);
+            this.compactViewSpeedTextDiv.text(currentSpeed.toFixed(1) + ' km/h');
+            if (this.keyBoardControl) this.setSpeedHandleValue(prc);
 
             // Сохраняем последнюю скорость
             this.lastSpeed = currentSpeed;

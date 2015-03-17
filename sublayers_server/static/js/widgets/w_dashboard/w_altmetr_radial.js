@@ -9,6 +9,9 @@ var WAltmetrRadial = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
 
+        // Компакт режим
+        this.compactText = $('#cruiseControlCompactViewAltitudeTextDiv');
+
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WAltmetrRadial' + (-generator_ID.getID());
         $('#' + div_parent).append('<div id="' + this.div_id + '" class="w-alt-radial-parent"></div>');
@@ -228,8 +231,7 @@ var WAltmetrRadial = (function (_super) {
         // Изменение текста (метры)
         // todo: узнать сколько метров минимум, а сколько максимум, и здесь переводить
         this.text_prc.text(Math.round(prc * 100) + ' M');
-
-
+        this.compactText.text(Math.round(prc * 100) + ' M');
     };
 
     WAltmetrRadial.prototype.change = function () {

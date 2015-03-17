@@ -18,6 +18,9 @@ var WFuelRadial = (function (_super) {
         this.alarmLampState = false;
         $('#' + div_parent).append(this.alarmLamp);
 
+        // Компакт режим
+        this.compactText = $('#cruiseControlCompactViewFuelTextDiv');
+
         var draw_main = SVG(this.div_id);
         this.draw_main = draw_main;
         var draw = draw_main.group();
@@ -260,8 +263,7 @@ var WFuelRadial = (function (_super) {
 
         // Изменение текста (проценты)
         this.text_prc.text(prc.toFixed(2));
-
-
+        this.compactText.text(prc.toFixed(2))
     };
 
     WFuelRadial.prototype.change = function () {

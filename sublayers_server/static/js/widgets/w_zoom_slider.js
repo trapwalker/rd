@@ -95,13 +95,37 @@ var WZoomSlider = (function () {
 
         // создание SVG шкалы
         this.drawScale();
-        this.setZoom(this.mapMng.getZoom());
-
 
         // кнопка сворачивания дива
         parentPort.append('<div id="ZoomPortHideBtn" class="hideBtnDownLeft"></div>');
         this.btn_hide =  $('#ZoomPortHideBtn');
         this.btn_hide.on('click', {self: this}, this.btnHideReaction);
+
+        // Зона для отображения урезанной версии контроллера
+        mainParent.append('<div id="zoomSliderMainDivCompact"></div>');
+        this.mainCompact = $('#zoomSliderMainDivCompact');
+
+        // добавление кнопки развернуть всё и фулл-скрин
+        this.mainCompact.append('<div id="DivForBtnRazverALLInsideZoomCompact"></div>');
+        this.mainCompact.append('<div id="DivForBtnFSCRInsideZoomCompact">FSCR</div>');
+        $('#DivForBtnRazverALLInsideZoomCompact').click(this, this.razverAll);
+        $('#DivForBtnFSCRInsideZoomCompact').on('click', {self: this}, this.fullscr);
+
+
+        // добавление кнопок + и минус
+        this.mainCompact.append('<div id="DivForBtnPlusZoomCompact">' +
+            '<div class="classForBtnZoomCompactText">+</div></div>');
+        this.mainCompact.append('<div id="DivForBtnMinusZoomCompact">' +
+            '<div class="classForBtnZoomCompactText">-</div></div>');
+        $('#DivForBtnPlusZoomCompact').on('click', {self: this}, this.plusFunc);
+        $('#DivForBtnMinusZoomCompact').on('click', {self: this}, this.minusFunc);
+
+        // добавление текста - уровень зума
+        this.mainCompact.append('<div id="ZoomTextDivCompact"><div id="ZoomTextZoomValueCompact"></div></div>');
+        this.zoom_text_value_compact = $('#ZoomTextZoomValueCompact');
+
+
+        this.setZoom(this.mapMng.getZoom());
     }
 
     WZoomSlider.prototype.drawScale = function(){
@@ -165,9 +189,15 @@ var WZoomSlider = (function () {
         var old_str = this.zoom_text_value.text();
         if(old_str != new_str) {
             var text = this.zoom_text_value;
-            this.zoom_text_value.animate({opacity: 0}, ConstDurationAnimation / 2., function(){
+            var text_compact = this.zoom_text_value_compact;
+            text.animate({opacity: 0}, ConstDurationAnimation / 2., function(){
                 text.text(new_str)
                     .animate({opacity: 1}, ConstDurationAnimation / 2.);
+            });
+
+            text_compact.animate({opacity: 0}, ConstDurationAnimation / 2., function(){
+                text_compact.text(new_str)
+                    .animate({opacity: 0.5}, ConstDurationAnimation / 2.);
             });
 
             var zoom_circle = this.zomm_circle;
@@ -232,6 +262,16 @@ var WZoomSlider = (function () {
         wCruiseControl.changeVisible(false);
         chat.changeVisible(false);
         slider.changeVisible(false);
+        document.getElementById('map').focus();
+    };
+
+    WZoomSlider.prototype.razverAll = function (event) {
+        var slider = event.data;
+        //alert('Свернуть все гаджеты-стекляшки');
+        wCruiseControl.changeVisible(true);
+        chat.changeVisible(true);
+        slider.changeVisible(true);
+        document.getElementById('map').focus();
     };
 
     WZoomSlider.prototype.btnHideReaction = function(event) {
@@ -242,16 +282,24 @@ var WZoomSlider = (function () {
 
     WZoomSlider.prototype.changeVisible = function(visible) {
         //console.log('WZoomSlider.prototype.changeVisible', visible);
+        this.parentGlass.stop(true, true);
+        this.mainCompact.stop(true, true);
         var self = this;
         if (visible != this.zoom_visible) {
             this.zoom_visible = visible;
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
-                this.parentGlass.animate({left: 0}, 500, function () {
+                self.parentGlass.animate({left: 0}, 500, function () {
                     self.btn_hide.removeClass('hideBtnUpLeft');
                     self.btn_hide.addClass('hideBtnDownLeft');
                     self.parentGlass.css({display: 'block'});
                 });
+
+                // и нужно скрыть портативную версию
+                self.mainCompact.animate({opacity: 0}, 300, function () {
+                    self.mainCompact.css({display: 'none'});
+                });
+
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -200}, 500, function () {
@@ -259,6 +307,10 @@ var WZoomSlider = (function () {
                     self.btn_hide.addClass('hideBtnUpLeft');
                     self.parentGlass.css({display: 'none'});
                 });
+
+                // и нужно показать портативную версию
+                self.mainCompact.css({display: 'block'});
+                self.mainCompact.animate({opacity: 1}, 300);
             }
         }
     };

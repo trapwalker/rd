@@ -18,6 +18,9 @@ var WWindRadial = (function (_super) {
         this.alarmLampState = false;
         $('#' + div_parent).append(this.alarmLamp);
 
+        // Компакт режим
+        this.compactText = $('#cruiseControlCompactViewWindTextDiv');
+
         var draw_main = SVG(this.div_id);
         this.draw_main = draw_main;
         var draw = draw_main.group();
@@ -261,8 +264,7 @@ var WWindRadial = (function (_super) {
 
         // Изменение текста (проценты)
         this.text_prc.text(Math.round(prc * 30.) + ' m/s');
-
-
+        this.compactText.text(Math.round(prc * 30.) + ' m/s');
     };
 
     WWindRadial.prototype.change = function () {

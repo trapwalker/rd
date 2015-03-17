@@ -299,3 +299,33 @@
     font: 8pt MICRADI;
     letter-spacing: 1px;
 }
+
+/* Компактная версия чата */
+
+#VGMMainDivCompact {
+    pointer-events: none;
+    display: none;
+    width: 480px;
+    position: absolute;
+    bottom: 0;
+    margin: 10px;
+    overflow-x: visible;
+}
+
+#VGMtextAreaCompact {
+    height: 100%;
+    width: 100%;
+    max-height: 310px;
+    overflow-y: auto;
+    overflow-x: visible;
+}
+
+.VGM-message-compact {
+    padding-left: 3px;
+    padding-right: 3px;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+    bottom: 0;
+    position: relative;
+}

@@ -303,6 +303,25 @@ var MapManager = (function(_super){
         // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
         //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
         //L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
+
+
+        // Рисовалка на канвасе
+        var canvasTiles = L.tileLayer.canvas();
+        canvasTiles.drawTile = function (canvas, tilePoint, zoom) {
+            var ctx = canvas.getContext('2d');
+            //ctx.fillText(tilePoint.toString(), 50, 50);
+            ctx.globalAlpha = 1;
+            var l = 0, s = 255;
+            //ctx.fillStyle = 'transparent';
+            ctx.strokeStyle = "rgba(42, 253, 10, 0.15)";
+            ctx.strokeRect(0, 0, 255, 0);
+            ctx.strokeRect(255, 0, 255, 255);
+        };
+        canvasTiles.addTo(myMap);
+
+
+
+
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
