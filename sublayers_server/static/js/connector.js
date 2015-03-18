@@ -219,7 +219,9 @@ var WSConnector = (function(_super){
                 // websocket is closed.
                 self.isConnected = false;
                 if (event.wasClean) {
-                    alert('Соединение закрыто чисто');
+                    alert('Соединение закрыто чисто ', event);
+                    console.log('Соединение закрыто чисто ', event);
+                    timeManager.timerStop();
                 } else {
                     modalWindow.modalRestartShow();
                 }

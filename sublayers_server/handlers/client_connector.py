@@ -23,10 +23,15 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
         agent = srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
+        log.info('Agent %r socket Init', self)
         self.agent = agent
         agent.connection = self
         self.application.clients.append(self)
-        self.api = AgentAPI(agent=agent)
+        if agent.api:
+            self.api = agent.api
+            agent.api.update_agent_api()
+        else:
+            self.api = AgentAPI(agent=agent)
 
         # todo: extract chat logic from here
         for message_params in self.application.chat:
@@ -37,12 +42,14 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         # todo: removing car from worldmap by disconnect
         log.info('Agent %r socket Closed', self)
         self.application.clients.remove(self)
-        self.agent.connection = None
+
+        '''
         while self.agent.cars:
             car = self.agent.cars[0]
             if car.is_alive:
                 self.agent.drop_car(car)
                 car.delete()
+        '''
 
     def on_message(self, message):
         log.debug("Got message from %s: %r", self.agent, message)

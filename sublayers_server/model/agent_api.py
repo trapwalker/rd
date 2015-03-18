@@ -13,27 +13,29 @@ from sublayers_server.model.api_tools import API, public_method
 from sublayers_server.model.rocket import Rocket
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
+from sublayers_server.model.events import Event
+
+
+
+class UpdateAgentAPIEvent(Event):
+    def __init__(self, api, **kw):
+        super(UpdateAgentAPIEvent, self).__init__(server=api.agent.server, **kw)
+        self.api = api
+
+    def on_perform(self):
+        super(UpdateAgentAPIEvent, self).on_perform()
+        self.api.on_update_agent_api()
 
 
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
-    def __init__(self, agent, position=None, position_sigma=Point(100, 100)):
-        # todo: use init position or remove that params
+    def __init__(self, agent):
         super(AgentAPI, self).__init__()
         self.agent = agent
-        if self.agent.cars:
-            self.car = self.agent.cars[0]
-        else:
-            self.make_car()
-            # todo: move to event queue
+        agent.api = self
 
-        # todo: deprecated
-        self.shell = Shell(self.cmd_line_context(), dict(
-            pi=pi,
-            P=Point,
-            log=log,
-        ))
-        self.send_init_package()
+        self.update_agent_api()
+
 
     def cmd_line_context(self):
         # todo: deprecated
@@ -49,8 +51,45 @@ class AgentAPI(API):
         return ctx
 
     def send_init_package(self):
-        # todo: move to Init-event performing method (!)
         messages.Init(agent=self.agent, time=None).post()
+        # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
+        # сначала отправляем кого видят все свои обсёрверы
+        for obs in self.agent.observers:
+            messages.See(
+                agent=self.agent,
+                subj=obs,
+                obj=obs,
+                is_first=True,
+                is_boundary=False
+            ).post()
+            for vo in obs.visible_objects:
+                messages.See(
+                    agent=self.agent,
+                    subj=obs,
+                    obj=vo,
+                    is_first=True,
+                    is_boundary=False
+                ).post()
+        # todo: отправка агенту сообщений кто по кому стреляет (пока не понятно как!)
+
+    def update_agent_api(self):
+        UpdateAgentAPIEvent(api=self).post()
+
+    def on_update_agent_api(self):
+        if self.agent.cars:
+            self.car = self.agent.cars[0]
+        else:
+            self.make_car()
+
+        # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
+        self.shell = Shell(self.cmd_line_context(), dict(
+            pi=pi,
+            P=Point,
+            log=log,
+        ))
+
+        self.send_init_package()
+
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent)

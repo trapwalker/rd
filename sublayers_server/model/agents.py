@@ -16,6 +16,7 @@ class Agent(Object):
     def __init__(self, login, connection=None, party=None, **kw):
         super(Agent, self).__init__(**kw)
         self.observers = Counter()
+        self.api = None
         # todo: replace Counter to CounterSet
         self.login = login
         self._connection = connection
