@@ -239,9 +239,15 @@ class Observer(VisibleObject):
 
     def on_before_delete(self, event):
         super(Observer, self).on_before_delete(event=event)
-        for obs in self.visible_objects:
-            if not obs.limbo:
-                ContactOut(subj=self, obj=obs).post()
+        # развидеть все объекты, которые были видны
+        for vo in self.visible_objects:
+            if not vo.limbo:
+                ContactOut(subj=self, obj=vo).post()
+        # todo: сделать евентом, чтобы отработало после этого ContactOut, но до полного удаления
+        # перестать отправлять агентам сообщения
+        for agnt in self.watched_agents:
+            agnt.drop_ovserver(self)
+
 
     @property
     def r(self):

@@ -24,4 +24,9 @@ class ServerAPI(API):
         if not agent and make:
             cls = AI if ai else User
             agent = cls(server=self.server, login=agent_id, party=None)
+            log.info('New Agent is connected: %s', agent_id)
+        else:
+            if agent.connection:
+                agent.connection.close(reason='XPEH BAM')
+            log.info('Old Agent is connected: %s', agent_id)
         return agent
