@@ -39,7 +39,7 @@ class Message(object):
         # todo: online status optimization
         connection = self.agent.connection
         log.debug('Send message: %s to %s', self, self.agent.login)
-        if connection:
+        if connection.ws_connection:
             connection.send(serialize(make_push_package([self])))
 
     def __str__(self):
