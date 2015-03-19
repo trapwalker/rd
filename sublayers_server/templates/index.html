@@ -2,11 +2,14 @@
 
 {% block body %}
           {% if current_user %}
-            Hello, <b>{{ current_user }}</b>, you can <a href="/auth/logout?next={{ url_escape(request.uri) }}">{{ _("Sign out") }}</a>
+            <h1>Hello, <b><i>{{ current_user }}!</i></b></h>
+            <h2>You can:</h2>
+            <ul>
+                <li><a href="/play">PLAY</a></li>
+                <li><a href="/auth/logout?next={{ url_escape(request.uri) }}">{{ _("Sign out") }}</a></li>
+            </ul>
           {% else %}
-            <a href="/auth/login?next={{ url_escape(request.uri) }}">{{ _("Sign in (Google)") }}</a>
             {% raw modules.LoginForm() %}
-
           {% end %}
 
     <!-- raw modules.LoginForm() %}-->
