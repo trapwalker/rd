@@ -26,7 +26,7 @@ from sublayers_server import service_tools
 from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
-from sublayers_server.handlers.pages import MainHandler
+from sublayers_server.handlers.pages import MainHandler, PlayHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
 
 from sublayers_server.model.event_machine import LocalServer
@@ -34,7 +34,13 @@ from sublayers_server.model.event_machine import LocalServer
 
 class Application(tornado.web.Application):
     def __init__(self):
-        log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED\n' + '--' * 70)
+        try:
+            self.revision = service_tools.HGRevision()
+        except Exception as e:
+            self.revision = None
+            log.warning("Can't get HG revision info: %s", e)
+
+        log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
         self.srv.start()
         self.clients = []
@@ -44,12 +50,12 @@ class Application(tornado.web.Application):
         self.init_scene()
 
         handlers = [
-            #(r"/", MainHandler),
+            (r"/", MainHandler),
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
-            (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
+            #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
-            (r"/play", MainHandler),
+            (r"/play", PlayHandler),
 
             (r"/auth/login", AuthLoginHandler),
             (r"/auth/login/google", AuthGoogleHandler),
@@ -63,6 +69,7 @@ class Application(tornado.web.Application):
             ui_modules=uimodules,
             login_url="/",
             debug=True,
+            autoreload=False,
         )
         tornado.web.Application.__init__(self, handlers, **app_settings)
 
@@ -80,6 +87,7 @@ class Application(tornado.web.Application):
         #from sublayers_server.model.vectors import Point
         pass
         # todo: map metadata store to DB
+
 
 def main():
     settings.load('server.conf')
