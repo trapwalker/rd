@@ -34,7 +34,13 @@ from sublayers_server.model.event_machine import LocalServer
 
 class Application(tornado.web.Application):
     def __init__(self):
-        log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED\n' + '--' * 70)
+        try:
+            self.revision = service_tools.HGRevision()
+        except Exception as e:
+            self.revision = None
+            log.warning("Can't get HG revision info: %s", e)
+
+        log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
         self.srv.start()
         self.clients = []
@@ -81,6 +87,7 @@ class Application(tornado.web.Application):
         #from sublayers_server.model.vectors import Point
         pass
         # todo: map metadata store to DB
+
 
 def main():
     settings.load('server.conf')
