@@ -26,7 +26,7 @@ from sublayers_server import service_tools
 from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
-from sublayers_server.handlers.pages import MainHandler
+from sublayers_server.handlers.pages import MainHandler, PlayHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
 
 from sublayers_server.model.event_machine import LocalServer
@@ -50,12 +50,12 @@ class Application(tornado.web.Application):
         self.init_scene()
 
         handlers = [
-            #(r"/", MainHandler),
+            (r"/", MainHandler),
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
-            (r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
+            #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
-            (r"/play", MainHandler),
+            (r"/play", PlayHandler),
 
             (r"/auth/login", AuthLoginHandler),
             (r"/auth/login/google", AuthGoogleHandler),
