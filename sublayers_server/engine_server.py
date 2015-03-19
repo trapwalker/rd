@@ -63,6 +63,7 @@ class Application(tornado.web.Application):
             ui_modules=uimodules,
             login_url="/",
             debug=True,
+            autoreload=False,
         )
         tornado.web.Application.__init__(self, handlers, **app_settings)
 
