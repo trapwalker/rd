@@ -53,23 +53,24 @@ class AgentAPI(API):
     def send_init_package(self):
         messages.Init(agent=self.agent, time=None).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
-        # сначала отправляем кого видят все свои обсёрверы
+        # сначала формируем список всех видимых объектов
+        vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
         for obs in self.agent.observers:
-            messages.See(
+            if not (obs in vo_list) and (obs != self.car):
+                vo_list.append(obs)
+            for vo in obs.visible_objects:
+                if not (vo in vo_list)and (vo != self.car):
+                    vo_list.append(vo)
+        # отправляем все видимые объекты, будто мы сами их видим, и сейчас не важно кто их видит
+        for vo in vo_list:
+             messages.See(
                 agent=self.agent,
-                subj=obs,
-                obj=obs,
+                subj=self.car,
+                obj=vo,
                 is_first=True,
                 is_boundary=False
             ).post()
-            for vo in obs.visible_objects:
-                messages.See(
-                    agent=self.agent,
-                    subj=obs,
-                    obj=vo,
-                    is_first=True,
-                    is_boundary=False
-                ).post()
+
         # todo: отправка агенту сообщений кто по кому стреляет (пока не понятно как!)
 
     def update_agent_api(self):
