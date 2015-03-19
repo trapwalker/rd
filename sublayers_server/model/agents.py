@@ -7,7 +7,7 @@ from sublayers_server.model.base import Object
 import messages
 
 
-from collections import Counter
+from counterset import CounterSet
 
 # todo: make agent offline status possible
 class Agent(Object):
@@ -15,7 +15,7 @@ class Agent(Object):
 
     def __init__(self, login, connection=None, party=None, **kw):
         super(Agent, self).__init__(**kw)
-        self.observers = Counter()
+        self.observers = CounterSet()
         self.api = None
         # todo: replace Counter to CounterSet
         self.login = login
