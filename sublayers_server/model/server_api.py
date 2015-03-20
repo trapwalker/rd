@@ -27,6 +27,6 @@ class ServerAPI(API):
             log.info('New Agent is connected: %s', agent_id)
         else:
             if agent.connection:
-                agent.connection.close(reason='XPEH BAM')
+                agent.connection.close()
             log.info('Old Agent is connected: %s', agent_id)
         return agent

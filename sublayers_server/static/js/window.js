@@ -10,6 +10,8 @@ var Window = (function () {
             isModal: false}, this.options);
         if (options) setOptions(options, this.options);
 
+        this.parentDiv = $("#" + this.options.parentDiv);
+
         // создание структуры дивов
         if (this.options.name == '')
             this.options.name = 'window' + tempWindowID++;
@@ -19,26 +21,40 @@ var Window = (function () {
 
         if (this.options.isModal) {
             this.modalDiv = $("<div id=" + this.options.name + "ModalDiv" + " class='modalDivWindow'></div>");
-            $("#" + this.options.parentDiv).append(this.modalDiv);
+            this.parentDiv.append(this.modalDiv);
             this.modalDiv.append(this.mainDiv);
             this.modalDiv.on('click', stopEvent);
             this.modalDiv.on('mousedown', stopEvent);
             this.modalDiv.on('mouswmove', stopEvent);
             this.modalDiv.on('mouseup', stopEvent);
         }
-        else $("#" + this.options.parentDiv).append(this.mainDiv);
+        else this.parentDiv.append(this.mainDiv);
 
         this.hideWindow();
     }
 
-    // Установка DOM-элемента в качестве таскателя для данного окна
+    // Установка DOM-элемента в качестве "таскателя" для данного окна
     Window.prototype.setupDragElement = function (element) {
         //console.log('Window.prototype.setupDragElement', element);
+        this.mainDiv.height(this.mainDiv[0].scrollHeight);
+        this.mainDiv.width(this.mainDiv[0].scrollWidth);
         this.mainDiv.draggable({
             handle: element == this.mainDiv ? null : element,
             containment: "parent",
             snap: true,
             snapMode: 'outer'
+        });
+    };
+
+    // Установка DOM-элемента в качестве "закрывателя" для данного окна
+    Window.prototype.setupCloseElement = function (element) {
+        //console.log('Window.prototype.setupCloseElement', element);
+        // todo: снять все обработчики перед удалением
+        element.click(this, function(event) {
+            if (event.data.options.isModal)
+                event.data.modalDiv.remove();
+            else
+                event.data.mainDiv.remove();
         });
     };
 
@@ -48,10 +64,17 @@ var Window = (function () {
     };
 
     // Показать окно
-    Window.prototype.showWindow = function () {
+    Window.prototype.showWindow = function (in_center) {
         if (this.options.isModal)
             this.modalDiv.css('display', 'block');
         else this.mainDiv.css('display', 'block');
+
+        if (in_center) {
+            var parent = this.options.isModal ? this.modalDiv : this.parentDiv;
+            var _top = (parent.height() - this.mainDiv[0].scrollHeight) / 2;
+            var _left = (parent.width() - this.mainDiv[0].scrollWidth) / 2;
+            this.mainDiv.css({top: _top, left: _left});
+        }
     };
 
     // Скрыть окно
@@ -65,9 +88,32 @@ var Window = (function () {
     Window.prototype.setNewSize = function (height, width) {
         if (height) this.mainDiv.height(height);
         if (width) this.mainDiv.width(width);
-    }
+    };
 
     return Window;
 })();
 
 var tempWindowID = 0;
+
+var TemplateWindow = (function (_super) {
+    __extends(TemplateWindow, _super);
+
+    function TemplateWindow(options) {
+        if (!this.options) this.options = {};
+
+        setOptions({
+            height: 400,
+            width: 300
+           }, this.options);
+
+        if (options) setOptions(options, this.options);
+
+        // Запихиваем чат в отдельное окно
+        _super.call(this, {
+            parentDiv: this.options.parentDiv
+        });
+    }
+
+
+    return TemplateWindow;
+})(Window);

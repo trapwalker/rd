@@ -1,0 +1,34 @@
+<style>
+    .windowDragCloseHeader-main {
+        position: relative;
+        box-sizing: border-box;
+        height: 25px;
+        width: 100%;
+    }
+
+    .windowDragCloseHeader-close {
+        position: absolute;
+        right: 0px;
+        height: 23px;
+        width: 23px;
+        background-color: yellow;
+        box-sizing: border-box;
+    }
+
+    .windowDragCloseHeader-caption {
+        position: relative;
+        top: 5px;
+        left: 5px;
+        pointer-events: none;
+        float: left;
+        color: lime;
+        background-color: transparent;
+        box-sizing: border-box;
+        font: 10pt MICRADI;
+    }
+</style>
+
+<div class="windowDragCloseHeader-main sublayers-clickable">
+    <div class="windowDragCloseHeader-caption">{{ window_caption }}</div>
+    <div class="windowDragCloseHeader-close"></div>
+</div>

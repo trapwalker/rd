@@ -260,7 +260,6 @@ var LeafletIconManager = (function(){
             }),
             id: this.max_id++
         };
-
     }
 
 
