@@ -27,6 +27,37 @@ class UpdateAgentAPIEvent(Event):
         self.api.on_update_agent_api()
 
 
+class OpenTemplateWindowMessage(messages.Message):
+    def __init__(self, url, unique=False, win_name=None, **kw):
+        super(OpenTemplateWindowMessage, self).__init__(**kw)
+        self.url = url
+        self.unique = unique
+        self.win_name = win_name
+
+    def as_dict(self):
+        d = super(OpenTemplateWindowMessage, self).as_dict()
+        d.update(
+            url=self.url,
+            unique=self.unique,
+            win_name=self.win_name,
+        )
+        return d
+
+class CloseTemplateWindowMessage(messages.Message):
+    def __init__(self, unique=False, win_name=None, **kw):
+        super(CloseTemplateWindowMessage, self).__init__(**kw)
+        self.unique = unique
+        self.win_name = win_name
+
+    def as_dict(self):
+        d = super(CloseTemplateWindowMessage, self).as_dict()
+        d.update(
+            unique=self.unique,
+            win_name=self.win_name,
+        )
+        return d
+
+
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
@@ -124,6 +155,26 @@ class AgentAPI(API):
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent)
         self.agent.append_car(self.car)
+
+    @public_method
+    def open_window_create_party(self):
+        OpenTemplateWindowMessage(
+            agent=self.agent,
+            url='/party',
+            unique=True,
+            win_name="create_party"
+        ).post()
+
+    @public_method
+    def send_create_party_from_template(self, name, description):
+        self.set_party(name=name)
+        log.debug('Party Create: Given description: %s', description)
+        CloseTemplateWindowMessage(
+            agent=self.agent,
+            unique=True,
+            win_name="create_party"
+        ).post()
+
 
     @public_method
     def set_party(self, name=None, id=None):

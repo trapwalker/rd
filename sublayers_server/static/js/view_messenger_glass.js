@@ -562,6 +562,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.party_create = function (event) {
         //alert('Окно создания пати');
+        /*
         var temp_str = chat.main_input.val();
         chat.main_input.val('/create ' + temp_str).focus();
 
@@ -579,6 +580,8 @@ var ViewMessengerGlass = (function () {
                 temp_window.setupCloseElement(close_elem);
             }
         });
+        */
+        clientManager.sendOpenWindowCreateParty();
     };
 
     ViewMessengerGlass.prototype.party_kick = function (event) {
