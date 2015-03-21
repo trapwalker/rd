@@ -22,7 +22,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         log.info('!!! Open User connection: %s', self.user_id)
         log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
-        agent = srv.api.get_agent(self.user_id, make=True)  # todo: Change to make=False
+        agent = srv.api.get_agent(self.user_id, make=True, do_disconnect=True)  # todo: Change to make=False
         log.info('Agent %r socket Init', self)
         self.agent = agent
         agent.connection = self

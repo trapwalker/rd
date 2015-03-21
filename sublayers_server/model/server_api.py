@@ -15,7 +15,7 @@ class ServerAPI(API):
         """
         self.server = server
 
-    def get_agent(self, agent_id=None, make=False, ai=False):
+    def get_agent(self, agent_id=None, make=False, do_disconnect=False, ai=False):
         """
         @rtype sublayers_server.model.agents.Agent
         """
@@ -24,9 +24,10 @@ class ServerAPI(API):
         if not agent and make:
             cls = AI if ai else User
             agent = cls(server=self.server, login=agent_id, party=None)
-            log.info('New Agent is connected: %s', agent_id)
+            log.info('Server API: New Agent is created: %s', agent_id)
         else:
-            if agent.connection:
-                agent.connection.close()
-            log.info('Old Agent is connected: %s', agent_id)
+            if agent and do_disconnect:
+                if agent.connection:
+                    agent.connection.close()
+            log.info('Server API: Old Agent given: %s', agent_id)
         return agent
