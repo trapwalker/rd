@@ -8,11 +8,21 @@
 
     .windowDragCloseHeader-close {
         position: absolute;
-        right: 0px;
-        height: 23px;
+        right: 2px;
+        top: 3px;
+        height: 18px;
         width: 23px;
-        background-color: yellow;
+        background: transparent url('/static/img/window_interface/share_elements/close_big.png') 50% 50% no-repeat;
         box-sizing: border-box;
+    }
+
+    .windowDragCloseHeader-close:hover {
+        background: transparent url('/static/img/window_interface/share_elements/close_big_over.png') 50% 50% no-repeat;
+    }
+
+    .windowDragCloseHeader-close:active {
+        background: transparent url('/static/img/window_interface/share_elements/close_big_pressed.png') 50% 50% no-repeat;
+
     }
 
     .windowDragCloseHeader-caption {

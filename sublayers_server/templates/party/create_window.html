@@ -24,7 +24,7 @@
         float: left;
         height: 200px;
         width: 50%;
-        background-color: white;
+        background-color: transparent;
     }
 
     .partyCreateWindow-footer {
@@ -50,6 +50,7 @@
     .partyCreateWindow-buttonCreate {
         position: absolute;
         pointer-events: auto;
+        cursor: pointer;
         top: 0;
         bottom: 0;
         margin: auto;
@@ -91,6 +92,6 @@
     </div>
     <div class="partyCreateWindow-rules"></div>
     <div class="partyCreateWindow-footer">
-        <div class="partyCreateWindow-buttonCreate">Создать</div>
+        <div id="btnSendCreatePartyInWindow_{{ current_user }}" class="partyCreateWindow-buttonCreate">Создать</div>
     </div>
 </div>
