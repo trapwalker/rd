@@ -76,6 +76,10 @@ class Unit(Observer):
     def hp(self):
         return self.hp_state.hp(self.server.get_time())
 
+    @property
+    def max_hp(self):
+        return self.hp_state.max_hp
+
     def hp_by_time(self, t=None):
         t = t if t is not None else self.server.get_time()
         return self.hp_state.hp(t)
