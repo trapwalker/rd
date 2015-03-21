@@ -53,6 +53,26 @@ class AgentAPI(API):
     def send_init_package(self):
         messages.Init(agent=self.agent, time=None).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
+
+        # todo: отправляем все эффекты, которые наложены на машинку
+        # эффекты зон (todo: сделать отправку именно зон, а не всех эффектов)
+        for effect in self.car.effects:
+            messages.ZoneEffectMessage(
+                agent=self.agent,
+                subj=self.car,
+                in_zone=effect.actual,
+                zone_effect=effect.as_dict(),
+            ).post()
+
+        # Отправить всех тех, кто стреляет по мне
+        for shooter in self.car.hp_state.shooters:
+            messages.FireAutoEffect(
+                agent=self.agent,
+                subj=shooter,
+                obj=self.car,
+                action=True,
+            ).post()
+
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
         for obs in self.agent.observers:
@@ -63,13 +83,22 @@ class AgentAPI(API):
                     vo_list.append(vo)
         # отправляем все видимые объекты, будто мы сами их видим, и сейчас не важно кто их видит
         for vo in vo_list:
-             messages.See(
+            messages.See(
                 agent=self.agent,
                 subj=self.car,
                 obj=vo,
                 is_first=True,
                 is_boundary=False
             ).post()
+            # для каждого VO пройтись по его хп таскам и узнать кто по нему стреляет
+            if vo.hp_state:
+                for shooter in vo.hp_state.shooters:
+                    messages.FireAutoEffect(
+                        agent=self.agent,
+                        subj=shooter,
+                        obj=vo,
+                        action=True,
+                    ).post()
 
         # todo: отправка агенту сообщений кто по кому стреляет (пока не понятно как!)
 

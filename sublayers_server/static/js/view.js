@@ -63,25 +63,6 @@ $(document).ready(function () {
     // Включение/Выключение отображения настроек игры
     buttonOptions.onclick = funcModalOptionsShow;
 
-
-    // создание чата
-/*
-    chat = new ViewMessenger({
-            parentDiv: 'bodydiv',
-            height: (cookieStorage.flagDebug ? 550 : 250),
-            width: (cookieStorage.flagDebug ? 600 : 400),
-            stream_mes: message_stream
-    });
-
-
-    chat.showChatWindow();
-    chat.setupDragElement(chat.vMHA);
-    chat.setMessagesHistory(cookieStorage.historyArray);
-    chat.addChat(-1, "-= L O G =-");
-    chat.setActiveChat(-1);
-    chat.setVisible(cookieStorage.chatVisible);
-*/
-
     chat = new ViewMessengerGlass({
         stream_mes: message_stream
     });
