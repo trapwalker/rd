@@ -11,7 +11,7 @@ from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
-from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent
+from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, SearchZones
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
@@ -147,14 +147,21 @@ class Unit(Observer):
             if sector.side == side:
                 sector.enable_auto_fire(enable=enable)
 
+    def on_init(self, event):
+        super(Unit, self).on_init(event)
+        SearchZones(obj=self).post()
+
+    def on_zone_check(self, event):
+        # зонирование
+        #log.debug('Zone test     teeeesttt    111111')
+        for zone in self.server.zones:
+            zone.test_in_zone(obj=self)
+
     def contact_test(self, obj):
         super(Unit, self).contact_test(obj=obj)
         for sector in self.fire_sectors:
             if sector.is_auto():
                 sector.fire_auto(target=obj)
-        # зонирование
-        for zone in self.server.zones:
-            zone.test_in_zone(obj=self)
 
     def on_contact_in(self, obj, **kw):
         super(Unit, self).on_contact_in(obj=obj, **kw)
@@ -213,6 +220,7 @@ class Unit(Observer):
                 task.done()
 
     def zone_changed(self, zone_effect, in_zone):
+        #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
         for agent in self.watched_agents:
             messages.ZoneEffectMessage(
                 agent=agent,

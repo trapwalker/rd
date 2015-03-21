@@ -39,9 +39,9 @@ def init_zones_on_server(server):
     # Считывание из файлов
     log.info("Read zones tileset from files.")
 
-    read_ts_from_file(file_name='./tilesets/ts_wood', server=server, effects=[EffectWood])
-    read_ts_from_file(file_name='./tilesets/ts_water', server=server, effects=[EffectWater])
-    read_ts_from_file(file_name='./tilesets/ts_road', server=server, effects=[EffectRoad])
+    read_ts_from_file(file_name='tilesets/ts_wood', server=server, effects=[EffectWood])
+    read_ts_from_file(file_name='tilesets/ts_water', server=server, effects=[EffectWater])
+    read_ts_from_file(file_name='tilesets/ts_road', server=server, effects=[EffectRoad])
 
     log.info("Zones ready!")
 
@@ -59,7 +59,6 @@ class Zone(object):
 
     def _obj_out_zone(self, obj):
         obj.zones.remove(self)
-
         for effect in obj.effects:
             if effect.__class__ in self.effects:  # todo: replace 'obj.__class__' to 'type(obj)'
                 effect.done()
