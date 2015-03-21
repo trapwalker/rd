@@ -53,6 +53,17 @@ class AgentAPI(API):
     def send_init_package(self):
         messages.Init(agent=self.agent, time=None).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
+
+        # todo: отправляем все эффекты, которые наложены на машинку
+        # эффекты зон (todo: сделать отправку именно зон, а не всех эффектов)
+        for effect in self.car.effects:
+            messages.ZoneEffectMessage(
+                agent=self.agent,
+                subj=self.car,
+                in_zone=effect.actual,
+                zone_effect=effect.as_dict(),
+            ).post()
+
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
         for obs in self.agent.observers:
