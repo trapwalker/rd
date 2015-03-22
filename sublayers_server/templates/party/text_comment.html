@@ -1,5 +1,5 @@
 <style>
-    .partyCreateWindow-commentDiv {
+    .partyTextComment-mainDiv {
         position: absolute;
         right: 0;
         left: 0;
@@ -7,11 +7,23 @@
         bottom: 0;
         margin: auto;
         width: 200px;
-        height: 120px;
+        height: 141px;
     }
 
-    .partyCreateWindow-textComment {
+    .partyTextComment-titleDiv {
+        position: relative;
+        width: 100%;
+        color: #2afd0a;
+        text-align: center;
+        font: 13pt MICRADI;
+        letter-spacing: 1px;
+        padding-bottom: 3px;
+        pointer-events: none;
+    }
+
+    .partyTextComment-textarea {
         border: 1px solid #2afd0a;
+        position: relative;
         background: transparent;
         -webkit-border-radius: 2px;
         -moz-border-radius: 2px;
@@ -23,13 +35,17 @@
         resize: none;
         font: 8pt MICRADI;
         letter-spacing: 1px;
+        box-sizing: border-box;
     }
 
-    .partyCreateWindow-textComment:focus {
+    .partyTextComment-textarea:focus {
         color: #ffffff;
     }
 </style>
 
-<div class="partyCreateWindow-commentDiv">
-    <textarea class="partyCreateWindow-textComment" maxlength="150"></textarea>
+<div class="partyTextComment-mainDiv">
+    <div class="partyTextComment-titleDiv">Цели:</div>
+    <textarea {% if not can_edit_party_comment %} readonly {% end %} class="partyTextComment-textarea" maxlength="150">
+        {{party_comment}}
+    </textarea>
 </div>

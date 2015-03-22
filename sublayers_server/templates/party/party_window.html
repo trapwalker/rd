@@ -1,0 +1,42 @@
+{% set window_caption = 'Party' %}
+{% set can_edit_party_name = False %}
+{% set party_name = data['party'].name %}
+{% set can_edit_party_comment = (data['party'].owner == agent) %}
+{% set party_comment = data['party'].description %}
+
+<style>
+    .partyWindow-main {
+        position: relative;
+        height: 100%;
+        width: 500px;
+        background-color: rgba(0, 0, 0, 0.75);
+    }
+
+    .partyWindow-header {
+        position: relative;
+        height: 30px;
+        width: 100%;
+    }
+
+    .partyWindow-comment {
+        position: relative;
+        float: left;
+        height: 200px;
+        width: 50%;
+    }
+
+    .partyWindow-rules {
+        position: relative;
+        float: left;
+        height: 200px;
+        width: 50%;
+        background-color: transparent;
+    }
+</style>
+
+<div class="partyWindow-main">
+    {% include ../drag_close_header.html %}
+    <div class="partyWindow-header"> {% include input_name.html %} </div>
+    <div class="partyWindow-comment"> {% include text_comment.html %} </div>
+    <div class="partyWindow-rules"></div>
+</div>

@@ -1,3 +1,9 @@
+{% set window_caption = 'Create party' %}
+{% set can_edit_party_comment = True %}
+{% set party_comment = '' %}
+{% set can_edit_party_name = True %}
+{% set party_name = '' %}
+
 <style>
     .partyCreateWindow-main {
         position: relative;
@@ -8,7 +14,7 @@
 
     .partyCreateWindow-header {
         position: relative;
-        height: 50px;
+        height: 30px;
         width: 100%;
     }
 
@@ -32,19 +38,6 @@
         float: left;
         height: 50px;
         width: 100%;
-    }
-
-    .partyCreateWindow-targetNote {
-        position: absolute;
-        pointer-events: none;
-        right: 0;
-        left: 0;
-        top: 10px;
-        margin: auto;
-        color: #2afd0a;
-        text-align: center;
-        font: 13pt MICRADI;
-        letter-spacing: 1px;
     }
 
     .partyCreateWindow-buttonCreate {
@@ -77,8 +70,6 @@
         background-color: rgba(0, 255, 85, 0.1);
         border: 1px solid rgba(0, 255, 85, 0.3);
     }
-
-
 </style>
 
 <div class="partyCreateWindow-main">
@@ -87,7 +78,6 @@
         {% include input_name.html %}
     </div>
     <div id="divNotesPartyCreatePartyWindow_{{ current_user }}" class="partyCreateWindow-comment">
-        <div class="partyCreateWindow-targetNote">Цели:</div>
         {% include text_comment.html %}
     </div>
     <div class="partyCreateWindow-rules"></div>
@@ -102,5 +92,4 @@
         var descr = $("#divNotesPartyCreatePartyWindow_{{ current_user }}").find('textarea').first().val();
         clientManager.sendCreatePartyFromTemplate(name, descr);
     });
-
 </script>

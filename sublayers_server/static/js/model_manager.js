@@ -488,7 +488,7 @@ var ClientManager = (function () {
         user.party = new OwnerParty(event.party.id, event.party.name);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-
+        chat._getChatByName('party').partyButtons.create.text('Отряд');
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
     };
 
@@ -497,7 +497,7 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-
+        chat._getChatByName('party').partyButtons.create.text('Создать');
         // изменить иконки машинок для всех бывших мемберов пати
     };
 
@@ -512,7 +512,7 @@ var ClientManager = (function () {
     ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
         console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
         if (event.unique)
-            windowTemplateManager.openUniqueWindow(event.win_name, event.url);
+            windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
         else
             console.log('Попытка открыть не уникальное окно по адресу: ', event.url);
     };
@@ -638,6 +638,18 @@ var ClientManager = (function () {
             params: {
                 name: name,
                 description: description
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendJoinPartyFromTemplate = function (name) {
+        var mes = {
+            call: "send_join_party_from_template",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: name
             }
         };
         rpcCallList.add(mes);

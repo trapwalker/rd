@@ -67,10 +67,15 @@ class Invite(object):
 
         # Добавляем приглашение в список приглашений party
         self.party.invites.append(self)
+        self.recipient.invites.append(self)
+
+    id = property(id)
 
     def delete_invite(self):
         if self in self.party.invites:
             self.party.invites.remove(self)
+        if self in self.recipient.invites:
+            self.recipient.invites.remove(self)
         # todo: отправить сообщение об неактуальности инвайта
 
 
@@ -127,12 +132,13 @@ class PartyMember(object):
 class Party(object):
     parties = {}
 
-    def __init__(self, owner=None, name=None):
-        if name is None:
+    def __init__(self, owner=None, name=None, description=''):
+        if (name is None) or (name == ''):
             name = self.classname
         while name in self.parties:
             name = inc_name_number(name)
         self.parties[name] = self
+        self.description = description
         self.name = name
         self.owner = owner
         self.share_obs = []
@@ -208,7 +214,8 @@ class Party(object):
         self._on_include(agent)
         PartyMember(agent=agent, party=self, role=('Owner' if self.owner == agent else 'Normal'))
         agent.party = self
-        log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
+        #todo: проблемы с русским языком
+        #log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
 
         # after include for members
         for member in self.members:

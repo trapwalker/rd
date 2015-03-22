@@ -1,0 +1,29 @@
+<style>
+    .partyMyInvitesWindow-main {
+        position: relative;
+        height: 100%;
+        width: 300px;
+        background-color: rgba(0, 0, 0, 0.75);
+    }
+
+    .partyMyInvitesWindow-invitesList {
+        position: relative;
+        border: 1px solid rgba(0, 255, 85, 0.81);
+        height: 400px;
+        width: 290px;
+        margin: 5px;
+        box-sizing: border-box;
+        padding: 3px;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="partyMyInvitesWindow-main">
+    {% set window_caption = 'Your invites' %}
+    {% include ../drag_close_header.html %}
+    <div class="partyMyInvitesWindow-invitesList">
+        {% for invite in agent.invites %}
+            {% include invite_record.html %}
+        {% end %}
+    </div>
+</div>

@@ -25,6 +25,7 @@ class Agent(Object):
         self.cars = []  # specific
         """@type: list[sublayers_server.model.units.Bot]"""
         self.party = None
+        self.invites = []
         if party is not None:
             party.include(self)
 
