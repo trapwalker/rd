@@ -83,10 +83,10 @@
 
 <div class="partyCreateWindow-main">
     {% include ../drag_close_header.html %}
-    <div class="partyCreateWindow-header">
+    <div id="divNamePartyCreatePartyWindow_{{ current_user }}" class="partyCreateWindow-header">
         {% include input_name.html %}
     </div>
-    <div class="partyCreateWindow-comment">
+    <div id="divNotesPartyCreatePartyWindow_{{ current_user }}" class="partyCreateWindow-comment">
         <div class="partyCreateWindow-targetNote">Цели:</div>
         {% include text_comment.html %}
     </div>
@@ -95,3 +95,12 @@
         <div id="btnSendCreatePartyInWindow_{{ current_user }}" class="partyCreateWindow-buttonCreate">Создать</div>
     </div>
 </div>
+
+<script>
+    $("#btnSendCreatePartyInWindow_{{ current_user }}").click(function (event) {
+        var name = $("#divNamePartyCreatePartyWindow_{{ current_user }}").find('input').first().val();
+        var descr = $("#divNotesPartyCreatePartyWindow_{{ current_user }}").find('textarea').first().val();
+        clientManager.sendCreatePartyFromTemplate(name, descr);
+    });
+
+</script>

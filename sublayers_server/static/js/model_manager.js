@@ -509,6 +509,22 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.PartyErrorMessage', event);
     };
 
+    ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
+        console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
+        if (event.unique)
+            windowTemplateManager.openUniqueWindow(event.win_name, event.url);
+        else
+            console.log('Попытка открыть не уникальное окно по адресу: ', event.url);
+    };
+
+    ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
+        console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
+        if (event.unique)
+            windowTemplateManager.closeUniqueWindow(event.win_name);
+        else
+            console.log('Попытка открыть не уникальное');
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
@@ -600,6 +616,29 @@ var ClientManager = (function () {
             call: "send_rocket",
             rpc_call_id: rpcCallList.getID(),
             params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendOpenWindowCreateParty = function () {
+        var mes = {
+            call: "open_window_create_party",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description) {
+        var mes = {
+            call: "send_create_party_from_template",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: name,
+                description: description
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

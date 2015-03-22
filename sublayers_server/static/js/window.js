@@ -50,12 +50,21 @@ var Window = (function () {
     Window.prototype.setupCloseElement = function (element) {
         //console.log('Window.prototype.setupCloseElement', element);
         // todo: снять все обработчики перед удалением
-        element.click(this, function(event) {
-            if (event.data.options.isModal)
-                event.data.modalDiv.remove();
-            else
-                event.data.mainDiv.remove();
+        element.on('click', this, function (event) {
+            event.data.closeWindow();
         });
+    };
+
+    // Программный способ закрвания (удаления) окна
+    Window.prototype.closeWindow = function () {
+        // todo: усовершенствовать снятие обработчиков
+        this.mainDiv.find('div').off(); // снять со всемх дивов, так как они скорее всего кнопки
+        this.mainDiv.off(); // снять с главного дива - тут снимается draggable
+        if (this.options.isModal)
+            this.modalDiv.remove();
+        else
+            this.mainDiv.remove();
+
     };
 
     // Загрузка произвольного HTML
