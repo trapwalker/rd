@@ -565,22 +565,8 @@ var ViewMessengerGlass = (function () {
         /*
         var temp_str = chat.main_input.val();
         chat.main_input.val('/create ' + temp_str).focus();
-
-        $.ajax({
-            url: "http://" + location.host + "/party",
-            success: function(data){
-                var temp_window = new TemplateWindow({
-                        parentDiv: 'bodydiv'
-                });
-                temp_window.mainDiv.append(data);
-                temp_window.showWindow(true);
-                var drag_elem = temp_window.mainDiv.find('.windowDragCloseHeader-main').first();
-                var close_elem = temp_window.mainDiv.find('.windowDragCloseHeader-close').first();
-                temp_window.setupDragElement(drag_elem);
-                temp_window.setupCloseElement(close_elem);
-            }
-        });
         */
+
         clientManager.sendOpenWindowCreateParty();
     };
 
