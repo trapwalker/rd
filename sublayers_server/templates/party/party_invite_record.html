@@ -1,0 +1,39 @@
+<style>
+    .partyInviteRecord-main {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        border: 1px solid rgba(0, 255, 85, 0.81);
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        color: #2afd0a;
+        font: 8pt MICRADI;
+        letter-spacing: 1px;
+        padding-left: 8px;
+    }
+
+    .partyInviteRecord-infoSender {
+        position: absolute;
+        top: 8px;
+    }
+
+    .partyInviteRecord-infoRecipient {
+        position: absolute;
+        top: 28px;
+    }
+</style>
+
+<div id="partyInviteRecord{{ party_invite.id }}" class="partyInviteRecord-main">
+    <span class="partyInviteRecord-infoSender">Отправитель: {{ party_invite.sender.login }}</span>
+    <span class="partyInviteRecord-infoRecipient">Получатель: {{ party_invite.recipient.login }}</span>
+</div>
+
+<script>
+    // todo: сделать отмену инвайтов и здесь повесить обработчики
+    /*
+    $("#partyInviteRecord{{ party_invite.id }}").click(function(){
+        windowTemplateManager.openUniqueWindow('party_info', '/party', {page_type: 'party_info', party_name: '{{ party_invite.party.name }}' });
+    })
+    */
+</script>
+

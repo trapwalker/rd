@@ -118,7 +118,7 @@ var ViewMessengerGlass = (function () {
 
         // Создание чатов. Сразу все 4 чата
         this.addChat(-1, 'global', true); // глобальный чат
-        this.addPartyChat(-2, 'party', false); // глобальный чат
+        this.addPartyChat(-2, 'party', false); // пати чат
         this.addChat(-3, 'gamelog', false); // игровой лог
         this.addChat(-4, 'systemlog', false); // системный лог
 
@@ -136,13 +136,11 @@ var ViewMessengerGlass = (function () {
 
     }
 
-
     ViewMessengerGlass.prototype.showChatWindow = function () {
         this.showWindow();
         // todo: придумать как учесть размеры границ (box-sizing)
         this.setNewSize(this.vMA.height() + 4, this.vMA.width() + 4);
     };
-
 
     ViewMessengerGlass.prototype.setVisible = function (aVisible) {
         if (this.options._visible !== aVisible) {
@@ -150,11 +148,9 @@ var ViewMessengerGlass = (function () {
         }
     };
 
-
     ViewMessengerGlass.prototype.getVisible = function () {
         return this.options._visible;
     };
-
 
     ViewMessengerGlass.prototype.addChat = function (aID, aName, setAct){
         var chat = {
@@ -179,7 +175,6 @@ var ViewMessengerGlass = (function () {
         return chat;
     };
 
-
     ViewMessengerGlass.prototype.addPartyChat = function (aID, aName, setAct){
         var chat = {
             id: aID,
@@ -201,31 +196,26 @@ var ViewMessengerGlass = (function () {
         chat.pageButton.on('click', {self: this, id: chat.id}, this.clickForPageButton);
 
         // добавление кнопок для работы с пати
-        chat.pageControl.append('<div id="VMGPartyCntrlInvite' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'invite' + '</div>');
-        chat.pageControl.append('<div id="VMGPartyCntrlCreate' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'create' + '</div>');
-        chat.pageControl.append('<div id="VMGPartyCntrlKick' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'kick' + '</div>');
-        chat.pageControl.append('<div id="VMGPartyCntrlLeave' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'leave' + '</div>');
+        chat.pageControl.append('<div id="VMGPartyCntrlCreate' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Создать' + '</div>');
+        chat.pageControl.append('<div id="VMGPartyCntrlLeave' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
+        chat.pageControl.append('<div id="VMGPartyCntrlInvite' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Приглашения' + '</div>');
 
         chat.partyButtons = {
-            invite: $('#VMGPartyCntrlInvite' + aID),
             create: $('#VMGPartyCntrlCreate' + aID),
-            kick: $('#VMGPartyCntrlKick' + aID),
-            leave: $('#VMGPartyCntrlLeave' + aID)
+            leave: $('#VMGPartyCntrlLeave' + aID),
+            invite: $('#VMGPartyCntrlInvite' + aID)
         };
 
         // Вешаем евенты для работы с пати
-        // todo: эвенты не должны быть здесь!
-        chat.partyButtons.invite.on('click', {self: this, id: chat.id}, this.party_invite);
-        chat.partyButtons.create.on('click', {self: this, id: chat.id}, this.party_create);
-        chat.partyButtons.kick.on('click', {self: this, id: chat.id}, this.party_kick);
-        chat.partyButtons.leave.on('click', {self: this, id: chat.id}, this.party_leave);
+        chat.partyButtons.create.click(this, this.party_create);
+        chat.partyButtons.leave.click(this, this.party_leave);
+        chat.partyButtons.invite.click(this, this.party_invite);
 
         this.chats.push(chat);
         if (setAct)
             this.setActiveChat(chat.id);
         return chat;
     };
-
 
     ViewMessengerGlass.prototype.removeChat = function(chatID){
         // Если этот чат активный, то сделать активным нулевой
@@ -330,7 +320,6 @@ var ViewMessengerGlass = (function () {
 
     };
 
-
     ViewMessengerGlass.prototype.addMessage = function (chatID, chatName, aUser, aText) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChat(chatID);
@@ -372,7 +361,6 @@ var ViewMessengerGlass = (function () {
 
     };
 
-
     ViewMessengerGlass.prototype._removeAllMessagesInChat = function(chat){
         for(;chat.mesList.length;){
             var dmessage = chat.mesList.pop();
@@ -380,7 +368,6 @@ var ViewMessengerGlass = (function () {
             dmessage.mesDiv.remove();
         }
     };
-
 
     ViewMessengerGlass.prototype.addMessageToHistory = function(mes){
         // Сверить с нулевый элементом истории, если совпадает, то не добавлять. Иначе добавить
@@ -395,7 +382,6 @@ var ViewMessengerGlass = (function () {
         // сбросить индекс в -1, так как было добавление
         this._historyIndex = -1;
     };
-
 
     ViewMessengerGlass.prototype.setMessagesHistory = function(mess){
         // Добавить все элементы истории (при чтении из куки) в чат, читать массив с конца
@@ -443,7 +429,6 @@ var ViewMessengerGlass = (function () {
         chat._setInputHistoryMessage();
     };
 
-
     ViewMessengerGlass.prototype.viewMessengerSendMessage = function() {
         //console.log('ViewMessengerGlass.prototype.viewMessengerSendMessage');
 
@@ -477,12 +462,10 @@ var ViewMessengerGlass = (function () {
 
     };
 
-
     ViewMessengerGlass.prototype.clickForPageButton = function (event) {
         //console.log('ViewMessengerGlass.prototype.clickForPageButton');
         event.data.self.setActiveChat(event.data.id);
     };
-
 
     ViewMessengerGlass.prototype.viewMessengerClickSpanUser = function (event) {
         // подстветить все машинки данного пользователя
@@ -500,12 +483,10 @@ var ViewMessengerGlass = (function () {
             }
     };
 
-
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
         this.addMessage(params.chatID, params.chatName, params.user, params.text);
         return true;
     };
-
 
     // вывод входящих ws-сообщений в лог
     ViewMessengerGlass.prototype.receiveMessageFromWS = function(msg){
@@ -553,39 +534,17 @@ var ViewMessengerGlass = (function () {
         this.addMessage(-2, '', {login: name + ' #' + this.log_index},  mes );
     };
 
-
     ViewMessengerGlass.prototype.party_invite = function (event) {
-        //alert('Окно приглашения в пати');
-        var temp_str = chat.main_input.val();
-        chat.main_input.val('/invite ' + temp_str).focus();
+        //console.log('ViewMessengerGlass.prototype.party_invite', event);
+        windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ViewMessengerGlass.prototype.party_create = function (event) {
-        //alert('Окно создания пати');
-        var temp_str = chat.main_input.val();
-        chat.main_input.val('/create ' + temp_str).focus();
-
-        $.ajax({
-            url: "http://" + location.host + "/party",
-            success: function(data){
-                var temp_window = new TemplateWindow({
-                        parentDiv: 'bodydiv'
-                });
-                temp_window.mainDiv.append(data);
-                temp_window.showWindow(true);
-                var drag_elem = temp_window.mainDiv.find('.windowDragCloseHeader-main').first();
-                var close_elem = temp_window.mainDiv.find('.windowDragCloseHeader-close').first();
-                temp_window.setupDragElement(drag_elem);
-                temp_window.setupCloseElement(close_elem);
-            }
-        });
-    };
-
-    ViewMessengerGlass.prototype.party_kick = function (event) {
-        //alert('Окно выбора участника(ов) пати для кика');
-        var temp_str = chat.main_input.val();
-        chat.main_input.val('/kick ' + temp_str).focus();
-
+        //console.log('ViewMessengerGlass.prototype.party_create');
+        if ( user.party == null)
+            clientManager.sendOpenWindowCreateParty();
+        if ( user.party != null)
+            windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
     };
 
     ViewMessengerGlass.prototype.party_leave = function (event) {
@@ -638,7 +597,6 @@ var ViewMessengerGlass = (function () {
 
     };
 
-
     ViewMessengerGlass.prototype.btnHideReaction = function(event) {
         var self = event.data.self;
         self.changeVisible(!self.chat_visible);
@@ -676,7 +634,6 @@ var ViewMessengerGlass = (function () {
             }
         }
     };
-
 
     return ViewMessengerGlass;
 })();

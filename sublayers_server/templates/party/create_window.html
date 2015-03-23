@@ -1,3 +1,9 @@
+{% set window_caption = 'Create party' %}
+{% set can_edit_party_comment = True %}
+{% set party_comment = '' %}
+{% set can_edit_party_name = True %}
+{% set party_name = '' %}
+
 <style>
     .partyCreateWindow-main {
         position: relative;
@@ -8,7 +14,7 @@
 
     .partyCreateWindow-header {
         position: relative;
-        height: 50px;
+        height: 30px;
         width: 100%;
     }
 
@@ -32,19 +38,6 @@
         float: left;
         height: 50px;
         width: 100%;
-    }
-
-    .partyCreateWindow-targetNote {
-        position: absolute;
-        pointer-events: none;
-        right: 0;
-        left: 0;
-        top: 10px;
-        margin: auto;
-        color: #2afd0a;
-        text-align: center;
-        font: 13pt MICRADI;
-        letter-spacing: 1px;
     }
 
     .partyCreateWindow-buttonCreate {
@@ -77,17 +70,14 @@
         background-color: rgba(0, 255, 85, 0.1);
         border: 1px solid rgba(0, 255, 85, 0.3);
     }
-
-
 </style>
 
 <div class="partyCreateWindow-main">
     {% include ../drag_close_header.html %}
-    <div class="partyCreateWindow-header">
+    <div id="divNamePartyCreatePartyWindow_{{ current_user }}" class="partyCreateWindow-header">
         {% include input_name.html %}
     </div>
-    <div class="partyCreateWindow-comment">
-        <div class="partyCreateWindow-targetNote">Цели:</div>
+    <div id="divNotesPartyCreatePartyWindow_{{ current_user }}" class="partyCreateWindow-comment">
         {% include text_comment.html %}
     </div>
     <div class="partyCreateWindow-rules"></div>
@@ -95,3 +85,11 @@
         <div id="btnSendCreatePartyInWindow_{{ current_user }}" class="partyCreateWindow-buttonCreate">Создать</div>
     </div>
 </div>
+
+<script>
+    $("#btnSendCreatePartyInWindow_{{ current_user }}").click(function (event) {
+        var name = $("#divNamePartyCreatePartyWindow_{{ current_user }}").find('input').first().val();
+        var descr = $("#divNotesPartyCreatePartyWindow_{{ current_user }}").find('textarea').first().val();
+        clientManager.sendCreatePartyFromTemplate(name, descr);
+    });
+</script>

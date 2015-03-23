@@ -27,6 +27,40 @@ class UpdateAgentAPIEvent(Event):
         self.api.on_update_agent_api()
 
 
+class OpenTemplateWindowMessage(messages.Message):
+    def __init__(self, url, unique=False, win_name=None, page_type=None, **kw):
+        super(OpenTemplateWindowMessage, self).__init__(**kw)
+        self.url = url
+        self.unique = unique
+        self.win_name = win_name
+        self.page_type = page_type
+
+    def as_dict(self):
+        d = super(OpenTemplateWindowMessage, self).as_dict()
+        d.update(
+            url=self.url,
+            unique=self.unique,
+            win_name=self.win_name,
+            page_type=self.page_type
+        )
+        return d
+
+
+class CloseTemplateWindowMessage(messages.Message):
+    def __init__(self, unique=False, win_name=None, **kw):
+        super(CloseTemplateWindowMessage, self).__init__(**kw)
+        self.unique = unique
+        self.win_name = win_name
+
+    def as_dict(self):
+        d = super(CloseTemplateWindowMessage, self).as_dict()
+        d.update(
+            unique=self.unique,
+            win_name=self.win_name,
+        )
+        return d
+
+
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
@@ -126,13 +160,45 @@ class AgentAPI(API):
         self.agent.append_car(self.car)
 
     @public_method
-    def set_party(self, name=None, id=None):
+    def open_window_create_party(self):
+        OpenTemplateWindowMessage(
+            agent=self.agent,
+            url='/party',
+            unique=True,
+            win_name='create_party',
+            page_type='create',
+        ).post()
+
+    @public_method
+    def send_create_party_from_template(self, name, description):
+        self.set_party(name=name, description=description)
+        CloseTemplateWindowMessage(
+            agent=self.agent,
+            unique=True,
+            win_name="create_party"
+        ).post()
+
+    @public_method
+    def send_join_party_from_template(self, name):
+        self.set_party(name=name)
+        CloseTemplateWindowMessage(
+            agent=self.agent,
+            unique=True,
+            win_name="party_info"
+        ).post()
+        CloseTemplateWindowMessage(
+            agent=self.agent,
+            unique=True,
+            win_name="my_invites"
+        ).post()
+
+    @public_method
+    def set_party(self, name=None, id=None, description=''):
         """
         Create party or accept invitation
         @param basestring|None name: new or existed name of party
         @param str|int id: existed id of party
         """
-        # todo: autogenerate party name
         log.info('%s try to set or create party %s', self.agent.login, name)
         if name is None:
             if self.agent.party:
@@ -140,15 +206,14 @@ class AgentAPI(API):
         else:
             party = Party.search(name)
             if party is None:
-                party = Party(owner=self.agent, name=name)
+                party = Party(owner=self.agent, name=name, description=description)
             elif self.agent not in party:
                 party.include(self.agent)
-                # todo: проверка инвайтов, соответствующие исключения
-        # todo: События на добавление/исключение в/из пати
 
     @public_method
     def send_invite(self, username):
-        log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         user = self.agent.server.agents.get(username)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient').post()
@@ -157,6 +222,37 @@ class AgentAPI(API):
         if party is None:
             party = Party(owner=self.agent)
         party.invite(sender=self.agent, recipient=user)
+
+    @public_method
+    def send_kick(self, username):
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        party = self.agent.party
+        if party is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party').post()
+            return
+        user = self.agent.server.agents.get(username)
+        if (user is None) or (not (user in party)):
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick').post()
+            return
+        party.kick(kicker=self.agent, kicked=user)
+
+    @public_method
+    def send_set_category(self, username, category):
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        party = self.agent.party
+        if party is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party').post()
+            return
+        if not (party.owner is self.agent):
+            messages.PartyErrorMessage(agent=self.agent, comment='You dont have rights').post()
+            return
+        user = self.agent.server.agents.get(username)
+        if (user is None) or (not (user in party)):
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category').post()
+            return
+        party.get_member_by_agent(agent=user).set_category(category=category)
 
     @public_method
     def change_car(self):
@@ -236,5 +332,8 @@ class AgentAPI(API):
         elif command == '/invite':
             for name in args:
                 self.send_invite(username=name)
+        elif command == '/kick':
+            for name in args:
+                self.send_kick(username=name)
         else:
             log.warning('Unknown console command "%s"', cmd)

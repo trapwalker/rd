@@ -1,0 +1,95 @@
+<style>
+    .partyMemberRecord-main {
+        pointer-events: none;
+        position: relative;
+        width: 100%;
+        height: 50px;
+        border: 1px solid rgba(0, 255, 85, 0.81);
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        color: #2afd0a;
+        font: 8pt MICRADI;
+        letter-spacing: 1px;
+        padding-left: 8px;
+        overflow: hidden;
+    }
+
+    .partyMemberRecord-name {
+        position: relative;
+    }
+
+    .partyMemberRecord-desr {
+        position: relative;
+    }
+
+    .partyMemberRecord-category {
+        position: relative;
+    }
+
+    .partyMemberRecord-Btn {
+        position: relative;
+        float: left;
+        border: 1px solid rgba(0, 255, 85, 0.81);
+        border-radius: 2px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        pointer-events: auto;
+        padding: 5px;
+        margin-top: 5px;
+        margin-right: 5px;
+    }
+
+    .partyMemberRecord-doCategoryUPBtn {
+
+    }
+
+    .partyMemberRecord-doCategoryDownBtn {
+
+    }
+
+    .partyMemberRecord-kickBtn {
+
+    }
+
+</style>
+
+<div id="partyRecordDivForAgent{{ member.agent.uid }}" class="partyMemberRecord-main">
+    <span class="partyMemberRecord-name">Игрок: {{ member.agent.login }}</span>
+    <span class=".partyMemberRecord-desr">Звание: {{ member.description }}</span>
+    <span class=".partyMemberRecord-desr">Полномочия: {{ member.category }}</span>
+
+    {% if my_member_in_party.category == 0 %}
+        <br>
+        {% if member.category == 2 %}
+            <div class="partyMemberRecord-doCategoryUPBtn partyMemberRecord-Btn sublayers-clickable">Повысить</div>
+        {% end %}
+        {% if member.category == 1 %}
+            <div class="partyMemberRecord-doCategoryDownBtn partyMemberRecord-Btn sublayers-clickable">Понизить</div>
+        {% end %}
+    {% end %}
+    {% if my_member_in_party.can_kick_member(member) %}
+        <div class="partyMemberRecord-kickBtn partyMemberRecord-Btn sublayers-clickable">Исключить</div>
+    {% end %}
+</div>
+
+<script>
+    // todo: сделать jQuery click, с вызовами нужных функций, вставив правильные login
+    var btn_up = $("#partyRecordDivForAgent{{ member.agent.uid }}").find(".partyMemberRecord-doCategoryUPBtn").first();
+    var btn_down = $("#partyRecordDivForAgent{{ member.agent.uid }}").find(".partyMemberRecord-doCategoryDownBtn").first();
+    var btn_kick = $("#partyRecordDivForAgent{{ member.agent.uid }}").find(".partyMemberRecord-kickBtn").first();
+
+    if (btn_up)
+        btn_up.click(function (event) {
+            clientManager.sendSetPartyCategory('{{ member.agent.login }}', 1);
+        });
+    if (btn_down)
+        btn_down.click(function (event) {
+            clientManager.sendSetPartyCategory('{{ member.agent.login }}', 2);
+        });
+    if (btn_kick)
+        btn_kick.click(function (event) {
+            clientManager.sendKickPartyFromTemplate('{{ member.agent.login }}');
+        });
+
+</script>
+

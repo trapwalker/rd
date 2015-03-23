@@ -1,0 +1,36 @@
+<style>
+    .myInviteRecord-main {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        border: 1px solid rgba(0, 255, 85, 0.81);
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        color: #2afd0a;
+        font: 8pt MICRADI;
+        letter-spacing: 1px;
+        padding-left: 8px;
+    }
+
+    .myInviteRecord-infoPlayer {
+        position: absolute;
+        top: 8px;
+    }
+
+    .myInviteRecord-infoParty {
+        position: absolute;
+        top: 28px;
+    }
+</style>
+
+<div id="myInviteRecord{{ invite.id }}" class="myInviteRecord-main sublayers-clickable">
+    <span class="myInviteRecord-infoPlayer">Игрок: {{ invite.sender.login }}</span>
+    <span class="myInviteRecord-infoParty">Группа: {{ invite.party.name }}</span>
+</div>
+
+<script>
+    $("#myInviteRecord{{ invite.id }}").click(function(){
+        windowTemplateManager.openUniqueWindow('party_info', '/party', {page_type: 'party_info', party_name: '{{ invite.party.name }}' });
+    })
+</script>
+

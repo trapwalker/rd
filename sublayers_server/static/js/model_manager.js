@@ -488,7 +488,7 @@ var ClientManager = (function () {
         user.party = new OwnerParty(event.party.id, event.party.name);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-
+        chat._getChatByName('party').partyButtons.create.text('Отряд');
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
     };
 
@@ -497,7 +497,16 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
+        chat._getChatByName('party').partyButtons.create.text('Создать');
+        // изменить иконки машинок для всех бывших мемберов пати
+    };
 
+    ClientManager.prototype.PartyKickMessageForKicked = function (event) {
+        console.log('ClientManager.prototype.PartyKickMessageForKicked', event);
+        user.party = null;
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
+        widget_marker.updateLabel();
+        chat._getChatByName('party').partyButtons.create.text('Создать');
         // изменить иконки машинок для всех бывших мемберов пати
     };
 
@@ -507,6 +516,22 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PartyErrorMessage = function (event) {
         console.log('ClientManager.prototype.PartyErrorMessage', event);
+    };
+
+    ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
+        console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
+        if (event.unique)
+            windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
+        else
+            console.log('Попытка открыть не уникальное окно по адресу: ', event.url);
+    };
+
+    ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
+        console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
+        if (event.unique)
+            windowTemplateManager.closeUniqueWindow(event.win_name);
+        else
+            console.log('Попытка открыть не уникальное');
     };
 
     // Исходящие сообщения
@@ -600,6 +625,78 @@ var ClientManager = (function () {
             call: "send_rocket",
             rpc_call_id: rpcCallList.getID(),
             params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendOpenWindowCreateParty = function () {
+        var mes = {
+            call: "open_window_create_party",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description) {
+        var mes = {
+            call: "send_create_party_from_template",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: name,
+                description: description
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendJoinPartyFromTemplate = function (name) {
+        var mes = {
+            call: "send_join_party_from_template",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendInvitePartyFromTemplate = function (name) {
+        var mes = {
+            call: "send_invite",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                username: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendKickPartyFromTemplate = function (name) {
+        var mes = {
+            call: "send_kick",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                username: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSetPartyCategory = function (name, category) {
+        var mes = {
+            call: "send_set_category",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                username: name,
+                category: category
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

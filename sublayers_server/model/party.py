@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
-    PartyIncludeMessageForIncluded, PartyErrorMessage)
+    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked)
 
 
 def inc_name_number(name):
@@ -38,6 +38,16 @@ class PartyExcludeEvent(Event):
         super(PartyExcludeEvent, self).on_perform()
         self.party.on_exclude(self.agent)
 
+class PartyKickEvent(Event):
+    def __init__(self, party, kicker, kicked, **kw):
+        super(PartyKickEvent, self).__init__(server=kicker.server, **kw)
+        self.party = party
+        self.kicker = kicker
+        self.kicked = kicked
+
+    def on_perform(self):
+        super(PartyKickEvent, self).on_perform()
+        self.party.on_kick(kicker=self.kicker, kicked=self.kicked)
 
 class PartyInviteEvent(Event):
     def __init__(self, party, sender, recipient, **kw):
@@ -67,10 +77,15 @@ class Invite(object):
 
         # Добавляем приглашение в список приглашений party
         self.party.invites.append(self)
+        self.recipient.invites.append(self)
+
+    id = property(id)
 
     def delete_invite(self):
         if self in self.party.invites:
             self.party.invites.remove(self)
+        if self in self.recipient.invites:
+            self.recipient.invites.remove(self)
         # todo: отправить сообщение об неактуальности инвайта
 
 
@@ -81,13 +96,16 @@ class PartyMember(object):
     #       'Admin' - заместитель главы пати
     #       'Normal' - обычный участник
 
-    def __init__(self, agent, party, role='Normal'):
+    def __init__(self, agent, party, category=2):
+        u'''
+            category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
+        '''
         assert (agent is not None) and (party is not None)
         self.agent = agent
         self.party = party
         self.description = None
         self.role = None
-        self.set_role(role)
+        self.set_category(category)
         # Рассылка всем агентам, которые видят машинки добавляемого агента
         for car in agent.cars:
             for sbscr_agent in car.subscribed_agents:
@@ -107,8 +125,18 @@ class PartyMember(object):
             for sbscr_agent in car.subscribed_agents:
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
 
-    def set_role(self, role):
-        self.role = role
+    def kick_from_party(self):
+        # Исключение мембера из пати
+        self.party.members.remove(self)
+        # Отправка специального сообщения исключённому (вышедшему) агенту
+        PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party).post()
+        # Рассылка всем агентам, которые видят машинки удаляемого агента
+        for car in self.agent.cars:
+            for sbscr_agent in car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
+
+    def set_category(self, category):
+        self.category = category
         # todo: сообщение о присвоении роли
 
     def set_description(self, new_description):
@@ -120,19 +148,34 @@ class PartyMember(object):
             agent_name=self.agent.login,
             agent_uid=self.agent.uid,
             description=self.description,
-            role=self.role
+            category=self.category
         )
+
+    # определяет, может ли данный мембер кидать инвайты
+    def can_invite(self):
+        return self.category < 2
+
+    # определяет, может ли данный мембер кикнуть хоть кого-нибудь
+    def can_kick(self):
+        return self.category < 2
+
+    # определяет, может ли данный мембер кикнуть другого мембера
+    def can_kick_member(self, member):
+        if self.party != member.party:
+            return False
+        return self.category < member.category
 
 
 class Party(object):
     parties = {}
 
-    def __init__(self, owner=None, name=None):
-        if name is None:
+    def __init__(self, owner=None, name=None, description=''):
+        if (name is None) or (name == ''):
             name = self.classname
         while name in self.parties:
             name = inc_name_number(name)
         self.parties[name] = self
+        self.description = description
         self.name = name
         self.owner = owner
         self.share_obs = []
@@ -206,9 +249,10 @@ class Party(object):
             old_party.exclude(agent)
 
         self._on_include(agent)
-        PartyMember(agent=agent, party=self, role=('Owner' if self.owner == agent else 'Normal'))
+        PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2))
         agent.party = self
-        log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
+        #todo: проблемы с русским языком
+        #log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
 
         # after include for members
         for member in self.members:
@@ -320,7 +364,37 @@ class Party(object):
     id = property(id)
 
     def __contains__(self, agent):
+        if agent is None:
+            return False
         for member in self.members:
             if member.agent == agent:
                 return True
         return False
+
+    def kick(self, kicker, kicked):
+        PartyKickEvent(party=self, kicker=kicker, kicked=kicked).post()
+
+    def on_kick(self, kicker, kicked):
+        kicker_member = self.get_member_by_agent(kicker)
+        kicked_member = self.get_member_by_agent(kicked)
+        if (kicker.party is not self) or (kicked.party is not self) or (kicker_member is None) or (kicked_member is None):
+            log.warning('%s trying to kick agent (%s) from party %s', kicker, kicked, self)
+            return
+        if not kicker_member.can_kick_member(kicked_member):
+            log.warning('%s dont have rights to kick (%s) from party %s', kicker, kicked, self)
+            PartyErrorMessage(agent=kicker, comment='Dont have rights for kick').post()
+            return
+
+        # before exclude for members
+        for member in self.members:
+            member.agent.party_before_exclude(old_member=kicked, party=self)
+
+        kicked.party = None
+        kicked_member.kick_from_party()
+        self._on_exclude(kicked)
+        log.info('Agent %s kick from party %s', kicked, self)
+
+        # after exclude for members and agent
+        kicked.party_after_exclude(old_member=kicked, party=self)
+        for member in self.members:
+            member.agent.party_after_exclude(old_member=kicked, party=self)
