@@ -224,6 +224,20 @@ class AgentAPI(API):
         party.invite(sender=self.agent, recipient=user)
 
     @public_method
+    def send_kick(self, username):
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        party = self.agent.party
+        if party is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party').post()
+            return
+        user = self.agent.server.agents.get(username)
+        if (user is None) or (not (user in party)):
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick').post()
+            return
+        party.kick(kicker=self.agent, kicked=user)
+
+    @public_method
     def change_car(self):
         self.agent.drop_car(self.car)
         self.make_car()
@@ -301,5 +315,8 @@ class AgentAPI(API):
         elif command == '/invite':
             for name in args:
                 self.send_invite(username=name)
+        elif command == '/kick':
+            for name in args:
+                self.send_kick(username=name)
         else:
             log.warning('Unknown console command "%s"', cmd)

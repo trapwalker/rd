@@ -345,6 +345,20 @@ class PartyExcludeMessageForExcluded(Message):
         )
         return d
 
+class PartyKickMessageForKicked(Message):
+    def __init__(self, subj, party, **kw):
+        super(PartyKickMessageForKicked, self).__init__(**kw)
+        self.subj = subj
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyKickMessageForKicked, self).as_dict()
+        d.update(
+            subj=self.subj.as_dict(),
+            party=self.party.as_dict(),
+        )
+        return d
+
 
 class PartyInviteMessage(Message):
     def __init__(self, sender, recipient, party, **kw):

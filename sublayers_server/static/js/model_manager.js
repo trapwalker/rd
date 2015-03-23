@@ -501,6 +501,15 @@ var ClientManager = (function () {
         // изменить иконки машинок для всех бывших мемберов пати
     };
 
+    ClientManager.prototype.PartyKickMessageForKicked = function (event) {
+        console.log('ClientManager.prototype.PartyKickMessageForKicked', event);
+        user.party = null;
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
+        widget_marker.updateLabel();
+        chat._getChatByName('party').partyButtons.create.text('Создать');
+        // изменить иконки машинок для всех бывших мемберов пати
+    };
+
     ClientManager.prototype.PartyInviteMessage = function (event) {
         console.log('ClientManager.prototype.PartyInviteMessage', event);
     };
