@@ -665,5 +665,17 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendInvitePartyFromTemplate = function (name) {
+        var mes = {
+            call: "send_invite",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                username: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();

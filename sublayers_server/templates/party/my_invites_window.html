@@ -1,29 +1,88 @@
+{% set party = agent.party %}
+{% set member = None if not party else party.get_member_by_agent(agent) %}
+{% set height_of_party_invite_area = 235 if ((member is None) or (not member.can_invite())) else 205 %}
+
 <style>
     .partyMyInvitesWindow-main {
         position: relative;
         height: 100%;
-        width: 300px;
+        width: 500px;
         background-color: rgba(0, 0, 0, 0.75);
+
+    }
+
+    .partyInvitesWindowSpan {
+        color: #2afd0a;
+        text-align: center;
+        font: 8pt MICRADI;
+        letter-spacing: 1px;
     }
 
     .partyMyInvitesWindow-invitesList {
         position: relative;
-        border: 1px solid rgba(0, 255, 85, 0.81);
-        height: 400px;
-        width: 290px;
+        border: 1px solid rgba(0, 255, 85, 0.5);
+        height: 230px;
+        width: 470px;
         margin: 5px;
         box-sizing: border-box;
         padding: 3px;
         overflow-y: auto;
     }
+
+    .partyMyInvitesWindowPartyInviteArea {
+        position: relative;
+        border: 1px solid rgba(0, 255, 85, 0.5);
+        height: 270px;
+        width: 490px;
+        margin: 5px;
+        box-sizing: border-box;
+        padding: 3px;
+    }
+
+    .partyInvitesArea {
+        position: relative;
+        border: 1px solid rgba(0, 255, 85, 0.5);
+        height: {{ height_of_party_invite_area }}px;
+        width: 470px;
+        margin: 5px;
+        box-sizing: border-box;
+        padding: 3px;
+    }
+
+    .partyMyInvitesWindow_sendInviteArea {
+        margin-bottom: 5px;
+        margin-top: 5px;
+    }
+
 </style>
 
 <div class="partyMyInvitesWindow-main">
-    {% set window_caption = 'Your invites' %}
+    {% set window_caption = 'Invites' %}
     {% include ../drag_close_header.html %}
-    <div class="partyMyInvitesWindow-invitesList">
-        {% for invite in agent.invites %}
-            {% include invite_record.html %}
+
+
+    {% if member %}
+        <div class="partyMyInvitesWindowPartyInviteArea">
+            <span class="partyInvitesWindowSpan">Приглашения в отряд</span>
+            <div class="partyInvitesArea">
+                {% for party_invite in party.invites %}
+                    {% include party_invite_record.html %}
+                {% end %}
+            </div>
+        {% if member.can_invite() %}
+            <div class="partyMyInvitesWindow_sendInviteArea">
+                {% include send_invite.html %}
+            </div>
         {% end %}
+        </div>
+    {% end %}
+
+    <div class="partyMyInvitesWindowPartyInviteArea">
+        <span class="partyInvitesWindowSpan">Мои приглашения</span>
+        <div class="partyMyInvitesWindow-invitesList">
+            {% for invite in agent.invites %}
+                {% include invite_record.html %}
+            {% end %}
+        </div>
     </div>
 </div>
