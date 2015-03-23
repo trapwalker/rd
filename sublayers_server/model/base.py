@@ -195,7 +195,11 @@ class Observer(VisibleObject):
         can_see = self.can_see(obj)
         see = obj in self.visible_objects
         if can_see != see:
-            (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).post()
+            # (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).post()
+            if can_see:
+                self.on_contact_in(time=self.server.get_time(), obj=obj, is_boundary=True)
+            else:
+                self.on_contact_out(time=self.server.get_time(), obj=obj, is_boundary=True)
             return
 
     def can_see(self, obj):
