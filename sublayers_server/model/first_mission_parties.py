@@ -16,7 +16,7 @@ class RandomCarList:
             dict(
                 max_hp=100,
                 v_max=(80 * 1000 / 3600),
-                observing_range=300,
+                observing_range=270,
                 weapons=[
                     dict(fi=0, is_auto=False, radius=200, width=radians(40), dmg=10, time_recharge=5),
                     dict(fi=pi / 2, is_auto=True, radius=200, width=radians(30), dps=0.5),

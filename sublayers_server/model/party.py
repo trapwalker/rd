@@ -108,7 +108,7 @@ class PartyMember(object):
         self.set_category(category)
         # Рассылка всем агентам, которые видят машинки добавляемого агента
         for car in agent.cars:
-            for sbscr_agent in car.subscribed_agents:
+            for sbscr_agent in car.subscribed_agents.get_keys_more_value():
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=agent).post()
         # Включение в мемберы пати нового мембера
         party.members.append(self)
@@ -122,7 +122,7 @@ class PartyMember(object):
         PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
         for car in self.agent.cars:
-            for sbscr_agent in car.subscribed_agents:
+            for sbscr_agent in car.subscribed_agents.get_keys_more_value():
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
 
     def kick_from_party(self):
@@ -132,7 +132,7 @@ class PartyMember(object):
         PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
         for car in self.agent.cars:
-            for sbscr_agent in car.subscribed_agents:
+            for sbscr_agent in car.subscribed_agents.get_keys_more_value():
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
 
     def set_category(self, category):
@@ -262,7 +262,7 @@ class Party(object):
         #log.info('==============Start include')
         #log.info(len(self.share_obs))
 
-        agent_observers = agent.observers.keys()
+        agent_observers = agent.observers.get_keys_more_value()
         for obs in agent_observers:
             if agent.observers[obs] > 0:
                 self.share_obs.append(obs)
@@ -308,7 +308,7 @@ class Party(object):
         for obs in self.share_obs:
             agent.drop_observer(obs)
 
-        agent_observers = agent.observers.keys()
+        agent_observers = agent.observers.get_keys_more_value()
         for member in self.members:
             for obs in agent_observers:
                 if agent.observers[obs] > 0:

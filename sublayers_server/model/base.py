@@ -131,7 +131,7 @@ class VisibleObject(PointObject):
 
     def on_update(self, event):  # todo: privacy level index
         self.on_contacts_check()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
-        for agent in self.subscribed_agents:
+        for agent in self.subscribed_agents.get_keys_more_value():
             messages.Update(
                 agent=agent,
                 time=event.time,
@@ -217,8 +217,8 @@ class Observer(VisibleObject):
         self.visible_objects.append(obj)
         obj.subscribed_observers.append(self)
         # add all subscribed _agents_ into to the _visible object_
-        for agent in self.watched_agents:
-            for i in xrange(self.watched_agents[agent]):
+        for agent in self.watched_agents.get_keys_more_value():
+            for i in range(self.watched_agents[agent]):
                 agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
     # todo: check calls
@@ -230,8 +230,8 @@ class Observer(VisibleObject):
         @param str comment: debug comment
         """
         # remove all subscribed _agents_ from _visible object_
-        for agent in self.watched_agents:
-            for i in xrange(self.watched_agents[agent]):
+        for agent in self.watched_agents.get_keys_more_value():
+            for i in range(self.watched_agents[agent]):
                 agent.on_out(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
         self.visible_objects.remove(obj)
@@ -245,7 +245,7 @@ class Observer(VisibleObject):
                 ContactOut(subj=self, obj=vo).post()
         # todo: сделать евентом, чтобы отработало после этого ContactOut, но до полного удаления
         # перестать отправлять агентам сообщения
-        for agnt in self.watched_agents:
+        for agnt in self.watched_agents.get_keys_more_value():
             agnt.drop_ovserver(self)
 
 
