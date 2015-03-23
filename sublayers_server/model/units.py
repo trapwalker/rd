@@ -113,7 +113,7 @@ class Unit(Observer):
         FireAutoEnableEvent(time=time, obj=self, side=side, enable=enable).post()
 
     def fire_auto_enable_all(self, enable, time=None):
-        log.info('%s  fire_auto_enable_all is %s    in time: %s', self.uid, enable, time)
+        # log.info('%s  fire_auto_enable_all is %s    in time: %s', self.uid, enable, time)
         self.fire_auto_enable(time=time, side='front', enable=enable)
         self.fire_auto_enable(time=time, side='back', enable=enable)
         self.fire_auto_enable(time=time, side='left', enable=enable)

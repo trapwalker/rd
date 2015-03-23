@@ -52,7 +52,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         '''
 
     def on_message(self, message):
-        log.debug("Got message from %s: %r", self.agent, message)
+        # log.debug("Got message from %s: %r", self.agent, message)
         result = self.api.__rpc_call__(message)
         self.send(result)
 
