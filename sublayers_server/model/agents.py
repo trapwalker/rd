@@ -56,7 +56,7 @@ class Agent(Object):
         self.observers[observer] -= 1
 
     def on_see(self, time, subj, obj, is_boundary):
-        log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
+        # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
             return
@@ -70,7 +70,7 @@ class Agent(Object):
         ).post()
 
     def on_out(self, time, subj, obj, is_boundary):
-        log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
+        # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_last = obj.subscribed_agents.dec(self) == 0
         #if self.cars:
             #log.info('_+_+_+_+_+_+_+_+_+_+_+_ %s out by %s length %s', obj.uid, self.cars[0].uid, obj.subscribed_agents[self])

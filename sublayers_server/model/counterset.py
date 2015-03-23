@@ -14,12 +14,15 @@ class CounterSet(Counter):
         assert all(imap(lambda v: v > 0, self.values()))  # todo: optimization possible
 
 
-    #def __setitem__(self, k, v):
+    def __setitem__(self, k, v):
         #assert v >= 0, 'value = {}'.format(v)
         #if v == 0:
         #    del self[k]
         #else:
         #super(CounterSet, self).__setitem__(k, v)
+        if v < 0:
+            log.debug('aaaaaaaaa!!!! value in counterSet = %s', v)
+        super(CounterSet, self).__setitem__(k, v)
 
     def inc(self, key, step=1):
         v = self[key] + step
