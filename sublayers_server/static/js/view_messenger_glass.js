@@ -541,9 +541,9 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.party_create = function (event) {
         //console.log('ViewMessengerGlass.prototype.party_create');
-        if ( $(event.target).text() == 'Создать')
+        if ( user.party == null)
             clientManager.sendOpenWindowCreateParty();
-        if ( $(event.target).text() == 'Отряд')
+        if ( user.party != null)
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
     };
 

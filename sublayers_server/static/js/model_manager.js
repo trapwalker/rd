@@ -677,5 +677,30 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendKickPartyFromTemplate = function (name) {
+        var mes = {
+            call: "send_kick",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                username: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSetPartyCategory = function (name, category) {
+        var mes = {
+            call: "send_set_category",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                username: name,
+                category: category
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();

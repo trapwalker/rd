@@ -238,6 +238,23 @@ class AgentAPI(API):
         party.kick(kicker=self.agent, kicked=user)
 
     @public_method
+    def send_set_category(self, username, category):
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        party = self.agent.party
+        if party is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party').post()
+            return
+        if not (party.owner is self.agent):
+            messages.PartyErrorMessage(agent=self.agent, comment='You dont have rights').post()
+            return
+        user = self.agent.server.agents.get(username)
+        if (user is None) or (not (user in party)):
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category').post()
+            return
+        party.get_member_by_agent(agent=user).set_category(category=category)
+
+    @public_method
     def change_car(self):
         self.agent.drop_car(self.car)
         self.make_car()
