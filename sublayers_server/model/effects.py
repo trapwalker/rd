@@ -69,3 +69,6 @@ class Effect(object):
                 effect.actual = False
                 do_diff = False
         return do_diff
+
+    def send_message(self):
+        pass
