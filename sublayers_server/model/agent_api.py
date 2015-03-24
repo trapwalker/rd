@@ -88,15 +88,9 @@ class AgentAPI(API):
         messages.Init(agent=self.agent, time=None).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
-        # todo: отправляем все эффекты, которые наложены на машинку
-        # эффекты зон (todo: сделать отправку именно зон, а не всех эффектов)
+        # эффекты
         for effect in self.car.effects:
-            messages.ZoneEffectMessage(
-                agent=self.agent,
-                subj=self.car,
-                in_zone=effect.actual,
-                zone_effect=effect.as_dict(),
-            ).post()
+            effect.send_message()
 
         # Отправить всех тех, кто стреляет по мне
         for shooter in self.car.hp_state.shooters:
