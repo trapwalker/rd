@@ -137,7 +137,7 @@ class Unit(Observer):
             # евент залповая стрельба
             FireDischargeEffectEvent(obj=self, side=side).post()
             # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
-            for agent in self.watched_agents.get_keys_more_value():
+            for agent in self.watched_agents:
                 messages.FireDischarge(
                     agent=agent,
                     side=side,
@@ -170,7 +170,7 @@ class Unit(Observer):
     def on_contact_in(self, obj, **kw):
         super(Unit, self).on_contact_in(obj=obj, **kw)
         if isinstance(obj, Unit):
-            for agent in self.watched_agents.get_keys_more_value():
+            for agent in self.watched_agents:
                 for shooter in obj.hp_state.shooters:
                     messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=True).post()
                 for sector in obj.fire_sectors:
@@ -184,7 +184,7 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             sector.out_car(target=obj)
         if isinstance(obj, Unit):
-            for agent in self.watched_agents.get_keys_more_value():
+            for agent in self.watched_agents:
                 # Убрать все эффекты стрельбы в ЭТУ машинку (в obj)
                 for shooter in obj.hp_state.shooters:
                     messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=False).post()
@@ -225,7 +225,7 @@ class Unit(Observer):
 
     def zone_changed(self, zone_effect, in_zone):
         #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
-        for agent in self.watched_agents.get_keys_more_value():
+        for agent in self.watched_agents:
             messages.ZoneEffectMessage(
                 agent=agent,
                 subj=self,

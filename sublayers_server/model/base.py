@@ -200,7 +200,6 @@ class Observer(VisibleObject):
             else:
                 self.on_contact_out(time=self.server.get_time(), obj=obj, is_boundary=True)
 
-
     def can_see(self, obj):
         """
         @type obj: VisibleObject

@@ -46,11 +46,11 @@ class HPTask(TaskSingleton):
 
         if self.add_shooter:
             owner.hp_state.add_shooter(self.add_shooter)
-            for agent in self.owner.subscribed_agents.get_keys_more_value():
+            for agent in self.owner.subscribed_agents:
                 FireAutoEffect(agent=agent, subj=self.add_shooter, obj=self.owner, action=True).post()
         if self.del_shooter:
             owner.hp_state.del_shooter(self.del_shooter)
-            for agent in self.owner.subscribed_agents.get_keys_more_value():
+            for agent in self.owner.subscribed_agents:
                 FireAutoEffect(agent=agent, subj=self.del_shooter, obj=self.owner, action=False).post()
 
         time = event.time

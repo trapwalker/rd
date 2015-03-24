@@ -74,7 +74,7 @@ class Rocket(Mobile):
             return
         log.debug('Rocket Contacn IN !!!!!!!!!!!!!!!')
         # todo: сделать евент (не мессадж, а именно евент) Bang, который будет отнимать хп у задетых машинок
-        for agent in self.subscribed_agents.get_keys_more_value():
+        for agent in self.subscribed_agents:
             messages.Bang(
                 position=self.position,
                 agent=agent,

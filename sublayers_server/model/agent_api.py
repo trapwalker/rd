@@ -109,7 +109,7 @@ class AgentAPI(API):
 
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
-        for obs in self.agent.observers.get_keys_more_value():
+        for obs in self.agent.observers:
             if not (obs in vo_list) and (obs != self.car):
                 vo_list.append(obs)
             for vo in obs.visible_objects:

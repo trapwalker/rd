@@ -49,7 +49,7 @@ class WeaponAuto(Weapon):
         #todo: создать таск на патроны, который отменит дамаг и сделает стоп стрельбы
         self.targets.append(car)
         HPTask(owner=car, dps=self.dps, add_shooter=self.owner).start()
-        for agent in self.owner.subscribed_agents.get_keys_more_value():
+        for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=True).post()
 
     def _end(self, car):
@@ -57,7 +57,7 @@ class WeaponAuto(Weapon):
         self.targets.remove(car)
         if not car.is_died:  # если цель мертва, то нет смысла снимать с неё дамаг
             HPTask(owner=car, dps=-self.dps, del_shooter=self.owner).start()
-        for agent in self.owner.subscribed_agents.get_keys_more_value():
+        for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=False).post()
 
     def start(self, car):

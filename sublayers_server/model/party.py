@@ -135,7 +135,7 @@ class PartyMember(object):
         PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party).post()
         # Рассылка всем агентам, которые видят машинки добавляемого агента
         for car in agent.cars:
-            for sbscr_agent in car.subscribed_agents.get_keys_more_value():
+            for sbscr_agent in car.subscribed_agents:
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=agent).post()
 
     def out_from_party(self):
@@ -145,7 +145,7 @@ class PartyMember(object):
         PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
         for car in self.agent.cars:
-            for sbscr_agent in car.subscribed_agents.get_keys_more_value():
+            for sbscr_agent in car.subscribed_agents:
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
 
     def kick_from_party(self):
@@ -155,7 +155,7 @@ class PartyMember(object):
         PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
         for car in self.agent.cars:
-            for sbscr_agent in car.subscribed_agents.get_keys_more_value():
+            for sbscr_agent in car.subscribed_agents:
                 AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
 
     def set_category(self, category):
@@ -285,7 +285,7 @@ class Party(object):
         #log.info('==============Start include')
         #log.info(len(self.share_obs))
 
-        agent_observers = agent.observers.get_keys_more_value()
+        agent_observers = agent.observers.keys()
         for obs in agent_observers:
             self.share_obs.append(obs)
 
@@ -329,7 +329,7 @@ class Party(object):
         for obs in self.share_obs:
             agent.drop_observer(obs)
 
-        agent_observers = agent.observers.get_keys_more_value()
+        agent_observers = agent.observers.keys()
         for member in self.members:
             for obs in agent_observers:
                 member.agent.drop_observer(obs)
