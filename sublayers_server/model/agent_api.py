@@ -181,16 +181,6 @@ class AgentAPI(API):
     @public_method
     def send_join_party_from_template(self, name):
         self.set_party(name=name)
-        CloseTemplateWindowMessage(
-            agent=self.agent,
-            unique=True,
-            win_name="party_info"
-        ).post()
-        CloseTemplateWindowMessage(
-            agent=self.agent,
-            unique=True,
-            win_name="my_invites"
-        ).post()
 
     @public_method
     def set_party(self, name=None, id=None, description=''):
@@ -337,3 +327,7 @@ class AgentAPI(API):
                 self.send_kick(username=name)
         else:
             log.warning('Unknown console command "%s"', cmd)
+
+    @public_method
+    def delete_invite(self, invite_id):
+        self.agent.delete_invite(invite_id)
