@@ -8,13 +8,15 @@ var WindowTemplateManager = (function () {
         var self = this;
         if (this.unique[win_name] != null) this.closeUniqueWindow(win_name);
         // todo: возможно стоит передавать уникальное имя в сам объект-окно, чтобы когда окно закрывается само, оно закрывалось через этот менеджер
-
+        this.unique[win_name] = 'waiting';
         $.ajax({
             url: "http://" + location.host + win_url,
             data: win_data,
             success: function(data){
+                if (self.unique[win_name] != 'waiting') return;
                 var temp_window = new TemplateWindow({
-                    parentDiv: 'bodydiv'
+                    parentDiv: 'bodydiv',
+                    win_name: win_name
                 });
                 temp_window.mainDiv.append(data);
                 temp_window.showWindow(true);
@@ -50,9 +52,18 @@ var WindowTemplateManager = (function () {
 
     WindowTemplateManager.prototype.closeUniqueWindow = function (win_name) {
         if (this.unique[win_name] != null) {
-            this.unique[win_name].closeWindow();
+            if (this.unique[win_name] != 'waiting')
+                this.unique[win_name].closeWindow();
             this.unique[win_name] = null;
         }
+    };
+
+    WindowTemplateManager.prototype.isOpen = function (win_name) {
+        return (this.unique[win_name]) && (this.unique[win_name] != null)
+    };
+
+    WindowTemplateManager.prototype.isClose = function (win_name) {
+        return (!this.unique[win_name]) || (this.unique[win_name] == null)
     };
 
 

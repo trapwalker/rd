@@ -471,18 +471,19 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.AgentPartyChangeMessage = function (event) {
-        console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
+        //console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
         if(event.subj.uid == user.ID) return;
         var owner = this._getOwner(event.subj);
         for (var i = 0; i < owner.cars.length; i++) {
             var widget_marker = visualManager.getVobjByType(owner.cars[i], WCarMarker);
             widget_marker.updateLabel();
         }
-
+        if (windowTemplateManager.isOpen('party'))
+            windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
-        console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+        //console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
         // изменить настройки своей пати для своего клиента
         if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
         user.party = new OwnerParty(event.party.id, event.party.name);
@@ -490,28 +491,54 @@ var ClientManager = (function () {
         widget_marker.updateLabel();
         chat._getChatByName('party').partyButtons.create.text('Отряд');
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
+
+        if (windowTemplateManager.isOpen('create_party'))
+            windowTemplateManager.closeUniqueWindow('create_party');
+        if (windowTemplateManager.isOpen('my_invites'))
+            windowTemplateManager.closeUniqueWindow('my_invites');
+        if (windowTemplateManager.isOpen('party_info'))
+            windowTemplateManager.closeUniqueWindow('party_info');
+
+        windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
+
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
-        console.log('ClientManager.prototype.PartyExcludeMessageForExcluded', event);
+        //console.log('ClientManager.prototype.PartyExcludeMessageForExcluded', event);
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
         chat._getChatByName('party').partyButtons.create.text('Создать');
         // изменить иконки машинок для всех бывших мемберов пати
+        if (windowTemplateManager.isOpen('party'))
+            windowTemplateManager.closeUniqueWindow('party');
+        if (windowTemplateManager.isOpen('my_invites'))
+            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
-        console.log('ClientManager.prototype.PartyKickMessageForKicked', event);
+        //console.log('ClientManager.prototype.PartyKickMessageForKicked', event);
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
         chat._getChatByName('party').partyButtons.create.text('Создать');
         // изменить иконки машинок для всех бывших мемберов пати
+        if (windowTemplateManager.isOpen('party'))
+            windowTemplateManager.closeUniqueWindow('party');
+        if (windowTemplateManager.isOpen('my_invites'))
+            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyInviteMessage = function (event) {
-        console.log('ClientManager.prototype.PartyInviteMessage', event);
+        //console.log('ClientManager.prototype.PartyInviteMessage', event);
+        if (windowTemplateManager.isOpen('my_invites'))
+            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
+    };
+
+    ClientManager.prototype.PartyInviteDeleteMessage = function (event) {
+        //console.log('ClientManager.prototype.PartyInviteDeleteMessage', event);
+        if (windowTemplateManager.isOpen('my_invites'))
+            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyErrorMessage = function (event) {
@@ -696,6 +723,18 @@ var ClientManager = (function () {
             params: {
                 username: name,
                 category: category
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendPartyDeleteInvite = function (invite_id) {
+        var mes = {
+            call: "delete_invite",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                invite_id: invite_id
             }
         };
         rpcCallList.add(mes);

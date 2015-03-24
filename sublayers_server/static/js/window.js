@@ -51,7 +51,10 @@ var Window = (function () {
         //console.log('Window.prototype.setupCloseElement', element);
         // todo: снять все обработчики перед удалением
         element.on('click', this, function (event) {
-            event.data.closeWindow();
+            if (event.data.options.win_name)
+                windowTemplateManager.closeUniqueWindow(event.data.options.win_name);
+            else
+                event.data.closeWindow();
         });
     };
 

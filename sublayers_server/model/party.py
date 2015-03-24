@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
-    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked)
+    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage)
 
 
 def inc_name_number(name):
@@ -61,6 +61,16 @@ class PartyInviteEvent(Event):
         self.party.on_invite(event=self)
 
 
+class PartyInviteDeleteEvent(Event):
+    def __init__(self, invite, **kw):
+        super(PartyInviteDeleteEvent, self).__init__(server=invite.sender.server, **kw)
+        self.invite = invite
+
+    def on_perform(self):
+        super(PartyInviteDeleteEvent, self).on_perform()
+        self.invite.delete_invite()
+
+
 class Invite(object):
     def __init__(self, sender, recipient, party):
         assert (recipient is not None) and (party is not None)
@@ -70,10 +80,10 @@ class Invite(object):
 
         # Все члены пати должны знать кого пригласили
         for member in self.party.members:
-            PartyInviteMessage(agent=member.agent, sender=sender, recipient=recipient, party=party).post()
+            PartyInviteMessage(agent=member.agent, sender=sender, recipient=recipient, party=party, invite=self).post()
 
         # Приглашенный тоже должен об этом узнать
-        PartyInviteMessage(agent=recipient, sender=sender, recipient=recipient, party=party).post()
+        PartyInviteMessage(agent=recipient, sender=sender, recipient=recipient, party=party, invite=self).post()
 
         # Добавляем приглашение в список приглашений party
         self.party.invites.append(self)
@@ -81,12 +91,23 @@ class Invite(object):
 
     id = property(id)
 
+    def can_delete_by_agent(self, agent):
+        # отменить инвайт могут: sender, recipient, owner пати
+        return (agent == self.sender) or (agent == self.recipient) or (agent == self.party.owner)
+
     def delete_invite(self):
+        # все участники пати должны узнать, что инвайт отменён
+        for member in self.party.members:
+            PartyInviteDeleteMessage(agent=member.agent, sender=self.sender,
+                                     recipient=self.recipient, party=self.party, invite=self).post()
+        # Приглашаемый тоже должен об этом узнать
+        PartyInviteDeleteMessage(agent=self.recipient, sender=self.sender,
+                                 recipient=self.recipient, party=self.party, invite=self).post()
+
         if self in self.party.invites:
             self.party.invites.remove(self)
         if self in self.recipient.invites:
             self.recipient.invites.remove(self)
-        # todo: отправить сообщение об неактуальности инвайта
 
 
 class PartyMember(object):
@@ -106,14 +127,14 @@ class PartyMember(object):
         self.description = None
         self.role = None
         self.set_category(category)
-        # Рассылка всем агентам, которые видят машинки добавляемого агента
-        for car in agent.cars:
-            for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent).post()
         # Включение в мемберы пати нового мембера
         party.members.append(self)
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
         PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party).post()
+        # Рассылка всем агентам, которые видят машинки добавляемого агента
+        for car in agent.cars:
+            for sbscr_agent in car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent).post()
 
     def out_from_party(self):
         # Исключение мембера из пати

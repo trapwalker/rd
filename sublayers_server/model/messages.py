@@ -345,6 +345,7 @@ class PartyExcludeMessageForExcluded(Message):
         )
         return d
 
+
 class PartyKickMessageForKicked(Message):
     def __init__(self, subj, party, **kw):
         super(PartyKickMessageForKicked, self).__init__(**kw)
@@ -361,11 +362,12 @@ class PartyKickMessageForKicked(Message):
 
 
 class PartyInviteMessage(Message):
-    def __init__(self, sender, recipient, party, **kw):
+    def __init__(self, sender, recipient, party, invite, **kw):
         super(PartyInviteMessage, self).__init__(**kw)
         self.sender = sender
         self.recipient = recipient
         self.party = party
+        self.invite = invite
 
     def as_dict(self):
         d = super(PartyInviteMessage, self).as_dict()
@@ -373,6 +375,26 @@ class PartyInviteMessage(Message):
             sender=self.sender.as_dict(),
             recipient=self.recipient.as_dict(),
             party=self.party.as_dict(),
+            invite_id=self.invite.id
+        )
+        return d
+
+
+class PartyInviteDeleteMessage(Message):
+    def __init__(self, sender, recipient, party, invite, **kw):
+        super(PartyInviteDeleteMessage, self).__init__(**kw)
+        self.sender = sender
+        self.recipient = recipient
+        self.party = party
+        self.invite = invite
+
+    def as_dict(self):
+        d = super(PartyInviteDeleteMessage, self).as_dict()
+        d.update(
+            sender=self.sender.as_dict(),
+            recipient=self.recipient.as_dict(),
+            party=self.party.as_dict(),
+            invite_id=self.invite.id
         )
         return d
 

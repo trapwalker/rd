@@ -3,9 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
+
 from sublayers_server.model.base import Object
 import messages
-
+from sublayers_server.model.party import PartyInviteDeleteEvent
 
 from counterset import CounterSet
 
@@ -152,6 +153,25 @@ class Agent(Object):
         if not self.is_online:
             return
         self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
+
+    def _invite_by_id(self, invite_id):
+        for invite in self.invites:
+            if invite.id == invite_id:
+                return invite
+        if self.party:
+            for invite in self.party.invites:
+                if invite.id == invite_id:
+                    return invite
+        return None
+
+    def delete_invite(self, invite_id):
+        # получить инвайт с данным id
+        invite = self._invite_by_id(invite_id)
+        if (invite is not None) and (invite.can_delete_by_agent(self)):
+            PartyInviteDeleteEvent(invite=invite).post()
+        else:
+            messages.PartyErrorMessage(agent=self,
+                                       comment="You not have access for this invite {}".format(invite_id)).post()
 
 
 class User(Agent):

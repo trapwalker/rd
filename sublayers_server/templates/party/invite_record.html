@@ -21,16 +21,44 @@
         position: absolute;
         top: 28px;
     }
+
+    .myInviteRecord-Btn {
+        position: absolute;
+        height: 25px;
+        right: 5px;
+        border: 1px solid rgba(0, 255, 85, 0.51);
+        background-color: rgba(0, 255, 85, 0.20);
+        border-radius: 2px;
+        box-sizing: border-box;
+        pointer-events: auto;
+        padding: 5px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+    }
+
+    .myInviteRecord-Btn:hover {
+        border: 1px solid rgba(0, 255, 85, 0.81);
+        background-color: rgba(0, 255, 85, 0.50);
+    }
+
 </style>
 
 <div id="myInviteRecord{{ invite.id }}" class="myInviteRecord-main sublayers-clickable">
     <span class="myInviteRecord-infoPlayer">Игрок: {{ invite.sender.login }}</span>
     <span class="myInviteRecord-infoParty">Группа: {{ invite.party.name }}</span>
+    <div class="myInviteRecord-Btn sublayers-clickable">Отменить</div>
 </div>
 
 <script>
     $("#myInviteRecord{{ invite.id }}").click(function(){
         windowTemplateManager.openUniqueWindow('party_info', '/party', {page_type: 'party_info', party_name: '{{ invite.party.name }}' });
-    })
+    });
+
+    $("#myInviteRecord{{ invite.id }}").find(".myInviteRecord-Btn").first().click(function (event) {
+        clientManager.sendPartyDeleteInvite({{ invite.id }});
+        stopEvent(event);
+    });
+
 </script>
 
