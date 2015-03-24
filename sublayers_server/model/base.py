@@ -195,8 +195,10 @@ class Observer(VisibleObject):
         can_see = self.can_see(obj)
         see = obj in self.visible_objects
         if can_see != see:
-            (ContactSee if can_see else ContactOut)(time=self.server.get_time(), subj=self, obj=obj).post()
-            return
+            if can_see:
+                self.on_contact_in(time=self.server.get_time(), obj=obj, is_boundary=True)
+            else:
+                self.on_contact_out(time=self.server.get_time(), obj=obj, is_boundary=True)
 
     def can_see(self, obj):
         """
@@ -218,7 +220,7 @@ class Observer(VisibleObject):
         obj.subscribed_observers.append(self)
         # add all subscribed _agents_ into to the _visible object_
         for agent in self.watched_agents:
-            for i in xrange(self.watched_agents[agent]):
+            for i in range(self.watched_agents[agent]):
                 agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
     # todo: check calls
@@ -231,7 +233,7 @@ class Observer(VisibleObject):
         """
         # remove all subscribed _agents_ from _visible object_
         for agent in self.watched_agents:
-            for i in xrange(self.watched_agents[agent]):
+            for i in range(self.watched_agents[agent]):
                 agent.on_out(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
         self.visible_objects.remove(obj)

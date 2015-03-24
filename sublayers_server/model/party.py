@@ -38,6 +38,7 @@ class PartyExcludeEvent(Event):
         super(PartyExcludeEvent, self).on_perform()
         self.party.on_exclude(self.agent)
 
+
 class PartyKickEvent(Event):
     def __init__(self, party, kicker, kicked, **kw):
         super(PartyKickEvent, self).__init__(server=kicker.server, **kw)
@@ -48,6 +49,7 @@ class PartyKickEvent(Event):
     def on_perform(self):
         super(PartyKickEvent, self).on_perform()
         self.party.on_kick(kicker=self.kicker, kicked=self.kicked)
+
 
 class PartyInviteEvent(Event):
     def __init__(self, party, sender, recipient, **kw):
@@ -285,13 +287,11 @@ class Party(object):
 
         agent_observers = agent.observers.keys()
         for obs in agent_observers:
-            if agent.observers[obs] > 0:
-                self.share_obs.append(obs)
+            self.share_obs.append(obs)
 
         for member in self.members:
             for obs in agent_observers:
-                if agent.observers[obs] > 0:
-                    member.agent.add_observer(obs)
+                member.agent.add_observer(obs)
 
         for obs in self.share_obs:
             agent.add_observer(obs)
@@ -332,12 +332,10 @@ class Party(object):
         agent_observers = agent.observers.keys()
         for member in self.members:
             for obs in agent_observers:
-                if agent.observers[obs] > 0:
-                    member.agent.drop_observer(obs)
+                member.agent.drop_observer(obs)
 
         for obs in agent_observers:
-            if agent.observers[obs] > 0:
-                self.share_obs.remove(obs)
+            self.share_obs.remove(obs)
 
         #log.info(len(self.share_obs))
         #log.info('---------------End exclude')
