@@ -45,12 +45,14 @@ class Agent(Object):
         self.on_see(time=time, subj=observer, obj=observer, is_boundary=False)
         for vo in observer.visible_objects:
             self.on_see(time=time, subj=observer, obj=vo, is_boundary=False)
-        observer.send_auto_fire_messages(agent=self, action=True)
+        if observer.owner is not self:
+            observer.send_auto_fire_messages(agent=self, action=True)
 
     def drop_observer(self, observer, time=None):
         if not self.is_online:
             return
-        observer.send_auto_fire_messages(agent=self, action=False)
+        if observer.owner is not self:
+            observer.send_auto_fire_messages(agent=self, action=False)
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.visible_objects:
             self.on_out(time=time, subj=observer, obj=vo, is_boundary=False)
