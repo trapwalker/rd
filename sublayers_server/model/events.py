@@ -246,4 +246,4 @@ class FireAutoEnableEvent(Objective):
 
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
-        self.obj.on_fire_auto_enable(self)
+        self.obj.on_fire_auto_enable(self.side, self.enable)
