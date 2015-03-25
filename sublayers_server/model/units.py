@@ -165,6 +165,26 @@ class Unit(Observer):
             if sector.is_auto():
                 sector.fire_auto(target=obj)
 
+    def send_auto_fire_messages(self, agent, action):
+        for obj in self.visible_objects:
+            if isinstance(obj, Unit):
+                for shooter in obj.hp_state.shooters:
+                        messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=action).post()
+                for sector in obj.fire_sectors:
+                    for weapon in sector.weapon_list:
+                        if isinstance(weapon, WeaponAuto):
+                            for target in weapon.targets:
+                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target,
+                                                        action=action, side=sector.side).post()
+        for shooter in self.hp_state.shooters:
+            messages.FireAutoEffect(agent=agent, subj=shooter, obj=self, action=action).post()
+        for sector in self.fire_sectors:
+            for weapon in sector.weapon_list:
+                if isinstance(weapon, WeaponAuto):
+                    for target in weapon.targets:
+                        messages.FireAutoEffect(agent=agent, subj=self, obj=target,
+                                                action=action, side=sector.side).post()
+
     def on_contact_in(self, obj, **kw):
         super(Unit, self).on_contact_in(obj=obj, **kw)
         if isinstance(obj, Unit):
