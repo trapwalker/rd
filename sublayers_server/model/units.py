@@ -189,13 +189,15 @@ class Unit(Observer):
         super(Unit, self).on_contact_in(obj=obj, **kw)
         if isinstance(obj, Unit):
             for agent in self.watched_agents:
-                for shooter in obj.hp_state.shooters:
-                    messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=True).post()
-                for sector in obj.fire_sectors:
-                    for weapon in sector.weapon_list:
-                        if isinstance(weapon, WeaponAuto):
-                            for target in weapon.targets:
-                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target, action=True, side=sector.side).post()
+                for i in range(self.watched_agents[agent]):
+                    for shooter in obj.hp_state.shooters:
+                        messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=True).post()
+                    for sector in obj.fire_sectors:
+                        for weapon in sector.weapon_list:
+                            if isinstance(weapon, WeaponAuto):
+                                for target in weapon.targets:
+                                    messages.FireAutoEffect(agent=agent, subj=obj, obj=target,
+                                                            action=True, side=sector.side).post()
 
     def on_contact_out(self, obj, **kw):
         super(Unit, self).on_contact_out(obj=obj, **kw)
@@ -203,15 +205,17 @@ class Unit(Observer):
             sector.out_car(target=obj)
         if isinstance(obj, Unit):
             for agent in self.watched_agents:
-                # Убрать все эффекты стрельбы в ЭТУ машинку (в obj)
-                for shooter in obj.hp_state.shooters:
-                    messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=False).post()
-                # Убрать все эффекты стрельбы ЭТОЙ машинки
-                for sector in obj.fire_sectors:
-                    for weapon in sector.weapon_list:
-                        if isinstance(weapon, WeaponAuto):
-                            for target in weapon.targets:
-                                messages.FireAutoEffect(agent=agent, subj=obj, obj=target, action=False, side=sector.side).post()
+                for i in range(self.watched_agents[agent]):
+                    # Убрать все эффекты стрельбы в ЭТУ машинку (в obj)
+                    for shooter in obj.hp_state.shooters:
+                        messages.FireAutoEffect(agent=agent, subj=shooter, obj=obj, action=False).post()
+                    # Убрать все эффекты стрельбы ЭТОЙ машинки
+                    for sector in obj.fire_sectors:
+                        for weapon in sector.weapon_list:
+                            if isinstance(weapon, WeaponAuto):
+                                for target in weapon.targets:
+                                    messages.FireAutoEffect(agent=agent, subj=obj, obj=target,
+                                                            action=False, side=sector.side).post()
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
