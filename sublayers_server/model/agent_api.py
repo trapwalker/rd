@@ -91,11 +91,6 @@ class AgentAPI(API):
         for effect in self.car.effects:
             effect.send_message()
 
-        # Отправить всех тех, кто стреляет по мне
-        self.agent.drop_observer(self.car)
-        self.agent.add_observer(self.car)
-
-        '''
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
         for obs in self.agent.observers:
@@ -104,6 +99,8 @@ class AgentAPI(API):
             for vo in obs.visible_objects:
                 if not (vo in vo_list)and (vo != self.car):
                     vo_list.append(vo)
+
+
         # отправляем все видимые объекты, будто мы сами их видим, и сейчас не важно кто их видит
         for vo in vo_list:
             messages.See(
@@ -113,11 +110,15 @@ class AgentAPI(API):
                 is_first=True,
                 is_boundary=False
             ).post()
-        # для каждого VO пройтись по его хп таскам и узнать кто по нему стреляет
+
+        # отобразить информацию о стрельбе по нашей машинке и нашей машинки
+        self.car.send_auto_fire_messages(agent=self.agent, action=True)
+
+        # для каждого VO узнать информацию о стрельбе
         for vo in vo_list:
             if vo.hp_state:
-                vo.send_auto_fire_messages(agent=self, action=True)
-        '''
+                vo.send_auto_fire_messages(agent=self.agent, action=True)
+
 
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self).post()
