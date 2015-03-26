@@ -92,14 +92,10 @@ class AgentAPI(API):
             effect.send_message()
 
         # Отправить всех тех, кто стреляет по мне
-        for shooter in self.car.hp_state.shooters:
-            messages.FireAutoEffect(
-                agent=self.agent,
-                subj=shooter,
-                obj=self.car,
-                action=True,
-            ).post()
+        self.agent.drop_observer(self.car)
+        self.agent.add_observer(self.car)
 
+        '''
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
         for obs in self.agent.observers:
@@ -117,15 +113,11 @@ class AgentAPI(API):
                 is_first=True,
                 is_boundary=False
             ).post()
-            # для каждого VO пройтись по его хп таскам и узнать кто по нему стреляет
+        # для каждого VO пройтись по его хп таскам и узнать кто по нему стреляет
+        for vo in vo_list:
             if vo.hp_state:
-                for shooter in vo.hp_state.shooters:
-                    messages.FireAutoEffect(
-                        agent=self.agent,
-                        subj=shooter,
-                        obj=vo,
-                        action=True,
-                    ).post()
+                vo.send_auto_fire_messages(agent=self, action=True)
+        '''
 
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self).post()
