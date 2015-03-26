@@ -152,6 +152,7 @@ class SearchContacts(Objective):
             obj.on_contacts_check()  # todo: check it
             SearchContacts(obj=obj, time=obj.server.get_time() + interval).post()  # todo: make regular interva
 
+
 class SearchZones(Objective):
 
     def on_perform(self):
@@ -162,7 +163,6 @@ class SearchZones(Objective):
         interval = obj.contacts_check_interval
         if obj.is_alive and interval:
             SearchZones(obj=obj, time=obj.server.get_time() + interval).post()
-
 
 
 class Contact(Objective):
