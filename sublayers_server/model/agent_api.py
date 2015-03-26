@@ -16,7 +16,6 @@ from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event
 
 
-
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
         super(UpdateAgentAPIEvent, self).__init__(server=api.agent.server, **kw)
@@ -127,8 +126,6 @@ class AgentAPI(API):
                         obj=vo,
                         action=True,
                     ).post()
-
-        # todo: отправка агенту сообщений кто по кому стреляет (пока не понятно как!)
 
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self).post()

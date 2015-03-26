@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Object
 import messages
 from sublayers_server.model.party import PartyInviteDeleteEvent
-
+from sublayers_server.model.units import Unit
 from counterset import CounterSet
 
 # todo: make agent offline status possible
@@ -45,21 +45,16 @@ class Agent(Object):
         self.on_see(time=time, subj=observer, obj=observer, is_boundary=False)
         for vo in observer.visible_objects:
             self.on_see(time=time, subj=observer, obj=vo, is_boundary=False)
-        if observer.owner is not self:
-            observer.send_auto_fire_messages(agent=self, action=True)
 
     def drop_observer(self, observer, time=None):
         if not self.is_online:
             return
-        if observer.owner is not self:
-            observer.send_auto_fire_messages(agent=self, action=False)
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.visible_objects:
             self.on_out(time=time, subj=observer, obj=vo, is_boundary=False)
         self.on_out(time=time, subj=observer, obj=observer, is_boundary=False)
         observer.watched_agents[self] -= 1
         self.observers[observer] -= 1
-
 
     def on_see(self, time, subj, obj, is_boundary):
         # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
@@ -74,6 +69,8 @@ class Agent(Object):
             is_boundary=is_boundary,
             is_first=is_first,
         ).post()
+        if isinstance(obj, Unit):
+            obj.send_auto_fire_messages(agent=self, action=True)
 
     def on_out(self, time, subj, obj, is_boundary):
         # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
@@ -88,6 +85,8 @@ class Agent(Object):
             is_boundary=is_boundary,
             is_last=is_last,
         ).post()
+        if isinstance(obj, Unit):
+            obj.send_auto_fire_messages(agent=self, action=False)
 
     def as_dict(self, *av, **kw):
         d = super(Agent, self).as_dict(*av, **kw)
