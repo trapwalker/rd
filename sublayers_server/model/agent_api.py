@@ -16,7 +16,6 @@ from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event
 
 
-
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
         super(UpdateAgentAPIEvent, self).__init__(server=api.agent.server, **kw)
@@ -92,15 +91,6 @@ class AgentAPI(API):
         for effect in self.car.effects:
             effect.send_message()
 
-        # Отправить всех тех, кто стреляет по мне
-        for shooter in self.car.hp_state.shooters:
-            messages.FireAutoEffect(
-                agent=self.agent,
-                subj=shooter,
-                obj=self.car,
-                action=True,
-            ).post()
-
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
         for obs in self.agent.observers:
@@ -109,6 +99,8 @@ class AgentAPI(API):
             for vo in obs.visible_objects:
                 if not (vo in vo_list)and (vo != self.car):
                     vo_list.append(vo)
+
+
         # отправляем все видимые объекты, будто мы сами их видим, и сейчас не важно кто их видит
         for vo in vo_list:
             messages.See(
@@ -118,17 +110,15 @@ class AgentAPI(API):
                 is_first=True,
                 is_boundary=False
             ).post()
-            # для каждого VO пройтись по его хп таскам и узнать кто по нему стреляет
-            if vo.hp_state:
-                for shooter in vo.hp_state.shooters:
-                    messages.FireAutoEffect(
-                        agent=self.agent,
-                        subj=shooter,
-                        obj=vo,
-                        action=True,
-                    ).post()
 
-        # todo: отправка агенту сообщений кто по кому стреляет (пока не понятно как!)
+        # отобразить информацию о стрельбе по нашей машинке и нашей машинки
+        self.car.send_auto_fire_messages(agent=self.agent, action=True)
+
+        # для каждого VO узнать информацию о стрельбе
+        for vo in vo_list:
+            if vo.hp_state:
+                vo.send_auto_fire_messages(agent=self.agent, action=True)
+
 
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self).post()
