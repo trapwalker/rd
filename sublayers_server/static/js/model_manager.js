@@ -155,7 +155,8 @@ var ClientManager = (function () {
     ClientManager.prototype.Init = function (event) {
         console.log('ClientManager.prototype.Init', event);
         var servtime = event.time;
-        var max_speed = event.cars[0].max_velocity;
+        var v_forward = event.cars[0].v_forward;
+        var v_backward = event.cars[0].v_backward;
         var radius_visible = event.cars[0].r;
         var uid = event.cars[0].uid;
         var role = event.cars[0].role;
@@ -177,7 +178,8 @@ var ClientManager = (function () {
             // создать машинку
             var mcar = new UserCar(
                 uid,       //ID машинки
-                max_speed, //Максималка
+                v_forward,
+                v_backward,
                 state,
                 hp_state
             );
@@ -219,7 +221,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Update = function (event) {
-        //console.log('ClientManager.prototype.Update');
+        console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
 
@@ -565,7 +567,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
-        user.userCar.setLastSpeed(newSpeed);
         this.sendMotion(null, newSpeed, null)
     };
 
@@ -580,31 +581,33 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGoto = function (target) {
-        //console.log('ClientManager.prototype.sendGoto', user.userCar.getLastSpeed());
+        //console.log('ClientManager.prototype.sendGoto');
+        /*
         var currentSpeed = wCruiseControl.getSpeedHandleValue();
         if (currentSpeed == 0) {
             currentSpeed = user.userCar.maxSpeed * 0.2;
             wCruiseControl.setSpeedHandleValue(0.2);
         }
         this.sendMotion(target, currentSpeed, null);
+        */
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        //console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
-        new_speed = newSpeed;
+        console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
+        var new_speed = newSpeed;
         if (new_speed) {
-            new_speed = new_speed / user.userCar.maxSpeed;
-            new_speed = new_speed >= 0 ? new_speed : 0;
-            new_speed = new_speed <= 1 ? new_speed : 1;
+            new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
+            if (Math.abs(new_speed) > 1.0) new_speed = new_speed / Math.abs(new_speed);
         }
-        new_turn = turn;
+        var new_turn = turn;
         if (new_turn) {
             new_turn = new_turn > 1 ? 1 : new_turn;
             new_turn = new_turn < -1 ? -1 : new_turn;
             new_turn = Math.abs(new_turn) < 1 ? 0: new_turn;
         }
-        new_x = target ? target.x : null;
-        new_y = target ? target.y : null;
+        var new_x = target ? target.x : null;
+        var new_y = target ? target.y : null;
+        console.log('ClientManager.prototype.sendMotion', new_x, new_y, new_speed, new_turn);
         var mes = {
             call: "set_motion",
             rpc_call_id: rpcCallList.getID(),

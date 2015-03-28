@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.state import State
+from sublayers_server.model.state import State, MotionState
 from sublayers_server.model.hp_state import HPState
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
@@ -248,11 +248,7 @@ class Mobile(Unit):
                  **kw):
         super(Mobile, self).__init__(**kw)
         time = self.server.get_time()
-        self.state = State(owner=self, t=time, **self.init_state_params(r_min=r_min,
-                                                                        ac_max=ac_max,
-                                                                        v_max=v_max,
-                                                                        a_accelerate=a_accelerate,
-                                                                        a_braking=a_braking))
+        self.state = MotionState(t=time, p=self._position, fi=self._direction)
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
@@ -275,7 +271,8 @@ class Mobile(Unit):
         d = super(Mobile, self).as_dict(to_time=to_time)
         d.update(
             state=self.state.export(),
-            max_velocity=self.max_velocity,
+            v_forward=self.state.v_forward,
+            v_backward=self.state.v_backward,
         )
         return d
 
@@ -320,13 +317,6 @@ class Mobile(Unit):
         @rtype: float
         """
         return self.state.fi(t=self.server.get_time())
-
-    @property
-    def max_velocity(self):  # m/s
-        """
-        @rtype: float
-        """
-        return self.state.v_max
 
 
 class Bot(Mobile):

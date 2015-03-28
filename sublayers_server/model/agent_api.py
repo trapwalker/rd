@@ -69,7 +69,6 @@ class AgentAPI(API):
 
         self.update_agent_api()
 
-
     def cmd_line_context(self):
         # todo: deprecated
         ctx = dict(
@@ -119,7 +118,6 @@ class AgentAPI(API):
             if vo.hp_state:
                 vo.send_auto_fire_messages(agent=self.agent, action=True)
 
-
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self).post()
 
@@ -137,7 +135,6 @@ class AgentAPI(API):
         ))
 
         self.send_init_package()
-
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent)
@@ -282,6 +279,7 @@ class AgentAPI(API):
             p = Point(x, y)
         self.car.set_motion(position=p, cc=cc, turn=turn)
 
+
     @public_method
     def console_cmd(self, cmd):
         log.debug('Agent %s cmd: %r', self.agent.login, cmd)
@@ -309,6 +307,8 @@ class AgentAPI(API):
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
+        elif command == '/go':
+            self.go_test1()
         else:
             log.warning('Unknown console command "%s"', cmd)
 

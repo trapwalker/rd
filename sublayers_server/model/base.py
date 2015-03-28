@@ -136,6 +136,7 @@ class VisibleObject(PointObject):
                 agent=agent,
                 time=event.time,
                 obj=self,
+                comment=event.comment
             ).post()
 
     def on_contacts_check(self):
