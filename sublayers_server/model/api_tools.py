@@ -45,7 +45,7 @@ def public_method(func):
             method=func.__name__,
             params=', '.join(map(repr, av) + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
         )
-        log.info('API call: %s ...', log_call)
+        # log.info('API call: %s ...', log_call)
         try:
             res = func(*av, **kw)
         except TypeError as e:

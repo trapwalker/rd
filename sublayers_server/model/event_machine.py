@@ -38,7 +38,7 @@ class Server(object):
 
         self.randomCarList = RandomCarList()
         self.zones = []
-        # init_zones_on_server(server=self)
+        init_zones_on_server(server=self)
 
     @staticmethod
     def get_time():

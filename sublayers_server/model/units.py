@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.state import State, MotionState
+from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE

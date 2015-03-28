@@ -221,7 +221,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Update = function (event) {
-        console.log('ClientManager.prototype.Update', event);
+        //console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
 
@@ -265,20 +265,14 @@ var ClientManager = (function () {
                 )
                     .addTo(myMap)
             );
-            /*
-             if (event.object.state.c)
-             debugMapList.push(
-             L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
-             .setRadius(6)
-             .bindPopup(
-             'Тип сообщения: ' + event.cls + '</br>' +
-             'Server-Time: ' + servtime / 1000. + '</br>' +
-             'uid объекта: ' + event.object.uid + '</br>' +
-             'comment: ' + event.comment + '</br>'
-             )
-             .addTo(myMap)
-             );
-             */
+
+            if (event.object.state.c)
+                debugMapList.push(
+                    L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
+                        .setRadius(20)
+                        .addTo(myMap)
+                );
+
         }
 
     };
@@ -582,18 +576,18 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto');
-        /*
-        var currentSpeed = wCruiseControl.getSpeedHandleValue();
+        //var currentSpeed = wCruiseControl.getSpeedHandleValue();
+        var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
         if (currentSpeed == 0) {
-            currentSpeed = user.userCar.maxSpeed * 0.2;
-            wCruiseControl.setSpeedHandleValue(0.2);
+            return;
+            //currentSpeed = user.userCar.maxSpeed * 0.2;
+            //wCruiseControl.setSpeedHandleValue(0.2);
         }
         this.sendMotion(target, currentSpeed, null);
-        */
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
+        //console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
         var new_speed = newSpeed;
         if (new_speed) {
             new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
@@ -607,7 +601,6 @@ var ClientManager = (function () {
         }
         var new_x = target ? target.x : null;
         var new_y = target ? target.y : null;
-        console.log('ClientManager.prototype.sendMotion', new_x, new_y, new_speed, new_turn);
         var mes = {
             call: "set_motion",
             rpc_call_id: rpcCallList.getID(),
