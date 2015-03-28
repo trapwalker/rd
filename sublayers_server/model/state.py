@@ -377,12 +377,12 @@ class MotionState(BaseMotionState):
     def __init__(
         self, t, p, fi=0.0,
         r_min=10.0,
-        ac_max=10.0,
+        ac_max=20.0,
         v_forward=30.0,
         v_backward=-30.0,
         a_forward=4.0,
         a_backward=-2.0,
-        a_braking=-4.0,
+        a_braking=-9.0,
     ):
         super(MotionState, self).__init__(t=t, p=p, fi=fi, r_min=r_min, ac_max=ac_max)
         half_ac_max = 0.5 * self.ac_max
