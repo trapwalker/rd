@@ -142,7 +142,7 @@ class State(BaseState):
         pt = target_point - self.p0
         pf = Point.polar(1, self.fi0)
         _turn_sign = pf.cross_mul(pt)
-        if _turn_sign == 0.0 :
+        if _turn_sign == 0.0:
             return 0.0 if pf.angle_with(pt) == 0.0 else 1
         return 1 if _turn_sign > 0.0 else -1
 
@@ -157,8 +157,10 @@ class State(BaseState):
         ct = target_point - c
         ct_angle = ct.angle
         ce_fi = ct_angle - turn_sign * acos(r / abs(ct))
-        if ce_fi < - pi: ce_fi = 2 * pi + ce_fi
-        if ce_fi > pi: ce_fi = ce_fi - 2 * pi
+        if ce_fi < - pi:
+            ce_fi = 2 * pi + ce_fi
+        if ce_fi > pi:
+            ce_fi = ce_fi - 2 * pi
         res = ce_fi - cp.angle
         if turn_sign < 0: res = 2 * pi - res
         return normalize_angle(res)
@@ -304,8 +306,6 @@ class BaseMotionState(object):
             self.p0 = self.p(t)
             self.fi0 = self.fi(t)
             self.v0 = self.v(t)
-            if abs(self.v0) < EPS:
-                self.v0 = 0.0
             self.t0 = t
 
     def s(self, t):
@@ -314,12 +314,15 @@ class BaseMotionState(object):
 
     def v(self, t):
         dt = t - self.t0
-        return self.v0 + self.a * dt
+        temp_v = self.v0 + self.a * dt
+        if abs(temp_v) < EPS:
+            temp_v = 0.0
+        return temp_v
 
     def r(self, t):
         if self.a == 0:
-            return (self.v0 ** 2) / self.ac_max + self.r_min  # не спираль, а круг
-        return (self.v(t) ** 2) / self.ac_max + self.r_min
+            return (self.v0 ** 2) / self.ac_max + self.r_min  # круг
+        return (self.v(t) ** 2) / self.ac_max + self.r_min  # спираль
 
     def sp_fi(self, t):
         assert self._sp_m > 0
@@ -329,34 +332,31 @@ class BaseMotionState(object):
         if self._c is None:
             return self.fi0
         if self.a == 0.0:
-            return self.fi0 - self.s(t) / self.r(t) * self._turn_sign # не спираль, а круг
+            return self.fi0 - self.s(t) / self.r(t) * self._turn_sign  # круг
         if self.a > 0.0:
-            return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign
+            return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль (а > 0)
         else:
-            return normalize_angle(self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign + pi)
+            return normalize_angle(self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign + pi)  # спираль (а < 0)
 
     def _fi(self, t):
         if self._c is None:
             return self.fi0
         if self.a == 0.0:
-            return self.fi0 - self.s(t) / self.r(t) * self._turn_sign # не спираль, а круг
-        return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign
+            return self.fi0 - self.s(t) / self.r(t) * self._turn_sign  # круг
+        return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль
 
     def p(self, t):
         if self._c is None:
-            return self.p0 + Point.polar(self.s(t), self.fi0) # не спираль, а прямая
+            return self.p0 + Point.polar(self.s(t), self.fi0)
         return self._c + Point.polar(self.r(t), self._fi(t) + self._turn_sign * self._rv_fi)
 
     def export(self):
-        u"""
-        Представление параметров состояния для клиента.
-        """
         return dict(
             cls='MobileState',
             t0=self.t0,
             p0=self.p0,
             fi0=self.fi0,
-            v0=self.v0 if abs(self.v0) > EPS else 0,
+            v0=self.v0,
             a=self.a,
             c=self._c,
             turn=self._turn_sign,
@@ -367,10 +367,9 @@ class BaseMotionState(object):
             _rv_fi=self._rv_fi,
         )
 
-
     @property
     def is_moving(self):
-        return abs(self.v0) > 0.0 or abs(self.a) > 0.0
+        return (abs(self.v0) > 0.0) or (abs(self.a) > 0.0)
 
 
 class MotionState(BaseMotionState):
@@ -411,7 +410,7 @@ class MotionState(BaseMotionState):
                 cc = 0.0
             assert -1 <= cc <= 1
             assert (cc == 0.0) or ((cc > 0.0) and (self.v0 >= 0.0)) or ((cc < 0.0) and (self.v0 <= 0.0)), \
-                   'cc={}  v0={}'.format(cc, self.v0)
+                'cc={}  v0={}'.format(cc, self.v0)
             self.cc = cc
         assert self.cc is not None
 
