@@ -272,17 +272,13 @@ class AgentAPI(API):
 
     @public_method
     def set_motion(self, x, y, cc, turn):
-        log.debug('================================================================== cc = %s', cc)
         if self.car.limbo:
             return
-        '''
         p = None
         if x and y:
             p = Point(x, y)
         self.car.set_motion(position=p, cc=cc, turn=turn)
-        '''
-        if cc is not None: cc = -cc
-        TestEvent(comment='in event', cc=cc, turn=turn, car=self.car, agent=self.agent).post()
+
 
     @public_method
     def console_cmd(self, cmd):
@@ -319,28 +315,3 @@ class AgentAPI(API):
     @public_method
     def delete_invite(self, invite_id):
         self.agent.delete_invite(invite_id)
-
-
-class TestEvent(Event):
-    def __init__(self, car, agent, cc=None, turn=None, **kw):
-        server = car.server
-        super(TestEvent, self).__init__(server=server, **kw)
-        self.car = car
-        self.agent = agent
-        self.cc = cc
-        self.turn = turn
-        temp_events = self.car.events[:]
-        for e in temp_events:
-            if isinstance(e, TestEvent):
-                e.cancel()
-                self.car.events.remove(e)
-        self.car.events.append(self)
-
-    def on_perform(self):
-        super(TestEvent, self).on_perform()
-        self.car.events.remove(self)
-        t_max = self.car.state.update(t=self.time, cc=self.cc, turn=self.turn)
-        if t_max is not None:
-            TestEvent(time=t_max, comment='in event', cc=self.cc, turn=self.turn, car=self.car, agent=self.agent).post()
-        self.car.on_update(event=self)
-        log.debug('agent.api - go test - otpravili = %s', self.comment)

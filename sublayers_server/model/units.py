@@ -271,7 +271,8 @@ class Mobile(Unit):
         d = super(Mobile, self).as_dict(to_time=to_time)
         d.update(
             state=self.state.export(),
-            max_velocity=self.max_velocity,
+            v_forward=self.state.v_forward,
+            v_backward=self.state.v_backward,
         )
         return d
 
@@ -316,13 +317,6 @@ class Mobile(Unit):
         @rtype: float
         """
         return self.state.fi(t=self.server.get_time())
-
-    @property
-    def max_velocity(self):  # m/s
-        """
-        @rtype: float
-        """
-        return self.state.v_forward
 
 
 class Bot(Mobile):

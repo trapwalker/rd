@@ -153,10 +153,10 @@ var MapCar = (function (_super) {
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
-    function UserCar(aID, aMaxSpeed, aState, aHPState) {
+    function UserCar(aID, aVForward, aVBackward, aState, aHPState) {
         _super.call(this, aID, aState, aHPState);
-        this.maxSpeed = aMaxSpeed;
-        this._lastSpeed = 0;
+        this.v_forward = aVForward;
+        this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
     }
 
@@ -199,14 +199,6 @@ var UserCar = (function (_super) {
             timeManager.addTimerEvent(this, 'change');
             this._in_tm = true;
         }
-    };
-
-    UserCar.prototype.setLastSpeed = function (speed) {
-        this._lastSpeed = speed;
-    };
-
-    UserCar.prototype.getLastSpeed = function () {
-        return this._lastSpeed;
     };
 
     return UserCar;

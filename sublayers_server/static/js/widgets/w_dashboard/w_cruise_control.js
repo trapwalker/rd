@@ -286,10 +286,12 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype._setSpeedHandleText = function(prc) {
+        /*
         var currentSpeed = (user.userCar.maxSpeed / 1000 * 3600) * prc;
         currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
         this.speedHandleDiv1.text(currentSpeedWords[0] + '.');
         this.speedHandleDiv2.text(currentSpeedWords[1]);
+        */
     };
 
     WCruiseControl.prototype.setSpeedHandleValue = function(prc) {
@@ -301,7 +303,7 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype.getSpeedHandleValue = function() {
         //console.log('WCruiseControl.prototype.getSpeedHandleValue');
-        return user.userCar.maxSpeed * this.speedHandlePrc;
+        //return user.userCar.maxSpeed * this.speedHandlePrc;
     };
 
     WCruiseControl.prototype._onMoveSpeedHandle = function (event, ui) {
@@ -311,20 +313,23 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype._onStopSpeedHandle = function (event, ui) {
         //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
+        /*
         var currentSpeed = user.userCar.maxSpeed * (1 - (ui.position.top / event.data.constScaleHeight));
         clientManager.sendSetSpeed(currentSpeed);
         document.getElementById('map').focus();
+        */
     };
 
     WCruiseControl.prototype._onClickScaleArea = function (event) {
         //console.log('WCruiseControl.prototype._onClickScaleArea');
-        var prc = (event.data.constScaleHeight + event.data.constSpeedHandleHeight) - event.offsetY - event.data.svgScaleDY;
+        /*var prc = (event.data.constScaleHeight + event.data.constSpeedHandleHeight) - event.offsetY - event.data.svgScaleDY;
         if (prc < 0) prc = 0;
         if (prc > event.data.constScaleHeight) prc = event.data.constScaleHeight;
         prc /= event.data.constScaleHeight;
         event.data.setSpeedHandleValue(prc);
         clientManager.sendSetSpeed(user.userCar.maxSpeed * prc);
         document.getElementById('map').focus();
+        */
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
@@ -414,8 +419,8 @@ var WCruiseControl = (function (_super) {
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
         if (Math.abs(currentSpeed - this.lastSpeed) > 0.01) {
             // Обновление шкалы скорости
-            var prc = currentSpeed / user.userCar.maxSpeed;
-            this._drawFillArea(prc);
+            //var prc = currentSpeed / user.userCar.maxSpeed;
+            //this._drawFillArea(prc);
 
             // Вывод текущей скорости
             currentSpeed = (currentSpeed / 1000 * 3600);
@@ -423,7 +428,7 @@ var WCruiseControl = (function (_super) {
             this.topTextDiv1.text(currentSpeedWords[0] + '.');
             this.topTextDiv2.text(currentSpeedWords[1]);
             this.compactViewSpeedTextDiv.text(currentSpeed.toFixed(1) + ' km/h');
-            if (this.keyBoardControl) this.setSpeedHandleValue(prc);
+            //if (this.keyBoardControl) this.setSpeedHandleValue(prc);
 
             // Сохраняем последнюю скорость
             this.lastSpeed = currentSpeed;

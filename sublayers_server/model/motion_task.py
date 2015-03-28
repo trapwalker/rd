@@ -28,11 +28,16 @@ class MotionTask(TaskSingleton):
         self.turn = turn
         self.target_point = target_point
 
-    # todo: убрать из _calc event и заменить его на event.time
-    def _calc_keybord(self, event):
-        time = event.time
+    def _calc_keybord(self, start_time):
+        time = start_time
         owner = self.owner
         st = copy(owner.state)
+        cc = self.cc
+        if (cc * st.v(time)) < 0:
+            MotionTaskEvent(time=time, task=self, cc=0.0, turn=self.turn).post()
+            time = st.update(t=time, cc=0.0, turn=self.turn)
+            if time is None:
+                time = start_time
         while time is not None:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=self.turn).post()
             time = st.update(t=time, cc=self.cc, turn=self.turn)
@@ -162,7 +167,7 @@ class MotionTask(TaskSingleton):
 
         if self.cc is None:
             self.cc = owner.state.u_cc
-        self.cc = min(self.cc, max(owner.p_cc.current, 0.0))
+        self.cc = min(abs(self.cc), abs(owner.p_cc.current)) * (1 if self.cc >= 0.0 else -1)
         if abs(self.cc) < EPS:
             self.target_point = None
             self.cc = 0.0
@@ -170,8 +175,9 @@ class MotionTask(TaskSingleton):
 
         if self.target_point:
             self._calc_goto(event)
+            assert False
         else:
-            self._calc_keybord(event)
+            self._calc_keybord(start_time=event.time)
         owner.cur_motion_task = self
 
     def on_done(self, event=None):
