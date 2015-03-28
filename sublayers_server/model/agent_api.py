@@ -69,7 +69,6 @@ class AgentAPI(API):
 
         self.update_agent_api()
 
-
     def cmd_line_context(self):
         # todo: deprecated
         ctx = dict(
@@ -119,7 +118,6 @@ class AgentAPI(API):
             if vo.hp_state:
                 vo.send_auto_fire_messages(agent=self.agent, action=True)
 
-
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self).post()
 
@@ -137,7 +135,6 @@ class AgentAPI(API):
         ))
 
         self.send_init_package()
-
 
     def make_car(self, position=None, position_sigma=Point(100, 100)):
         self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent)
@@ -275,12 +272,17 @@ class AgentAPI(API):
 
     @public_method
     def set_motion(self, x, y, cc, turn):
+        log.debug('================================================================== cc = %s', cc)
         if self.car.limbo:
             return
+        '''
         p = None
         if x and y:
             p = Point(x, y)
         self.car.set_motion(position=p, cc=cc, turn=turn)
+        '''
+        if cc is not None: cc = -cc
+        TestEvent(comment='in event', cc=cc, turn=turn, car=self.car, agent=self.agent).post()
 
     @public_method
     def console_cmd(self, cmd):
@@ -319,31 +321,26 @@ class AgentAPI(API):
         self.agent.delete_invite(invite_id)
 
 
-    def go_test1(self):
-        log.debug('agent.api - go test start')
-        car = self.car
-        agent = self.agent
+class TestEvent(Event):
+    def __init__(self, car, agent, cc=None, turn=None, **kw):
+        server = car.server
+        super(TestEvent, self).__init__(server=server, **kw)
+        self.car = car
+        self.agent = agent
+        self.cc = cc
+        self.turn = turn
+        temp_events = self.car.events[:]
+        for e in temp_events:
+            if isinstance(e, TestEvent):
+                e.cancel()
+                self.car.events.remove(e)
+        self.car.events.append(self)
 
-        def call_back_for_event(event):
-            log.debug('agent.api - go test - otpravili = %s', event.comment)
-            messages.Update(
-                agent=agent,
-                time=t_max,
-                obj=car,
-                comment=event.comment
-            ).post()
-
-
-        state = car.state
-        log.debug('agent.api - go test - t0 = %s', state.t0)
-        t_max = state.update(cc=1)
-
-        log.debug('agent.api - go test - t_max accelerate = %s', t_max)
-
-        Event(server=agent.server, time=state.t0, comment='start accelerate', callback_after=call_back_for_event).post()
-        t_max1 = state.update(t=t_max, cc=1)
-        Event(server=agent.server, time=t_max, comment='finish accelerate', callback_after=call_back_for_event).post()
-
-
-        log.debug('agent.api - go test finish')
-
+    def on_perform(self):
+        super(TestEvent, self).on_perform()
+        self.car.events.remove(self)
+        t_max = self.car.state.update(t=self.time, cc=self.cc, turn=self.turn)
+        if t_max is not None:
+            TestEvent(time=t_max, comment='in event', cc=self.cc, turn=self.turn, car=self.car, agent=self.agent).post()
+        self.car.on_update(event=self)
+        log.debug('agent.api - go test - otpravili = %s', self.comment)

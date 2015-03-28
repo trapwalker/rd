@@ -304,6 +304,8 @@ class BaseMotionState(object):
             self.p0 = self.p(t)
             self.fi0 = self.fi(t)
             self.v0 = self.v(t)
+            if abs(self.v0) < EPS:
+                self.v0 = 0.0
             self.t0 = t
 
     def s(self, t):
@@ -378,93 +380,26 @@ class MotionState(BaseMotionState):
         r_min=10.0,
         ac_max=10.0,
         v_forward=30.0,
-        v_backward=-10.0,
+        v_backward=-30.0,
         a_forward=4.0,
         a_backward=-2.0,
         a_braking=-4.0,
     ):
         super(MotionState, self).__init__(t=t, p=p, fi=fi, r_min=r_min, ac_max=ac_max)
+        half_ac_max = 0.5 * self.ac_max
+        assert (a_forward < half_ac_max) and (a_backward < half_ac_max) and (a_braking < half_ac_max)
+        assert (v_forward >= 0.0) and (v_backward <= 0.0)
         self.v_forward = v_forward
         self.v_backward = v_backward
         self.a_forward = a_forward
         self.a_backward = a_backward
         self.a_braking = a_braking
         self.cc = 0.0
+        self.turn = 0.0
         self.t_max = None
         self.target_point = None
         self.u_cc = None
         self.update()
-
-    def _get_turn_sign(self, target_point):
-        assert target_point is not None
-        pt = target_point - self.p0
-        pf = Point.polar(1, self.fi0)
-        _turn_sign = pf.cross_mul(pt)
-        if _turn_sign == 0.0 :
-            return 0.0 if pf.angle_with(pt) == 0.0 else 1
-        return 1 if _turn_sign > 0.0 else -1
-
-    def _get_turn_fi(self, target_point):
-        assert target_point is not None
-        turn_sign = self._get_turn_sign(target_point=target_point)
-        if turn_sign == 0.0:
-            return 0.0
-        r = self.r(self.t0)
-        c = self.p0 + Point.polar(r, self.fi0 + turn_sign * 0.5 * pi)
-        cp = self.p0 - c
-        ct = target_point - c
-        ct_angle = ct.angle
-        ce_fi = ct_angle - turn_sign * acos(r / abs(ct))
-        if ce_fi < - pi: ce_fi = 2 * pi + ce_fi
-        if ce_fi > pi: ce_fi = ce_fi - 2 * pi
-        res = ce_fi - cp.angle
-        if turn_sign < 0: res = 2 * pi - res
-        return normalize_angle(res)
-
-    def _calc_time_segment(self, s, cc):
-        u"""
-        Возвращает  (t1, t2, t3)
-        t1 - время отведённое на разгон
-        t2 - время отведённое на равномерное движение
-        t3 - время отведённое на торможение
-        """
-        vcc = cc * self.v_max
-        v0 = self.v0
-        bb = self.a_braking
-        aa = self.a_accelerate if vcc > v0 else self.a_braking
-
-        # рассчитать тормозной путь от текущей скорости
-        t4 = - v0 / bb
-        s4 = v0 * t4 + bb * (t4 ** 2) / 2.0
-        if s4 >= s:  # если не успеваем, то сразу торможение
-            if abs(t4) < EPS:
-                t4 = 0.0
-            return (0.0, 0.0, t4)
-        # путь и время разгона
-        t1 = (vcc - v0) / aa
-        if abs(t1) < EPS: t1 = 0.0
-        s1 = v0 * t1 + aa * (t1 ** 2) / 2.0
-        # путь и время торможения
-        t3 = - vcc / bb
-        if abs(t3) < EPS:
-            t3 = 0.0
-        s3 = vcc * t3 + bb * (t3 ** 2) / 2.0
-
-        if s3 + s1 > s:  # нет равномерного движения
-            if aa == bb:  # мы уже в торможении
-                return (0.0, 0.0, t3)  # остановка
-            else:  # нет запаса расстояния для разгона до vcc
-                # рассчёт времени разгона и торможения
-                t3 = sqrt((2*aa*s + v0 ** 2) / (bb ** 2 - aa * bb))
-                t1 = (- bb * t3 - v0) / aa
-                if abs(t1) < EPS: t1 = 0.0
-                return (t1, 0.0, t3)  # разгон и торможение
-
-        if s3 + s1 <= s:  # есть отрезок равномерного движения
-            s2 = s - s3 - s1
-            t2 = s2 / vcc
-            if abs(t2) < EPS: t2 = 0.0  # чтобы не добавлять ивент через очень короткое время
-            return (t1, t2, t3)
 
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None):
@@ -472,10 +407,11 @@ class MotionState(BaseMotionState):
         self.t_max = None
 
         if cc is not None:
+            if abs(cc) < EPS:
+                cc = 0.0
             assert -1 <= cc <= 1
-
             assert (cc == 0.0) or ((cc > 0.0) and (self.v0 >= 0.0)) or ((cc < 0.0) and (self.v0 <= 0.0)), \
-                'cc={}        v0={}'.format(cc, self.v0)
+                   'cc={}  v0={}'.format(cc, self.v0)
             self.cc = cc
         assert self.cc is not None
 
@@ -485,34 +421,30 @@ class MotionState(BaseMotionState):
             if self.cc == 0.0:
                 self.a = self.a_braking if self.v0 >= 0.0 else -self.a_braking
             elif self.cc > 0.0:
-                if dv < 0.0:
-                    self.a = self.a_braking
-                else:
-                    self.a = self.a_forward
+                self.a = self.a_braking if dv < 0.0 else self.a_forward
             elif self.cc < 0.0:
-                if dv < 0.0:
-                    self.a = self.a_backward
-                else:
-                    self.a = -self.a_braking
+                self.a = self.a_backward if dv < 0.0 else -self.a_braking
         else:
             self.a = 0.0
         if self.a != 0.0:
             self.t_max = self.t0 + dv / self.a
+        assert (self.t_max is None) or (self.t_max >= self.t0)
 
         if turn is not None:
-            self._turn_sign = turn
-        if self._turn_sign == 0:
+            self.turn = turn
+        if self.turn == 0:
+            self._turn_sign = 0.0
             self._c = None
         else:
+            self._turn_sign = self.turn
             if abs(self.a) > 0.0:
                 aa = 2 * abs(self.a) / self.ac_max
                 m = aa / sqrt(1 - aa ** 2)
                 self._sp_m = m
                 self._sp_fi0 = self.sp_fi(self.t0)
                 self._rv_fi = acos(m / sqrt(1 + m ** 2))
-
                 if self.a < 0.0:
-                    self._turn_sign = -self._turn_sign
+                    self._turn_sign = -self.turn
                     self.fi0 = normalize_angle(self.fi0 + pi)
             else:
                 self._rv_fi = 0.5 * pi
@@ -533,23 +465,19 @@ class MotionState(BaseMotionState):
             a_backward=self.a_backward,
             a_braking=self.a_braking)
         res.a = self.a
+        res.v0 = self.v0
         res._c = self._c
         res._sp_m = self._sp_m
         res._sp_fi0 = self._sp_fi0
         res._rv_fi = self._rv_fi
         res.t_max = self.t_max
+        res._turn_sign = self._turn_sign
+        res.turn = self.turn
+        res.cc = self.cc
+        res.target_point = self.target_point
+        res.u_cc = self.u_cc
         return res
 
 
 if __name__ == '__main__':
     pass
-    '''
-    state = MotionState(t=0.0, p=Point(0, 0))
-    t_max = state.update(cc=1)
-    print 'direction = ', state.fi0
-    state.update(t=t_max, cc=0, turn=1)
-    print 'position = ', state.p0
-    print 'center = ', state._c
-    for time in range(7):
-        print state.p(t=(time + t_max)), '  ', state.fi(time + t_max)
-    '''

@@ -252,7 +252,7 @@ var ClientManager = (function () {
         }
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (!cookieStorage.enableMarkerUpdate()) {
+        if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
                 L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
                     .setRadius(3)

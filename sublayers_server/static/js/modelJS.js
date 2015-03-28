@@ -448,7 +448,7 @@ var State = (function () {
         if (this.a > 0)
             return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
         else
-            return normalizeAngleRad((this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign) + MAth.PI)
+            return normalizeAngleRad((this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign) + Math.PI)
     };
 
     State.prototype.p = function (t) {
