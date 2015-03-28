@@ -239,29 +239,41 @@ class Mobile(Unit):
     u"""Class of mobile units"""
 
     def __init__(self,
-                 r_min=BALANCE.Mobile.r_min,
-                 ac_max=BALANCE.Mobile.ac_max,
-                 v_max=BALANCE.Mobile.v_max,
-                 a_accelerate=BALANCE.Mobile.a_accelerate,
-                 a_braking=BALANCE.Mobile.a_braking,
+                 r_min,
+                 ac_max,
+                 v_forward,
+                 v_backward,
+                 a_forward,
+                 a_backward,
+                 a_braking,
                  max_control_speed=BALANCE.Mobile.max_control_speed,
                  **kw):
         super(Mobile, self).__init__(**kw)
         time = self.server.get_time()
-        self.state = MotionState(t=time, p=self._position, fi=self._direction)
+        self.state = MotionState(t=time, **self.init_state_params(
+            r_min=r_min,
+            ac_max=ac_max,
+            v_forward=v_forward,
+            v_backward=v_backward,
+            a_forward=a_forward,
+            a_backward=a_backward,
+            a_braking=a_braking,
+        ))
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
         self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
 
-    def init_state_params(self, r_min, ac_max, v_max, a_accelerate, a_braking):
+    def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
             p=self._position,
             fi=self._direction,
-            v_max=v_max,
             r_min=r_min,
             ac_max=ac_max,
-            a_accelerate=a_accelerate,
+            v_forward=v_forward,
+            v_backward=v_backward,
+            a_forward=a_forward,
+            a_backward=a_backward,
             a_braking=a_braking,
         )
 
