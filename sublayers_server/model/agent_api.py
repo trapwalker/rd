@@ -309,9 +309,41 @@ class AgentAPI(API):
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
+        elif command == '/go':
+            self.go_test1()
         else:
             log.warning('Unknown console command "%s"', cmd)
 
     @public_method
     def delete_invite(self, invite_id):
         self.agent.delete_invite(invite_id)
+
+
+    def go_test1(self):
+        log.debug('agent.api - go test start')
+        car = self.car
+        agent = self.agent
+
+        def call_back_for_event(event):
+            log.debug('agent.api - go test - otpravili = %s', event.comment)
+            messages.Update(
+                agent=agent,
+                time=t_max,
+                obj=car,
+                comment=event.comment
+            ).post()
+
+
+        state = car.state
+        log.debug('agent.api - go test - t0 = %s', state.t0)
+        t_max = state.update(cc=1)
+
+        log.debug('agent.api - go test - t_max accelerate = %s', t_max)
+
+        Event(server=agent.server, time=state.t0, comment='start accelerate', callback_after=call_back_for_event).post()
+        t_max1 = state.update(t=t_max, cc=1)
+        Event(server=agent.server, time=t_max, comment='finish accelerate', callback_after=call_back_for_event).post()
+
+
+        log.debug('agent.api - go test finish')
+
