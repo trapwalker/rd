@@ -167,7 +167,9 @@ class MotionState(BaseMotionState):
         cp = self.p0 - c
         ct = target_point - c
         ct_angle = ct.angle
-        ce_fi = ct_angle - turn_sign * acos(r / abs(ct))
+        abs_ct = abs(ct)
+        assert abs_ct >= r, 'ct = {}      r = {}'.format(abs_ct, r)
+        ce_fi = ct_angle - turn_sign * acos(r / abs_ct)
         if ce_fi < - pi:
             ce_fi += 2 * pi
         if ce_fi > pi:

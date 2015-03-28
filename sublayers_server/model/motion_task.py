@@ -67,26 +67,28 @@ class MotionTask(TaskSingleton):
 
         # Непосредственно поворот
         st.update(t=time)
-        turn_fi = st._get_turn_fi(target_point)
-        if abs(turn_fi) > EPS:  # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
-            turn = st._get_turn_sign(target_point)
-            if st.v0 > 0:
-                turn = -turn
-            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=turn).post()
-            st.update(t=time, cc=self.cc, turn=turn)
-            time += abs(turn_fi * st.r(st.t0) / st.v0)
+        dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+        if dist > EPS:  # если после последних апдейтов дистанция так же позволяет поворачивать
+            turn_fi = st._get_turn_fi(target_point)
+            if abs(turn_fi) > EPS:  # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
+                turn = st._get_turn_sign(target_point)
+                if st.v0 > 0:
+                    turn = -turn
+                MotionTaskEvent(time=time, task=self, cc=self.cc, turn=turn).post()
+                st.update(t=time, cc=self.cc, turn=turn)
+                time += abs(turn_fi * st.r(st.t0) / st.v0)
 
-        # Шаг 4: Подъехать к цели
-        st.update(t=time)
-        dist = st.p0.distance(target_point)
-        br_time = abs(st.v0 / st.a_braking)
-        br_dist = abs(st.v0 * br_time + 0.5 * (br_time ** 2) * (st.a_braking if st.v0 >= 0 else -st.a_braking))
+            # Шаг 4: Подъехать к цели
+            st.update(t=time)
+            dist = st.p0.distance(target_point)
+            br_time = abs(st.v0 / st.a_braking)
+            br_dist = abs(st.v0 * br_time + 0.5 * (br_time ** 2) * (st.a_braking if st.v0 >= 0 else -st.a_braking))
 
-        if dist > br_dist:  # проехать некоторое расстояние вперед
-            dist -= br_dist
-            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
-            st.update(t=time, cc=self.cc, turn=0.0)
-            time += abs(dist / st.v0)
+            if dist > br_dist:  # проехать некоторое расстояние вперед
+                dist -= br_dist
+                MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+                st.update(t=time, cc=self.cc, turn=0.0)
+                time += abs(dist / st.v0)
 
         # Замедление
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
