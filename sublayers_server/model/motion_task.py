@@ -5,10 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.tasks import TaskPerformEvent, TaskSingleton
 from sublayers_server.model.state import EPS
-from sublayers_server.model.vectors import Point
-
 from copy import copy
-import math
 
 
 class MotionTaskEvent(TaskPerformEvent):
@@ -32,112 +29,72 @@ class MotionTask(TaskSingleton):
         time = start_time
         owner = self.owner
         st = copy(owner.state)
-        cc = self.cc
-        if (cc * st.v(time)) < 0:
+        if (self.cc * st.v(time)) < 0:
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=self.turn).post()
             time = st.update(t=time, cc=0.0, turn=self.turn)
-            if time is None:
-                time = start_time
+            assert time is not None
         while time is not None:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=self.turn).post()
             time = st.update(t=time, cc=self.cc, turn=self.turn)
 
-    def _calc_stop_car(self, st, time):
-        u"""
-        расчёт движения при целевой точке заданной внутри двух радиусов поворота
-        """
-        # todo: если target_point не ближе чем минимальный радиус, то проехать вперед с замедлением
-        # начать двигаться по кругу и тормозить сразу же
-
-        target_point = self.target_point
-        _turn = -st._get_turn_sign(target_point)
-        br_time = st.update(t=time, cc=0.0, turn=_turn)
-        if br_time:
-            MotionTaskEvent(time=time, task=self, cc=0.0, turn=_turn).post()
-        else:
-            MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
-            return
-        '''
-        Если мы кликнули внутрь радиуса, то нужно узнать сможем ли мы будучи в торможении достичь данной точки
-        Для этого рассчитаем угол, на который мы должны довернуть своё текущее направление
-        '''
-        my_vect = Point.polar(1, st.fi0)
-        t_vect = target_point - st.p0
-        angle = abs(t_vect.angle_with(my_vect))
-
-        if angle > EPS:
-            # рассчитаем длину пути по кругу для достижения направления
-            l_circle = angle * st.r(st.t0)
-            # рассчитаем тормозной путь
-            s_bracking = st.s(br_time)
-            # если путь по кругу меньше, чем тормозной путь
-            if s_bracking - l_circle > EPS:
-                # узнать как долго мы должны двигаться по кругу
-                t_circle = (- st.v0 + math.sqrt(st.v0 ** 2 + 2 * st.a * l_circle)) / st.a
-                # закончить круг и остальную часть ехать прямо и тормозить
-                MotionTaskEvent(time=time + t_circle, task=self, cc=0.0, turn=0.0).post()
-                # обновить время остановки
-                br_time = st.update(t=time + t_circle, cc=0.0, turn=0.0)
-        if br_time:
-            MotionTaskEvent(time=br_time, task=self, turn=0.0).post()
-
-    def _calc_goto(self, event):
-        assert (self.cc is not None) and (self.cc > EPS)
-
-        time = event.time
+    def _calc_goto(self, start_time):
+        time = start_time
         owner = self.owner
         target_point = self.target_point
         st = copy(owner.state)
         st.update(t=time)
 
-        ddist = st.p0.distance(target_point) - 2 * st.r(st.t0)
-        # Мы около цели, необходимо остановиться
-        if not (ddist > EPS):
-            self._calc_stop_car(st=st, time=time)
-            return
-
-        # если мы стоим, то разогнаться до min (Vcc, 5 м/c)
-        v_min = 5.0  # todo: обсудить куда вынести данный балансный параметр
-        assert v_min < st.v_max
-        temp_cc = min(self.cc, v_min / st.v_max)  # определить минимальную скоростью
-        #if st.v0 < temp_cc * st.v_max and abs(st.v0 - temp_cc * st.v_max) > EPS:
-        if temp_cc * st.v_max - st.v0 > EPS:
-            turn = -st._get_turn_sign(target_point)
-            MotionTaskEvent(time=time, task=self, cc=temp_cc, turn=turn).post()
-            time = st.update(t=time, cc=temp_cc, turn=turn)
-            ddist = st.p(time).distance(target_point) - 2 * st.r(time)
-            if not (ddist > EPS):
-                st.update(t=time)
-                self._calc_stop_car(st=st, time=time)
-                return
-
-        # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
-        st.update(t=time)
-        turn_fi = st._get_turn_fi(target_point)
-        if abs(turn_fi) > EPS:
-            temp_cc = st.v(time) / st.v_max
-            turn = -st._get_turn_sign(target_point)
-            MotionTaskEvent(time=time, task=self, cc=temp_cc, turn=turn).post()
-            st.update(t=time, cc=temp_cc, turn=turn)
-            time = st.t0 + turn_fi * st.r(st.t0) / st.v0
-
-        # если мы направлены в сторону цели
-        st.update(t=time, cc=self.cc)
-        s = abs(target_point - st.p0)
-        assert self.cc is not None
-        t1, t2, t3 = st._calc_time_segment(s, self.cc)
-        if t1 != 0.0:
-            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
-            st.update(t=time, cc=self.cc, turn=0.0)
-            time = time + t1
-        if t2 != 0.0:
-            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
-            st.update(t=time, cc=self.cc, turn=0.0)
-            time = time + t2
-        if t3 != 0.0:
+        # Шаг 1: Синхронизация знаков сс и текущей скорости
+        if (self.cc * st.v(time)) < 0:
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
             time = st.update(t=time, cc=0.0, turn=0.0)
+            assert time is not None
+
+        # Шаг 2: Установить желаемое сс
+        if abs(self.cc - st.cc) > EPS:
+            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+            time = st.update(t=time, cc=self.cc, turn=0.0)
+            assert time is not None
+
+        # Шаг 3: Повернуться к цели
+        st.update(t=time)
+        dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+        if not (dist > EPS):  # если target_point слишком близко, то проехать некоторое расстояние вперед
+            dist = 2.1 * st.r(st.t0)  # расстояние которое надо проехать
+            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+            st.update(t=time, cc=self.cc, turn=0.0)
+            time += abs(dist / st.v0)
+
+        # Непосредственно поворот
+        st.update(t=time)
+        turn_fi = st._get_turn_fi(target_point)
+        if abs(turn_fi) > EPS:  # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
+            turn = st._get_turn_sign(target_point)
+            if st.v0 > 0:
+                turn = -turn
+            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=turn).post()
+            st.update(t=time, cc=self.cc, turn=turn)
+            time += abs(turn_fi * st.r(st.t0) / st.v0)
+
+        # Шаг 4: Подъехать к цели
+        st.update(t=time)
+        dist = st.p0.distance(target_point)
+        br_time = abs(st.v0 / st.a_braking)
+        br_dist = abs(st.v0 * br_time + 0.5 * (br_time ** 2) * (st.a_braking if st.v0 >= 0 else -st.a_braking))
+
+        if dist > br_dist:  # проехать некоторое расстояние вперед
+            dist -= br_dist
+            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+            st.update(t=time, cc=self.cc, turn=0.0)
+            time += abs(dist / st.v0)
+
+        # Замедление
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
+        time = st.update(t=time, cc=0.0, turn=0.0)
+        # Полная остановка
+        MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
+        time = st.update(t=time, cc=0.0, turn=0.0)
+        assert time is None
 
     def _update_state(self, event):
         owner = self.owner
@@ -160,13 +117,12 @@ class MotionTask(TaskSingleton):
         owner = self.owner
         old_tp = None if owner.cur_motion_task is None else owner.cur_motion_task.target_point
         super(MotionTask, self).on_start(event=event)
-
         if old_tp:
             if (self.target_point is None) and (self.turn is None):
                 self.target_point = old_tp
-
         if self.cc is None:
             self.cc = owner.state.u_cc
+        assert self.cc is not None
         self.cc = min(abs(self.cc), abs(owner.p_cc.current)) * (1 if self.cc >= 0.0 else -1)
         if abs(self.cc) < EPS:
             self.target_point = None
@@ -174,8 +130,7 @@ class MotionTask(TaskSingleton):
             owner.state.u_cc = 0.0
 
         if self.target_point:
-            self._calc_goto(event)
-            assert False
+            self._calc_goto(start_time=event.time)
         else:
             self._calc_keybord(start_time=event.time)
         owner.cur_motion_task = self

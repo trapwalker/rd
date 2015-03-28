@@ -116,15 +116,6 @@ $(document).ready(function () {
     document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 
 
-    setInterval(function () {
-        if (! user.userCar) return;
-        var t = clock.getCurrentTime();
-        var coord = user.userCar.getCurrentCoord(t);
-        L.circleMarker(myMap.unproject([coord.x, coord.y], myMap.getMaxZoom()), {color: '#FF0000'})
-            .setRadius(3)
-            .addTo(myMap)
-
-    }, 1000)
 
 });
 
