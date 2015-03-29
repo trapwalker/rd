@@ -12,6 +12,8 @@ var ClientManager = (function () {
             cbFunc: 'receiveMessage',
             subject: this
         });
+
+        this.motions = [];
     }
 
     // Вспомогательные методы для парсинга
@@ -225,8 +227,23 @@ var ClientManager = (function () {
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
 
+
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
+
+        if (car == user.userCar)
+            var tt = clock.getCurrentTime();
+            var n_fi = motion_state.fi(tt);
+            var o_fi = user.userCar._motion_state.fi(tt);
+            if (Math.abs(n_fi - o_fi) > 1.0) {
+                console.log('Произошёл разворот машинки на более 1 радиана! Полицейский разворот!', n_fi, o_fi);
+                console.log('Произощло в таске, с комментом: ', event.comment);
+                console.log('Последние 5 комманд, отправленных на сервер');
+                var len = this.motions.length >= 5 ? 5 : this.motions.length;
+                for (var i = 1; i <= len; i ++)
+                    console.log(this.motions[this.motions.length - i]);
+            }
+
 
         if (!car) {
             console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка! uid=', uid);
@@ -593,6 +610,8 @@ var ClientManager = (function () {
             new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
             if (Math.abs(new_speed) > 1.0) new_speed = new_speed / Math.abs(new_speed);
         }
+
+        var comment = this.motions.length;
         var new_turn = turn;
         if (new_turn) {
             new_turn = new_turn > 1 ? 1 : new_turn;
@@ -608,9 +627,18 @@ var ClientManager = (function () {
                 x: new_x,
                 y: new_y,
                 cc: new_speed,
-                turn: new_turn
+                turn: new_turn,
+                comment: comment
             }
         };
+        this.motions.push(
+            {
+                cc: new_speed,
+                turn: new_turn,
+                time: clock.getClientTime(),
+                comment: comment
+            }
+        );
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };

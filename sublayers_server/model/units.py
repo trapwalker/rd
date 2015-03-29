@@ -298,9 +298,9 @@ class Mobile(Unit):
     def on_stop(self, event):
         pass
 
-    def set_motion(self, position=None, cc=None, turn=None):
+    def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
-        MotionTask(owner=self, target_point=position, cc=cc, turn=turn).start()
+        MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
         super(Mobile, self).on_before_delete(**kw)

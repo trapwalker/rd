@@ -271,13 +271,13 @@ class AgentAPI(API):
         # Rocket(starter=self.car, server=self.agent.server)
 
     @public_method
-    def set_motion(self, x, y, cc, turn):
+    def set_motion(self, x, y, cc, turn, comment=None):
         if self.car.limbo:
             return
         p = None
         if x and y:
             p = Point(x, y)
-        self.car.set_motion(position=p, cc=cc, turn=turn)
+        self.car.set_motion(position=p, cc=cc, turn=turn, comment=comment)
 
 
     @public_method
