@@ -114,6 +114,9 @@ $(document).ready(function () {
     document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnMain').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
+
+
+
 });
 
 

@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.state import State
+from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
@@ -239,33 +239,41 @@ class Mobile(Unit):
     u"""Class of mobile units"""
 
     def __init__(self,
-                 r_min=BALANCE.Mobile.r_min,
-                 ac_max=BALANCE.Mobile.ac_max,
-                 v_max=BALANCE.Mobile.v_max,
-                 a_accelerate=BALANCE.Mobile.a_accelerate,
-                 a_braking=BALANCE.Mobile.a_braking,
+                 r_min,
+                 ac_max,
+                 v_forward,
+                 v_backward,
+                 a_forward,
+                 a_backward,
+                 a_braking,
                  max_control_speed=BALANCE.Mobile.max_control_speed,
                  **kw):
         super(Mobile, self).__init__(**kw)
         time = self.server.get_time()
-        self.state = State(owner=self, t=time, **self.init_state_params(r_min=r_min,
-                                                                        ac_max=ac_max,
-                                                                        v_max=v_max,
-                                                                        a_accelerate=a_accelerate,
-                                                                        a_braking=a_braking))
+        self.state = MotionState(t=time, **self.init_state_params(
+            r_min=r_min,
+            ac_max=ac_max,
+            v_forward=v_forward,
+            v_backward=v_backward,
+            a_forward=a_forward,
+            a_backward=a_backward,
+            a_braking=a_braking,
+        ))
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
         self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
 
-    def init_state_params(self, r_min, ac_max, v_max, a_accelerate, a_braking):
+    def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
             p=self._position,
             fi=self._direction,
-            v_max=v_max,
             r_min=r_min,
             ac_max=ac_max,
-            a_accelerate=a_accelerate,
+            v_forward=v_forward,
+            v_backward=v_backward,
+            a_forward=a_forward,
+            a_backward=a_backward,
             a_braking=a_braking,
         )
 
@@ -275,7 +283,8 @@ class Mobile(Unit):
         d = super(Mobile, self).as_dict(to_time=to_time)
         d.update(
             state=self.state.export(),
-            max_velocity=self.max_velocity,
+            v_forward=self.state.v_forward,
+            v_backward=self.state.v_backward,
         )
         return d
 
@@ -289,9 +298,9 @@ class Mobile(Unit):
     def on_stop(self, event):
         pass
 
-    def set_motion(self, position=None, cc=None, turn=None):
+    def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
-        MotionTask(owner=self, target_point=position, cc=cc, turn=turn).start()
+        MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
         super(Mobile, self).on_before_delete(**kw)
@@ -320,13 +329,6 @@ class Mobile(Unit):
         @rtype: float
         """
         return self.state.fi(t=self.server.get_time())
-
-    @property
-    def max_velocity(self):  # m/s
-        """
-        @rtype: float
-        """
-        return self.state.v_max
 
 
 class Bot(Mobile):

@@ -114,7 +114,7 @@ function onKeyDownMap(event) {
             break;
         case 38:
             if (!pressedArrowUp) {
-                clientManager.sendSetSpeed(user.userCar.maxSpeed);
+                clientManager.sendSetSpeed(user.userCar.v_forward);
                 wCruiseControl.startKeyboardControl();
                 pressedArrowUp = true;
             }
@@ -127,7 +127,7 @@ function onKeyDownMap(event) {
             break;
         case 40:
             if (!pressedArrowDown) {
-                clientManager.sendStopCar();
+                clientManager.sendSetSpeed(user.userCar.v_backward);
                 wCruiseControl.startKeyboardControl();
                 pressedArrowDown = true;
             }
@@ -209,7 +209,7 @@ function onKeyUpMap(event) {
             pressedArrowLeft = false;
             break;
         case 38:
-            clientManager.sendSetSpeed(wCruiseControl.getSpeedHandleValue());
+            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             wCruiseControl.stopKeyboardControl();
             pressedArrowUp = false;
             break;
@@ -218,7 +218,7 @@ function onKeyUpMap(event) {
             pressedArrowRight = false;
             break;
         case 40:
-            clientManager.sendSetSpeed(wCruiseControl.getSpeedHandleValue());
+            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             wCruiseControl.stopKeyboardControl();
             pressedArrowDown = false;
             break;
