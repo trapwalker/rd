@@ -474,6 +474,7 @@ var ClientManager = (function () {
         for (var i = 0; i < owner.cars.length; i++) {
             var widget_marker = visualManager.getVobjByType(owner.cars[i], WCarMarker);
             widget_marker.updateLabel();
+            widget_marker.updateIcon();
         }
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});

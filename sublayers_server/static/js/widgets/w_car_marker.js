@@ -20,20 +20,17 @@ var WCarMarker = (function (_super) {
         var marker;
         marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
         this.marker = marker;
+        marker.carID = car.ID;
 
         // todo: сделать доступ к иконнке через car.cls
-        marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
-        if(car.cls == 'Rocket')
-            marker.setIcon(iconsLeaflet.getIcon('icon_rocket_V1'));
-
-        // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
+        this.updateIcon();
 
         this.updateLabel();
 
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
         marker.addTo(map);
-        marker.carID = car.ID;
+
 
 
         //if (car == user.userCar)
@@ -57,6 +54,31 @@ var WCarMarker = (function (_super) {
             this.marker.setLatLng(tempLatLng);
         else
             this.marker.update();
+
+    };
+
+    WCarMarker.prototype.updateIcon = function(){
+        var car = this.car;
+        var marker = this.marker;
+        var icon_id = 1;
+        // 1 - стрелка-машинка // для всех, кроме себя
+        // 4 - одинарная стрелка // своих сапортийцев
+        // 5 - двойная стрелка  // своя
+
+        if (car == user.userCar)
+            icon_id = 5;
+        else {
+            if (user.party && car.owner.party)
+                if (car.owner.party.name == user.party.name)
+                    icon_id = 4;
+        }
+
+        if(car.cls == 'Rocket') {
+            icon_id = 10;
+        }
+        marker.setIcon(iconsLeaflet.getIconByID(icon_id));
+
+
 
     };
 
