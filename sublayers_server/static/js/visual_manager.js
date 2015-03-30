@@ -54,6 +54,15 @@ var VisualManager = (function () {
         return null;
     };
 
+    // Возвращается визуальный объект данного типа для данного модельного объекта
+    VisualManager.prototype.getAllVobjsByType = function(visual_type){
+        var vobj_list = [];
+        for (var i=0; i< this._visual_list.length; i++)
+            if (this._visual_list[i].obj instanceof visual_type)
+                vobj_list.push(this._visual_list[i].obj);
+        return vobj_list;
+    };
+
     // Добавляет визуальный объект и подписывает его на модельные объекты из model_objects
     VisualManager.prototype.addVisualObject = function (vobj, model_objects) {
         //console.log('VisualManager.prototype.addVisualObject', model_objects);

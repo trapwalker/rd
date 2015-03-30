@@ -20,20 +20,17 @@ var WCarMarker = (function (_super) {
         var marker;
         marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
         this.marker = marker;
+        marker.carID = car.ID;
 
         // todo: сделать доступ к иконнке через car.cls
-        marker.setIcon(iconsLeaflet.getIcon('icon_moving_V2'));
-        if(car.cls == 'Rocket')
-            marker.setIcon(iconsLeaflet.getIcon('icon_rocket_V1'));
-
-        // todo: разобраться с owner машинки. Возможно будет OwnerManager !!!
+        this.updateIcon();
 
         this.updateLabel();
 
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
         marker.addTo(map);
-        marker.carID = car.ID;
+
 
 
         //if (car == user.userCar)
@@ -60,11 +57,40 @@ var WCarMarker = (function (_super) {
 
     };
 
+    WCarMarker.prototype.updateIcon = function(){
+        var car = this.car;
+        var marker = this.marker;
+        var icon_id = 1;
+        // 1 - стрелка-машинка // для всех, кроме себя
+        // 4 - одинарная стрелка // своих сапортийцев
+        // 5 - двойная стрелка  // своя
+
+        if (car == user.userCar)
+            icon_id = 5;
+        else {
+            if (user.party && car.owner.party)
+                if (car.owner.party.name == user.party.name)
+                    icon_id = 4;
+        }
+
+        if(car.cls == 'Rocket') {
+            icon_id = 10;
+        }
+        marker.setIcon(iconsLeaflet.getIconByID(icon_id));
+
+
+
+    };
+
     WCarMarker.prototype.updateLabel = function(new_label){
         this.marker.unbindLabel();
+        var label_str1 = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">';
+        //var label_str1 = '<span>';
+        var label_str2 = '</span>';
+        var label_str = "";
 
         if(new_label){ // если нужно просто что-то написать, то передаём это сюда
-            this.marker.bindLabel(new_label, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+            label_str = label_str1 + new_label + label_str2;
         }else { // иначе будет установлена стандартная надпись
             if (this.car.owner || this.car == user.userCar) {
                 var owner = this.car.owner || user;
@@ -73,11 +99,12 @@ var WCarMarker = (function (_super) {
                     //console.log(owner.party);
                     party_str = '[' + owner.party.name + ']';
                 }
-                this.marker.bindLabel(owner.login + party_str, {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+                label_str = label_str1 + owner.login + party_str + label_str2;
             }
             else
-                this.marker.bindLabel(this.car.ID.toString(), {direction: 'right'}).setLabelNoHide(cookieStorage.visibleLabel());
+                label_str = label_str1 + this.car.ID.toString() + label_str2;
         }
+        this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
     };
 
     WCarMarker.prototype.delFromVisualManager = function () {
@@ -93,12 +120,14 @@ var WCarMarker = (function (_super) {
 // todo: внести следующие функции в класс WCarMarker
 
 function onMouseOverForLabels(){
-    if(this._labelNoHide) return false;
+    //if(this._labelNoHide) return false;
     this.setLabelNoHide(true);
+    this.getLabel().setOpacity(0.95);
 }
 
 function onMouseOutForLabels(){
     this.setLabelNoHide(cookieStorage.visibleLabel());
+    this.getLabel().setOpacity(0.4);
 }
 
 

@@ -16,7 +16,7 @@ var LocalCookieStorage = (function(){
             optionsFCRotate: true,
             optionsRMVisible: true,
             optionsSelectAnybody: false,
-            levelZoomForVisibleLabel: 19,
+            levelZoomForVisibleLabel: 17,
             optionsShowID: false,
             optionsShowDebugLine: true,
             optionsFriendlyFireEnabled: true,

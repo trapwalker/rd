@@ -127,6 +127,8 @@ class AgentAPI(API):
         else:
             self.make_car()
 
+        assert self.car.hp > 0, 'Car HP <= 0'
+
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,
