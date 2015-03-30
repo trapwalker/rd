@@ -209,12 +209,13 @@ class MotionState(BaseMotionState):
 
         if turn is not None:
             self.turn = turn
+
+        self._fi0 = self.fi0
         if self.turn == 0:
             self._turn_sign = 0.0
             self._c = None
         else:
             self._turn_sign = self.turn
-            self._fi0 = self.fi0
             if abs(self.a) > 0.0:
                 aa = 2 * abs(self.a) / self.ac_max
                 m = aa / sqrt(1 - aa ** 2)
