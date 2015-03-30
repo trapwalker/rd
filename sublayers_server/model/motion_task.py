@@ -25,12 +25,6 @@ class MotionTask(TaskSingleton):
         self.turn = turn
         self.target_point = target_point
         self.comment = comment
-        self.event_number = 0
-
-    @property
-    def get_comment(self):
-        self.event_number += 1
-        return '{} ___ {}'.format(self.comment, self.event_number)
 
     def _calc_keybord(self, start_time):
         time = start_time
@@ -38,11 +32,11 @@ class MotionTask(TaskSingleton):
         st = copy(owner.state)
         st.update(t=time)
         if (self.cc * st.v(time)) < 0:
-            MotionTaskEvent(time=time, task=self, cc=0.0, turn=self.turn, comment=self.get_comment).post()
+            MotionTaskEvent(time=time, task=self, cc=0.0, turn=self.turn, comment=self.comment).post()
             time = st.update(t=time, cc=0.0, turn=self.turn)
             assert time is not None
         while time is not None:
-            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=self.turn, comment=self.get_comment).post()
+            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=self.turn, comment=self.comment).post()
             time = st.update(t=time, cc=self.cc, turn=self.turn)
 
     def _calc_goto(self, start_time):

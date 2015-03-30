@@ -391,10 +391,11 @@ var Weapon = (function () {
 
 
 var State = (function () {
-    function State(t, position, direct, velocity, acceleration, center_point, turn, ac_max, r_min, _sp_m, _sp_fi0, _rv_fi) {
+    function State(t, position, fi0, _fi0, velocity, acceleration, center_point, turn, ac_max, r_min, _sp_m, _sp_fi0, _rv_fi) {
         this.t0 = t;                // Время начала движения (состояния)
         this.p0 = position;         // Начальная позиция - вектор!
-        this.fi0 = direct;          // Начальный угол
+        this.fi0 = fi0;             // Начальный угол
+        this._fi0 = _fi0;           // Начальный угол для расчётов спиралей
         this.v0 = velocity;         // Начальная скорость - число, а не вектор
         this.a = acceleration;      // Начальное ускорение - число!
         this._c = center_point;      // Центр разворота - точка!
@@ -426,26 +427,27 @@ var State = (function () {
         return Math.log(this.r(t) / this.r_min) / this._sp_m
     };
 
-    State.prototype._fi = function (t) {
+
+
+
+    State.prototype.fi = function (t) {
         if (!this._c) return this.fi0;
         if (this.a == 0.0)
             return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
         return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
     };
 
-    State.prototype.fi = function (t) {
-        if (!this._c) return this.fi0;
+    State.prototype._fi = function (t) {
+        if (!this._c) return this._fi0;
         if (this.a == 0.0)
-            return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
-        if (this.a > 0)
-            return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
-        else
-            return normalizeAngleRad((this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign) + Math.PI)
+            return this._fi0 - this.s(t) / this.r(t) * this._turn_sign;
+        return this._fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
     };
+
 
     State.prototype.p = function (t) {
         if (!this._c)
-            return summVector(this.p0, polarPoint(this.s(t), this.fi0));
+            return summVector(this.p0, polarPoint(this.s(t), this._fi0));
         return summVector(this._c, polarPoint(this.r(t), this._fi(t) + this._turn_sign * this._rv_fi));
     };
 

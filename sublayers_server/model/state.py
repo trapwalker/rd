@@ -33,6 +33,7 @@ class BaseMotionState(object):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
+        self._fi0 = fi
         self.r_min = r_min
         self.ac_max = ac_max
         self.v0 = 0.0
@@ -76,21 +77,18 @@ class BaseMotionState(object):
             return self.fi0
         if self.a == 0.0:
             return self.fi0 - self.s(t) / self.r(t) * self._turn_sign  # круг
-        if self.a > 0.0:
-            return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль (а > 0)
-        else:
-            return normalize_angle(self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign + pi)  # спираль (а < 0)
+        return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль
 
     def _fi(self, t):
         if self._c is None:
-            return self.fi0
+            return self._fi0
         if self.a == 0.0:
-            return self.fi0 - self.s(t) / self.r(t) * self._turn_sign  # круг
-        return self.fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль
+            return self._fi0 - self.s(t) / self.r(t) * self._turn_sign  # круг
+        return self._fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль
 
     def p(self, t):
         if self._c is None:
-            return self.p0 + Point.polar(self.s(t), self.fi0)
+            return self.p0 + Point.polar(self.s(t), self._fi0)
         return self._c + Point.polar(self.r(t), self._fi(t) + self._turn_sign * self._rv_fi)
 
     def export(self):
@@ -99,6 +97,7 @@ class BaseMotionState(object):
             t0=self.t0,
             p0=self.p0,
             fi0=self.fi0,
+            _fi0=self._fi0,
             v0=self.v0,
             a=self.a,
             c=self._c,
@@ -215,6 +214,7 @@ class MotionState(BaseMotionState):
             self._c = None
         else:
             self._turn_sign = self.turn
+            self._fi0 = self.fi0
             if abs(self.a) > 0.0:
                 aa = 2 * abs(self.a) / self.ac_max
                 m = aa / sqrt(1 - aa ** 2)
@@ -223,10 +223,10 @@ class MotionState(BaseMotionState):
                 self._rv_fi = acos(m / sqrt(1 + m ** 2))
                 if self.a < 0.0:
                     self._turn_sign = -self.turn
-                    self.fi0 = normalize_angle(self.fi0 + pi)
+                    self._fi0 = normalize_angle(self._fi0 + pi)
             else:
                 self._rv_fi = 0.5 * pi
-            self._c = self.p0 + Point.polar(self.r(self.t0), self.fi0 - self._turn_sign * (pi - self._rv_fi))
+            self._c = self.p0 + Point.polar(self.r(self.t0), self._fi0 - self._turn_sign * (pi - self._rv_fi))
 
         return self.t_max
 
@@ -245,6 +245,7 @@ class MotionState(BaseMotionState):
         res.a = self.a
         res.v0 = self.v0
         res._c = self._c
+        res._fi0 = self._fi0
         res._sp_m = self._sp_m
         res._sp_fi0 = self._sp_fi0
         res._rv_fi = self._rv_fi
