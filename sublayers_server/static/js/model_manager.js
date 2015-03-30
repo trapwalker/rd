@@ -22,6 +22,7 @@ var ClientManager = (function () {
                 data.t0,                                          // Время
                 new Point(data.p0.x, data.p0.y),                  // Позиция
                 data.fi0,                                         // Направление
+                data._fi0,                                        // Направление для расчёта спиралей
                 data.v0,                                          // Скорость - число
                 data.a,                                           // Ускорение - число
                 data.c ? (new Point(data.c.x, data.c.y)) : null,  // Центр поворота, которого может не быть
@@ -593,6 +594,7 @@ var ClientManager = (function () {
             new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
             if (Math.abs(new_speed) > 1.0) new_speed = new_speed / Math.abs(new_speed);
         }
+
         var new_turn = turn;
         if (new_turn) {
             new_turn = new_turn > 1 ? 1 : new_turn;
