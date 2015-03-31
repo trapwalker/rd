@@ -246,10 +246,12 @@ class Observer(VisibleObject):
         for vo in self.visible_objects:
             if not vo.limbo:
                 ContactOut(subj=self, obj=vo).post()
+
         # todo: сделать евентом, чтобы отработало после этого ContactOut, но до полного удаления
         # перестать отправлять агентам сообщения
         for agnt in self.watched_agents:
-            agnt.drop_ovserver(self)
+            log.debug('ERROR !!! Try to drop observer for agent %s', agnt)
+            # agnt.drop_ovserver(self)
 
 
     @property
