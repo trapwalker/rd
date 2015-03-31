@@ -139,7 +139,7 @@ class MotionState(BaseMotionState):
         self.turn = 0.0
         self.t_max = None
         self.target_point = None
-        self.u_cc = None
+        self.u_cc = 0.0
         self.update()
 
     def _get_turn_sign(self, target_point):
