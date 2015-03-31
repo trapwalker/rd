@@ -206,10 +206,10 @@ class Unit(Observer):
         return d
 
     def on_before_delete(self, **kw):
-        super(Unit, self).on_before_delete(**kw)
         for task in self.tasks:
             if isinstance(task, HPTask):
                 task.done()
+        super(Unit, self).on_before_delete(**kw)
 
     def zone_changed(self, zone_effect, in_zone):
         #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
@@ -303,10 +303,10 @@ class Mobile(Unit):
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
-        super(Mobile, self).on_before_delete(**kw)
         for task in self.tasks:
             if isinstance(task, MotionTask):
                 task.done()
+        super(Mobile, self).on_before_delete(**kw)
 
     @property
     def v(self):
