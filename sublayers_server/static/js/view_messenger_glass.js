@@ -197,8 +197,8 @@ var ViewMessengerGlass = (function () {
 
         // добавление кнопок для работы с пати
         chat.pageControl.append('<div id="VMGPartyCntrlCreate' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Создать' + '</div>');
-        chat.pageControl.append('<div id="VMGPartyCntrlLeave' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
         chat.pageControl.append('<div id="VMGPartyCntrlInvite' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Приглашения' + '</div>');
+        chat.pageControl.append('<div id="VMGPartyCntrlLeave' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
 
         chat.partyButtons = {
             create: $('#VMGPartyCntrlCreate' + aID),
@@ -208,8 +208,8 @@ var ViewMessengerGlass = (function () {
 
         // Вешаем евенты для работы с пати
         chat.partyButtons.create.click(this, this.party_create);
-        chat.partyButtons.leave.click(this, this.party_leave);
         chat.partyButtons.invite.click(this, this.party_invite);
+        chat.partyButtons.leave.click(this, this.party_leave);
 
         this.chats.push(chat);
         if (setAct)

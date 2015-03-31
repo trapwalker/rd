@@ -171,8 +171,10 @@ var ClientManager = (function () {
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
-            if (event.agent.party)
+            if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
+                chat._getChatByName('party').partyButtons.create.text('Отряд');
+            }
         }
 
         if (!user.userCar) {
@@ -463,7 +465,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ZoneEffectMessage = function (event) {
-        //console.log('ClientManager.prototype.ZoneEffectMessage');
+        //console.log('ClientManager.prototype.ZoneEffectMessage', event);
         wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
     };
 
