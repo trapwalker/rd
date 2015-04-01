@@ -45,7 +45,7 @@ class TaskInitEvent(events.Event):
 
     def on_perform(self):
         super(TaskInitEvent, self).on_perform()
-        if not self.task.owner.limbo:
+        if not self.task.owner.limbo and self.task.owner.is_alive:
             self.task.on_start(self)
         else:
             self.task.on_done(self)

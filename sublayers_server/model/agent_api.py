@@ -235,13 +235,13 @@ class AgentAPI(API):
 
     @public_method
     def fire_discharge(self, side):
-        if self.car.limbo:
+        if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_discharge(side=side)
 
     @public_method
     def fire_auto_enable(self, side, enable):
-        if self.car.limbo:
+        if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_auto_enable(side=side, enable=enable)
 
@@ -267,20 +267,19 @@ class AgentAPI(API):
 
     @public_method
     def send_rocket(self):
-        if self.car.limbo:
+        if self.car.limbo or not self.car.is_alive:
             return
         # todo: ракета должна создаваться в unit
         # Rocket(starter=self.car, server=self.agent.server)
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
-        if self.car.limbo:
+        if self.car.limbo or not self.car.is_alive:
             return
         p = None
         if x and y:
             p = Point(x, y)
         self.car.set_motion(position=p, cc=cc, turn=turn, comment=comment)
-
 
     @public_method
     def console_cmd(self, cmd):

@@ -136,7 +136,7 @@ class Update(Message):
             state=obj.state.export(),
             hp_state=obj.hp_state.export()
         )
-        if self.agent == obj.agent:
+        if self.agent == obj.owner:
             if obj.cur_motion_task is not None:
                 dict_update.update(target_point=obj.cur_motion_task.target_point)
         d.update(object=dict_update)

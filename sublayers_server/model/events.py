@@ -99,6 +99,7 @@ class Objective(Event):
         @param sublayers_server.model.base.Object obj: Object of event
         """
         server = obj.server
+        assert not obj.limbo
         super(Objective, self).__init__(server=server, **kw)
         self.obj = obj  # todo: weakref?
         obj.events.append(self)
@@ -121,23 +122,16 @@ class Init(Objective):
 class Die(Objective):
     def on_perform(self):
         super(Die, self).on_perform()
+        self.obj.is_alive = False
         self.obj.on_die(self)
 
 
 class Delete(Objective):
     def on_perform(self):
         super(Delete, self).on_perform()
-        self.obj.on_before_delete(event=self)
         self.obj.limbo = True
-        events = self.obj.events
-        t_max = (max(events).time + 1.0) if events else None  # todo: extract to constant 'limbo_timeout'
-        log.debug('Termination of %s set to %s', self.obj, t_max)
-        DeleteEnd(obj=self.obj, time=t_max).post()
-
-
-class DeleteEnd(Objective):
-    def on_perform(self):
-        super(DeleteEnd, self).on_perform()
+        self.obj.on_before_delete(event=self)
+        log.debug('Termination of %s ', self.obj)
         self.obj.on_after_delete(event=self)
 
 
@@ -180,20 +174,6 @@ class Contact(Objective):
         assert subj.is_alive and not subj.limbo
         self.subj = subj
         super(Contact, self).__init__(obj=obj, **kw)
-
-
-class ContactSee(Contact):
-
-    def on_perform(self):
-        super(ContactSee, self).on_perform()
-        self.subj.on_contact_in(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
-
-
-class ContactOut(Contact):
-
-    def on_perform(self):
-        super(ContactOut, self).on_perform()
-        self.subj.on_contact_out(time=self.time, obj=self.obj, is_boundary=True, comment=self.comment)
 
 
 class FireDischargeEvent(Objective):
