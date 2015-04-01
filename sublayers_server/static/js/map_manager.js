@@ -104,7 +104,7 @@ function sendRandGoTo(){
 }
 
 function onKeyDownMap(event) {
-    console.log('onKeyDownMap', event.keyCode);
+    //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
         case 37:
             if (!pressedArrowLeft) {

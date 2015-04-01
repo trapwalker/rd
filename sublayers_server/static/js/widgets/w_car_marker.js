@@ -68,13 +68,14 @@ var WCarMarker = (function (_super) {
         if (car == user.userCar)
             icon_id = 5;
         else {
-            if (user.party && car.owner.party)
-                if (car.owner.party.name == user.party.name)
-                    icon_id = 4;
+            if (car.owner)
+                if (user.party && car.owner.party)
+                    if (car.owner.party.name == user.party.name)
+                        icon_id = 4;
         }
 
         if(car.cls == 'Rocket') {
-            icon_id = 17;
+            icon_id = 10;
         }
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
 
