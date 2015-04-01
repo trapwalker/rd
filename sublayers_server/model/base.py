@@ -197,9 +197,8 @@ class Observer(VisibleObject):
                 self.on_contact_out(time=self.server.get_time(), obj=obj)
 
     def can_see(self, obj):
-        """
-        @type obj: VisibleObject
-        """
+        assert not self.limbo
+        assert not obj.limbo
         dist = abs(self.position - obj.position)
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника

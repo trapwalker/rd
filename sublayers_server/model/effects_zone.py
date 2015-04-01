@@ -17,6 +17,7 @@ class EffectZone(Effect):
             zone_effect=self.as_dict(),
         ).post()
 
+
 class EffectWood(EffectZone):
     def on_start(self, event):
         super(EffectWood, self).on_start(event=event)

@@ -211,7 +211,8 @@ class Unit(Observer):
                 task.done()
 
         # дроп машинки из агента и пати (в которой находится агент)
-        self.owner.drop_car(self)
+        if self.owner:
+            self.owner.drop_car(self)
 
         super(Unit, self).on_before_delete(**kw)
 

@@ -66,6 +66,8 @@ class Task(object):
         self.is_started = False
         self.events = []
 
+    id = property(id)
+
     @property
     def status_str(self):
         return ''.join([

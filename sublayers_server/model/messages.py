@@ -21,19 +21,21 @@ def make_push_package(events):
 class Message(object):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, agent, time=None, comment=None):
+    def __init__(self, agent=None, time=None, comment=None):
         """
         @param sublayers_server.model.utils.TimeClass time: Time of message post
         """
-        if time is None:
-            time = agent.server.get_time()
+        if agent is not None:
+            if time is None:
+                time = agent.server.get_time()
         super(Message, self).__init__()
         self.agent = agent
         self.time = time
         self.comment = comment
 
     def post(self):
-        self.agent.server.post_message(self)
+        if self.agent is not None:
+            self.agent.server.post_message(self)
 
     def send(self):
         # todo: online status optimization

@@ -10,7 +10,7 @@ from sublayers_server.model import units
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
-from sublayers_server.model.rocket import Rocket
+from sublayers_server.model.rocket import RocketStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event
@@ -270,7 +270,7 @@ class AgentAPI(API):
         if self.car.limbo or not self.car.is_alive:
             return
         # todo: ракета должна создаваться в unit
-        # Rocket(starter=self.car, server=self.agent.server)
+        RocketStartEvent(starter=self.car).post()
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
