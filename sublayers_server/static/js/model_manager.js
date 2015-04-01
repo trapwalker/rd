@@ -281,7 +281,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+        //console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
