@@ -72,14 +72,15 @@ class BALANCE(BalanceSettingsABS):
         time_recharge = 6
 
     class Rocket(Mobile):
-        observing_range = 100.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
-        max_hp = 10.0
-        life_time = 6.0  # s  (время полёта ракеты до заканчивания её топлива)
-        a_accelerate = 100.0  # ускорение ракеты
+        observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
+        max_hp = 30.0
+        a_forward = 100.0  # ускорение ракеты
         a_braking = -50.0   # торможение ракеты ... будто она упала на землю
-        v_max = 200.0         # максимальная скорость ракеты
+        v_forward = 200.0         # максимальная скорость ракеты
         ac_max = 1000.0         # на будущее
         max_control_speed = 200.0
+        radius_damage = 120.0
+        damage = 10.0
 
     class RocketBang:
         duration = 2000  # ms задавать в милисекундах - время расплывания круга
