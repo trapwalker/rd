@@ -104,6 +104,16 @@ class Agent(Object):
     def connection(self, new_connection):
         self._connection = new_connection
 
+    def append_obj(self, obj):  # specific
+        self.add_observer(obj)
+        if self.party:
+            self.party.add_observer_to_party(obj)
+
+    def drop_obj(self, obj):
+        if self.party:
+            self.party.drop_observer_from_party(obj)
+        self.drop_observer(obj)
+
     def append_car(self, car):  # specific
         if car not in self.cars:
             self.cars.append(car)

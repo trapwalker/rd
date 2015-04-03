@@ -19,34 +19,15 @@ function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
     map._mouseDowned = true;
     map.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
-
-    // Запустить setTimeout на появление меню. Если оно появилось, то myMap._mouseDown = false - обязательно!
-    //radialMenuTimeout = setTimeout(function () {
-    //if (cookieStorage.enableRadialMenu())
-    //         radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
-    // }, 400);
 }
 
 function onMouseUpMap(mouseEventObject) {
-    //alert('onMouseUpMap');
-    // очистить тайм-аут, вне завивимости от того, было ли вызвано меню
-    //if (radialMenuTimeout)
-    //    clearTimeout(radialMenuTimeout);
-
-    // Если не вызывалось меню, то поехать в заданную точку
-    //if (radialMenu.isHide && myMap._mouseDowned) {
-    //    if (user.userCar)
-        //clientManager.sendGoto(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()), controllers.speedSetSlider.getSpeed());
-            clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
-    //console.log(myMap.project(mouseEventObject.latlng, myMap.getMaxZoom()));
-
-    //} else {
-        // было вызвано меню, значит нужно обработать выход из меню и спрятать его
-        //radialMenu.hideMenu(true);
-        //userCarMarker.sectorsView.setSelectedToNormalState();
-    //}
-    // фолсим флаг нажатия
+    clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
     map._mouseDowned = false;
+}
+
+function onMouseDblClick(mouseEventObject) {
+    clientManager.sendScoutDroid(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
 }
 
 function onMouseMoveMap(mouseEventObject) {
@@ -275,6 +256,7 @@ var MapManager = (function(_super){
         map.on('click', onMouseUpMap);
         //map.on('mousedown', onMouseDownMap);
         //map.on('mouseup', onMouseUpMap);
+        map.on('dblclick', onMouseDblClick);
         map.on('mousemove', onMouseMoveMap);
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
