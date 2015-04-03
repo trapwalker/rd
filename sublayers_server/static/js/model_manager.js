@@ -389,6 +389,10 @@ var ClientManager = (function () {
         //chat.addMessage(-1, '', event.author, event.text);
     };
 
+    ClientManager.prototype.Message = function (event){
+        console.log('ClientManager.prototype.Message :', event.comment);
+    };
+
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang ');

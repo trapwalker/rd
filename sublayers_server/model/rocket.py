@@ -65,7 +65,7 @@ class Rocket(Mobile):
             if obj is not self and not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if self.is_target(obj):  # если вызвать self.starter.is_target - то проигнорируется дамаг по своим
                     if abs(self.position - obj.position) < self.radius_damage:
-                        HPTask(owner=obj, dhp=self.damage).start()
+                        HPTask(owner=obj, dhp=self.damage, shooter=self.starter).start()
 
         for agent in self.server.agents.values():
             messages.Bang(
@@ -86,5 +86,8 @@ class Rocket(Mobile):
             return
         self.delete()
 
+    @property
+    def is_frag(self):
+        return False
 
 

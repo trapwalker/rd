@@ -57,7 +57,7 @@ class Object(object):
             log.error('Events after deletion: %s', self.events)
         assert len(self.events) == 0
         del self.server.objects[self.uid]
-        log.debug('Finally deletion: %s', self)
+        # log.debug('Finally deletion: %s', self)
 
     def delete(self, time=None):
         Delete(obj=self, time=time).post()
@@ -79,6 +79,9 @@ class Object(object):
             uid=self.uid,
         )
 
+    @property
+    def is_frag(self):
+        return False
 
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
