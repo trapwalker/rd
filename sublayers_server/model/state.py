@@ -206,10 +206,11 @@ class MotionState(BaseMotionState):
         if self.a != 0.0:
             self.t_max = self.t0 + dv / self.a
         assert (self.t_max is None) or (self.t_max >= self.t0)
-
+        if (self.t_max is not None) and ((self.t_max - self.t0) <= EPS):
+            self.a = 0.0
+            self.t_max = None
         if turn is not None:
             self.turn = turn
-
         self._fi0 = self.fi0
         if self.turn == 0:
             self._turn_sign = 0.0

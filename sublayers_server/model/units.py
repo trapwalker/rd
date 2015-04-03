@@ -182,15 +182,8 @@ class Unit(Observer):
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
-        # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
-        self.on_fire_auto_enable(side='front', enable=False)
-        self.on_fire_auto_enable(side='back', enable=False)
-        self.on_fire_auto_enable(side='left', enable=False)
-        self.on_fire_auto_enable(side='right', enable=False)
-        # todo: перенести в более правильное место. Временно тут!
+        # Отправка сообщения owner'у о гибели машинки
         messages.Die(agent=self.owner).post()
-        # вроде как нельзя делать в delete, так как при дисконнекте делается ДО удаления
-        self.owner.drop_car(self)
         # todo: удалить себя и на этом месте создать обломки
         self.delete()
 
@@ -206,9 +199,21 @@ class Unit(Observer):
         return d
 
     def on_before_delete(self, **kw):
+        # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
+        self.on_fire_auto_enable(side='front', enable=False)
+        self.on_fire_auto_enable(side='back', enable=False)
+        self.on_fire_auto_enable(side='left', enable=False)
+        self.on_fire_auto_enable(side='right', enable=False)
+
+        # снять все таски стрельбы по нам
         for task in self.tasks:
             if isinstance(task, HPTask):
                 task.done()
+
+        # дроп машинки из агента и пати (в которой находится агент)
+        if self.owner:
+            self.owner.drop_car(self)
+
         super(Unit, self).on_before_delete(**kw)
 
     def zone_changed(self, zone_effect, in_zone):

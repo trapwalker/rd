@@ -9,6 +9,11 @@ from copy import copy
 
 
 class MotionTaskEvent(TaskPerformEvent):
+    __str_template__ = (
+        '<{self.unactual_mark}{self.classname}#{self.id} [{self.time_str}] '
+        '{self.task.owner.classname}#{self.task.owner.id}> task={self.task.id}'
+        '#alive={self.task.owner.is_alive}   #limbo=#{self.task.owner.limbo}>')
+
     def __init__(self, cc=None, turn=None, **kw):
         super(MotionTaskEvent, self).__init__(**kw)
         self.cc = cc
@@ -38,6 +43,8 @@ class MotionTask(TaskSingleton):
         while time is not None:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=self.turn, comment=self.comment).post()
             time = st.update(t=time, cc=self.cc, turn=self.turn)
+            if time is not None:
+                assert time >= start_time
 
     def _calc_goto(self, start_time):
         time = start_time

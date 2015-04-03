@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 #from utils import get_uid, serialize
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory
-from sublayers_server.model.events import ContactSee, ContactOut, Init, Delete, SearchContacts
+from sublayers_server.model.events import Init, Delete, SearchContacts
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
 
@@ -53,9 +53,8 @@ class Object(object):
     def on_after_delete(self, event):
         if self.events:
             log.error('Events after deletion: %s', self.events)
-        assert len(self.events) == 0  # todo: set 2 phase of deletion as last event
+        assert len(self.events) == 0
         del self.server.objects[self.uid]
-        self.is_alive = False
         log.debug('Finally deletion: %s', self)
 
     def delete(self, time=None):
@@ -154,15 +153,11 @@ class VisibleObject(PointObject):
         pass
 
     def on_before_delete(self, event):
-        # todo: test to subscription leaks
+        time = self.server.get_time()
+        subscribed_observers = self.subscribed_observers[:]
+        for obs in subscribed_observers:
+            obs.on_contact_out(time=time, obj=self)
         super(VisibleObject, self).on_before_delete(event=event)
-        for obs in self.subscribed_observers:
-            if not obs.limbo:
-                ContactOut(subj=obs, obj=self).post()
-
-    def on_after_delete(self, event):
-        # todo: checkit
-        super(VisibleObject, self).on_after_delete(event=event)
 
 
 class Heap(VisibleObject):
@@ -197,20 +192,19 @@ class Observer(VisibleObject):
         see = obj in self.visible_objects
         if can_see != see:
             if can_see:
-                self.on_contact_in(time=self.server.get_time(), obj=obj, is_boundary=True)
+                self.on_contact_in(time=self.server.get_time(), obj=obj)
             else:
-                self.on_contact_out(time=self.server.get_time(), obj=obj, is_boundary=True)
+                self.on_contact_out(time=self.server.get_time(), obj=obj)
 
     def can_see(self, obj):
-        """
-        @type obj: VisibleObject
-        """
+        assert not self.limbo
+        assert not obj.limbo
         dist = abs(self.position - obj.position)
         return dist <= self._r  # todo: check <= vs <
         # todo: Расчет видимости с учетом маскировки противника
 
     # todo: check calls
-    def on_contact_in(self, time, obj, is_boundary, comment=None):
+    def on_contact_in(self, time, obj, is_boundary=False, comment=None):
         """
         @param float time: contact time
         @param VisibleObject obj: contacted object
@@ -225,7 +219,7 @@ class Observer(VisibleObject):
                 agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
 
     # todo: check calls
-    def on_contact_out(self, time, obj, is_boundary, comment=None):
+    def on_contact_out(self, time, obj, is_boundary=False, comment=None):
         """
         @param float time: contact time
         @param VisibleObject obj: contacted object
@@ -241,18 +235,18 @@ class Observer(VisibleObject):
         obj.subscribed_observers.remove(self)
 
     def on_before_delete(self, event):
-        super(Observer, self).on_before_delete(event=event)
         # развидеть все объекты, которые были видны
-        for vo in self.visible_objects:
-            if not vo.limbo:
-                ContactOut(subj=self, obj=vo).post()
+        time = self.server.get_time()
+        visible_objects = self.visible_objects[:]
+        for vo in visible_objects:
+            self.on_contact_out(time=time, obj=vo)
 
-        # todo: сделать евентом, чтобы отработало после этого ContactOut, но до полного удаления
         # перестать отправлять агентам сообщения
-        for agnt in self.watched_agents:
-            log.debug('ERROR !!! Try to drop observer for agent %s', agnt)
-            # agnt.drop_ovserver(self)
+        for agent in self.watched_agents:
+            log.debug('Warning !!! Try to drop observer for agent %s', agent)
+            agent.drop_observer(self)
 
+        super(Observer, self).on_before_delete(event=event)
 
     @property
     def r(self):

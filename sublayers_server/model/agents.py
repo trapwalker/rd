@@ -107,7 +107,7 @@ class Agent(Object):
     def append_car(self, car):  # specific
         if car not in self.cars:
             self.cars.append(car)
-            car.agent = self
+            car.owner = self
             self.add_observer(car)
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь добавлен на карту
@@ -119,7 +119,7 @@ class Agent(Object):
                 # сообщить пати, что этот обсёрвер теперь убран с карты
                 self.party.drop_observer_from_party(car)
             self.drop_observer(car)
-            car.agent = None
+            car.owner = None
             self.cars.remove(car)
 
     def on_message(self, connection, message):

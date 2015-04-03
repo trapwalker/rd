@@ -281,7 +281,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+        //console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -391,11 +391,9 @@ var ClientManager = (function () {
 
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
-        console.log('ClientManager.prototype.Bang ');
-        //chat.addMessage(-1, '', getOwner(event.author), event.text);
-        new Bang(new Point(event.position.x, event.position.y), event.bang_power, event.duration, event.end_duration)
-            .start();
-        // todo разобраться, почему оно не всегда отрисовывается
+        //console.log('ClientManager.prototype.Bang ');
+        new Bang(new Point(event.position.x, event.position.y),
+                 event.bang_power, event.duration, event.end_duration).start();
     };
 
     ClientManager.prototype.FireDischarge = function (event) {
