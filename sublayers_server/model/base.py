@@ -9,6 +9,7 @@ from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Init, Delete, SearchContacts
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
+from sublayers_server.model.stat_log import StatLogger
 
 import sys
 from abc import ABCMeta
@@ -35,6 +36,7 @@ class Object(object):
         self.events = []  # all events about this object
         self.is_alive = True
         self.limbo = False
+        self.stat_log = StatLogger(owner=self)
 
     def __hash__(self):
         return self.uid
@@ -259,3 +261,4 @@ class Observer(VisibleObject):
 
     def on_die(self, event):
         pass
+
