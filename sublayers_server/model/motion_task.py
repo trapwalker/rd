@@ -111,6 +111,10 @@ class MotionTask(TaskSingleton):
         owner = self.owner
         state = owner.state
         is_moving_before = state.is_moving
+
+        # работа с метрикой
+        owner.stat_log.way(stat_log=owner.stat_log, d_way=state.s(t=event.time), time=event.time)
+
         state.update(t=event.time, cc=event.cc, turn=event.turn)
         is_moving_after = state.is_moving
         owner.on_update(event=event)

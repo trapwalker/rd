@@ -308,8 +308,11 @@ class AgentAPI(API):
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
-        elif command == '/go':
-            self.go_test1()
+        elif command == '/metric':
+            metric_name = args[0] if args else None
+            if metric_name:
+                if hasattr(self.car.stat_log, metric_name):
+                    messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
         else:
             log.warning('Unknown console command "%s"', cmd)
 

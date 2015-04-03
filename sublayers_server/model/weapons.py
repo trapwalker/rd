@@ -102,7 +102,7 @@ class WeaponDischarge(Weapon):
         # todo: добавить проверку на патроны
         if self.can_fire(time=time):
             for car in cars:
-                HPTask(owner=car, dhp=self.dmg).start()
+                HPTask(owner=car, dhp=self.dmg, shooter=self.owner).start()
             self.last_shoot = time
             return self.t_rch
         return 0

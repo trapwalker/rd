@@ -337,4 +337,6 @@ class Mobile(Unit):
 
 
 class Bot(Mobile):
-    pass
+    @property
+    def is_frag(self):
+        return True

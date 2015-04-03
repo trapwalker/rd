@@ -9,6 +9,7 @@ from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Init, Delete, SearchContacts
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
+from sublayers_server.model.stat_log import StatLogger
 
 import sys
 from abc import ABCMeta
@@ -35,6 +36,7 @@ class Object(object):
         self.events = []  # all events about this object
         self.is_alive = True
         self.limbo = False
+        self.stat_log = StatLogger(owner=self)
 
     def __hash__(self):
         return self.uid
@@ -55,7 +57,7 @@ class Object(object):
             log.error('Events after deletion: %s', self.events)
         assert len(self.events) == 0
         del self.server.objects[self.uid]
-        log.debug('Finally deletion: %s', self)
+        # log.debug('Finally deletion: %s', self)
 
     def delete(self, time=None):
         Delete(obj=self, time=time).post()
@@ -77,6 +79,9 @@ class Object(object):
             uid=self.uid,
         )
 
+    @property
+    def is_frag(self):
+        return False
 
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
@@ -259,3 +264,4 @@ class Observer(VisibleObject):
 
     def on_die(self, event):
         pass
+
