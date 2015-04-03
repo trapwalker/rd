@@ -71,9 +71,19 @@ class BALANCE(BalanceSettingsABS):
         width = pi / 2
         time_recharge = 6
 
+    class ScoutDroid(Mobile):
+        observing_range = 500.0
+        max_hp = 60.0
+        r_min=5.0
+        a_forward = 5.0
+        a_braking = -5.0
+        v_forward = (100 * 1000 / 3600)
+        ac_max = 11.0
+        max_control_speed = 60.0
+
     class Rocket(Mobile):
         observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
-        max_hp = 30.0
+        max_hp = 10.0
         a_forward = 100.0  # ускорение ракеты
         a_braking = -50.0   # торможение ракеты ... будто она упала на землю
         v_forward = 200.0         # максимальная скорость ракеты

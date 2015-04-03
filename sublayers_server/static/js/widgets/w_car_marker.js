@@ -77,6 +77,10 @@ var WCarMarker = (function (_super) {
         if(car.cls == 'Rocket') {
             icon_id = 17;
         }
+
+        if(car.cls == 'ScoutDroid') {
+            icon_id = 21;
+        }
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
 
 
