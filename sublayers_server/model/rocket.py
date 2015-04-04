@@ -61,13 +61,14 @@ class Rocket(Mobile):
         HPTask(owner=self, dps=1.0).start()
 
     def on_bang_damage(self):
+        # todo: Сделать радиус обзора >= радиуса поражения. Наносить урон только объектам из списк видимости.
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if obj is not self and not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if self.is_target(obj):  # если вызвать self.starter.is_target - то проигнорируется дамаг по своим
                     if abs(self.position - obj.position) < self.radius_damage:
                         HPTask(owner=obj, dhp=self.damage, shooter=self.starter).start()
 
-        for agent in self.server.agents.values():
+        for agent in self.server.agents.values():  # todoL Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             messages.Bang(
                 position=self.position,
                 agent=agent,
