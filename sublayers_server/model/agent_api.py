@@ -321,7 +321,12 @@ class AgentAPI(API):
             metric_name = args[0] if args else None
             if metric_name:
                 if hasattr(self.car.stat_log, metric_name):
-                    messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
+                    if metric_name == 'frag':
+                        m_car = self.car.stat_log.get_metric('frag')
+                        m_agent = self.agent.stat_log.get_metric('frag')
+                        messages.Message(agent=self.agent, comment='{} / {}'.format(m_car, m_agent)).post()
+                    else:
+                        messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
         else:
             log.warning('Unknown console command "%s"', cmd)
 

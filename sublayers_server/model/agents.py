@@ -9,6 +9,7 @@ import messages
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
 from counterset import CounterSet
+from sublayers_server.model.stat_log import StatLogger
 
 # todo: make agent offline status possible
 class Agent(Object):
@@ -31,6 +32,7 @@ class Agent(Object):
             party.include(self)
 
         self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
+        self.stat_log = StatLogger(owner=self)
 
     @property
     def is_online(self):
