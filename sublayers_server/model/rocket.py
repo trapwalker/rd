@@ -8,7 +8,8 @@ from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model import messages
-from sublayers_server.model.events import Event
+from sublayers_server.model.events  import Event
+import sublayers_server.model.tags as tags
 
 
 class RocketStartEvent(Event):
@@ -64,7 +65,7 @@ class Rocket(Mobile):
         # todo: Сделать радиус обзора >= радиуса поражения. Наносить урон только объектам из списк видимости.
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if obj is not self and not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
-                if self.is_target(obj):  # если вызвать self.starter.is_target - то проигнорируется дамаг по своим
+                if self.is_target(obj):  # если вызвать self.main_unit.is_target - то проигнорируется дамаг по своим
                     if abs(self.position - obj.position) < self.radius_damage:
                         HPTask(owner=obj, dhp=self.damage, shooter=self.starter).start()
 
@@ -81,14 +82,23 @@ class Rocket(Mobile):
 
     def on_contact_in(self, time, obj, **kw):
         super(Rocket, self).on_contact_in(time=time, obj=obj, **kw)
-        if obj is self.starter:
+        if (obj is self.main_unit) or (obj is self.starter):  # нельзя врезаться в своего стартера (и даже в стартера-дрона)
             return
-        if isinstance(obj, Rocket):  # чтобы ракеты не врезались друг в друга
+        if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return
+
         self.delete()
 
     @property
     def is_frag(self):
         return False
+
+    def set_default_tags(self):
+        self.tags.add(tags.RocketTag)
+        self.tags.add(tags.UnZoneTag)
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
 
 

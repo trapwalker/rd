@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.effects import Effect
 from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.messages import ZoneEffectMessage
+import sublayers_server.model.tags as tags
 
 
 class EffectZone(Effect):
@@ -97,6 +98,10 @@ class EffectRoad(EffectZone):
 
 
 class EffectDirt(EffectZone):
+    def start(self):
+        if tags.UnZoneTag not in self.owner.tags:
+            super(EffectDirt, self).start()
+
     def on_start(self, event):
         super(EffectDirt, self).on_start(event=event)
         #log.debug('ZONES !!!!! ====== ======= ====== !!!!      In Dirt')

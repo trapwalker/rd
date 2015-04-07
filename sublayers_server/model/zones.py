@@ -7,6 +7,7 @@ from sublayers_server.model.image_to_tileset import MongoDBToTilesets
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.effects_zone import EffectRoad, EffectWater, EffectWood
+import sublayers_server.model.tags as tags
 
 import os
 
@@ -75,6 +76,8 @@ class ZoneTileset(Zone):
         self.max_map_zoom = 18
 
     def test_in_zone(self, obj):
+        if tags.UnZoneTag in obj.tags:
+            return
         position = obj.position
         if self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)):
             if not self in obj.zones:

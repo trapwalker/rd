@@ -128,6 +128,9 @@ class VisibleObject(PointObject):
         self.subscribed_observers = []
         self.contacts_check_interval = None  # todo: extract to special task
         Init(obj=self).post()
+        # работа с тегами
+        self.tags = set()
+        self.set_default_tags()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
@@ -163,6 +166,13 @@ class VisibleObject(PointObject):
         for obs in subscribed_observers:
             obs.on_contact_out(time=time, obj=self)
         super(VisibleObject, self).on_before_delete(event=event)
+
+    @property
+    def main_unit(self):
+        return self
+
+    def set_default_tags(self):
+        pass
 
 
 class Heap(VisibleObject):

@@ -94,7 +94,9 @@ class Unit(Observer):
                             dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
 
     def is_target(self, target):
-        # todo: проверить объект на партийность
+        if target is self:
+            return False
+        # проверка объекта на партийность
         if isinstance(target, Unit):
             if target.owner and self.owner:
                 if target.owner.party and self.owner.party:

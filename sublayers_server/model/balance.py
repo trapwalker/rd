@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 
-from math import pi
+from math import pi, radians
 
 
 class BalanceSettingsABS:
@@ -80,6 +80,12 @@ class BALANCE(BalanceSettingsABS):
         v_forward = (100 * 1000 / 3600)
         ac_max = 11.0
         max_control_speed = 60.0
+        weapons = [
+            dict(fi=0.0, is_auto=True, radius=200, width=radians(90), dps=0.2),
+            dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.2),
+            dict(fi=pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.2),
+            dict(fi=-pi, is_auto=True, radius=200, width=radians(90), dps=0.2)
+        ]
 
     class Rocket(Mobile):
         observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
