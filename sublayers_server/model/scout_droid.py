@@ -55,6 +55,8 @@ class ScoutDroid(Mobile):
                                          weapons=weapons,
                                          **kw)
 
+        self.agent_owner = starter.main_unit.owner  # нужно запомнить агента, на случай, если выпустившая машинка умрёт раньше
+
     def on_init(self, event):
         super(ScoutDroid, self).on_init(event)
         self.starter.owner.append_obj(self)
@@ -63,7 +65,8 @@ class ScoutDroid(Mobile):
         self.fire_auto_enable_all(enable=True)
 
     def on_before_delete(self, **kw):
-        self.starter.owner.drop_obj(self)
+        if self.agent_owner:
+            self.agent_owner.drop_obj(self)
         super(ScoutDroid, self).on_before_delete(**kw)
 
     @property
