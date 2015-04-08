@@ -8,7 +8,7 @@ from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model import messages
-from sublayers_server.model.events  import Event
+from sublayers_server.model.events  import Event, BangEvent
 import sublayers_server.model.tags as tags
 
 
@@ -61,28 +61,14 @@ class Rocket(Mobile):
         MotionTask(owner=self, cc=1.0).start()
         HPTask(owner=self, dps=1.0).start()
 
-    def on_bang_damage(self):
-        # todo: Сделать радиус обзора >= радиуса поражения. Наносить урон только объектам из списк видимости.
-        for obj in self.server.geo_objects:  # todo: GEO-index clipping
-            if obj is not self and not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
-                if self.is_target(obj):  # если вызвать self.main_unit.is_target - то проигнорируется дамаг по своим
-                    if abs(self.position - obj.position) < self.radius_damage:
-                        HPTask(owner=obj, dhp=self.damage, shooter=self.starter).start()
-
-        for agent in self.server.agents.values():  # todoL Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
-            messages.Bang(
-                position=self.position,
-                agent=agent,
-                subj=self,
-            ).post()
-
     def on_before_delete(self, event):
-        self.on_bang_damage()
+        BangEvent(starter=self.main_unit, center=self.position, radius=self.radius_damage,
+                  damage=self.damage).post()
         super(Rocket, self).on_before_delete(event=event)
 
     def on_contact_in(self, time, obj, **kw):
         super(Rocket, self).on_contact_in(time=time, obj=obj, **kw)
-        if (obj is self.main_unit) or (obj is self.starter):  # нельзя врезаться в своего стартера (и даже в стартера-дрона)
+        if not self.is_target(target=obj):  # нельзя взрываться о тех, кто не является целью для main_unit'а
             return
         if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return

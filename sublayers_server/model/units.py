@@ -94,13 +94,16 @@ class Unit(Observer):
                             dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
 
     def is_target(self, target):
-        if target is self:
+        t_mu = target.main_unit
+        s_mu = self.main_unit
+        if t_mu is s_mu:
             return False
+
         # проверка объекта на партийность
-        if isinstance(target, Unit):
-            if target.owner and self.owner:
-                if target.owner.party and self.owner.party:
-                    if target.owner.party == self.owner.party:
+        if isinstance(t_mu, Unit):
+            if t_mu.owner and s_mu.owner:
+                if t_mu.owner.party and s_mu.owner.party:
+                    if t_mu.owner.party == s_mu.owner.party:
                         return False
         return True
 
