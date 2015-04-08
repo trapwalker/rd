@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 #from utils import get_uid, serialize
 from sublayers_server.model import messages
-from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Init, Delete, SearchContacts
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
@@ -173,22 +172,6 @@ class VisibleObject(PointObject):
 
     def set_default_tags(self):
         pass
-
-
-class Heap(VisibleObject):
-    """Heap objects thrown on the map"""
-    # todo: rearrange class tree
-    def __init__(self, items, **kw):
-        """
-        @type items: list[sublayers_server.model.inventory.Thing]
-        """
-        super(Heap, self).__init__(**kw)
-        self.inventory = Inventory(things=items)
-        """@type: Inventory"""
-
-    def on_after_delete(self, event):
-        self.inventory = None
-        super(Heap, self).on_after_delete(event=event)
 
 
 class Observer(VisibleObject):
