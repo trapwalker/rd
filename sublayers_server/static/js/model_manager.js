@@ -663,6 +663,32 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendSlowMine = function () {
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 5) return;
+        last_send_time = time;
+        var mes = {
+            call: "send_slow_mine",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendStationaryTurret = function () {
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 5) return;
+        last_send_time = time;
+        var mes = {
+            call: "send_stationary_turret",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendScoutDroid = function (target) {
         var time = clock.getCurrentTime();
         if ((time - last_send_time) < 5) return;

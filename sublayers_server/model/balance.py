@@ -81,15 +81,31 @@ class BALANCE(BalanceSettingsABS):
         ac_max = 11.0
         max_control_speed = 60.0
         weapons = [
-            dict(fi=0.0, is_auto=True, radius=200, width=radians(90), dps=0.2),
-            dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.2),
-            dict(fi=pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.2),
-            dict(fi=-pi, is_auto=True, radius=200, width=radians(90), dps=0.2)
+            dict(fi=0.0, is_auto=True, radius=200, width=radians(90), dps=0.1),
+            dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),
+            dict(fi=pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),
+            dict(fi=-pi, is_auto=True, radius=200, width=radians(90), dps=0.1)
+        ]
+
+    class StationaryTurret(Mobile):
+        observing_range = 300.0
+        max_hp = 100.0
+        r_min=5.0
+        a_forward = 3.0
+        a_braking = -3.0
+        v_forward = (1 * 1000 / 3600)
+        ac_max = 10.0
+        max_control_speed = 1.0
+        weapons = [
+            dict(fi=0.0, is_auto=True, radius=200, width=radians(90), dps=0.1),
+            dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),
+            dict(fi=pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),
+            dict(fi=-pi, is_auto=True, radius=200, width=radians(90), dps=0.1)
         ]
 
     class Rocket(Mobile):
         observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
-        max_hp = 10.0
+        max_hp = 5.0
         a_forward = 100.0  # ускорение ракеты
         a_braking = -50.0   # торможение ракеты ... будто она упала на землю
         v_forward = 200.0         # максимальная скорость ракеты
@@ -97,6 +113,15 @@ class BALANCE(BalanceSettingsABS):
         max_control_speed = 200.0
         radius_damage = 120.0
         damage = 10.0
+
+    class SlowMine(Mobile):
+        observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
+        max_hp = 20.0
+        a_forward = 100.0  # ускорение ракеты
+        a_braking = -50.0   # торможение ракеты ... будто она упала на землю
+        v_forward = 200.0         # максимальная скорость ракеты
+        ac_max = 1000.0         # на будущее
+        max_control_speed = 200.0
 
     class RocketBang:
         duration = 2000  # ms задавать в милисекундах - время расплывания круга

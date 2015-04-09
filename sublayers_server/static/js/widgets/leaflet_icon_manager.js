@@ -260,6 +260,14 @@ var LeafletIconManager = (function(){
             }),
             id: this.max_id++
         };
+
+        icons['mine_001'] = {
+            icon: new L.icon({
+                iconUrl: '/static/img/map_icons/mine_5.png',
+                iconSize: [24, 17]
+            }),
+            id: this.max_id++
+        };
     }
 
 

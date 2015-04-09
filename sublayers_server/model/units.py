@@ -345,3 +345,30 @@ class Bot(Mobile):
     @property
     def is_frag(self):
         return True
+
+
+class Slave(Mobile):
+    def __init__(self, starter, **kw):
+        super(Slave, self).__init__(**kw)
+        self.starter = starter
+        # запомнить агента, на случай если выпустившая машинка умрёт раньше
+        self.agent_owner = starter.main_unit.owner
+
+    def on_before_delete(self, **kw):
+        if self.agent_owner:
+            self.agent_owner.drop_obj(self)
+        super(Slave, self).on_before_delete(**kw)
+
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+
+class UnitWeapon(Mobile):
+    @property
+    def is_frag(self):
+        return False
