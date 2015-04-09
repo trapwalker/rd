@@ -157,11 +157,11 @@ function onKeyDownMap(event) {
             //console.log('Was pressed: Z');
             break;
         case 49:  // 1
-            console.log('Was pressed: 1');
+            //console.log('Was pressed: 1');
             clientManager.sendSlowMine();
             break;
         case 50:  // 2
-            console.log('Was pressed: 2');
+            //console.log('Was pressed: 2');
             clientManager.sendStationaryTurret();
             break;
         case 51:  // 3

@@ -116,7 +116,7 @@ class BALANCE(BalanceSettingsABS):
 
     class SlowMine(Mobile):
         observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
-        max_hp = 20.0
+        max_hp = 10.0
         a_forward = 100.0  # ускорение ракеты
         a_braking = -50.0   # торможение ракеты ... будто она упала на землю
         v_forward = 200.0         # максимальная скорость ракеты
