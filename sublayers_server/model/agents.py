@@ -205,6 +205,24 @@ class Agent(Object):
             messages.PartyErrorMessage(agent=self,
                                        comment="You not have access for this invite {}".format(invite_id)).post()
 
+    def is_target(self, target):
+        if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
+            return False
+
+        t_agent = target.main_agent
+
+        if t_agent is self:
+            return False
+
+        if t_agent is None:
+            return True
+
+        # проверка объекта на партийность
+        if t_agent.party and self.party:
+            if t_agent.party is self.party:
+                return False
+        return True
+
 
 class User(Agent):
     # todo: realize

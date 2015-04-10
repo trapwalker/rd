@@ -40,9 +40,8 @@ class Rocket(UnitWeapon):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
         self.starter = starter
-        self.radius_damage = radius_damage
-        self.damage = damage
-        super(Rocket, self).__init__(position=starter.position,
+        super(Rocket, self).__init__(starter=starter,
+                                     position=starter.position,
                                      direction=starter.direction,
                                      r_min=10,
                                      observing_range=observing_range,
@@ -56,11 +55,12 @@ class Rocket(UnitWeapon):
                                      max_control_speed=max_control_speed,
                                      server=starter.server,
                                      **kw)
+        self.radius_damage = radius_damage
+        self.damage = damage
 
     def on_init(self, event):
         super(Rocket, self).on_init(event)
         MotionTask(owner=self, cc=1.0).start()
-        # HPTask(owner=self, dps=1.0).start()
         self.delete(time=event.time + 10.0)
 
     def on_before_delete(self, event):
@@ -70,24 +70,16 @@ class Rocket(UnitWeapon):
 
     def on_contact_in(self, time, obj, **kw):
         super(Rocket, self).on_contact_in(time=time, obj=obj, **kw)
-        if not self.is_target(target=obj):  # нельзя взрываться о тех, кто не является целью для main_unit'а
+        if not self.is_target(target=obj):  # нельзя взрываться о тех, кто не является целью для main_agent'а
             return
         if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return
 
         self.delete()
 
-    @property
-    def is_frag(self):
-        return False
-
     def set_default_tags(self):
         self.tags.add(tags.RocketTag)
         self.tags.add(tags.UnZoneTag)
-
-    @property
-    def main_unit(self):
-        return self.starter.main_unit
 
 
 u'''
@@ -141,8 +133,8 @@ class SlowMine(UnitWeapon):
     ):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
-        self.starter = starter
-        super(SlowMine, self).__init__(position=starter.position,
+        super(SlowMine, self).__init__(starter=starter,
+                                       position=starter.position,
                                        direction=starter.direction,
                                        r_min=10,
                                        observing_range=observing_range,
@@ -162,6 +154,11 @@ class SlowMine(UnitWeapon):
         super(SlowMine, self).on_init(event)
         self.delete(time=event.time + 30.0)
 
+    def on_before_delete(self, event):
+        for effect in self.effects_to_targets.values():
+            effect.done()
+        super(SlowMine, self).on_before_delete(event=event)
+
     def on_contact_in(self, time, obj, **kw):
         super(SlowMine, self).on_contact_in(time=time, obj=obj, **kw)
         if not self.is_target(target=obj):
@@ -179,15 +176,7 @@ class SlowMine(UnitWeapon):
             effect = self.effects_to_targets.pop(obj)
             effect.done()
 
-    @property
-    def is_frag(self):
-        return False
-
     def set_default_tags(self):
-        self.tags.add(tags.RocketTag)
         self.tags.add(tags.UnZoneTag)
 
-    @property
-    def main_unit(self):
-        return self.starter.main_unit
 

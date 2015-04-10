@@ -62,9 +62,7 @@ class ScoutDroid(Slave):
 
     def on_init(self, event):
         super(ScoutDroid, self).on_init(event)
-        self.main_unit.owner.append_obj(self)
         MotionTask(owner=self, cc=1.0, target_point=self.target).start()
-        # HPTask(owner=self, dps=1.0).start()
         self.delete(time=event.time + 60.0)
         self.fire_auto_enable_all(enable=True)
 
@@ -119,8 +117,6 @@ class StationaryTurret(Slave):
 
     def on_init(self, event):
         super(StationaryTurret, self).on_init(event)
-        self.main_unit.owner.append_obj(self)
-        # HPTask(owner=self, dps=1.0).start()
         self.delete(time=event.time + 90.0)
         self.fire_auto_enable_all(enable=True)
 
