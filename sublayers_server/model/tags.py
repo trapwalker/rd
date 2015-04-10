@@ -24,6 +24,10 @@ class UnZoneTag(Tag):
     u"""Object is not affected by zones"""
 
 
+class UnAltitudeTag(Tag):
+    u"""Object is not affected by zones Altitude"""
+
+
 if __name__ == '__main__':
     t = Tag()
     print t

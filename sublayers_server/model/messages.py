@@ -398,3 +398,17 @@ class PartyInviteDeleteMessage(Message):
 
 class PartyErrorMessage(Message):
     pass
+
+
+class ChangeAltitude(Message):
+    def __init__(self, altitude, obj_id, **kw):
+        super(ChangeAltitude, self).__init__(**kw)
+        self.altitude = altitude
+        self.obj_id = obj_id
+
+    def as_dict(self):
+        d = super(ChangeAltitude, self).as_dict()
+        d.update(altitude=self.altitude,
+                 obj_id=self.obj_id,
+                 )
+        return d

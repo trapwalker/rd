@@ -400,6 +400,14 @@ var ClientManager = (function () {
                  event.bang_power, event.duration, event.end_duration).start();
     };
 
+    ClientManager.prototype.ChangeAltitude = function(event){
+        // console.log('ClientManager.prototype.ChangeAltitude ', event);
+        if (event.obj_id == user.userCar.ID)
+            user.userCar.altitude = event.altitude;
+        else
+            console.error('Error! Пришла высота на неизветную машинку!')
+    };
+
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 

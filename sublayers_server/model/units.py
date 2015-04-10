@@ -57,6 +57,7 @@ class Unit(Observer):
 
 
         # Резисты Unit'а
+        self.altitude = 0
 
 
     @property
@@ -230,6 +231,16 @@ class Unit(Observer):
 
     def _get_main_agent(self):
         return self.owner
+
+    def on_change_altitude(self, new_altitude):
+        if new_altitude != self.altitude:
+            self.altitude = new_altitude
+            if self.owner:
+                messages.ChangeAltitude(
+                    agent=self.owner,
+                    altitude=new_altitude,
+                    obj_id=self.id
+                ).post()
 
 
 class Station(Unit):

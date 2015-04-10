@@ -235,9 +235,8 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype.change = function () {
-        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
-        //this.draw_fill_area(prc);
+        this.draw_fill_area(this.car.altitude / 255.);
     };
 
     WAltmetrRadial.prototype.delFromVisualManager = function () {
