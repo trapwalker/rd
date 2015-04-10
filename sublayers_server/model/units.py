@@ -37,6 +37,8 @@ class Unit(Observer):
         """
         super(Unit, self).__init__(**kw)
         self.owner = owner
+        self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
+
         time = self.server.get_time()
         self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
         self._direction = direction
@@ -94,18 +96,7 @@ class Unit(Observer):
                             dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
 
     def is_target(self, target):
-        t_mu = target.main_unit
-        s_mu = self.main_unit
-        if t_mu is s_mu:
-            return False
-
-        # проверка объекта на партийность
-        if isinstance(t_mu, Unit):
-            if t_mu.owner and s_mu.owner:
-                if t_mu.owner.party and s_mu.owner.party:
-                    if t_mu.owner.party == s_mu.owner.party:
-                        return False
-        return True
+        return self.main_agent.is_target(target=target)
 
     def takeoff_weapon(self, weapon):
         # todo: продумать меанизм снятия оружия
@@ -237,6 +228,9 @@ class Unit(Observer):
                 return True
         return False
 
+    def _get_main_agent(self):
+        return self.owner
+
 
 class Station(Unit):
     u"""Class of buildings"""
@@ -345,3 +339,51 @@ class Bot(Mobile):
     @property
     def is_frag(self):
         return True
+
+
+# todo: придумать названия и сделать наследование так: сначала беспилотники без деления видимости, потом с делением
+# то есть Slave от Беспилотников. Ракеты и мины унаследованы от Беспилотников без видимости,
+# а дроны от Беспилотников с видимостью
+
+class Slave(Mobile):
+    def __init__(self, starter, **kw):
+        self.starter = starter
+        super(Slave, self).__init__(**kw)
+
+    def on_init(self, event):
+        super(Slave, self).on_init(event)
+        if self.main_agent:
+            self.main_agent.append_obj(self)
+
+    def on_before_delete(self, **kw):
+        if self.main_agent:
+            self.main_agent.drop_obj(self)
+        super(Slave, self).on_before_delete(**kw)
+
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+    def _get_main_agent(self):
+        return self.starter.main_agent
+
+
+class UnitWeapon(Mobile):
+    def __init__(self, starter, **kw):
+        self.starter = starter
+        super(UnitWeapon, self).__init__(**kw)
+
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+    def _get_main_agent(self):
+        return self.starter.main_agent

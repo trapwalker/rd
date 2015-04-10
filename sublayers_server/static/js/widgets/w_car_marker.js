@@ -81,6 +81,15 @@ var WCarMarker = (function (_super) {
         if(car.cls == 'ScoutDroid') {
             icon_id = 21;
         }
+
+        if(car.cls == 'StationaryTurret') {
+            icon_id = 7;
+        }
+
+        if(car.cls == 'SlowMine') {
+            icon_id = 31;
+        }
+
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
 
 

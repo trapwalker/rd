@@ -108,7 +108,7 @@ class TimeFormatter(object):
     def __call__(self, t):
         try:
             dt = datetime.fromtimestamp(t)
-        except VlueError as e:
+        except ValueError as e:
             log.exception('Wrong time: %r', t)
             raise e
 

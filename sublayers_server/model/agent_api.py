@@ -10,8 +10,8 @@ from sublayers_server.model import units
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
-from sublayers_server.model.rocket import RocketStartEvent
-from sublayers_server.model.scout_droid import ScoutDroidStartEvent
+from sublayers_server.model.rocket import RocketStartEvent, SlowMineStartEvent
+from sublayers_server.model.scout_droid import ScoutDroidStartEvent, StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event
@@ -272,6 +272,20 @@ class AgentAPI(API):
             return
         # todo: ракета должна создаваться в unit
         RocketStartEvent(starter=self.car).post()
+
+    @public_method
+    def send_slow_mine(self):
+        if self.car.limbo or not self.car.is_alive:
+            return
+        # todo: ракета должна создаваться в unit
+        SlowMineStartEvent(starter=self.car).post()
+
+    @public_method
+    def send_stationary_turret(self):
+        if self.car.limbo or not self.car.is_alive:
+            return
+        # todo: ракета должна создаваться в unit
+        StationaryTurretStartEvent(starter=self.car).post()
 
     @public_method
     def send_scout_droid(self, x, y):
