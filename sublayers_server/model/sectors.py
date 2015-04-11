@@ -101,7 +101,7 @@ class FireSector(Sector):
         assert (self._is_auto >= 0) and (self.is_discharge >= 0)
 
     def _test_target_in_sector(self, target):
-        if not self.owner.is_target(target):
+        if not self.owner.is_target(target=target):
             return False
         v = target.position - self.owner.position
         if (v.x ** 2 + v.y ** 2) > self.radius ** 2:

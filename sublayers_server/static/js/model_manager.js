@@ -400,6 +400,14 @@ var ClientManager = (function () {
                  event.bang_power, event.duration, event.end_duration).start();
     };
 
+    ClientManager.prototype.ChangeAltitude = function(event){
+        // console.log('ClientManager.prototype.ChangeAltitude ', event);
+        if (event.obj_id == user.userCar.ID)
+            user.userCar.altitude = event.altitude;
+        else
+            console.error('Error! Пришла высота на неизветную машинку!')
+    };
+
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 
@@ -656,6 +664,32 @@ var ClientManager = (function () {
         last_send_time = time;
         var mes = {
             call: "send_rocket",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSlowMine = function () {
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 5) return;
+        last_send_time = time;
+        var mes = {
+            call: "send_slow_mine",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendStationaryTurret = function () {
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 5) return;
+        last_send_time = time;
+        var mes = {
+            call: "send_stationary_turret",
             rpc_call_id: rpcCallList.getID(),
             params: { }
         };

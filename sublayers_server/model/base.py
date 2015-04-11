@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 #from utils import get_uid, serialize
 from sublayers_server.model import messages
-from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Init, Delete, SearchContacts
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
@@ -83,6 +82,7 @@ class Object(object):
     def is_frag(self):
         return False
 
+
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
@@ -122,12 +122,16 @@ class PointObject(Object):
 class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-    def __init__(self, **kw):
+    def __init__(self, visibility=1.0, **kw):
         super(VisibleObject, self).__init__(**kw)
+        self.p_visibility = Parameter(original=visibility)
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         self.contacts_check_interval = None  # todo: extract to special task
         Init(obj=self).post()
+        # работа с тегами
+        self.tags = set()
+        self.set_default_tags()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
@@ -164,28 +168,18 @@ class VisibleObject(PointObject):
             obs.on_contact_out(time=time, obj=self)
         super(VisibleObject, self).on_before_delete(event=event)
 
+    @property
+    def main_unit(self):
+        return self
 
-class Heap(VisibleObject):
-    """Heap objects thrown on the map"""
-    # todo: rearrange class tree
-    def __init__(self, items, **kw):
-        """
-        @type items: list[sublayers_server.model.inventory.Thing]
-        """
-        super(Heap, self).__init__(**kw)
-        self.inventory = Inventory(things=items)
-        """@type: Inventory"""
-
-    def on_after_delete(self, event):
-        self.inventory = None
-        super(Heap, self).on_after_delete(event=event)
+    def set_default_tags(self):
+        pass
 
 
 class Observer(VisibleObject):
 
     def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
-        self._r = observing_range
-        self.p_r = Parameter(original=observing_range)
+        self.p_observing_range = Parameter(original=observing_range, max_value=10000.0)
         super(Observer, self).__init__(**kw)
         self.watched_agents = CounterSet()
         self.visible_objects = []
@@ -205,10 +199,10 @@ class Observer(VisibleObject):
         assert not self.limbo
         assert not obj.limbo
         dist = abs(self.position - obj.position)
-        return dist <= self._r  # todo: check <= vs <
-        # todo: Расчет видимости с учетом маскировки противника
+        return dist <= (self.p_observing_range.value * obj.p_visibility.value)
 
     # todo: check calls
+
     def on_contact_in(self, time, obj, is_boundary=False, comment=None):
         """
         @param float time: contact time
@@ -255,7 +249,7 @@ class Observer(VisibleObject):
 
     @property
     def r(self):
-        return self._r
+        return self.p_observing_range.value
 
     def as_dict(self, **kw):
         d = super(Observer, self).as_dict(**kw)

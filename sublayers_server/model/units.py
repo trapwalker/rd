@@ -16,8 +16,6 @@ from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
 
-from math import pi
-
 
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
@@ -37,9 +35,11 @@ class Unit(Observer):
         """
         super(Unit, self).__init__(**kw)
         self.owner = owner
+        self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
         time = self.server.get_time()
         self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
         self._direction = direction
+        self.altitude = 0.0
         self.zones = []
         self.effects = []
         EffectDirt(owner=self).start()
@@ -50,12 +50,6 @@ class Unit(Observer):
         if weapons:
             for weapon in weapons:
                 self.setup_weapon(dict_weapon=weapon)
-
-        # Параметры Unit'а
-
-
-        # Резисты Unit'а
-
 
     @property
     def direction(self):
@@ -94,13 +88,7 @@ class Unit(Observer):
                             dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
 
     def is_target(self, target):
-        # todo: проверить объект на партийность
-        if isinstance(target, Unit):
-            if target.owner and self.owner:
-                if target.owner.party and self.owner.party:
-                    if target.owner.party == self.owner.party:
-                        return False
-        return True
+        return self.main_agent.is_target(target=target)
 
     def takeoff_weapon(self, weapon):
         # todo: продумать меанизм снятия оружия
@@ -232,6 +220,23 @@ class Unit(Observer):
                 return True
         return False
 
+    def _get_main_agent(self):
+        return self.owner
+
+    def on_change_altitude(self, new_altitude):
+        if new_altitude != self.altitude:
+            old_altitude = self.altitude
+            self.altitude = new_altitude
+            # todo: взять коэффициенты из баланса
+            self.p_observing_range.current -= old_altitude * 1.0
+            self.p_observing_range.current += new_altitude * 1.0
+            if self.owner:
+                messages.ChangeAltitude(
+                    agent=self.owner,
+                    altitude=new_altitude,
+                    obj_id=self.id
+                ).post()
+
 
 class Station(Unit):
     u"""Class of buildings"""
@@ -340,3 +345,51 @@ class Bot(Mobile):
     @property
     def is_frag(self):
         return True
+
+
+# todo: придумать названия и сделать наследование так: сначала беспилотники без деления видимости, потом с делением
+# то есть Slave от Беспилотников. Ракеты и мины унаследованы от Беспилотников без видимости,
+# а дроны от Беспилотников с видимостью
+
+class Slave(Mobile):
+    def __init__(self, starter, **kw):
+        self.starter = starter
+        super(Slave, self).__init__(**kw)
+
+    def on_init(self, event):
+        super(Slave, self).on_init(event)
+        if self.main_agent:
+            self.main_agent.append_obj(self)
+
+    def on_before_delete(self, **kw):
+        if self.main_agent:
+            self.main_agent.drop_obj(self)
+        super(Slave, self).on_before_delete(**kw)
+
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+    def _get_main_agent(self):
+        return self.starter.main_agent
+
+
+class UnitWeapon(Mobile):
+    def __init__(self, starter, **kw):
+        self.starter = starter
+        super(UnitWeapon, self).__init__(**kw)
+
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+    def _get_main_agent(self):
+        return self.starter.main_agent

@@ -158,6 +158,7 @@ var UserCar = (function (_super) {
         this.v_forward = aVForward;
         this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
+        this.altitude = 0.0;
     }
 
     UserCar.prototype._manage_tm = function () {

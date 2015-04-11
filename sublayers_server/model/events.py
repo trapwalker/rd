@@ -227,3 +227,31 @@ class FireAutoEnableEvent(Objective):
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
         self.obj.on_fire_auto_enable(self.side, self.enable)
+
+
+class BangEvent(Event):
+    def __init__(self, starter, center, radius, damage, **kw):
+        server = starter.server
+        super(BangEvent, self).__init__(server=server, **kw)
+        self.starter = starter
+        self.center = center
+        self.radius = radius
+        self.damage = damage
+
+    def on_perform(self):
+        super(BangEvent, self).on_perform()
+        from sublayers_server.model.hp_task import HPTask
+        from sublayers_server.model.messages import Bang
+        from sublayers_server.model.units import Unit
+
+        for obj in self.server.geo_objects:  # todo: GEO-index clipping
+            if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
+                if isinstance(obj, Unit):
+                    if abs(self.center - obj.position) < self.radius:
+                        HPTask(owner=obj, dhp=self.damage, shooter=self.starter).start()
+
+        for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+            Bang(
+                position=self.center,
+                agent=agent,
+            ).post()

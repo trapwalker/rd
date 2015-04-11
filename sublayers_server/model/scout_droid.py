@@ -3,13 +3,19 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.units import Mobile
+from sublayers_server.model.units import Slave
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model import messages
 from sublayers_server.model.events import Event
+import sublayers_server.model.tags as tags
 
+
+
+u'''
+    Двигающаяся турель! Дрон-разведчик.
+'''
 
 class ScoutDroidStartEvent(Event):
     def __init__(self, starter, target, **kw):
@@ -22,7 +28,7 @@ class ScoutDroidStartEvent(Event):
         ScoutDroid(starter=self.starter, target=self.target)
 
 
-class ScoutDroid(Mobile):
+class ScoutDroid(Slave):
     def __init__(
         self, starter, target,
         observing_range=BALANCE.ScoutDroid.observing_range,
@@ -33,37 +39,84 @@ class ScoutDroid(Mobile):
         v_forward=BALANCE.ScoutDroid.v_forward,
         ac_max=BALANCE.ScoutDroid.ac_max,
         max_control_speed=BALANCE.ScoutDroid.max_control_speed,
+        weapons=BALANCE.ScoutDroid.weapons,
         **kw
     ):
-        self.starter = starter
+        super(ScoutDroid, self).__init__(starter=starter,
+                                         position=starter.position,
+                                         direction=starter.direction,
+                                         r_min=r_min,
+                                         observing_range=observing_range,
+                                         max_hp=max_hp,
+                                         a_forward=a_forward,
+                                         a_braking=a_braking,
+                                         a_backward=0.0,
+                                         v_forward=v_forward,
+                                         v_backward=0.0,
+                                         ac_max=ac_max,
+                                         max_control_speed=max_control_speed,
+                                         server=starter.server,
+                                         weapons=weapons,
+                                         **kw)
         self.target = target
-        super(ScoutDroid, self).__init__(position=starter.position,
-                                     direction=starter.direction,
-                                     r_min=r_min,
-                                     observing_range=observing_range,
-                                     max_hp=max_hp,
-                                     a_forward=a_forward,
-                                     a_braking=a_braking,
-                                     a_backward=0.0,
-                                     v_forward=v_forward,
-                                     v_backward=0.0,
-                                     ac_max=ac_max,
-                                     max_control_speed=max_control_speed,
-                                     server=starter.server,
-                                     **kw)
 
     def on_init(self, event):
         super(ScoutDroid, self).on_init(event)
-        self.starter.owner.append_obj(self)
         MotionTask(owner=self, cc=1.0, target_point=self.target).start()
-        HPTask(owner=self, dps=1.0).start()
+        self.delete(time=event.time + 60.0)
+        self.fire_auto_enable_all(enable=True)
 
-    def on_before_delete(self, **kw):
-        self.starter.owner.drop_obj(self)
-        super(ScoutDroid, self).on_before_delete(**kw)
+    def set_default_tags(self):
+        self.tags.add(tags.UnZoneTag)
 
-    @property
-    def is_frag(self):
-        return False
 
+u'''
+    Стационарная турель!
+'''
+
+class StationaryTurretStartEvent(Event):
+    def __init__(self, starter, **kw):
+        super(StationaryTurretStartEvent, self).__init__(server=starter.server, **kw)
+        self.starter = starter
+
+    def on_perform(self):
+        super(StationaryTurretStartEvent, self).on_perform()
+        StationaryTurret(starter=self.starter)
+
+
+class StationaryTurret(Slave):
+    def __init__(
+        self, starter,
+        observing_range=BALANCE.StationaryTurret.observing_range,
+        max_hp=BALANCE.StationaryTurret.max_hp,
+        r_min=BALANCE.StationaryTurret.r_min,
+        a_forward=BALANCE.StationaryTurret.a_forward,
+        a_braking=BALANCE.StationaryTurret.a_braking,
+        v_forward=BALANCE.StationaryTurret.v_forward,
+        ac_max=BALANCE.StationaryTurret.ac_max,
+        max_control_speed=BALANCE.StationaryTurret.max_control_speed,
+        weapons=BALANCE.StationaryTurret.weapons,
+        **kw
+    ):
+        super(StationaryTurret, self).__init__(starter=starter,
+                                               position=starter.position,
+                                               direction=starter.direction,
+                                               r_min=r_min,
+                                               observing_range=observing_range,
+                                               max_hp=max_hp,
+                                               a_forward=a_forward,
+                                               a_braking=a_braking,
+                                               a_backward=0.0,
+                                               v_forward=v_forward,
+                                               v_backward=0.0,
+                                               ac_max=ac_max,
+                                               max_control_speed=max_control_speed,
+                                               server=starter.server,
+                                               weapons=weapons,
+                                               **kw)
+
+    def on_init(self, event):
+        super(StationaryTurret, self).on_init(event)
+        self.delete(time=event.time + 90.0)
+        self.fire_auto_enable_all(enable=True)
 
