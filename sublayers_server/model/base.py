@@ -82,6 +82,7 @@ class Object(object):
     def is_frag(self):
         return False
 
+
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
@@ -121,8 +122,9 @@ class PointObject(Object):
 class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-    def __init__(self, **kw):
+    def __init__(self, visibility=1.0, **kw):
         super(VisibleObject, self).__init__(**kw)
+        self.p_visibility = Parameter(original=visibility)
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         self.contacts_check_interval = None  # todo: extract to special task
@@ -177,8 +179,7 @@ class VisibleObject(PointObject):
 class Observer(VisibleObject):
 
     def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
-        self._r = observing_range
-        self.p_r = Parameter(original=observing_range)
+        self.p_observing_range = Parameter(original=observing_range, max_value=10000.0)
         super(Observer, self).__init__(**kw)
         self.watched_agents = CounterSet()
         self.visible_objects = []
@@ -198,10 +199,10 @@ class Observer(VisibleObject):
         assert not self.limbo
         assert not obj.limbo
         dist = abs(self.position - obj.position)
-        return dist <= self._r  # todo: check <= vs <
-        # todo: Расчет видимости с учетом маскировки противника
+        return dist <= (self.p_observing_range.value * obj.p_visibility.value)
 
     # todo: check calls
+
     def on_contact_in(self, time, obj, is_boundary=False, comment=None):
         """
         @param float time: contact time
@@ -248,7 +249,7 @@ class Observer(VisibleObject):
 
     @property
     def r(self):
-        return self._r
+        return self.p_observing_range.value
 
     def as_dict(self, **kw):
         d = super(Observer, self).as_dict(**kw)

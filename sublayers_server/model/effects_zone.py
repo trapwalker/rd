@@ -25,11 +25,11 @@ class EffectWood(EffectZone):
         # log.debug('ZONES !!!!! ====== ======= ====== !!!!      In Road')
         if self._cancel_effects():
             # меняем параметры
-            # todo: поменять тут маскировку
             owner = self.owner
-            owner.p_r.current -= owner.p_r.original * 0.5  # todo: взять из баланса
-            owner._r = max(0, owner.p_r.current)
-            owner.p_cc.current -= owner.p_cc.original * 0.3  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_visibility.current -= owner.p_visibility.original * 0.5
+            owner.p_observing_range.current -= owner.p_observing_range.original * 0.5
+            owner.p_cc.current -= owner.p_cc.original * 0.3
             owner.set_motion()
             self.send_message()
 
@@ -38,12 +38,12 @@ class EffectWood(EffectZone):
         # log.debug('ZONES !!!!! ====== ======= ====== !!!!      Out Road')
         if self.actual:
             # меняем параметры обратно
-            # todo: поменять тут маскировку
             self.actual = False
             owner = self.owner
-            owner.p_r.current += owner.p_r.original * 0.5  # todo: взять из баланса
-            owner._r = max(0, owner.p_r.current)
-            owner.p_cc.current += owner.p_cc.original * 0.3  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_visibility.current += owner.p_visibility.original * 0.5
+            owner.p_observing_range.current += owner.p_observing_range.original * 0.5
+            owner.p_cc.current += owner.p_cc.original * 0.3
             owner.set_motion()
             self.send_message()
 
@@ -54,7 +54,8 @@ class EffectWater(EffectZone):
         # log.debug('ZONES !!!!! ====== ======= ====== !!!!      In Water')
         if self._cancel_effects():
             owner = self.owner
-            owner.p_cc.current -= owner.p_cc.original * 0.45  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_cc.current -= owner.p_cc.original * 0.45
             owner.set_motion()
             HPTask(owner=owner, dps=0.5).start()
             self.send_message()
@@ -65,7 +66,8 @@ class EffectWater(EffectZone):
         if self.actual:
             self.actual = False
             owner = self.owner
-            owner.p_cc.current += owner.p_cc.original * 0.45  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_cc.current += owner.p_cc.original * 0.45
             owner.set_motion()
             HPTask(owner=owner, dps=-0.5).start()
             self.send_message()
@@ -76,9 +78,10 @@ class EffectRoad(EffectZone):
         super(EffectRoad, self).on_start(event=event)
         #log.debug('ZONES !!!!! ====== ======= ====== !!!!      In Road')
         if self._cancel_effects():
-            # todo: поменять тут маскировку
             owner = self.owner
-            owner.p_cc.current += owner.p_cc.original * 0.2  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_visibility.current += owner.p_visibility.original * 0.2
+            owner.p_cc.current += owner.p_cc.original * 0.2
             owner.set_motion()
             self.send_message()
 
@@ -87,9 +90,10 @@ class EffectRoad(EffectZone):
         #log.debug('ZONES !!!!! ====== ======= ====== !!!!      Out Road')
         if self.actual:
             self.actual = False
-            # todo: поменять тут маскировку
             owner = self.owner
-            owner.p_cc.current -= owner.p_cc.original * 0.2  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_visibility.current -= owner.p_visibility.original * 0.2
+            owner.p_cc.current -= owner.p_cc.original * 0.2
             owner.set_motion()
             self.send_message()
 
@@ -107,7 +111,8 @@ class EffectDirt(EffectZone):
         #log.debug('ZONES !!!!! ====== ======= ====== !!!!      In Dirt')
         if self._cancel_effects():
             owner = self.owner
-            owner.p_cc.current -= owner.p_cc.original * 0.2  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_cc.current -= owner.p_cc.original * 0.2
             self.send_message()
 
     def on_done(self, event):
@@ -116,5 +121,6 @@ class EffectDirt(EffectZone):
         if self.actual:
             self.actual = False
             owner = self.owner
-            owner.p_cc.current += owner.p_cc.original * 0.2  # todo: взять из баланса
+            # todo: взять коэффициенты из баланса
+            owner.p_cc.current += owner.p_cc.original * 0.2
             self.send_message()

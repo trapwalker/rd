@@ -16,8 +16,6 @@ from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
 
-from math import pi
-
 
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
@@ -38,10 +36,10 @@ class Unit(Observer):
         super(Unit, self).__init__(**kw)
         self.owner = owner
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-
         time = self.server.get_time()
         self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
         self._direction = direction
+        self.altitude = 0.0
         self.zones = []
         self.effects = []
         EffectDirt(owner=self).start()
@@ -52,13 +50,6 @@ class Unit(Observer):
         if weapons:
             for weapon in weapons:
                 self.setup_weapon(dict_weapon=weapon)
-
-        # Параметры Unit'а
-
-
-        # Резисты Unit'а
-        self.altitude = 0
-
 
     @property
     def direction(self):
@@ -234,7 +225,11 @@ class Unit(Observer):
 
     def on_change_altitude(self, new_altitude):
         if new_altitude != self.altitude:
+            old_altitude = self.altitude
             self.altitude = new_altitude
+            # todo: взять коэффициенты из баланса
+            self.p_observing_range.current -= old_altitude * 1.0
+            self.p_observing_range.current += new_altitude * 1.0
             if self.owner:
                 messages.ChangeAltitude(
                     agent=self.owner,
