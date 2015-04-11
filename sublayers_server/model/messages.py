@@ -141,6 +141,7 @@ class Update(Message):
         if self.agent == obj.owner:
             if obj.cur_motion_task is not None:
                 dict_update.update(target_point=obj.cur_motion_task.target_point)
+            dict_update.update(fuel_state=obj.fuel_state.export())
         d.update(object=dict_update)
         return d
 

@@ -5,13 +5,16 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
+from sublayers_server.model.fuel_state import FuelState
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.hp_task import HPTask
+from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
-from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, SearchZones
+from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
+    SearchZones, Die
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
@@ -37,7 +40,7 @@ class Unit(Observer):
         self.owner = owner
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
         time = self.server.get_time()
-        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
+        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp)
         self._direction = direction
         self.altitude = 0.0
         self.zones = []
@@ -257,6 +260,8 @@ class Mobile(Unit):
                  a_backward,
                  a_braking,
                  max_control_speed=BALANCE.Mobile.max_control_speed,
+                 max_fuel=BALANCE.Mobile.max_fuel,
+                 fuel=BALANCE.Mobile.fuel,
                  **kw):
         super(Mobile, self).__init__(**kw)
         time = self.server.get_time()
@@ -269,10 +274,13 @@ class Mobile(Unit):
             a_backward=a_backward,
             a_braking=a_braking,
         ))
+        self.fuel_state = FuelState(t=time, max_fuel=max_fuel, fuel=fuel)
+
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
         self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
+        self.p_fuel_rate = Parameter(original=1.0, max_value=10000.0)
 
     def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
@@ -293,6 +301,7 @@ class Mobile(Unit):
         d = super(Mobile, self).as_dict(to_time=to_time)
         d.update(
             state=self.state.export(),
+            fuel_state=self.fuel_state.export(),
             v_forward=self.state.v_forward,
             v_backward=self.state.v_backward,
         )
@@ -303,10 +312,10 @@ class Mobile(Unit):
         super(Mobile, self).on_init(event)
 
     def on_start(self, event):
-        pass
+        FuelTask(owner=self, dfs=self.p_fuel_rate.value).start()
 
     def on_stop(self, event):
-        pass
+        FuelTask(owner=self, dfs=0.0).start()
 
     def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
@@ -317,6 +326,11 @@ class Mobile(Unit):
             if isinstance(task, MotionTask):
                 task.done()
         super(Mobile, self).on_before_delete(**kw)
+
+    def on_fuel_empty(self, event):
+        self.p_cc.current = 0.0
+        self.set_motion()
+        Die(time=event.time + 20.0, obj=self).post()
 
     @property
     def v(self):

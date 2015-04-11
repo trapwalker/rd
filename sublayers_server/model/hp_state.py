@@ -62,6 +62,8 @@ class HPState(object):
             if self.hp0 <= 0:
                 self.t_die = self.t0
                 return self.t_die
+            if self.hp0 > self.max_hp:
+                self.hp0 = self.max_hp
         if dps:
             self.dps += dps
         if self.dps > 0.0:

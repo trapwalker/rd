@@ -29,6 +29,8 @@ class BALANCE(BalanceSettingsABS):
         a_accelerate = 4.0
         a_braking = -8.0
         max_control_speed = 30.0  # max_control_speed <= v_max
+        max_fuel = 100.0
+        fuel = 100.0
 
     class Bot(Mobile):
         velocity = 100.0  # m/s
