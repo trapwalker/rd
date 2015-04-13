@@ -296,7 +296,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+        //console.log('ClientManager.prototype.Contact', event);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -309,6 +309,7 @@ var ClientManager = (function () {
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
             var radius_visible = event.object.r;
+            var main_agent_login = event.object.main_agent_login;
 
             // Проверка: нет ли уже такой машинки.
             var car = visualManager.getModelObject(uid);
@@ -325,6 +326,7 @@ var ClientManager = (function () {
             car = new MapCar(uid, state, hp_state, fuel_state);
             car.role = event.object.role;
             car.cls = event.object.cls;
+            car.main_agent_login = main_agent_login;
 
             if (aOwner)
                 aOwner.bindCar(car);

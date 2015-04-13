@@ -82,6 +82,8 @@ class BALANCE(BalanceSettingsABS):
         v_forward = (100 * 1000 / 3600)
         ac_max = 11.0
         max_control_speed = 60.0
+        fuel = 70.0
+        max_fuel = 70.0
         weapons = [
             dict(fi=0.0, is_auto=True, radius=200, width=radians(90), dps=0.1),
             dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),

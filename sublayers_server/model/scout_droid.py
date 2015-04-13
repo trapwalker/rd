@@ -40,6 +40,8 @@ class ScoutDroid(Slave):
         ac_max=BALANCE.ScoutDroid.ac_max,
         max_control_speed=BALANCE.ScoutDroid.max_control_speed,
         weapons=BALANCE.ScoutDroid.weapons,
+        max_fuel=BALANCE.ScoutDroid.max_fuel,
+        fuel=BALANCE.ScoutDroid.fuel,
         **kw
     ):
         super(ScoutDroid, self).__init__(starter=starter,
@@ -57,6 +59,8 @@ class ScoutDroid(Slave):
                                          max_control_speed=max_control_speed,
                                          server=starter.server,
                                          weapons=weapons,
+                                         max_fuel=max_fuel,
+                                         fuel=fuel,
                                          **kw)
         self.target = target
 

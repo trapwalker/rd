@@ -174,7 +174,8 @@ class Unit(Observer):
     def on_die(self, event):
         super(Unit, self).on_die(event)
         # Отправка сообщения owner'у о гибели машинки
-        messages.Die(agent=self.owner).post()
+        if self.owner:
+            messages.Die(agent=self.owner).post()
         # todo: удалить себя и на этом месте создать обломки
         self.delete()
 
@@ -322,8 +323,9 @@ class Mobile(Unit):
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
-        for task in self.tasks:
-            if isinstance(task, MotionTask):
+        tasks = self.tasks[:]
+        for task in tasks:
+            if isinstance(task, MotionTask) or isinstance(task, FuelTask):
                 task.done()
         super(Mobile, self).on_before_delete(**kw)
 
@@ -365,11 +367,32 @@ class Bot(Mobile):
 # то есть Slave от Беспилотников. Ракеты и мины унаследованы от Беспилотников без видимости,
 # а дроны от Беспилотников с видимостью
 
-class Slave(Mobile):
+class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):
         self.starter = starter
-        super(Slave, self).__init__(**kw)
+        super(ExtraMobile, self).__init__(**kw)
 
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+    def _get_main_agent(self):
+        return self.starter.main_agent
+
+    def as_dict(self, to_time=None):
+        d = super(ExtraMobile, self).as_dict(to_time=to_time)
+        login = None if self.main_unit is None else self.main_agent.login
+        d.update(
+            main_agent_login=login,
+        )
+        return d
+
+
+class Slave(ExtraMobile):
     def on_init(self, event):
         super(Slave, self).on_init(event)
         if self.main_agent:
@@ -380,30 +403,6 @@ class Slave(Mobile):
             self.main_agent.drop_obj(self)
         super(Slave, self).on_before_delete(**kw)
 
-    @property
-    def is_frag(self):
-        return False
 
-    @property
-    def main_unit(self):
-        return self.starter.main_unit
-
-    def _get_main_agent(self):
-        return self.starter.main_agent
-
-
-class UnitWeapon(Mobile):
-    def __init__(self, starter, **kw):
-        self.starter = starter
-        super(UnitWeapon, self).__init__(**kw)
-
-    @property
-    def is_frag(self):
-        return False
-
-    @property
-    def main_unit(self):
-        return self.starter.main_unit
-
-    def _get_main_agent(self):
-        return self.starter.main_agent
+class UnitWeapon(ExtraMobile):
+    pass

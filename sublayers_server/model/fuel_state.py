@@ -54,7 +54,7 @@ class FuelState(object):
             if self.fuel0 <= 0:
                 self.t_fuel_empty = self.t0
                 return self.t_fuel_empty
-        if dfs:
+        if dfs is not None:
             self.dfs = dfs
         if self.dfs > 0.0:
             self.t_fuel_empty = self.t0 + self.fuel0 / self.dfs
