@@ -198,7 +198,8 @@ class Unit(Observer):
         self.on_fire_auto_enable(side='right', enable=False)
 
         # снять все таски стрельбы по нам
-        for task in self.tasks:
+        tasks = self.tasks[:]
+        for task in tasks:
             if isinstance(task, HPTask):
                 task.done()
 
