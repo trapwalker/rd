@@ -48,6 +48,17 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getFuelState = function (data) {
+        if (data)
+            return new FuelState(
+                data.t0,
+                data.max_fuel,
+                data.fuel0,
+                data.dfs
+            );
+        return null;
+    };
+
     ClientManager.prototype._getOwner = function (data) {
         if(data)
             if (data.cls === "User") {
@@ -163,6 +174,7 @@ var ClientManager = (function () {
         var role = event.cars[0].role;
         var state = this._getState(event.cars[0].state);
         var hp_state = this._getHPState(event.cars[0].hp_state);
+        var fuel_state = this._getFuelState(event.cars[0].fuel_state);
         var fireSectors = this._getSectors(event.cars[0].fire_sectors);
 
         clock.setDt((new Date().getTime() - servtime) / 1000.);
@@ -184,7 +196,8 @@ var ClientManager = (function () {
                 v_forward,
                 v_backward,
                 state,
-                hp_state
+                hp_state,
+                fuel_state
             );
             for (var i = 0; i < fireSectors.length; i++)
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
@@ -227,6 +240,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
+        var fuel_state = this._getFuelState(event.object.fuel_state);
 
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
@@ -239,6 +253,7 @@ var ClientManager = (function () {
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
+        if (car == user.userCar) car.setFuelState(fuel_state);
 
         // Если своя машинка
         if (car == user.userCar) {
@@ -281,7 +296,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+        //console.log('ClientManager.prototype.Contact', event);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -290,9 +305,11 @@ var ClientManager = (function () {
         if (event.is_first) { // только если первый раз добавляется машинка
             var state = this._getState(event.object.state);
             var hp_state = this._getHPState(event.object.hp_state);
+            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
             var radius_visible = event.object.r;
+            var main_agent_login = event.object.main_agent_login;
 
             // Проверка: нет ли уже такой машинки.
             var car = visualManager.getModelObject(uid);
@@ -306,9 +323,10 @@ var ClientManager = (function () {
             }
 
             // Создание новой машинки
-            car = new MapCar(uid, state, hp_state);
+            car = new MapCar(uid, state, hp_state, fuel_state);
             car.role = event.object.role;
             car.cls = event.object.cls;
+            car.main_agent_login = main_agent_login;
 
             if (aOwner)
                 aOwner.bindCar(car);
@@ -659,9 +677,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendRocket = function () {
-        var time = clock.getCurrentTime();
+        /*var time = clock.getCurrentTime();
         if ((time - last_send_time) < 5) return;
-        last_send_time = time;
+        last_send_time = time;*/
         var mes = {
             call: "send_rocket",
             rpc_call_id: rpcCallList.getID(),

@@ -35,7 +35,7 @@ var WCarMarker = (function (_super) {
 
         //if (car == user.userCar)
         marker.on('click', onClickUserCarMarker);
-        marker.on('contextmenu', function(){alert('Номер текущей иконки: ' + this._old_icon_id)});
+        marker.on('contextmenu', function(){alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)});
     };
 
     WCarMarker.prototype.change = function(){
@@ -115,8 +115,12 @@ var WCarMarker = (function (_super) {
                 }
                 label_str = label_str1 + owner.login + party_str + label_str2;
             }
-            else
-                label_str = label_str1 + this.car.ID.toString() + label_str2;
+            else { // значит объект не имеет владельца, нужно использовать main_agent_login
+                if (this.car.cls == 'Rocket' || this.car.cls == 'SlowMine')
+                    label_str = label_str = label_str1 + label_str2;
+                else
+                    label_str = label_str1 + '-=by ' + this.car.main_agent_login + '=-' + label_str2;
+            }
         }
         this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
     };

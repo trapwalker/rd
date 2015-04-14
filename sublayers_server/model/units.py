@@ -5,13 +5,16 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
+from sublayers_server.model.fuel_state import FuelState
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.hp_task import HPTask
+from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
-from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, SearchZones
+from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
+    SearchZones, Die
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
@@ -37,7 +40,7 @@ class Unit(Observer):
         self.owner = owner
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
         time = self.server.get_time()
-        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp, dps=0.0)
+        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp)
         self._direction = direction
         self.altitude = 0.0
         self.zones = []
@@ -171,7 +174,8 @@ class Unit(Observer):
     def on_die(self, event):
         super(Unit, self).on_die(event)
         # Отправка сообщения owner'у о гибели машинки
-        messages.Die(agent=self.owner).post()
+        if self.owner:
+            messages.Die(agent=self.owner).post()
         # todo: удалить себя и на этом месте создать обломки
         self.delete()
 
@@ -194,7 +198,8 @@ class Unit(Observer):
         self.on_fire_auto_enable(side='right', enable=False)
 
         # снять все таски стрельбы по нам
-        for task in self.tasks:
+        tasks = self.tasks[:]
+        for task in tasks:
             if isinstance(task, HPTask):
                 task.done()
 
@@ -257,6 +262,8 @@ class Mobile(Unit):
                  a_backward,
                  a_braking,
                  max_control_speed=BALANCE.Mobile.max_control_speed,
+                 max_fuel=BALANCE.Mobile.max_fuel,
+                 fuel=BALANCE.Mobile.fuel,
                  **kw):
         super(Mobile, self).__init__(**kw)
         time = self.server.get_time()
@@ -269,10 +276,13 @@ class Mobile(Unit):
             a_backward=a_backward,
             a_braking=a_braking,
         ))
+        self.fuel_state = FuelState(t=time, max_fuel=max_fuel, fuel=fuel)
+
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
         self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
+        self.p_fuel_rate = Parameter(original=0.5, max_value=10000.0)
 
     def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
@@ -293,6 +303,7 @@ class Mobile(Unit):
         d = super(Mobile, self).as_dict(to_time=to_time)
         d.update(
             state=self.state.export(),
+            fuel_state=self.fuel_state.export(),
             v_forward=self.state.v_forward,
             v_backward=self.state.v_backward,
         )
@@ -303,20 +314,26 @@ class Mobile(Unit):
         super(Mobile, self).on_init(event)
 
     def on_start(self, event):
-        pass
+        FuelTask(owner=self).start()
 
     def on_stop(self, event):
-        pass
+        FuelTask(owner=self).start()
 
     def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
-        for task in self.tasks:
-            if isinstance(task, MotionTask):
+        tasks = self.tasks[:]
+        for task in tasks:
+            if isinstance(task, MotionTask) or isinstance(task, FuelTask):
                 task.done()
         super(Mobile, self).on_before_delete(**kw)
+
+    def on_fuel_empty(self, event):
+        self.p_cc.current = 0.0
+        self.set_motion()
+        Die(time=event.time + 20.0, obj=self).post()
 
     @property
     def v(self):
@@ -347,15 +364,32 @@ class Bot(Mobile):
         return True
 
 
-# todo: придумать названия и сделать наследование так: сначала беспилотники без деления видимости, потом с делением
-# то есть Slave от Беспилотников. Ракеты и мины унаследованы от Беспилотников без видимости,
-# а дроны от Беспилотников с видимостью
-
-class Slave(Mobile):
+class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):
         self.starter = starter
-        super(Slave, self).__init__(**kw)
+        super(ExtraMobile, self).__init__(**kw)
 
+    @property
+    def is_frag(self):
+        return False
+
+    @property
+    def main_unit(self):
+        return self.starter.main_unit
+
+    def _get_main_agent(self):
+        return self.starter.main_agent
+
+    def as_dict(self, to_time=None):
+        d = super(ExtraMobile, self).as_dict(to_time=to_time)
+        login = None if self.main_unit is None else self.main_agent.login
+        d.update(
+            main_agent_login=login,
+        )
+        return d
+
+
+class Slave(ExtraMobile):
     def on_init(self, event):
         super(Slave, self).on_init(event)
         if self.main_agent:
@@ -366,30 +400,6 @@ class Slave(Mobile):
             self.main_agent.drop_obj(self)
         super(Slave, self).on_before_delete(**kw)
 
-    @property
-    def is_frag(self):
-        return False
 
-    @property
-    def main_unit(self):
-        return self.starter.main_unit
-
-    def _get_main_agent(self):
-        return self.starter.main_agent
-
-
-class UnitWeapon(Mobile):
-    def __init__(self, starter, **kw):
-        self.starter = starter
-        super(UnitWeapon, self).__init__(**kw)
-
-    @property
-    def is_frag(self):
-        return False
-
-    @property
-    def main_unit(self):
-        return self.starter.main_unit
-
-    def _get_main_agent(self):
-        return self.starter.main_agent
+class UnitWeapon(ExtraMobile):
+    pass

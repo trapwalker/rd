@@ -8,6 +8,7 @@ var WFuelRadial = (function (_super) {
     function WFuelRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
+        this.value_prc = 0.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WFuelRadial' + (-generator_ID.getID());
@@ -267,9 +268,20 @@ var WFuelRadial = (function (_super) {
     };
 
     WFuelRadial.prototype.change = function () {
-        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
-        // todo: определить способ плавного изменения области заливки
-        //this.draw_fill_area(prc);
+        var prc = this.car.getCurrentFuel(clock.getCurrentTime()) / this.car._fuel_state.max_fuel;
+        if (prc < 0.0) prc = 0.0;
+        if (Math.abs(this.value_prc - prc) > 0.005) {
+            this.value_prc = prc;
+            this.draw_fill_area(prc);
+            if ((prc > 0.1) && (this.alarmLampState)) {
+                this.alarmLampState = false;
+                this.draw_alarmLamp();
+            }
+            if ((prc <= 0.1) && (!this.alarmLampState)) {
+                this.alarmLampState = true;
+                this.draw_alarmLamp();
+            }
+        }
     };
 
     WFuelRadial.prototype.delFromVisualManager = function () {
