@@ -677,9 +677,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendRocket = function () {
-        var time = clock.getCurrentTime();
+        /*var time = clock.getCurrentTime();
         if ((time - last_send_time) < 5) return;
-        last_send_time = time;
+        last_send_time = time;*/
         var mes = {
             call: "send_rocket",
             rpc_call_id: rpcCallList.getID(),

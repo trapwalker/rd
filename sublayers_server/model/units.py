@@ -282,7 +282,7 @@ class Mobile(Unit):
         # todo: test to excess update-message after initial contact-message
         # Parametrs
         self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
-        self.p_fuel_rate = Parameter(original=2.0, max_value=10000.0)
+        self.p_fuel_rate = Parameter(original=0.5, max_value=10000.0)
 
     def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(

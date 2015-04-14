@@ -83,8 +83,8 @@ class EffectRoad(EffectZone):
             # todo: взять коэффициенты из баланса
             owner.p_visibility.current += owner.p_visibility.original * 0.2
             owner.p_cc.current += owner.p_cc.original * 0.2
-            owner.set_motion()
             owner.p_fuel_rate.current -= owner.p_fuel_rate.original * 0.5
+            owner.set_motion()
             FuelTask(owner=owner).start()
             self.send_message()
 

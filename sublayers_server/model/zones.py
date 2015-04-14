@@ -43,8 +43,7 @@ def init_zones_on_server(server):
     read_ts_from_file(file_name='tilesets/ts_wood', server=server, effects=[EffectWood])
     read_ts_from_file(file_name='tilesets/ts_water', server=server, effects=[EffectWater])
     read_ts_from_file(file_name='tilesets/ts_road', server=server, effects=[EffectRoad])
-
-    read_ts_from_file(file_name='tilesets/ts_altitude_15', server=server, effects=[], zone_cls=AltitudeZoneTileset)
+    #read_ts_from_file(file_name='tilesets/ts_altitude_15', server=server, effects=[], zone_cls=AltitudeZoneTileset)
 
     log.info("Zones ready!")
 
