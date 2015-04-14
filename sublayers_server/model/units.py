@@ -282,7 +282,7 @@ class Mobile(Unit):
         # todo: test to excess update-message after initial contact-message
         # Parametrs
         self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
-        self.p_fuel_rate = Parameter(original=1.0, max_value=10000.0)
+        self.p_fuel_rate = Parameter(original=2.0, max_value=10000.0)
 
     def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
@@ -314,10 +314,10 @@ class Mobile(Unit):
         super(Mobile, self).on_init(event)
 
     def on_start(self, event):
-        FuelTask(owner=self, dfs=self.p_fuel_rate.value).start()
+        FuelTask(owner=self).start()
 
     def on_stop(self, event):
-        FuelTask(owner=self, dfs=0.0).start()
+        FuelTask(owner=self).start()
 
     def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
@@ -363,10 +363,6 @@ class Bot(Mobile):
     def is_frag(self):
         return True
 
-
-# todo: придумать названия и сделать наследование так: сначала беспилотники без деления видимости, потом с делением
-# то есть Slave от Беспилотников. Ракеты и мины унаследованы от Беспилотников без видимости,
-# а дроны от Беспилотников с видимостью
 
 class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):

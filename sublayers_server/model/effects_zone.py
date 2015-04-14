@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.effects import Effect
 from sublayers_server.model.hp_task import HPTask
+from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.messages import ZoneEffectMessage
 import sublayers_server.model.tags as tags
 
@@ -83,6 +84,8 @@ class EffectRoad(EffectZone):
             owner.p_visibility.current += owner.p_visibility.original * 0.2
             owner.p_cc.current += owner.p_cc.original * 0.2
             owner.set_motion()
+            owner.p_fuel_rate.current -= owner.p_fuel_rate.original * 0.5
+            FuelTask(owner=owner).start()
             self.send_message()
 
     def on_done(self, event):
@@ -95,6 +98,8 @@ class EffectRoad(EffectZone):
             owner.p_visibility.current -= owner.p_visibility.original * 0.2
             owner.p_cc.current -= owner.p_cc.original * 0.2
             owner.set_motion()
+            owner.p_fuel_rate.current += owner.p_fuel_rate.original * 0.5
+            FuelTask(owner=owner).start()
             self.send_message()
 
     def done(self, time=None):
