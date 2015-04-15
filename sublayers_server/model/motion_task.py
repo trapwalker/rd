@@ -138,7 +138,7 @@ class MotionTask(TaskSingleton):
         if self.cc is None:
             self.cc = owner.state.u_cc
         assert self.cc is not None
-        self.cc = min(abs(self.cc), abs(owner.p_cc.current)) * (1 if self.cc >= 0.0 else -1)
+        self.cc = min(abs(self.cc), abs(owner.params.get('p_cc').current)) * (1 if self.cc >= 0.0 else -1)
         if abs(self.cc) < EPS:
             self.target_point = None
             self.cc = 0.0

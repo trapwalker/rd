@@ -94,8 +94,10 @@ class EffectSlow(Effect):
             # меняем параметры
             # todo: поменять тут маскировку
             owner = self.owner
+            '''
             owner.p_cc.current -= owner.p_cc.original * 0.5  # todo: взять из баланса
             owner.set_motion()
+            '''
 
     def on_done(self, event):
         super(EffectSlow, self).on_done(event=event)
@@ -105,8 +107,10 @@ class EffectSlow(Effect):
             # todo: поменять тут маскировку
             self.actual = False
             owner = self.owner
+            '''
             owner.p_cc.current += owner.p_cc.original * 0.5  # todo: взять из баланса
             owner.set_motion()
+            '''
 
 
 class SlowMineStartEvent(Event):

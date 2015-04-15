@@ -281,8 +281,8 @@ class Mobile(Unit):
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
-        self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
-        self.p_fuel_rate = Parameter(original=0.5, max_value=10000.0)
+        Parameter(original=1.0, min_value=0.0, max_value=1.0, owner=self, name='p_cc')  # todo: вычислить так: max_control_speed / v_max
+        Parameter(original=0.5, owner=self, name='p_fuel_rate')
 
     def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
@@ -331,9 +331,12 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(**kw)
 
     def on_fuel_empty(self, event):
+        pass
+        '''
         self.p_cc.current = 0.0
         self.set_motion()
         Die(time=event.time + 20.0, obj=self).post()
+        '''
 
     @property
     def v(self):
