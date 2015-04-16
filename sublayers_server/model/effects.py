@@ -18,7 +18,7 @@ def get_effects(server):
 class EffectStartEvent(Event):
     def __init__(self, effect, owner, **kw):
         assert effect
-        super(EffectStartEvent, self).__init__(server=effect.owner.server, **kw)
+        super(EffectStartEvent, self).__init__(server=owner.server, **kw)
         self.effect = effect
         self.owner = owner
 
@@ -33,7 +33,7 @@ class EffectStartEvent(Event):
 class EffectDoneEvent(Event):
     def __init__(self, effect, owner, **kw):
         assert effect
-        super(EffectDoneEvent, self).__init__(server=effect.owner.server, **kw)
+        super(EffectDoneEvent, self).__init__(server=owner.server, **kw)
         self.effect = effect
         self.owner = owner
 
@@ -43,8 +43,11 @@ class EffectDoneEvent(Event):
 
 
 class Effect(object):
-    def __init__(self, server, name, param_name, m_name, r_name, upd_method=None, sign=-1.0, is_stack=False):
+    def __init__(self, server, name, param_name, m_name, r_name, upd_method=None, sign=-1.0, is_stack=False,
+                 absolute=False, message=None):
         super(Effect, self).__init__()
+        self.absolute = absolute
+        self.message = message
         self.name = name
         self.sign = sign
         self.is_stack = is_stack
@@ -64,35 +67,50 @@ class Effect(object):
     def done(self, owner, time=None):
         EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
+    def modify(self, on, p, m_value, r_value):
+        sign = self.sign if on else -self.sign
+        original = 1.0 if self.absolute else p.original
+        p.current += sign * original * m_value * (1 - r_value)
+
     def on_update(self, owner, param_name, old_p_value):
         if param_name in self.dependence_list:
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
             r = owner.params.get(self.r_name)
             assert p and m and r
-            p.current -= self.sign * p.original * (old_p_value if param_name == self.m_name else m.value) * \
-                         (1 - (old_p_value if param_name == self.r_name else r.value))
-            p.current += self.sign * p.original * m.value * (1 - r.value)
+            self.modify(on=False, p=p, m_value=(old_p_value if param_name == self.m_name else m.value),
+                        r_value=(old_p_value if param_name == self.r_name else r.value))
+            self.modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
     def on_start(self, owner):
+
+        log.debug('On Start __ %s', self)
+
         if self.is_stack or not (self in owner.effects):
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
             r = owner.params.get(self.r_name)
             assert p and m and r
             old_p = p.value
-            p.current += self.sign * p.original * m.value * (1 - r.value)
+            self.modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
             for effect in owner.effects:
                 effect.on_update(owner=owner, param_name=self.param_name, old_p_value=old_p)
 
-            method = getattr(owner, self.upd_method)
-            if method:
-                method()
+            if self.upd_method is not None:
+                method = getattr(owner, self.upd_method)
+                if method:
+                    method()
+            if self.message:
+                if owner.owner:
+                    self.message(agent=owner.owner, subj=owner, effect=self, is_start=True).post()
 
         owner.effects.append(self)
 
     def on_done(self, owner):
+
+        log.debug('On END __ %s', self)
+
         if not self in owner.effects:
             return
         owner.effects.remove(self)
@@ -102,11 +120,15 @@ class Effect(object):
             r = owner.params.get(self.r_name)
             assert p and m and r
             old_p = p.value
-            p.current -= self.sign * p.original * m.value * (1 - r.value)
+            self.modify(on=False, p=p, m_value=m.value, r_value=r.value)
 
             for effect in owner.effects:
                 effect.on_update(owner=owner, param_name=self.param_name, old_p_value=old_p)
 
-            method = getattr(owner, self.upd_method)
-            if method:
-                method()
+            if self.upd_method is not None:
+                method = getattr(owner, self.upd_method)
+                if method:
+                    method()
+            if self.message:
+                if owner.owner:
+                    self.message(agent=owner.owner, subj=owner, effect=self, is_start=False).post()

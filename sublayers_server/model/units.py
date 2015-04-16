@@ -16,7 +16,6 @@ from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
     SearchZones, Die
 from sublayers_server.model.parameters import Parameter
-from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
 
 
@@ -45,7 +44,9 @@ class Unit(Observer):
         self.altitude = 0.0
         self.zones = []
         self.effects = []
-        EffectDirt(owner=self).start()
+        #EffectDirt(owner=self).start()
+        self.server.effects.get('EffectDirtCC').start(owner=self)
+
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
@@ -321,6 +322,8 @@ class Mobile(Unit):
 
     def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
+        if position is not None:
+            cc = 1.0
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):

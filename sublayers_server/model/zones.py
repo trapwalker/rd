@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.image_to_tileset import MongoDBToTilesets
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
-from sublayers_server.model.effects_zone import EffectRoad, EffectWater, EffectWood
 import sublayers_server.model.tags as tags
 
 import os
@@ -40,9 +39,17 @@ def init_zones_on_server(server):
     # Считывание из файлов
     log.info("Read zones tileset from files.")
 
-    read_ts_from_file(file_name='tilesets/ts_wood', server=server, effects=[EffectWood])
-    read_ts_from_file(file_name='tilesets/ts_water', server=server, effects=[EffectWater])
-    read_ts_from_file(file_name='tilesets/ts_road', server=server, effects=[EffectRoad])
+    read_ts_from_file(file_name='tilesets/ts_wood', server=server, effects=[
+        server.effects.get('EffectWoodCC'),
+        server.effects.get('EffectWoodVisibility'),
+        server.effects.get('EffectWoodObsRange'),
+    ])
+    read_ts_from_file(file_name='tilesets/ts_water', server=server, effects=[server.effects.get('EffectWaterCC')])
+    read_ts_from_file(file_name='tilesets/ts_road', server=server, effects=[
+        server.effects.get('EffectRoadRCCWood'),
+        server.effects.get('EffectRoadRCCWater'),
+        server.effects.get('EffectRoadRCCDirt'),
+        ])
     #read_ts_from_file(file_name='tilesets/ts_altitude_15', server=server, effects=[], zone_cls=AltitudeZoneTileset)
 
     log.info("Zones ready!")
@@ -57,13 +64,12 @@ class Zone(object):
     def _obj_in_zone(self, obj):
         obj.zones.append(self)
         for effect in self.effects:
-            effect(owner=obj).start()
+            effect.start(owner=obj)
 
     def _obj_out_zone(self, obj):
         obj.zones.remove(self)
-        for effect in obj.effects:
-            if effect.__class__ in self.effects:  # todo: replace 'obj.__class__' to 'type(obj)'
-                effect.done()
+        for effect in self.effects:
+            effect.done(owner=obj)
 
     def test_in_zone(self, obj):
         pass

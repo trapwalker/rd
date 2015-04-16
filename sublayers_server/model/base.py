@@ -190,8 +190,8 @@ class VisibleObject(PointObject):
 class Observer(VisibleObject):
 
     def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
-        Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
         super(Observer, self).__init__(**kw)
+        Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 

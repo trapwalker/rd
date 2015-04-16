@@ -47,6 +47,9 @@ class MotionTask(TaskSingleton):
                 assert time >= start_time
 
     def _calc_goto(self, start_time):
+
+        log.debug('=============_calc_goto cc is %s', self.cc)
+
         time = start_time
         owner = self.owner
         target_point = self.target_point
@@ -138,7 +141,7 @@ class MotionTask(TaskSingleton):
         if self.cc is None:
             self.cc = owner.state.u_cc
         assert self.cc is not None
-        self.cc = min(abs(self.cc), abs(owner.params.get('p_cc').current)) * (1 if self.cc >= 0.0 else -1)
+        self.cc = min(abs(self.cc), abs(owner.params.get('p_cc').value)) * (1 if self.cc >= 0.0 else -1)
         if abs(self.cc) < EPS:
             self.target_point = None
             self.cc = 0.0
