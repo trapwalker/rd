@@ -8,8 +8,56 @@ class BalanceSettingsABS:
         raise NotImplementedError
 
 
+class EffectsDict:
+    # todo: тут напутано со знаками, кое-где проставить sign=1.0
+    dicts = [
+        # dirt
+        dict(name='EffectDirtCC', param_name='p_cc', m_name='m_cc_dirt', r_name='r_cc_dirt', upd_method='set_motion'),
+        # wood
+        dict(name='EffectWoodCC', param_name='p_cc', m_name='m_cc_wood', r_name='r_cc_wood', upd_method='set_motion'),
+        dict(name='EffectWoodVisibility', param_name='p_visibility', m_name='m_visibility_wood', r_name='r_visibility_wood'),
+        dict(name='EffectWoodObsRange', param_name='p_observing_range', m_name='m_observing_range_wood', r_name='r_observing_range_wood'),
+        # road
+        dict(name='EffectRoadCC', param_name='p_cc', m_name='m_cc_wood', r_name='r_cc_road', upd_method='set_motion'),
+        dict(name='EffectRoadVisibility', param_name='p_visibility', m_name='m_visibility_road', r_name='r_visibility_road'),
+        dict(name='EffectRoadFuelRate', param_name='p_fuel_rate', m_name='m_fuel_rate_road', r_name='r_fuel_rate_road', upd_method='set_fuel'),
+        # road effects_resist
+        dict(name='EffectRoadRCCWood', param_name='r_cc_wood', m_name='m_cc_wood_on_road', r_name='r_r_cc_wood_on_road', upd_method='set_motion'),
+        dict(name='EffectRoadRCCWater', param_name='r_cc_water', m_name='m_cc_water_on_road', r_name='r_r_cc_water_on_road', upd_method='set_motion'),
+        # water
+        dict(name='EffectWaterCC', param_name='p_cc', m_name='m_cc_water', r_name='r_cc_water', upd_method='set_motion'),
+    ]
+
+
 class BALANCE(BalanceSettingsABS):
     """Gameplay balancing settings"""
+
+    # todo: резист не должен быть равен 0, иначе его нельзя изменить будет
+    default_resists = [
+        dict(name='r_cc_dirt', original=0.0),
+        dict(name='r_cc_wood', original=0.0),
+        dict(name='r_visibility_wood', original=0.0),
+        dict(name='r_observing_range_wood', original=0.0),
+        dict(name='r_cc_road', original=0.0),
+        dict(name='r_visibility_road', original=0.0),
+        dict(name='r_fuel_rate_road', original=0.0),
+        dict(name='r_r_cc_wood_on_road', original=0.0),
+        dict(name='r_r_cc_water_on_road', original=0.0),
+        dict(name='r_cc_water', original=0.0),
+    ]
+
+    default_modifiers = [
+        dict(name='m_cc_dirt', original=0.2),
+        dict(name='m_cc_wood', original=0.3),
+        dict(name='m_visibility_wood', original=0.5),
+        dict(name='m_observing_range_wood', original=0.5),
+        dict(name='m_cc_road', original=0.2),
+        dict(name='m_visibility_road', original=0.2),
+        dict(name='m_fuel_rate_road', original=0.5),
+        dict(name='m_cc_wood_on_road', original=1.0),
+        dict(name='m_cc_water_on_road', original=1.0),
+        dict(name='m_cc_water', original=0.45),
+    ]
 
     class Observer(BalanceSettingsABS):
         observing_range = 1000.0

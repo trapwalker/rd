@@ -125,6 +125,7 @@ class VisibleObject(PointObject):
     def __init__(self, visibility=1.0, **kw):
         super(VisibleObject, self).__init__(**kw)
         self.params = dict()
+        self.set_default_params()
 
         Parameter(original=visibility, name='p_visibility', owner=self)
 
@@ -177,6 +178,13 @@ class VisibleObject(PointObject):
 
     def set_default_tags(self):
         pass
+
+    def set_default_params(self):
+        for d in BALANCE.default_resists:
+            Parameter(owner=self, **d)
+        for d in BALANCE.default_modifiers:
+            Parameter(owner=self, **d)
+
 
 
 class Observer(VisibleObject):

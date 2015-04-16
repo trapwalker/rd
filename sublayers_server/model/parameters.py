@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 class Parameter(object):
-    def __init__(self, name, owner, original, min_value=None, max_value=None):
+    def __init__(self, owner, name, original, min_value=None, max_value=None):
         super(Parameter, self).__init__()
         self.name = name
         self.original = original
