@@ -83,9 +83,6 @@ class Effect(object):
             self.modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
     def on_start(self, owner):
-
-        log.debug('On Start __ %s', self)
-
         if self.is_stack or not (self in owner.effects):
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
@@ -108,10 +105,7 @@ class Effect(object):
         owner.effects.append(self)
 
     def on_done(self, owner):
-
-        log.debug('On END __ %s', self)
-
-        if not self in owner.effects:
+        if self not in owner.effects:
             return
         owner.effects.remove(self)
         if self.is_stack or not (self in owner.effects):

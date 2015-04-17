@@ -48,8 +48,6 @@ class MotionTask(TaskSingleton):
 
     def _calc_goto(self, start_time):
 
-        log.debug('=============_calc_goto cc is %s', self.cc)
-
         time = start_time
         owner = self.owner
         target_point = self.target_point
@@ -62,11 +60,15 @@ class MotionTask(TaskSingleton):
             time = st.update(t=time, cc=0.0, turn=0.0)
             assert time is not None
 
-        # Шаг 2: Установить желаемое сс
+        # Шаг 2: Установить желаемое сс # ошибка была здесь! Потому что это мог установить прошлый таск
         if abs(self.cc - st.cc) > EPS:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
             assert time is not None
+        else:
+            # ещё не разогнались, значит ждём разгон от другого таска
+            if (st.t_max is not None) and (st.t_max > time):
+                time = st.t_max
 
         # Шаг 3: Повернуться к цели
         st.update(t=time)
