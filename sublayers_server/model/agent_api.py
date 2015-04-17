@@ -247,12 +247,6 @@ class AgentAPI(API):
         self.car.fire_auto_enable(side=side, enable=enable)
 
     @public_method
-    def crazy(self, target_id=None):
-        # todo: identify target by name too
-        from sublayers_server.model.task_tools import CrazyTask
-        CrazyTask(owner=self.car, target_id=target_id).start()
-
-    @public_method
     def chat_message(self, text):
         log.info('Agent %s say: %r', self.agent.login, text)
         app = self.agent.connection.application
@@ -313,12 +307,7 @@ class AgentAPI(API):
         command, args = words[0], words[1:]
 
         # todo: need refactoring
-        if command == 'crazy':
-            target = args[0] if args else None
-            if isinstance(target, (basestring)) and target.isdigit():
-                target = int(target)
-            self.crazy(target)
-        elif command == 'sepuku':
+        if command == 'sepuku':
             self.change_car()  # todo: починить смену машинки
         elif command == '/create':
             # todo: options of party create
