@@ -325,7 +325,6 @@ class Mobile(Unit):
         if position is not None:
             cc = 1.0
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
-        # MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
         tasks = self.tasks[:]

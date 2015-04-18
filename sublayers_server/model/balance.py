@@ -171,9 +171,9 @@ class BALANCE(BalanceSettingsABS):
     class Rocket(Mobile):
         observing_range = 50.0  # очень небольшой радиус. думаю от 100 до 300 должен быть
         max_hp = 5.0
-        a_forward = 0.5  # ускорение ракеты
+        a_forward = 5.0  # ускорение ракеты
         a_braking = -50.0   # торможение ракеты ... будто она упала на землю
-        v_forward = 3.0         # максимальная скорость ракеты
+        v_forward = 30.0         # максимальная скорость ракеты
         ac_max = 1000.0         # на будущее
         max_control_speed = 200.0
         radius_damage = 120.0
