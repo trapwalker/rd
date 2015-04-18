@@ -61,10 +61,10 @@ class Effect(object):
     def __str__(self):
         return '{}<{} := ({}, {})>'.format(self.name, self.param_name, self.m_name, self.r_name)
 
-    def start(self, owner):
-        EffectStartEvent(effect=self, owner=owner).post()
+    def start(self, owner, time):
+        EffectStartEvent(effect=self, owner=owner, time=time).post()
 
-    def done(self, owner, time=None):
+    def done(self, owner, time):
         EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
     def modify(self, on, p, m_value, r_value):

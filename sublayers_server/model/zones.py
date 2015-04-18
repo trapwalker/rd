@@ -61,17 +61,17 @@ class Zone(object):
         self.server = server
         self.effects = effects[:]
 
-    def _obj_in_zone(self, obj):
+    def _obj_in_zone(self, obj, time):
         obj.zones.append(self)
         for effect in self.effects:
-            effect.start(owner=obj)
+            effect.start(owner=obj, time=time)
 
-    def _obj_out_zone(self, obj):
+    def _obj_out_zone(self, obj, time):
         obj.zones.remove(self)
         for effect in self.effects:
-            effect.done(owner=obj)
+            effect.done(owner=obj, time=time)
 
-    def test_in_zone(self, obj):
+    def test_in_zone(self, obj, time):
         pass
 
 
@@ -82,23 +82,23 @@ class ZoneTileset(Zone):
         # todo: вынести в сервер или куда-то !!!!
         self.max_map_zoom = 18
 
-    def test_in_zone(self, obj):
+    def test_in_zone(self, obj, time):
         if tags.UnZoneTag in obj.tags:
             return
-        position = obj.position
+        position = obj.position(time=time)
         if self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)):
             if not self in obj.zones:
-                self._obj_in_zone(obj=obj)
+                self._obj_in_zone(obj=obj, time=time)
         else:
             if self in obj.zones:
-                self._obj_out_zone(obj=obj)
+                self._obj_out_zone(obj=obj, time=time)
 
 
 class AltitudeZoneTileset(ZoneTileset):
-    def test_in_zone(self, obj):
+    def test_in_zone(self, obj, time):
         if tags.UnZoneTag in obj.tags:
             return
         if tags.UnAltitudeTag in obj.tags:
             return
-        position = obj.position
+        position = obj.position(time=time)
         obj.on_change_altitude(new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)))

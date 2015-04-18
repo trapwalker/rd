@@ -9,8 +9,6 @@ from sublayers_server.model import messages
 from sublayers_server.model.events import Event
 import sublayers_server.model.tags as tags
 
-
-
 u'''
     Двигающаяся турель! Дрон-разведчик.
 '''
@@ -28,7 +26,7 @@ class ScoutDroidStartEvent(Event):
 
 class ScoutDroid(Slave):
     def __init__(
-        self, starter, target,
+        self, time, starter, target,
         observing_range=BALANCE.ScoutDroid.observing_range,
         max_hp=BALANCE.ScoutDroid.max_hp,
         r_min=BALANCE.ScoutDroid.r_min,
@@ -42,9 +40,10 @@ class ScoutDroid(Slave):
         fuel=BALANCE.ScoutDroid.fuel,
         **kw
     ):
-        super(ScoutDroid, self).__init__(starter=starter,
-                                         position=starter.position,
-                                         direction=starter.direction,
+        super(ScoutDroid, self).__init__(time=time,
+                                         starter=starter,
+                                         position=starter.position(time=time),
+                                         direction=starter.direction(time=time),
                                          r_min=r_min,
                                          observing_range=observing_range,
                                          max_hp=max_hp,
@@ -88,7 +87,7 @@ class StationaryTurretStartEvent(Event):
 
 class StationaryTurret(Slave):
     def __init__(
-        self, starter,
+        self, time, starter,
         observing_range=BALANCE.StationaryTurret.observing_range,
         max_hp=BALANCE.StationaryTurret.max_hp,
         r_min=BALANCE.StationaryTurret.r_min,
@@ -100,9 +99,10 @@ class StationaryTurret(Slave):
         weapons=BALANCE.StationaryTurret.weapons,
         **kw
     ):
-        super(StationaryTurret, self).__init__(starter=starter,
-                                               position=starter.position,
-                                               direction=starter.direction,
+        super(StationaryTurret, self).__init__(time=time,
+                                               starter=starter,
+                                               position=starter.position(time=time),
+                                               direction=starter.direction(time=time),
                                                r_min=r_min,
                                                observing_range=observing_range,
                                                max_hp=max_hp,

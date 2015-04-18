@@ -88,8 +88,8 @@ class AgentAPI(API):
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
         # эффекты
-        for effect in self.car.effects:
-            effect.send_message()
+        #for effect in self.car.effects:
+        #    effect.send_message()
 
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов

@@ -39,7 +39,7 @@ class Agent(Object):
     def is_online(self):
         return self._connection is not None
 
-    def add_observer(self, observer, time=None):
+    def add_observer(self, observer, time):
         if not self.is_online:
             return
         # add _self_ into to the all _visible objects_ by _observer_
@@ -66,7 +66,7 @@ class Agent(Object):
             return
         messages.See(
             agent=self,
-            time=time or self.server.get_time(),  # todo: check it
+            time=time,
             subj=subj,
             obj=obj,
             is_boundary=is_boundary,
@@ -82,7 +82,7 @@ class Agent(Object):
             return
         messages.Out(
             agent=self,
-            time=time or self.server.get_time(),  # todo: check it
+            time=time,
             subj=subj,
             obj=obj,
             is_boundary=is_boundary,
@@ -146,7 +146,7 @@ class Agent(Object):
     def on_disconnect(self, connection):
         pass
 
-    def party_before_include(self, party, new_member):
+    def party_before_include(self, party, new_member, time):
         # party - куда включают, agent - кого включают
         if not self.is_online:
             return
@@ -157,7 +157,7 @@ class Agent(Object):
             if isinstance(obj, Unit):
                 obj.fire_auto_enable_all(enable=False)
 
-    def party_after_include(self, party, new_member, old_enable=True):
+    def party_after_include(self, party, new_member, time, old_enable=True):
         # party - куда включили, agent - кого включили
         if not self.is_online:
             return
@@ -166,7 +166,7 @@ class Agent(Object):
             if isinstance(obj, Unit):
                 obj.fire_auto_enable_all(enable=True)
 
-    def party_before_exclude(self, party, old_member):
+    def party_before_exclude(self, party, old_member, time):
         # party - откуда исключабт, agent - кого исключают
         if not self.is_online:
             return
@@ -177,7 +177,7 @@ class Agent(Object):
             if isinstance(obj, Unit):
                 obj.fire_auto_enable_all(enable=False)
 
-    def party_after_exclude(self, party, old_member):
+    def party_after_exclude(self, party, old_member, time):
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
             return
