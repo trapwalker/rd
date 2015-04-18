@@ -96,9 +96,9 @@ class Task(object):
         while e:
             e.pop().cancel()
 
-    def start(self):
+    def start(self, time=None):
         if not self.is_started:
-            TaskInitEvent(task=self).post()
+            TaskInitEvent(task=self, time=time).post()
         else:
             raise TaskError('Trying to start of already started task')
 

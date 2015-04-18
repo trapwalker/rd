@@ -142,7 +142,7 @@ class VisibleObject(PointObject):
         SearchContacts(obj=self).post()
 
     def on_update(self, event):  # todo: privacy level index
-        self.on_contacts_check()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
+        self.on_contacts_check(time=event.time)  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             messages.Update(
                 agent=agent,
@@ -151,17 +151,17 @@ class VisibleObject(PointObject):
                 comment=event.comment
             ).post()
 
-    def on_contacts_check(self):
+    def on_contacts_check(self, time):
         # todo: check all existed contacts
         if self.limbo:
             log.warning('Trying to check contacts in limbo: subj=%s', self)
             return
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if obj is not self and not obj.limbo:  # todo: optimize filtration observers
-                self.contact_test(obj)
-                obj.contact_test(self)  # todo: optimize forecasts
+                self.contact_test(obj=obj, time=time)
+                obj.contact_test(obj=self, time=time)  # todo: optimize forecasts
 
-    def contact_test(self, obj):
+    def contact_test(self, obj, time):
         """Test to contacts between *self* and *obj*, append them if is."""
         pass
 
@@ -195,16 +195,16 @@ class Observer(VisibleObject):
         self.watched_agents = CounterSet()
         self.visible_objects = []
 
-    def contact_test(self, obj):
+    def contact_test(self, obj, time):
         """Test to contacts between *self* and *obj*, append them if is."""
         # todo: test to time
         can_see = self.can_see(obj)
         see = obj in self.visible_objects
         if can_see != see:
             if can_see:
-                self.on_contact_in(time=self.server.get_time(), obj=obj)
+                self.on_contact_in(time=time, obj=obj)
             else:
-                self.on_contact_out(time=self.server.get_time(), obj=obj)
+                self.on_contact_out(time=time, obj=obj)
 
     def can_see(self, obj):
         assert not self.limbo

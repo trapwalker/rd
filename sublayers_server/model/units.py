@@ -78,6 +78,10 @@ class Unit(Observer):
     def max_hp(self):
         return self.hp_state.max_hp
 
+    def set_hp(self, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, time=None):
+        HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
+            .start(time=time)
+
     def hp_by_time(self, t=None):
         t = t if t is not None else self.server.get_time()
         return self.hp_state.hp(t)
@@ -136,10 +140,10 @@ class Unit(Observer):
                     t_rch=t_rch,
                 ).post()
 
-    def on_fire_auto_enable(self, side, enable):
+    def on_fire_auto_enable(self, side, enable, time):
         for sector in self.fire_sectors:
             if sector.side == side:
-                sector.enable_auto_fire(enable=enable)
+                sector.enable_auto_fire(enable=enable, time=time)
 
     def on_init(self, event):
         super(Unit, self).on_init(event)
@@ -151,11 +155,11 @@ class Unit(Observer):
         for zone in self.server.zones:
             zone.test_in_zone(obj=self)
 
-    def contact_test(self, obj):
-        super(Unit, self).contact_test(obj=obj)
+    def contact_test(self, obj, time):
+        super(Unit, self).contact_test(obj=obj, time=time)
         for sector in self.fire_sectors:
             if sector.is_auto():
-                sector.fire_auto(target=obj)
+                sector.fire_auto(target=obj, time=time)
 
     def send_auto_fire_messages(self, agent, action):
         for shooter in self.hp_state.shooters:
@@ -167,10 +171,10 @@ class Unit(Observer):
                         messages.FireAutoEffect(agent=agent, subj=self, obj=target,
                                                 action=action, side=sector.side).post()
 
-    def on_contact_out(self, obj, **kw):
+    def on_contact_out(self, obj, time, **kw):
         for sector in self.fire_sectors:
-            sector.out_car(target=obj)
-        super(Unit, self).on_contact_out(obj=obj, **kw)
+            sector.out_car(target=obj, time=time)
+        super(Unit, self).on_contact_out(obj=obj, time=time, **kw)
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
@@ -191,12 +195,12 @@ class Unit(Observer):
         )
         return d
 
-    def on_before_delete(self, **kw):
+    def on_before_delete(self, event):
         # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
-        self.on_fire_auto_enable(side='front', enable=False)
-        self.on_fire_auto_enable(side='back', enable=False)
-        self.on_fire_auto_enable(side='left', enable=False)
-        self.on_fire_auto_enable(side='right', enable=False)
+        self.on_fire_auto_enable(side='front', enable=False, time=event.time)
+        self.on_fire_auto_enable(side='back', enable=False, time=event.time)
+        self.on_fire_auto_enable(side='left', enable=False, time=event.time)
+        self.on_fire_auto_enable(side='right', enable=False, time=event.time)
 
         # снять все таски стрельбы по нам
         tasks = self.tasks[:]
@@ -208,7 +212,7 @@ class Unit(Observer):
         if self.owner:
             self.owner.drop_car(self)
 
-        super(Unit, self).on_before_delete(**kw)
+        super(Unit, self).on_before_delete(event=event)
 
     def zone_changed(self, zone_effect, in_zone):
         #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
@@ -315,23 +319,24 @@ class Mobile(Unit):
         super(Mobile, self).on_init(event)
 
     def on_start(self, event):
-        FuelTask(owner=self).start()
+        self.set_fuel(time=event.time)
 
     def on_stop(self, event):
-        FuelTask(owner=self).start()
+        self.set_fuel(time=event.time)
 
-    def set_motion(self, position=None, cc=None, turn=None, comment=None):
-        assert (turn is None) or (position is None)
-        if position is not None:
-            cc = 1.0
-        MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
+    def set_motion(self, target_point=None, cc=None, turn=None, comment=None, time=None):
+        assert (turn is None) or (target_point is None)
+        MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
-    def on_before_delete(self,  **kw):
+    def set_fuel(self, df=None, time=None):
+        FuelTask(owner=self, df=df).start(time=time)
+
+    def on_before_delete(self, event):
         tasks = self.tasks[:]
         for task in tasks:
             if isinstance(task, MotionTask) or isinstance(task, FuelTask):
                 task.done()
-        super(Mobile, self).on_before_delete(**kw)
+        super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
         pass
@@ -401,10 +406,10 @@ class Slave(ExtraMobile):
         if self.main_agent:
             self.main_agent.append_obj(self)
 
-    def on_before_delete(self, **kw):
+    def on_before_delete(self, event):
         if self.main_agent:
             self.main_agent.drop_obj(self)
-        super(Slave, self).on_before_delete(**kw)
+        super(Slave, self).on_before_delete(event=event)
 
 
 class UnitWeapon(ExtraMobile):

@@ -8,7 +8,6 @@ class BalanceSettingsABS:
 
 
 class EffectsDict:
-    # todo: тут напутано со знаками, кое-где проставить sign=1.0
     dicts = [
         # dirt
         dict(name='EffectDirtCC', param_name='p_cc', m_name='m_cc_dirt', r_name='r_cc_dirt',
@@ -34,14 +33,12 @@ class EffectsDict:
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
         dict(name='EffectRoadRCCDirt', param_name='r_cc_dirt', m_name='m_r_cc_dirt_on_road',
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
-
     ]
 
 
 class BALANCE(BalanceSettingsABS):
     """Gameplay balancing settings"""
 
-    # todo: резист не должен быть равен 0, иначе его нельзя изменить будет
     default_resists = [
         dict(name='r_empty', original=0.0, max_value=1.0),
 

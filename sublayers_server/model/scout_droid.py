@@ -5,8 +5,6 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.units import Slave
 from sublayers_server.model.balance import BALANCE
-from sublayers_server.model.hp_task import HPTask
-from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model import messages
 from sublayers_server.model.events import Event
 import sublayers_server.model.tags as tags
@@ -66,9 +64,9 @@ class ScoutDroid(Slave):
 
     def on_init(self, event):
         super(ScoutDroid, self).on_init(event)
-        MotionTask(owner=self, cc=1.0, target_point=self.target).start()
+        self.set_motion(cc=1.0, target_point=self.target, time=event.time)
         self.delete(time=event.time + 30.0)
-        self.fire_auto_enable_all(enable=True)
+        self.fire_auto_enable_all(enable=True, time=event.time)
 
     def set_default_tags(self):
         self.tags.add(tags.UnZoneTag)

@@ -302,7 +302,7 @@ class AgentAPI(API):
         p = None
         if x and y:
             p = Point(x, y)
-        self.car.set_motion(position=p, cc=cc, turn=turn, comment=comment)
+        self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment)
 
     @public_method
     def console_cmd(self, cmd):

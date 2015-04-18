@@ -25,9 +25,9 @@ class EffectStartEvent(Event):
     def on_perform(self):
         super(EffectStartEvent, self).on_perform()
         if not self.owner.limbo:
-            self.effect.on_start(owner=self.owner)
+            self.effect.on_start(owner=self.owner, time=self.time)
         else:
-            self.effect.on_done(owner=self.owner)
+            self.effect.on_done(owner=self.owner, time=self.time)
 
 
 class EffectDoneEvent(Event):
@@ -39,7 +39,7 @@ class EffectDoneEvent(Event):
 
     def on_perform(self):
         super(EffectDoneEvent, self).on_perform()
-        self.effect.on_done(owner=self.owner)
+        self.effect.on_done(owner=self.owner, time=self.time)
 
 
 class Effect(object):
@@ -82,7 +82,7 @@ class Effect(object):
                         r_value=(old_p_value if param_name == self.r_name else r.value))
             self.modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
-    def on_start(self, owner):
+    def on_start(self, owner, time=None):
         if self.is_stack or not (self in owner.effects):
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
@@ -97,14 +97,14 @@ class Effect(object):
             if self.upd_method is not None:
                 method = getattr(owner, self.upd_method)
                 if method:
-                    method()
+                    method(time=time)
             if self.message:
                 if owner.owner:
                     self.message(agent=owner.owner, subj=owner, effect=self, is_start=True).post()
 
         owner.effects.append(self)
 
-    def on_done(self, owner):
+    def on_done(self, owner, time=None):
         if self not in owner.effects:
             return
         owner.effects.remove(self)
@@ -122,7 +122,7 @@ class Effect(object):
             if self.upd_method is not None:
                 method = getattr(owner, self.upd_method)
                 if method:
-                    method()
+                    method(time=time)
             if self.message:
                 if owner.owner:
                     self.message(agent=owner.owner, subj=owner, effect=self, is_start=False).post()

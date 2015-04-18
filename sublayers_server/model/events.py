@@ -143,7 +143,7 @@ class SearchContacts(Objective):
         """@type: sublayers_server.model.base.Observer"""
         interval = obj.contacts_check_interval
         if obj.is_alive and interval:
-            obj.on_contacts_check()  # todo: check it
+            obj.on_contacts_check(time=self.time)  # todo: check it
             SearchContacts(obj=obj, time=obj.server.get_time() + interval).post()  # todo: make regular interva
 
 
@@ -226,7 +226,7 @@ class FireAutoEnableEvent(Objective):
 
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
-        self.obj.on_fire_auto_enable(self.side, self.enable)
+        self.obj.on_fire_auto_enable(side=self.side, enable=self.enable, time=self.time)
 
 
 class BangEvent(Event):
@@ -240,7 +240,6 @@ class BangEvent(Event):
 
     def on_perform(self):
         super(BangEvent, self).on_perform()
-        from sublayers_server.model.hp_task import HPTask
         from sublayers_server.model.messages import Bang
         from sublayers_server.model.units import Unit
 
@@ -248,7 +247,7 @@ class BangEvent(Event):
             if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if isinstance(obj, Unit):
                     if abs(self.center - obj.position) < self.radius:
-                        HPTask(owner=obj, dhp=self.damage, shooter=self.starter).start()
+                        obj.set_hp(dhp=self.damage, shooter=self.starter, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(
