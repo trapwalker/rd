@@ -253,9 +253,11 @@ class Party(object):
 
     def on_include(self, agent):
         old_party = agent.party
-        if old_party is self:
+        if not (old_party is self):
+            if old_party:
+                old_party.on_exclude(agent)
+        else:
             return
-
         # проверка по инвайтам
         if agent != self.owner:
             if not self._has_invite(agent):
@@ -266,10 +268,7 @@ class Party(object):
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self)
         for member in self.members:
-            member.agent.party_before_include(new_member=agent, party=self)
-
-        if old_party:
-            old_party.exclude(agent)
+            member.agent.party_before_include(new_member=agent, party=self)        
 
         self._on_include(agent)
         PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2))
