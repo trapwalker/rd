@@ -124,7 +124,11 @@ class VisibleObject(PointObject):
     """
     def __init__(self, visibility=1.0, **kw):
         super(VisibleObject, self).__init__(**kw)
-        self.p_visibility = Parameter(original=visibility)
+        self.params = dict()
+        self.set_default_params()
+
+        Parameter(original=visibility, name='p_visibility', owner=self)
+
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         self.contacts_check_interval = None  # todo: extract to special task
@@ -175,12 +179,19 @@ class VisibleObject(PointObject):
     def set_default_tags(self):
         pass
 
+    def set_default_params(self):
+        for d in BALANCE.default_resists:
+            Parameter(owner=self, **d)
+        for d in BALANCE.default_modifiers:
+            Parameter(owner=self, **d)
+
+
 
 class Observer(VisibleObject):
 
     def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
-        self.p_observing_range = Parameter(original=observing_range, max_value=10000.0)
         super(Observer, self).__init__(**kw)
+        Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 
@@ -199,7 +210,9 @@ class Observer(VisibleObject):
         assert not self.limbo
         assert not obj.limbo
         dist = abs(self.position - obj.position)
-        return dist <= (self.p_observing_range.value * obj.p_visibility.value)
+        self_p_observing_range = self.params.get('p_observing_range')
+        obj_p_visibility = obj.params.get('p_visibility')
+        return dist <= (self_p_observing_range.value * obj_p_visibility.value)
 
     # todo: check calls
 
@@ -249,7 +262,7 @@ class Observer(VisibleObject):
 
     @property
     def r(self):
-        return self.p_observing_range.value
+        return self.params.get('p_observing_range').value
 
     def as_dict(self, **kw):
         d = super(Observer, self).as_dict(**kw)

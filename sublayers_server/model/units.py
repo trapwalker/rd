@@ -16,7 +16,6 @@ from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
     SearchZones, Die
 from sublayers_server.model.parameters import Parameter
-from sublayers_server.model.effects_zone import EffectDirt
 from sublayers_server.model import messages
 
 
@@ -45,7 +44,9 @@ class Unit(Observer):
         self.altitude = 0.0
         self.zones = []
         self.effects = []
-        EffectDirt(owner=self).start()
+        #EffectDirt(owner=self).start()
+        self.server.effects.get('EffectDirtCC').start(owner=self)
+
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
@@ -281,8 +282,8 @@ class Mobile(Unit):
         self.cur_motion_task = None
         # todo: test to excess update-message after initial contact-message
         # Parametrs
-        self.p_cc = Parameter(original=1.0)  # todo: вычислить так: max_control_speed / v_max
-        self.p_fuel_rate = Parameter(original=0.5, max_value=10000.0)
+        Parameter(original=1.0, min_value=0.0, max_value=1.0, owner=self, name='p_cc')  # todo: вычислить так: max_control_speed / v_max
+        Parameter(original=0.5, owner=self, name='p_fuel_rate')
 
     def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
         return dict(
@@ -321,6 +322,8 @@ class Mobile(Unit):
 
     def set_motion(self, position=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (position is None)
+        if position is not None:
+            cc = 1.0
         MotionTask(owner=self, target_point=position, cc=cc, turn=turn, comment=comment).start()
 
     def on_before_delete(self,  **kw):
@@ -331,9 +334,12 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(**kw)
 
     def on_fuel_empty(self, event):
+        pass
+        '''
         self.p_cc.current = 0.0
         self.set_motion()
         Die(time=event.time + 20.0, obj=self).post()
+        '''
 
     @property
     def v(self):

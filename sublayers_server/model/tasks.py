@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import events
@@ -49,7 +50,6 @@ class TaskInitEvent(events.Event):
             self.task.on_start(self)
         else:
             self.task.on_done(self)
-
 
 
 class Task(object):
@@ -134,11 +134,10 @@ class TaskSingleton(Task):
     def _clear_tasks(self, time):
         tasks = []
         for task in self.owner.tasks:
-             if isinstance(task, self.__class__):
-                 tasks.append(task)
+            if isinstance(task, self.__class__):
+                tasks.append(task)
         for task in tasks:
             events = task.events[:]
             for event in events:
                 if event.time > time:
                     event.cancel()
-

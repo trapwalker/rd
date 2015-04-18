@@ -47,6 +47,7 @@ class MotionTask(TaskSingleton):
                 assert time >= start_time
 
     def _calc_goto(self, start_time):
+
         time = start_time
         owner = self.owner
         target_point = self.target_point
@@ -60,7 +61,7 @@ class MotionTask(TaskSingleton):
             assert time is not None
 
         # Шаг 2: Установить желаемое сс
-        if abs(self.cc - st.cc) > EPS:
+        if abs(abs(self.cc) * st.get_max_v_by_cc(self.cc) - st.v(t=time)) > EPS:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
             assert time is not None
@@ -138,7 +139,7 @@ class MotionTask(TaskSingleton):
         if self.cc is None:
             self.cc = owner.state.u_cc
         assert self.cc is not None
-        self.cc = min(abs(self.cc), abs(owner.p_cc.current)) * (1 if self.cc >= 0.0 else -1)
+        self.cc = min(abs(self.cc), abs(owner.params.get('p_cc').value)) * (1 if self.cc >= 0.0 else -1)
         if abs(self.cc) < EPS:
             self.target_point = None
             self.cc = 0.0
