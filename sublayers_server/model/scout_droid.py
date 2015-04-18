@@ -67,7 +67,7 @@ class ScoutDroid(Slave):
     def on_init(self, event):
         super(ScoutDroid, self).on_init(event)
         MotionTask(owner=self, cc=1.0, target_point=self.target).start()
-        self.delete(time=event.time + 60.0)
+        self.delete(time=event.time + 30.0)
         self.fire_auto_enable_all(enable=True)
 
     def set_default_tags(self):

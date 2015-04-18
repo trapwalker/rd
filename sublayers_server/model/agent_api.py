@@ -293,7 +293,7 @@ class AgentAPI(API):
             return
         assert x and y
         p = Point(x, y)
-        #ScoutDroidStartEvent(starter=self.car, target=p).post()
+        ScoutDroidStartEvent(starter=self.car, target=p).post()
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
