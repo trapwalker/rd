@@ -268,7 +268,7 @@ class Party(object):
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self)
         for member in self.members:
-            member.agent.party_before_include(new_member=agent, party=self)        
+            member.agent.party_before_include(new_member=agent, party=self)
 
         self._on_include(agent)
         PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2))

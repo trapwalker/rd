@@ -172,6 +172,8 @@ class LocalServer(Server):
 
 
 def main():
+    pass
+    '''
     log.info('==== Start logging ' + '=' * 50)
 
     from sublayers_server.model.units import Station, Bot
@@ -197,3 +199,4 @@ def main():
     pp(srv.timeline, width=1)
 
     return locals()
+    '''

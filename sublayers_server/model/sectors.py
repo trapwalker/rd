@@ -73,15 +73,15 @@ class FireSector(Sector):
         )
         return d
 
-    def _fire_auto_start(self, target):
+    def _fire_auto_start(self, target, time):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.start(target)
+                w.start(car=target, time=time)
 
-    def _fire_auto_end(self, target):
+    def _fire_auto_end(self, target, time):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.end(target)
+                w.end(car=target, time=time)
 
     def add_weapon(self, weapon):
         assert not (weapon in self.weapon_list)
@@ -111,13 +111,13 @@ class FireSector(Sector):
         fi = self.owner.direction + self.fi
         return shortest_angle(v.angle - fi) <= self.half_width
 
-    def fire_auto(self, target):
+    def fire_auto(self, target, time):
         if self._test_target_in_sector(target):
             if not target in self.target_list:
                 self.target_list.append(target)
-                self._fire_auto_start(target)
+                self._fire_auto_start(target=target, time=time)
         else:
-            self.out_car(target=target)
+            self.out_car(target=target, time=time)
 
     def fire_discharge(self, time):
         cars = []
@@ -134,9 +134,9 @@ class FireSector(Sector):
                 t_rch = max(t_rch, wp.fire(cars, time))
         return t_rch
 
-    def out_car(self, target):
+    def out_car(self, target, time):
         if target in self.target_list:
-            self._fire_auto_end(target=target)
+            self._fire_auto_end(target=target, time=time)
             self.target_list.remove(target)
 
     def can_discharge_fire(self, time):
@@ -146,11 +146,11 @@ class FireSector(Sector):
                     return False
         return True
 
-    def enable_auto_fire(self, enable=False):
+    def enable_auto_fire(self, time, enable=False):
         #log.debug('%s  enable auto_fire: %s    on side: %s', self.owner.uid, enable, self.side)
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.set_enable(enable, self.target_list)
+                w.set_enable(enable=enable, cars=self.target_list, time=time)
 
     def is_discharge(self):
         return self._is_discharge > 0
