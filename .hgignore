@@ -36,3 +36,4 @@ sublayers_server/static/js/map_base_local.js
 *.pid
 .hgrc
 local.*.conf
+sublayers_server/static/map/*

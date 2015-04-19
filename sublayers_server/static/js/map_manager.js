@@ -158,7 +158,8 @@ function onKeyDownMap(event) {
             break;
         case 49:  // 1
             //console.log('Was pressed: 1');
-            clientManager.sendSlowMine();
+            //clientManager.sendSlowMine();
+            clientManager.sendSetSpeed(10);
             break;
         case 50:  // 2
             //console.log('Was pressed: 2');

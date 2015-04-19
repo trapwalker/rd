@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.balance import BALANCE
-from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.messages import FireAutoEffect
 
 
@@ -45,39 +44,39 @@ class WeaponAuto(Weapon):
         )
         return d
 
-    def _start(self, car):
+    def _start(self, car, time):
         #todo: создать таск на патроны, который отменит дамаг и сделает стоп стрельбы
         self.targets.append(car)
-        HPTask(owner=car, dps=self.dps, add_shooter=self.owner).start()
+        car.set_hp(dps=self.dps, add_shooter=self.owner, time=time)
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=True).post()
 
-    def _end(self, car):
+    def _end(self, car, time):
         # todo: остановить списывание патронов пулемёта
         self.targets.remove(car)
-        if not car.is_died:  # если цель мертва, то нет смысла снимать с неё дамаг
-            HPTask(owner=car, dps=-self.dps, del_shooter=self.owner).start()
+        if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
+            car.set_hp(dps=-self.dps, del_shooter=self.owner, time=time)
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=False).post()
 
-    def start(self, car):
+    def start(self, car, time):
         if self._enable:
-            self._start(car)
+            self._start(car=car, time=time)
 
-    def end(self, car):
+    def end(self, car, time):
         if self._enable:
-            self._end(car)
+            self._end(car=car, time=time)
 
-    def set_enable(self, enable=True, cars=None):
+    def set_enable(self, time, enable=True, cars=None):
         if self._enable == enable:
             return
         self._enable = enable
         if cars:
             for car in cars:
                 if enable:
-                    self._start(car)
+                    self._start(car=car, time=time)
                 else:
-                    self._end(car)
+                    self._end(car=car, time=time)
 
     def get_enable(self):
         return self._enable
@@ -102,7 +101,7 @@ class WeaponDischarge(Weapon):
         # todo: добавить проверку на патроны
         if self.can_fire(time=time):
             for car in cars:
-                HPTask(owner=car, dhp=self.dmg, shooter=self.owner).start()
+                car.set_hp(dhp=self.dmg, shooter=self.owner, time=time)
             self.last_shoot = time
             return self.t_rch
         return 0

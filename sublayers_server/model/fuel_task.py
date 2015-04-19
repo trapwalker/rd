@@ -27,7 +27,7 @@ class FuelTask(TaskSingleton):
         super(FuelTask, self).__init__(**kw)
         assert self.owner.fuel_state is not None
         self.df = df
-        self.dfs = self.owner.p_fuel_rate.value if self.owner.state.is_moving else 0.0
+        self.dfs = self.owner.params.get('p_fuel_rate').value if self.owner.state.is_moving else 0.0
 
     def _update_state(self, event):
         owner = self.owner

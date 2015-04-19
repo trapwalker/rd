@@ -269,6 +269,9 @@ var ClientManager = (function () {
             // При попадании залповым орудием включить эффект тряски
             if (hp_state.dhp)
                 mapManager.widget_rumble.startDischargeRumble();
+
+            // Установка cc для круизконтроля
+            wCruiseControl.setSpeedRange(event.object.params.p_cc);
         }
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -492,9 +495,9 @@ var ClientManager = (function () {
         });
     };
 
-    ClientManager.prototype.ZoneEffectMessage = function (event) {
-        //console.log('ClientManager.prototype.ZoneEffectMessage', event);
-        wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
+    ClientManager.prototype.ZoneMessage = function (event) {
+        //console.log('ClientManager.prototype.ZoneMessage', event);
+        wCruiseControl.setZoneState(event.in_zone, event.is_start);
     };
 
     ClientManager.prototype.AgentPartyChangeMessage = function (event) {
@@ -610,11 +613,11 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendGoto');
         //var currentSpeed = wCruiseControl.getSpeedHandleValue();
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
-        if (currentSpeed == 0) {
-            return;
+       // if (currentSpeed == 0) {
+       //     return;
             //currentSpeed = user.userCar.maxSpeed * 0.2;
             //wCruiseControl.setSpeedHandleValue(0.2);
-        }
+       // }
         this.sendMotion(target, currentSpeed, null);
     };
 

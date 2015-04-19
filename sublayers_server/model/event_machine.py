@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
 from sublayers_server.model.zones import init_zones_on_server
+from sublayers_server.model.effects import get_effects
 from sublayers_server.model.first_mission_parties import RandomCarList
 from sublayers_server.model import events
 from sublayers_server.model import errors
@@ -37,6 +38,10 @@ class Server(object):
         # todo: blocking of init of servers with same uid
 
         self.randomCarList = RandomCarList()
+
+        self.effects = dict()
+        get_effects(server=self)
+
         self.zones = []
         init_zones_on_server(server=self)
 
@@ -167,6 +172,8 @@ class LocalServer(Server):
 
 
 def main():
+    pass
+    '''
     log.info('==== Start logging ' + '=' * 50)
 
     from sublayers_server.model.units import Station, Bot
@@ -192,3 +199,4 @@ def main():
     pp(srv.timeline, width=1)
 
     return locals()
+    '''

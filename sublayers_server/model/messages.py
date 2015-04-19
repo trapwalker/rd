@@ -71,8 +71,8 @@ class Init(Message):
     def as_dict(self):
         d = super(Init, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(),
-            cars=[car.as_dict(self.time) for car in self.agent.cars],
+            agent=self.agent.as_dict(time=self.time),
+            cars=[car.as_dict(time=self.time) for car in self.agent.cars],
         )
         return d
 
@@ -97,7 +97,7 @@ class Chat(Message):
     def as_dict(self):
         d = super(Chat, self).as_dict()
         d.update(
-            author=self.author.as_dict(),
+            author=self.author.as_dict(time=self.time),
             text=self.text,
             id=self.client_id,
         )
@@ -142,6 +142,7 @@ class Update(Message):
             if obj.cur_motion_task is not None:
                 dict_update.update(target_point=obj.cur_motion_task.target_point)
             dict_update.update(fuel_state=obj.fuel_state.export())
+            dict_update.update(params=obj.get_params_dict())
         d.update(object=dict_update)
         return d
 
@@ -179,7 +180,7 @@ class See(Contact):
     def as_dict(self):
         d = super(See, self).as_dict()
         d.update(
-            object=self.obj.as_dict(to_time=self.time),  # todo: Serialize objects with private case
+            object=self.obj.as_dict(time=self.time),  # todo: Serialize objects with private case
             is_first=self.is_first,
         )
         return d
@@ -282,21 +283,19 @@ class FireAutoEffect(Message):
         return d
 
 
-class ZoneEffectMessage(Message):
-    def __init__(self, subj, in_zone, zone_effect, **kw):
-        super(ZoneEffectMessage, self).__init__(**kw)
+class ZoneMessage(Message):
+    def __init__(self, subj, name, is_start, **kw):
+        super(ZoneMessage, self).__init__(**kw)
         self.subj = subj
-        self.in_zone = in_zone
-        self.zone_effect = zone_effect
+        self.name = name
+        self.is_start = is_start
 
     def as_dict(self):
-        d = super(ZoneEffectMessage, self).as_dict()
+        d = super(ZoneMessage, self).as_dict()
         d.update(
             subj=self.subj.uid,
-            in_zone=self.in_zone,
-            zone_effect=self.zone_effect,
-            subj_cc=self.subj.p_cc.current,
-            subj_r=self.subj.r
+            in_zone=self.name,
+            is_start=self.is_start,
         )
         return d
 
@@ -309,7 +308,7 @@ class AgentPartyChangeMessage(Message):
     def as_dict(self):
         d = super(AgentPartyChangeMessage, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
         )
         return d
 
@@ -323,7 +322,7 @@ class PartyIncludeMessageForIncluded(Message):
     def as_dict(self):
         d = super(PartyIncludeMessageForIncluded, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
             party=self.party.as_dict(with_members=True),
         )
         return d
@@ -338,7 +337,7 @@ class PartyExcludeMessageForExcluded(Message):
     def as_dict(self):
         d = super(PartyExcludeMessageForExcluded, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
             party=self.party.as_dict(),
         )
         return d
@@ -353,7 +352,7 @@ class PartyKickMessageForKicked(Message):
     def as_dict(self):
         d = super(PartyKickMessageForKicked, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
             party=self.party.as_dict(),
         )
         return d
@@ -370,8 +369,8 @@ class PartyInviteMessage(Message):
     def as_dict(self):
         d = super(PartyInviteMessage, self).as_dict()
         d.update(
-            sender=self.sender.as_dict(),
-            recipient=self.recipient.as_dict(),
+            sender=self.sender.as_dict(time=self.time),
+            recipient=self.recipient.as_dict(time=self.time),
             party=self.party.as_dict(),
             invite_id=self.invite.id
         )
@@ -389,8 +388,8 @@ class PartyInviteDeleteMessage(Message):
     def as_dict(self):
         d = super(PartyInviteDeleteMessage, self).as_dict()
         d.update(
-            sender=self.sender.as_dict(),
-            recipient=self.recipient.as_dict(),
+            sender=self.sender.as_dict(time=self.time),
+            recipient=self.recipient.as_dict(time=self.time),
             party=self.party.as_dict(),
             invite_id=self.invite.id
         )
@@ -413,3 +412,4 @@ class ChangeAltitude(Message):
                  obj_id=self.obj_id,
                  )
         return d
+

@@ -36,11 +36,11 @@ class HPTask(TaskSingleton):
             if self.owner.is_frag:
                 if self.shooter is not None:
                     self.shooter.main_unit.stat_log.frag(time=event.time, delta=1.0)  # начисляем фраг машинке
-                    self.shooter.main_unit.owner.stat_log.frag(time=event.time, delta=1.0)  # начисляем фраг агенту
+                    self.shooter.main_unit.main_agent.stat_log.frag(time=event.time, delta=1.0)  # начисляем фраг агенту
                 else:
                     if len(owner.hp_state.shooters) > 0:
                         owner.hp_state.shooters[0].main_unit.stat_log.frag(time=event.time, delta=1.0)  # начисляем фраг машинке
-                        owner.hp_state.shooters[0].main_unit.owner.stat_log.frag(time=event.time, delta=1.0)  # начисляем фраг агенту
+                        owner.hp_state.shooters[0].main_unit.main_agent.stat_log.frag(time=event.time, delta=1.0)  # начисляем фраг агенту
 
             return
         owner.hp_state.update(t=event.time, dhp=event.dhp, dps=event.dps)
