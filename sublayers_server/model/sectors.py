@@ -113,7 +113,7 @@ class FireSector(Sector):
 
     def fire_auto(self, target, time):
         if self._test_target_in_sector(target=target, time=time):
-            if not target in self.target_list:
+            if target not in self.target_list:
                 self.target_list.append(target)
                 self._fire_auto_start(target=target, time=time)
         else:

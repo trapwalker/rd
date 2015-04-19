@@ -68,8 +68,7 @@ class Unit(Observer):
         return self.hp_state.max_hp
 
     def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None):
-        HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
-            .start(time=time)
+        HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter).start(time=time)
 
     def setup_weapon(self, dict_weapon):
         sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
