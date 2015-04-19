@@ -72,7 +72,7 @@ class Init(Message):
         d = super(Init, self).as_dict()
         d.update(
             agent=self.agent.as_dict(time=self.time),
-            cars=[car.as_dict(self.time) for car in self.agent.cars],
+            cars=[car.as_dict(time=self.time) for car in self.agent.cars],
         )
         return d
 
@@ -97,7 +97,7 @@ class Chat(Message):
     def as_dict(self):
         d = super(Chat, self).as_dict()
         d.update(
-            author=self.author.as_dict(),
+            author=self.author.as_dict(time=self.time),
             text=self.text,
             id=self.client_id,
         )
@@ -308,7 +308,7 @@ class AgentPartyChangeMessage(Message):
     def as_dict(self):
         d = super(AgentPartyChangeMessage, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
         )
         return d
 
@@ -322,7 +322,7 @@ class PartyIncludeMessageForIncluded(Message):
     def as_dict(self):
         d = super(PartyIncludeMessageForIncluded, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
             party=self.party.as_dict(with_members=True),
         )
         return d
@@ -337,7 +337,7 @@ class PartyExcludeMessageForExcluded(Message):
     def as_dict(self):
         d = super(PartyExcludeMessageForExcluded, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
             party=self.party.as_dict(),
         )
         return d
@@ -352,7 +352,7 @@ class PartyKickMessageForKicked(Message):
     def as_dict(self):
         d = super(PartyKickMessageForKicked, self).as_dict()
         d.update(
-            subj=self.subj.as_dict(),
+            subj=self.subj.as_dict(time=self.time),
             party=self.party.as_dict(),
         )
         return d
@@ -369,8 +369,8 @@ class PartyInviteMessage(Message):
     def as_dict(self):
         d = super(PartyInviteMessage, self).as_dict()
         d.update(
-            sender=self.sender.as_dict(),
-            recipient=self.recipient.as_dict(),
+            sender=self.sender.as_dict(time=self.time),
+            recipient=self.recipient.as_dict(time=self.time),
             party=self.party.as_dict(),
             invite_id=self.invite.id
         )
@@ -388,8 +388,8 @@ class PartyInviteDeleteMessage(Message):
     def as_dict(self):
         d = super(PartyInviteDeleteMessage, self).as_dict()
         d.update(
-            sender=self.sender.as_dict(),
-            recipient=self.recipient.as_dict(),
+            sender=self.sender.as_dict(time=self.time),
+            recipient=self.recipient.as_dict(time=self.time),
             party=self.party.as_dict(),
             invite_id=self.invite.id
         )
