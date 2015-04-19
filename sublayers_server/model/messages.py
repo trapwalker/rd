@@ -142,6 +142,7 @@ class Update(Message):
             if obj.cur_motion_task is not None:
                 dict_update.update(target_point=obj.cur_motion_task.target_point)
             dict_update.update(fuel_state=obj.fuel_state.export())
+            dict_update.update(params=obj.get_params_dict())
         d.update(object=dict_update)
         return d
 
@@ -282,20 +283,19 @@ class FireAutoEffect(Message):
         return d
 
 
-class ZoneEffectMessage(Message):
-    def __init__(self, subj, effect, is_start, **kw):
-        super(ZoneEffectMessage, self).__init__(**kw)
+class ZoneMessage(Message):
+    def __init__(self, subj, name, is_start, **kw):
+        super(ZoneMessage, self).__init__(**kw)
         self.subj = subj
-        self.effect = effect
+        self.name = name
         self.is_start = is_start
 
     def as_dict(self):
-        d = super(ZoneEffectMessage, self).as_dict()
+        d = super(ZoneMessage, self).as_dict()
         d.update(
             subj=self.subj.uid,
-            in_zone=self.effect.name,
+            in_zone=self.name,
             is_start=self.is_start,
-            subj_cc=self.subj.params.get('p_cc').value,
         )
         return d
 

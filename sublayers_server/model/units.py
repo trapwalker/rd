@@ -44,8 +44,6 @@ class Unit(Observer):
         self.altitude = 0.0
         self.zones = []
         self.effects = []
-        self.server.effects.get('EffectDirtCC').start(owner=self, time=time)
-
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
@@ -283,6 +281,7 @@ class Mobile(Unit):
             fuel_state=self.fuel_state.export(),
             v_forward=self.state.v_forward,
             v_backward=self.state.v_backward,
+            p_cc=self.params.get('p_cc').value,
         )
         return d
 
