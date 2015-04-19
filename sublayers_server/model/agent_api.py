@@ -6,12 +6,13 @@ from math import pi
 
 log = logging.getLogger(__name__)
 
-from sublayers_server.model import units
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
-from sublayers_server.model.rocket import RocketStartEvent, SlowMineStartEvent
-from sublayers_server.model.scout_droid import ScoutDroidStartEvent, StationaryTurretStartEvent
+from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
+from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
+from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
+from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event
