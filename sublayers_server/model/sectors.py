@@ -100,20 +100,20 @@ class FireSector(Sector):
             self.is_discharge -= 1
         assert (self._is_auto >= 0) and (self.is_discharge >= 0)
 
-    def _test_target_in_sector(self, target):
+    def _test_target_in_sector(self, target, time):
         if not self.owner.is_target(target=target):
             return False
-        v = target.position - self.owner.position
+        v = target.position(time=time) - self.owner.position(time=time)
         if (v.x ** 2 + v.y ** 2) > self.radius ** 2:
             return False
         if self.width >= 2 * pi:
             return True
-        fi = self.owner.direction + self.fi
+        fi = self.owner.direction(time=time) + self.fi
         return shortest_angle(v.angle - fi) <= self.half_width
 
     def fire_auto(self, target, time):
-        if self._test_target_in_sector(target):
-            if not target in self.target_list:
+        if self._test_target_in_sector(target=target, time=time):
+            if target not in self.target_list:
                 self.target_list.append(target)
                 self._fire_auto_start(target=target, time=time)
         else:
@@ -125,7 +125,7 @@ class FireSector(Sector):
             cars = self.target_list
         else:
             for vo in self.owner.visible_objects:
-                if self._test_target_in_sector(vo):
+                if self._test_target_in_sector(target=vo, time=time):
                     cars.append(vo)
             self.target_list = cars
         t_rch = 0

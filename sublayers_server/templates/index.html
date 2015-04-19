@@ -5,9 +5,9 @@
             <h1>Hello, <b><i>{{ current_user }}!</i></b></h1>
             {% if car %}
                 <h2>You have car: </h2>
-                Health:  {{  car.hp }} / {{ car.max_hp }} <br>
-                Speed:  {{ car.v }} <br>
-                Auto Fire: {% if car.is_auto_fire_enable() %} On {% else %} Off {% end %} <br>
+                Health:  {{ car.max_hp }} <br>
+                Speed:   <br>
+                Auto Fire:  <br>
             {% else %}
                 You have 0 cars. Click Play for take random car !
             {% end %}

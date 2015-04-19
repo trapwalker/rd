@@ -71,7 +71,7 @@ class Init(Message):
     def as_dict(self):
         d = super(Init, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(),
+            agent=self.agent.as_dict(time=self.time),
             cars=[car.as_dict(self.time) for car in self.agent.cars],
         )
         return d
@@ -179,7 +179,7 @@ class See(Contact):
     def as_dict(self):
         d = super(See, self).as_dict()
         d.update(
-            object=self.obj.as_dict(to_time=self.time),  # todo: Serialize objects with private case
+            object=self.obj.as_dict(time=self.time),  # todo: Serialize objects with private case
             is_first=self.is_first,
         )
         return d

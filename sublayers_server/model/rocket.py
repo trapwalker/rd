@@ -17,12 +17,12 @@ class RocketStartEvent(Event):
 
     def on_perform(self):
         super(RocketStartEvent, self).on_perform()
-        Rocket(starter=self.starter)
+        Rocket(time=self.time, starter=self.starter)
 
 
 class Rocket(UnitWeapon):
     def __init__(
-        self, starter,
+        self, starter, time,
         observing_range=BALANCE.Rocket.observing_range,
         max_hp=BALANCE.Rocket.max_hp,
         a_forward=BALANCE.Rocket.a_forward,
@@ -37,9 +37,10 @@ class Rocket(UnitWeapon):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
         self.starter = starter
-        super(Rocket, self).__init__(starter=starter,
-                                     position=starter.position,
-                                     direction=starter.direction,
+        super(Rocket, self).__init__(time=time,
+                                     starter=starter,
+                                     position=starter.position(time=time),
+                                     direction=starter.direction(time=time),
                                      r_min=10,
                                      observing_range=observing_range,
                                      max_hp=max_hp,
@@ -61,8 +62,8 @@ class Rocket(UnitWeapon):
         self.delete(time=event.time + 180.0)
 
     def on_before_delete(self, event):
-        BangEvent(starter=self.main_unit, center=self.position, radius=self.radius_damage,
-                  damage=self.damage).post()
+        BangEvent(starter=self.main_unit, center=self.position(time=event.time), radius=self.radius_damage,
+                  damage=self.damage, time=event.time).post()
         super(Rocket, self).on_before_delete(event=event)
 
     def on_contact_in(self, time, obj, **kw):
@@ -72,11 +73,11 @@ class Rocket(UnitWeapon):
         if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return
 
-        self.delete()
+        self.delete(time=time)
 
     def set_default_tags(self):
         self.tags.add(tags.RocketTag)
-        self.tags.add(tags.UnZoneTag)
+        # self.tags.add(tags.UnZoneTag)
 
 
 u'''
@@ -117,12 +118,12 @@ class SlowMineStartEvent(Event):
 
     def on_perform(self):
         super(SlowMineStartEvent, self).on_perform()
-        SlowMine(starter=self.starter)
+        SlowMine(time=self.time, starter=self.starter)
 
 
 class SlowMine(UnitWeapon):
     def __init__(
-        self, starter,
+        self, time, starter,
         observing_range=BALANCE.SlowMine.observing_range,
         max_hp=BALANCE.SlowMine.max_hp,
         a_forward=BALANCE.SlowMine.a_forward,
@@ -134,9 +135,10 @@ class SlowMine(UnitWeapon):
     ):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
-        super(SlowMine, self).__init__(starter=starter,
-                                       position=starter.position,
-                                       direction=starter.direction,
+        super(SlowMine, self).__init__(time=time,
+                                       starter=starter,
+                                       position=starter.position(time=time),
+                                       direction=starter.direction(time=time),
                                        r_min=10,
                                        observing_range=observing_range,
                                        max_hp=max_hp,

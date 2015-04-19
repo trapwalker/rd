@@ -23,7 +23,7 @@ class Object(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
-    def __init__(self, server):
+    def __init__(self, server, time):
         """
         @type server: sublayers_server.model.event_machine.Server
         """
@@ -58,7 +58,7 @@ class Object(object):
         del self.server.objects[self.uid]
         # log.debug('Finally deletion: %s', self)
 
-    def delete(self, time=None):
+    def delete(self, time):
         Delete(obj=self, time=time).post()
 
     id = property(id)
@@ -72,7 +72,7 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
-    def as_dict(self, to_time=None):
+    def as_dict(self, time):
         return dict(
             cls=self.classname,
             uid=self.uid,
@@ -87,43 +87,28 @@ class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
     def __init__(self, position, **kw):
-        """
-        @type position: sublayers_server.model.vectors.Point
-        """
         super(PointObject, self).__init__(**kw)
         self._position = position
-        """@type: sublayers_server.model.vectors.Point"""
         self.server.geo_objects.append(self)
 
     def on_after_delete(self, event):
         self.server.geo_objects.remove(self)
         super(PointObject, self).on_after_delete(event=event)
 
-    def as_dict(self, **kw):
-        d = super(PointObject, self).as_dict(**kw)
-        d.update(position=self.position)
+    def as_dict(self, time):
+        d = super(PointObject, self).as_dict(time=time)
+        d.update(position=self.position(time=time))
         return d
 
-    @property
-    def position(self):
-        """
-        :rtype: model.vectors.Point
-        """
+    def position(self, time):
         return self._position
-
-    @position.setter
-    def position(self, position):
-        """
-        @param sublayers_server.model.vectors.Point position: New position
-        """
-        self._position = position
 
 
 class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-    def __init__(self, visibility=1.0, **kw):
-        super(VisibleObject, self).__init__(**kw)
+    def __init__(self, time, visibility=1.0, **kw):
+        super(VisibleObject, self).__init__(time=time, **kw)
         self.params = dict()
         self.set_default_params()
 
@@ -132,14 +117,14 @@ class VisibleObject(PointObject):
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         self.contacts_check_interval = None  # todo: extract to special task
-        Init(obj=self).post()
+        Init(obj=self, time=time).post()
         # работа с тегами
         self.tags = set()
         self.set_default_tags()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
-        SearchContacts(obj=self).post()
+        SearchContacts(obj=self, time=event.time).post()
 
     def on_update(self, event):  # todo: privacy level index
         self.on_contacts_check(time=event.time)  # todo: (!) Не обновлять контакты если изменения их не затрагивают
@@ -166,10 +151,9 @@ class VisibleObject(PointObject):
         pass
 
     def on_before_delete(self, event):
-        time = self.server.get_time()
         subscribed_observers = self.subscribed_observers[:]
         for obs in subscribed_observers:
-            obs.on_contact_out(time=time, obj=self)
+            obs.on_contact_out(time=event.time, obj=self)
         super(VisibleObject, self).on_before_delete(event=event)
 
     @property
@@ -186,7 +170,6 @@ class VisibleObject(PointObject):
             Parameter(owner=self, **d)
 
 
-
 class Observer(VisibleObject):
 
     def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
@@ -198,7 +181,7 @@ class Observer(VisibleObject):
     def contact_test(self, obj, time):
         """Test to contacts between *self* and *obj*, append them if is."""
         # todo: test to time
-        can_see = self.can_see(obj)
+        can_see = self.can_see(obj=obj, time=time)
         see = obj in self.visible_objects
         if can_see != see:
             if can_see:
@@ -206,10 +189,10 @@ class Observer(VisibleObject):
             else:
                 self.on_contact_out(time=time, obj=obj)
 
-    def can_see(self, obj):
+    def can_see(self, obj, time):
         assert not self.limbo
         assert not obj.limbo
-        dist = abs(self.position - obj.position)
+        dist = abs(self.position(time=time) - obj.position(time=time))
         self_p_observing_range = self.params.get('p_observing_range')
         obj_p_visibility = obj.params.get('p_visibility')
         return dist <= (self_p_observing_range.value * obj_p_visibility.value)
@@ -248,10 +231,9 @@ class Observer(VisibleObject):
 
     def on_before_delete(self, event):
         # развидеть все объекты, которые были видны
-        time = self.server.get_time()
         visible_objects = self.visible_objects[:]
         for vo in visible_objects:
-            self.on_contact_out(time=time, obj=vo)
+            self.on_contact_out(time=event.time, obj=vo)
 
         # перестать отправлять агентам сообщения
         for agent in self.watched_agents:
@@ -264,8 +246,8 @@ class Observer(VisibleObject):
     def r(self):
         return self.params.get('p_observing_range').value
 
-    def as_dict(self, **kw):
-        d = super(Observer, self).as_dict(**kw)
+    def as_dict(self, time):
+        d = super(Observer, self).as_dict(time=time)
         d.update(r=self.r)
         return d
 
