@@ -24,7 +24,7 @@ class UpdateAgentAPIEvent(Event):
 
     def on_perform(self):
         super(UpdateAgentAPIEvent, self).on_perform()
-        self.api.on_update_agent_api()
+        self.api.on_update_agent_api(time=self.time)
 
 
 class OpenTemplateWindowMessage(messages.Message):
@@ -83,8 +83,8 @@ class AgentAPI(API):
                 ctx[attr_name] = attr
         return ctx
 
-    def send_init_package(self):
-        messages.Init(agent=self.agent, time=None).post()
+    def send_init_package(self, time):
+        messages.Init(agent=self.agent, time=time).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
         # эффекты
@@ -120,15 +120,15 @@ class AgentAPI(API):
                 vo.send_auto_fire_messages(agent=self.agent, action=True)
 
     def update_agent_api(self):
-        UpdateAgentAPIEvent(api=self).post()
+        UpdateAgentAPIEvent(api=self, time=self.agent.server.get_time()).post()
 
-    def on_update_agent_api(self):
+    def on_update_agent_api(self, time):
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
-            self.make_car()
+            self.make_car(time=time)
 
-        assert self.car.hp > 0, 'Car HP <= 0'
+        assert self.car.hp(time=time) > 0, 'Car HP <= 0'
 
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
         self.shell = Shell(self.cmd_line_context(), dict(
@@ -137,11 +137,11 @@ class AgentAPI(API):
             log=log,
         ))
 
-        self.send_init_package()
+        self.send_init_package(time=time)
 
-    def make_car(self, position=None, position_sigma=Point(100, 100)):
-        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent)
-        self.agent.append_car(self.car)
+    def make_car(self, time, position=None, position_sigma=Point(100, 100)):
+        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent, time=time)
+        self.agent.append_car(car=self.car, time=time)
 
     @public_method
     def open_window_create_party(self):
@@ -174,15 +174,16 @@ class AgentAPI(API):
         @param str|int id: existed id of party
         """
         log.info('%s try to set or create party %s', self.agent.login, name)
+        time = self.agent.server.get_time()
         if name is None:
             if self.agent.party:
-                self.agent.party.exclude(self.agent)
+                self.agent.party.exclude(self.agent, time=time)
         else:
             party = Party.search(name)
             if party is None:
-                party = Party(owner=self.agent, name=name, description=description)
+                party = Party(time=time, owner=self.agent, name=name, description=description)
             elif self.agent not in party:
-                party.include(self.agent)
+                party.include(self.agent, time=time)
 
     @public_method
     def send_invite(self, username):
@@ -194,7 +195,7 @@ class AgentAPI(API):
             return
         party = self.agent.party
         if party is None:
-            party = Party(owner=self.agent)
+            party = Party(owner=self.agent, time=self.agent.server.get_time())
         party.invite(sender=self.agent, recipient=user)
 
     @public_method
@@ -209,7 +210,7 @@ class AgentAPI(API):
         if (user is None) or (not (user in party)):
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick').post()
             return
-        party.kick(kicker=self.agent, kicked=user)
+        party.kick(kicker=self.agent, kicked=user, time=self.agent.server.get_time())
 
     @public_method
     def send_set_category(self, username, category):
@@ -229,28 +230,16 @@ class AgentAPI(API):
         party.get_member_by_agent(agent=user).set_category(category=category)
 
     @public_method
-    def change_car(self):
-        self.agent.drop_car(self.car)
-        self.make_car()
-        self.send_init_package()
-
-    @public_method
     def fire_discharge(self, side):
         if self.car.limbo or not self.car.is_alive:
             return
-        self.car.fire_discharge(side=side)
+        self.car.fire_discharge(side=side, time=self.agent.server.get_time())
 
     @public_method
     def fire_auto_enable(self, side, enable):
         if self.car.limbo or not self.car.is_alive:
             return
-        self.car.fire_auto_enable(side=side, enable=enable)
-
-    @public_method
-    def crazy(self, target_id=None):
-        # todo: identify target by name too
-        from sublayers_server.model.task_tools import CrazyTask
-        CrazyTask(owner=self.car, target_id=target_id).start()
+        self.car.fire_auto_enable(side=side, enable=enable, time=self.agent.server.get_time())
 
     @public_method
     def chat_message(self, text):
@@ -270,22 +259,19 @@ class AgentAPI(API):
     def send_rocket(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        # todo: ракета должна создаваться в unit
-        RocketStartEvent(starter=self.car).post()
+        RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_slow_mine(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        # todo: ракета должна создаваться в unit
-        SlowMineStartEvent(starter=self.car).post()
+        SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_stationary_turret(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        # todo: ракета должна создаваться в unit
-        StationaryTurretStartEvent(starter=self.car).post()
+        StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_scout_droid(self, x, y):
@@ -293,7 +279,7 @@ class AgentAPI(API):
             return
         assert x and y
         p = Point(x, y)
-        ScoutDroidStartEvent(starter=self.car, target=p).post()
+        ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
@@ -302,7 +288,7 @@ class AgentAPI(API):
         p = None
         if x and y:
             p = Point(x, y)
-        self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment)
+        self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment, time=self.agent.server.get_time())
 
     @public_method
     def console_cmd(self, cmd):
@@ -313,14 +299,7 @@ class AgentAPI(API):
         command, args = words[0], words[1:]
 
         # todo: need refactoring
-        if command == 'crazy':
-            target = args[0] if args else None
-            if isinstance(target, (basestring)) and target.isdigit():
-                target = int(target)
-            self.crazy(target)
-        elif command == 'sepuku':
-            self.change_car()  # todo: починить смену машинки
-        elif command == '/create':
+        if command == '/create':
             # todo: options of party create
             self.set_party(name=args[0] if args else None)
         elif command == '/leave':

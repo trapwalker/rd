@@ -43,11 +43,9 @@ class MotionTask(TaskSingleton):
         while time is not None:
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=self.turn, comment=self.comment).post()
             time = st.update(t=time, cc=self.cc, turn=self.turn)
-            if time is not None:
-                assert time >= start_time
+            assert (time is None) or (time >= start_time)
 
     def _calc_goto(self, start_time):
-
         time = start_time
         owner = self.owner
         target_point = self.target_point

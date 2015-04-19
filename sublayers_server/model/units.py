@@ -55,28 +55,21 @@ class Unit(Observer):
                 self.setup_weapon(dict_weapon=weapon)
 
     def direction(self, time):
-        """
-        @rtype: float
-        """
         return self._direction
 
     def is_died(self, time):
         return self.hp(time=time) <= 0.0
 
     def hp(self, time):
-        return self.hp_state.hp(time=time)
+        return self.hp_state.hp(t=time)
 
     @property
     def max_hp(self):
         return self.hp_state.max_hp
 
-    def set_hp(self, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, time=None):
+    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None):
         HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
             .start(time=time)
-
-    def hp_by_time(self, t=None):
-        t = t if t is not None else self.server.get_time()
-        return self.hp_state.hp(t)
 
     def setup_weapon(self, dict_weapon):
         sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
@@ -94,13 +87,13 @@ class Unit(Observer):
         # todo: продумать меанизм снятия оружия
         pass
 
-    def fire_discharge(self, side):
-        FireDischargeEvent(obj=self, side=side).post()
+    def fire_discharge(self, side, time):
+        FireDischargeEvent(obj=self, side=side, time=time).post()
 
-    def fire_auto_enable(self, side, enable, time=None):
+    def fire_auto_enable(self, side, enable, time):
         FireAutoEnableEvent(time=time, obj=self, side=side, enable=enable).post()
 
-    def fire_auto_enable_all(self, enable, time=None):
+    def fire_auto_enable_all(self, enable, time):
         # log.info('%s  fire_auto_enable_all is %s    in time: %s', self.uid, enable, time)
         self.fire_auto_enable(time=time, side='front', enable=enable)
         self.fire_auto_enable(time=time, side='back', enable=enable)
@@ -123,7 +116,7 @@ class Unit(Observer):
         # для себя: side, time, t_rch
         if t_rch > 0.0:
             # евент залповая стрельба
-            FireDischargeEffectEvent(obj=self, side=side).post()
+            FireDischargeEffectEvent(obj=self, side=side, time=event.time).post()
             # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
             for agent in self.watched_agents:
                 messages.FireDischarge(
@@ -173,13 +166,13 @@ class Unit(Observer):
         if self.owner:
             messages.Die(agent=self.owner).post()
         # todo: удалить себя и на этом месте создать обломки
-        self.delete()
+        self.delete(time=event.time)
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
         owner = self.owner
         d.update(
-            owner=owner and owner.as_dict(),
+            owner=owner and owner.as_dict(time=time),
             direction=self.direction(time=time),
             hp_state=self.hp_state.export(),
             fire_sectors=[sector.as_dict() for sector in self.fire_sectors],
@@ -201,7 +194,7 @@ class Unit(Observer):
 
         # дроп машинки из агента и пати (в которой находится агент)
         if self.owner:
-            self.owner.drop_car(self)
+            self.owner.drop_car(car=self, time=event.time)
 
         super(Unit, self).on_before_delete(event=event)
 
@@ -304,11 +297,11 @@ class Mobile(Unit):
     def on_stop(self, event):
         self.set_fuel(time=event.time)
 
-    def set_motion(self, target_point=None, cc=None, turn=None, comment=None, time=None):
+    def set_motion(self, time, target_point=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
-    def set_fuel(self, df=None, time=None):
+    def set_fuel(self, time, df=None):
         FuelTask(owner=self, df=df).start(time=time)
 
     def on_before_delete(self, event):
@@ -325,10 +318,6 @@ class Mobile(Unit):
         self.set_motion()
         Die(time=event.time + 20.0, obj=self).post()
         '''
-
-    def get_position(self, time=None):
-        time = time if time is not None else self.server.get_time()
-        return self.state.p(time)
 
     def v(self, time):
         return self.state.v(t=time)
@@ -375,11 +364,11 @@ class Slave(ExtraMobile):
     def on_init(self, event):
         super(Slave, self).on_init(event)
         if self.main_agent:
-            self.main_agent.append_obj(self)
+            self.main_agent.append_obj(obj=self, time=event.time)
 
     def on_before_delete(self, event):
         if self.main_agent:
-            self.main_agent.drop_obj(self)
+            self.main_agent.drop_obj(obj=self, time=event.time)
         super(Slave, self).on_before_delete(event=event)
 
 

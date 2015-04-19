@@ -21,7 +21,7 @@ class ScoutDroidStartEvent(Event):
 
     def on_perform(self):
         super(ScoutDroidStartEvent, self).on_perform()
-        ScoutDroid(starter=self.starter, target=self.target)
+        ScoutDroid(time=self.time, starter=self.starter, target=self.target)
 
 
 class ScoutDroid(Slave):
@@ -82,7 +82,7 @@ class StationaryTurretStartEvent(Event):
 
     def on_perform(self):
         super(StationaryTurretStartEvent, self).on_perform()
-        StationaryTurret(starter=self.starter)
+        StationaryTurret(time=self.time, starter=self.starter)
 
 
 class StationaryTurret(Slave):
@@ -120,5 +120,5 @@ class StationaryTurret(Slave):
     def on_init(self, event):
         super(StationaryTurret, self).on_init(event)
         self.delete(time=event.time + 90.0)
-        self.fire_auto_enable_all(enable=True)
+        self.fire_auto_enable_all(enable=True, time=event.time)
 

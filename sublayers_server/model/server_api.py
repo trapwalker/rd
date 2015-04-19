@@ -23,7 +23,7 @@ class ServerAPI(API):
         agent = self.server.agents.get(agent_id, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             cls = AI if ai else User
-            agent = cls(server=self.server, login=agent_id, party=None)
+            agent = cls(server=self.server, login=agent_id, party=None, time=self.server.get_time())
             log.info('Server API: New Agent is created: %s', agent_id)
         else:
             if agent and do_disconnect:

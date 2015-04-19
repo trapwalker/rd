@@ -192,7 +192,7 @@ class PartyMember(object):
 class Party(object):
     parties = {}
 
-    def __init__(self, owner=None, name=None, description=''):
+    def __init__(self, time, owner=None, name=None, description=''):
         if (name is None) or (name == ''):
             name = self.classname
         while name in self.parties:
@@ -205,7 +205,7 @@ class Party(object):
         self.members = []
         self.invites = []
         if owner is not None:
-            self.include(owner)
+            self.include(owner, time=time)
 
     @property
     def classname(self):
@@ -248,8 +248,8 @@ class Party(object):
                 return member
         return None
 
-    def include(self, agent):
-        PartyIncludeEvent(party=self, agent=agent).post()
+    def include(self, agent, time):
+        PartyIncludeEvent(party=self, agent=agent, time=time).post()
 
     def on_include(self, agent, time):
         old_party = agent.party
@@ -298,8 +298,8 @@ class Party(object):
         #log.info(len(self.share_obs))
         #log.info('==============End include')
 
-    def exclude(self, agent):
-        PartyExcludeEvent(party=self, agent=agent).post()
+    def exclude(self, agent, time):
+        PartyExcludeEvent(party=self, agent=agent, time=time).post()
 
     def on_exclude(self, agent, time):
         out_member = self.get_member_by_agent(agent)
@@ -389,8 +389,8 @@ class Party(object):
                 return True
         return False
 
-    def kick(self, kicker, kicked):
-        PartyKickEvent(party=self, kicker=kicker, kicked=kicked).post()
+    def kick(self, kicker, kicked, time):
+        PartyKickEvent(party=self, kicker=kicker, kicked=kicked, time=time).post()
 
     def on_kick(self, kicker, kicked, time):
         kicker_member = self.get_member_by_agent(kicker)

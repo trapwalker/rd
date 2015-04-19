@@ -17,7 +17,7 @@ class RocketStartEvent(Event):
 
     def on_perform(self):
         super(RocketStartEvent, self).on_perform()
-        Rocket(starter=self.starter)
+        Rocket(time=self.time, starter=self.starter)
 
 
 class Rocket(UnitWeapon):
@@ -59,11 +59,11 @@ class Rocket(UnitWeapon):
     def on_init(self, event):
         super(Rocket, self).on_init(event)
         self.set_motion(cc=1.0, time=event.time)
-        self.delete(time=event.time + 180.0)
+        self.delete(time=event.time + 120.0)
 
     def on_before_delete(self, event):
-        BangEvent(starter=self.main_unit, center=self.position, radius=self.radius_damage,
-                  damage=self.damage).post()
+        BangEvent(starter=self.main_unit, center=self.position(time=event.time), radius=self.radius_damage,
+                  damage=self.damage, time=event.time).post()
         super(Rocket, self).on_before_delete(event=event)
 
     def on_contact_in(self, time, obj, **kw):
@@ -73,7 +73,7 @@ class Rocket(UnitWeapon):
         if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return
 
-        self.delete()
+        self.delete(time=time)
 
     def set_default_tags(self):
         self.tags.add(tags.RocketTag)
@@ -118,7 +118,7 @@ class SlowMineStartEvent(Event):
 
     def on_perform(self):
         super(SlowMineStartEvent, self).on_perform()
-        SlowMine(starter=self.starter)
+        SlowMine(time=self.time, starter=self.starter)
 
 
 class SlowMine(UnitWeapon):

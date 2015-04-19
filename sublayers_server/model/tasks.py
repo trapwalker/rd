@@ -24,7 +24,7 @@ class TaskPerformEvent(events.Event):
         task = self.task
         if self in task.events:
             task.events.remove(self)
-        if not task.events:
+        if len(task.events) == 0:
             self.task.on_done(self)
 
     def on_perform(self):
@@ -96,7 +96,7 @@ class Task(object):
         while e:
             e.pop().cancel()
 
-    def start(self, time=None):
+    def start(self, time):
         if not self.is_started:
             TaskInitEvent(task=self, time=time).post()
         else:
@@ -139,5 +139,5 @@ class TaskSingleton(Task):
         for task in tasks:
             events = task.events[:]
             for event in events:
-                if event.time > time:
+                if event.time >= time:
                     event.cancel()

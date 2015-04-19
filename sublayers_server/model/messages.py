@@ -71,7 +71,7 @@ class Init(Message):
     def as_dict(self):
         d = super(Init, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(),
+            agent=self.agent.as_dict(time=self.time),
             cars=[car.as_dict(self.time) for car in self.agent.cars],
         )
         return d

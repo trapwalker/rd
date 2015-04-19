@@ -21,6 +21,7 @@ class Event(object):
         @param float time: Time of event
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
+        assert time is not None, 'classname event is {}'.format(self.classname)
         self.time = time or server.get_time()
         self.actual = True
         self.callback_before = callback_before
@@ -144,7 +145,9 @@ class SearchContacts(Objective):
         interval = obj.contacts_check_interval
         if obj.is_alive and interval:
             obj.on_contacts_check(time=self.time)  # todo: check it
-            SearchContacts(obj=obj, time=obj.server.get_time() + interval).post()  # todo: make regular interva
+            SearchContacts(obj=obj, time=self.time + interval).post()  # todo: make regular interva
+            # info раньше было так
+            # SearchContacts(obj=obj, time=obj.server.get_time() + interval).post()
 
 
 class SearchZones(Objective):
@@ -156,7 +159,9 @@ class SearchZones(Objective):
         obj.on_zone_check(self)
         interval = obj.contacts_check_interval
         if obj.is_alive and interval:
-            SearchZones(obj=obj, time=obj.server.get_time() + interval).post()
+            SearchZones(obj=obj, time=self.time + interval).post()
+            # info было так
+            # SearchZones(obj=obj, time=obj.server.get_time() + interval).post()
 
 
 class Contact(Objective):
@@ -203,13 +208,13 @@ class FireDischargeEffectEvent(Objective):
             if (sector.side == self.side) and sector.is_discharge():
                 max_radius = max(max_radius, sector.radius)
                 for target in sector.target_list:
-                    targets.append(target.position)
+                    targets.append(target.position(time=self.time))
 
         # todo: добавить гео-позиционный фильтр агентов
-        subj_position = self.obj.position
+        subj_position = self.obj.position(time=self.time)
         fake_position = None
         if len(targets) == 0:
-            fake_position = Point.polar(max_radius, self.obj.direction + get_angle_by_side(self.side)) + subj_position
+            fake_position = Point.polar(max_radius, self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
             if len(targets) > 0:
                 for target in targets:
@@ -246,7 +251,7 @@ class BangEvent(Event):
         for obj in self.server.geo_objects:  # todo: GEO-index clipping
             if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if isinstance(obj, Unit):
-                    if abs(self.center - obj.position) < self.radius:
+                    if abs(self.center - obj.position(time=self.time)) < self.radius:
                         obj.set_hp(dhp=self.damage, shooter=self.starter, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
