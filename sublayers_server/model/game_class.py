@@ -5,7 +5,12 @@ log = logging.getLogger(__name__)
 
 
 class BaseMeta(type):
-    pass
+
+    def f(self):
+        return 13
+
+    x = property(f)
+    
 
 
 
