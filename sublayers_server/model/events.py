@@ -31,6 +31,8 @@ class Event(object):
     def post(self):
         self.server.post_event(self)  # todo: test to atomic construction
         log.info('POST   %s', self)
+        self.server.stat_log.s_events_all(time=self.time, delta=1.0)
+        self.server.stat_log.s_events_on(time=self.time, delta=1.0)
 
     def cancel(self):
         if self.actual:
@@ -41,7 +43,7 @@ class Event(object):
             log.warning('Double cancelling event: %s', self)
 
     def on_cancel(self):
-        pass
+        self.server.stat_log.s_events_on(time=self.time, delta=-1.0)
 
     def __hash__(self):
         return hash((self.time,))
@@ -87,7 +89,13 @@ class Event(object):
             self.callback_after(event=self)
 
     def on_perform(self):
-        pass
+        stat_log = self.server.stat_log
+        stat_log.s_events_on(time=self.time, delta=-1.0)
+        curr_lag = self.server.get_time() - self.time
+        assert curr_lag >= 0.0, '{}'.format(curr_lag)
+        stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
+        if stat_log.get_metric('s_events_lag_max') < curr_lag:
+            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
 
 
 class Objective(Event):

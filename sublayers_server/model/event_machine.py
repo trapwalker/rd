@@ -8,7 +8,7 @@ from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_
 from sublayers_server.model.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
 from sublayers_server.model.first_mission_parties import RandomCarList
-from sublayers_server.model import events
+from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model import errors
 
 import sys
@@ -44,6 +44,8 @@ class Server(object):
 
         self.zones = []
         init_zones_on_server(server=self)
+
+        self.stat_log = StatLogger(owner=self)
 
     @staticmethod
     def get_time():

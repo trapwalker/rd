@@ -321,6 +321,8 @@ class AgentAPI(API):
                         messages.Message(agent=self.agent, comment='{} / {}'.format(m_car, m_agent)).post()
                     else:
                         messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
+                elif metric_name == 'server':
+                    messages.Message(agent=self.agent, comment=self.agent.server.stat_log.get_server_stat()).post()
         else:
             log.warning('Unknown console command "%s"', cmd)
 

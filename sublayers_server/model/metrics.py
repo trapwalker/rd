@@ -52,6 +52,26 @@ class IncMetric(Metric):
         storage = stat_log.m_dict
         return storage.get(self.name, self.init)
 
+class ValueMetric(Metric):
+    __str_template__ = 'metric::{self.classname}[{time}] #{stat_log.owner} => {stat_log.m_dict[way]}'
+
+    def __init__(self, init=0.0, delta=None, **kw):
+        super(ValueMetric, self).__init__(**kw)
+        self.init = init
+        self.delta = delta
+
+    def call(self, stat_log, value=None, **kw):
+        name = self.name
+        storage = stat_log.m_dict
+        if value is None:
+            return
+        storage[name] = value
+        super(ValueMetric, self).call(stat_log=stat_log, **kw)
+
+    def value(self, stat_log):
+        storage = stat_log.m_dict
+        return storage.get(self.name, self.init)
+
 
 if __name__ == '__main__':
     pass

@@ -35,6 +35,10 @@ class Agent(Object):
         self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
         self.stat_log = StatLogger(owner=self)
 
+        # статистика сервера
+        self.server.stat_log.s_agents_all(time=time, delta=1.0)
+
+
     @property
     def is_online(self):
         return self._connection is not None
@@ -121,7 +125,6 @@ class Agent(Object):
             self.drop_observer(observer=obj, time=time)
             self.slave_objects.remove(obj)
 
-
     def append_car(self, car, time):  # specific
         if car not in self.cars:
             self.cars.append(car)
@@ -144,7 +147,7 @@ class Agent(Object):
         pass
 
     def on_disconnect(self, connection):
-        pass
+        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=-1.0)
 
     def party_before_include(self, party, new_member, time):
         # party - куда включают, agent - кого включают
