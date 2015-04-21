@@ -136,6 +136,12 @@ class VisibleObject(PointObject):
                 comment=event.comment
             ).post()
 
+    def get_params_dict(self):
+        res = dict()
+        for p in self.params.values():
+            res.update({p.name: p.value})
+        return res
+
     def on_contacts_check(self, time):
         # todo: check all existed contacts
         if self.limbo:

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Server Statistics</title>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+</head>
+<body>
+<div>
+
+    {%  for key in server_stat.keys() %}
+        <div>
+            <span> {{ key }} :</span>
+            <span id="{{ key }}">{{ server_stat[key] }}</span>
+        </div>
+    {% end %}
+
+
+    <script>
+        $(document).ready(function () {
+            setInterval(function () {
+                $.ajax({
+                    url: "http://" + location.host + '/server_stat_refresh',
+                    data: null,
+                    success: function (data) {
+                        for(var key in data) {
+                            var elem = $('#'+key);
+                            if (elem){
+                                elem.text(data[key])
+                            }
+                        }
+                    }
+                });
+            }, 3000);
+
+        })
+    </script>
+</div>
+</body>

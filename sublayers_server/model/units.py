@@ -44,8 +44,6 @@ class Unit(Observer):
         self.altitude = 0.0
         self.zones = []
         self.effects = []
-        self.server.effects.get('EffectDirtCC').start(owner=self, time=time)
-
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
         self.fire_sectors = []
@@ -53,6 +51,11 @@ class Unit(Observer):
         if weapons:
             for weapon in weapons:
                 self.setup_weapon(dict_weapon=weapon)
+
+        # обновляем статистику сервера
+        server_stat = self.server.stat_log
+        server_stat.s_units_all(time=time, delta=1.0)
+        server_stat.s_units_on(time=time, delta=1.0)
 
     def direction(self, time):
         return self._direction
@@ -195,6 +198,9 @@ class Unit(Observer):
         if self.owner:
             self.owner.drop_car(car=self, time=event.time)
 
+        # обновляем статистику по живым юнитам
+        self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
+
         super(Unit, self).on_before_delete(event=event)
 
     def zone_changed(self, zone_effect, in_zone):
@@ -283,6 +289,7 @@ class Mobile(Unit):
             fuel_state=self.fuel_state.export(),
             v_forward=self.state.v_forward,
             v_backward=self.state.v_backward,
+            p_cc=self.params.get('p_cc').value,
         )
         return d
 

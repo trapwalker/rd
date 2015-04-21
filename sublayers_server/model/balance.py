@@ -33,6 +33,10 @@ class EffectsDict:
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
         dict(name='EffectRoadRCCDirt', param_name='r_cc_dirt', m_name='m_r_cc_dirt_on_road',
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
+
+        # mine effects
+        dict(name='EffectMineCC', param_name='p_cc', m_name='m_cc_mine', r_name='r_cc_mine',
+             upd_method='set_motion', sign=-1.0),
     ]
 
 
@@ -53,6 +57,8 @@ class BALANCE(BalanceSettingsABS):
         dict(name='r_cc_road', original=0.0, max_value=1.0),
         dict(name='r_visibility_road', original=0.0, max_value=1.0),
         dict(name='r_fuel_rate_road', original=0.0, max_value=1.0),
+
+        dict(name='r_cc_mine', original=0.0, max_value=1.0),
     ]
 
     default_modifiers = [
@@ -67,6 +73,8 @@ class BALANCE(BalanceSettingsABS):
         dict(name='m_r_cc_wood_on_road', original=1.0),
         dict(name='m_r_cc_water_on_road', original=1.0),
         dict(name='m_r_cc_dirt_on_road', original=1.0),
+
+        dict(name='m_cc_mine', original=0.5),
     ]
 
     class Observer(BalanceSettingsABS):
