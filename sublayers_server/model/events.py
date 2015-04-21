@@ -148,14 +148,13 @@ class SearchContacts(Objective):
 
     def on_perform(self):
         super(SearchContacts, self).on_perform()
-        '''
         obj = self.obj
         """@type: sublayers_server.model.base.Observer"""
         interval = obj.contacts_check_interval
         if obj.is_alive and interval:
             obj.on_contacts_check(time=self.time)  # todo: check it
             SearchContacts(obj=obj, time=self.time + interval).post()  # todo: make regular interva
-        '''
+
 
 
 class SearchZones(Objective):
