@@ -29,6 +29,7 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import MainHandler, PlayHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
+from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 
 from sublayers_server.model.event_machine import LocalServer
 
@@ -61,6 +62,8 @@ class Application(tornado.web.Application):
             (r"/auth/login", AuthLoginHandler),
             (r"/auth/login/google", AuthGoogleHandler),
             (r"/auth/logout", AuthLogoutHandler),
+            (r"/stat", ServerStatisticsHandler),
+            (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,
