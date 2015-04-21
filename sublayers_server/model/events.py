@@ -166,8 +166,8 @@ class SearchZones(Objective):
         """@type: sublayers_server.model.base.Observer"""
         #obj.on_zone_check(self)
         interval = obj.contacts_check_interval
-        if obj.is_alive and interval:
-            SearchZones(obj=obj, time=self.time + interval).post()
+        #if obj.is_alive and interval:
+        #    SearchZones(obj=obj, time=self.time + interval).post()
             # info было так
             # SearchZones(obj=obj, time=obj.server.get_time() + interval).post()
 
