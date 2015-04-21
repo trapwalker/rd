@@ -198,11 +198,13 @@ class Observer(VisibleObject):
     def can_see(self, obj, time):
         assert not self.limbo
         assert not obj.limbo
-        #dist = abs(self.position(time=time) - obj.position(time=time))
+        v = self.position(time=time) - obj.position(time=time)
+        dist = v.x ** 2 + v.y ** 2
+        # dist = abs(self.position(time=time) - obj.position(time=time))
         self_p_observing_range = self.params.get('p_observing_range')
         obj_p_visibility = obj.params.get('p_visibility')
-        #return dist <= (self_p_observing_range.value * obj_p_visibility.value)
-        # res = dist <= (self_p_observing_range.value * obj_p_visibility.value)
+        #return dist <= ((self_p_observing_range.value * obj_p_visibility.value) ** 2)
+        res = dist <= ((self_p_observing_range.value * obj_p_visibility.value) ** 2)
         return False
 
     # todo: check calls
