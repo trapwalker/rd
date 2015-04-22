@@ -58,7 +58,7 @@ class Rocket(UnitWeapon):
     def on_init(self, event):
         super(Rocket, self).on_init(event)
         self.set_motion(cc=1.0, time=event.time)
-        self.delete(time=event.time + 60.0)
+        self.delete(time=event.time + 180.0)
 
     def on_before_delete(self, event):
         BangEvent(starter=self.main_unit, center=self.position(time=event.time), radius=self.radius_damage,
