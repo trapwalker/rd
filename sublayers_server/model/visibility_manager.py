@@ -54,10 +54,11 @@ class VisibilityManager(object):
         tid = Tileid2(long(p.x), long(p.y), self.max_z).parent_by_lvl(self.z)
         if self._obj_in_tile(obj=obj, tid=tid):
             return tid
-        if tid in self.tiles.keys():
-            for t in self.tiles[tid][0]:
-                if self._obj_in_tile(obj=obj, tid=t):
-                    return t
+        around_tiles = tid.get_around_tiles()
+        for t in around_tiles:
+            if self._obj_in_tile(obj=obj, tid=t):
+                return t
+        
         x, y, z = tid.xyz()
         log.info('111111111111111111ERRRRRROR !!!!! MEGA SUPER ERRROR !!!!! %s, %s, %s', x, y, z)
         for t in self.tiles.keys():
@@ -65,6 +66,7 @@ class VisibilityManager(object):
                 x, y, z = t.xyz()
                 log.info('222222222222222222ERRRRRROR !!!!! MEGA SUPER ERRROR !!!!! %s, %s, %s', x, y, z)
                 return t
+
         assert False
 
     def _can_see(self, obj, subj, obj_pos, subj_pos):
