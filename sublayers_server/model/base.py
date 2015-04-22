@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 #from utils import get_uid, serialize
 from sublayers_server.model import messages
-from sublayers_server.model.events import Init, Delete, SearchContacts
+from sublayers_server.model.events import Init, Delete
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.stat_log import StatLogger
@@ -124,10 +124,9 @@ class VisibleObject(PointObject):
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
-        SearchContacts(obj=self, time=event.time).post()
+        self.server.visibility_mng.add_object(obj=self, time=event.time)
 
     def on_update(self, event):  # todo: privacy level index
-        self.on_contacts_check(time=event.time)  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             messages.Update(
                 agent=agent,
@@ -142,24 +141,11 @@ class VisibleObject(PointObject):
             res.update({p.name: p.value})
         return res
 
-    def on_contacts_check(self, time):
-        # todo: check all existed contacts
-        if self.limbo:
-            log.warning('Trying to check contacts in limbo: subj=%s', self)
-            return
-        for obj in self.server.geo_objects:  # todo: GEO-index clipping
-            if obj is not self and not obj.limbo:  # todo: optimize filtration observers
-                self.contact_test(obj=obj, time=time)
-                obj.contact_test(obj=self, time=time)  # todo: optimize forecasts
-
-    def contact_test(self, obj, time):
-        """Test to contacts between *self* and *obj*, append them if is."""
-        pass
-
     def on_before_delete(self, event):
         subscribed_observers = self.subscribed_observers[:]
         for obs in subscribed_observers:
             obs.on_contact_out(time=event.time, obj=self)
+        self.server.visibility_mng.del_object(obj=self, time=event.time)
         super(VisibleObject, self).on_before_delete(event=event)
 
     @property
@@ -183,27 +169,6 @@ class Observer(VisibleObject):
         Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
-
-    def contact_test(self, obj, time):
-        """Test to contacts between *self* and *obj*, append them if is."""
-        # todo: test to time
-        can_see = self.can_see(obj=obj, time=time)
-        see = obj in self.visible_objects
-        if can_see != see:
-            if can_see:
-                self.on_contact_in(time=time, obj=obj)
-            else:
-                self.on_contact_out(time=time, obj=obj)
-
-    def can_see(self, obj, time):
-        assert not self.limbo
-        assert not obj.limbo
-        self_p_observing_range = self.params.get('p_observing_range')
-        obj_p_visibility = obj.params.get('p_visibility')
-        radius = self_p_observing_range.value * obj_p_visibility.value
-        p1 = self.position(time=time)
-        p2 = obj.position(time=time)
-        return ((p1.x - radius) < p2.x) and ((p1.x + radius) > p2.x) and ((p1.y - radius) < p2.y) and ((p1.y + radius) > p2.y)
 
     def on_contact_in(self, time, obj, is_boundary=False, comment=None):
         """

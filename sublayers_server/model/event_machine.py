@@ -9,6 +9,7 @@ from sublayers_server.model.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
 from sublayers_server.model.first_mission_parties import RandomCarList
 from sublayers_server.model.stat_log import StatLogger
+from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 import sys
@@ -46,6 +47,7 @@ class Server(object):
         init_zones_on_server(server=self)
 
         self.stat_log = StatLogger(owner=self)
+        self.visibility_mng = VisibilityManager(server=self)
 
     @staticmethod
     def get_time():

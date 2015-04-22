@@ -140,13 +140,13 @@ class Unit(Observer):
         # зонирование
         for zone in self.server.zones:
             zone.test_in_zone(obj=self, time=event.time)
-
+    '''
     def contact_test(self, obj, time):
         super(Unit, self).contact_test(obj=obj, time=time)
         for sector in self.fire_sectors:
             if sector.is_auto():
                 sector.fire_auto(target=obj, time=time)
-
+    '''
     def send_auto_fire_messages(self, agent, action):
         for shooter in self.hp_state.shooters:
             messages.FireAutoEffect(agent=agent, subj=shooter, obj=self, action=action).post()
