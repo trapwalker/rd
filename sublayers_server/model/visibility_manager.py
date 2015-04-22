@@ -59,9 +59,11 @@ class VisibilityManager(object):
                 if self._obj_in_tile(obj=obj, tid=t):
                     return t
         x, y, z = tid.xyz()
-        log.info('ERRRRRROR !!!!! MEGA SUPER ERRROR !!!!! %s, %s', x, y)
+        log.info('111111111111111111ERRRRRROR !!!!! MEGA SUPER ERRROR !!!!! %s, %s, %s', x, y, z)
         for t in self.tiles.keys():
             if self._obj_in_tile(obj=obj, tid=t):
+                x, y, z = t.xyz()
+                log.info('222222222222222222ERRRRRROR !!!!! MEGA SUPER ERRROR !!!!! %s, %s, %s', x, y, z)
                 return t
         assert False
 
