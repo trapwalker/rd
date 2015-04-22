@@ -144,19 +144,6 @@ class Delete(Objective):
         self.obj.on_after_delete(event=self)
 
 
-class SearchContacts(Objective):
-
-    def on_perform(self):
-        super(SearchContacts, self).on_perform()
-        obj = self.obj
-        """@type: sublayers_server.model.base.Observer"""
-        interval = obj.contacts_check_interval
-        if obj.is_alive and interval:
-            obj.on_contacts_check(time=self.time)  # todo: check it
-            SearchContacts(obj=obj, time=self.time + interval).post()  # todo: make regular interva
-
-
-
 class SearchZones(Objective):
 
     def on_perform(self):
@@ -184,6 +171,20 @@ class Contact(Objective):
         assert subj.is_alive and not subj.limbo
         self.subj = subj
         super(Contact, self).__init__(obj=obj, **kw)
+
+
+class ContactInEvent(Contact):
+    def on_perform(self):
+        super(ContactInEvent, self).on_perform()
+        if (self.subj.is_alive and not self.subj.limbo) and (self.obj.is_alive and not self.obj.limbo):
+            self.subj.on_contact_in(obj=self.obj, time=self.time)
+
+
+class ContactOutEvent(Contact):
+    def on_perform(self):
+        super(ContactOutEvent, self).on_perform()
+        if (self.subj.is_alive and not self.subj.limbo) and (self.obj.is_alive and not self.obj.limbo):
+            self.subj.on_contact_out(obj=self.obj, time=self.time)
 
 
 class FireDischargeEvent(Objective):
