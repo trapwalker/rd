@@ -58,6 +58,11 @@ class VisibilityManager(object):
             for t in self.tiles[tid][0]:
                 if self._obj_in_tile(obj=obj, tid=t):
                     return t
+        x, y, z = tid.xyz()
+        log.info('ERRRRRROR !!!!! MEGA SUPER ERRROR !!!!! %s, %s', x, y)
+        for t in self.tiles.keys():
+            if self._obj_in_tile(obj=obj, tid=t):
+                return t
         assert False
 
     def _can_see(self, obj, subj, obj_pos, subj_pos):
