@@ -42,6 +42,7 @@ class Unit(Observer):
         self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp)
         self._direction = direction
         self.altitude = 0.0
+        self.check_zone_interval = None
         self.zones = []
         self.effects = []
         self.tasks = []
@@ -134,6 +135,7 @@ class Unit(Observer):
 
     def on_init(self, event):
         super(Unit, self).on_init(event)
+        self.check_zone_interval = BALANCE.interval_refresh
         SearchZones(obj=self, time=event.time).post()
 
     def on_zone_check(self, event):
@@ -292,10 +294,6 @@ class Mobile(Unit):
             p_cc=self.params.get('p_cc').value,
         )
         return d
-
-    def on_init(self, event):
-        self.contacts_check_interval = 2.0  # todo: optimize. Regular in motion only
-        super(Mobile, self).on_init(event)
 
     def on_start(self, event):
         self.set_fuel(time=event.time)
