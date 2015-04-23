@@ -49,6 +49,8 @@ class Server(object):
         self.stat_log = StatLogger(owner=self)
         self.visibility_mng = VisibilityManager(server=self)
 
+        self.event_lag_deque = deque(maxlen=100)
+
     @staticmethod
     def get_time():
         return get_time()
@@ -71,6 +73,25 @@ class Server(object):
         """
         for event in events_list:
             self.post_event(event)
+
+    def get_server_stat(self):
+        st = self.stat_log
+        s_events_lag_mid = 0.0
+        for t in self.event_lag_deque:
+            s_events_lag_mid += t
+        s_events_lag_mid /= 100.0
+        return dict(
+            s_agents_all=st.get_metric('s_agents_all'),
+            s_agents_on=st.get_metric('s_agents_on'),
+            s_units_all=st.get_metric('s_units_all'),
+            s_units_on=st.get_metric('s_units_on'),
+            s_events_all=st.get_metric('s_events_all'),
+            s_events_on=st.get_metric('s_events_on'),
+            s_events_lag_max=st.get_metric('s_events_lag_max'),
+            s_events_lag_cur=st.get_metric('s_events_lag_cur'),
+            s_events_lag_mid=s_events_lag_mid,
+        )
+
 
     memsize = sys.getsizeof
 
