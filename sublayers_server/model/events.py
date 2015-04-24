@@ -94,7 +94,7 @@ class Event(object):
         curr_lag = self.server.get_time() - self.time
         assert curr_lag >= 0.0, '{}'.format(curr_lag)
         stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
-        self.server.event_lag_deque.append(curr_lag)
+        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
         if stat_log.get_metric('s_events_lag_max') < curr_lag:
             stat_log.s_events_lag_max(time=self.time, value=curr_lag)
 
