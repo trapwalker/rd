@@ -14,7 +14,7 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
-    SearchZones, Die
+    SearchZones, Die, FireAutoTestEvent
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 
@@ -42,10 +42,13 @@ class Unit(Observer):
         self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp)
         self._direction = direction
         self.altitude = 0.0
+        self.check_zone_interval = None
         self.zones = []
         self.effects = []
         self.tasks = []
         """@type: list[sublayers_server.model.tasks.Task]"""
+        self.turn_on_auto_fire = False
+        self.check_auto_fire_interval = None
         self.fire_sectors = []
         """@type: list[sublayers_server.model.sectors.FireSector]"""
         if weapons:
@@ -71,7 +74,8 @@ class Unit(Observer):
         return self.hp_state.max_hp
 
     def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None):
-        HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter).start(time=time)
+        HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
+            .start(time=time)
 
     def setup_weapon(self, dict_weapon):
         sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
@@ -92,15 +96,8 @@ class Unit(Observer):
     def fire_discharge(self, side, time):
         FireDischargeEvent(obj=self, side=side, time=time).post()
 
-    def fire_auto_enable(self, side, enable, time):
-        FireAutoEnableEvent(time=time, obj=self, side=side, enable=enable).post()
-
-    def fire_auto_enable_all(self, enable, time):
-        # log.info('%s  fire_auto_enable_all is %s    in time: %s', self.uid, enable, time)
-        self.fire_auto_enable(time=time, side='front', enable=enable)
-        self.fire_auto_enable(time=time, side='back', enable=enable)
-        self.fire_auto_enable(time=time, side='left', enable=enable)
-        self.fire_auto_enable(time=time, side='right', enable=enable)
+    def fire_auto_enable(self, enable, time):
+        FireAutoEnableEvent(time=time, obj=self, enable=enable).post()
 
     def on_fire_discharge(self, event):
         time = event.time
@@ -127,13 +124,24 @@ class Unit(Observer):
                     t_rch=t_rch,
                 ).post()
 
-    def on_fire_auto_enable(self, side, enable, time):
-        for sector in self.fire_sectors:
-            if sector.side == side:
+    def on_fire_auto_enable(self, enable, time):
+        #log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
+        if self.turn_on_auto_fire == enable:
+            return
+        else:
+            if enable:
+                FireAutoTestEvent(obj=self, time=time).post()
+            else:
+                for event in self.events:
+                    if isinstance(event, FireAutoTestEvent):
+                        event.cancel()
+            for sector in self.fire_sectors:
                 sector.enable_auto_fire(enable=enable, time=time)
 
     def on_init(self, event):
         super(Unit, self).on_init(event)
+        self.check_auto_fire_interval = BALANCE.interval_refresh
+        self.check_zone_interval = BALANCE.interval_refresh
         SearchZones(obj=self, time=event.time).post()
 
     def on_zone_check(self, event):
@@ -141,8 +149,8 @@ class Unit(Observer):
         for zone in self.server.zones:
             zone.test_in_zone(obj=self, time=event.time)
 
-    def contact_test(self, obj, time):
-        super(Unit, self).contact_test(obj=obj, time=time)
+    def on_auto_fire_test(self, obj, time):
+        #log.debug('on_auto_fire_test bot = %s', self.uid)
         for sector in self.fire_sectors:
             if sector.is_auto():
                 sector.fire_auto(target=obj, time=time)
@@ -183,10 +191,7 @@ class Unit(Observer):
 
     def on_before_delete(self, event):
         # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
-        self.on_fire_auto_enable(side='front', enable=False, time=event.time)
-        self.on_fire_auto_enable(side='back', enable=False, time=event.time)
-        self.on_fire_auto_enable(side='left', enable=False, time=event.time)
-        self.on_fire_auto_enable(side='right', enable=False, time=event.time)
+        self.on_fire_auto_enable(enable=False, time=event.time)
 
         # снять все таски стрельбы по нам
         tasks = self.tasks[:]
@@ -292,10 +297,6 @@ class Mobile(Unit):
             p_cc=self.params.get('p_cc').value,
         )
         return d
-
-    def on_init(self, event):
-        self.contacts_check_interval = 2.0  # todo: optimize. Regular in motion only
-        super(Mobile, self).on_init(event)
 
     def on_start(self, event):
         self.set_fuel(time=event.time)
