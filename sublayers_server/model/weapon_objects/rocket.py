@@ -31,6 +31,8 @@ class Rocket(UnitWeapon):
         max_control_speed=BALANCE.Rocket.max_control_speed,
         damage=BALANCE.Rocket.damage,
         radius_damage=BALANCE.Rocket.radius_damage,
+        max_fuel=BALANCE.Rocket.max_fuel,
+        fuel=BALANCE.Rocket.fuel,
         **kw
     ):
         # todo: docstring required
@@ -51,6 +53,8 @@ class Rocket(UnitWeapon):
                                      ac_max=ac_max,
                                      max_control_speed=max_control_speed,
                                      server=starter.server,
+                                     fuel=fuel,
+                                     max_fuel=max_fuel,
                                      **kw)
         self.radius_damage = radius_damage
         self.damage = damage
@@ -58,7 +62,7 @@ class Rocket(UnitWeapon):
     def on_init(self, event):
         super(Rocket, self).on_init(event)
         self.set_motion(cc=1.0, time=event.time)
-        self.delete(time=event.time + 180.0)
+        self.delete(time=event.time + 900.0)
 
     def on_before_delete(self, event):
         BangEvent(starter=self.main_unit, center=self.position(time=event.time), radius=self.radius_damage,

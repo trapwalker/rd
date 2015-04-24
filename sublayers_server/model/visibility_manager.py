@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.tileid2 import Tileid2
 from sublayers_server.model.events import Event, ContactInEvent, ContactOutEvent
 from sublayers_server.model.base import Observer
+from sublayers_server.model.balance import BALANCE
 
 
 class TileContactSearchEvent(Event):
@@ -28,7 +29,7 @@ class TileContactSearchEvent(Event):
 
 
 class VisibilityManager(object):
-    def __init__(self, server, z=16, max_z=26, interval=2.0):
+    def __init__(self, server, z=16, max_z=26, interval=BALANCE.interval_refresh):
         self.server = server
         self.tiles = dict()
         self.z = z

@@ -665,13 +665,12 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendFireAutoEnable = function (side, enable) {
+    ClientManager.prototype.sendFireAutoEnable = function (enable) {
         //console.log('ClientManager.prototype.sendFireDischarge');
         var mes = {
             call: "fire_auto_enable",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                side: side,
                 enable: enable
             }
         };
@@ -680,9 +679,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendRocket = function () {
-        /*var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 5) return;
-        last_send_time = time;*/
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 0.333) return;
+        last_send_time = time;
         var mes = {
             call: "send_rocket",
             rpc_call_id: rpcCallList.getID(),
@@ -694,7 +693,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendSlowMine = function () {
         var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 5) return;
+        if ((time - last_send_time) < 0.333) return;
         last_send_time = time;
         var mes = {
             call: "send_slow_mine",
@@ -707,7 +706,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendStationaryTurret = function () {
         var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 5) return;
+        if ((time - last_send_time) < 0.333) return;
         last_send_time = time;
         var mes = {
             call: "send_stationary_turret",
@@ -720,7 +719,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendScoutDroid = function (target) {
         var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 5) return;
+        if ((time - last_send_time) < 0.333) return;
         last_send_time = time;
         var mes = {
             call: "send_scout_droid",

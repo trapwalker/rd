@@ -116,7 +116,6 @@ class VisibleObject(PointObject):
 
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
-        self.contacts_check_interval = None  # todo: extract to special task
         Init(obj=self, time=time).post()
         # работа с тегами
         self.tags = set()

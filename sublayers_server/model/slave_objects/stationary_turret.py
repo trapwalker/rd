@@ -57,7 +57,7 @@ class StationaryTurret(Slave):
     def on_init(self, event):
         super(StationaryTurret, self).on_init(event)
         self.delete(time=event.time + 90.0)
-        self.fire_auto_enable_all(enable=True, time=event.time)
+        self.fire_auto_enable(enable=True, time=event.time)
 
     def set_default_tags(self):
         self.tags.add(tags.UnZoneTag)

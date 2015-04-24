@@ -121,14 +121,11 @@ class FireSector(Sector):
 
     def fire_discharge(self, time):
         cars = []
-        if self._is_auto:
-            cars = self.target_list
-        else:
-            for vo in self.owner.visible_objects:
-                if self._test_target_in_sector(target=vo, time=time):
-                    cars.append(vo)
-            self.target_list = cars
+        for vo in self.owner.visible_objects:
+            if self._test_target_in_sector(target=vo, time=time):
+                cars.append(vo)
         t_rch = 0
+        self.target_list = cars
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
                 t_rch = max(t_rch, wp.fire(cars, time))
@@ -151,6 +148,8 @@ class FireSector(Sector):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable=enable, cars=self.target_list, time=time)
+        if not enable:
+            self.target_list = []  # todo: можно ли так чистить список?
 
     def is_discharge(self):
         return self._is_discharge > 0

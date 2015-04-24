@@ -18,6 +18,7 @@ class StatLogger(object):
     s_events_on = metrics.IncMetric(name='s_events_on', doc=u"Кол-во евентов в очереди")
     s_events_lag_max = metrics.ValueMetric(name='s_events_lag_max', doc=u"Максимальное отставание евентов")
     s_events_lag_cur = metrics.ValueMetric(name='s_events_lag_cur', doc=u"Текущее отставание евентов")
+    s_events_lag_mid = metrics.MovingAverageMetric(name='s_events_lag_cur', doc=u"Среднее отставание евентов")
 
     def __init__(self, owner):
         self.owner = owner
@@ -25,18 +26,6 @@ class StatLogger(object):
 
     def get_metric(self, metric):
         return getattr(self, metric).value()
-
-    def get_server_stat(self):
-        return dict(
-            s_agents_all=self.get_metric('s_agents_all'),
-            s_agents_on=self.get_metric('s_agents_on'),
-            s_units_all=self.get_metric('s_units_all'),
-            s_units_on=self.get_metric('s_units_on'),
-            s_events_all=self.get_metric('s_events_all'),
-            s_events_on=self.get_metric('s_events_on'),
-            s_events_lag_max=self.get_metric('s_events_lag_max'),
-            s_events_lag_cur=self.get_metric('s_events_lag_cur'),
-        )
 
 
 if __name__ == '__main__':

@@ -151,23 +151,25 @@ class Agent(Object):
 
     def party_before_include(self, party, new_member, time):
         # party - куда включают, agent - кого включают
+        #log.debug('ON_BEFORE INCLUDE !!!!!!')
         if not self.is_online:
             return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
-        car.fire_auto_enable_all(enable=False, time=time)
+        car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=False, time=time)
+                obj.fire_auto_enable(enable=False, time=time)
 
     def party_after_include(self, party, new_member, time, old_enable=True):
         # party - куда включили, agent - кого включили
+        #log.debug('ON_AFTER INCLUDE !!!!!!')
         if not self.is_online:
             return
-        self.cars[0].fire_auto_enable_all(time=time + 0.01, enable=self._auto_fire_enable)
+        self.cars[0].fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=True, time=time + 0.01)
+                obj.fire_auto_enable(enable=True, time=time + 0.01)
 
     def party_before_exclude(self, party, old_member, time):
         # party - откуда исключабт, agent - кого исключают
@@ -175,19 +177,19 @@ class Agent(Object):
             return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
-        car.fire_auto_enable_all(enable=False, time=time)
+        car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=False, time=time)
+                obj.fire_auto_enable(enable=False, time=time)
 
     def party_after_exclude(self, party, old_member, time):
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
             return
-        self.cars[0].fire_auto_enable_all(time=time + 0.01, enable=self._auto_fire_enable)
+        self.cars[0].fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=True, time=time + 0.01)
+                obj.fire_auto_enable(enable=True, time=time + 0.01)
 
     def _invite_by_id(self, invite_id):
         for invite in self.invites:

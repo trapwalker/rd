@@ -32,7 +32,6 @@ class Metric(object):
 
 
 class IncMetric(Metric):
-    __str_template__ = 'metric::{self.classname}[{time}] #{stat_log.owner} => {stat_log.m_dict[way]}'
 
     def __init__(self, init=0.0, delta=None, **kw):
         super(IncMetric, self).__init__(**kw)
@@ -52,9 +51,8 @@ class IncMetric(Metric):
         storage = stat_log.m_dict
         return storage.get(self.name, self.init)
 
-class ValueMetric(Metric):
-    __str_template__ = 'metric::{self.classname}[{time}] #{stat_log.owner} => {stat_log.m_dict[way]}'
 
+class ValueMetric(Metric):
     def __init__(self, init=0.0, delta=None, **kw):
         super(ValueMetric, self).__init__(**kw)
         self.init = init
@@ -71,6 +69,33 @@ class ValueMetric(Metric):
     def value(self, stat_log):
         storage = stat_log.m_dict
         return storage.get(self.name, self.init)
+
+
+# Метрика для расчёта средних значений. Использовать только для объектов-синглтонов !!!
+class MovingAverageMetric(Metric):
+    def __init__(self, max_count=10, **kw):
+        super(MovingAverageMetric, self).__init__(**kw)
+        self._max_count = max_count
+        self._val = 0.0
+        self._count = 0
+        from collections import deque
+        self.mid_d = deque()
+
+    def call(self, stat_log, value, **kw):
+        super(MovingAverageMetric, self).call(stat_log=stat_log, **kw)
+        v = value / self._max_count
+        if self._count < self._max_count:
+            self.mid_d.append(v)
+            self._val += v
+            self._count += 1
+        else:
+            lv = self.mid_d.popleft()
+            self.mid_d.append(v)
+            self._val -= lv
+            self._val += v
+
+    def value(self, stat_log):
+        return self._val
 
 
 if __name__ == '__main__':

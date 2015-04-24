@@ -237,10 +237,10 @@ class AgentAPI(API):
         self.car.fire_discharge(side=side, time=self.agent.server.get_time())
 
     @public_method
-    def fire_auto_enable(self, side, enable):
+    def fire_auto_enable(self, enable):
         if self.car.limbo or not self.car.is_alive:
             return
-        self.car.fire_auto_enable(side=side, enable=enable, time=self.agent.server.get_time())
+        self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())
 
     @public_method
     def chat_message(self, text):
@@ -322,7 +322,7 @@ class AgentAPI(API):
                     else:
                         messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
                 elif metric_name == 'server':
-                    messages.Message(agent=self.agent, comment=self.agent.server.stat_log.get_server_stat()).post()
+                    messages.Message(agent=self.agent, comment=self.agent.server.get_server_stat()).post()
         else:
             log.warning('Unknown console command "%s"', cmd)
 
