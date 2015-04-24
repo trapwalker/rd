@@ -665,13 +665,12 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendFireAutoEnable = function (side, enable) {
+    ClientManager.prototype.sendFireAutoEnable = function (enable) {
         //console.log('ClientManager.prototype.sendFireDischarge');
         var mes = {
             call: "fire_auto_enable",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                side: side,
                 enable: enable
             }
         };

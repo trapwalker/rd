@@ -64,7 +64,7 @@ class ScoutDroid(Slave):
         super(ScoutDroid, self).on_init(event)
         self.set_motion(cc=1.0, target_point=self.target, time=event.time)
         self.delete(time=event.time + 30.0)
-        self.fire_auto_enable_all(enable=True, time=event.time)
+        self.fire_auto_enable(enable=True, time=event.time)
 
     def set_default_tags(self):
         self.tags.add(tags.UnZoneTag)

@@ -231,14 +231,22 @@ class FireDischargeEffectEvent(Objective):
 
 
 class FireAutoEnableEvent(Objective):
-    def __init__(self, side, enable, **kw):
+    def __init__(self, enable, **kw):
         super(FireAutoEnableEvent, self).__init__(**kw)
-        self.side = side
         self.enable = enable
 
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
-        self.obj.on_fire_auto_enable(side=self.side, enable=self.enable, time=self.time)
+        self.obj.on_fire_auto_enable(enable=self.enable, time=self.time)
+
+
+class FireAutoTestEvent(Objective):
+    def on_perform(self):
+        super(FireAutoTestEvent, self).on_perform()
+        obj = self.obj
+        for target in obj.visible_objects:
+            obj.on_auto_fire_test(obj=target, time=self.time)
+        FireAutoTestEvent(obj=obj, time=self.time + obj.check_auto_fire_interval).post()
 
 
 class BangEvent(Event):
