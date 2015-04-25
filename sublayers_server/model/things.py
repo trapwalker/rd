@@ -9,6 +9,13 @@ class Attribute(object):
         pass
 
 
+class ThingMeta(type):
+    def __new__(cls, name, parents, kw):
+        print 'cls={cls}\nname={name}\nparents={parents}\!Tempnkw={kw}'.format(**locals())
+        c = type(name, parents, kw)
+        return c
+
+
 class BaseThingClass(object):
     container = None
     def __init__(self, name, parent=None, attrs=None):
@@ -45,3 +52,20 @@ class Container(object):
 root = Container()
 
 
+class P(object):
+    def __init__(self, name):
+        self.name = name
+        
+    def __get__(self, obj, cls):
+        print 'get', self, obj, cls
+        return 13
+    
+    def __set__(self, obj, v):
+        print 'set', self, obj, v
+        
+
+class C(object):
+    x = P('x')
+
+c = C()    
+    
