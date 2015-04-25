@@ -8,6 +8,7 @@ var WAltmetrRadial = (function (_super) {
     function WAltmetrRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
+        this.value_prc = 0.0;
 
         // Компакт режим
         this.compactText = $('#cruiseControlCompactViewAltitudeTextDiv');
@@ -235,9 +236,12 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype.change = function () {
-        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
-        // todo: определить способ плавного изменения области заливки
-        //this.draw_fill_area(prc);
+        var prc = this.car.altitude / 255.;
+        if (prc < 0.0) prc = 0.0;
+        if (Math.abs(this.value_prc - prc) > 0.005) {
+            this.value_prc = prc;
+            this.draw_fill_area(prc);
+        }
     };
 
     WAltmetrRadial.prototype.delFromVisualManager = function () {

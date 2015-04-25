@@ -49,7 +49,7 @@ class RandomCarList:
             )
         )
 
-    def get_random_car(self, agent, id=None):
+    def get_random_car(self, agent, time, id=None):
         import random
         id_car = -1
         if (id is not None) and (id < len(self.params_cars)):
@@ -57,6 +57,7 @@ class RandomCarList:
         else:
             id_car = random.randint(0, len(self.params_cars) - 1)
         return Bot(
+            time=time,
             server=agent.server,
             owner=agent,
             position=self.base_point,

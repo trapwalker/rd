@@ -24,7 +24,7 @@ class PartyIncludeEvent(Event):
 
     def on_perform(self):
         super(PartyIncludeEvent, self).on_perform()
-        self.party.on_include(self.agent)
+        self.party.on_include(agent=self.agent, time=self.time)
 
 
 class PartyExcludeEvent(Event):
@@ -36,7 +36,7 @@ class PartyExcludeEvent(Event):
 
     def on_perform(self):
         super(PartyExcludeEvent, self).on_perform()
-        self.party.on_exclude(self.agent)
+        self.party.on_exclude(agent=self.agent, time=self.time)
 
 
 class PartyKickEvent(Event):
@@ -48,7 +48,7 @@ class PartyKickEvent(Event):
 
     def on_perform(self):
         super(PartyKickEvent, self).on_perform()
-        self.party.on_kick(kicker=self.kicker, kicked=self.kicked)
+        self.party.on_kick(kicker=self.kicker, kicked=self.kicked, time=self.time)
 
 
 class PartyInviteEvent(Event):
@@ -192,7 +192,7 @@ class PartyMember(object):
 class Party(object):
     parties = {}
 
-    def __init__(self, owner=None, name=None, description=''):
+    def __init__(self, time, owner=None, name=None, description=''):
         if (name is None) or (name == ''):
             name = self.classname
         while name in self.parties:
@@ -205,7 +205,7 @@ class Party(object):
         self.members = []
         self.invites = []
         if owner is not None:
-            self.include(owner)
+            self.include(owner, time=time)
 
     @property
     def classname(self):
@@ -248,14 +248,16 @@ class Party(object):
                 return member
         return None
 
-    def include(self, agent):
-        PartyIncludeEvent(party=self, agent=agent).post()
+    def include(self, agent, time):
+        PartyIncludeEvent(party=self, agent=agent, time=time).post()
 
-    def on_include(self, agent):
+    def on_include(self, agent, time):
         old_party = agent.party
-        if old_party is self:
+        if not (old_party is self):
+            if old_party:
+                old_party.on_exclude(agent, time=time)
+        else:
             return
-
         # проверка по инвайтам
         if agent != self.owner:
             if not self._has_invite(agent):
@@ -264,14 +266,11 @@ class Party(object):
             self._del_invites_by_agent(agent)
 
         # before include for members and agent
-        agent.party_before_include(new_member=agent, party=self)
+        agent.party_before_include(new_member=agent, party=self, time=time)
         for member in self.members:
-            member.agent.party_before_include(new_member=agent, party=self)
+            member.agent.party_before_include(new_member=agent, party=self, time=time)
 
-        if old_party:
-            old_party.exclude(agent)
-
-        self._on_include(agent)
+        self._on_include(agent=agent, time=time)
         PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2))
         agent.party = self
         #todo: проблемы с русским языком
@@ -279,9 +278,9 @@ class Party(object):
 
         # after include for members
         for member in self.members:
-            member.agent.party_after_include(new_member=agent, party=self)
+            member.agent.party_after_include(new_member=agent, party=self, time=time)
 
-    def _on_include(self, agent):
+    def _on_include(self, agent, time):
         #log.info('==============Start include')
         #log.info(len(self.share_obs))
 
@@ -291,18 +290,18 @@ class Party(object):
 
         for member in self.members:
             for obs in agent_observers:
-                member.agent.add_observer(obs)
+                member.agent.add_observer(observer=obs, time=time)
 
         for obs in self.share_obs:
-            agent.add_observer(obs)
+            agent.add_observer(observer=obs, time=time)
 
         #log.info(len(self.share_obs))
         #log.info('==============End include')
 
-    def exclude(self, agent):
-        PartyExcludeEvent(party=self, agent=agent).post()
+    def exclude(self, agent, time):
+        PartyExcludeEvent(party=self, agent=agent, time=time).post()
 
-    def on_exclude(self, agent):
+    def on_exclude(self, agent, time):
         out_member = self.get_member_by_agent(agent)
         if (agent.party is not self) or (out_member is None):
             log.warning('Trying to exclude unaffilated agent (%s) from party %s', agent, self)
@@ -310,29 +309,29 @@ class Party(object):
 
         # before exclude for members
         for member in self.members:
-            member.agent.party_before_exclude(old_member=agent, party=self)
+            member.agent.party_before_exclude(old_member=agent, party=self, time=time)
 
         agent.party = None
         out_member.out_from_party()
-        self._on_exclude(agent)
+        self._on_exclude(agent=agent, time=time)
         log.info('Agent %s excluded from party %s', agent, self)
 
         # after exclude for members and agent
-        agent.party_after_exclude(old_member=agent, party=self)
+        agent.party_after_exclude(old_member=agent, party=self, time=time)
         for member in self.members:
-            member.agent.party_after_exclude(old_member=agent, party=self)
+            member.agent.party_after_exclude(old_member=agent, party=self, time=time)
 
-    def _on_exclude(self, agent):
+    def _on_exclude(self, agent, time):
         #log.info('---------------Start exclude')
         #log.info(len(self.share_obs))
 
         for obs in self.share_obs:
-            agent.drop_observer(obs)
+            agent.drop_observer(observer=obs, time=time)
 
         agent_observers = agent.observers.keys()
         for member in self.members:
             for obs in agent_observers:
-                member.agent.drop_observer(obs)
+                member.agent.drop_observer(observer=obs, time=time)
 
         for obs in agent_observers:
             self.share_obs.remove(obs)
@@ -340,17 +339,17 @@ class Party(object):
         #log.info(len(self.share_obs))
         #log.info('---------------End exclude')
 
-    def drop_observer_from_party(self, observer):
+    def drop_observer_from_party(self, observer, time):
         if observer in self.share_obs:
             self.share_obs.remove(observer)
         for member in self.members:
-            member.agent.drop_observer(observer)
+            member.agent.drop_observer(observer=observer, time=time)
 
-    def add_observer_to_party(self, observer):
+    def add_observer_to_party(self, observer, time):
         if not (observer in self.share_obs):
             self.share_obs.append(observer)
         for member in self.members:
-            member.agent.add_observer(observer)
+            member.agent.add_observer(observer=observer, time=time)
 
     def invite(self, sender, recipient):
         PartyInviteEvent(party=self, sender=sender, recipient=recipient, time=sender.server.get_time() + 0.01).post()
@@ -390,10 +389,10 @@ class Party(object):
                 return True
         return False
 
-    def kick(self, kicker, kicked):
-        PartyKickEvent(party=self, kicker=kicker, kicked=kicked).post()
+    def kick(self, kicker, kicked, time):
+        PartyKickEvent(party=self, kicker=kicker, kicked=kicked, time=time).post()
 
-    def on_kick(self, kicker, kicked):
+    def on_kick(self, kicker, kicked, time):
         kicker_member = self.get_member_by_agent(kicker)
         kicked_member = self.get_member_by_agent(kicked)
         if (kicker.party is not self) or (kicked.party is not self) or (kicker_member is None) or (kicked_member is None):
@@ -406,14 +405,14 @@ class Party(object):
 
         # before exclude for members
         for member in self.members:
-            member.agent.party_before_exclude(old_member=kicked, party=self)
+            member.agent.party_before_exclude(old_member=kicked, party=self, time=time)
 
         kicked.party = None
         kicked_member.kick_from_party()
-        self._on_exclude(kicked)
+        self._on_exclude(agent=kicked, time=time)
         log.info('Agent %s kick from party %s', kicked, self)
 
         # after exclude for members and agent
-        kicked.party_after_exclude(old_member=kicked, party=self)
+        kicked.party_after_exclude(old_member=kicked, party=self, time=time)
         for member in self.members:
-            member.agent.party_after_exclude(old_member=kicked, party=self)
+            member.agent.party_after_exclude(old_member=kicked, party=self, time=time)

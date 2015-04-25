@@ -73,15 +73,15 @@ class FireSector(Sector):
         )
         return d
 
-    def _fire_auto_start(self, target):
+    def _fire_auto_start(self, target, time):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.start(target)
+                w.start(car=target, time=time)
 
-    def _fire_auto_end(self, target):
+    def _fire_auto_end(self, target, time):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.end(target)
+                w.end(car=target, time=time)
 
     def add_weapon(self, weapon):
         assert not (weapon in self.weapon_list)
@@ -100,43 +100,40 @@ class FireSector(Sector):
             self.is_discharge -= 1
         assert (self._is_auto >= 0) and (self.is_discharge >= 0)
 
-    def _test_target_in_sector(self, target):
-        if not self.owner.main_unit.is_target(target):
+    def _test_target_in_sector(self, target, time):
+        if not self.owner.is_target(target=target):
             return False
-        v = target.position - self.owner.position
+        v = target.position(time=time) - self.owner.position(time=time)
         if (v.x ** 2 + v.y ** 2) > self.radius ** 2:
             return False
         if self.width >= 2 * pi:
             return True
-        fi = self.owner.direction + self.fi
+        fi = self.owner.direction(time=time) + self.fi
         return shortest_angle(v.angle - fi) <= self.half_width
 
-    def fire_auto(self, target):
-        if self._test_target_in_sector(target):
-            if not target in self.target_list:
+    def fire_auto(self, target, time):
+        if self._test_target_in_sector(target=target, time=time):
+            if target not in self.target_list:
                 self.target_list.append(target)
-                self._fire_auto_start(target)
+                self._fire_auto_start(target=target, time=time)
         else:
-            self.out_car(target=target)
+            self.out_car(target=target, time=time)
 
     def fire_discharge(self, time):
         cars = []
-        if self._is_auto:
-            cars = self.target_list
-        else:
-            for vo in self.owner.visible_objects:
-                if self._test_target_in_sector(vo):
-                    cars.append(vo)
-            self.target_list = cars
+        for vo in self.owner.visible_objects:
+            if self._test_target_in_sector(target=vo, time=time):
+                cars.append(vo)
         t_rch = 0
+        self.target_list = cars
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
                 t_rch = max(t_rch, wp.fire(cars, time))
         return t_rch
 
-    def out_car(self, target):
+    def out_car(self, target, time):
         if target in self.target_list:
-            self._fire_auto_end(target=target)
+            self._fire_auto_end(target=target, time=time)
             self.target_list.remove(target)
 
     def can_discharge_fire(self, time):
@@ -146,11 +143,13 @@ class FireSector(Sector):
                     return False
         return True
 
-    def enable_auto_fire(self, enable=False):
+    def enable_auto_fire(self, time, enable=False):
         #log.debug('%s  enable auto_fire: %s    on side: %s', self.owner.uid, enable, self.side)
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.set_enable(enable, self.target_list)
+                w.set_enable(enable=enable, cars=self.target_list, time=time)
+        if not enable:
+            self.target_list = []  # todo: можно ли так чистить список?
 
     def is_discharge(self):
         return self._is_discharge > 0

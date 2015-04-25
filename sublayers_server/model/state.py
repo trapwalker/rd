@@ -178,6 +178,9 @@ class MotionState(BaseMotionState):
             res = 2 * pi - res
         return normalize_angle(res)
 
+    def get_max_v_by_cc(self, cc):
+        return self.v_forward if cc >= 0.0 else self.v_backward
+
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None):
         self.fix(t=t, dt=dt)
@@ -192,7 +195,7 @@ class MotionState(BaseMotionState):
             self.cc = cc
         assert self.cc is not None
 
-        v_max = self.v_forward if self.cc >= 0 else self.v_backward
+        v_max = self.get_max_v_by_cc(cc=self.cc)
         dv = v_max * abs(self.cc) - self.v0
         if abs(dv) > EPS:
             if self.cc == 0.0:

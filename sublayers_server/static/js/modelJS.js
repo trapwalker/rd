@@ -55,12 +55,13 @@ var ClientObject = (function () {
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
-    function DynamicObject(ID, state, hp_state) {
+    function DynamicObject(ID, state, hp_state, fuel_state) {
         _super.call(this, ID);
         this._in_tm = false;
         this.addToVisualManager();
         this._motion_state = state;
         this._hp_state = hp_state;
+        this._fuel_state = fuel_state;
         this._manage_tm();
     }
 
@@ -76,17 +77,26 @@ var DynamicObject = (function (_super) {
         return this._motion_state.v(time);
     };
 
+    DynamicObject.prototype.getCurrentHP = function (time) {
+        return this._hp_state.hp(time);
+    };
+
+    DynamicObject.prototype.getCurrentFuel = function (time) {
+        return this._fuel_state.fuel(time);
+    };
+
     DynamicObject.prototype._manage_tm = function () {
-        // вызывается только из апдейтов (setState и setHPState)
+        // вызывается только из апдейтов (setState и setHPState и setFuelState)
         var hp_changed = this._hp_state.is_changed();
         var motion_changed = this._motion_state.is_moving();
+        var fuel_changed = this._fuel_state != null ? this._fuel_state.is_changed() : false;
 
-        if (this._in_tm && !(motion_changed || hp_changed)) {
+        if (this._in_tm && !(motion_changed || hp_changed || fuel_changed)) {
             // если в timeManager и стейты не меняются, то удалиться из таймменеджера
             timeManager.delTimerEvent(this, 'change');
             this._in_tm = false;
         }
-        if (!this._in_tm && (motion_changed || hp_changed)) {
+        if (!this._in_tm && (motion_changed || hp_changed || fuel_changed)) {
             // если не в timeManager и хоть один стейт меняется, то добавиться в таймменеджер
             timeManager.addTimerEvent(this, 'change');
             this._in_tm = true;
@@ -105,8 +115,10 @@ var DynamicObject = (function (_super) {
         visualManager.changeModelObject(this);
     };
 
-    DynamicObject.prototype.getCurrentHP = function (time) {
-        return this._hp_state.hp(time);
+    DynamicObject.prototype.setFuelState = function (fuel_state) {
+        this._fuel_state = fuel_state;
+        this._manage_tm();
+        visualManager.changeModelObject(this);
     };
 
     DynamicObject.prototype.change = function () {
@@ -122,8 +134,8 @@ var DynamicObject = (function (_super) {
 var MapCar = (function (_super) {
     __extends(MapCar, _super);
 
-    function MapCar(aID, aState, aHPState) {
-        _super.call(this, aID, aState, aHPState);
+    function MapCar(aID, aState, aHPState, aFuelState) {
+        _super.call(this, aID, aState, aHPState, aFuelState);
         this.fireSectors = [];
     }
 
@@ -153,11 +165,12 @@ var MapCar = (function (_super) {
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
-    function UserCar(aID, aVForward, aVBackward, aState, aHPState) {
-        _super.call(this, aID, aState, aHPState);
+    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState) {
+        _super.call(this, aID, aState, aHPState, aFuelState);
         this.v_forward = aVForward;
         this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
+        this.altitude = 0.0;
     }
 
     UserCar.prototype._manage_tm = function () {
@@ -480,6 +493,26 @@ var HPState = (function () {
     return HPState;
 })();
 
+
+var FuelState = (function () {
+    function FuelState(t, max_fuel, fuel0, dfs) {
+        this.t0 = t;
+        this.max_fuel = max_fuel;
+        this.fuel0 = fuel0;
+        this.dfs = dfs;
+    }
+
+    FuelState.prototype.fuel = function (t) {
+        return Math.min(this.max_fuel, this.fuel0 - this.dfs * (t - this.t0));
+    };
+
+    FuelState.prototype.is_changed = function () {
+        return this.dfs != 0.0;
+    };
+
+
+    return FuelState;
+})();
 
 var User = (function () {
     function User(aID) {

@@ -152,10 +152,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype._setAutoShootingEnable = function (enable) {
         //console.log('WFireController.prototype._setAutoShootingEnable', enable);
-        clientManager.sendFireAutoEnable('front', enable);
-        clientManager.sendFireAutoEnable('back', enable);
-        clientManager.sendFireAutoEnable('right', enable);
-        clientManager.sendFireAutoEnable('left', enable);
+        clientManager.sendFireAutoEnable(enable);
     };
 
     WFireController.prototype.changeAutoShootingEnable = function (event) {

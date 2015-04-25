@@ -157,6 +157,21 @@ class Tileid2(long):
                 return True
         return False
 
+    def get_around_tiles(self):
+        x, y, z = self.xyz()
+        return [
+            Tileid2(x - 1, y - 1, z),
+            Tileid2(x - 1, y, z),
+            Tileid2(x - 1, y + 1, z),
+
+            Tileid2(x, y - 1, z),
+            Tileid2(x, y, z),
+            Tileid2(x, y + 1, z),
+
+            Tileid2(x + 1, y - 1, z),
+            Tileid2(x + 1, y, z),
+            Tileid2(x + 1, y + 1, z),
+        ]
 
     @classmethod
     def iter_rect(cls, tl, br):

@@ -47,10 +47,12 @@ class HPState(object):
         return min(self.hp0 - self.dps * (t - self.t0), self.max_hp)
 
     def add_shooter(self, shooter):
+        #log.debug('+++++++ {} to {}'.format(shooter, len(self.shooters)))
         self.shooters.append(shooter)
 
     def del_shooter(self, shooter):
-        assert shooter in self.shooters
+        #log.debug('-------- {} from {}'.format(shooter, len(self.shooters)))
+        assert shooter in self.shooters, '{} from {}'.format(shooter, self.shooters)
         self.shooters.remove(shooter)
 
     @assert_time_in_hpstate
@@ -62,6 +64,8 @@ class HPState(object):
             if self.hp0 <= 0:
                 self.t_die = self.t0
                 return self.t_die
+            if self.hp0 > self.max_hp:
+                self.hp0 = self.max_hp
         if dps:
             self.dps += dps
         if self.dps > 0.0:

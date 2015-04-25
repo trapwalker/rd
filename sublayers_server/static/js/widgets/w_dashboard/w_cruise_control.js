@@ -169,22 +169,22 @@ var WCruiseControl = (function (_super) {
         this.zoneIconAreaDiv.append(this.zoneWaterIconDiv);
 
         this.zones = {
-            EffectDirt: {
+            Dirt: {
                 jqselector: this.zoneDirtIconDiv,
                 zoneName: "dirt",
                 active: false
             },
-            EffectWood: {
+            Wood: {
                 jqselector: this.zoneWoodIconDiv,
                 zoneName: "wood",
                 active: false
             },
-            EffectWater: {
+            Water: {
                 jqselector: this.zoneWaterIconDiv,
                 zoneName: "water",
                 active: false
             },
-            EffectRoad: {
+            Road: {
                 jqselector: this.zoneRoadIconDiv,
                 zoneName: "road",
                 active: false
@@ -374,7 +374,7 @@ var WCruiseControl = (function (_super) {
             .stroke({width: 1, color: this.svg_params.gradients.line_grad3});
     };
 
-    WCruiseControl.prototype.setZoneState = function(zoneName, zoneState, speedRange) {
+    WCruiseControl.prototype.setZoneState = function(zoneName, zoneState) {
         //console.log('WCruiseControl.prototype.setZoneState');
         if (zoneState) {
             this.zones[zoneName].jqselector.css({display: "block"});
@@ -390,7 +390,7 @@ var WCruiseControl = (function (_super) {
             this.zoneDirtIconDiv.css({display: "none"});
             var limit_str = "";
             for(var key in this.zones)
-                if (key != 'EffectDirt' && this.zones[key].active)
+                if (key != 'Dirt' && this.zones[key].active)
                     limit_str = limit_str + '  ' + this.zones[key].zoneName;
             this.zoneLimitText.text(limit_str);
             this.compactViewLimitTextDiv.text(limit_str);
@@ -400,8 +400,12 @@ var WCruiseControl = (function (_super) {
             this.zoneLimitText.text("dirt");
             this.compactViewLimitTextDiv.text("dirt");
         }
-        var topValue = (1 - speedRange) * this.constScaleHeight + this.svgScaleDY - this.zoneHandleDiv.height() / 2;
-        this.zoneHandleDiv.css({top: topValue});
+    };
+
+    WCruiseControl.prototype.setSpeedRange = function(speedRange) {
+        //console.log('WCruiseControl.prototype.setSpeedRange', speedRange);
+        //var topValue = (1 - speedRange) * this.constScaleHeight + this.svgScaleDY - this.zoneHandleDiv.height() / 2;
+        //this.zoneHandleDiv.css({top: topValue});
     };
 
     WCruiseControl.prototype.startKeyboardControl = function() {

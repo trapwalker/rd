@@ -5,8 +5,7 @@ log = logging.getLogger(__name__)
 
 #from utils import get_uid, serialize
 from sublayers_server.model import messages
-from sublayers_server.model.inventory import Inventory
-from sublayers_server.model.events import Init, Delete, SearchContacts
+from sublayers_server.model.events import Init, Delete
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.stat_log import StatLogger
@@ -24,7 +23,7 @@ class Object(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
-    def __init__(self, server):
+    def __init__(self, server, time):
         """
         @type server: sublayers_server.model.event_machine.Server
         """
@@ -59,7 +58,7 @@ class Object(object):
         del self.server.objects[self.uid]
         # log.debug('Finally deletion: %s', self)
 
-    def delete(self, time=None):
+    def delete(self, time):
         Delete(obj=self, time=time).post()
 
     id = property(id)
@@ -73,7 +72,7 @@ class Object(object):
     def dead_mark(self):
         return '' if self.is_alive else '~'
 
-    def as_dict(self, to_time=None):
+    def as_dict(self, time):
         return dict(
             cls=self.classname,
             uid=self.uid,
@@ -83,61 +82,50 @@ class Object(object):
     def is_frag(self):
         return False
 
+
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
     def __init__(self, position, **kw):
-        """
-        @type position: sublayers_server.model.vectors.Point
-        """
         super(PointObject, self).__init__(**kw)
         self._position = position
-        """@type: sublayers_server.model.vectors.Point"""
         self.server.geo_objects.append(self)
 
     def on_after_delete(self, event):
         self.server.geo_objects.remove(self)
         super(PointObject, self).on_after_delete(event=event)
 
-    def as_dict(self, **kw):
-        d = super(PointObject, self).as_dict(**kw)
-        d.update(position=self.position)
+    def as_dict(self, time):
+        d = super(PointObject, self).as_dict(time=time)
+        d.update(position=self.position(time=time))
         return d
 
-    @property
-    def position(self):
-        """
-        :rtype: model.vectors.Point
-        """
+    def position(self, time):
         return self._position
-
-    @position.setter
-    def position(self, position):
-        """
-        @param sublayers_server.model.vectors.Point position: New position
-        """
-        self._position = position
 
 
 class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-    def __init__(self, **kw):
-        super(VisibleObject, self).__init__(**kw)
+    def __init__(self, time, visibility=1.0, **kw):
+        super(VisibleObject, self).__init__(time=time, **kw)
+        self.params = dict()
+        self.set_default_params()
+
+        Parameter(original=visibility, name='p_visibility', owner=self)
+
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
-        self.contacts_check_interval = None  # todo: extract to special task
-        Init(obj=self).post()
+        Init(obj=self, time=time).post()
         # работа с тегами
         self.tags = set()
         self.set_default_tags()
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
-        SearchContacts(obj=self).post()
+        self.server.visibility_mng.add_object(obj=self, time=event.time)
 
     def on_update(self, event):  # todo: privacy level index
-        self.on_contacts_check()  # todo: (!) Не обновлять контакты если изменения их не затрагивают
         for agent in self.subscribed_agents:
             messages.Update(
                 agent=agent,
@@ -146,25 +134,17 @@ class VisibleObject(PointObject):
                 comment=event.comment
             ).post()
 
-    def on_contacts_check(self):
-        # todo: check all existed contacts
-        if self.limbo:
-            log.warning('Trying to check contacts in limbo: subj=%s', self)
-            return
-        for obj in self.server.geo_objects:  # todo: GEO-index clipping
-            if obj is not self and not obj.limbo:  # todo: optimize filtration observers
-                self.contact_test(obj)
-                obj.contact_test(self)  # todo: optimize forecasts
-
-    def contact_test(self, obj):
-        """Test to contacts between *self* and *obj*, append them if is."""
-        pass
+    def get_params_dict(self):
+        res = dict()
+        for p in self.params.values():
+            res.update({p.name: p.value})
+        return res
 
     def on_before_delete(self, event):
-        time = self.server.get_time()
         subscribed_observers = self.subscribed_observers[:]
         for obs in subscribed_observers:
-            obs.on_contact_out(time=time, obj=self)
+            obs.on_contact_out(time=event.time, obj=self)
+        self.server.visibility_mng.del_object(obj=self, time=event.time)
         super(VisibleObject, self).on_before_delete(event=event)
 
     @property
@@ -174,51 +154,21 @@ class VisibleObject(PointObject):
     def set_default_tags(self):
         pass
 
-
-class Heap(VisibleObject):
-    """Heap objects thrown on the map"""
-    # todo: rearrange class tree
-    def __init__(self, items, **kw):
-        """
-        @type items: list[sublayers_server.model.inventory.Thing]
-        """
-        super(Heap, self).__init__(**kw)
-        self.inventory = Inventory(things=items)
-        """@type: Inventory"""
-
-    def on_after_delete(self, event):
-        self.inventory = None
-        super(Heap, self).on_after_delete(event=event)
+    def set_default_params(self):
+        for d in BALANCE.default_resists:
+            Parameter(owner=self, **d)
+        for d in BALANCE.default_modifiers:
+            Parameter(owner=self, **d)
 
 
 class Observer(VisibleObject):
 
     def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
-        self._r = observing_range
-        self.p_r = Parameter(original=observing_range)
         super(Observer, self).__init__(**kw)
+        Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 
-    def contact_test(self, obj):
-        """Test to contacts between *self* and *obj*, append them if is."""
-        # todo: test to time
-        can_see = self.can_see(obj)
-        see = obj in self.visible_objects
-        if can_see != see:
-            if can_see:
-                self.on_contact_in(time=self.server.get_time(), obj=obj)
-            else:
-                self.on_contact_out(time=self.server.get_time(), obj=obj)
-
-    def can_see(self, obj):
-        assert not self.limbo
-        assert not obj.limbo
-        dist = abs(self.position - obj.position)
-        return dist <= self._r  # todo: check <= vs <
-        # todo: Расчет видимости с учетом маскировки противника
-
-    # todo: check calls
     def on_contact_in(self, time, obj, is_boundary=False, comment=None):
         """
         @param float time: contact time
@@ -251,10 +201,9 @@ class Observer(VisibleObject):
 
     def on_before_delete(self, event):
         # развидеть все объекты, которые были видны
-        time = self.server.get_time()
         visible_objects = self.visible_objects[:]
         for vo in visible_objects:
-            self.on_contact_out(time=time, obj=vo)
+            self.on_contact_out(time=event.time, obj=vo)
 
         # перестать отправлять агентам сообщения
         for agent in self.watched_agents:
@@ -265,10 +214,10 @@ class Observer(VisibleObject):
 
     @property
     def r(self):
-        return self._r
+        return self.params.get('p_observing_range').value
 
-    def as_dict(self, **kw):
-        d = super(Observer, self).as_dict(**kw)
+    def as_dict(self, time):
+        d = super(Observer, self).as_dict(time=time)
         d.update(r=self.r)
         return d
 

@@ -48,6 +48,17 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getFuelState = function (data) {
+        if (data)
+            return new FuelState(
+                data.t0,
+                data.max_fuel,
+                data.fuel0,
+                data.dfs
+            );
+        return null;
+    };
+
     ClientManager.prototype._getOwner = function (data) {
         if(data)
             if (data.cls === "User") {
@@ -163,6 +174,7 @@ var ClientManager = (function () {
         var role = event.cars[0].role;
         var state = this._getState(event.cars[0].state);
         var hp_state = this._getHPState(event.cars[0].hp_state);
+        var fuel_state = this._getFuelState(event.cars[0].fuel_state);
         var fireSectors = this._getSectors(event.cars[0].fire_sectors);
 
         clock.setDt((new Date().getTime() - servtime) / 1000.);
@@ -184,7 +196,8 @@ var ClientManager = (function () {
                 v_forward,
                 v_backward,
                 state,
-                hp_state
+                hp_state,
+                fuel_state
             );
             for (var i = 0; i < fireSectors.length; i++)
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
@@ -227,6 +240,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
+        var fuel_state = this._getFuelState(event.object.fuel_state);
 
         var uid = event.object.uid;
         var car = visualManager.getModelObject(uid);
@@ -239,6 +253,7 @@ var ClientManager = (function () {
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
+        if (car == user.userCar) car.setFuelState(fuel_state);
 
         // Если своя машинка
         if (car == user.userCar) {
@@ -254,6 +269,9 @@ var ClientManager = (function () {
             // При попадании залповым орудием включить эффект тряски
             if (hp_state.dhp)
                 mapManager.widget_rumble.startDischargeRumble();
+
+            // Установка cc для круизконтроля
+            wCruiseControl.setSpeedRange(event.object.params.p_cc);
         }
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -281,7 +299,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact', event.is_first, event.subject_id, event.object.uid);
+        //console.log('ClientManager.prototype.Contact', event);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -290,9 +308,11 @@ var ClientManager = (function () {
         if (event.is_first) { // только если первый раз добавляется машинка
             var state = this._getState(event.object.state);
             var hp_state = this._getHPState(event.object.hp_state);
+            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
             var radius_visible = event.object.r;
+            var main_agent_login = event.object.main_agent_login;
 
             // Проверка: нет ли уже такой машинки.
             var car = visualManager.getModelObject(uid);
@@ -306,9 +326,10 @@ var ClientManager = (function () {
             }
 
             // Создание новой машинки
-            car = new MapCar(uid, state, hp_state);
+            car = new MapCar(uid, state, hp_state, fuel_state);
             car.role = event.object.role;
             car.cls = event.object.cls;
+            car.main_agent_login = main_agent_login;
 
             if (aOwner)
                 aOwner.bindCar(car);
@@ -400,6 +421,14 @@ var ClientManager = (function () {
                  event.bang_power, event.duration, event.end_duration).start();
     };
 
+    ClientManager.prototype.ChangeAltitude = function(event){
+        // console.log('ClientManager.prototype.ChangeAltitude ', event);
+        if (event.obj_id == user.userCar.ID)
+            user.userCar.altitude = event.altitude;
+        else
+            console.error('Error! Пришла высота на неизветную машинку!')
+    };
+
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 
@@ -466,9 +495,9 @@ var ClientManager = (function () {
         });
     };
 
-    ClientManager.prototype.ZoneEffectMessage = function (event) {
-        //console.log('ClientManager.prototype.ZoneEffectMessage', event);
-        wCruiseControl.setZoneState(event.zone_effect.cls, event.in_zone, event.subj_cc);
+    ClientManager.prototype.ZoneMessage = function (event) {
+        //console.log('ClientManager.prototype.ZoneMessage', event);
+        wCruiseControl.setZoneState(event.in_zone, event.is_start);
     };
 
     ClientManager.prototype.AgentPartyChangeMessage = function (event) {
@@ -584,11 +613,11 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendGoto');
         //var currentSpeed = wCruiseControl.getSpeedHandleValue();
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
-        if (currentSpeed == 0) {
-            return;
+       // if (currentSpeed == 0) {
+       //     return;
             //currentSpeed = user.userCar.maxSpeed * 0.2;
             //wCruiseControl.setSpeedHandleValue(0.2);
-        }
+       // }
         this.sendMotion(target, currentSpeed, null);
     };
 
@@ -636,13 +665,12 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendFireAutoEnable = function (side, enable) {
+    ClientManager.prototype.sendFireAutoEnable = function (enable) {
         //console.log('ClientManager.prototype.sendFireDischarge');
         var mes = {
             call: "fire_auto_enable",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                side: side,
                 enable: enable
             }
         };
@@ -652,7 +680,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendRocket = function () {
         var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 5) return;
+        if ((time - last_send_time) < 0.333) return;
         last_send_time = time;
         var mes = {
             call: "send_rocket",
@@ -663,9 +691,35 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendSlowMine = function () {
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 0.333) return;
+        last_send_time = time;
+        var mes = {
+            call: "send_slow_mine",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendStationaryTurret = function () {
+        var time = clock.getCurrentTime();
+        if ((time - last_send_time) < 0.333) return;
+        last_send_time = time;
+        var mes = {
+            call: "send_stationary_turret",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendScoutDroid = function (target) {
         var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 5) return;
+        if ((time - last_send_time) < 0.333) return;
         last_send_time = time;
         var mes = {
             call: "send_scout_droid",

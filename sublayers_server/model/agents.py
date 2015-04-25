@@ -15,8 +15,8 @@ from sublayers_server.model.stat_log import StatLogger
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login}>'
 
-    def __init__(self, login, connection=None, party=None, **kw):
-        super(Agent, self).__init__(**kw)
+    def __init__(self, login, time, connection=None, party=None, **kw):
+        super(Agent, self).__init__(time=time, **kw)
         self.observers = CounterSet()
         self.api = None
         # todo: replace Counter to CounterSet
@@ -30,16 +30,20 @@ class Agent(Object):
         self.party = None
         self.invites = []
         if party is not None:
-            party.include(self)
+            party.include(agent=self, time=time)
 
         self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
         self.stat_log = StatLogger(owner=self)
+
+        # статистика сервера
+        self.server.stat_log.s_agents_all(time=time, delta=1.0)
+
 
     @property
     def is_online(self):
         return self._connection is not None
 
-    def add_observer(self, observer, time=None):
+    def add_observer(self, observer, time):
         if not self.is_online:
             return
         # add _self_ into to the all _visible objects_ by _observer_
@@ -49,7 +53,7 @@ class Agent(Object):
         for vo in observer.visible_objects:
             self.on_see(time=time, subj=observer, obj=vo, is_boundary=False)
 
-    def drop_observer(self, observer, time=None):
+    def drop_observer(self, observer, time):
         if not self.is_online:
             return
         # remove _self_ from all _visible objects_ by _observer_
@@ -66,7 +70,7 @@ class Agent(Object):
             return
         messages.See(
             agent=self,
-            time=time or self.server.get_time(),  # todo: check it
+            time=time,
             subj=subj,
             obj=obj,
             is_boundary=is_boundary,
@@ -82,7 +86,7 @@ class Agent(Object):
             return
         messages.Out(
             agent=self,
-            time=time or self.server.get_time(),  # todo: check it
+            time=time,
             subj=subj,
             obj=obj,
             is_boundary=is_boundary,
@@ -91,8 +95,8 @@ class Agent(Object):
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=False)
 
-    def as_dict(self, *av, **kw):
-        d = super(Agent, self).as_dict(*av, **kw)
+    def as_dict(self, **kw):
+        d = super(Agent, self).as_dict(**kw)
         d.update(
             login=self.login,
             party=self.party.as_dict() if self.party else None,
@@ -107,36 +111,35 @@ class Agent(Object):
     def connection(self, new_connection):
         self._connection = new_connection
 
-    def append_obj(self, obj):
+    def append_obj(self, obj, time):
         if obj not in self.slave_objects:
             self.slave_objects.append(obj)
-            self.add_observer(obj)
+            self.add_observer(observer=obj, time=time)
             if self.party:
-                self.party.add_observer_to_party(obj)
+                self.party.add_observer_to_party(observer=obj, time=time)
 
-    def drop_obj(self, obj):
+    def drop_obj(self, obj, time):
         if obj in self.slave_objects:
             if self.party:
-                self.party.drop_observer_from_party(obj)
-            self.drop_observer(obj)
+                self.party.drop_observer_from_party(observer=obj, time=time)
+            self.drop_observer(observer=obj, time=time)
             self.slave_objects.remove(obj)
 
-
-    def append_car(self, car):  # specific
+    def append_car(self, car, time):  # specific
         if car not in self.cars:
             self.cars.append(car)
             car.owner = self
-            self.add_observer(car)
+            self.add_observer(observer=car, time=time)
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь добавлен на карту
-                self.party.add_observer_to_party(car)
+                self.party.add_observer_to_party(observer=car, time=time)
 
-    def drop_car(self, car):
+    def drop_car(self, car, time):
         if car in self.cars:
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь убран с карты
-                self.party.drop_observer_from_party(car)
-            self.drop_observer(car)
+                self.party.drop_observer_from_party(observer=car, time=time)
+            self.drop_observer(observer=car, time=time)
             car.owner = None
             self.cars.remove(car)
 
@@ -144,47 +147,49 @@ class Agent(Object):
         pass
 
     def on_disconnect(self, connection):
-        pass
+        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=-1.0)
 
-    def party_before_include(self, party, new_member):
+    def party_before_include(self, party, new_member, time):
         # party - куда включают, agent - кого включают
+        #log.debug('ON_BEFORE INCLUDE !!!!!!')
         if not self.is_online:
             return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
-        car.fire_auto_enable_all(enable=False)
+        car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=False)
+                obj.fire_auto_enable(enable=False, time=time)
 
-    def party_after_include(self, party, new_member, old_enable=True):
+    def party_after_include(self, party, new_member, time, old_enable=True):
         # party - куда включили, agent - кого включили
+        #log.debug('ON_AFTER INCLUDE !!!!!!')
         if not self.is_online:
             return
-        self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
+        self.cars[0].fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=True)
+                obj.fire_auto_enable(enable=True, time=time + 0.01)
 
-    def party_before_exclude(self, party, old_member):
+    def party_before_exclude(self, party, old_member, time):
         # party - откуда исключабт, agent - кого исключают
         if not self.is_online:
             return
         car = self.cars[0]
         self._auto_fire_enable = car.is_auto_fire_enable()
-        car.fire_auto_enable_all(enable=False)
+        car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=False)
+                obj.fire_auto_enable(enable=False, time=time)
 
-    def party_after_exclude(self, party, old_member):
+    def party_after_exclude(self, party, old_member, time):
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
             return
-        self.cars[0].fire_auto_enable_all(time=self.server.get_time() + 0.01, enable=self._auto_fire_enable)
+        self.cars[0].fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
-                obj.fire_auto_enable_all(enable=True)
+                obj.fire_auto_enable(enable=True, time=time + 0.01)
 
     def _invite_by_id(self, invite_id):
         for invite in self.invites:
@@ -204,6 +209,24 @@ class Agent(Object):
         else:
             messages.PartyErrorMessage(agent=self,
                                        comment="You not have access for this invite {}".format(invite_id)).post()
+
+    def is_target(self, target):
+        if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
+            return False
+
+        t_agent = target.main_agent
+
+        if t_agent is self:
+            return False
+
+        if t_agent is None:
+            return True
+
+        # проверка объекта на партийность
+        if t_agent.party and self.party:
+            if t_agent.party is self.party:
+                return False
+        return True
 
 
 class User(Agent):

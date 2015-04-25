@@ -21,6 +21,7 @@ class Event(object):
         @param float time: Time of event
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
+        assert time is not None, 'classname event is {}'.format(self.classname)
         self.time = time or server.get_time()
         self.actual = True
         self.callback_before = callback_before
@@ -30,6 +31,8 @@ class Event(object):
     def post(self):
         self.server.post_event(self)  # todo: test to atomic construction
         log.info('POST   %s', self)
+        self.server.stat_log.s_events_all(time=self.time, delta=1.0)
+        self.server.stat_log.s_events_on(time=self.time, delta=1.0)
 
     def cancel(self):
         if self.actual:
@@ -40,7 +43,7 @@ class Event(object):
             log.warning('Double cancelling event: %s', self)
 
     def on_cancel(self):
-        pass
+        self.server.stat_log.s_events_on(time=self.time, delta=-1.0)
 
     def __hash__(self):
         return hash((self.time,))
@@ -86,7 +89,14 @@ class Event(object):
             self.callback_after(event=self)
 
     def on_perform(self):
-        pass
+        stat_log = self.server.stat_log
+        stat_log.s_events_on(time=self.time, delta=-1.0)
+        curr_lag = self.server.get_time() - self.time
+        assert curr_lag >= 0.0, '{}'.format(curr_lag)
+        stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
+        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
+        if stat_log.get_metric('s_events_lag_max') < curr_lag:
+            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
 
 
 class Objective(Event):
@@ -135,18 +145,6 @@ class Delete(Objective):
         self.obj.on_after_delete(event=self)
 
 
-class SearchContacts(Objective):
-
-    def on_perform(self):
-        super(SearchContacts, self).on_perform()
-        obj = self.obj
-        """@type: sublayers_server.model.base.Observer"""
-        interval = obj.contacts_check_interval
-        if obj.is_alive and interval:
-            obj.on_contacts_check()  # todo: check it
-            SearchContacts(obj=obj, time=obj.server.get_time() + interval).post()  # todo: make regular interva
-
-
 class SearchZones(Objective):
 
     def on_perform(self):
@@ -154,9 +152,9 @@ class SearchZones(Objective):
         obj = self.obj
         """@type: sublayers_server.model.base.Observer"""
         obj.on_zone_check(self)
-        interval = obj.contacts_check_interval
+        interval = obj.check_zone_interval
         if obj.is_alive and interval:
-            SearchZones(obj=obj, time=obj.server.get_time() + interval).post()
+            SearchZones(obj=obj, time=self.time + interval).post()
 
 
 class Contact(Objective):
@@ -174,6 +172,20 @@ class Contact(Objective):
         assert subj.is_alive and not subj.limbo
         self.subj = subj
         super(Contact, self).__init__(obj=obj, **kw)
+
+
+class ContactInEvent(Contact):
+    def on_perform(self):
+        super(ContactInEvent, self).on_perform()
+        if (self.subj.is_alive and not self.subj.limbo) and (self.obj.is_alive and not self.obj.limbo):
+            self.subj.on_contact_in(obj=self.obj, time=self.time)
+
+
+class ContactOutEvent(Contact):
+    def on_perform(self):
+        super(ContactOutEvent, self).on_perform()
+        if (self.subj.is_alive and not self.subj.limbo) and (self.obj.is_alive and not self.obj.limbo):
+            self.subj.on_contact_out(obj=self.obj, time=self.time)
 
 
 class FireDischargeEvent(Objective):
@@ -203,13 +215,13 @@ class FireDischargeEffectEvent(Objective):
             if (sector.side == self.side) and sector.is_discharge():
                 max_radius = max(max_radius, sector.radius)
                 for target in sector.target_list:
-                    targets.append(target.position)
+                    targets.append(target.position(time=self.time))
 
         # todo: добавить гео-позиционный фильтр агентов
-        subj_position = self.obj.position
+        subj_position = self.obj.position(time=self.time)
         fake_position = None
         if len(targets) == 0:
-            fake_position = Point.polar(max_radius, self.obj.direction + get_angle_by_side(self.side)) + subj_position
+            fake_position = Point.polar(max_radius, self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
             if len(targets) > 0:
                 for target in targets:
@@ -219,11 +231,46 @@ class FireDischargeEffectEvent(Objective):
 
 
 class FireAutoEnableEvent(Objective):
-    def __init__(self, side, enable, **kw):
+    def __init__(self, enable, **kw):
         super(FireAutoEnableEvent, self).__init__(**kw)
-        self.side = side
         self.enable = enable
 
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
-        self.obj.on_fire_auto_enable(self.side, self.enable)
+        self.obj.on_fire_auto_enable(enable=self.enable, time=self.time)
+
+
+class FireAutoTestEvent(Objective):
+    def on_perform(self):
+        super(FireAutoTestEvent, self).on_perform()
+        obj = self.obj
+        for target in obj.visible_objects:
+            obj.on_auto_fire_test(obj=target, time=self.time)
+        FireAutoTestEvent(obj=obj, time=self.time + obj.check_auto_fire_interval).post()
+
+
+class BangEvent(Event):
+    def __init__(self, starter, center, radius, damage, **kw):
+        server = starter.server
+        super(BangEvent, self).__init__(server=server, **kw)
+        self.starter = starter
+        self.center = center
+        self.radius = radius
+        self.damage = damage
+
+    def on_perform(self):
+        super(BangEvent, self).on_perform()
+        from sublayers_server.model.messages import Bang
+        from sublayers_server.model.units import Unit
+
+        for obj in self.server.geo_objects:  # todo: GEO-index clipping
+            if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
+                if isinstance(obj, Unit):
+                    if abs(self.center - obj.position(time=self.time)) < self.radius:
+                        obj.set_hp(dhp=self.damage, shooter=self.starter, time=self.time)
+
+        for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+            Bang(
+                position=self.center,
+                agent=agent,
+            ).post()
