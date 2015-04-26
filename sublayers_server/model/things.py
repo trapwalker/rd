@@ -28,37 +28,37 @@ class BaseMeta(type):
     __container__ = None
     def __new__(cls, name, bases, attrs):
         pp(locals()); print
-        attrs = self.__process_attrs__(name, bases, attrs)
         c = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
         return c
 
     def __init__(self, name, bases, attrs):
         super(BaseMeta, self).__init__(name, bases, attrs)
 
+        self._ = self()
+
+        self.__process_attrs__()
+
         if self.__container__:
             self.__container__.register(self)
 
-        self._ = self()
-
-    def __process_attrs__(self, name, bases, attrs):
-        res_attrs = {}
-        for k, v in attrs:
+    def __process_attrs__(self):
+        overrides = {}
+        for k, v in self.__dict__.items():
             if isinstance(v, Attribute):
-                res_attrs[k] = v
                 v._attach(cls=self, name=k)                
-            elif not k.startswith('_'):
-                attr = None
-                for b in bases:
-                    if hasattr(k, b):
-                        attr = getattr(k, b)
-                        break
-                if attr:
-                    pass # todo: make
-                    
-                
-            else:
-                res_attrs[k] = v
+            elif (
+                not k.startswith('_')
+                and hasattr(super(self, self), k)
+                and isinstance(getattr(super(self, self), k), Attribute)
+                and not isinstance(v, Attribute)
+            ):
+                overrides[k] = v
 
+        for k, v in overrides.items():
+            print 'override', k, v
+            delattr(self, k)  # todo: фильтровать перекрытия до инстанцирования вместо удаления после
+            setattr(self._, k, v)
+               
 
 class Container(object):
     def __init__(self):
@@ -90,11 +90,13 @@ class BaseClass(object):
 
 
 class A(root.BaseClass):
-    x = Attribute()
+    x = Attribute(3)
         
 
 class B(A):
-    y = Attribute()
+    y = Attribute(4)
+    x = 33
+    
 
 a = A()
 b = B()
