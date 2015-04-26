@@ -11,39 +11,26 @@ def load():
 
 
 class BaseMeta(type):
-
-    def f(self):
-        return 13
-
-    x = property(f)
-    
-
-
-class ThingMeta(type):
-    '''def __new__(cls, name, parents, kw):
+    def __new__(cls, name, bases, attrs):
         pp(locals())
-        del kw['__metaclass__']
-        c = type(name, parents, kw)
-        return c'''
+        c = super(ThingMeta, cls).__new__(cls, name, bases, attrs)
+        return c
 
-    def __call__(self, name, parents, kw):
-        print 'call'
-        pp(locals())
-        return super(ThingMeta, self).__call__(name, parents, kw)
+    def __init__(self, name, bases, attrs):
+        super(ThingMeta, self).__init__(name, bases, attrs)
 
-#__metaclass__ = ThingMeta
+        # classregistry.register(self, self.interfaces)
+        print "Would register class %s now." % self
+        print
 
-class C(object):
-    __metaclass__ = ThingMeta
-    x=13
-    @property
-    def y(self):
-        return self.x+1
+        
+class Base(object):
+    __metaclass__ = BaseMeta
+
+
+class C(Base):
+    pass
 
 
 class D(C):
-    #__metaclass__ = ThingMeta
-    x=5
-    @property
-    def z(self):
-        return self.y*2
+    pass

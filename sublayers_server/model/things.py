@@ -3,69 +3,73 @@
 import logging
 log = logging.getLogger(__name__)
 
+from pprint import pprint as pp
+
 
 class Attribute(object):
-    def __init__(self, name):
-        pass
+    def __init__(self):
+        self.name = None
+
+    def attach(self, cls, name):
+        self.name = name
 
 
-class ThingMeta(type):
-    def __new__(cls, name, parents, kw):
-        print 'cls={cls}\nname={name}\nparents={parents}\!Tempnkw={kw}'.format(**locals())
-        c = type(name, parents, kw)
+class BaseMeta(type):
+    __container__ = None
+    def __new__(cls, name, bases, attrs):
+        pp(locals()); print
+        c = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
         return c
 
+    def __init__(self, name, bases, attrs):
+        super(BaseMeta, self).__init__(name, bases, attrs)
 
-class BaseThingClass(object):
-    container = None
-    def __init__(self, name, parent=None, attrs=None):
-        self.name = name
-        self.parent = parent
-        self.attrs = attrs or []
-        assert self.container
-        self.container.register(self)
+        self.__process_attrs__()
 
-    def __del__(self):
-        log.warning('ThingClass deletion! [__del__]')
-        self.container.unregister(self)
+        if self.__container__:
+            self.__container__.register(self)
 
+    def __process_attrs__(self):
+        for k, v in self.__dict__.items():
+            if isinstance(v, Attribute):
+                v.attach(cls=self, name=k)
+    
 
 class Container(object):
     def __init__(self):
-        self.ThingClass = type('ThingClass', (BaseThingClass,), dict(container=self))
         self.classes = {}
 
     def save(self, stream):
         # todo: serialization
         pass
 
-    def register(self, thing_class):
-        self.classes[thing_class.name] = thing_class
+    def register(self, cls):
+        self.classes[cls.__name__] = cls
+        self.__dict__[cls.__name__] = cls
 
-    def unregister(self, thing_class):
-        if isinstance(thing_class, BaseThingClass):
-            del self.classes[thing_class.name]
+    def unregister(self, cls):
+        if isinstance(cls, AbstractBaseClass):
+            del self.classes[cls.__name__]
+            del self.__dict__[cls.__name__]
         else:
-            del self.classes[thing_class]
-
+            del self.classes[cls]
+            del self.__dict__[cls]
+            
 
 root = Container()
 
 
-class P(object):
-    def __init__(self, name):
-        self.name = name
-        
-    def __get__(self, obj, cls):
-        print 'get', self, obj, cls
-        return 13
-    
-    def __set__(self, obj, v):
-        print 'set', self, obj, v
+class BaseClass(object):
+    __metaclass__ = BaseMeta
+    __container__ = root
+
+
+class A(root.BaseClass):
+    x = Attribute()
         
 
-class C(object):
-    x = P('x')
+class B(A):
+    y = Attribute()
 
-c = C()    
+
     
