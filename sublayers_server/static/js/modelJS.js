@@ -440,9 +440,6 @@ var State = (function () {
         return Math.log(this.r(t) / this.r_min) / this._sp_m
     };
 
-
-
-
     State.prototype.fi = function (t) {
         if (!this._c) return this.fi0;
         if (this.a == 0.0)
@@ -456,7 +453,6 @@ var State = (function () {
             return this._fi0 - this.s(t) / this.r(t) * this._turn_sign;
         return this._fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
     };
-
 
     State.prototype.p = function (t) {
         if (!this._c)
@@ -513,6 +509,7 @@ var FuelState = (function () {
 
     return FuelState;
 })();
+
 
 var User = (function () {
     function User(aID) {
