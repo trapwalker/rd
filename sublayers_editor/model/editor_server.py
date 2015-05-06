@@ -18,15 +18,15 @@ class EditorServer(object):
 
         self.db_connection = Connection()
         self.db = self.db_connection.maindb
-        self.tss = MongoDBToTilesets(self.db.tile_sets)
+        #self.tss = MongoDBToTilesets(self.db.tile_sets)
 
-        '''
+
         self.tss = {
-            u'wood': tileset.Tileset(open('d:/ts_scrub_12')),
-            u'water': tileset.Tileset(open('d:/ts_water_12')),
-            u'road': tileset.Tileset(open('d:/ts_road_12')),
+        #    u'wood': tileset.Tileset(open('d:/ts_scrub_12')),
+        #    u'water': tileset.Tileset(open('d:/ts_water_12')),
+        #    u'road': tileset.Tileset(open('d:/ts_road_12')),
         }
-        '''
+
 
         log.info('EditorServer: Tilesets loaded !')
 
@@ -74,17 +74,24 @@ class EditorServer(object):
                 res.append(e)
 
         ts_res = []
-        if long(min_point[u'z']) > 13:
-            for tile in tile_list:
-                list_obj = self.db.tile_sets.find({u'tileid':{'$gte':tile, '$lte': tile.index_child_last()}})
-                for e in list_obj:
-                    x, y, z = Tileid2(e['tileid']).xyz()
+
+        # todo переписать данное место. Здесь забирается информация из бд, тут сразу есть цвет
+        current_zoom = long(min_point[u'z'])
+        #if long(min_point[u'z']) > 13:
+        for tile in tile_list:
+            list_obj = self.db.tile_sets.find({u'tileid':{'$gte': tile, '$lte': tile.index_child_last()}})
+            for e in list_obj:
+                x, y, z = Tileid2(e['tileid']).xyz()
+                # если размер тайла имеет смысл показывать на данном масштабе
+                if abs(current_zoom - z) < 6:
                     e[u'position'] = {
                         'x': x,
                         'y': y,
                         'z': z,
                     }
                     ts_res.append(e)
+
+        # todo: переписываем получение списка листов тайлсетов из оперативной памяти
 
         client.setSelectArea(tile_list)
         client.selectAreaByRect(res)
