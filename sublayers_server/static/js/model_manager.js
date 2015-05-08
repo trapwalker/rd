@@ -611,13 +611,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto');
-        //var currentSpeed = wCruiseControl.getSpeedHandleValue();
-        var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
-       // if (currentSpeed == 0) {
-       //     return;
-            //currentSpeed = user.userCar.maxSpeed * 0.2;
-            //wCruiseControl.setSpeedHandleValue(0.2);
-       // }
+        var currentSpeed = wCruiseControl.getSpeedHandleValue();
+        if (currentSpeed == 0)
+            wCruiseControl.setSpeedHandleValue(0.2);
+        currentSpeed = wCruiseControl.getSpeedHandleValue();
         this.sendMotion(target, currentSpeed, null);
     };
 
