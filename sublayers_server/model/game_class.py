@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from pprint import pprint as pp
+from pprint import pprint as pp, pformat
 
 
 class AttrError(Exception):
@@ -26,12 +26,19 @@ class AttrValueRangeError(AttrValidationError):
     """Attribute range is missing"""
 
 
+class AttributeMeta(type):
+    def __call__(cls, *av, **kw):
+        obj = super(AttributeMeta, cls).__call__(*av, **kw)  # make singleton instance
+        obj.validate(obj.default)
+        return obj
+
+
 class Attribute(object):
+    __metaclass__ = AttributeMeta
     def __init__(self, default=None, null=True, caption=None, doc=None):
         self.name = None
         self.default = default
         self.null = null
-        self.validate(default)
         self.doc = doc
         self._caption = caption
 
@@ -48,6 +55,7 @@ class Attribute(object):
         setattr(cls, self.value_name, self.default)
 
     def __get__(self, obj, cls):
+        # todo: proxy attr instance to provide 'value' property of singleton
         return self if obj is None else getattr(obj, self.value_name)
 
     def __set__(self, obj, v):
@@ -82,35 +90,37 @@ class StrAttr(Attribute):
 
 
 class NumAttr(Attribute):
-    def __init__(self, default=None, min_value=None, max_value=None, **kw):
+    def __init__(self, default=None, min=None, max=None, **kw):
         super(NumAttr, self).__init__(default=default, **kw)
-        self.min_value = min_value
-        self.max_value = max_value
+        self.min = min
+        self.max = max
 
     def validate(self, value):
         if value is None:
             super(NumAttr, self).validate(value)
 
-        if self.min_value is not None and value < self.min_value:
-            raise AttrValueRangeError('Value ({}) < of minimal ({})'.format(value, self.min_value))
+        if self.min is not None and value < self.min:
+            raise AttrValueRangeError('Value ({}) < of minimal ({})'.format(value, self.min))
 
-        if self.max_value is not None and value > self.max_value:
-            raise AttrValueRangeError('Value ({}) > of maximal ({})'.format(value, self.max_value))
+        if self.max is not None and value > self.max:
+            raise AttrValueRangeError('Value ({}) > of maximal ({})'.format(value, self.max))
 
 
 class BaseMeta(type):
     __container__ = None
 
     def __new__(mcs, name, bases, attrs):
-        pp(locals())
-        print
+        log.debug(pformat(locals()))
         c = super(BaseMeta, mcs).__new__(mcs, name, bases, attrs)
         return c
+
+    def __call__(cls, *av, **kw):
+        return cls._
 
     def __init__(cls, name, bases, attrs):
         super(BaseMeta, cls).__init__(name, bases, attrs)
 
-        cls._ = cls()
+        cls._ = super(BaseMeta, cls).__call__()  # make singleton instance
 
         cls.__process_attrs__()
 
@@ -131,7 +141,7 @@ class BaseMeta(type):
                 overrides[k] = v
 
         for k, v in overrides.items():
-            print 'override', k, v
+            log.debug('override %s=%s', k, v)
             delattr(self, k)  # todo: фильтровать перекрытия до инстанцирования вместо удаления после
             setattr(self._, k, v)
                
@@ -165,14 +175,19 @@ class BaseClass(object):
     __container__ = root
 
 
-class A(BaseClass):
-    x = Attribute(3)
+if __name__ == '__main__':
+    import sys
+    log.level = logging.DEBUG
+    log.addHandler(logging.StreamHandler(sys.stderr))
+    
+    class A(BaseClass):
+        x = NumAttr(3, max=40)
         
 
-class B(A):
-    y = Attribute(4)
-    x = 33
-    
+    class B(A):
+        y = Attribute(4)
+        x = 33
 
-a = A()
-b = B()
+    a = A()
+    b = B()
+    
