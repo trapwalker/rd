@@ -3,6 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
+from collections import Callable
 from pprint import pprint as pp, pformat
 
 
@@ -29,13 +30,17 @@ class AttrValueRangeError(AttrValidationError):
 class AttributeMeta(type):
     def __call__(cls, *av, **kw):
         obj = super(AttributeMeta, cls).__call__(*av, **kw)  # make singleton instance
-        obj.validate(obj.default)
+        if not isinstance(obj.default, Callable):
+            obj.validate(obj.default)
         return obj
 
 
 class Attribute(object):
     __metaclass__ = AttributeMeta
     def __init__(self, default=None, null=True, caption=None, doc=None):
+        '''
+            default - value or callable object like `lambda attr, obj, cls: None`
+        '''
         self.name = None
         self.default = default
         self.null = null
@@ -52,12 +57,21 @@ class Attribute(object):
 
     def attach(self, cls, name):
         self.name = name
-        setattr(cls, self.value_name, self.default)
+        #setattr(cls, self.value_name, self.default)
 
     def __get__(self, obj, cls):
         # todo: proxy attr instance to provide 'value' property of singleton
-        return self if obj is None else getattr(obj, self.value_name)
+        if obj is None:
+            return self
 
+        try:
+            return getattr(obj, self.value_name)
+        except AttributeError:
+            if isinstance(self.default, Callable):
+                return self.default(self, obj, cls)
+            else:
+                return self.default
+            
     def __set__(self, obj, v):
         self.validate(v)
         setattr(obj.__class__, self.value_name, v)
@@ -181,6 +195,7 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
     
     class A(BaseClass):
+        name = StrAttr(default=lambda attr, obj, cls: cls.__name__, caption=u'Имя', doc=u'Имя класса. Должно быть идентификатором.')
         x = NumAttr(3, max=40)
         
 
