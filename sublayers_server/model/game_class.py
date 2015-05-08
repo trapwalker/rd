@@ -123,6 +123,9 @@ class NumAttr(Attribute):
 class BaseMeta(type):
     __container__ = None
 
+    def __reduce__(cls):
+        return (BaseMeta, (cls.__name__, cls.__bases__, cls.__dict__))
+
     def __new__(mcs, name, bases, attrs):
         log.debug(pformat(locals()))
         c = super(BaseMeta, mcs).__new__(mcs, name, bases, attrs)
@@ -193,6 +196,9 @@ if __name__ == '__main__':
     import sys
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
+
+    from pickle import dumps, loads
+    import jsonpickle as jp
     
     class A(BaseClass):
         name = StrAttr(default=lambda attr, obj, cls: cls.__name__, caption=u'Имя', doc=u'Имя класса. Должно быть идентификатором.')
