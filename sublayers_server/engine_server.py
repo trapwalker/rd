@@ -27,7 +27,9 @@ from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import MainHandler, PlayHandler
+from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.party_handler import PartyHandler
+from sublayers_server.handlers.town import TownHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 
@@ -53,6 +55,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r"/", MainHandler),
+            (r"/main_car_info", MainCarInfoHandler),
             (r"/party", PartyHandler),
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
             #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
@@ -64,6 +67,7 @@ class Application(tornado.web.Application):
             (r"/auth/logout", AuthLogoutHandler),
             (r"/stat", ServerStatisticsHandler),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
+            (r"/town", TownHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,

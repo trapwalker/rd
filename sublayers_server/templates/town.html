@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="static/js/third_party/jquery.min.js"></script>
+    <script src="static/js/third_party/jquery-ui.min.js"></script>
+    <title></title>
+</head>
+<body>
+    <div>
+        {% include ../static/img/towns/town_1/town.svg %}
+    </div>
+    <script>
+
+
+
+        $("#tower_off").mouseenter(function(){
+            $("#tower_on").css("display", "block");
+            $("#tower_off").css("display", "none");
+        })
+
+
+
+        $("#tower_on").mouseleave(function(){
+            $("#tower_off").css("display", "block");
+            $("#tower_on").css("display", "none");
+        })
+
+
+    </script>
+</body>
+</html>

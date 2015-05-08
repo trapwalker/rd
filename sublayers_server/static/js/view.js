@@ -108,7 +108,14 @@ $(document).ready(function () {
 
     // Повесить на кнопки меню возврат фокуса на карту
     document.getElementById('divMainMenuBtnCharacter').onclick = returnFocusToMap;
-    document.getElementById('divMainMenuBtnCar').onclick = returnFocusToMap;
+
+    document.getElementById('divMainMenuBtnCar').onclick =
+        function(){
+            windowTemplateManager.openUniqueWindow('car_info', '/main_car_info', null);
+            returnFocusToMap();
+        };
+
+
     document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnNucoil').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
