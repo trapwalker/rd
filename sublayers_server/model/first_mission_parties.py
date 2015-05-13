@@ -11,7 +11,7 @@ from math import pi, radians
 class RandomCarList:
     def __init__(self):
         self.params_cars = []
-        self.base_point = Point(12494648, 27025580)
+        self.base_point = Point(12496376, 27133643)
         self.params_cars.append(
             dict(
                 max_hp=100,
