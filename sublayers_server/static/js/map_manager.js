@@ -28,6 +28,7 @@ function onMouseUpMap(mouseEventObject) {
 
 function onMouseDblClick(mouseEventObject) {
     clientManager.sendScoutDroid(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    //console.log(map.project(mouseEventObject.latlng, myMap.getMaxZoom()))
 }
 
 function onMouseMoveMap(mouseEventObject) {
