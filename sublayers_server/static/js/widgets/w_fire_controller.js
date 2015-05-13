@@ -105,6 +105,7 @@ var WFireController = (function (_super) {
         this.SVGRadarCirle.setAttribute('fill', 'url(#fcRadarCircleGradient)');
         this.SVG.appendChild(this.SVGRadarCirle);
         this.change();
+
         // todo: сделать это правильно
         timeManager.addTimerEvent(this, 'change');
     }
@@ -399,7 +400,10 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.delModelObject = function (mobj) {
         //console.log('WFireController.prototype.delModelObject');
-        var isSelf = mobj == this.car;
+        if (mobj == this.car) {
+            this.delFromVisualManager();
+            return;
+        }
         if (_super.prototype.delModelObject.call(this, mobj) && !isSelf) {
             var i = 0;
             while ((i < this.cars.length) && (this.cars[i].mobj != mobj)) i++;
@@ -412,6 +416,7 @@ var WFireController = (function (_super) {
     WFireController.prototype.delFromVisualManager = function () {
         //console.log('WFireController.prototype.delFromVisualManager');
         this.car = null;
+        timeManager.delTimerEvent(this, 'change');
         _super.prototype.delFromVisualManager.call(this);
     };
 

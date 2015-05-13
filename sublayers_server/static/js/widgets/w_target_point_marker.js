@@ -62,5 +62,11 @@ var WTargetPointMarker = (function (_super) {
         }
     };
 
+    WTargetPointMarker.prototype.delFromVisualManager = function () {
+        //console.log('WTargetPointMarker.prototype.delFromVisualManager');
+        this.deactivate();
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
     return WTargetPointMarker;
 })(VisualObject);

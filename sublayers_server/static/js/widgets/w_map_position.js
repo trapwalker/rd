@@ -32,8 +32,7 @@ var WMapPosition = (function (_super) {
     };
 
     WMapPosition.prototype.delFromVisualManager = function () {
-        this.scar = null;
-        this.ocar = null;
+        this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };
 

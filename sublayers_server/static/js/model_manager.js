@@ -107,19 +107,6 @@ var ClientManager = (function () {
         return sectors;
     };
 
-    ClientManager.prototype._setClientState = function (state) {
-        if (state === 'death_car') {
-            // Перевести клиент в состояние, пока машинка мертва
-            //cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-            //map.dragging.enable(); // разрешить тягать карту
-            modalWindow.modalDeathShow();
-            return true;
-        }
-        // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
-        cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
-        myMap.dragging.disable(); // запретить двигать карту
-    };
-
     ClientManager.prototype._sendMessage = function (msg) {
         //console.log('ClientManager.prototype._sendMessage');
         message_stream.sendMessage({
@@ -298,8 +285,8 @@ var ClientManager = (function () {
 
     };
 
-    ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact', event);
+    ClientManager.prototype.See = function (event) {
+        //console.log('ClientManager.prototype.See', event);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -366,11 +353,6 @@ var ClientManager = (function () {
         
     };
 
-    ClientManager.prototype.See = function (event) {
-        //console.log('ClientManager.prototype.See');
-        this.Contact(event);
-    };
-
     ClientManager.prototype.Out = function (event) {
         //console.log('ClientManager.prototype.Out');
         if(event.is_last) { // только если машинку нужно совсем убирать
@@ -390,9 +372,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Die = function (event) {
-        console.log('ClientManager.prototype.Die');
-        this._setClientState('death_car');
-        timeManager.timerStop();
+        // console.log('ClientManager.prototype.Die');
+        modalWindow.modalDeathShow();
     };
 
     ClientManager.prototype.Chat = function (event){

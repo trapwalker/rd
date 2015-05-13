@@ -45,8 +45,15 @@ var WViewRadius = (function (_super) {
         }
     };
 
+    WViewRadius.prototype.delModelObject = function (mobj) {
+        //console.log('WViewRadius.prototype.delModelObject');
+        if (mobj == this.car) {
+            this.delFromVisualManager();
+        }
+    };
+
     WViewRadius.prototype.delFromVisualManager = function () {
-        //console.log('WViewRadius.prototype.delFromVisualManager');
+        console.log('WViewRadius.prototype.delFromVisualManager');
         this.car = null;
         map.removeLayer(this.marker);
         _super.prototype.delFromVisualManager.call(this);
