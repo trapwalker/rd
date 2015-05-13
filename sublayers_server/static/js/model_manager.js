@@ -372,29 +372,20 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Out = function (event) {
-        //console.log('ClientManager.prototype.Out', event.is_last, event.subject_id, event.object_id);
+        //console.log('ClientManager.prototype.Out');
         if(event.is_last) { // только если машинку нужно совсем убирать
-            // очистить все виджеты машинки
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
             if (! car) {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
-            if (car.owner)
-                car.owner.unbindCar(car);
 
-            var list_vo = visualManager.getVobjsByMobj(car);
-            for(var i = 0; i< list_vo.length; i++)
-                list_vo[i].delModelObject(car);
+            // Удалить привязку к владельцу
+            if (car.owner) car.owner.unbindCar(car);
 
-            // убрать саму машинку из визуалменеджера
-            visualManager.delModelObject(car);
-
-            // стирание линий
-            //carMarkerList.delContactLine(event.subject_id, event.object_id);
-            // удаление машинки
-            //carMarkerList.del(event.object_id);
+            // Удаление машинки (убрать саму машинку из визуалменеджера)
+            car.delFromVisualManager();
         }
     };
 

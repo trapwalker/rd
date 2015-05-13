@@ -1,6 +1,6 @@
 var VisualManager = (function () {
     function VisualManager() {
-        this._model_list = {}; // хранятся объекты {obj: modelObject, list: [visualObjects в]}
+        this._model_list = {}; // хранятся объекты {obj: modelObject, list: [visualObjects]}
         this._visual_list = []; // хранятся объекты {obj: visualObject, changed: boolean}
     }
 
@@ -14,6 +14,9 @@ var VisualManager = (function () {
     };
 
     VisualManager.prototype.delModelObject = function (mobj) {
+        var list_vo = this.getVobjsByMobj(mobj);
+        for(var i = 0; i < list_vo.length; i++)
+            list_vo[i].delModelObject(mobj);
         if (this._model_list[mobj.ID])
             delete this._model_list[mobj.ID];
     };
