@@ -15,9 +15,7 @@ var WCruiseControl = (function (_super) {
         // Механизм скрытия
         this.visible = true;
         this.glassDiv = $('#cruiseControlGlassDiv');
-        this.hardWareDiv = $('#cruiseControlHardwareDiv');
-        this.visibleButtonDiv = $("<div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>");
-        this.hardWareDiv.append(this.visibleButtonDiv);
+        this.visibleButtonDiv = $("#cruiseControlVisibleButtonDiv");
         this.visibleButtonDiv.click(this, this._onClickChangeVisible);
 
         // Компактный вид
@@ -453,6 +451,23 @@ var WCruiseControl = (function (_super) {
                 this.changeReverse(this.lastSpeed < 0)
             }
         }
+    };
+
+    WCruiseControl.prototype.delFromVisualManager = function () {
+        this.car = null;
+
+        this.speedHandleDiv.unbind();
+        this.speedHandleDiv.draggable("destroy");
+        this.scaleArea.unbind();
+        this.reverseDiv.unbind();
+        this.stopDiv.unbind();
+        this.visibleButtonDiv.unbind();
+        wCruiseControl = null;
+
+        this.compactView.remove();
+        this.mainDiv.remove();
+
+        _super.prototype.delFromVisualManager.call(this);
     };
 
     return WCruiseControl;

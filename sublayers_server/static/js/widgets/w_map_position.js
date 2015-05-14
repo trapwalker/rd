@@ -17,7 +17,6 @@ var WMapPosition = (function (_super) {
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
-        //map.panTo(tempLatLng, {animate: false});
         map.setView(tempLatLng, map.getZoom(), {
             reset: false,
             animate: false,
@@ -27,7 +26,6 @@ var WMapPosition = (function (_super) {
                 easeLinearity: 0.05,
                 noMoveStart: true
             }
-
         });
     };
 

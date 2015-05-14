@@ -677,6 +677,7 @@ var WFireRadialGrid = (function (_super) {
         //console.log('WFireRadialGrid.prototype.delFromVisualManager');
         this.car = null;
         map.removeLayer(this.marker);
+        mapManager.widget_fire_radial_grid = null;
         _super.prototype.delFromVisualManager.call(this);
     };
 

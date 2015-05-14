@@ -338,19 +338,6 @@ var ClientManager = (function () {
                 )
                     .addTo(myMap)
             );
-
-        // отрисовка линии от объекта к субъекту event.subject_id, event.object.uid
-
-        if(cookieStorage.enableShowDebugLine()) {
-            var scar = visualManager.getModelObject(event.subject_id);
-            var ocar = visualManager.getModelObject(event.object.uid);
-            if (!scar || !ocar) {
-                console.error('Contact Error: невозможно отобразить Contact-Line, так как на клиенте отсутствует одна из машин: ', scar, ocar);
-                return;
-            }
-            new WRedContactLine(scar, ocar);
-        }
-        
     };
 
     ClientManager.prototype.Out = function (event) {
@@ -368,6 +355,8 @@ var ClientManager = (function () {
 
             // Удаление машинки (убрать саму машинку из визуалменеджера)
             car.delFromVisualManager();
+
+            if (car == user.userCar) user.userCar = null;
         }
     };
 
@@ -567,22 +556,26 @@ var ClientManager = (function () {
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
-        //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        //console.log('ClientManager.prototype.sendSetSpeed');
+        if (!user.userCar) return;
         this.sendMotion(null, newSpeed, null)
     };
 
     ClientManager.prototype.sendStopCar = function () {
-        //console.log('sendStopCar');
+        //console.log('ClientManager.prototype.sendStopCar');
+        if (!user.userCar) return;
         this.sendMotion(null, 0.0, null)
     };
 
     ClientManager.prototype.sendTurn = function (turn) {
-        //console.log('sendTurn', turn);
+        //console.log('ClientManager.prototype.sendTurn');
+        if (!user.userCar) return;
         this.sendMotion(null, null, turn)
     };
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto');
+        if (!user.userCar) return;
         var currentSpeed = wCruiseControl.getSpeedHandleValue();
         if (currentSpeed == 0)
             wCruiseControl.setSpeedHandleValue(0.2);
@@ -591,7 +584,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        //console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
+        //console.log('ClientManager.prototype.sendMotion');
+        if (!user.userCar) return;
         var new_speed = newSpeed;
         if (new_speed) {
             new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
@@ -622,6 +616,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireDischarge = function (side) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if (!user.userCar) return;
         if(! wFireController.visible) return;
         var mes = {
             call: "fire_discharge",
@@ -636,6 +631,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireAutoEnable = function (enable) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if (!user.userCar) return;
         var mes = {
             call: "fire_auto_enable",
             rpc_call_id: rpcCallList.getID(),
