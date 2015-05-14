@@ -304,7 +304,7 @@ var ClientManager = (function () {
             // Проверка: нет ли уже такой машинки.
             var car = visualManager.getModelObject(uid);
             if (car) {
-                console.error('Contact Error: Такая машинка уже есть на клиенте! Ошибка!');
+                console.warn('Contact: Такая машинка уже есть на клиенте!');
                 return;
             }
             if (car == user.userCar) {

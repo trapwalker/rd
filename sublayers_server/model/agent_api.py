@@ -331,6 +331,8 @@ class AgentAPI(API):
                     messages.Message(agent=self.agent, comment=self.agent.server.get_server_stat()).post()
         elif command == '/delete':
             self.delete_car()
+        elif command == '/init':
+            self.update_agent_api()
         else:
             log.warning('Unknown console command "%s"', cmd)
 
