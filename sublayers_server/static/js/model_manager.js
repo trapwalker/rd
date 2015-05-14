@@ -107,19 +107,6 @@ var ClientManager = (function () {
         return sectors;
     };
 
-    ClientManager.prototype._setClientState = function (state) {
-        if (state === 'death_car') {
-            // Перевести клиент в состояние, пока машинка мертва
-            //cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-            //map.dragging.enable(); // разрешить тягать карту
-            modalWindow.modalDeathShow();
-            return true;
-        }
-        // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
-        cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
-        myMap.dragging.disable(); // запретить двигать карту
-    };
-
     ClientManager.prototype._sendMessage = function (msg) {
         //console.log('ClientManager.prototype._sendMessage');
         message_stream.sendMessage({
@@ -298,8 +285,8 @@ var ClientManager = (function () {
 
     };
 
-    ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact', event);
+    ClientManager.prototype.See = function (event) {
+        //console.log('ClientManager.prototype.See', event);
 
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
@@ -317,7 +304,7 @@ var ClientManager = (function () {
             // Проверка: нет ли уже такой машинки.
             var car = visualManager.getModelObject(uid);
             if (car) {
-                console.error('Contact Error: Такая машинка уже есть на клиенте! Ошибка!');
+                console.warn('Contact: Такая машинка уже есть на клиенте!');
                 return;
             }
             if (car == user.userCar) {
@@ -351,57 +338,31 @@ var ClientManager = (function () {
                 )
                     .addTo(myMap)
             );
-
-        // отрисовка линии от объекта к субъекту event.subject_id, event.object.uid
-
-        if(cookieStorage.enableShowDebugLine()) {
-            var scar = visualManager.getModelObject(event.subject_id);
-            var ocar = visualManager.getModelObject(event.object.uid);
-            if (!scar || !ocar) {
-                console.error('Contact Error: невозможно отобразить Contact-Line, так как на клиенте отсутствует одна из машин: ', scar, ocar);
-                return;
-            }
-            new WRedContactLine(scar, ocar);
-        }
-        
-    };
-
-    ClientManager.prototype.See = function (event) {
-        //console.log('ClientManager.prototype.See');
-        this.Contact(event);
     };
 
     ClientManager.prototype.Out = function (event) {
-        //console.log('ClientManager.prototype.Out', event.is_last, event.subject_id, event.object_id);
+        //console.log('ClientManager.prototype.Out');
         if(event.is_last) { // только если машинку нужно совсем убирать
-            // очистить все виджеты машинки
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
             if (! car) {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
-            if (car.owner)
-                car.owner.unbindCar(car);
 
-            var list_vo = visualManager.getVobjsByMobj(car);
-            for(var i = 0; i< list_vo.length; i++)
-                list_vo[i].delModelObject(car);
+            // Удалить привязку к владельцу
+            if (car.owner) car.owner.unbindCar(car);
 
-            // убрать саму машинку из визуалменеджера
-            visualManager.delModelObject(car);
+            // Удаление машинки (убрать саму машинку из визуалменеджера)
+            car.delFromVisualManager();
 
-            // стирание линий
-            //carMarkerList.delContactLine(event.subject_id, event.object_id);
-            // удаление машинки
-            //carMarkerList.del(event.object_id);
+            if (car == user.userCar) user.userCar = null;
         }
     };
 
     ClientManager.prototype.Die = function (event) {
-        console.log('ClientManager.prototype.Die');
-        this._setClientState('death_car');
-        timeManager.timerStop();
+        // console.log('ClientManager.prototype.Die');
+        modalWindow.modalDeathShow();
     };
 
     ClientManager.prototype.Chat = function (event){
@@ -595,22 +556,26 @@ var ClientManager = (function () {
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
-        //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        //console.log('ClientManager.prototype.sendSetSpeed');
+        if (!user.userCar) return;
         this.sendMotion(null, newSpeed, null)
     };
 
     ClientManager.prototype.sendStopCar = function () {
-        //console.log('sendStopCar');
+        //console.log('ClientManager.prototype.sendStopCar');
+        if (!user.userCar) return;
         this.sendMotion(null, 0.0, null)
     };
 
     ClientManager.prototype.sendTurn = function (turn) {
-        //console.log('sendTurn', turn);
+        //console.log('ClientManager.prototype.sendTurn');
+        if (!user.userCar) return;
         this.sendMotion(null, null, turn)
     };
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto');
+        if (!user.userCar) return;
         var currentSpeed = wCruiseControl.getSpeedHandleValue();
         if (currentSpeed == 0)
             wCruiseControl.setSpeedHandleValue(0.2);
@@ -619,7 +584,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        //console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
+        //console.log('ClientManager.prototype.sendMotion');
+        if (!user.userCar) return;
         var new_speed = newSpeed;
         if (new_speed) {
             new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
@@ -650,6 +616,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireDischarge = function (side) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if (!user.userCar) return;
         if(! wFireController.visible) return;
         var mes = {
             call: "fire_discharge",
@@ -664,6 +631,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireAutoEnable = function (enable) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if (!user.userCar) return;
         var mes = {
             call: "fire_auto_enable",
             rpc_call_id: rpcCallList.getID(),

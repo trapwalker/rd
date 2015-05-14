@@ -259,7 +259,7 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.sverAll = function (event) {
         var slider = event.data;
         //alert('Свернуть все гаджеты-стекляшки');
-        wCruiseControl.changeVisible(false);
+        if (wCruiseControl) wCruiseControl.changeVisible(false);
         chat.changeVisible(false);
         slider.changeVisible(false);
         document.getElementById('map').focus();
@@ -268,7 +268,7 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.razverAll = function (event) {
         var slider = event.data;
         //alert('Свернуть все гаджеты-стекляшки');
-        wCruiseControl.changeVisible(true);
+        if (wCruiseControl) wCruiseControl.changeVisible(true);
         chat.changeVisible(true);
         slider.changeVisible(true);
         document.getElementById('map').focus();

@@ -281,7 +281,8 @@ var WHPRadial = (function (_super) {
     };
 
     WHPRadial.prototype.delFromVisualManager = function () {
-        // todo: удалить свою вёрстку (просто удалить $('#' + this.div_id), по идее)
+        $('#' + this.div_id).remove();
+        this.alarmLamp.remove();
         this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };

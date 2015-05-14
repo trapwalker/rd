@@ -105,6 +105,7 @@ var WFireController = (function (_super) {
         this.SVGRadarCirle.setAttribute('fill', 'url(#fcRadarCircleGradient)');
         this.SVG.appendChild(this.SVGRadarCirle);
         this.change();
+
         // todo: сделать это правильно
         timeManager.addTimerEvent(this, 'change');
     }
@@ -136,8 +137,10 @@ var WFireController = (function (_super) {
         });
         document.getElementById('map').focus();
         var is_show_central = !self.visible && (map.getZoom() >= 14);
-        mapManager.widget_fire_radial_grid.setVisible(is_show_central);
-        mapManager.widget_fire_sectors.setVisible(is_show_central);
+        if (mapManager.widget_fire_radial_grid)
+            mapManager.widget_fire_radial_grid.setVisible(is_show_central);
+        if (mapManager.widget_fire_sectors)
+            mapManager.widget_fire_sectors.setVisible(is_show_central);
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
@@ -239,10 +242,10 @@ var WFireController = (function (_super) {
     WFireController.prototype._clearSides = function () {
         for (; this.sides.length > 0;) {
             var side = this.sides.pop();
-            $(sides.SVGPath).off('click', this._fireSectorEvent);
-            $(sides.SVGPath).remove();
-            $(sides.SVGPathShadow).remove();
-            $(sides.SVGGroup).remove();
+            $(side.SVGPath).off('click', this._fireSectorEvent);
+            $(side.SVGPath).remove();
+            $(side.SVGPathShadow).remove();
+            $(side.SVGGroup).remove();
         }
         this.sides = [];
     };
@@ -399,8 +402,11 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.delModelObject = function (mobj) {
         //console.log('WFireController.prototype.delModelObject');
-        var isSelf = mobj == this.car;
-        if (_super.prototype.delModelObject.call(this, mobj) && !isSelf) {
+        if (mobj == this.car) {
+            this.delFromVisualManager();
+            return;
+        }
+        if (_super.prototype.delModelObject.call(this, mobj)) {
             var i = 0;
             while ((i < this.cars.length) && (this.cars[i].mobj != mobj)) i++;
             if (i >= this._model_objects.length) return false;
@@ -412,6 +418,17 @@ var WFireController = (function (_super) {
     WFireController.prototype.delFromVisualManager = function () {
         //console.log('WFireController.prototype.delFromVisualManager');
         this.car = null;
+        this.cars = [];
+        timeManager.delTimerEvent(this, 'change');
+
+        this.fCSB.unbind();
+        $(this.backgroundCircle).unbind();
+        $(this.allFire).unbind();
+        this._clearSides();
+
+        wFireController = null;
+
+        $('#fireControlArea').empty();
         _super.prototype.delFromVisualManager.call(this);
     };
 

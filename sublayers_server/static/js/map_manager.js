@@ -97,7 +97,7 @@ function onKeyDownMap(event) {
         case 38:
             if (!pressedArrowUp) {
                 clientManager.sendSetSpeed(user.userCar.v_forward);
-                wCruiseControl.startKeyboardControl();
+                if (wCruiseControl) wCruiseControl.startKeyboardControl();
                 pressedArrowUp = true;
             }
             break;
@@ -110,7 +110,7 @@ function onKeyDownMap(event) {
         case 40:
             if (!pressedArrowDown) {
                 clientManager.sendSetSpeed(user.userCar.v_backward);
-                wCruiseControl.startKeyboardControl();
+                if (wCruiseControl) wCruiseControl.startKeyboardControl();
                 pressedArrowDown = true;
             }
             break;
@@ -183,7 +183,7 @@ function onKeyUpMap(event) {
             break;
         case 38:
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-            wCruiseControl.stopKeyboardControl();
+            if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowUp = false;
             break;
         case 39:
@@ -192,7 +192,7 @@ function onKeyUpMap(event) {
             break;
         case 40:
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-            wCruiseControl.stopKeyboardControl();
+            if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowDown = false;
             break;
     }
@@ -347,15 +347,17 @@ var MapManager = (function(_super){
         if (event.zoom) {
             if (event.zoom < 15) {
                 // убрать сетку и секутора
-                //wFireController.setVisible(false);
-                mapManager.widget_fire_radial_grid.setVisible(false);
-                mapManager.widget_fire_sectors.setVisible(false);
+                if (mapManager.widget_fire_radial_grid)
+                    mapManager.widget_fire_radial_grid.setVisible(false);
+                if (mapManager.widget_fire_sectors)
+                    mapManager.widget_fire_sectors.setVisible(false);
             }
             else {
                 // показать сетку и сектора, если боевой режим
-                //wFireController.setVisible(wFireController.combatState);
-                mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
-                mapManager.widget_fire_sectors.setVisible(wFireController.visible);
+                if ((mapManager.widget_fire_radial_grid) && (wFireController))
+                    mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
+                if ((mapManager.widget_fire_sectors) && (wFireController))
+                    mapManager.widget_fire_sectors.setVisible(wFireController.visible);
             }
         }
     };

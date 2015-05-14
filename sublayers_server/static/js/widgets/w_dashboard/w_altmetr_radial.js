@@ -245,7 +245,7 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype.delFromVisualManager = function () {
-        // todo: удалить свою вёрстку (просто удалить $('#' + this.div_id), по идее)
+        $('#' + this.div_id).remove();
         this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };

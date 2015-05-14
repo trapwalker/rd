@@ -72,7 +72,6 @@
     <script src="{{ static_url('js/widgets/w_rumble.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_map_position.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_zoom_slider.js') }}"></script>
-    <script src="{{ static_url('js/widgets/w_red_contact_line.js') }}"></script>
     <script src="{{ static_url('js/widgets/central/w_fire_sectors.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_view_radius.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_target_point_marker.js') }}"></script>
@@ -135,7 +134,9 @@
             <div id="divForHpAndFuelRadials"></div>
             <div id="divForAltmetrRadial"></div>
         </div>
-        <div id="cruiseControlHardwareDiv" class="cruise-control-hardware"></div>
+        <div id="cruiseControlHardwareDiv" class="cruise-control-hardware">
+            <div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>
+        </div>
     </div>
     <div id="zoomSetDivForZoomSlider"></div>
     <div id="chatAreaGlass"></div>
