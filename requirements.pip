@@ -3,5 +3,6 @@ tornado
 debug
 pymongo
 sleekxmpp
+jsonpickle
 #PIL
 #pyzmq

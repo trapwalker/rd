@@ -3,6 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
+import copy_reg
 from collections import Callable
 from pprint import pprint as pp, pformat
 
@@ -123,8 +124,8 @@ class NumAttr(Attribute):
 class BaseMeta(type):
     __container__ = None
 
-    def __reduce__(cls):
-        return (BaseMeta, (cls.__name__, cls.__bases__, cls.__dict__))
+    def __getinitargs__(cls):
+        return cls.__name__, cls.__bases__, {}
 
     def __new__(mcs, name, bases, attrs):
         log.debug(pformat(locals()))
@@ -163,6 +164,17 @@ class BaseMeta(type):
             setattr(self._, k, v)
                
 
+def _pickle(cls):
+    log.debug('__reduce: %s', cls)
+    return cls.__class__, (
+        cls.__name__,
+        cls.__bases__,
+        {} # {k: v for k, v in cls.__dict__.items() if not k.startswith('__')}
+    )
+
+copy_reg.pickle(BaseMeta, _pickle)
+
+
 class Container(object):
     def __init__(self):
         self.classes = {}
@@ -200,6 +212,7 @@ if __name__ == '__main__':
     from pickle import dumps, loads
     import jsonpickle as jp
     
+    
     class A(BaseClass):
         name = StrAttr(default=lambda attr, obj, cls: cls.__name__, caption=u'Имя', doc=u'Имя класса. Должно быть идентификатором.')
         x = NumAttr(3, max=40)
@@ -211,4 +224,5 @@ if __name__ == '__main__':
 
     a = A()
     b = B()
-    
+
+    print jp.dumps(B)
