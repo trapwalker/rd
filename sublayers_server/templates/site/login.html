@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="static/js/third_party/jquery.min.js"></script>
+    <link rel="stylesheet" href="static/css/module-login.css"/>
+
+
+</head>
+<body>
+    <div id="background">
+        <div id="login">
+            <div class="flip flipped">
+                <div class="form-signup">
+                    <h1>Регистрация</h1>
+                    <fieldset>
+                        <p class="login-msg"></p>
+                        <form method="post" autocomplete="on">
+                            <input type="email" name="email" placeholder="Email" required/>
+                            <input type="password" name="password" placeholder="Password" required/>
+                            <input type="text" name="username" placeholder="Имя пользователя" required/>
+                            <input type="hidden" name="action" value="1">
+                            <input type="submit" value="Зарегистрироваться"/>
+                            {% raw xsrf_form_html() %}
+                        </form>
+                        <p>Войти через:
+                        </p>
+                        <a href="#" class="flipper">Войти.</a>
+                    </fieldset>
+                </div>
+                <div class="form-login">
+                    <h1>Авторизация</h1>
+                    <fieldset>
+                        <form method="post">
+                            <input type="email" name="email" placeholder="Email" required/>
+                            <input type="password" name="password" placeholder="Password" required/>
+                            <input type="hidden" name="action" value="2">
+                            <input type="submit" value="Войти"/>
+                            {% raw xsrf_form_html() %}
+                        </form>
+                        <p>Войти через:
+<a href="https://accounts.google.com/o/oauth2/auth?redirect_uri=http%3A%2F%2Flocalhost%2Flogin&response_type=code&client_id=106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fplus.login"
+   title="Войти через Google">Войти через Google</a>
+                        </p>
+                        <p><a href="#" class="flipper">Регистрация.</a></p>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function () {
+        $('a.flipper').click(function(){
+            $('.flip').toggleClass('flipped');
+        });
+    });
+</script>
+
+</html>
