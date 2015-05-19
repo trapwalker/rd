@@ -19,13 +19,15 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
+from pymongo import Connection
 
 from sublayers_server import settings
 from sublayers_server import service_tools
 from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.site.site_handler import SiteHandler
-from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler
+from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
+    StandardLoginHandler
 
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
@@ -44,13 +46,17 @@ class Application(tornado.web.Application):
             (r"/", SiteHandler),
             (r"/login", SiteLoginHandler),
             (r"/logout", SiteLogoutHandler),
+            (r"/login/standard", StandardLoginHandler),
+            (r"/login/google", GoogleLoginHandler),
+
+
 
 
             (r"/main_car_info", MainCarInfoHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
             (r"/auth/login", AuthLoginHandler),
             (r"/auth/login/auth", AuthLoginHandler),
-            (r"/auth/login/google", AuthGoogleHandler),
+
             (r"/auth/logout", AuthLogoutHandler),
         ]
         app_settings = dict(
@@ -62,23 +68,21 @@ class Application(tornado.web.Application):
             login_url="/login",
             debug=True,
             autoreload=False,
+
+            google_oauth={"key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
+                          "secret": "JOXGxpPxKGqr_9TYW9oYT8g_"}
         )
         tornado.web.Application.__init__(self, handlers, **app_settings)
+
+        self.db_connection = Connection()
+        self.db = self.db_connection.auth_db
+
+
 
     def stop(self):
         log.debug('====== ioloop before stop')
         tornado.ioloop.IOLoop.instance().stop()
         log.debug('====== ioloop after stop')
-
-    def on_stop(self):
-        if self.srv.is_active:
-            self.srv.stop()
-
-    def init_scene(self):
-        #from model.units import Bot
-        #from sublayers_server.model.vectors import Point
-        pass
-        # todo: map metadata store to DB
 
 
 def main():
