@@ -6,9 +6,11 @@ log = logging.getLogger(__name__)
 import tornado.web
 from handlers.base import BaseHandler
 from tornado.web import RequestHandler
-from tornado.auth import GoogleOAuth2Mixin
+from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin
+from tornado.httputil import url_concat
 import json
 import hashlib
+import urllib
 from tornado.httpclient import HTTPClient
 
 
@@ -127,6 +129,78 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
                 return str(db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
+            if (action == '2') and (user_id is not None):
+                return str(user_id[u'_id'])
+            return None
+
+
+class OKLoginHandler(RequestHandler, OAuth2Mixin):
+    _OAUTH_AUTHORIZE_URL = "http://www.odnoklassniki.ru/oauth/authorize"
+    _OAUTH_ACCESS_TOKEN_URL = "https://api.odnoklassniki.ru/oauth/token.do"
+    _OAUTH_SETTINGS_KEY = "ok_oauth"
+
+    @tornado.gen.coroutine
+    def get(self):
+        if self.get_argument('action', False):
+            self.set_cookie("action", self.get_argument("action"))
+        if self.get_argument('code', False):
+            http = HTTPClient()
+            body = urllib.urlencode({
+                "redirect_uri": "http://localhost/login/ok",
+                "code": self.get_argument('code'),
+                "client_id": self.settings[self._OAUTH_SETTINGS_KEY]['key'],
+                "client_secret": self.settings[self._OAUTH_SETTINGS_KEY]['secret'],
+                "grant_type": "authorization_code",
+            })
+
+            response = http.fetch(request=self._OAUTH_ACCESS_TOKEN_URL, method="POST",
+                                  headers={'Content-Type': 'application/x-www-form-urlencoded'}, body=body)
+            acc_token = json.loads(response.body)['access_token']
+
+            hex_sign_1 = hashlib.md5(acc_token + self.settings[self._OAUTH_SETTINGS_KEY]['secret']).hexdigest()
+            hex_sign = hashlib.md5('application_key=' + self.settings[self._OAUTH_SETTINGS_KEY]['public_key'] +
+                                   'method=users.getCurrentUser' + hex_sign_1).hexdigest()
+
+            args = {
+                "method": "users.getCurrentUser",
+                "access_token": acc_token,
+                "application_key": self.settings[self._OAUTH_SETTINGS_KEY]['public_key'],
+                "sig": hex_sign
+            }
+
+            path = url_concat('http://api.ok.ru/fb.do', args)
+            response = http.fetch(request=path,
+                                  method="GET", headers={'Content-Type': 'application/x-www-form-urlencoded'})
+
+            cookie = self._on_get_user_info(response)
+            self.clear_cookie("action")
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/")
+            else:
+                self.redirect("/login?msg=Ошибка%20авторизации")
+        else:
+            yield self.authorize_redirect(
+                redirect_uri='http://localhost/login/ok',
+                client_id=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
+                scope=['VALUABLE_ACCESS'],
+                response_type='code',
+            )
+
+    def _on_get_user_info(self, response):
+        action = self.get_cookie("action")
+        if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
+            body_id = json.loads(response.body)['uid']
+            db = self.application.db
+            db_res = db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})
+            user_ids = []
+            for db_rec in db_res:
+                user_ids.append(db_rec)
+            user_id = None
+            if len(user_ids) == 1:
+                user_id = user_ids[0]
+            if (action == '1') and (user_id is None):
+                return str(db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
             return None
