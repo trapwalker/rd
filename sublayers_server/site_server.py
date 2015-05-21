@@ -27,7 +27,7 @@ from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.site.site_handler import SiteHandler
 from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
-    StandardLoginHandler, OKLoginHandler
+    StandardLoginHandler, OKLoginHandler, VKLoginHandler
 
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
@@ -49,6 +49,7 @@ class Application(tornado.web.Application):
             (r"/login/standard", StandardLoginHandler),
             (r"/login/google", GoogleLoginHandler),
             (r"/login/ok", OKLoginHandler),
+            (r"/login/vk", VKLoginHandler),
 
             (r"/main_car_info", MainCarInfoHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
@@ -72,6 +73,8 @@ class Application(tornado.web.Application):
             ok_oauth={"key": "1137609984",
                       "secret": "BB413D7F8E6B685D19AE3FE0",
                       "public_key": "CBAOIPMEEBABABABA"},
+            vk_oauth={"key": "4926489",
+                      "secret": "4gyveXhKv5aVNCor5bkB"},
         )
         tornado.web.Application.__init__(self, handlers, **app_settings)
 
