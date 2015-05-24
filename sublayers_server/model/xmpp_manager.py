@@ -15,7 +15,7 @@ class BotXMPPManager(sleekxmpp.ClientXMPP):
         self.add_event_handler("session_start", self.start)
 
     def start(self, event):
-        print 'start BotXMPPManager'
+        # print 'start BotXMPPManager'
         self.send_presence()
 
 
@@ -46,10 +46,11 @@ class RegisterBot(sleekxmpp.ClientXMPP):
 
 class XMPPManager(object):
 
-    def __init__(self, jid, password, server=('localhost', 5222)):
+    def __init__(self, jid, password, server=('localhost', 5222), host_name='@example.com'):
         super(XMPPManager, self).__init__()
         # сохранение входных параметров
         self.server = server
+        self.host_name = host_name
 
         self.bot = BotXMPPManager(jid, password)
         # регистрация плагинов для XMPP
@@ -62,7 +63,7 @@ class XMPPManager(object):
         self.bot.register_plugin('xep_0199') # XMPP Ping
 
         if self.bot.connect(self.server):
-            print 'manager connected'
+            log.info('XMPPManager connected to {}'.format(server))
             self.bot.process(block=False)
 
 
@@ -123,19 +124,43 @@ class XMPPManager(object):
 
 if __name__ == '__main__':
     print 'start'
-    manager = XMPPManager(jid='test1@andrey-pc', password='1', server=('localhost', 5222))
+    manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
     print 'manager is ready'
     # todo настроить сервер, чтобы не запрещал частую регистрацию пользователей
-    '''if manager.register_new_jid(u'test9@andrey-pc', u'9'):
+    if manager.register_new_jid(u'user1@example.com', u'1'):
         print 'register_on'
     else:
         print 'off'
-    '''
 
-    room = 'room15@conference.andrey-pc'
+
+
+    #room = 'room15@conference.andrey-pc'
     #manager.create_room(room)
     #manager.kick_from_room(room, 'dima1')
-    
+
+
+    '''
+    # первое создание первого аккаунта
+    print 'register_new_jid'
+    rbot = RegisterBot('srv@example.com', '1')
+    print 'rbot ready'
+    rbot.register_plugin('xep_0030') # Service Discovery
+    rbot.register_plugin('xep_0004') # Data forms
+    rbot.register_plugin('xep_0066') # Out-of-band Data
+    rbot.register_plugin('xep_0077') # In-band Registration
+    print 'all_plugin ready'
+    server=('localhost', 5222)
+    rbot['xep_0077'].force_registration = True
+    print 'pred_if  server = ' + server[0]
+    if rbot.connect(server):
+        print 'rbot connected'
+        rbot.process(block=True)
+        print True
+    else:
+        print False
+    '''
+
+
     # todo: test send_message
 
 

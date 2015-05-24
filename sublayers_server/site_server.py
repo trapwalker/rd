@@ -32,6 +32,8 @@ from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogou
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
 
+from sublayers_server.model.xmpp_manager import XMPPManager
+
 class Application(tornado.web.Application):
     def __init__(self):
         try:
@@ -78,6 +80,7 @@ class Application(tornado.web.Application):
         self.db_connection = Connection()
         self.db = self.db_connection.auth_db
 
+        self.xmpp_manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
 
 
     def stop(self):

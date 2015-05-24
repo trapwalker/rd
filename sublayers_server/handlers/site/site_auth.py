@@ -12,6 +12,23 @@ import json
 import hashlib
 import urllib
 from tornado.httpclient import HTTPClient
+from random import randint
+from bson.objectid import ObjectId
+
+
+def on_register_new_user(xmpp_manager, profiles, user_db_uid):
+    jid = user_db_uid + xmpp_manager.host_name
+    psw = str(hashlib.md5(jid + str(randint(0, 100))).hexdigest())
+    if xmpp_manager.register_new_jid(jid=jid, password=psw):
+        log.info('New XMPP user <<{}>> is registered'.format(jid))
+    else:
+        log.warning('New XMPP user <<{}>> is NOT registered'.format(jid))
+
+    is_upd = profiles.update({"_id": ObjectId(user_db_uid)}, {'xmpp': {'jid': jid, 'password': psw}})
+    if is_upd:
+        return True
+    else:
+        return False
 
 
 class SiteLoginHandler(BaseHandler):
@@ -59,16 +76,18 @@ class StandardLoginHandler(BaseHandler):
             return
         user_id = self._db_request(email=email)
         if user_id is None:
-            self.set_secure_cookie("user",
-                                   str(self.application.db.profiles.insert({
-                                       'name': user,
-                                       'auth': {
-                                           'standard': {
-                                               'email': email,
-                                               'password': hashlib.md5(password).hexdigest()
-                                           }
-                                       }
-                                   })))
+            user_db_uid = str(self.application.db.profiles.insert({
+                'name': user,
+                'auth': {
+                    'standard': {
+                        'email': email,
+                        'password': hashlib.md5(password).hexdigest()
+                    }
+                }
+            }))
+            on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=self.application.db.profiles,
+                                 user_db_uid=user_db_uid)
+            self.set_secure_cookie("user", user_db_uid)
             self.redirect("/")
         else:
             self.redirect("/login?msg=Ошибка%20авторизации")
@@ -128,7 +147,10 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                return str(db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
+                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
+                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=db.profiles,
+                                     user_db_uid=user_db_uid)
+                return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
             return None
@@ -200,7 +222,10 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                return str(db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
+                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
+                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=db.profiles,
+                                     user_db_uid=user_db_uid)
+                return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
             return None

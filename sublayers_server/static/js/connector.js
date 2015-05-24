@@ -45,23 +45,24 @@ var JabberConnector = (function(_super){
 
 
     JabberConnector.prototype.connect = function(){
+        console.log('JabberConnector.prototype.connect');
         var self = this;
         this.connection.connect(this.options.jid, this.options.password, function (status) {
                 // иначе нельзя, так как нужно использовать self
                 if (status == Strophe.Status.CONNECTING) {
-                    //alert('Strophe is connecting.');
+                    console.log('Strophe is connecting.');
                 }
                 else if (status == Strophe.Status.CONNFAIL) {
-                    alert('Strophe failed to connect.');
+                    console.log('Strophe failed to connect.');
                 }
                 else if (status == Strophe.Status.DISCONNECTING) {
-                    alert('Strophe is disconnecting.');
+                    console.log('Strophe is disconnecting.');
                 }
                 else if (status == Strophe.Status.DISCONNECTED) {
-                    alert('Strophe is disconnected.');
+                    console.log('Strophe is disconnected.');
                 }
                 else if (status == Strophe.Status.CONNECTED) {
-                    //alert('Strophe is connected, ' + self.connection.jid);
+                    console.log('Strophe is connected, ' + self.connection.jid);
                     //addHandler: function (handler, ns, name, type, id, from, options)
                     self.connection.addHandler(self.receiveMessage, null, 'message', null, null, null);
                     self.connection.addHandler(self.onGroupInvite, "jabber:x:conference", null, null, null, null);

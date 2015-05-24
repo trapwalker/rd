@@ -34,12 +34,14 @@
 
         // создание чата
         j_connector = new JabberConnector({
-            jid: 'menkent@menkent-desktop/subclient',
+            jid: 'user1@example.com/subclient',
             password: '1',
             adress_server: 'http://localhost:5280/http-bind'
         });
 
+        j_connector.connect();
 
+        /*
         chat = new ViewMessenger({
             parentDiv: 'test_chat',
             height: 400,
@@ -48,7 +50,9 @@
         });
         chat.showChatWindow();
         chat.setupDragElement(chat.vMHA);
+         */
     });
+
 
     var chat;
     var j_connector;
