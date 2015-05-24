@@ -292,7 +292,10 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                return str(db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
+                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
+                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=db.profiles,
+                                     user_db_uid=user_db_uid)
+                return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
             return None
