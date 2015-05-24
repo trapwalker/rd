@@ -117,21 +117,28 @@ class XMPPManager(object):
                 self.create_room(roomJID)
             self.bot.plugin['xep_0045'].setRole(roomJID, nick, 'none')
 
+    def change_password(self, jid, new_pass):
+        self.bot.plugin['xep_0077'].change_password(jid='srv@example.com', password=new_pass)
 
-    def change_password(self, jid, old_pass, new_pass):
-        pass
 
 
 if __name__ == '__main__':
     print 'start'
-    manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
+    manager = XMPPManager(jid='srv@example.com', password='44', server=('localhost', 5222))
     print 'manager is ready'
     # todo настроить сервер, чтобы не запрещал частую регистрацию пользователей
-    if manager.register_new_jid(u'user1@example.com', u'1'):
-        print 'register_on'
+    '''
+    if manager.register_new_jid(u'user2@example.com', u'2'):
+        print '1 register_on'
     else:
-        print 'off'
+        print '1 off'
 
+    if manager.register_new_jid(u'user2@example.com', u'22'):
+        print '2 register_on'
+    else:
+        print '2 off'
+    '''
+    # manager.change_password(jid='user2@example.com', new_pass='44')
 
 
     #room = 'room15@conference.andrey-pc'
