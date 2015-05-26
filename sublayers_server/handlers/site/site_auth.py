@@ -23,8 +23,7 @@ def on_register_new_user(xmpp_manager, profiles, user_db_uid):
         log.info('New XMPP user <<{}>> is registered'.format(jid))
     else:
         log.warning('New XMPP user <<{}>> is NOT registered'.format(jid))
-
-    is_upd = profiles.update({"_id": ObjectId(user_db_uid)}, {'xmpp': {'jid': jid, 'password': psw}})
+    is_upd = profiles.update({"_id": ObjectId(user_db_uid)}, {'$set': {'xmpp': {'jid': jid, 'password': psw}}})
     if is_upd:
         return True
     else:
@@ -33,7 +32,12 @@ def on_register_new_user(xmpp_manager, profiles, user_db_uid):
 
 class SiteLoginHandler(BaseHandler):
     def get(self):
-        msg = self.get_argument('msg', '')
+        if self.application.auth_db is None:
+            # todo: сделать через механизм одноразовых пользователей
+            self.set_secure_cookie("user", str(hashlib.md5(str(randint(0, 1000000))).hexdigest()))
+            self.redirect("/")
+            return
+        msg = self.get_argument("msg", "")
         self.render("site\login.html", msg=msg)
 
 
@@ -54,11 +58,11 @@ class StandardLoginHandler(BaseHandler):
             self.redirect("/login?msg=Ошибка%20авторизации")
 
     def _db_request(self, email, password=None):
-        db = self.application.db
+        auth_db = self.application.auth_db
         if password is None:
-            db_res = db.profiles.find({'auth': {'standard': {'email': email}}}, {'id': 1})
+            db_res = auth_db.profiles.find({'auth': {'standard': {'email': email}}}, {'id': 1})
         else:
-            db_res = db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}}, {'id': 1})
+            db_res = auth_db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}}, {'id': 1})
         user_ids = []
         for db_rec in db_res:
             user_ids.append(db_rec)
@@ -76,7 +80,7 @@ class StandardLoginHandler(BaseHandler):
             return
         user_id = self._db_request(email=email)
         if user_id is None:
-            user_db_uid = str(self.application.db.profiles.insert({
+            user_db_uid = str(self.application.auth_db.profiles.insert({
                 'name': user,
                 'auth': {
                     'standard': {
@@ -85,7 +89,7 @@ class StandardLoginHandler(BaseHandler):
                     }
                 }
             }))
-            on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=self.application.db.profiles,
+            on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=self.application.auth_db.profiles,
                                  user_db_uid=user_db_uid)
             self.set_secure_cookie("user", user_db_uid)
             self.redirect("/")
@@ -138,8 +142,8 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
         action = self.get_cookie("action")
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)[u'id']
-            db = self.application.db
-            db_res = db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})
+            auth_db = self.application.auth_db
+            db_res = auth_db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -147,8 +151,8 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
-                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=db.profiles,
+                user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
+                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=auth_db.profiles,
                                      user_db_uid=user_db_uid)
                 return user_db_uid
             if (action == '2') and (user_id is not None):
@@ -213,8 +217,8 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
         action = self.get_cookie("action")
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)['uid']
-            db = self.application.db
-            db_res = db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})
+            auth_db = self.application.auth_db
+            db_res = auth_db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -222,8 +226,8 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
-                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=db.profiles,
+                user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
+                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=auth_db.profiles,
                                      user_db_uid=user_db_uid)
                 return user_db_uid
             if (action == '2') and (user_id is not None):
@@ -283,8 +287,8 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
         action = self.get_cookie("action")
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)['response'][0]['uid']
-            db = self.application.db
-            db_res = db.profiles.find({'auth': {'vk': {'id': body_id}}}, {'id': 1})
+            auth_db = self.application.auth_db
+            db_res = auth_db.profiles.find({'auth': {'vk': {'id': body_id}}}, {'id': 1})
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -292,8 +296,8 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
-                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=db.profiles,
+                user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
+                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=auth_db.profiles,
                                      user_db_uid=user_db_uid)
                 return user_db_uid
             if (action == '2') and (user_id is not None):

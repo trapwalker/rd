@@ -68,18 +68,13 @@ class XMPPManager(object):
 
 
     def register_new_jid(self, jid, password):
-        print 'register_new_jid'
         rbot = RegisterBot(jid, password)
-        print 'rbot ready'
         rbot.register_plugin('xep_0030') # Service Discovery
         rbot.register_plugin('xep_0004') # Data forms
         rbot.register_plugin('xep_0066') # Out-of-band Data
         rbot.register_plugin('xep_0077') # In-band Registration
-        print 'all_plugin ready'
         rbot['xep_0077'].force_registration = True
-        print 'pred_if  server = ' + self.server[0]
         if rbot.connect(self.server):
-            print 'rbot connected'
             rbot.process(block=True)
             return True
         else:
@@ -123,30 +118,28 @@ class XMPPManager(object):
 
 
 if __name__ == '__main__':
+    '''
     print 'start'
     manager = XMPPManager(jid='srv@example.com', password='44', server=('localhost', 5222))
     print 'manager is ready'
-    # todo настроить сервер, чтобы не запрещал частую регистрацию пользователей
+    '''
+
     '''
     if manager.register_new_jid(u'user2@example.com', u'2'):
         print '1 register_on'
     else:
         print '1 off'
-
     if manager.register_new_jid(u'user2@example.com', u'22'):
         print '2 register_on'
     else:
         print '2 off'
     '''
-    # manager.change_password(jid='user2@example.com', new_pass='44')
 
 
     #room = 'room15@conference.andrey-pc'
     #manager.create_room(room)
     #manager.kick_from_room(room, 'dima1')
 
-
-    '''
     # первое создание первого аккаунта
     print 'register_new_jid'
     rbot = RegisterBot('srv@example.com', '1')
@@ -165,7 +158,7 @@ if __name__ == '__main__':
         print True
     else:
         print False
-    '''
+
 
 
     # todo: test send_message
