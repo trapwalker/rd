@@ -49,21 +49,21 @@ class Agent(Object):
         # add _self_ into to the all _visible objects_ by _observer_
         self.observers[observer] += 1
         observer.watched_agents[self] += 1
-        self.on_see(time=time, subj=observer, obj=observer, is_boundary=False)
+        self.on_see(time=time, subj=observer, obj=observer)
         for vo in observer.visible_objects:
-            self.on_see(time=time, subj=observer, obj=vo, is_boundary=False)
+            self.on_see(time=time, subj=observer, obj=vo)
 
     def drop_observer(self, observer, time):
         if not self.is_online:
             return
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.visible_objects:
-            self.on_out(time=time, subj=observer, obj=vo, is_boundary=False)
-        self.on_out(time=time, subj=observer, obj=observer, is_boundary=False)
+            self.on_out(time=time, subj=observer, obj=vo)
+        self.on_out(time=time, subj=observer, obj=observer)
         observer.watched_agents[self] -= 1
         self.observers[observer] -= 1
 
-    def on_see(self, time, subj, obj, is_boundary):
+    def on_see(self, time, subj, obj):
         # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
@@ -73,13 +73,12 @@ class Agent(Object):
             time=time,
             subj=subj,
             obj=obj,
-            is_boundary=is_boundary,
             is_first=is_first,
         ).post()
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=True)
 
-    def on_out(self, time, subj, obj, is_boundary):
+    def on_out(self, time, subj, obj):
         # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_last = obj.subscribed_agents.dec(self) == 0
         if not is_last:
@@ -89,7 +88,6 @@ class Agent(Object):
             time=time,
             subj=subj,
             obj=obj,
-            is_boundary=is_boundary,
             is_last=is_last,
         ).post()
         if isinstance(obj, Unit):

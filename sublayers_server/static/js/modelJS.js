@@ -38,6 +38,7 @@ var ListMapObject = (function () {
 var ClientObject = (function () {
     function ClientObject(ID) {
         this.ID = ID || generator_ID.getID();
+        this.addToVisualManager();
     }
 
     ClientObject.prototype.addToVisualManager = function () {
@@ -52,13 +53,33 @@ var ClientObject = (function () {
 })();
 
 
+var StaticObject = (function (_super) {
+    __extends(StaticObject, _super);
+
+    function StaticObject(ID, position) {
+        _super.call(this, ID);
+        this.position = position;
+        this.direction = - 0.5 * Math.PI;
+    }
+
+    StaticObject.prototype.getCurrentDirection = function (time) {
+        return this.direction
+    };
+
+    StaticObject.prototype.getCurrentCoord = function (time) {
+        return this.position;
+    };
+
+    return StaticObject;
+})(ClientObject);
+
+
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
     function DynamicObject(ID, state, hp_state, fuel_state) {
         _super.call(this, ID);
         this._in_tm = false;
-        this.addToVisualManager();
         this._motion_state = state;
         this._hp_state = hp_state;
         this._fuel_state = fuel_state;

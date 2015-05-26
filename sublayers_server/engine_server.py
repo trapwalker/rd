@@ -47,6 +47,24 @@ class Application(tornado.web.Application):
             self.revision = None
             log.warning("Can't get HG revision info: %s", e)
 
+        self.db_connection = None
+        self.xmpp_manager = None
+        self.auth_db = None
+
+        try:
+            self.db_connection = Connection()
+        except:
+            log.warn('MongoDB not found')
+
+        if self.db_connection:
+            self.auth_db = self.db_connection.auth_db
+            try:
+                self.xmpp_manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
+            except:
+                log.warn('XMPP not available')
+        else:
+            self.auth_db = None
+
         log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
         self.srv.start()
@@ -54,7 +72,7 @@ class Application(tornado.web.Application):
         self.chat = []
         # todo: tuncate chat history
 
-        self.init_scene()
+        self.srv.init_scene()
 
         handlers = [
             (r"/", SiteHandler),
@@ -94,22 +112,7 @@ class Application(tornado.web.Application):
             vk_oauth={"key": "4926489",
                       "secret": "4gyveXhKv5aVNCor5bkB"},
         )
-
         tornado.web.Application.__init__(self, handlers, **app_settings)
-        try:
-            self.db_connection = Connection()
-        except:
-            self.db_connection = None
-        if self.db_connection:
-            self.auth_db = self.db_connection.auth_db
-            try:
-                self.xmpp_manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
-            except:
-                self.xmpp_manager = None
-        else:
-            self.auth_db = None
-
-
 
     def stop(self):
         log.debug('====== ioloop before stop')
@@ -120,11 +123,7 @@ class Application(tornado.web.Application):
         if self.srv.is_active:
             self.srv.stop()
 
-    def init_scene(self):
-        #from model.units import Bot
-        #from sublayers_server.model.vectors import Point
-        pass
-        # todo: map metadata store to DB
+
 
 
 def main():

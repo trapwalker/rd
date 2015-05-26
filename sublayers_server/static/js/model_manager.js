@@ -36,6 +36,14 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getMObj = function (uid) {
+        //console.log("ClientManager.prototype._getMObj");
+        var obj = visualManager.getModelObject(uid);
+        if (obj)
+            console.warn('Contact: Такой объект уже есть на клиенте!');
+        return obj;
+    };
+
     ClientManager.prototype._getHPState = function (data) {
         if (data)
             return new HPState(
@@ -147,6 +155,60 @@ var ClientManager = (function () {
             }
         return true;
 
+    };
+
+    ClientManager.prototype._contactBot = function (event) {
+        //console.log('ClientManager.prototype._contactBot');
+        if (event.is_first) { // только если первый раз добавляется машинка
+            var state = this._getState(event.object.state);
+            var hp_state = this._getHPState(event.object.hp_state);
+            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
+            var uid = event.object.uid;
+            var aOwner = this._getOwner(event.object.owner);
+            var radius_visible = event.object.r;
+            var main_agent_login = event.object.main_agent_login;
+
+            // Проверка: нет ли уже такой машинки.
+            var car = this._getMObj(uid);
+            if (car) return;
+            if (car == user.userCar) {
+                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
+                return;
+            }
+
+            // Создание новой машинки
+            car = new MapCar(uid, state, hp_state, fuel_state);
+            car.role = event.object.role;
+            car.cls = event.object.cls;
+            car.main_agent_login = main_agent_login;
+
+            if (aOwner)
+                aOwner.bindCar(car);
+
+            // Создание/инициализация виджетов
+            new WCarMarker(car);                 // виджет маркера
+            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+        }
+    };
+
+    ClientManager.prototype._contactRadioPoint = function (event) {
+        //console.log('ClientManager.prototype._contactRadioPoint');
+        if (event.is_first) { // только если первый раз добавляется машинка
+            var uid = event.object.uid;
+            var radius_visible = event.object.r;
+
+            // Проверка: нет ли уже такого объекта.
+            var obj = this._getMObj(uid);
+            if (obj) return;
+
+            // Создание объекта
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y));
+            obj.cls = event.object.cls;
+
+            // Создание/инициализация виджетов
+            new WCarMarker(obj); // виджет маркера
+            if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+        }
     };
 
     // Входящие сообщения
@@ -292,38 +354,18 @@ var ClientManager = (function () {
             console.warn('Контакт ивент до инициализации своей машинки!');
             return;
         }
-        if (event.is_first) { // только если первый раз добавляется машинка
-            var state = this._getState(event.object.state);
-            var hp_state = this._getHPState(event.object.hp_state);
-            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
-            var uid = event.object.uid;
-            var aOwner = this._getOwner(event.object.owner);
-            var radius_visible = event.object.r;
-            var main_agent_login = event.object.main_agent_login;
 
-            // Проверка: нет ли уже такой машинки.
-            var car = visualManager.getModelObject(uid);
-            if (car) {
-                console.warn('Contact: Такая машинка уже есть на клиенте!');
-                return;
-            }
-            if (car == user.userCar) {
-                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
-                return;
-            }
-
-            // Создание новой машинки
-            car = new MapCar(uid, state, hp_state, fuel_state);
-            car.role = event.object.role;
-            car.cls = event.object.cls;
-            car.main_agent_login = main_agent_login;
-
-            if (aOwner)
-                aOwner.bindCar(car);
-
-            // Создание/инициализация виджетов
-            new WCarMarker(car);                 // виджет маркера
-            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+        switch (event.object.cls) {
+            case 'Bot':
+            case 'Rocket':
+            case 'ScoutDroid':
+            case 'StationaryTurret':
+            case 'SlowMine':
+                this._contactBot(event);
+                break;
+            case 'RadioPoint':
+                this._contactRadioPoint(event);
+                break;
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом

@@ -150,20 +150,18 @@ class Update(Message):
 class Contact(Subjective):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}; obj={self.obj}>'
 
-    def __init__(self, obj, is_boundary, **kw):
+    def __init__(self, obj, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Object
         @param bool is_boundary: True if this contact about penetration into the visibility sphere
         """
         super(Contact, self).__init__(**kw)
         self.obj = obj
-        self.is_boundary = is_boundary
 
     def as_dict(self):
         d = super(Subjective, self).as_dict()
         d.update(
             subject_id=self.subj.uid,
-            is_boundary=self.is_boundary,
         )
         return d
 
