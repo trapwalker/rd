@@ -1,18 +1,132 @@
-{% set window_caption = 'Car Info' %}
+{% set window_caption = 'Транспорт' %}
 
 <style>
     .mainCarInfoWindow-main {
         position: relative;
-        height: 100px;
-        width: 500px;
+        width: 660px;
+        height: 424px;
         background-color: rgba(0, 0, 0, 0.75);
+        color: #ffffff;
+        font: 12pt fsex300;
     }
 
+    .mainCarInfoWindow-menu {
+        position: relative;
+        width: 100%;
+        height: 30px;
+    }
+
+    .mainCarInfoWindow-menu-button {
+        position: relative;
+        float: left;
+        margin-top: 7px;
+        margin-left: 30px;
+        text-align: center;
+        color: lime;
+    }
+
+    .mainCarInfoWindow-menu-button:hover {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+    }
+
+    .mainCarInfoWindow-body {
+        position: relative;
+        float: left;
+        width: 652px;
+        height: 362px;
+        overflow-y: auto;
+        border: solid 1px #00f150;
+        margin: 0px 3px 3px 3px;
+    }
+
+    .mainCarInfoWindow-body-left {
+        position: relative;
+        float: left;
+        width: 348px;
+        height: 100%;
+        text-align: center;
+        overflow-y: auto;
+    }
+
+    .mainCarInfoWindow-body-left-picture {
+        height: 250px;
+        border: solid 3px #ffffff;
+        margin: 20px;
+        line-height: 250px;
+    }
+
+    .mainCarInfoWindow-body-left-name {
+        height: 50px;
+        line-height: 50px;
+        margin-left: 40px;
+        margin-right: 40px;
+        border-top: dashed 2px darkgreen;
+        color: lime;
+    }
+
+    .mainCarInfoWindow-body-right {
+        position: relative;
+        width: 304px;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .mainCarInfoWindow-body-right-menu {
+        width: 297px;
+        height: 40px;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button {
+        position: relative;
+        float: left;
+        margin-top: 12px;
+        margin-left: 5px;
+        text-align: center;
+        color: lime;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button:hover {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list {
+        width: 297px;
+        height: 314px;
+        border: solid 1px #00f150;
+        padding-top: 10px;
+        padding-left: 20px;
+        box-sizing: border-box;
+    }
 </style>
 
 <div class="mainCarInfoWindow-main">
     {% include drag_close_header.html %}
-    <div style="color: #ffffff">
-        {{ data['login'] }} ====> oiaurhasodf = {{ data['car_id'] }}
+    <div class="mainCarInfoWindow-menu">
+        <div class="mainCarInfoWindow-menu-button">&nbspХарактеристики&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button">&nbspБагажник&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button">&nbspТюнинг&nbsp</div>
+    </div>
+
+    <div class="mainCarInfoWindow-body">
+        <div class="mainCarInfoWindow-body-left">
+            <div class="mainCarInfoWindow-body-left-picture">Картинка</div>
+            <div class="mainCarInfoWindow-body-left-name">Nastoyatel's ride</div>
+        </div>
+        <div class="mainCarInfoWindow-body-right">
+            <div class="mainCarInfoWindow-body-right-menu">
+                <div class="mainCarInfoWindow-body-right-menu-button">&nbspМодель&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button">&nbspТТХ&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button">&nbspВооружение&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button">&nbspИстория&nbsp</div>
+            </div>
+            <div class="mainCarInfoWindow-body-right-list">
+                Модель: Газель<br />
+                Класс: Средний<br />
+                Слотов кузова: 4<br />
+                Слотов багажника: 8
+            </div>
+        </div>
     </div>
 </div>
