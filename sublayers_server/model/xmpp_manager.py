@@ -46,7 +46,7 @@ class RegisterBot(sleekxmpp.ClientXMPP):
 
 class XMPPManager(object):
 
-    def __init__(self, jid, password, server=('localhost', 5222), host_name='@example.com'):
+    def __init__(self, jid, password, server=('localhost', 5222), host_name='example.com'):
         super(XMPPManager, self).__init__()
         # сохранение входных параметров
         self.server = server
@@ -81,12 +81,14 @@ class XMPPManager(object):
             return False
 
 
-    def create_room(self, roomJID):
-        self.bot.plugin['xep_0045'].joinMUC(roomJID,
+    def create_room(self, room):
+        room_jid = room + '@conference.' + self.host_name
+        self.bot.plugin['xep_0045'].joinMUC(room_jid,
                                         self.bot.jid,
                                         # If a room password is needed, use:
                                         # password=the_room_password,
                                         wait=True)
+        return room_jid
 
     def send_message(self, jid, msg):
         self.bot.send_message(mto=jid,
@@ -98,19 +100,22 @@ class XMPPManager(object):
                           mbody=msg,
                           mtype='groupchat')
 
-    def invite_to_room(self, roomJID, jid):
-        if not (roomJID in self.bot.plugin['xep_0045'].rooms):
-            self.create_room(roomJID)
-        self.bot.plugin['xep_0045'].invite(roomJID, jid)
+    def invite_to_room(self, room_jid, jid):
+        if not (room_jid in self.bot.plugin['xep_0045'].rooms):
+            self.create_room(room_jid)
+        self.bot.plugin['xep_0045'].invite(room_jid, jid)
 
 
-    def kick_from_room(self, roomJID, nick=None, jid=None):
+    def kick_from_room(self, room_jid, jid):
         # todo: просто setRole None
-        tnick = nick or jid.split('@')[0]
-        if tnick:
-            if not (roomJID in self.bot.plugin['xep_0045'].rooms):
-                self.create_room(roomJID)
-            self.bot.plugin['xep_0045'].setRole(roomJID, nick, 'none')
+        # проверка - находится ли jid в комнате
+        if not self.bot.plugin['xep_0045'].jidInRoom(room_jid, jid):
+            return
+        nick = jid.split('@')[0]
+        if nick:
+            if not (room_jid in self.bot.plugin['xep_0045'].rooms):
+                self.create_room(room_jid)
+            self.bot.plugin['xep_0045'].setRole(room_jid, nick, 'none')
 
     def change_password(self, jid, new_pass):
         self.bot.plugin['xep_0077'].change_password(jid='srv@example.com', password=new_pass)

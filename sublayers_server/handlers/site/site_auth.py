@@ -17,7 +17,7 @@ from bson.objectid import ObjectId
 
 
 def on_register_new_user(xmpp_manager, profiles, user_db_uid):
-    jid = user_db_uid + xmpp_manager.host_name
+    jid = user_db_uid + '@' + xmpp_manager.host_name
     psw = str(hashlib.md5(jid + str(randint(0, 100))).hexdigest())
     if xmpp_manager.register_new_jid(jid=jid, password=psw):
         log.info('New XMPP user <<{}>> is registered'.format(jid))

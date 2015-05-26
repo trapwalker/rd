@@ -10,6 +10,8 @@ from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
 from counterset import CounterSet
 from sublayers_server.model.stat_log import StatLogger
+from bson import ObjectId
+
 
 # todo: make agent offline status possible
 class Agent(Object):
@@ -38,6 +40,17 @@ class Agent(Object):
         # статистика сервера
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 
+        # XMPP чат
+        self.xmpp = None
+        if self.server.app.auth_db is not None:
+            db_res = self.server.app.auth_db.profiles.find_one({"_id": ObjectId(login)}, {'xmpp': 1})
+            if db_res is not None:
+                self.xmpp = dict(
+                    jid=db_res.get(u'xmpp').get(u'jid'),
+                    password=db_res.get(u'xmpp').get(u'password')
+                )
+            else:
+                log.warn('User %s has not XMPP profile', self)
 
     @property
     def is_online(self):

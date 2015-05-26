@@ -52,10 +52,6 @@ class Server(object):
         self.stat_log = StatLogger(owner=self)
         self.visibility_mng = VisibilityManager(server=self)
 
-
-
-
-
     @staticmethod
     def get_time():
         return get_time()
@@ -64,7 +60,7 @@ class Server(object):
         base_point = Point(12496376, 27133643)
         RadioPoint(time=self.get_time(),
                    server=self,
-                   conference_name='test1_conference',
+                   conference_name='radio_point_1',
                    position=base_point)
         
     def post_message(self, message):
