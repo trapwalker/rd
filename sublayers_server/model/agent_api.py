@@ -16,6 +16,7 @@ from sublayers_server.model.slave_objects.stationary_turret import StationaryTur
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event
+from sublayers_server.model.units import Unit
 
 
 class UpdateAgentAPIEvent(Event):
@@ -109,7 +110,6 @@ class AgentAPI(API):
                 subj=self.car,
                 obj=vo,
                 is_first=True,
-                is_boundary=False
             ).post()
 
         # отобразить информацию о стрельбе по нашей машинке и нашей машинки
@@ -117,18 +117,18 @@ class AgentAPI(API):
 
         # для каждого VO узнать информацию о стрельбе
         for vo in vo_list:
-            if vo.hp_state:
+            if isinstance(vo, Unit) and (vo.hp_state is not None):
                 vo.send_auto_fire_messages(agent=self.agent, action=True)
 
     def update_agent_api(self):
         UpdateAgentAPIEvent(api=self, time=self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time):
+        messages.InitXMPPClient(agent=self.agent, time=time).post()
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
             self.make_car(time=time)
-
         assert self.car.hp(time=time) > 0, 'Car HP <= 0'
 
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)

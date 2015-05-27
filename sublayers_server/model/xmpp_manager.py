@@ -39,9 +39,9 @@ class RegisterBot(sleekxmpp.ClientXMPP):
         resp['register']['password'] = self.password
         try:
             resp.send(now=True)
-            print "Account created for %s!" % self.boundjid
+            log.info("Account created for %s!", self.boundjid)
         except:
-            print 'Errrorrrrrrrrrrr!'
+            log.info("Account not created for %s!", self.boundjid)
 
 
 class XMPPManager(object):
@@ -103,23 +103,27 @@ class XMPPManager(object):
     def invite_to_room(self, room_jid, jid):
         if not (room_jid in self.bot.plugin['xep_0045'].rooms):
             self.create_room(room_jid)
-        self.bot.plugin['xep_0045'].invite(room_jid, jid)
+        nick = jid.split('@')[0]
+        log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!%s', self.bot.plugin['xep_0045'].rooms[room_jid])
+        if nick in self.bot.plugin['xep_0045'].rooms[room_jid]:
+            log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!Im still here')
+        else:
+            self.bot.plugin['xep_0045'].invite(room_jid, jid)
 
 
     def kick_from_room(self, room_jid, jid):
-        # todo: просто setRole None
         # проверка - находится ли jid в комнате
-        if not self.bot.plugin['xep_0045'].jidInRoom(room_jid, jid):
-            return
         nick = jid.split('@')[0]
+
         if nick:
             if not (room_jid in self.bot.plugin['xep_0045'].rooms):
                 self.create_room(room_jid)
-            self.bot.plugin['xep_0045'].setRole(room_jid, nick, 'none')
+            if nick in self.bot.plugin['xep_0045'].rooms[room_jid]:
+                self.bot.plugin['xep_0045'].setRole(room_jid, nick, 'none')
+            log.debug(nick in self.bot.plugin['xep_0045'].rooms[room_jid])
 
     def change_password(self, jid, new_pass):
         self.bot.plugin['xep_0077'].change_password(jid='srv@example.com', password=new_pass)
-
 
 
 if __name__ == '__main__':

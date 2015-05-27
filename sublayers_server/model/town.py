@@ -29,5 +29,4 @@ class RadioPoint(Observer):
         super(RadioPoint, self).on_contact_out(time=time, obj=obj)
         log.debug('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Out RP %s', obj)
         if (obj.owner is not None) and (obj.owner.xmpp is not None) and (self.room_jid is not None):
-
             self.xmpp.kick_from_room(room_jid=self.room_jid, jid=obj.owner.xmpp.get('jid'))

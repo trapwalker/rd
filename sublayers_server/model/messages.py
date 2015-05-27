@@ -77,6 +77,16 @@ class Init(Message):
         return d
 
 
+class InitXMPPClient(Message):
+    def as_dict(self):
+        d = super(InitXMPPClient, self).as_dict()
+        d.update(
+            jid=self.agent.xmpp.get('jid'),
+            password=self.agent.xmpp.get('password'),
+        )
+        return d
+
+
 class Die(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 

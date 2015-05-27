@@ -67,13 +67,22 @@ var JabberConnector = (function(_super){
                     self.connection.addHandler(self.receiveMessage, null, 'message', null, null, null);
                     self.connection.addHandler(self.onGroupInvite, "jabber:x:conference", null, null, null, null);
                     self.connection.send($pres().tree());
+                    console.log('Сейчас вызовем мук ', self.connection.jid);
+                    self.connection.muc.listRooms('example.com',
+                        function(data){
+                            console.log( data)
+
+                        },
+                        function(error){
+                            console.error(error)
+                    } );
 
                     // вешаем евенты на исходящие сообщения от потока сообений
-                    message_stream.addOutEvent({
-                        key: 'send_chat_message',
-                        cbFunc: self.sendMessage,
-                        subject: self
-                    });
+                  //  message_stream.addOutEvent({
+                   //     key: 'send_chat_message',
+                   //     cbFunc: self.sendMessage,
+                   //     subject: self
+                   // });
                 }
             }
         );
@@ -81,7 +90,7 @@ var JabberConnector = (function(_super){
 
     // автоматический приём приглашения в группу
     JabberConnector.prototype.onGroupInvite = function (msg) {
-        //alert('onGroupMessage');
+        console.log('JabberConnector.prototype.onGroupInvite');
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
         var type = msg.getAttribute('type');
@@ -122,8 +131,9 @@ var JabberConnector = (function(_super){
         // todo: разобраться как обратиться к this
         var mes = j_connector.decodeMessage(msg);
         // отправить сообщение в мессадж стрим
-        if (mes)
-            message_stream.receiveMessage(mes);
+        //if (mes)
+        //    message_stream.receiveMessage(mes);
+        console.log('JabberConnector.prototype.receiveMessage:', mes);
         // обязательно возвращать true
         return true;
     };

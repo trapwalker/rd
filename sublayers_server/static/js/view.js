@@ -49,12 +49,6 @@ $(document).ready(function () {
 
     ws_connector = new WSConnector();
 
-    j_connector = new JabberConnector({
-        jid: 'menkent@menkent-desktop/subclient',
-        password: '1',
-        adress_server: 'http://localhost:5280/http-bind'
-    });
-
     rpcCallList = new RPCCallList();
 
     clientManager = new ClientManager();

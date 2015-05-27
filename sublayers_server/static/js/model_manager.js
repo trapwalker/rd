@@ -285,6 +285,16 @@ var ClientManager = (function () {
         //user.userCar.debugLines = [];
     };
 
+    ClientManager.prototype.InitXMPPClient = function (event) {
+        console.log('ClientManager.prototype.InitXMPPClient', event);
+        j_connector = new JabberConnector({
+            jid: event.jid + '/sublayers',
+            password: event.password,
+            adress_server: 'http://localhost:5280/http-bind'
+        });
+        j_connector.connect();
+    };
+
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);
