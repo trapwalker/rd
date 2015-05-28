@@ -214,7 +214,7 @@ var ClientManager = (function () {
     // Входящие сообщения
 
     ClientManager.prototype.Init = function (event) {
-        console.log('ClientManager.prototype.Init', event);
+        //console.log('ClientManager.prototype.Init', event);
         var servtime = event.time;
         var v_forward = event.cars[0].v_forward;
         var v_backward = event.cars[0].v_backward;
@@ -286,7 +286,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InitXMPPClient = function (event) {
-        console.log('ClientManager.prototype.InitXMPPClient', event);
+        //console.log('ClientManager.prototype.InitXMPPClient', event);
         j_connector = new JabberConnector({
             jid: event.jid + '/sublayers',
             password: event.password,
@@ -590,7 +590,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
-        console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
+        //console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
         if (event.unique)
             windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
         else
@@ -598,7 +598,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
-        console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
+        //console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
         if (event.unique)
             windowTemplateManager.closeUniqueWindow(event.win_name);
         else

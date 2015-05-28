@@ -27,6 +27,5 @@ class RadioPoint(Observer):
 
     def on_contact_out(self, time, obj):
         super(RadioPoint, self).on_contact_out(time=time, obj=obj)
-        log.debug('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Out RP %s', obj)
         if isinstance(obj, Unit) and (obj.owner is not None):
             obj.owner.del_xmpp_room(room_jid=self.room_jid)

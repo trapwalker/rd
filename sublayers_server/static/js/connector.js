@@ -45,12 +45,12 @@ var JabberConnector = (function(_super){
 
 
     JabberConnector.prototype.connect = function(){
-        console.log('JabberConnector.prototype.connect');
+        //console.log('JabberConnector.prototype.connect');
         var self = this;
         this.connection.connect(this.options.jid, this.options.password, function (status) {
                 // иначе нельзя, так как нужно использовать self
                 if (status == Strophe.Status.CONNECTING) {
-                    console.log('Strophe is connecting.');
+                    //console.log('Strophe is connecting.');
                 }
                 else if (status == Strophe.Status.CONNFAIL) {
                     console.log('Strophe failed to connect.');
@@ -66,31 +66,45 @@ var JabberConnector = (function(_super){
                     //addHandler: function (handler, ns, name, type, id, from, options)
                     self.connection.addHandler(self.receiveMessage, null, 'message', null, null, null);
                     self.connection.addHandler(self.onGroupInvite, "jabber:x:conference", null, null, null, null);
+                    self.connection.addHandler(self._muc_presence, Strophe.NS.MUC_USER, "presence", null, null, null);
                     self.connection.send($pres().tree());
 
+                    // запрос текущих комнат
                     self._reinvite_me_to_rooms();
-                    /*
-                    console.log('Сейчас вызовем мук ', self.connection.jid);
-                    self.connection.muc.listRooms('example.com',
-                        function(data){
-                            console.log( data)
-
-                        },
-                        function(error){
-                            console.error(error)
-                    } );
-                    */
 
                     // вешаем евенты на исходящие сообщения от потока сообений
-                  //  message_stream.addOutEvent({
-                   //     key: 'send_chat_message',
-                   //     cbFunc: self.sendMessage,
-                   //     subject: self
-                   // });
-
+                    //  message_stream.addOutEvent({
+                    //     key: 'send_chat_message',
+                    //     cbFunc: self.sendMessage,
+                    //     subject: self
+                    // });
                 }
             }
         );
+    };
+
+
+    JabberConnector.prototype._muc_presence = function(data) {
+        //console.log('JabberConnector.prototype._muc_presence', data);
+        var code = null;
+        var status = data.getElementsByTagName('status');
+        var from = data.getAttribute('from').split('@')[0];
+
+        if (status.length > 0) {
+            code = status[0].getAttribute('code');
+        }
+        if (code == '307') {
+            var items = data.getElementsByTagName('item');
+            var nick = '';
+            if (items.length > 0) {
+                nick = items[0].getAttribute('nick');
+            }
+            if (user.login != nick)
+                console.log('Пользователь [', nick, '] вышел из комнаты [', from, ']');
+            else
+                console.log('Вы вышли из комнаты [', from, ']');
+        }
+        return true;
     };
 
 
@@ -110,7 +124,7 @@ var JabberConnector = (function(_super){
 
     // автоматический приём приглашения в группу
     JabberConnector.prototype.onGroupInvite = function (msg) {
-        console.log('JabberConnector.prototype.onGroupInvite');
+        //console.log('JabberConnector.prototype.onGroupInvite', msg);
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
         var type = msg.getAttribute('type');
@@ -118,6 +132,8 @@ var JabberConnector = (function(_super){
         j_connector.connection.muc.join(from, user.login, null, null, null, null, null);
         // обязательно возвращать true
         console.log('Приглашение в ', from, '  принято');
+
+
         return true;
     };
 
@@ -154,7 +170,7 @@ var JabberConnector = (function(_super){
         // отправить сообщение в мессадж стрим
         //if (mes)
         //    message_stream.receiveMessage(mes);
-        console.log('JabberConnector.prototype.receiveMessage:', mes);
+        //console.log('JabberConnector.prototype.receiveMessage:', mes);
         // обязательно возвращать true
         return true;
     };
