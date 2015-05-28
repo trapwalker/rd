@@ -104,7 +104,7 @@ class XMPPManager(object):
         if not (room_jid in self.bot.plugin['xep_0045'].rooms):
             self.create_room(room_jid)
         nick = jid.split('@')[0]
-        log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!%s', self.bot.plugin['xep_0045'].rooms[room_jid])
+        # log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!%s', self.bot.plugin['xep_0045'].rooms[room_jid])
         if nick in self.bot.plugin['xep_0045'].rooms[room_jid]:
             log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!Im still here')
         else:

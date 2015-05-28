@@ -67,6 +67,9 @@ var JabberConnector = (function(_super){
                     self.connection.addHandler(self.receiveMessage, null, 'message', null, null, null);
                     self.connection.addHandler(self.onGroupInvite, "jabber:x:conference", null, null, null, null);
                     self.connection.send($pres().tree());
+
+                    self._reinvite_me_to_rooms();
+                    /*
                     console.log('Сейчас вызовем мук ', self.connection.jid);
                     self.connection.muc.listRooms('example.com',
                         function(data){
@@ -76,6 +79,7 @@ var JabberConnector = (function(_super){
                         function(error){
                             console.error(error)
                     } );
+                    */
 
                     // вешаем евенты на исходящие сообщения от потока сообений
                   //  message_stream.addOutEvent({
@@ -83,9 +87,25 @@ var JabberConnector = (function(_super){
                    //     cbFunc: self.sendMessage,
                    //     subject: self
                    // });
+
                 }
             }
         );
+    };
+
+
+    JabberConnector.prototype._reinvite_me_to_rooms = function () {
+        var mes = {
+            call: "get_my_xmpp_room_invite",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+
+        message_stream.sendMessage({
+            type: 'ws_message_send',
+            body: mes
+        });
     };
 
     // автоматический приём приглашения в группу
@@ -97,6 +117,7 @@ var JabberConnector = (function(_super){
         // todo: переделать на правильное обращение к объекту коннектора
         j_connector.connection.muc.join(from, user.login, null, null, null, null, null);
         // обязательно возвращать true
+        console.log('Приглашение в ', from, '  принято');
         return true;
     };
 

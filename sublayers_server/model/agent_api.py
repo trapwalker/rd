@@ -339,3 +339,8 @@ class AgentAPI(API):
     @public_method
     def delete_invite(self, invite_id):
         self.agent.delete_invite(invite_id)
+
+    @public_method
+    def get_my_xmpp_room_invite(self):
+        log.info('agent get xmpp invites')
+        self.agent.reinvite_to_xmpp_rooms()

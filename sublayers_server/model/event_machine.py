@@ -62,6 +62,11 @@ class Server(object):
                    server=self,
                    conference_name='radio_point_1',
                    position=base_point)
+
+        RadioPoint(time=self.get_time(),
+                   server=self,
+                   conference_name='radio_point_2',
+                   position=Point(12496200, 27133643))
         
     def post_message(self, message):
         """

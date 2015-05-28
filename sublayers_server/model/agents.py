@@ -51,6 +51,8 @@ class Agent(Object):
                 )
             else:
                 log.warn('User %s has not XMPP profile', self)
+         # комнаты для джаббера
+        self.xmpp_rooms = []
 
     @property
     def is_online(self):
@@ -239,6 +241,27 @@ class Agent(Object):
                 return False
         return True
 
+    def add_xmpp_room(self, room_jid):
+        log.debug('INVITE !!!!!!!!!!----------aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdadsasdasdas ')
+        if (self.xmpp is not None) and (room_jid is not None):
+            self.server.app.xmpp_manager.invite_to_room(room_jid=room_jid, jid=self.xmpp.get('jid'))
+            if room_jid not in self.xmpp_rooms:
+                self.xmpp_rooms.append(room_jid)
+
+    def del_xmpp_room(self, room_jid):
+        log.debug('KICK !!!!!!!!!!----------aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdadsasdasdas ')
+        if (self.xmpp is not None) and (room_jid is not None):
+            self.server.app.xmpp_manager.kick_from_room(room_jid=room_jid, jid=self.xmpp.get('jid'))
+            if room_jid in self.xmpp_rooms:
+                self.xmpp_rooms.remove(room_jid)
+
+    def reinvite_to_xmpp_rooms(self):
+        log.debug('Reinvite !!!!!!!!!!----------aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdadsasdasdas ')
+        if self.xmpp is not None:
+            agent_jid = self.xmpp.get('jid')
+            xmpp_manager = self.server.app.xmpp_manager
+            for room_jid in self.xmpp_rooms:
+                xmpp_manager.invite_to_room(room_jid=room_jid, jid=agent_jid)
 
 class User(Agent):
     # todo: realize
