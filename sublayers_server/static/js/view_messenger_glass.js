@@ -127,12 +127,6 @@ var ViewMessengerGlass = (function () {
         this.compactVisibleOptions = ['global', 'party', 'system']; // ещё может быть 'gamelog'
     }
 
-    ViewMessengerGlass.prototype.showChatWindow = function () {
-        this.showWindow();
-        // todo: придумать как учесть размеры границ (box-sizing)
-        this.setNewSize(this.vMA.height() + 4, this.vMA.width() + 4);
-    };
-
     ViewMessengerGlass.prototype._getChatByJID = function (room_jid) {
         for (var i in this.chats)
             if ((this.chats[i]) && (this.chats[i].room_jid == room_jid))
@@ -172,7 +166,8 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype._removeAllMessagesInChat = function(chat){
         for(;chat.mesList.length;){
             var dmessage = chat.mesList.pop();
-            dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
+            if (dmessage.spanUser)
+                dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
             dmessage.mesDiv.remove();
         }
     };
@@ -547,7 +542,7 @@ var ViewMessengerGlass = (function () {
 
     // Отображение в партийном чате прихода инвайта
     ViewMessengerGlass.prototype.party_invite_show = function (event) {
-        //console.log('ViewMessengerGlass.prototype.party_invite_show');
+        console.log('ViewMessengerGlass.prototype.party_invite_show', event);
         // todo: добавить здесь интерактивный мессадж в пати-чат с информацией об инвайте в пати
     };
 
