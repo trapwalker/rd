@@ -419,8 +419,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Chat = function (event){
         //console.log('ClientManager.prototype.Chat', event);
-        //chat.addMessage(-1, '', getOwner(event.author), event.text);
-        //chat.addMessage(-1, '', event.author, event.text);
+        //chat.addMessageByID(-1, getOwner(event.author), event.text);
+        //chat.addMessageByID(-1, event.author, event.text);
     };
 
     ClientManager.prototype.Message = function (event){

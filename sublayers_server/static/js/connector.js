@@ -73,16 +73,15 @@ var JabberConnector = (function(_super){
                     self._reinvite_me_to_rooms();
 
                     // вешаем евенты на исходящие сообщения от потока сообений
-                    //  message_stream.addOutEvent({
-                    //     key: 'send_chat_message',
-                    //     cbFunc: self.sendMessage,
-                    //     subject: self
-                    // });
+                    message_stream.addOutEvent({
+                        key: 'send_chat_message',
+                        cbFunc: 'sendMessage',
+                        subject: self
+                    });
                 }
             }
         );
     };
-
 
     JabberConnector.prototype._muc_presence = function(data) {
         //console.log('JabberConnector.prototype._muc_presence', data);
@@ -101,12 +100,15 @@ var JabberConnector = (function(_super){
             }
             if (user.login != nick)
                 console.log('Пользователь [', nick, '] вышел из комнаты [', from, ']');
-            else
-                console.log('Вы вышли из комнаты [', from, ']');
+            else {
+                var chat_name = from.split('@')[0];
+                console.log('Вы вышли из комнаты [', chat_name, ']');
+                if (chat_name.indexOf('party_') >= 0)
+                    chat.deactivateParty(chat_name);
+            }
         }
         return true;
     };
-
 
     JabberConnector.prototype._reinvite_me_to_rooms = function () {
         var mes = {
@@ -128,19 +130,19 @@ var JabberConnector = (function(_super){
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from');
         var type = msg.getAttribute('type');
-        // todo: переделать на правильное обращение к объекту коннектора
         j_connector.connection.muc.join(from, user.login, null, null, null, null, null);
         // обязательно возвращать true
-        console.log('Приглашение в ', from, '  принято');
-
-
+        var chat_name = from.split('@')[0];
+        console.log('Приглашение в ', chat_name, '  принято');
+        if (chat_name.indexOf('party_') >= 0)
+            chat.activateParty(chat_name);
         return true;
     };
 
-    JabberConnector.prototype.sendMessage = function(self, msg){
-        // alert('sendMessage');
-        var mes = self.encodeMessage(msg);
-        self.connection.send(mes.tree());
+    JabberConnector.prototype.sendMessage = function(msg){
+        //console.log('JabberConnector.prototype.sendMessage', msg);
+        var mes = this.encodeMessage(msg);
+        this.connection.send(mes.tree());
 
         // сгенерировать сообщения для приватных джаббер чатов, чтобы отобразить своё сообщение
         if (mes.tree().getAttribute('type') === 'chat')
@@ -163,20 +165,20 @@ var JabberConnector = (function(_super){
     };
 
     JabberConnector.prototype.receiveMessage = function(msg){
-        //alert('receiveMessage');
+        //console.log('JabberConnector.prototype.receiveMessage:', msg);
         // раскодировать входящее от сервера сообщение
-        // todo: разобраться как обратиться к this
         var mes = j_connector.decodeMessage(msg);
+
         // отправить сообщение в мессадж стрим
-        //if (mes)
-        //    message_stream.receiveMessage(mes);
-        //console.log('JabberConnector.prototype.receiveMessage:', mes);
+        if (mes)
+            message_stream.receiveMessage(mes);
+
         // обязательно возвращать true
         return true;
     };
 
     JabberConnector.prototype.decodeMessage = function(msg){
-        // alert('decodeMessage');
+        //console.log('JabberConnector.prototype.decodeMessage');
         var to = msg.getAttribute('to');
         var from = msg.getAttribute('from').split('/')[0];
         var type = msg.getAttribute('type');
@@ -187,30 +189,26 @@ var JabberConnector = (function(_super){
             if (type === 'chat')
                 message = { type: 'message',
                     body: {
-                        chatID: from,
-                        chatName: from.split('@')[0],
+                        room_jid: from.split('@')[0],
                         user: {login: from.split('@')[0]},
                         text: Strophe.getText(elems[0])
                     }};
             if (type === 'groupchat')
                 message = { type: 'message',
                     body: {
-                        chatID: from,
-                        chatName: from.split('@')[0],
+                        room_jid: from.split('@')[0],
                         user: {login: msg.getAttribute('from').split('/')[1]},
                         text: Strophe.getText(elems[0])
                     }};
         }
         return message;
-
     };
 
     JabberConnector.prototype.encodeMessage = function(msg){
-        //alert('JabberConnector encodeMessage');
+        //console.log('JabberConnector.prototype.encodeMessage');
+        msg.to = msg.to + '@conference.example.com';
         var type = (msg.to.indexOf('conference') > 0) ? 'groupchat' : 'chat';
-        //
-        var mes = $msg({to: msg.to, from: this.connection.jid, type: type}).c('body').t(msg.body);
-        return mes;
+        return $msg({to: msg.to, from: this.connection.jid, type: type}).c('body').t(msg.body);
     };
 
 

@@ -16,7 +16,7 @@ var ViewMessengerGlass = (function () {
         this.chat_visible = true;
 
 
-        //  Вёрстка !
+        // вёрстка
         var mainParent = $('#chatAreaGlass');
         mainParent.append('<div id="VMGDivHardware"></div>');
         mainParent.append('<div id="VMGMainDivGlass"></div>');
@@ -27,45 +27,39 @@ var ViewMessengerGlass = (function () {
         var width = 480;
         var height = 310;
 
-
-        //добавление верхнего дива PageControl
+        // добавление верхнего дива PageControl
         parent.append('<div id="VMGPageControlArea"></div>');
         this.divPageControlArea = $('#VMGPageControlArea');
 
-
-        //создание центральной динамической части
+        // создание центральной динамической части
         parent.append("<div id='VMGDynamicAreaForBorder'></div>");
         var dynamicAreaForBorder = $('#VMGDynamicAreaForBorder');
 
-        //создание центральной динамической части
+        // создание центральной динамической части
         dynamicAreaForBorder.append("<div id='VMGDynamicArea'></div>");
         this.dynamicArea = $('#VMGDynamicArea');
 
 
-        //добавление дива с элементами ввода сообщений
+        // добавление дива с элементами ввода сообщений
         dynamicAreaForBorder.append("<div id='VMGFooterArea'></div>");
         var foot_area = $('#VMGFooterArea');
 
-        //добавление кнопки 'отправить соосбщение'
+        // добавление кнопки 'отправить соосбщение'
         foot_area.append("<div id='VMGEnterButtonDIV'><div id='VMGEnterButton' class='sublayers-clickable'> > </div></div>");
         this.send_btn = $('#VMGEnterButton');
-        this.send_btn.on('click', this.viewMessengerSendMessage);
+        this.send_btn.on('click', this.sendMessage);
 
-
-
-        //добавление дива с Input
+        // добавление дива с Input
         foot_area.append("<div id='VMGInputArea'></div>");
         var div_for_input = $('#VMGInputArea');
 
-
-        //добавление Input
+        // добавление Input
         div_for_input.append("<input id='VMGMainInput' type='text'>");
         this.main_input = $("#VMGMainInput");
 
-
         this.main_input.on('keydown', {self: this}, function (event) {
             if (event.keyCode == 13) {
-                event.data.self.viewMessengerSendMessage();
+                event.data.self.sendMessage();
             }
             if (event.keyCode == 38) { // стрелка вверх
                 event.data.self.setNextHistoryMessage();
@@ -75,15 +69,14 @@ var ViewMessengerGlass = (function () {
             }
         });
 
-
-
-        //добавление дива в котором будут формировать вкладки
+        // добавление дива в котором будут формировать вкладки
         this.dynamicArea.append("<div id='VMGTextArea'></div>");
         this.vmg_text_area = $('#VMGTextArea');
 
-        // Установка активного чата по умолчанию
+        // установка активного чата по умолчанию
         this._activeChatID = null;
-        // Инициализация истории сообщений
+
+        // инициализация истории сообщений
         this._history = [];
         this._historyIndex = -1;
 
@@ -109,31 +102,27 @@ var ViewMessengerGlass = (function () {
             subject: this
         });
 
-
         // кнопка сворачивания дива
         $('#VMGDivHardware').append('<div id="VMGPortHideBtn" class="hideBtnDownLeft"></div>');
         this.btn_hide =  $('#VMGPortHideBtn');
         this.btn_hide.on('click', {self: this}, this.btnHideReaction);
 
-
-        // Создание чатов. Сразу все 4 чата
+        // создание чатов. Сразу все 4 чата
         this.addChat(-1, 'global', true); // глобальный чат
-        this.addPartyChat(-2, 'party', false); // пати чат
+        this.initPartyChat(-2, 'party', false); // пати чат
         this.addChat(-3, 'gamelog', false); // игровой лог
         this.addChat(-4, 'systemlog', false); // системный лог
-
 
         // портативная версия чата. Главный див.
         mainParent.append('<div id="VGMMainDivCompact"></div>');
         this.mainCompact = $('#VGMMainDivCompact');
 
         // зона для сообщений портативной версии
-
         this.mainCompact.append('<div id="VGMtextAreaCompact"></div>');
         this.textAreaCompact = $('#VGMtextAreaCompact');
 
-        this.compactVisibleOptions = null; // Объект, содержащий какие именно сообщения отображать в компактной версии
-
+        // объект, содержащий какие именно сообщения отображать в компактной версии
+        this.compactVisibleOptions = null;
     }
 
     ViewMessengerGlass.prototype.showChatWindow = function () {
@@ -155,6 +144,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.addChat = function (aID, aName, setAct){
         var chat = {
             id: aID,
+            room_jid: null,
             name: aName,
             chatArea: $('<div id="_charArea' + aID + '" class="VMGChatOutArea"></div>'),
             textArea: $('<div id="textArea' + aID + '" class="VMGtextOutArea"></div>'),
@@ -175,53 +165,11 @@ var ViewMessengerGlass = (function () {
         return chat;
     };
 
-    ViewMessengerGlass.prototype.addPartyChat = function (aID, aName, setAct){
-        var chat = {
-            id: aID,
-            name: aName,
-            chatArea: $('<div id="_charArea' + aID + '" class="VMGChatOutArea"></div>'),
-            pageControl: $('<div id="_charPageControl' + aID + '" class="VMGPartyPageControl"></div>'),
-            textArea: $('<div id="textArea' + aID + '" class="VMGPartytextOutArea"></div>'),
-            pageButton: $('<div id="pageButton' + aID + '" class="VMGpageButton sublayers-clickable">' + aName + '</div>'),
-            mesList: [],
-            mesCount: 0,
-            partyBtns: null
-        };
-
-        this.vmg_text_area.append(chat.chatArea);
-        chat.chatArea.append(chat.pageControl);
-        chat.chatArea.append(chat.textArea);
-        this.divPageControlArea.append(chat.pageButton);
-
-        chat.pageButton.on('click', {self: this, id: chat.id}, this.clickForPageButton);
-
-        // добавление кнопок для работы с пати
-        chat.pageControl.append('<div id="VMGPartyCntrlCreate' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Создать' + '</div>');
-        chat.pageControl.append('<div id="VMGPartyCntrlInvite' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Приглашения' + '</div>');
-        chat.pageControl.append('<div id="VMGPartyCntrlLeave' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
-
-        chat.partyButtons = {
-            create: $('#VMGPartyCntrlCreate' + aID),
-            leave: $('#VMGPartyCntrlLeave' + aID),
-            invite: $('#VMGPartyCntrlInvite' + aID)
-        };
-
-        // Вешаем евенты для работы с пати
-        chat.partyButtons.create.click(this, this.party_create);
-        chat.partyButtons.invite.click(this, this.party_invite);
-        chat.partyButtons.leave.click(this, this.party_leave);
-
-        this.chats.push(chat);
-        if (setAct)
-            this.setActiveChat(chat.id);
-        return chat;
-    };
-
     ViewMessengerGlass.prototype.removeChat = function(chatID){
         // Если этот чат активный, то сделать активным нулевой
         var setNewActive = (this._activeChatID == chatID);
         // получить чат
-        var chat = this._getChat(chatID);
+        var chat = this._getChatById(chatID);
         if(! chat) return;
         // удалить все сообщения у чата
         this._removeAllMessagesInChat(chat);
@@ -250,7 +198,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.setActiveChat = function(aID){
         // если чата с таким aID не существует, то ничего не делать
-        if (this._getChat(aID)) {
+        if (this._getChatById(aID)) {
             this.chats.forEach(function (chat) {
                     if (chat.id == this.id) {
                         chat.textArea.addClass('VMGtextOutAreaActive');
@@ -271,13 +219,22 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.getActiveChat = function() {
-        return this._getChat(this._activeChatID);
+        return this._getChatById(this._activeChatID);
     };
 
-    ViewMessengerGlass.prototype._getChat = function (chatID) {
+    ViewMessengerGlass.prototype._getChatById = function (chatID) {
         for (var i in this.chats) {
             if (this.chats[i])
                 if (this.chats[i].id == chatID)
+                    return this.chats[i];
+        }
+        return null;
+    };
+
+    ViewMessengerGlass.prototype._getChatByJID = function (room_jid) {
+        for (var i in this.chats) {
+            if (this.chats[i])
+                if (this.chats[i].room_jid == room_jid)
                     return this.chats[i];
         }
         return null;
@@ -320,46 +277,7 @@ var ViewMessengerGlass = (function () {
 
     };
 
-    ViewMessengerGlass.prototype.addMessage = function (chatID, chatName, aUser, aText) {
-        // Найти чат для добавления в него сообщения
-        var chat = this._getChat(chatID);
 
-        if(! chat) //chat = this.addChat(chatID, chatName, false);
-            console.error('Попытка записать сообщение в несуществующий чат');
-
-        this.addMessageToCompact(chatID, chatName, aUser, aText);
-
-        var messageID = chat.mesCount++;
-        // получить локальное время
-        var tempTime = new Date().toLocaleTimeString();
-        // создать див сообщения и спаны
-        var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="VMG-message-message"></div>');
-        var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
-        var spanUser = $('<span class="VMG-message-text-user sublayers-clickable">' + aUser.login + '</span>');
-        var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
-        // Добавить, предварительно скрыв
-        mesDiv.hide();
-        chat.textArea.append(mesDiv);
-        mesDiv.append(spanTime);
-        mesDiv.append(spanUser);
-        mesDiv.append(spanText);
-        // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
-        spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
-        // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
-        if(aUser.login == user.login)
-            spanUser.addClass("VMG-message-text-my-user");
-        // Показать сообщение, опустив скрол дива
-        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
-        // Добавить mesDiv и spanUser в mesList для этого chat
-        chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
-        // Удалить старые сообщения, предварительно сняв с них всё
-        if(chat.mesList.length > this.options.mesCountInChat){
-            var dmessage = chat.mesList.shift();
-            dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
-            dmessage.mesDiv.remove();
-        }
-
-    };
 
     ViewMessengerGlass.prototype._removeAllMessagesInChat = function(chat){
         for(;chat.mesList.length;){
@@ -429,38 +347,7 @@ var ViewMessengerGlass = (function () {
         chat._setInputHistoryMessage();
     };
 
-    ViewMessengerGlass.prototype.viewMessengerSendMessage = function() {
-        //console.log('ViewMessengerGlass.prototype.viewMessengerSendMessage');
 
-        var str = chat.main_input.val();
-        if (str.length) {
-            if (str[0] === '#' || str[0] === '\\' || str[0] === '/') {
-                sendServConsole(str);
-            }
-            else {
-                var active = chat.getActiveChat();
-                if (active)
-                    chat.options.stream_mes.sendMessage(
-                        {
-                            type: 'send_chat_message',
-                            body: {
-                                to: chat.getActiveChat().id,
-                                body: str
-                            }
-                        }
-                    );
-                else
-                    sendServConsole(str); // попробовать отправить команду на сервер
-
-            }
-            chat.main_input.val('').focus();
-            // Добавление сообщения в историю
-            chat.addMessageToHistory(str);
-        } else {
-            chat.main_input.focus()
-        }
-
-    };
 
     ViewMessengerGlass.prototype.clickForPageButton = function (event) {
         //console.log('ViewMessengerGlass.prototype.clickForPageButton');
@@ -483,10 +370,7 @@ var ViewMessengerGlass = (function () {
             }
     };
 
-    ViewMessengerGlass.prototype.receiveMessage = function (params) {
-        this.addMessage(params.chatID, params.chatName, params.user, params.text);
-        return true;
-    };
+
 
     // вывод входящих ws-сообщений в лог
     ViewMessengerGlass.prototype.receiveMessageFromWS = function(msg){
@@ -505,7 +389,7 @@ var ViewMessengerGlass = (function () {
         if(msg.events) {
             var event = msg.events[0];
             if (event.cls === 'Chat')
-                this.addMessage(-1, '', event.author, event.text);
+                this.addMessageByID(-1, event.author, event.text);
         }
 
         return true;
@@ -524,15 +408,109 @@ var ViewMessengerGlass = (function () {
         // alert('ViewMessenger    addMessageToLog');
         this.log_index++;
         if(name == 'push')
-            this.addMessage(-4, '', {login: name + ' #' + this.log_index},  mes );
+            this.addMessageByID(-4, {login: name + ' #' + this.log_index},  mes );
         if(name == 'answer')
-            this.addMessage(-1, '', {login: name + ' #' + this.log_index},  mes );
+            this.addMessageByID(-1, {login: name + ' #' + this.log_index},  mes );
         if(name == 'rpc')
-            this.addMessage(-3, '', {login: name + ' #' + this.log_index},  mes );
-        //this.addMessage(-4, '', {login: name + ' #' + this.log_index},  mes );
-        //this.addMessage(-1, '', {login: name + ' #' + this.log_index},  '<pre>' + mes + '</pre>');
-        this.addMessage(-2, '', {login: name + ' #' + this.log_index},  mes );
+            this.addMessageByID(-3, {login: name + ' #' + this.log_index},  mes );
+        //this.addMessageByID(-4, {login: name + ' #' + this.log_index},  mes );
+        //this.addMessageByID(-1, {login: name + ' #' + this.log_index},  '<pre>' + mes + '</pre>');
+        this.addMessageByID(-2, {login: name + ' #' + this.log_index},  mes );
     };
+
+
+    // ======== Добавление сообщений в окно чата
+
+    ViewMessengerGlass.prototype.addMessageByID = function (chatID, aUser, aText) {
+        // Найти чат для добавления в него сообщения
+        var chat = this._getChatById(chatID);
+
+        if(! chat) //chat = this.addChat(chatID, chatName, false);
+            console.error('Попытка записать сообщение в несуществующий чат');
+
+        this.addMessageToCompact(chatID, chat.name, aUser, aText);
+
+        var messageID = chat.mesCount++;
+        // получить локальное время
+        var tempTime = new Date().toLocaleTimeString();
+        // создать див сообщения и спаны
+        var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="VMG-message-message"></div>');
+        var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
+        var spanUser = $('<span class="VMG-message-text-user sublayers-clickable">' + aUser.login + '</span>');
+        var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
+        // Добавить, предварительно скрыв
+        mesDiv.hide();
+        chat.textArea.append(mesDiv);
+        mesDiv.append(spanTime);
+        mesDiv.append(spanUser);
+        mesDiv.append(spanText);
+        // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
+        spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
+        // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
+        if(aUser.login == user.login)
+            spanUser.addClass("VMG-message-text-my-user");
+        // Показать сообщение, опустив скрол дива
+        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+        // Добавить mesDiv и spanUser в mesList для этого chat
+        chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
+        // Удалить старые сообщения, предварительно сняв с них всё
+        if(chat.mesList.length > this.options.mesCountInChat){
+            var dmessage = chat.mesList.shift();
+            dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
+            dmessage.mesDiv.remove();
+        }
+    };
+
+    ViewMessengerGlass.prototype.addMessageByJID = function (room_jid, aUser, aText) {
+        this.addMessageByID(this._getChatByJID(room_jid).id, aUser, aText)
+    };
+
+
+    // ======== Отправка и получение сообщений
+
+    ViewMessengerGlass.prototype.sendMessage = function() {
+        //console.log('ViewMessengerGlass.prototype.sendMessage');
+
+        var str = chat.main_input.val();
+        if (str.length) {
+            if (str[0] === '#' || str[0] === '\\' || str[0] === '/') {
+                sendServConsole(str);
+            }
+            else {
+                var active = chat.getActiveChat();
+                if (active && (active.room_jid != null)) {
+                    chat.options.stream_mes.sendMessage({
+                        type: 'send_chat_message',
+                        body: {
+                            to: active.room_jid,
+                            body: str
+                        }
+                    });
+
+                    // добавление сообщения в историю
+                    chat.addMessageToHistory(str);
+
+                    // очистить поле ввода
+                    chat.main_input.val('');
+                }
+                else
+                    console.warn('Вы не можете отправить сообщение в неактивный чат');
+            }
+        }
+
+        //фокус на поле ввода
+        chat.main_input.focus()
+
+    };
+
+    ViewMessengerGlass.prototype.receiveMessage = function (params) {
+        //console.log('ViewMessengerGlass.prototype.receiveMessage', params);
+        this.addMessageByJID(params.room_jid, params.user, params.text);
+        return true;
+    };
+
+
+    // ======== Кнопки работы с пати
 
     ViewMessengerGlass.prototype.party_invite = function (event) {
         //console.log('ViewMessengerGlass.prototype.party_invite', event);
@@ -553,49 +531,80 @@ var ViewMessengerGlass = (function () {
         chat.main_input.focus();
     };
 
-    // отображение в партийном чате прихода инвайта
+
+    // ======== Работа с пати чатом
+
+    // Создание вкладки пати (с кнопками и чат-комнатой пати)
+    ViewMessengerGlass.prototype.initPartyChat = function (aID, aName, setAct){
+        var chat = {
+            id: aID,
+            name: aName,
+            room_jid: null,
+            chatArea: $('<div id="_charArea' + aID + '" class="VMGChatOutArea"></div>'),
+            pageControl: $('<div id="_charPageControl' + aID + '" class="VMGPartyPageControl"></div>'),
+            textArea: $('<div id="textArea' + aID + '" class="VMGPartytextOutArea"></div>'),
+            pageButton: $('<div id="pageButton' + aID + '" class="VMGpageButton sublayers-clickable">' + aName + '</div>'),
+            mesList: [],
+            mesCount: 0,
+            partyBtns: null
+        };
+
+        this.vmg_text_area.append(chat.chatArea);
+        chat.chatArea.append(chat.pageControl);
+        chat.chatArea.append(chat.textArea);
+        this.divPageControlArea.append(chat.pageButton);
+
+        chat.pageButton.on('click', {self: this, id: chat.id}, this.clickForPageButton);
+
+        // добавление кнопок для работы с пати
+        chat.pageControl.append('<div id="VMGPartyCntrlCreate' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Создать' + '</div>');
+        chat.pageControl.append('<div id="VMGPartyCntrlInvite' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Приглашения' + '</div>');
+        chat.pageControl.append('<div id="VMGPartyCntrlLeave' + aID + '" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
+
+        chat.partyButtons = {
+            create: $('#VMGPartyCntrlCreate' + aID),
+            leave: $('#VMGPartyCntrlLeave' + aID),
+            invite: $('#VMGPartyCntrlInvite' + aID)
+        };
+
+        // Вешаем евенты для работы с пати
+        chat.partyButtons.create.click(this, this.party_create);
+        chat.partyButtons.invite.click(this, this.party_invite);
+        chat.partyButtons.leave.click(this, this.party_leave);
+
+        this.chats.push(chat);
+        if (setAct)
+            this.setActiveChat(chat.id);
+        return chat;
+    };
+
+    // Отображение в партийном чате прихода инвайта
     ViewMessengerGlass.prototype.party_invite_show = function (event) {
         //console.log('ViewMessengerGlass.prototype.party_invite_show');
-       // ViewMessengerGlass.prototype.addMessage = function (chatID, chatName, aUser, aText) {
-            // Найти чат для добавления в него сообщения
-            var chat = this._getChat(-2);
-
-            if(! chat) //chat = this.addChat(chatID, chatName, false);
-                console.error('Попытка записать сообщение в несуществующий чат');
-
-            this.addMessageToCompact(chatID, chatName, aUser, aText);
-
-            var messageID = chat.mesCount++;
-            // получить локальное время
-            var tempTime = new Date().toLocaleTimeString();
-            // создать див сообщения и спаны
-            var mesDiv = $('<div id="' + chat.name + chatID + messageID + '" class="VMG-message-message"></div>');
-            var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
-            var spanUser = $('<span class="VMG-message-text-user sublayers-clickable">' + aUser.login + '</span>');
-            var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
-            // Добавить, предварительно скрыв
-            mesDiv.hide();
-            chat.textArea.append(mesDiv);
-            mesDiv.append(spanTime);
-            mesDiv.append(spanUser);
-            mesDiv.append(spanText);
-            // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
-            spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
-            // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
-            if(aUser.login == user.login)
-                spanUser.addClass("VMG-message-text-my-user");
-            // Показать сообщение, опустив скрол дива
-            mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
-            // Добавить mesDiv и spanUser в mesList для этого chat
-            chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
-            // Удалить старые сообщения, предварительно сняв с них всё
-            if(chat.mesList.length > this.options.mesCountInChat){
-                var dmessage = chat.mesList.shift();
-                dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
-                dmessage.mesDiv.remove();
-            }
-
+        // todo: добавить здесь интерактивный мессадж в пати-чат с информацией об инвайте в пати
     };
+
+    // Активировать пати-чат (пользователь зашел в пати)
+    ViewMessengerGlass.prototype.activateParty = function (room_jid) {
+        console.log('ViewMessengerGlass.prototype.activateParty', room_jid);
+        var p_chat = this._getChatById(-2); // получить пати-чат
+        if (p_chat.room_jid == room_jid)
+            return;
+        if (p_chat.room_jid != null)
+            console.warn('Попытка установить комнату в пати-чате, не закрыв предыдущую.');
+        p_chat.room_jid = room_jid;
+    };
+
+    // Деактивировать пати-чат (пользователь покинул пати)
+    ViewMessengerGlass.prototype.deactivateParty = function (room_jid) {
+        console.log('ViewMessengerGlass.prototype.deactivateParty');
+        var p_chat = this._getChatById(-2); // получить пати-чат
+        if ((p_chat.room_jid == null) || (p_chat.room_jid != room_jid))
+            console.warn('Попытка выйти из неактивной пати-чат команты.');
+        p_chat.room_jid = null;
+    };
+
+
 
     ViewMessengerGlass.prototype.btnHideReaction = function(event) {
         var self = event.data.self;
