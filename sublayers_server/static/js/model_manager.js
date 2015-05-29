@@ -234,7 +234,7 @@ var ClientManager = (function () {
             user.ID = event.agent.uid;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-                chat._getChatByName('party').partyButtons.create.text('Отряд');
+                chat.page_party.buttons.create.text('Отряд');
             }
         }
 
@@ -533,7 +533,7 @@ var ClientManager = (function () {
         user.party = new OwnerParty(event.party.id, event.party.name);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Отряд');
+        chat.page_party.buttons.create.text('Отряд');
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
 
         if (windowTemplateManager.isOpen('create_party'))
@@ -552,7 +552,7 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Создать');
+        chat.page_party.buttons.create.text('Создать');
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
@@ -565,7 +565,7 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Создать');
+        chat.page_party.buttons.create.text('Создать');
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');

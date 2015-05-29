@@ -67,7 +67,7 @@ $(document).ready(function () {
         cookieStorage.save();
     };
 
-    chat.setActiveChat(-2);
+    chat.setActivePage(chat.page_global);
 
 
     // Когда всё загружено и создано вызвать коннекты к серверу

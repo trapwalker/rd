@@ -26,7 +26,6 @@ var Connector = (function(){
 })();
 
 
-
 var JabberConnector = (function(_super){
     __extends(JabberConnector, _super);
     function JabberConnector(options){
@@ -105,6 +104,8 @@ var JabberConnector = (function(_super){
                 console.log('Вы вышли из комнаты [', chat_name, ']');
                 if (chat_name.indexOf('party_') >= 0)
                     chat.deactivateParty(chat_name);
+                else
+                    chat.removeChat(chat_name);
             }
         }
         return true;
@@ -136,6 +137,8 @@ var JabberConnector = (function(_super){
         console.log('Приглашение в ', chat_name, '  принято');
         if (chat_name.indexOf('party_') >= 0)
             chat.activateParty(chat_name);
+        else
+            chat.addChat(chat_name);
         return true;
     };
 
@@ -216,7 +219,6 @@ var JabberConnector = (function(_super){
 })(Connector);
 
 
-
 var WSConnector = (function(_super){
     __extends(WSConnector, _super);
     function WSConnector(options){
@@ -280,34 +282,12 @@ var WSConnector = (function(_super){
                 cbFunc: 'sendMessage',
                 subject: self
             });
-            message_stream.addOutEvent({
-                key: 'send_chat_message',
-                cbFunc: 'sendMessageChat',
-                subject: self
-            })
         };
     };
 
     WSConnector.prototype.sendMessage = function(msg){
         //alert('WSConnector sendMessage');
         var mes = this.encodeMessage(msg);
-        this.connection.send(JSON.stringify(mes));
-
-        return true;
-    };
-
-    WSConnector.prototype.sendMessageChat = function(msg){
-        //console.log('WSConnector.prototype.sendMessageChat', msg);
-        //this.connection.send(JSON.stringify(mes));
-
-        var mes = {
-            call: "chat_message",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                text: msg.body
-            }
-        };
-
         this.connection.send(JSON.stringify(mes));
 
         return true;

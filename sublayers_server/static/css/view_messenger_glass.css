@@ -266,6 +266,10 @@
     pointer-events: auto;
 }
 
+.VMGPartypageButtonActive {
+    opacity: 1;
+}
+
 .VMGPartypageButton:hover {
     opacity: 1;
 }
