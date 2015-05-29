@@ -1,5 +1,5 @@
 virtualenv
-tornado
+tornado==3.2
 debug
 pymongo
 sleekxmpp
