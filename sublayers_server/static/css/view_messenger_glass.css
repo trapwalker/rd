@@ -275,6 +275,18 @@
 }
 
 
+.VMGStandarttextOutArea{
+    height: 100%;
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    background-color: transparent;
+}
+
 .VMG-message-message {
     padding-left: 3px;
     padding-right: 3px;

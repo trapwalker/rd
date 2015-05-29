@@ -110,10 +110,10 @@ var ViewMessengerGlass = (function () {
         this.btn_hide.on('click', {self: this}, this.btnHideReaction);
 
         // инициализация верхнего PageControl
-        this.page_global = this.initGlobalPage();
-        this.page_party = this.initPartyPage();
+        this.page_global = this.initGlobalPage(); // страница для глобальных комнат
+        this.page_party = this.initPartyPage(); // страница для пати
         this.page_log = this.initLogPage(); // игровой лог
-        //this.addChat(-4, 'systemlog', false); // системный лог
+        this.page_sys = this.initSysPage(); // системный лог
 
         // портативная версия чата. Главный див.
         mainParent.append('<div id="VGMMainDivCompact"></div>');
@@ -124,7 +124,7 @@ var ViewMessengerGlass = (function () {
         this.textAreaCompact = $('#VGMtextAreaCompact');
 
         // объект, содержащий какие именно сообщения отображать в компактной версии
-        this.compactVisibleOptions = null;
+        this.compactVisibleOptions = ['global', 'party', 'system']; // ещё может быть 'gamelog'
     }
 
     ViewMessengerGlass.prototype.showChatWindow = function () {
@@ -143,10 +143,11 @@ var ViewMessengerGlass = (function () {
         return null;
     };
 
-    ViewMessengerGlass.prototype.addMessageToCompact = function(chat, aUser, aText){
+    ViewMessengerGlass.prototype.addMessageToCompact = function(chat, aUser, aText, type){
         var self = this;
         // если компактная версия скрыта, то ничего не делать
         if(this.chat_visible) return;
+        if (this.compactVisibleOptions.indexOf(type) == -1) return;
         // создать див сообщения и спаны
         var mesDiv = $('<div class="VGM-message-compact"></div>');
         var spanUser = $('<span class="VMG-message-text-user">' + aUser.login + '</span>');
@@ -266,7 +267,8 @@ var ViewMessengerGlass = (function () {
             return;
         }
 
-        this.addMessageToCompact(chat, aUser, aText);
+        var type_for_compact = room_jid == this.page_party.chat.room_jid ? 'party' : 'global';
+        this.addMessageToCompact(chat, aUser, aText, type_for_compact);
         var messageID = chat.mesCount++;
         // получить локальное время
         var tempTime = new Date().toLocaleTimeString();
@@ -625,7 +627,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.initLogPage = function (){
         var chat = {
-            textArea: $('<div id="textAreaLog" class="VMGPartytextOutArea"></div>'),
+            textArea: $('<div id="textAreaLog" class="VMGStandarttextOutArea"></div>'),
             mesList: [],
             mesCount: 0
         };
@@ -649,9 +651,9 @@ var ViewMessengerGlass = (function () {
 
     // вывод входящих ws-сообщений в лог
     ViewMessengerGlass.prototype.receiveMessageFromWS = function (msg) {
-        console.log('ViewMessengerGlass.prototype.receiveMessageFromWS', msg);
+        //console.log('ViewMessengerGlass.prototype.receiveMessageFromWS', msg);
         if (msg.message_type == "push") {
-            this.addMessageToLog('new push form server');
+            this.addMessageToLog('new push: ' + msg.events[0].cls);
         }
         return true;
     };
@@ -671,7 +673,65 @@ var ViewMessengerGlass = (function () {
             console.error('Чат для логирования не найден');
             return;
         }
-        this.addMessageToCompact(chat, {login: 'GAMELOG'}, aText);
+        this.addMessageToCompact(chat, {login: 'GAMELOG'}, aText, 'gamelog');
+        var messageID = chat.mesCount++;
+        // получить локальное время
+        var tempTime = new Date().toLocaleTimeString();
+        // создать див сообщения и спаны
+        var mesDiv = $('<div id="mesdivlog' + messageID + '" class="VMG-message-message"></div>');
+        var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
+        var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
+        // Добавить, предварительно скрыв
+        mesDiv.hide();
+        chat.textArea.append(mesDiv);
+        mesDiv.append(spanTime);
+        mesDiv.append(spanText);
+        // Показать сообщение, опустив скрол дива
+        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+        // Добавить mesDiv и spanUser в mesList для этого chat
+        chat.mesList.push({mesDiv: mesDiv});
+        // Удалить старые сообщения
+        if(chat.mesList.length > this.options.mesCountInChat){
+            var dmessage = chat.mesList.shift();
+            dmessage.mesDiv.remove();
+        }
+    };
+
+
+    // ======== Добавление системной страницы (System)
+
+    ViewMessengerGlass.prototype.initSysPage = function (){
+        var chat = {
+            textArea: $('<div id="textAreaSys" class="VMGStandarttextOutArea"></div>'),
+            mesList: [],
+            mesCount: 0
+        };
+
+        var page = {
+            pageArea: $('<div id="chatAreaSys" class="VMGChatOutArea"></div>'),
+            pageButton: $('<div id="pageButtonSys" class="VMGpageButton sublayers-clickable">System</div>'),
+            chat: null,
+            log_chat: chat
+        };
+
+        this.vmg_text_area.append(page.pageArea);
+        page.pageArea.append(chat.textArea);
+        this.divPageControlArea.append(page.pageButton);
+
+        page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
+
+        this.pages.push(page);
+        return page;
+    };
+
+    ViewMessengerGlass.prototype.addMessageToSys = function (aText) {
+        // Найти чат для добавления в него сообщения
+        var chat = this.page_sys.log_chat;
+        if(! chat) {
+            console.error('Чат для логирования не найден');
+            return;
+        }
+        this.addMessageToCompact(chat, {login: 'SYSTEM'}, aText, 'system');
         var messageID = chat.mesCount++;
         // получить локальное время
         var tempTime = new Date().toLocaleTimeString();
