@@ -1,4 +1,4 @@
-{% set window_caption = 'Транспорт' %}
+{% set window_caption = 'NUKE:\Транспорт>' %}
 
 <style>
     .mainCarInfoWindow-main {
@@ -23,6 +23,7 @@
         margin-left: 30px;
         text-align: center;
         color: lime;
+        cursor: pointer;
     }
 
     .mainCarInfoWindow-menu-button:hover {
@@ -51,9 +52,10 @@
 
     .mainCarInfoWindow-body-left-picture {
         height: 250px;
-        border: solid 3px #ffffff;
+        border: solid 3px #00f150;
         margin: 20px;
         line-height: 250px;
+        color: #30fc00;
     }
 
     .mainCarInfoWindow-body-left-name {
@@ -77,27 +79,154 @@
         height: 40px;
     }
 
-    .mainCarInfoWindow-body-right-menu-button {
+    .mainCarInfoWindow-body-right-menu-button-model {
         position: relative;
         float: left;
         margin-top: 12px;
         margin-left: 5px;
         text-align: center;
         color: lime;
+        cursor: pointer;
     }
 
-    .mainCarInfoWindow-body-right-menu-button:hover {
+    .mainCarInfoWindow-body-right-menu-button-model:hover {
         background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
         background-size: 2px 2px;
     }
 
-    .mainCarInfoWindow-body-right-list {
+    .mainCarInfoWindow-body-right-menu-button-tth {
+        position: relative;
+        float: left;
+        margin-top: 12px;
+        margin-left: 5px;
+        text-align: center;
+        color: lime;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-tth:hover {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-weapons {
+        position: relative;
+        float: left;
+        margin-top: 12px;
+        margin-left: 5px;
+        text-align: center;
+        color: lime;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-weapons:hover {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-history {
+        position: relative;
+        float: left;
+        margin-top: 12px;
+        margin-left: 5px;
+        text-align: center;
+        color: lime;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-history:hover {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list-model {
+        position: absolute;
+        width: 297px;
+        height: 314px;
+        border: solid 1px #00f150;
+        padding-top: 25px;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-model {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-class {
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-bodyvol {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-trunkvol {
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-bonuses {
+        height: 30px;
+        line-height: 30px;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-top: dashed 2px darkgreen;
+        color: lime;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-road {
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+    }
+
+    .mainCarInfoWindow-body-right-list-tth {
+        position: absolute;
         width: 297px;
         height: 314px;
         border: solid 1px #00f150;
         padding-top: 10px;
         padding-left: 20px;
         box-sizing: border-box;
+        visibility: hidden;
+    }
+
+    .mainCarInfoWindow-body-right-list-weapons {
+        position: absolute;
+        width: 297px;
+        height: 314px;
+        border: solid 1px #00f150;
+        padding-top: 10px;
+        padding-left: 20px;
+        box-sizing: border-box;
+        visibility: hidden;
+    }
+
+    .mainCarInfoWindow-body-right-list-history {
+        position: absolute;
+        width: 297px;
+        height: 314px;
+        border: solid 1px #00f150;
+        padding-top: 10px;
+        padding-left: 20px;
+        box-sizing: border-box;
+        visibility: hidden;
     }
 </style>
 
@@ -116,16 +245,32 @@
         </div>
         <div class="mainCarInfoWindow-body-right">
             <div class="mainCarInfoWindow-body-right-menu">
-                <div class="mainCarInfoWindow-body-right-menu-button">&nbspМодель&nbsp</div>
-                <div class="mainCarInfoWindow-body-right-menu-button">&nbspТТХ&nbsp</div>
-                <div class="mainCarInfoWindow-body-right-menu-button">&nbspВооружение&nbsp</div>
-                <div class="mainCarInfoWindow-body-right-menu-button">&nbspИстория&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-model">&nbspМодель&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-tth">&nbspТТХ&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-weapons">&nbspВооружение&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-history">&nbspИстория&nbsp</div>
             </div>
-            <div class="mainCarInfoWindow-body-right-list">
-                Модель: Газель<br />
-                Класс: Средний<br />
-                Слотов кузова: 4<br />
-                Слотов багажника: 8
+            <div class="mainCarInfoWindow-body-right-list-model">
+                <div class="mainCarInfoWindow-body-right-list-model-model">&nbspМодель: Газель</div>
+                <div class="mainCarInfoWindow-body-right-list-model-class">&nbspКласс: Средний</div>
+                <div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspСлотов кузова: 4</div>
+                <div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspСлотов багажника: 8</div>
+                <div class="mainCarInfoWindow-body-right-list-model-bonuses">Бонусы местности:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога: Максимальная скорость</div>
+                <div class="mainCarInfoWindow-body-right-list-model-bonuses">Пенальти местности:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-model">&nbspЛес: Максимальная скорость</div>
+                <div class="mainCarInfoWindow-body-right-list-model-class">&nbspХолмы: -</div>
+                <div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspВода: Невозможно</div>
+                <div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspГоры: Невозможно</div>
+            </div>
+            <div class="mainCarInfoWindow-body-right-list-tth">
+                ТТХ
+            </div>
+            <div class="mainCarInfoWindow-body-right-list-weapons">
+                Вооружение
+            </div>
+            <div class="mainCarInfoWindow-body-right-list-history">
+                История
             </div>
         </div>
     </div>
