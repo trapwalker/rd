@@ -541,9 +541,91 @@ var ViewMessengerGlass = (function () {
     };
 
     // Отображение в партийном чате прихода инвайта
-    ViewMessengerGlass.prototype.party_invite_show = function (event) {
-        console.log('ViewMessengerGlass.prototype.party_invite_show', event);
+    ViewMessengerGlass.prototype.party_info_message = function (msg) {
+        //console.log('ViewMessengerGlass.prototype.party_invite_show', msg);
         // todo: добавить здесь интерактивный мессадж в пати-чат с информацией об инвайте в пати
+
+        // формирование сообщения анализируя входные данные
+        var aText = '';
+        switch (msg.cls) {
+            case 'AgentPartyChangeMessage':
+                aText = msg.subj.login + (msg.subj.party != null ? ' присоединился к группе' : ' покинул группу');
+                break;
+            case 'PartyIncludeMessageForIncluded':
+                aText = 'Вы включены в состав группы ' + msg.party.name;
+                break;
+            case 'PartyExcludeMessageForExcluded':
+                aText = 'Вы исключены из состава группы ' + msg.party.name;
+                break;
+            case 'PartyKickMessageForKicked':
+                aText = 'Вас выгнали из состава группы ' + msg.party.name;
+                break;
+            case 'PartyInviteMessage':
+                if (user.login == msg.recipient.login) {
+                    // значит инвайт для меня
+                    aText = msg.sender.login + ' приглашает Вас вступить в группу ' + msg.party.name;
+                } else {
+                    // значит инвайт для кого-то другого
+                    if (user.login == msg.sender.login) {
+                        // значит я пригласил кого-то
+                        aText ='Ваше приглашение отправлено для ' + msg.recipient.login;
+                    }
+                    else // просто кто-то кого-то пригласил
+                        aText = msg.sender.login + ' приглашает ' + msg.recipient.login + ' вступить в группу ' + msg.party.name;
+                }
+                break;
+            case 'PartyInviteDeleteMessage':
+                if (user.login == msg.recipient.login) {
+                    // значит инвайт для меня был кем-то отклонён, возможно даже мной
+                    aText = 'Приглашание вступить в группу ' + msg.party.name + ' от ' + msg.sender.login + ' отклонено.';
+                } else {
+                    // значит инвайт для кого-то другого
+                    if (user.login == msg.sender.login) {
+                        // значит я пригласил кого-то, и как-то это приглашение было отклонено
+                        aText ='Ваше приглашение для ' + msg.recipient.login + ' отклонено.';
+                    }
+                    else // просто кто-то кого-то пригласил
+                        aText = 'Приглашение от ' + msg.sender.login + ' для ' + msg.recipient.login + ' отклонено.';
+                }
+                break;
+            case 'PartyErrorMessage':
+                aText = 'Ошибка: ' + msg.comment;
+                break;
+            default:
+                aText = 'Неизвестная информация о пати! Попробуйте это повторить и расскажите нам.';
+        }
+
+        // Найти чат для добавления в него сообщения
+        var chat = this.page_party.chat;
+        if (!chat) {
+            console.error('Пати чат не найден');
+            return;
+        }
+        this.addMessageToCompact(chat, {login: 'SYSTEM'}, aText, 'party'); // оставлено специально GAMELOG
+        var messageID = chat.mesCount++;
+        // получить локальное время
+        var tempTime = new Date().toLocaleTimeString();
+        // создать див сообщения и спаны
+        var mesDiv = $('<div id="mesdivpartyinfo' + messageID + '" class="VMG-message-message"></div>');
+        var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
+        var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
+        // Добавить, предварительно скрыв
+        mesDiv.hide();
+        chat.textArea.append(mesDiv);
+        mesDiv.append(spanTime);
+        mesDiv.append(spanText);
+        // Показать сообщение, опустив скрол дива
+        mesDiv.slideDown('fast', function () {
+            chat.textArea.scrollTop(99999999)
+        });
+        // Добавить mesDiv и spanUser в mesList для этого chat
+        chat.mesList.push({mesDiv: mesDiv});
+        // Удалить старые сообщения
+        if (chat.mesList.length > this.options.mesCountInChat) {
+            var dmessage = chat.mesList.shift();
+            dmessage.mesDiv.remove();
+        }
+
     };
 
     // Активировать пати-чат (пользователь зашел в пати)

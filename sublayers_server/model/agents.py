@@ -218,7 +218,7 @@ class Agent(Object):
         # получить инвайт с данным id
         invite = self._invite_by_id(invite_id)
         if (invite is not None) and (invite.can_delete_by_agent(self)):
-            PartyInviteDeleteEvent(invite=invite).post()
+            PartyInviteDeleteEvent(invite=invite, time=self.server.get_time() + 0.01).post()
         else:
             messages.PartyErrorMessage(agent=self,
                                        comment="You not have access for this invite {}".format(invite_id)).post()

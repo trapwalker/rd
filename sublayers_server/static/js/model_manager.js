@@ -524,6 +524,7 @@ var ClientManager = (function () {
         }
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
+        chat.party_info_message(event);
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
@@ -534,6 +535,7 @@ var ClientManager = (function () {
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
         chat.page_party.buttons.create.text('Отряд');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
 
         if (windowTemplateManager.isOpen('create_party'))
@@ -544,7 +546,7 @@ var ClientManager = (function () {
             windowTemplateManager.closeUniqueWindow('party_info');
 
         windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
-
+        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -553,11 +555,14 @@ var ClientManager = (function () {
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
         chat.page_party.buttons.create.text('Создать');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
+
+        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
@@ -566,6 +571,7 @@ var ClientManager = (function () {
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
         chat.page_party.buttons.create.text('Создать');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
@@ -575,18 +581,21 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PartyInviteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteMessage', event);
+        chat.party_info_message(event);
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyInviteDeleteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteDeleteMessage', event);
+        chat.party_info_message(event);
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyErrorMessage = function (event) {
         console.log('ClientManager.prototype.PartyErrorMessage', event);
+        chat.party_info_message(event);
     };
 
     ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
