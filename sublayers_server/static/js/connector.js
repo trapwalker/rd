@@ -209,7 +209,7 @@ var JabberConnector = (function(_super){
 
     JabberConnector.prototype.encodeMessage = function(msg){
         //console.log('JabberConnector.prototype.encodeMessage');
-        msg.to = msg.to + '@conference.example.com';
+        msg.to = msg.to + '@conference.sublayers.net';
         var type = (msg.to.indexOf('conference') > 0) ? 'groupchat' : 'chat';
         return $msg({to: msg.to, from: this.connection.jid, type: type}).c('body').t(msg.body);
     };
