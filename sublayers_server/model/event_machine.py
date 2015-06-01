@@ -12,6 +12,9 @@ from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.town import RadioPoint
+
 import sys
 from time import sleep
 from threading import Thread
@@ -53,6 +56,18 @@ class Server(object):
     def get_time():
         return get_time()
 
+    def init_scene(self):
+        base_point = Point(12496376, 27133643)
+        RadioPoint(time=self.get_time(),
+                   server=self,
+                   conference_name='radio_point_1',
+                   position=base_point)
+
+        RadioPoint(time=self.get_time(),
+                   server=self,
+                   conference_name='radio_point_2',
+                   position=Point(12496200, 27133643))
+        
     def post_message(self, message):
         """
         @param sublayers_server.model.messages.Message message: message to sent

@@ -49,12 +49,6 @@ $(document).ready(function () {
 
     ws_connector = new WSConnector();
 
-    j_connector = new JabberConnector({
-        jid: 'menkent@menkent-desktop/subclient',
-        password: '1',
-        adress_server: 'http://localhost:5280/http-bind'
-    });
-
     rpcCallList = new RPCCallList();
 
     clientManager = new ClientManager();
@@ -67,29 +61,13 @@ $(document).ready(function () {
         stream_mes: message_stream
     });
 
-
-    // тестовые сообщения, просто чтобы видеть как они будут выглядеть
-    setTimeout(function() {
-       // chat.addMessage(-2, '', {login: 'Ivan'}, 'Привет! Это тестовое сообщение в пати!');
-       // chat.addMessage(-2, '', {login: user.login}, 'Привет! Это мой браузер!');
-
-        chat.addMessage(-1, '', {login: 'system'}, 'Городской чат говорите? Рация значит ловит.');
-      //  chat.addMessage(-1, '', {login: 'Vasiliy'}, 'аааа, город! хаха! я в городе');
-
-        chat.addMessage(-3, '', {login: 'game'}, 'Система загружена. Вы можете начать движение.');
-        chat.addMessage(-3, '', {login: 'game'}, 'Для начала движения выставьте круиз контроль на желаемое значение.');
-
-        chat.addMessage(-4, '', {login: 'system'}, 'На сервере игроков ххх.');
-        chat.addMessage(-4, '', {login: 'game'}, 'Мы рады сообщить Вам, что здесь будет всякий флуд от сервера');
-    }, 0);
-
     //carMarkerList = new CarMarkerList({_map: myMap});
 
     window.onbeforeunload = function (e) {
         cookieStorage.save();
     };
 
-    chat.setActiveChat(-2);
+    chat.setActivePage(chat.page_global);
 
 
     // Когда всё загружено и создано вызвать коннекты к серверу

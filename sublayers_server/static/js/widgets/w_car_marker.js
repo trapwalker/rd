@@ -90,10 +90,11 @@ var WCarMarker = (function (_super) {
             icon_id = 31;
         }
 
+        if(car.cls == 'RadioPoint') {
+            icon_id = 7;
+        }
+
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
-
-
-
     };
 
     WCarMarker.prototype.updateLabel = function(new_label){

@@ -192,7 +192,7 @@ class PartyMember(object):
 class Party(object):
     parties = {}
 
-    def __init__(self, time, owner=None, name=None, description=''):
+    def __init__(self, time, owner, name=None, description=''):
         if (name is None) or (name == ''):
             name = self.classname
         while name in self.parties:
@@ -204,8 +204,15 @@ class Party(object):
         self.share_obs = []
         self.members = []
         self.invites = []
-        if owner is not None:
-            self.include(owner, time=time)
+
+        # создание чат-комнаты пати
+        self.conference_name = 'party_' + name
+        self.xmpp = owner.server.app.xmpp_manager
+        self.room_jid = None
+        if self.xmpp is not None:
+            self.room_jid = self.xmpp.create_room(room=self.conference_name)
+
+        self.include(owner, time=time)
 
     @property
     def classname(self):
@@ -280,6 +287,9 @@ class Party(object):
         for member in self.members:
             member.agent.party_after_include(new_member=agent, party=self, time=time)
 
+        # включить агента в чат-комнату пати
+        agent.add_xmpp_room(room_jid=self.room_jid)
+
     def _on_include(self, agent, time):
         #log.info('==============Start include')
         #log.info(len(self.share_obs))
@@ -320,6 +330,9 @@ class Party(object):
         agent.party_after_exclude(old_member=agent, party=self, time=time)
         for member in self.members:
             member.agent.party_after_exclude(old_member=agent, party=self, time=time)
+
+        # исключить агента из чат-комнаты пати
+        agent.del_xmpp_room(room_jid=self.room_jid)
 
     def _on_exclude(self, agent, time):
         #log.info('---------------Start exclude')

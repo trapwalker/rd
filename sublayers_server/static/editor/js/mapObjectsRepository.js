@@ -146,7 +146,7 @@ MapObjectsRepository = (function () {
                     this.setupMarkerIcon(this.roads[id], this.selectRoadIcon);
                 }
                 break;
-        };
+        }
     };
 
     MapObjectsRepository.prototype.unSelectObject = function (type, id) {

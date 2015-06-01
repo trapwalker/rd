@@ -26,14 +26,17 @@ from sublayers_server import service_tools
 from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
-from sublayers_server.handlers.pages import MainHandler, PlayHandler
+from sublayers_server.handlers.pages import PlayHandler
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.town import TownHandler
-from sublayers_server.handlers.auth import AuthLoginHandler, AuthGoogleHandler, AuthLogoutHandler
+from sublayers_server.handlers.site.site_handler import SiteHandler
+from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
+    StandardLoginHandler, OKLoginHandler, VKLoginHandler
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
-
 from sublayers_server.model.event_machine import LocalServer
+from pymongo import Connection
+from sublayers_server.model.xmpp_manager import XMPPManager
 
 
 class Application(tornado.web.Application):
@@ -44,6 +47,24 @@ class Application(tornado.web.Application):
             self.revision = None
             log.warning("Can't get HG revision info: %s", e)
 
+        self.db_connection = None
+        self.xmpp_manager = None
+        self.auth_db = None
+
+        try:
+            self.db_connection = Connection()
+        except:
+            log.warn('MongoDB not found')
+
+        if self.db_connection:
+            self.auth_db = self.db_connection.auth_db
+            try:
+                self.xmpp_manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
+            except:
+                log.warn('XMPP not available')
+        else:
+            self.auth_db = None
+
         log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
         self.srv.start()
@@ -51,20 +72,25 @@ class Application(tornado.web.Application):
         self.chat = []
         # todo: tuncate chat history
 
-        self.init_scene()
+        self.srv.init_scene()
 
         handlers = [
-            (r"/", MainHandler),
+            (r"/", SiteHandler),
             (r"/main_car_info", MainCarInfoHandler),
             (r"/party", PartyHandler),
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
-            #(r"/", tornado.web.RedirectHandler, {"url": "/static/view.html", "permanent": False}),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", PlayHandler),
-            (r"/auth/login", AuthLoginHandler),
-            (r"/auth/login/google", AuthGoogleHandler),
-            (r"/auth/logout", AuthLogoutHandler),
+
+
+            (r"/login", SiteLoginHandler),
+            (r"/logout", SiteLogoutHandler),
+            (r"/login/standard", StandardLoginHandler),
+            (r"/login/google", GoogleLoginHandler),
+            (r"/login/ok", OKLoginHandler),
+            (r"/login/vk", VKLoginHandler),
+
             (r"/stat", ServerStatisticsHandler),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
             (r"/town", TownHandler),
@@ -75,9 +101,16 @@ class Application(tornado.web.Application):
             static_path=options.static_path,
             xsrf_cookies=True,
             ui_modules=uimodules,
-            login_url="/",
+            login_url="/login",
             debug=True,
             autoreload=False,
+            google_oauth={"key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
+                          "secret": "JOXGxpPxKGqr_9TYW9oYT8g_"},
+            ok_oauth={"key": "1137609984",
+                      "secret": "BB413D7F8E6B685D19AE3FE0",
+                      "public_key": "CBAOIPMEEBABABABA"},
+            vk_oauth={"key": "4926489",
+                      "secret": "4gyveXhKv5aVNCor5bkB"},
         )
         tornado.web.Application.__init__(self, handlers, **app_settings)
 
@@ -90,11 +123,7 @@ class Application(tornado.web.Application):
         if self.srv.is_active:
             self.srv.stop()
 
-    def init_scene(self):
-        #from model.units import Bot
-        #from sublayers_server.model.vectors import Point
-        pass
-        # todo: map metadata store to DB
+
 
 
 def main():
