@@ -38,7 +38,7 @@ class SiteLoginHandler(BaseHandler):
             self.redirect("/")
             return
         msg = self.get_argument("msg", "")
-        self.render("site\login.html", msg=msg)
+        self.render("site/login.html", msg=msg)
 
 
 class SiteLogoutHandler(BaseHandler):
