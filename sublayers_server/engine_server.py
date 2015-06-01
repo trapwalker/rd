@@ -59,7 +59,8 @@ class Application(tornado.web.Application):
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db
             try:
-                self.xmpp_manager = XMPPManager(jid='srv@sublayers.net', password='1', server=('sublayers.net', 5222))
+                self.xmpp_manager = XMPPManager(jid='srv@sublayers.net', password='1', server=('sublayers.net', 5222),
+                                                host_name='sublayers.net')
             except:
                 log.warn('XMPP not available')
         else:
