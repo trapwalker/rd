@@ -33,7 +33,7 @@ var JabberConnector = (function(_super){
         this.options = {
             jid: '',
             password: '',
-            adress_server: 'localhost',
+            adress_server: 'http://sublayers.net:5280/http-bind',
             messenger: null  // объект чата, в который будут кидаться сообщения
         };
         if (options) setOptions(options, this.options);
