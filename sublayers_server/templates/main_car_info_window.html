@@ -31,6 +31,19 @@
         background-size: 2px 2px;
     }
 
+    .mainCarInfoWindow-menu-button:hover:before {
+        position: absolute;
+        margin-left: -7px;
+        color: lime;
+        content: ">";
+    }
+
+    .mainCarInfoWindow-menu-button:hover:after {
+        position: absolute;
+        color: lime;
+        content: "<";
+    }
+
     .mainCarInfoWindow-body {
         position: relative;
         float: left;
@@ -83,7 +96,7 @@
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 5px;
+        margin-left: 7px;
         text-align: center;
         color: lime;
         cursor: pointer;
@@ -94,11 +107,24 @@
         background-size: 2px 2px;
     }
 
+    .mainCarInfoWindow-body-right-menu-button-model:hover:before {
+        position: absolute;
+        margin-left: -7px;
+        color: lime;
+        content: ">";
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-model:hover:after {
+        position: absolute;
+        color: lime;
+        content: "<";
+    }
+
     .mainCarInfoWindow-body-right-menu-button-tth {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 5px;
+        margin-left: 24px;
         text-align: center;
         color: lime;
         cursor: pointer;
@@ -109,11 +135,24 @@
         background-size: 2px 2px;
     }
 
+    .mainCarInfoWindow-body-right-menu-button-tth:hover:before {
+        position: absolute;
+        margin-left: -7px;
+        color: lime;
+        content: ">";
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-tth:hover:after {
+        position: absolute;
+        color: lime;
+        content: "<";
+    }
+
     .mainCarInfoWindow-body-right-menu-button-weapons {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 5px;
+        margin-left: 24px;
         text-align: center;
         color: lime;
         cursor: pointer;
@@ -124,11 +163,24 @@
         background-size: 2px 2px;
     }
 
+    .mainCarInfoWindow-body-right-menu-button-weapons:hover:before {
+        position: absolute;
+        margin-left: -7px;
+        color: lime;
+        content: ">";
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-weapons:hover:after {
+        position: absolute;
+        color: lime;
+        content: "<";
+    }
+
     .mainCarInfoWindow-body-right-menu-button-history {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 5px;
+        margin-left: 24px;
         text-align: center;
         color: lime;
         cursor: pointer;
@@ -137,6 +189,19 @@
     .mainCarInfoWindow-body-right-menu-button-history:hover {
         background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
         background-size: 2px 2px;
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-history:hover:before {
+        position: absolute;
+        margin-left: -7px;
+        color: lime;
+        content: ">";
+    }
+
+    .mainCarInfoWindow-body-right-menu-button-history:hover:after {
+        position: absolute;
+        color: lime;
+        content: "<";
     }
 
     .mainCarInfoWindow-body-right-list-model {
@@ -151,31 +216,83 @@
     }
 
     .mainCarInfoWindow-body-right-list-model-model {
+        width: 150px;
         background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
         background-size: 2px 2px;
         color: lime;
         margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-model-value {
+        width: 125px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -8px;
+        text-align: center;
+        display: inline-block;
     }
 
     .mainCarInfoWindow-body-right-list-model-class {
+        width: 150px;
         background-image: linear-gradient(135deg, black 50%, #004000 0%);
         background-size: 2px 2px;
         color: lime;
         margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-class-value {
+        width: 125px;
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -8px;
+        text-align: center;
+        display: inline-block;
     }
 
     .mainCarInfoWindow-body-right-list-model-bodyvol {
+        width: 150px;
         background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
         background-size: 2px 2px;
         color: lime;
         margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-bodyvol-value {
+        width: 125px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -8px;
+        text-align: center;
+        display: inline-block;
     }
 
     .mainCarInfoWindow-body-right-list-model-trunkvol {
+        width: 150px;
         background-image: linear-gradient(135deg, black 50%, #004000 0%);
         background-size: 2px 2px;
         color: lime;
         margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-trunkvol-value {
+        width: 125px;
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -8px;
+        text-align: center;
+        display: inline-block;
     }
 
     .mainCarInfoWindow-body-right-list-model-bonuses {
@@ -186,14 +303,102 @@
         margin-top: 10px;
         margin-bottom: 10px;
         border-top: dashed 2px darkgreen;
-        color: lime;
+        color: darkgreen;
     }
 
     .mainCarInfoWindow-body-right-list-model-road {
+        width: 75px;
         background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
         background-size: 2px 2px;
         color: lime;
         margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-road-value {
+        width: 201px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -9px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-forest {
+        width: 75px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-forest-value {
+        width: 201px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -9px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-hill {
+        width: 75px;
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-hill-value {
+        width: 201px;
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -9px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-water {
+        width: 75px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-water-value {
+        width: 201px;
+        background-image: linear-gradient(135deg, black 50%, darkgreen 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -9px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-mountain {
+        width: 75px;
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: lime;
+        margin-bottom: 2px;
+        display: inline-block;
+    }
+
+    .mainCarInfoWindow-body-right-list-model-mountain-value {
+        width: 201px;
+        background-image: linear-gradient(135deg, black 50%, #004000 0%);
+        background-size: 2px 2px;
+        color: greenyellow;
+        margin-bottom: 2px;
+        margin-left: -9px;
+        display: inline-block;
     }
 
     .mainCarInfoWindow-body-right-list-tth {
@@ -245,23 +450,32 @@
         </div>
         <div class="mainCarInfoWindow-body-right">
             <div class="mainCarInfoWindow-body-right-menu">
-                <div class="mainCarInfoWindow-body-right-menu-button-model">&nbspМодель&nbsp</div>
-                <div class="mainCarInfoWindow-body-right-menu-button-tth">&nbspТТХ&nbsp</div>
-                <div class="mainCarInfoWindow-body-right-menu-button-weapons">&nbspВооружение&nbsp</div>
-                <div class="mainCarInfoWindow-body-right-menu-button-history">&nbspИстория&nbsp</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-model">Модель</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-tth">ТТХ</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-weapons">Вооружение</div>
+                <div class="mainCarInfoWindow-body-right-menu-button-history">История</div>
             </div>
             <div class="mainCarInfoWindow-body-right-list-model">
-                <div class="mainCarInfoWindow-body-right-list-model-model">&nbspМодель: Газель</div>
-                <div class="mainCarInfoWindow-body-right-list-model-class">&nbspКласс: Средний</div>
-                <div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspСлотов кузова: 4</div>
-                <div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspСлотов багажника: 8</div>
+                <div class="mainCarInfoWindow-body-right-list-model-model">&nbspМодель:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-model-value">Газель</div>
+                <div class="mainCarInfoWindow-body-right-list-model-class">&nbspКласс:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-class-value">Средний</div>
+                <div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspСлотов кузова:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-bodyvol-value">4</div>
+                <div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspСлотов багажника:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-trunkvol-value">8</div>
                 <div class="mainCarInfoWindow-body-right-list-model-bonuses">Бонусы местности:</div>
-                <div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога: Максимальная скорость</div>
+                <div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>
                 <div class="mainCarInfoWindow-body-right-list-model-bonuses">Пенальти местности:</div>
-                <div class="mainCarInfoWindow-body-right-list-model-model">&nbspЛес: Максимальная скорость</div>
-                <div class="mainCarInfoWindow-body-right-list-model-class">&nbspХолмы: -</div>
-                <div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspВода: Невозможно</div>
-                <div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspГоры: Невозможно</div>
+                <div class="mainCarInfoWindow-body-right-list-model-forest">&nbspЛес:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-forest-value">Максимальная скорость</div>
+                <div class="mainCarInfoWindow-body-right-list-model-hill">&nbspХолмы:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-hill-value">-</div>
+                <div class="mainCarInfoWindow-body-right-list-model-water">&nbspВода:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-water-value">Невозможно</div>
+                <div class="mainCarInfoWindow-body-right-list-model-mountain">&nbspГоры:</div>
+                <div class="mainCarInfoWindow-body-right-list-model-mountain-value">Невозможно</div>
             </div>
             <div class="mainCarInfoWindow-body-right-list-tth">
                 ТТХ
