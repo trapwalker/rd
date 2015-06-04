@@ -129,6 +129,7 @@ class Unit(Observer):
         if self.turn_on_auto_fire == enable:
             return
         else:
+            self.turn_on_auto_fire = enable
             if enable:
                 FireAutoTestEvent(obj=self, time=time).post()
             else:
