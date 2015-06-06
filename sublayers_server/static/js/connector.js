@@ -134,7 +134,7 @@ var JabberConnector = (function(_super){
         j_connector.connection.muc.join(from, user.login, null, null, null, null, null);
         // обязательно возвращать true
         var chat_name = from.split('@')[0];
-        console.log('Приглашение в ', chat_name, '  принято');
+        //console.log('Приглашение в ', chat_name, '  принято');
         if (chat_name.indexOf('party_') >= 0)
             chat.activateParty(chat_name);
         else

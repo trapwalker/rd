@@ -260,6 +260,7 @@ class Agent(Object):
             for room_jid in self.xmpp_rooms:
                 xmpp_manager.invite_to_room(room_jid=room_jid, jid=agent_jid)
 
+
 class User(Agent):
     # todo: realize
     pass
