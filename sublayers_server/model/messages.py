@@ -449,3 +449,16 @@ class EnterToTown(Message):
             )
         return d
 
+
+class ExitFromTown(Message):
+    def __init__(self, town, **kw):
+        super(ExitFromTown, self).__init__(**kw)
+        self.town = town
+
+    def as_dict(self):
+        d = super(ExitFromTown, self).as_dict()
+        d.update(
+            town=self.town.as_dict(time=self.time)
+            )
+        return d
+

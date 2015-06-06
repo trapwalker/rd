@@ -70,7 +70,9 @@ class Server(object):
 
         Town(time=self.get_time(),
              server=self,
-             svg_link='../static/img/towns/town_1/town.svg',
+             #svg_link = "C:/Projects/Sublayers/sublayers_server/static/img/towns/town_2/town.svg",
+             svg_link='static/img/towns/town_2/town.svg',
+             #svg_link='img/towns/town_2/town.svg',
              town_name='Prior',
              position=Point(12496200, 27133590))
         

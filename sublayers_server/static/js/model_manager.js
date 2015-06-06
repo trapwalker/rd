@@ -625,23 +625,38 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InviteToTown = function (event) {
-        //console.log('ClientManager.prototype.InviteToTown', event);
+        //console.log('ClientManager.prototype.InviteToTown', event, user.active_towns);
         var town_uid = event.town.uid;
-        if (event.invite)
+        if (event.invite) {
             // разрешить входить в этот город
-            if (user.active_towns.indexOf(town_uid) == -1 )
+            if (user.active_towns.indexOf(town_uid) == -1)
                 user.active_towns.push(town_uid);
+        }
         else
             // запретить входить в этот город
             user.active_towns.splice(user.active_towns.indexOf(town_uid), 1);
+        console.log(user.active_towns);
     };
 
     ClientManager.prototype.EnterToTown = function (event) {
-        console.log('ClientManager.prototype.EnterToTown', event);
+        //console.log('ClientManager.prototype.EnterToTown', event);
         var town_uid = event.town.uid;
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
+        $.ajax({
+            url: "http://" + location.host + '/town',
+            data:  { town_id: event.town.uid },
+            success: function(data){
+                $('#activeTownDiv').append(data);
+                $('#activeTownDiv').css('display', 'block');
+            }
+        });
+    };
 
+    ClientManager.prototype.ExitFromTown = function (event) {
+        //console.log('ClientManager.prototype.ExitFromTown', event);
+        $('#activeTownDiv').empty();
+        $('#activeTownDiv').css('display', 'none');
     };
 
     // Исходящие сообщения
@@ -874,6 +889,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendEnterToTown = function (town_id) {
+        //console.log('ClientManager.prototype.sendEnterToTown');
         var mes = {
             call: "enter_to_town",
             rpc_call_id: rpcCallList.getID(),

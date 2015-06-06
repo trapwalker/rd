@@ -6,14 +6,17 @@ log = logging.getLogger(__name__)
 from .base import BaseHandler
 
 import tornado.web
+import os
+
 
 class TownHandler(BaseHandler):
-    def get(self):
-        self.render("town.html", town=1)
-
     @tornado.web.authenticated
-    def post(self):
+    def get(self):
         town_id = self.get_argument('town_id')
-        town = self.application.srv.objects.get(town_id)
-
-        self.render("town.html", town=town)
+        log.info('town id is %s', town_id)
+        town = self.application.srv.objects.get(int(town_id))
+        if town:
+            svg_link = os.path.join(os.getcwd(), town.svg_link)
+            self.render("town.html", town=town, svg_link=svg_link)
+        else:
+            log.info('!!!!!!!!!!!!!!!!!!!!! town not FOUND id: %s', town_id)

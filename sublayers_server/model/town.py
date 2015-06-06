@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.units import Unit
-from sublayers_server.model.messages import InviteToTown, EnterToTown
+from sublayers_server.model.messages import InviteToTown, EnterToTown, ExitFromTown
 
 
 class RadioPoint(Observer):
@@ -68,6 +68,7 @@ class Town(Observer):
     def on_exit(self, agent, time):
         log.info('agent %s exit from town %s', agent, self)
         self.visitors.remove(agent)
+        ExitFromTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
         agent.api.update_agent_api(time=time, position=self.position(time))
 
     def can_come(self, agent):
