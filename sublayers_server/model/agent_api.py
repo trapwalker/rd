@@ -238,6 +238,7 @@ class AgentAPI(API):
 
     @public_method
     def fire_auto_enable(self, enable):
+        #log.debug('Car - %s, set auto fire - %s', self.car, enable)
         if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())

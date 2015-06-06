@@ -38,7 +38,7 @@ class SiteLoginHandler(BaseHandler):
             self.redirect("/")
             return
         msg = self.get_argument("msg", "")
-        self.render("site\login.html", msg=msg)
+        self.render("site/login.html", msg=msg)
 
 
 class SiteLogoutHandler(BaseHandler):
@@ -59,10 +59,11 @@ class StandardLoginHandler(BaseHandler):
 
     def _db_request(self, email, password=None):
         auth_db = self.application.auth_db
+        db_res = None
         if password is None:
-            db_res = auth_db.profiles.find({'auth': {'standard': {'email': email}}}, {'id': 1})
+            db_res = auth_db.profiles.find({'auth.standard.email': email})
         else:
-            db_res = auth_db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}}, {'id': 1})
+            db_res = auth_db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}})
         user_ids = []
         for db_rec in db_res:
             user_ids.append(db_rec)

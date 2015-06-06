@@ -15,7 +15,6 @@ class BotXMPPManager(sleekxmpp.ClientXMPP):
         self.add_event_handler("session_start", self.start)
 
     def start(self, event):
-        # print 'start BotXMPPManager'
         self.send_presence()
 
 
@@ -66,7 +65,6 @@ class XMPPManager(object):
             log.info('XMPPManager connected to {}'.format(server))
             self.bot.process(block=False)
 
-
     def register_new_jid(self, jid, password):
         rbot = RegisterBot(jid, password)
         rbot.register_plugin('xep_0030') # Service Discovery
@@ -79,7 +77,6 @@ class XMPPManager(object):
             return True
         else:
             return False
-
 
     def create_room(self, room):
         room_jid = room + '@conference.' + self.host_name
@@ -104,23 +101,17 @@ class XMPPManager(object):
         if not (room_jid in self.bot.plugin['xep_0045'].rooms):
             self.create_room(room_jid)
         nick = jid.split('@')[0]
-        # log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!%s', self.bot.plugin['xep_0045'].rooms[room_jid])
-        if nick in self.bot.plugin['xep_0045'].rooms[room_jid]:
-            log.debug('=================!!!!!!!!!!!!!!!!!!!!!!!!!!!Im still here')
-        else:
+        if nick not in self.bot.plugin['xep_0045'].rooms[room_jid]:
             self.bot.plugin['xep_0045'].invite(room_jid, jid)
-
 
     def kick_from_room(self, room_jid, jid):
         # проверка - находится ли jid в комнате
         nick = jid.split('@')[0]
-
         if nick:
             if not (room_jid in self.bot.plugin['xep_0045'].rooms):
                 self.create_room(room_jid)
             if nick in self.bot.plugin['xep_0045'].rooms[room_jid]:
                 self.bot.plugin['xep_0045'].setRole(room_jid, nick, 'none')
-            log.debug(nick in self.bot.plugin['xep_0045'].rooms[room_jid])
 
     def change_password(self, jid, new_pass):
         self.bot.plugin['xep_0077'].change_password(jid='srv@example.com', password=new_pass)
@@ -144,7 +135,6 @@ if __name__ == '__main__':
         print '2 off'
     '''
 
-
     #room = 'room15@conference.andrey-pc'
     #manager.create_room(room)
     #manager.kick_from_room(room, 'dima1')
@@ -167,11 +157,3 @@ if __name__ == '__main__':
         print True
     else:
         print False
-
-
-
-    # todo: test send_message
-
-
-
-
