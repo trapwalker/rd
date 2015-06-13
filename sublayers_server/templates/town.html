@@ -1,6 +1,9 @@
 
 <div>
     {% raw open(svg_link).read() %}
+
+    <div id="chatTownWrap" style="display: none"></div>
+
 </div>
 <script>
     {% for i in xrange(10) %}
@@ -51,8 +54,19 @@
         clientManager.sendExitFromTown({{ town.uid }})
     });
 
+    $("#btn_3_select").mouseup(function(event){
+        $('#chatTownWrap').css('display', 'block');
+        $('#layer1').css('display', 'none');
+        $('#layer2').css('display', 'none');
+    });
 
-    /*
+    $("#btn_2_select").mouseup(function(event){
+        $('#chatTownWrap').css('display', 'none');
+        $('#layer1').css('display', 'block');
+        $('#layer2').css('display', 'block');
+    });
+
+    /* // подсветка градиентных заливок
     $("#img_house1_off").mouseenter(function(){
         $("#img_house1_on").css("display", "block");
         $("#img_house1_off").css("display", "none");
@@ -74,4 +88,6 @@
         $("#path_h1").css("opacity", "0.2");
     });
     */
+
+
 </script>

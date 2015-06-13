@@ -422,21 +422,6 @@ class ChangeAltitude(Message):
         return d
 
 
-class InviteToTown(Message):
-    def __init__(self, town, invite, **kw):
-        super(InviteToTown, self).__init__(**kw)
-        self.town = town
-        self.invite = invite
-
-    def as_dict(self):
-        d = super(InviteToTown, self).as_dict()
-        d.update(
-            town=self.town.as_dict(time=self.time),
-            invite=self.invite,
-            )
-        return d
-
-
 class EnterToTown(Message):
     def __init__(self, town, **kw):
         super(EnterToTown, self).__init__(**kw)

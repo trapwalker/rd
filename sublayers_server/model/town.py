@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.units import Unit
-from sublayers_server.model.messages import InviteToTown, EnterToTown, ExitFromTown
+from sublayers_server.model.messages import EnterToTown, ExitFromTown
 from sublayers_server.model.events import ActivateTownChats
 
 
@@ -41,18 +41,6 @@ class Town(Observer):
         self.svg_link = svg_link
         self.visitors = []
         self.radio_points = []
-
-    def on_contact_in(self, time, obj):
-        super(Town, self).on_contact_in(time=time, obj=obj)
-        if isinstance(obj, Unit) and (obj.owner is not None):
-            # отправить сообщение, что данный агент может войти в город
-            InviteToTown(agent=obj.owner, town=self, invite=True, time=time).post()
-
-    def on_contact_out(self, time, obj):
-        super(Town, self).on_contact_out(time=time, obj=obj)
-        if isinstance(obj, Unit) and (obj.owner is not None):
-            # отправить сообщение, что данный агент больше не может войти в город
-            InviteToTown(agent=obj.owner, town=self, invite=False, time=time).post()
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
@@ -90,7 +78,7 @@ class Town(Observer):
         self.radio_points.append(chat)
 
     def del_from_chat(self, chat, time):
-        super(Town, self).remove_from_chat(chat=chat, time=time)
+        super(Town, self).del_from_chat(chat=chat, time=time)
         # info: не нужно делать ездящие города, иначе могут быть проблемы
         self.radio_points.remove(chat)
 

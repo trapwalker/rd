@@ -160,8 +160,7 @@ function onMouseOutForLabels(){
 
 
 function onClickTownMarker() {
-    if (user.active_towns.indexOf(this.town_id) >= 0)
-        clientManager.sendEnterToTown(this.town_id)
+    clientManager.sendEnterToTown(this.town_id)
 }
 
 function onClickUserCarMarker(){

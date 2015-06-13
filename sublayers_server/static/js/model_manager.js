@@ -624,20 +624,6 @@ var ClientManager = (function () {
             console.log('Попытка открыть не уникальное');
     };
 
-    ClientManager.prototype.InviteToTown = function (event) {
-        //console.log('ClientManager.prototype.InviteToTown', event, user.active_towns);
-        var town_uid = event.town.uid;
-        if (event.invite) {
-            // разрешить входить в этот город
-            if (user.active_towns.indexOf(town_uid) == -1)
-                user.active_towns.push(town_uid);
-        }
-        else
-            // запретить входить в этот город
-            user.active_towns.splice(user.active_towns.indexOf(town_uid), 1);
-        console.log(user.active_towns);
-    };
-
     ClientManager.prototype.EnterToTown = function (event) {
         //console.log('ClientManager.prototype.EnterToTown', event);
         var town_uid = event.town.uid;
@@ -649,14 +635,17 @@ var ClientManager = (function () {
             success: function(data){
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
+                chat.showChatInTown();
             }
         });
     };
 
     ClientManager.prototype.ExitFromTown = function (event) {
         //console.log('ClientManager.prototype.ExitFromTown', event);
+        chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
+
     };
 
     // Исходящие сообщения

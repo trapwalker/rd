@@ -351,7 +351,7 @@ class Bot(Mobile):
             self.owner.add_xmpp_room(room_jid=chat.room_jid)
 
     def del_from_chat(self, chat, time):
-        super(Bot, self).remove_from_chat(chat=chat, time=time)
+        super(Bot, self).del_from_chat(chat=chat, time=time)
         if self.owner:
             self.owner.del_xmpp_room(room_jid=chat.room_jid)
 

@@ -538,7 +538,6 @@ var User = (function () {
         this.party = null;
         this.login = null;
         this.userCar = null;
-        this.active_towns = [];
     }
 
 
