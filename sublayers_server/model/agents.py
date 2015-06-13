@@ -147,13 +147,14 @@ class Agent(Object):
                 # сообщить пати, что этот обсёрвер теперь добавлен на карту
                 self.party.add_observer_to_party(observer=car, time=time)
 
-    def drop_car(self, car, time):
+    def drop_car(self, car, time, drop_owner=True):
         if car in self.cars:
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь убран с карты
                 self.party.drop_observer_from_party(observer=car, time=time)
             self.drop_observer(observer=car, time=time)
-            car.owner = None
+            if drop_owner:
+                car.owner = None
             self.cars.remove(car)
 
     def on_message(self, connection, message):

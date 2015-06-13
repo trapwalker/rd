@@ -202,12 +202,15 @@ class Unit(Observer):
 
         # дроп машинки из агента и пати (в которой находится агент)
         if self.owner:
-            self.owner.drop_car(car=self, time=event.time)
+            self.owner.drop_car(car=self, time=event.time, drop_owner=False)
 
         # обновляем статистику по живым юнитам
         self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
 
         super(Unit, self).on_before_delete(event=event)
+
+        # необходимо ради правильных out этой машинки.
+        self.owner = None
 
     def zone_changed(self, zone_effect, in_zone):
         #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
