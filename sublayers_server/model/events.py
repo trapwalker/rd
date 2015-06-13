@@ -306,3 +306,14 @@ class ExitFromTown(Event):
             town.on_exit(agent=self.agent, time=self.time)
         else:
             log.warning('agent %s try to exit from town %s, but town not find', self.agent, town)
+
+
+class ActivateTownChats(Event):
+    def __init__(self, agent, town, **kw):
+        super(ActivateTownChats, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.town = town
+
+    def on_perform(self):
+        super(ActivateTownChats, self).on_perform()
+        self.town.activate_chats(event=self)

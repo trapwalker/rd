@@ -160,6 +160,12 @@ class VisibleObject(PointObject):
         for d in BALANCE.default_modifiers:
             Parameter(owner=self, **d)
 
+    def add_to_chat(self, chat, time):
+        pass
+
+    def del_from_chat(self, chat, time):
+        pass
+
 
 class Observer(VisibleObject):
 

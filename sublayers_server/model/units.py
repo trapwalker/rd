@@ -345,6 +345,16 @@ class Bot(Mobile):
     def is_frag(self):
         return True
 
+    def add_to_chat(self, chat, time):
+        super(Bot, self).add_to_chat(chat=chat, time=time)
+        if self.owner:
+            self.owner.add_xmpp_room(room_jid=chat.room_jid)
+
+    def del_from_chat(self, chat, time):
+        super(Bot, self).remove_from_chat(chat=chat, time=time)
+        if self.owner:
+            self.owner.del_xmpp_room(room_jid=chat.room_jid)
+
 
 class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):
