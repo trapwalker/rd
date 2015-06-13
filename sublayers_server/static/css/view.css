@@ -185,6 +185,14 @@ input:focus {
 
 }
 
+#activeTownDiv {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: #0078A8;
+}
+
 .my-effect-icon {
     background-color: transparent;
     pointer-events: none;

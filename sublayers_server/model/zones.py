@@ -48,11 +48,14 @@ def init_zones_on_server(server):
         server.effects.get('EffectWoodObsRange'),
     ])
     read_ts_from_file(zone_name='Water', file_name='tilesets/ts_water', server=server, effects=[server.effects.get('EffectWaterCC')])
+
+    '''
     read_ts_from_file(zone_name='Road', file_name='tilesets/ts_road', server=server, effects=[
         server.effects.get('EffectRoadRCCWood'),
         server.effects.get('EffectRoadRCCWater'),
         server.effects.get('EffectRoadRCCDirt'),
         ])
+    '''
     #read_ts_from_file(zone_name='Altitude', file_name='tilesets/ts_altitude_15', server=server, effects=[], zone_cls=AltitudeZoneTileset)
 
     server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))

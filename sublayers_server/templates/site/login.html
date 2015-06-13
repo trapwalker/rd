@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="static/js/third_party/jquery.min.js"></script>
+    <link rel="stylesheet" href="static/css/module-login.css"/>
+</head>
+
+<body>
+    <div id="background">
+        <div id="login">
+            <div class="flip flipped">
+                <div class="form-signup">
+                    <h1>Регистрация</h1>
+                    <fieldset>
+                        <p class="login-msg"></p>
+                        <form action="/login/standard" method="post" autocomplete="on">
+                            <input type="email" name="email" placeholder="Email" required/>
+                            <input type="password" name="password" placeholder="Password" required/>
+                            <input type="text" name="username" placeholder="Имя пользователя" required/>
+                            <input type="hidden" name="action" value="1">
+                            <input type="submit" value="Зарегистрироваться"/>
+                            {% raw xsrf_form_html() %}
+                        </form>
+                        <p>Войти через:
+                            <button type="button" class="btn btn-primary btn-lg "
+                                    onClick="window.location.href='/login/google?action=1'">G+</button>
+                            <button type="button" class="btn btn-primary btn-lg "
+                                    onClick="window.location.href='/login/ok?action=1'">OK</button>
+                            <button type="button" class="btn btn-primary btn-lg "
+                                    onClick="window.location.href='/login/vk?action=1'">VK</button>
+                        </p>
+                        <a href="#" class="flipper">Войти.</a>
+                    </fieldset>
+                </div>
+                <div class="form-login">
+                    <h1>Авторизация</h1>
+                    <fieldset>
+                        <form action="/login/standard" method="post">
+                            <input type="email" name="email" placeholder="Email" required/>
+                            <input type="password" name="password" placeholder="Password" required/>
+                            <input type="hidden" name="action" value="2">
+                            <input type="submit" value="Войти"/>
+                            {% raw xsrf_form_html() %}
+                        </form>
+                        <p>Войти через:
+                            <button type="button" class="btn btn-primary btn-lg "
+                                    onClick="window.location.href='/login/google?action=2'">G+</button>
+                            <button type="button" class="btn btn-primary btn-lg "
+                                    onClick="window.location.href='/login/ok?action=2'">OK</button>
+                            <button type="button" class="btn btn-primary btn-lg "
+                                    onClick="window.location.href='/login/vk?action=2'">VK</button>
+                        </p>
+                        <p><a href="#" class="flipper">Регистрация.</a></p>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function () {
+        $('a.flipper').click(function(){
+            $('.flip').toggleClass('flipped');
+        });
+        if ('{{ msg }}' != '') alert('{{ msg }}');
+    });
+</script>
+
+</html>

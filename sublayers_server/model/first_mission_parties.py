@@ -49,7 +49,7 @@ class RandomCarList:
             )
         )
 
-    def get_random_car(self, agent, time, id=None):
+    def get_random_car(self, agent, time, position=None, id=None):
         import random
         id_car = -1
         if (id is not None) and (id < len(self.params_cars)):
@@ -60,6 +60,6 @@ class RandomCarList:
             time=time,
             server=agent.server,
             owner=agent,
-            position=self.base_point,
+            position=position if position is not None else self.base_point,
             **self.params_cars[id_car]
         )

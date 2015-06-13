@@ -36,6 +36,14 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getMObj = function (uid) {
+        //console.log("ClientManager.prototype._getMObj");
+        var obj = visualManager.getModelObject(uid);
+        if (obj)
+            console.warn('Contact: Такой объект уже есть на клиенте!');
+        return obj;
+    };
+
     ClientManager.prototype._getHPState = function (data) {
         if (data)
             return new HPState(
@@ -149,10 +157,72 @@ var ClientManager = (function () {
 
     };
 
+    ClientManager.prototype._contactBot = function (event) {
+        //console.log('ClientManager.prototype._contactBot');
+        if (event.is_first) { // только если первый раз добавляется машинка
+            var state = this._getState(event.object.state);
+            var hp_state = this._getHPState(event.object.hp_state);
+            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
+            var uid = event.object.uid;
+            var aOwner = this._getOwner(event.object.owner);
+            var radius_visible = event.object.r;
+            var main_agent_login = event.object.main_agent_login;
+
+            // Проверка: нет ли уже такой машинки.
+            var car = this._getMObj(uid);
+            if (car) return;
+            if (car == user.userCar) {
+                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
+                return;
+            }
+
+            // Создание новой машинки
+            car = new MapCar(uid, state, hp_state, fuel_state);
+            car.role = event.object.role;
+            car.cls = event.object.cls;
+            car.main_agent_login = main_agent_login;
+
+            if (aOwner)
+                aOwner.bindCar(car);
+
+            // Создание/инициализация виджетов
+            new WCarMarker(car);                 // виджет маркера
+            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+        }
+    };
+
+    ClientManager.prototype._contactStaticObject = function (event) {
+        //console.log('ClientManager.prototype._contactRadioPoint', event);
+        if (event.is_first) { // только если первый раз добавляется машинка
+            var uid = event.object.uid;
+            var radius_visible = event.object.r;
+            var obj_marker;
+
+            // Проверка: нет ли уже такого объекта.
+            var obj = this._getMObj(uid);
+            if (obj) return;
+
+            // Создание объекта
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y));
+            obj.cls = event.object.cls;
+
+            // Создание/инициализация виджетов
+            obj_marker = new WCarMarker(obj); // виджет маркера
+            if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+
+            // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
+            if (obj.cls == 'Town')
+                obj_marker.updateLabel(event.object.town_name);
+            if (obj.cls == 'RadioPoint')
+                obj_marker.updateLabel('Radio Point');
+
+        }
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.Init = function (event) {
-        console.log('ClientManager.prototype.Init', event);
+        //console.log('ClientManager.prototype.Init', event);
         var servtime = event.time;
         var v_forward = event.cars[0].v_forward;
         var v_backward = event.cars[0].v_backward;
@@ -172,7 +242,7 @@ var ClientManager = (function () {
             user.ID = event.agent.uid;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-                chat._getChatByName('party').partyButtons.create.text('Отряд');
+                chat.page_party.buttons.create.text('Отряд');
             }
         }
 
@@ -221,6 +291,18 @@ var ClientManager = (function () {
 
         // Установка своих линий
         //user.userCar.debugLines = [];
+    };
+
+    ClientManager.prototype.InitXMPPClient = function (event) {
+        //console.log('ClientManager.prototype.InitXMPPClient', event);
+        if (! j_connector) {
+            j_connector = new JabberConnector({
+                jid: event.jid + '/sublayers',
+                password: event.password,
+                adress_server: 'http://localhost:5280/http-bind'
+            });
+            j_connector.connect();
+        }
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -287,43 +369,23 @@ var ClientManager = (function () {
 
     ClientManager.prototype.See = function (event) {
         //console.log('ClientManager.prototype.See', event);
-
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
             return;
         }
-        if (event.is_first) { // только если первый раз добавляется машинка
-            var state = this._getState(event.object.state);
-            var hp_state = this._getHPState(event.object.hp_state);
-            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
-            var uid = event.object.uid;
-            var aOwner = this._getOwner(event.object.owner);
-            var radius_visible = event.object.r;
-            var main_agent_login = event.object.main_agent_login;
 
-            // Проверка: нет ли уже такой машинки.
-            var car = visualManager.getModelObject(uid);
-            if (car) {
-                console.warn('Contact: Такая машинка уже есть на клиенте!');
-                return;
-            }
-            if (car == user.userCar) {
-                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
-                return;
-            }
-
-            // Создание новой машинки
-            car = new MapCar(uid, state, hp_state, fuel_state);
-            car.role = event.object.role;
-            car.cls = event.object.cls;
-            car.main_agent_login = main_agent_login;
-
-            if (aOwner)
-                aOwner.bindCar(car);
-
-            // Создание/инициализация виджетов
-            new WCarMarker(car);                 // виджет маркера
-            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+        switch (event.object.cls) {
+            case 'Bot':
+            case 'Rocket':
+            case 'ScoutDroid':
+            case 'StationaryTurret':
+            case 'SlowMine':
+                this._contactBot(event);
+                break;
+            case 'Town':
+            case 'RadioPoint':
+                this._contactStaticObject(event);
+                break;
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -367,8 +429,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Chat = function (event){
         //console.log('ClientManager.prototype.Chat', event);
-        //chat.addMessage(-1, '', getOwner(event.author), event.text);
-        //chat.addMessage(-1, '', event.author, event.text);
+        //chat.addMessageByID(-1, getOwner(event.author), event.text);
+        //chat.addMessageByID(-1, event.author, event.text);
     };
 
     ClientManager.prototype.Message = function (event){
@@ -472,6 +534,7 @@ var ClientManager = (function () {
         }
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
+        chat.party_info_message(event);
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
@@ -481,7 +544,8 @@ var ClientManager = (function () {
         user.party = new OwnerParty(event.party.id, event.party.name);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Отряд');
+        chat.page_party.buttons.create.text('Отряд');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
 
         if (windowTemplateManager.isOpen('create_party'))
@@ -492,7 +556,7 @@ var ClientManager = (function () {
             windowTemplateManager.closeUniqueWindow('party_info');
 
         windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
-
+        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -500,12 +564,15 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Создать');
+        chat.page_party.buttons.create.text('Создать');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
+
+        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
@@ -513,7 +580,8 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Создать');
+        chat.page_party.buttons.create.text('Создать');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
@@ -523,22 +591,25 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PartyInviteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteMessage', event);
+        chat.party_info_message(event);
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyInviteDeleteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteDeleteMessage', event);
+        chat.party_info_message(event);
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyErrorMessage = function (event) {
         console.log('ClientManager.prototype.PartyErrorMessage', event);
+        chat.party_info_message(event);
     };
 
     ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
-        console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
+        //console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
         if (event.unique)
             windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
         else
@@ -546,11 +617,35 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
-        console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
+        //console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
         if (event.unique)
             windowTemplateManager.closeUniqueWindow(event.win_name);
         else
             console.log('Попытка открыть не уникальное');
+    };
+
+    ClientManager.prototype.EnterToTown = function (event) {
+        //console.log('ClientManager.prototype.EnterToTown', event);
+        var town_uid = event.town.uid;
+        // POST запрос на получение города и вывод его на экран.
+        // К этому моменту машинка уже удаляется или вот-вот удалится
+        $.ajax({
+            url: "http://" + location.host + '/town',
+            data:  { town_id: event.town.uid },
+            success: function(data){
+                $('#activeTownDiv').append(data);
+                $('#activeTownDiv').css('display', 'block');
+                chat.showChatInTown();
+            }
+        });
+    };
+
+    ClientManager.prototype.ExitFromTown = function (event) {
+        //console.log('ClientManager.prototype.ExitFromTown', event);
+        chat.showChatInMap();
+        $('#activeTownDiv').empty();
+        $('#activeTownDiv').css('display', 'none');
+
     };
 
     // Исходящие сообщения
@@ -776,6 +871,31 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 invite_id: invite_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendEnterToTown = function (town_id) {
+        //console.log('ClientManager.prototype.sendEnterToTown');
+        var mes = {
+            call: "enter_to_town",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_id: town_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendExitFromTown = function (town_id) {
+        var mes = {
+            call: "exit_from_town",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_id: town_id
             }
         };
         rpcCallList.add(mes);
