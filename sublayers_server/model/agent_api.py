@@ -126,7 +126,8 @@ class AgentAPI(API):
                             time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time, position=None):
-        messages.InitXMPPClient(agent=self.agent, time=time).post()
+        if self.agent.server.app.xmpp_manager.xmpp_is_connect:
+            messages.InitXMPPClient(agent=self.agent, time=time).post()
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:

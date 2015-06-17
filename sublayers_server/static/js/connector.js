@@ -33,7 +33,8 @@ var JabberConnector = (function(_super){
         this.options = {
             jid: '',
             password: '',
-            adress_server: 'localhost',
+            adress_server: '',
+            conference_suffixes: '',
             messenger: null  // объект чата, в который будут кидаться сообщения
         };
         if (options) setOptions(options, this.options);
@@ -209,7 +210,8 @@ var JabberConnector = (function(_super){
 
     JabberConnector.prototype.encodeMessage = function(msg){
         //console.log('JabberConnector.prototype.encodeMessage');
-        msg.to = msg.to + '@conference.example.com';
+        // todo: обработать здесь правильно. иначе не будут работать приваты, а то сейчас все сообщения = групповые
+        msg.to = msg.to + this.options.conference_suffixes;
         var type = (msg.to.indexOf('conference') > 0) ? 'groupchat' : 'chat';
         return $msg({to: msg.to, from: this.connection.jid, type: type}).c('body').t(msg.body);
     };

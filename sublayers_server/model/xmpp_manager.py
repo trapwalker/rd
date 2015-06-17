@@ -66,9 +66,9 @@ class XMPPManager(object):
     def connect(self):
         try:
             if self.bot.connect(self.server, reattempt=False):
-                log.info('XMPPManager connected to {}'.format(server))
-                self.bot.process(block=False)
+                log.info('XMPPManager connected to {}'.format(self.server))
                 self.xmpp_is_connect = True
+                self.bot.process(block=False)
                 return True
         except:
             return False
@@ -77,6 +77,7 @@ class XMPPManager(object):
 
     def register_new_jid(self, jid, password):
         if not self.xmpp_is_connect:
+            print 'not connect'
             return False
         rbot = RegisterBot(jid, password)
         rbot.register_plugin('xep_0030') # Service Discovery
