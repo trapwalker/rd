@@ -83,6 +83,8 @@ class InitXMPPClient(Message):
         d.update(
             jid=self.agent.xmpp.get('jid'),
             password=self.agent.xmpp.get('password'),
+            adress=self.agent.server.app.xmpp_settings['client_adress'],
+            conference_suffixes=self.agent.server.app.xmpp_settings['conference_suffixes'],
         )
         return d
 

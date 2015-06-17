@@ -50,6 +50,7 @@ class XMPPManager(object):
         # сохранение входных параметров
         self.server = server
         self.host_name = host_name
+        self.xmpp_is_connect = False
 
         self.bot = BotXMPPManager(jid, password)
         # регистрация плагинов для XMPP
@@ -61,11 +62,23 @@ class XMPPManager(object):
         self.bot.register_plugin('xep_0077') # In-band Registration
         self.bot.register_plugin('xep_0199') # XMPP Ping
 
-        if self.bot.connect(self.server):
-            log.info('XMPPManager connected to {}'.format(server))
-            self.bot.process(block=False)
+
+    def connect(self):
+        try:
+            if self.bot.connect(self.server, reattempt=False):
+                log.info('XMPPManager connected to {}'.format(self.server))
+                self.xmpp_is_connect = True
+                self.bot.process(block=False)
+                return True
+        except:
+            return False
+        finally:
+            return False
 
     def register_new_jid(self, jid, password):
+        if not self.xmpp_is_connect:
+            print 'not connect'
+            return False
         rbot = RegisterBot(jid, password)
         rbot.register_plugin('xep_0030') # Service Discovery
         rbot.register_plugin('xep_0004') # Data forms
@@ -79,6 +92,8 @@ class XMPPManager(object):
             return False
 
     def create_room(self, room):
+        if not self.xmpp_is_connect:
+            return False
         room_jid = room + '@conference.' + self.host_name
         self.bot.plugin['xep_0045'].joinMUC(room_jid,
                                         self.bot.jid,
@@ -98,6 +113,8 @@ class XMPPManager(object):
                           mtype='groupchat')
 
     def invite_to_room(self, room_jid, jid):
+        if not self.xmpp_is_connect:
+            return False
         if not (room_jid in self.bot.plugin['xep_0045'].rooms):
             self.create_room(room_jid)
         nick = jid.split('@')[0]
@@ -105,6 +122,8 @@ class XMPPManager(object):
             self.bot.plugin['xep_0045'].invite(room_jid, jid)
 
     def kick_from_room(self, room_jid, jid):
+        if not self.xmpp_is_connect:
+            return False
         # проверка - находится ли jid в комнате
         nick = jid.split('@')[0]
         if nick:

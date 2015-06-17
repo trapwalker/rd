@@ -294,12 +294,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InitXMPPClient = function (event) {
-        //console.log('ClientManager.prototype.InitXMPPClient', event);
+        console.log('ClientManager.prototype.InitXMPPClient', event);
         if (! j_connector) {
             j_connector = new JabberConnector({
                 jid: event.jid + '/sublayers',
                 password: event.password,
-                adress_server: 'http://localhost:5280/http-bind'
+                adress_server: event.adress,
+                conference_suffixes: event.conference_suffixes
             });
             j_connector.connect();
         }

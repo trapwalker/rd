@@ -51,6 +51,24 @@ class Application(tornado.web.Application):
         self.xmpp_manager = None
         self.auth_db = None
 
+        self.xmpp_settings = dict(
+            # for sublayers.net xmpp server
+            jid='srv@sublayers.net',
+            password='1',
+            server=('sublayers.net', 5222),
+            host_name='sublayers.net',
+            client_adress='http://sublayers.net:5280/http-bind',
+            conference_suffixes='@conference.sublayers.net',
+
+            # for localhost xmpp server
+            #jid='srv@sublayers.net',
+            #password='1',
+            #server=('localhost', 5222),
+            #host_name='localhost',
+            #client_adress='http://localhost:5280/http-bind',
+            #conference_suffixes='@conference.example.com',
+        )
+
         try:
             self.db_connection = Connection()
         except:
@@ -59,7 +77,15 @@ class Application(tornado.web.Application):
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db
             try:
-                self.xmpp_manager = XMPPManager(jid='srv@example.com', password='1', server=('localhost', 5222))
+                self.xmpp_manager = XMPPManager(
+                    jid=self.xmpp_settings['jid'],
+                    password=self.xmpp_settings['password'],
+                    server=self.xmpp_settings['server'],
+                    host_name=self.xmpp_settings['host_name']
+                )
+                if not self.xmpp_manager.connect():
+                    log.warn('XMPP not available')
+                    # self.xmpp_manager = None
             except:
                 log.warn('XMPP not available')
         else:
