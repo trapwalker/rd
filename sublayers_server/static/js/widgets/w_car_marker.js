@@ -33,8 +33,13 @@ var WCarMarker = (function (_super) {
 
 
 
-        //if (car == user.userCar)
-        marker.on('click', onClickUserCarMarker);
+        if (car.cls == 'Town') {
+            marker.on('click', onClickTownMarker);
+            marker.town_id = car.ID;
+        }
+        else
+            marker.on('click', onClickUserCarMarker);
+
         marker.on('contextmenu', function(){alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)});
     };
 
@@ -94,6 +99,10 @@ var WCarMarker = (function (_super) {
             icon_id = 7;
         }
 
+        if(car.cls == 'Town') {
+            icon_id = 32;
+        }
+
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
     };
 
@@ -149,6 +158,10 @@ function onMouseOutForLabels(){
     this.getLabel().setOpacity(0.4);
 }
 
+
+function onClickTownMarker() {
+    clientManager.sendEnterToTown(this.town_id)
+}
 
 function onClickUserCarMarker(){
     //alert('click to my marker');

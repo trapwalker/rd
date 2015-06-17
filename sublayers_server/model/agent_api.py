@@ -15,18 +15,19 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import Event, EnterToTown, ExitFromTown
 from sublayers_server.model.units import Unit
 
 
 class UpdateAgentAPIEvent(Event):
-    def __init__(self, api, **kw):
+    def __init__(self, api, position, **kw):
         super(UpdateAgentAPIEvent, self).__init__(server=api.agent.server, **kw)
         self.api = api
+        self.position = position
 
     def on_perform(self):
         super(UpdateAgentAPIEvent, self).on_perform()
-        self.api.on_update_agent_api(time=self.time)
+        self.api.on_update_agent_api(position=self.position, time=self.time)
 
 
 class OpenTemplateWindowMessage(messages.Message):
@@ -120,15 +121,17 @@ class AgentAPI(API):
             if isinstance(vo, Unit) and (vo.hp_state is not None):
                 vo.send_auto_fire_messages(agent=self.agent, action=True)
 
-    def update_agent_api(self):
-        UpdateAgentAPIEvent(api=self, time=self.agent.server.get_time()).post()
+    def update_agent_api(self, time=None, position=None):
+        UpdateAgentAPIEvent(api=self, position=position,
+                            time=time if time is not None else self.agent.server.get_time()).post()
 
-    def on_update_agent_api(self, time):
-        messages.InitXMPPClient(agent=self.agent, time=time).post()
+    def on_update_agent_api(self, time, position=None):
+        if self.agent.server.app.xmpp_manager.xmpp_is_connect:
+            messages.InitXMPPClient(agent=self.agent, time=time).post()
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
-            self.make_car(time=time)
+            self.make_car(time=time, position=position)
         assert self.car.hp(time=time) > 0, 'Car HP <= 0'
 
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
@@ -141,7 +144,7 @@ class AgentAPI(API):
         self.send_init_package(time=time)
 
     def make_car(self, time, position=None, position_sigma=Point(100, 100)):
-        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent, time=time)
+        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent, time=time, position=position)
         self.agent.append_car(car=self.car, time=time)
 
     @public_method
@@ -238,6 +241,7 @@ class AgentAPI(API):
 
     @public_method
     def fire_auto_enable(self, enable):
+        #log.debug('Car - %s, set auto fire - %s', self.car, enable)
         if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())
@@ -342,5 +346,15 @@ class AgentAPI(API):
 
     @public_method
     def get_my_xmpp_room_invite(self):
-        log.info('agent get xmpp invites')
+        # log.info('agent get xmpp invites')
         self.agent.reinvite_to_xmpp_rooms()
+
+    @public_method
+    def enter_to_town(self, town_id):
+        log.info('agent %s want to enter in town_id is %s', self.agent, town_id)
+        EnterToTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def exit_from_town(self, town_id):
+        log.info('agent %s want exit from town_id is %s', self.agent, town_id)
+        ExitFromTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()

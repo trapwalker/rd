@@ -274,3 +274,46 @@ class BangEvent(Event):
                 position=self.center,
                 agent=agent,
             ).post()
+
+
+class EnterToTown(Event):
+    def __init__(self, agent, town_id, **kw):
+        server = agent.server
+        super(EnterToTown, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.town_id = town_id
+
+    def on_perform(self):
+        super(EnterToTown, self).on_perform()
+        town = self.server.objects.get(self.town_id)
+        if town and town.can_come(agent=self.agent):
+            town.on_enter(agent=self.agent, time=self.time)
+        else:
+            log.warning('agent %s try to coming in town %s, but access denied', self.agent, town)
+
+
+class ExitFromTown(Event):
+    def __init__(self, agent, town_id, **kw):
+        server = agent.server
+        super(ExitFromTown, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.town_id = town_id
+
+    def on_perform(self):
+        super(ExitFromTown, self).on_perform()
+        town = self.server.objects.get(self.town_id)
+        if town:
+            town.on_exit(agent=self.agent, time=self.time)
+        else:
+            log.warning('agent %s try to exit from town %s, but town not find', self.agent, town)
+
+
+class ActivateTownChats(Event):
+    def __init__(self, agent, town, **kw):
+        super(ActivateTownChats, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.town = town
+
+    def on_perform(self):
+        super(ActivateTownChats, self).on_perform()
+        self.town.activate_chats(event=self)

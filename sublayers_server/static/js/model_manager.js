@@ -191,11 +191,12 @@ var ClientManager = (function () {
         }
     };
 
-    ClientManager.prototype._contactRadioPoint = function (event) {
-        //console.log('ClientManager.prototype._contactRadioPoint');
+    ClientManager.prototype._contactStaticObject = function (event) {
+        //console.log('ClientManager.prototype._contactRadioPoint', event);
         if (event.is_first) { // только если первый раз добавляется машинка
             var uid = event.object.uid;
             var radius_visible = event.object.r;
+            var obj_marker;
 
             // Проверка: нет ли уже такого объекта.
             var obj = this._getMObj(uid);
@@ -206,8 +207,15 @@ var ClientManager = (function () {
             obj.cls = event.object.cls;
 
             // Создание/инициализация виджетов
-            new WCarMarker(obj); // виджет маркера
+            obj_marker = new WCarMarker(obj); // виджет маркера
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+
+            // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
+            if (obj.cls == 'Town')
+                obj_marker.updateLabel(event.object.town_name);
+            if (obj.cls == 'RadioPoint')
+                obj_marker.updateLabel('Radio Point');
+
         }
     };
 
@@ -287,12 +295,15 @@ var ClientManager = (function () {
 
     ClientManager.prototype.InitXMPPClient = function (event) {
         console.log('ClientManager.prototype.InitXMPPClient', event);
-        j_connector = new JabberConnector({
-            jid: event.jid + '/sublayers',
-            password: event.password,
-            adress_server: 'http://sublayers.net:5280/http-bind'
-        });
-        j_connector.connect();
+        if (! j_connector) {
+            j_connector = new JabberConnector({
+                jid: event.jid + '/sublayers',
+                password: event.password,
+                adress_server: event.adress,
+                conference_suffixes: event.conference_suffixes
+            });
+            j_connector.connect();
+        }
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -359,7 +370,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.See = function (event) {
         //console.log('ClientManager.prototype.See', event);
-
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
             return;
@@ -373,8 +383,9 @@ var ClientManager = (function () {
             case 'SlowMine':
                 this._contactBot(event);
                 break;
+            case 'Town':
             case 'RadioPoint':
-                this._contactRadioPoint(event);
+                this._contactStaticObject(event);
                 break;
         }
 
@@ -614,6 +625,30 @@ var ClientManager = (function () {
             console.log('Попытка открыть не уникальное');
     };
 
+    ClientManager.prototype.EnterToTown = function (event) {
+        //console.log('ClientManager.prototype.EnterToTown', event);
+        var town_uid = event.town.uid;
+        // POST запрос на получение города и вывод его на экран.
+        // К этому моменту машинка уже удаляется или вот-вот удалится
+        $.ajax({
+            url: "http://" + location.host + '/town',
+            data:  { town_id: event.town.uid },
+            success: function(data){
+                $('#activeTownDiv').append(data);
+                $('#activeTownDiv').css('display', 'block');
+                chat.showChatInTown();
+            }
+        });
+    };
+
+    ClientManager.prototype.ExitFromTown = function (event) {
+        //console.log('ClientManager.prototype.ExitFromTown', event);
+        chat.showChatInMap();
+        $('#activeTownDiv').empty();
+        $('#activeTownDiv').css('display', 'none');
+
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
@@ -837,6 +872,31 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 invite_id: invite_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendEnterToTown = function (town_id) {
+        //console.log('ClientManager.prototype.sendEnterToTown');
+        var mes = {
+            call: "enter_to_town",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_id: town_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendExitFromTown = function (town_id) {
+        var mes = {
+            call: "exit_from_town",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_id: town_id
             }
         };
         rpcCallList.add(mes);

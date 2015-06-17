@@ -1,146 +1,93 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <script src="static/js/third_party/jquery.min.js"></script>
-    <script src="static/js/third_party/jquery-ui.min.js"></script>
-    <title></title>
-</head>
-<body>
-    <div>
-        {% include ../static/img/towns/town_1/town.svg %}
-    </div>
-    <script>
-        $("#img_house1_off").mouseenter(function(){
-            $("#img_house1_on").css("display", "block");
-            $("#img_house1_off").css("display", "none");
-            $("#path_h1").css("opacity", "0.4");
-        });
-        $("#img_house1_on").mouseleave(function(){
-            $("#img_house1_off").css("display", "block");
-            $("#img_house1_on").css("display", "none");
-            $("#path_h1").css("opacity", "0.2");
-        });
-        $("#path_h1").mouseenter(function(){
-            $("#img_house1_on").css("display", "block");
-            $("#img_house1_off").css("display", "none");
-            $("#path_h1").css("opacity", "0.4");
-        });
-        $("#path_h1").mouseleave(function(){
-            $("#img_house1_off").css("display", "block");
-            $("#img_house1_on").css("display", "none");
-            $("#path_h1").css("opacity", "0.2");
-        });
+
+<div>
+    {% raw open(svg_link).read() %}
+
+    <div id="chatTownWrap" style="display: none"></div>
+
+</div>
+<script>
+    {% for i in xrange(10) %}
+    $("#img_house{{i}}_off").mouseenter(function(){
+        $("#img_house{{i}}_on").css("display", "block");
+        $("#img_house{{i}}_off").css("display", "none");
+    });
+    $("#img_house{{i}}_on").mouseleave(function(){
+        $("#img_house{{i}}_off").css("display", "block");
+        $("#img_house{{i}}_on").css("display", "none");
+    });
+    $("#img_house{{i}}_on").click(function(event){
+        console.log(event.target.id);
+    });
+    {% end %}
+
+    // Кнопки меню
+    {% for i in xrange(8) %}
+    $("#btn_{{i}}").mouseenter(function(){
+        $("#btn_{{i}}_over").css("display", "block");
+        $("#btn_{{i}}").css("display", "none");
+    });
+    $("#btn_{{i}}_over").mouseleave(function(){
+        $("#btn_{{i}}_over").css("display", "none");
+        $("#btn_{{i}}").css("display", "block");
+    });
+
+     $("#btn_{{i}}_select").mouseleave(function(){
+        $("#btn_{{i}}_over").css("display", "none");
+        $("#btn_{{i}}_select").css("display", "none");
+        $("#btn_{{i}}").css("display", "block");
+    });
+
+    $("#btn_{{i}}_over").mousedown(function(){
+        $("#btn_{{i}}_select").css("display", "block");
+        $("#btn_{{i}}_over").css("display", "none");
+        $("#btn_{{i}}").css("display", "block");
+    });
+    $("#btn_{{i}}_select").mouseup(function(event){
+        console.log(event.target.id);
+        $("#btn_{{i}}_select").css("display", "none");
+        $("#btn_{{i}}_over").css("display", "block");
+        $("#btn_{{i}}").css("display", "none");
+    });
+    {% end %}
+
+    $("#btn_4_select").mouseup(function(event){
+        clientManager.sendExitFromTown({{ town.uid }})
+    });
+
+    $("#btn_3_select").mouseup(function(event){
+        $('#chatTownWrap').css('display', 'block');
+        $('#layer1').css('display', 'none');
+        $('#layer2').css('display', 'none');
+    });
+
+    $("#btn_2_select").mouseup(function(event){
+        $('#chatTownWrap').css('display', 'none');
+        $('#layer1').css('display', 'block');
+        $('#layer2').css('display', 'block');
+    });
+
+    /* // подсветка градиентных заливок
+    $("#img_house1_off").mouseenter(function(){
+        $("#img_house1_on").css("display", "block");
+        $("#img_house1_off").css("display", "none");
+        $("#path_h1").css("opacity", "0.4");
+    });
+    $("#img_house1_on").mouseleave(function(){
+        $("#img_house1_off").css("display", "block");
+        $("#img_house1_on").css("display", "none");
+        $("#path_h1").css("opacity", "0.2");
+    });
+    $("#path_h1").mouseenter(function(){
+        $("#img_house1_on").css("display", "block");
+        $("#img_house1_off").css("display", "none");
+        $("#path_h1").css("opacity", "0.4");
+    });
+    $("#path_h1").mouseleave(function(){
+        $("#img_house1_off").css("display", "block");
+        $("#img_house1_on").css("display", "none");
+        $("#path_h1").css("opacity", "0.2");
+    });
+    */
 
 
-        $("#img_house2_off").mouseenter(function(){
-            $("#img_house2_on").css("display", "block");
-            $("#img_house2_off").css("display", "none");
-            $("#path_h2").css("opacity", "0.4");
-        });
-        $("#img_house2_on").mouseleave(function(){
-            $("#img_house2_off").css("display", "block");
-            $("#img_house2_on").css("display", "none");
-            $("#path_h2").css("opacity", "0.2");
-        });
-        $("#path_h2").mouseenter(function(){
-            $("#img_house2_on").css("display", "block");
-            $("#img_house2_off").css("display", "none");
-            $("#path_h2").css("opacity", "0.4");
-        });
-        $("#path_h2").mouseleave(function(){
-            $("#img_house2_off").css("display", "block");
-            $("#img_house2_on").css("display", "none");
-            $("#path_h2").css("opacity", "0.2");
-        });
-
-
-        $("#img_house3_off").mouseenter(function(){
-            $("#img_house3_on").css("display", "block");
-            $("#img_house3_off").css("display", "none");
-            $("#path_h3").css("opacity", "0.4");
-        });
-        $("#img_house3_on").mouseleave(function(){
-            $("#img_house3_off").css("display", "block");
-            $("#img_house3_on").css("display", "none");
-            $("#path_h3").css("opacity", "0.2");
-        });
-        $("#path_h3").mouseenter(function(){
-            $("#img_house3_on").css("display", "block");
-            $("#img_house3_off").css("display", "none");
-            $("#path_h3").css("opacity", "0.4");
-        });
-        $("#path_h3").mouseleave(function(){
-            $("#img_house3_off").css("display", "block");
-            $("#img_house3_on").css("display", "none");
-            $("#path_h3").css("opacity", "0.2");
-        });
-
-
-        $("#img_house4_off").mouseenter(function(){
-            $("#img_house4_on").css("display", "block");
-            $("#img_house4_off").css("display", "none");
-            $("#path_h4").css("opacity", "0.4");
-        });
-        $("#img_house4_on").mouseleave(function(){
-            $("#img_house4_off").css("display", "block");
-            $("#img_house4_on").css("display", "none");
-            $("#path_h4").css("opacity", "0.2");
-        });
-        $("#path_h4").mouseenter(function(){
-            $("#img_house4_on").css("display", "block");
-            $("#img_house4_off").css("display", "none");
-            $("#path_h4").css("opacity", "0.4");
-        });
-        $("#path_h4").mouseleave(function(){
-            $("#img_house4_off").css("display", "block");
-            $("#img_house4_on").css("display", "none");
-            $("#path_h4").css("opacity", "0.2");
-        });
-
-
-        $("#img_house5_off").mouseenter(function(){
-            $("#img_house5_on").css("display", "block");
-            $("#img_house5_off").css("display", "none");
-            $("#path_h5").css("opacity", "0.4");
-        });
-        $("#img_house5_on").mouseleave(function(){
-            $("#img_house5_off").css("display", "block");
-            $("#img_house5_on").css("display", "none");
-            $("#path_h5").css("opacity", "0.2");
-        });
-        $("#path_h5").mouseenter(function(){
-            $("#img_house5_on").css("display", "block");
-            $("#img_house5_off").css("display", "none");
-            $("#path_h5").css("opacity", "0.4");
-        });
-        $("#path_h5").mouseleave(function(){
-            $("#img_house5_off").css("display", "block");
-            $("#img_house5_on").css("display", "none");
-            $("#path_h5").css("opacity", "0.2");
-        });
-
-
-        $("#img_house6_off").mouseenter(function(){
-            $("#img_house6_on").css("display", "block");
-            $("#img_house6_off").css("display", "none");
-            $("#path_h6").css("opacity", "0.4");
-        });
-        $("#img_house6_on").mouseleave(function(){
-            $("#img_house6_off").css("display", "block");
-            $("#img_house6_on").css("display", "none");
-            $("#path_h6").css("opacity", "0.2");
-        });
-        $("#path_h6").mouseenter(function(){
-            $("#img_house6_on").css("display", "block");
-            $("#img_house6_off").css("display", "none");
-            $("#path_h6").css("opacity", "0.4");
-        });
-        $("#path_h6").mouseleave(function(){
-            $("#img_house6_off").css("display", "block");
-            $("#img_house6_on").css("display", "none");
-            $("#path_h6").css("opacity", "0.2");
-        });
-    </script>
-</body>
-</html>
+</script>

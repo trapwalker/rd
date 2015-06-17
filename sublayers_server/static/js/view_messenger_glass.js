@@ -299,6 +299,7 @@ var ViewMessengerGlass = (function () {
 
     // Кнопки страниц
     ViewMessengerGlass.prototype.onClickPageButton = function (event) {
+        //console.log('ViewMessengerGlass.prototype.onClickPageButton', event);
         event.data.self.setActivePage(event.data.page);
     };
 
@@ -340,6 +341,7 @@ var ViewMessengerGlass = (function () {
 
     // Кнопки чатов
     ViewMessengerGlass.prototype.onClickChatButton = function (event) {
+        //console.log('ViewMessengerGlass.prototype.onClickChatButton', event);
         event.data.self.setActiveChat(event.data.chat);
     };
 
@@ -830,6 +832,17 @@ var ViewMessengerGlass = (function () {
             var dmessage = chat.mesList.shift();
             dmessage.mesDiv.remove();
         }
+    };
+
+
+    // ======== Отображение чата в других местах
+
+    ViewMessengerGlass.prototype.showChatInTown = function(){
+        $('#chatTownWrap').append(this.parent);
+    };
+
+    ViewMessengerGlass.prototype.showChatInMap = function(){
+        this.parentGlass.append(this.parent);
     };
 
     return ViewMessengerGlass;

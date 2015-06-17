@@ -13,7 +13,7 @@ from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.town import RadioPoint
+from sublayers_server.model.town import RadioPoint, Town
 
 import sys
 from time import sleep
@@ -67,6 +67,14 @@ class Server(object):
                    server=self,
                    conference_name='radio_point_2',
                    position=Point(12496200, 27133643))
+
+        Town(time=self.get_time(),
+             server=self,
+             #svg_link = "C:/Projects/Sublayers/sublayers_server/static/img/towns/town_2/town.svg",
+             svg_link='static/img/towns/town_2/town.svg',
+             #svg_link='img/towns/town_2/town.svg',
+             town_name='Prior',
+             position=Point(12496200, 27133590))
         
     def post_message(self, message):
         """
