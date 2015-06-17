@@ -8,4 +8,4 @@ from handlers.base import BaseHandler
 
 class SiteHandler(BaseHandler):
     def get(self):
-        self.render("site\index.html")
+        self.render("site/index.html")
