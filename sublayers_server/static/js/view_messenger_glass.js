@@ -272,7 +272,7 @@ var ViewMessengerGlass = (function () {
         var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
         // Добавить, предварительно скрыв
         mesDiv.hide();
-        chat.textArea.append(mesDiv);
+        chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanUser);
         mesDiv.append(spanText);
@@ -282,7 +282,7 @@ var ViewMessengerGlass = (function () {
         if(aUser.login == user.login)
             spanUser.addClass("VMG-message-text-my-user");
         // Показать сообщение, опустив скрол дива
-        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+        mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
         // Удалить старые сообщения, предварительно сняв с них всё
@@ -305,11 +305,11 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.setActivePage = function (aPage){
         this.pages.forEach(function (page) {
             if (page == aPage) {
-                aPage.pageArea.addClass('VMGtextOutAreaActive');
+                aPage.pageArea.addClass('VMGChatOutAreaActive');
                 aPage.pageButton.addClass('VMGpageButtonActive');
             }
             else {
-                page.pageArea.removeClass('VMGtextOutAreaActive');
+                page.pageArea.removeClass('VMGChatOutAreaActive');
                 page.pageButton.removeClass('VMGpageButtonActive');
             }
         });
@@ -323,14 +323,14 @@ var ViewMessengerGlass = (function () {
         var page = {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
             pageControl: $('<div id="chatPageControlGlobal" class="VMGPartyPageControl"></div>'),
-            textArea: $('<div id="textAreaGlobal" class="VMGPartytextOutArea"></div>'),
+            chatArea: $('<div id="textAreaGlobal" class="VMGPartytextOutArea"></div>'),
             pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Radio</div>'),
             chat: null
         };
 
         this.dynamicArea.append(page.pageArea);
         page.pageArea.append(page.pageControl);
-        page.pageArea.append(page.textArea);
+        page.pageArea.append(page.chatArea);
         this.divPageControlArea.append(page.pageButton);
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
         this.pages.push(page);
@@ -347,12 +347,10 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.setActiveChat = function (aChat) {
         this.chats.forEach(function (chat) {
             if (aChat == chat) {
-                aChat.textArea.addClass('VMGtextOutAreaActive');
                 aChat.pageButton.addClass('VMGPartypageButtonActive');
                 aChat.chatArea.addClass('VMGChatOutAreaActive');
             }
             else {
-                chat.textArea.removeClass('VMGtextOutAreaActive');
                 chat.pageButton.removeClass('VMGPartypageButtonActive');
                 chat.chatArea.removeClass('VMGChatOutAreaActive');
             }
@@ -371,14 +369,12 @@ var ViewMessengerGlass = (function () {
         var chat = {
             room_jid: room_jid,
             chatArea: $('<div id="_charArea' + room_jid + '" class="VMGChatOutArea"></div>'),
-            textArea: $('<div id="textArea' + room_jid + '" class="VMGtextOutArea"></div>'),
             pageButton: $('<div id="pageButton' + room_jid + '" class="VMGPartypageButton sublayers-clickable">' + room_jid + '</div>'),
             mesList: [],
             mesCount: 0
         };
 
-        this.page_global.textArea.append(chat.chatArea);
-        chat.chatArea.append(chat.textArea);
+        this.page_global.chatArea.append(chat.chatArea);
         this.page_global.pageControl.append(chat.pageButton);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
@@ -402,7 +398,6 @@ var ViewMessengerGlass = (function () {
         this._removeAllMessagesInChat(chat);
 
         // удалить область сообщений
-        chat.textArea.remove();
         chat.chatArea.remove();
 
         // отключить клик, удалить вкладку
@@ -500,7 +495,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.initPartyPage = function (){
         var chat = {
             room_jid: null,
-            textArea: $('<div id="textAreaParty" class="VMGPartytextOutArea"></div>'),
+            chatArea: $('<div id="textAreaParty" class="VMGPartytextOutArea"></div>'),
             mesList: [],
             mesCount: 0
         };
@@ -515,7 +510,7 @@ var ViewMessengerGlass = (function () {
 
         this.dynamicArea.append(page.pageArea);
         page.pageArea.append(page.pageControl);
-        page.pageArea.append(chat.textArea);
+        page.pageArea.append(chat.chatArea);
         this.divPageControlArea.append(page.pageButton);
 
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
@@ -611,12 +606,12 @@ var ViewMessengerGlass = (function () {
         var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
         // Добавить, предварительно скрыв
         mesDiv.hide();
-        chat.textArea.append(mesDiv);
+        chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanText);
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast', function () {
-            chat.textArea.scrollTop(99999999)
+            chat.chatArea.scrollTop(99999999)
         });
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv});
@@ -704,7 +699,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.initLogPage = function (){
         var chat = {
-            textArea: $('<div id="textAreaLog" class="VMGStandarttextOutArea"></div>'),
+            chatArea: $('<div id="textAreaLog" class="VMGStandarttextOutArea"></div>'),
             mesList: [],
             mesCount: 0
         };
@@ -717,7 +712,7 @@ var ViewMessengerGlass = (function () {
         };
 
         this.dynamicArea.append(page.pageArea);
-        page.pageArea.append(chat.textArea);
+        page.pageArea.append(chat.chatArea);
         this.divPageControlArea.append(page.pageButton);
 
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
@@ -760,11 +755,11 @@ var ViewMessengerGlass = (function () {
         var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
         // Добавить, предварительно скрыв
         mesDiv.hide();
-        chat.textArea.append(mesDiv);
+        chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanText);
         // Показать сообщение, опустив скрол дива
-        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+        mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv});
         // Удалить старые сообщения
@@ -779,7 +774,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.initSysPage = function (){
         var chat = {
-            textArea: $('<div id="textAreaSys" class="VMGStandarttextOutArea"></div>'),
+            chatArea: $('<div id="textAreaSys" class="VMGStandarttextOutArea"></div>'),
             mesList: [],
             mesCount: 0
         };
@@ -792,7 +787,7 @@ var ViewMessengerGlass = (function () {
         };
 
         this.dynamicArea.append(page.pageArea);
-        page.pageArea.append(chat.textArea);
+        page.pageArea.append(chat.chatArea);
         this.divPageControlArea.append(page.pageButton);
 
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
@@ -818,11 +813,11 @@ var ViewMessengerGlass = (function () {
         var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
         // Добавить, предварительно скрыв
         mesDiv.hide();
-        chat.textArea.append(mesDiv);
+        chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanText);
         // Показать сообщение, опустив скрол дива
-        mesDiv.slideDown('fast',function() {chat.textArea.scrollTop(99999999)});
+        mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv});
         // Удалить старые сообщения

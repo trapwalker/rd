@@ -129,34 +129,13 @@
     position: relative;
     height: 100%;
     width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: none;
 }
 
 .VMGChatOutAreaActive {
     display: block;
-}
-
-.VMGtextOutArea {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: block;
-}
-
-.VMGtextOutAreaActive {
-    display: block;
-}
-
-
-
-.VMGMessageOutArea {
-    position: absolute;
-    width: 100%;
-    height: 100%;
 }
 
 .VMGpageButton {
@@ -182,22 +161,6 @@
 
 .VMGpageButtonActive:after {
     content: " >";
-}
-
-.VMGtriangle-left {
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-right: 10px solid red;
-    border-bottom: 5px solid transparent;
-}
-
-.VMGtriangle-right {
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-left: 10px solid red;
-    border-bottom: 5px solid transparent;
 }
 
 .VMGPartytextOutArea {
