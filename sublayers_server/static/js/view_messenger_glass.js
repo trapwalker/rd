@@ -22,7 +22,9 @@ var ViewMessengerGlass = (function () {
         mainParent.append('<div id="VMGDivHardware"></div>');
         mainParent.append('<div id="VMGMainDivGlass"></div>');
         this.parentGlass = $('#VMGMainDivGlass');
-        this.parentGlass.append('<div id="VMGMainDivChat"></div>');
+        this.parentGlass.append('<div id="VMGDivWrapChat"></div>');
+        this.chatWrapDiv = $('#VMGDivWrapChat');
+        this.chatWrapDiv.append('<div id="VMGMainDivChat"></div>');
         var parent = $('#VMGMainDivChat');
         this.parent = parent;
         var width = 480;
@@ -36,7 +38,7 @@ var ViewMessengerGlass = (function () {
         parent.append("<div id='VMGDynamicAreaForBorder'></div>");
         var dynamicAreaForBorder = $('#VMGDynamicAreaForBorder');
 
-        // создание центральной динамической части
+        // создание центральной динамической части (в котором будут формировать под-вкладки)
         dynamicAreaForBorder.append("<div id='VMGDynamicArea'></div>");
         this.dynamicArea = $('#VMGDynamicArea');
 
@@ -69,10 +71,6 @@ var ViewMessengerGlass = (function () {
                 event.data.self.setPrevHistoryMessage();
             }
         });
-
-        // добавление дива в котором будут формировать вкладки
-        this.dynamicArea.append("<div id='VMGTextArea'></div>");
-        this.vmg_text_area = $('#VMGTextArea');
 
         // установка активного чата по умолчанию
         this.activeChat = null;
@@ -330,7 +328,7 @@ var ViewMessengerGlass = (function () {
             chat: null
         };
 
-        this.vmg_text_area.append(page.pageArea);
+        this.dynamicArea.append(page.pageArea);
         page.pageArea.append(page.pageControl);
         page.pageArea.append(page.textArea);
         this.divPageControlArea.append(page.pageButton);
@@ -515,7 +513,7 @@ var ViewMessengerGlass = (function () {
             buttons: null
         };
 
-        this.vmg_text_area.append(page.pageArea);
+        this.dynamicArea.append(page.pageArea);
         page.pageArea.append(page.pageControl);
         page.pageArea.append(chat.textArea);
         this.divPageControlArea.append(page.pageButton);
@@ -718,7 +716,7 @@ var ViewMessengerGlass = (function () {
             log_chat: chat
         };
 
-        this.vmg_text_area.append(page.pageArea);
+        this.dynamicArea.append(page.pageArea);
         page.pageArea.append(chat.textArea);
         this.divPageControlArea.append(page.pageButton);
 
@@ -793,7 +791,7 @@ var ViewMessengerGlass = (function () {
             log_chat: chat
         };
 
-        this.vmg_text_area.append(page.pageArea);
+        this.dynamicArea.append(page.pageArea);
         page.pageArea.append(chat.textArea);
         this.divPageControlArea.append(page.pageButton);
 
@@ -842,7 +840,7 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.showChatInMap = function(){
-        this.parentGlass.append(this.parent);
+        this.chatWrapDiv.append(this.parent);
     };
 
     return ViewMessengerGlass;
