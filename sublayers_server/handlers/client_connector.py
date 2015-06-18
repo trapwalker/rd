@@ -16,6 +16,11 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         # for iOS 5.0 Safari
         return True
 
+    def check_origin(self, origin):
+        log.warning('origin=%s', origin)
+        # todo: reject connections from wrong servers
+        return True
+
     def open(self):
         # todo: make agent_init event
         self.user_id = self.get_secure_cookie("user")

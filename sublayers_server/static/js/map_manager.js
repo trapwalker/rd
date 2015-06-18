@@ -4,11 +4,6 @@
 */
 
 
-//Путь к карте на сервере
-//var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
-//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
@@ -230,7 +225,7 @@ var MapManager = (function(_super){
 
     MapManager.prototype._init = function () {
 
-        this.tileLayerPath = ConstMapPath;
+        this.tileLayerPath = $('#settings_map_link').text();
 
         map = L.map('map',
             {
