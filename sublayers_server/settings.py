@@ -38,4 +38,6 @@ define("template_path", default=_rel("templates"), help="path to static files", 
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
 define("ws_port", default=80, help="run ws on the given port", type=int)
-define("map_link", default='http://sublayers.net/map/{z}/{x}/{y}.jpg', help="map link without z,y,x", type=str)
+define("map_link", default='http://localhost/map/{z}/{x}/{y}.jpg', help="map link", type=str)
+
+
