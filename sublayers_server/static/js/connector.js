@@ -226,7 +226,7 @@ var WSConnector = (function(_super){
     function WSConnector(options){
         _super.call(this);
         this.options = {
-            url: "ws://" + location.host + ":" + $('#settings_ws_port').text() + "/ws"
+            url: "ws://" + location.host.split(':')[0] + ":" + $('#settings_ws_port').text() + "/ws"
         };
         console.info('connect to:', this.options.url);
         if (options) setOptions(options, this.options);

@@ -64,7 +64,7 @@ class Application(tornado.web.Application):
             #jid='srv@sublayers.net',
             #password='1',
             #server=('localhost', 5222),
-            #host_name='localhost',
+            #host_name='example.com',
             #client_adress='http://localhost:5280/http-bind',
             #conference_suffixes='@conference.example.com',
         )
