@@ -317,7 +317,7 @@ var WSConnector = (function(_super){
 
     WSConnector.prototype.decodeMessage = function(msg){
         // alert('WSConnector decodeMessage');
-        var mes = JSON.parse(msg, function(key, value){
+        var mes = JSON.parse(msg, function(key, value) {
             if((key === 'time') || (key === 'start_time') || (key === 'serv_time')) return new Date(value * 1000).getTime();
             return value;
         });
@@ -325,7 +325,6 @@ var WSConnector = (function(_super){
         return {
             type: 'ws_message',
             body: mes
-
         };
     };
 

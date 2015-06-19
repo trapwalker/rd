@@ -7,8 +7,8 @@ var Clock = (function () {
             subject: this
         });
         this._count_message = 0;
-        this._pings = 0;
-        this._msg_count_correct = 50; // количество сообщений необходимое для корректировки dt
+        this._ddt = 0;
+        this._msg_count_correct = 20; // количество сообщений необходимое для корректировки dt
     }
 
     // Получение текущего времени с поправкой на сервер
@@ -28,14 +28,19 @@ var Clock = (function () {
     };
 
     Clock.prototype.receiveMessage = function (params) {
+        //console.log("Clock.prototype.receiveMessage", params);
         if (params.message_type == "push") {
-            this._pings += (new Date().getTime() - params.serv_time) / 1000.;
-            this._count_message ++;
-            if (this._count_message >= this._msg_count_correct) {
-                this._pings /= this._count_message;
-                this.setDt(this._pings);
-                this._pings = 0;
-                this._count_message = 0;
+            if (params.events[0].cls == "InitTime") {
+                this.setDt((new Date().getTime() - params.events[0].time) / 1000.);
+            }
+            else {
+                this._ddt += (new Date().getTime() - params.events[0].time) / 1000.;
+                this._count_message++;
+                if (this._count_message >= this._msg_count_correct) {
+                    this.setDt(this._ddt / this._count_message);
+                    this._ddt = 0;
+                    this._count_message = 0;
+                }
             }
         }
     };

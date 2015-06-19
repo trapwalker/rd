@@ -30,6 +30,17 @@ class UpdateAgentAPIEvent(Event):
         self.api.on_update_agent_api(position=self.position, time=self.time)
 
 
+class InitTimeEvent(Event):
+    def __init__(self, agent, **kw):
+        super(InitTimeEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(InitTimeEvent, self).on_perform()
+        # синхронизация времени на клиенте
+        messages.InitTime(agent=self.agent, time=self.time).post()
+
+
 class OpenTemplateWindowMessage(messages.Message):
     def __init__(self, url, unique=False, win_name=None, page_type=None, **kw):
         super(OpenTemplateWindowMessage, self).__init__(**kw)
@@ -70,7 +81,6 @@ class AgentAPI(API):
         super(AgentAPI, self).__init__()
         self.agent = agent
         agent.api = self
-
         self.update_agent_api()
 
     def cmd_line_context(self):
@@ -122,6 +132,7 @@ class AgentAPI(API):
                 vo.send_auto_fire_messages(agent=self.agent, action=True)
 
     def update_agent_api(self, time=None, position=None):
+        InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, position=position,
                             time=time if time is not None else self.agent.server.get_time()).post()
 

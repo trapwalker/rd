@@ -65,6 +65,10 @@ class Message(object):
         )
 
 
+class InitTime(Message):
+    pass
+
+
 class Init(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
