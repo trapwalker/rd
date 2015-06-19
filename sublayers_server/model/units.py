@@ -122,6 +122,7 @@ class Unit(Observer):
                     agent=agent,
                     side=side,
                     t_rch=t_rch,
+                    time=event.time
                 ).post()
 
     def on_fire_auto_enable(self, enable, time):
@@ -156,15 +157,15 @@ class Unit(Observer):
             if sector.is_auto():
                 sector.fire_auto(target=obj, time=time)
 
-    def send_auto_fire_messages(self, agent, action):
+    def send_auto_fire_messages(self, agent, action, time):
         for shooter in self.hp_state.shooters:
-            messages.FireAutoEffect(agent=agent, subj=shooter, obj=self, action=action).post()
+            messages.FireAutoEffect(agent=agent, subj=shooter, obj=self, action=action, time=time).post()
         for sector in self.fire_sectors:
             for weapon in sector.weapon_list:
                 if isinstance(weapon, WeaponAuto):
                     for target in weapon.targets:
                         messages.FireAutoEffect(agent=agent, subj=self, obj=target,
-                                                action=action, side=sector.side).post()
+                                                action=action, side=sector.side, time=time).post()
 
     def on_contact_out(self, obj, time, **kw):
         for sector in self.fire_sectors:
@@ -175,7 +176,7 @@ class Unit(Observer):
         super(Unit, self).on_die(event)
         # Отправка сообщения owner'у о гибели машинки
         if self.owner:
-            messages.Die(agent=self.owner).post()
+            messages.Die(agent=self.owner, time=event.time).post()
         # todo: удалить себя и на этом месте создать обломки
         self.delete(time=event.time)
 
@@ -231,7 +232,7 @@ class Unit(Observer):
     def _get_main_agent(self):
         return self.owner
 
-    def on_change_altitude(self, new_altitude):
+    def on_change_altitude(self, new_altitude, time):
         if new_altitude != self.altitude:
             old_altitude = self.altitude
             self.altitude = new_altitude
@@ -242,7 +243,8 @@ class Unit(Observer):
                 messages.ChangeAltitude(
                     agent=self.owner,
                     altitude=new_altitude,
-                    obj_id=self.id
+                    obj_id=self.id,
+                    time=time
                 ).post()
 
 

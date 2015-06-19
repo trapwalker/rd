@@ -124,4 +124,5 @@ class AltitudeZoneTileset(ZoneTileset):
         if tags.UnAltitudeTag in obj.tags:
             return
         position = obj.position(time=time)
-        obj.on_change_altitude(new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)))
+        obj.on_change_altitude(
+            new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)), time=time)

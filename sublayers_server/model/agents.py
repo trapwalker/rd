@@ -91,7 +91,7 @@ class Agent(Object):
             is_first=is_first,
         ).post()
         if isinstance(obj, Unit):
-            obj.send_auto_fire_messages(agent=self, action=True)
+            obj.send_auto_fire_messages(agent=self, action=True, time=time)
 
     def on_out(self, time, subj, obj):
         # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
@@ -106,7 +106,7 @@ class Agent(Object):
             is_last=is_last,
         ).post()
         if isinstance(obj, Unit):
-            obj.send_auto_fire_messages(agent=self, action=False)
+            obj.send_auto_fire_messages(agent=self, action=False, time=time)
 
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
@@ -215,13 +215,13 @@ class Agent(Object):
                     return invite
         return None
 
-    def delete_invite(self, invite_id):
+    def delete_invite(self, invite_id, time):
         # получить инвайт с данным id
         invite = self._invite_by_id(invite_id)
         if (invite is not None) and (invite.can_delete_by_agent(self)):
-            PartyInviteDeleteEvent(invite=invite, time=self.server.get_time() + 0.01).post()
+            PartyInviteDeleteEvent(invite=invite, time=time).post()
         else:
-            messages.PartyErrorMessage(agent=self,
+            messages.PartyErrorMessage(agent=self, time=time,
                                        comment="You not have access for this invite {}".format(invite_id)).post()
 
     def is_target(self, target):

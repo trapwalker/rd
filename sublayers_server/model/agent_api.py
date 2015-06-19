@@ -41,38 +41,103 @@ class InitTimeEvent(Event):
         messages.InitTime(agent=self.agent, time=self.time).post()
 
 
-class OpenTemplateWindowMessage(messages.Message):
-    def __init__(self, url, unique=False, win_name=None, page_type=None, **kw):
-        super(OpenTemplateWindowMessage, self).__init__(**kw)
-        self.url = url
-        self.unique = unique
-        self.win_name = win_name
-        self.page_type = page_type
+class SetPartyEvent(Event):
+    def __init__(self, agent, name=None, description='', **kw):
+        super(SetPartyEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.name = name
+        self.description = description
 
-    def as_dict(self):
-        d = super(OpenTemplateWindowMessage, self).as_dict()
-        d.update(
-            url=self.url,
-            unique=self.unique,
-            win_name=self.win_name,
-            page_type=self.page_type
-        )
-        return d
+    def on_perform(self):
+        super(SetPartyEvent, self).on_perform()
+        log.info('%s try to set or create party %s', self.agent.login, self.name)
+        if self.name is None:
+            if self.agent.party:
+                self.agent.party.exclude(self.agent, time=self.time)
+        else:
+            party = Party.search(self.name)
+            if party is None:
+                party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
+            elif self.agent not in party:
+                party.include(self.agent, time=self.time)
 
 
-class CloseTemplateWindowMessage(messages.Message):
-    def __init__(self, unique=False, win_name=None, **kw):
-        super(CloseTemplateWindowMessage, self).__init__(**kw)
-        self.unique = unique
-        self.win_name = win_name
+class SendInviteEvent(Event):
+    def __init__(self, agent, username, **kw):
+        super(SendInviteEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.username = username
 
-    def as_dict(self):
-        d = super(CloseTemplateWindowMessage, self).as_dict()
-        d.update(
-            unique=self.unique,
-            win_name=self.win_name,
-        )
-        return d
+    def on_perform(self):
+        super(SendInviteEvent, self).on_perform()
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        user = self.agent.server.agents.get(self.username)
+        if user is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
+            return
+        party = self.agent.party
+        if party is None:
+            party = Party(owner=self.agent, time=self.time)
+        party.invite(sender=self.agent, recipient=user, time=self.time)
+
+
+class DeleteInviteEvent(Event):
+    def __init__(self, agent, invite_id, **kw):
+        super(DeleteInviteEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.invite_id = invite_id
+
+    def on_perform(self):
+        super(DeleteInviteEvent, self).on_perform()
+        self.agent.delete_invite(invite_id=self.invite_id, time=self.time)
+
+
+class SendKickEvent(Event):
+    def __init__(self, agent, username, **kw):
+        super(SendKickEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.username = username
+
+    def on_perform(self):
+        super(SendKickEvent, self).on_perform()
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        party = self.agent.party
+        if party is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
+            return
+        user = self.agent.server.agents.get(self.username)
+        if (user is None) or (not (user in party)):
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
+            return
+        party.kick(kicker=self.agent, kicked=user, time=self.time)
+
+
+class SendSetCategoryEvent(Event):
+    def __init__(self, agent, username, category, **kw):
+        super(SendSetCategoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.username = username
+        self.category = category
+
+    def on_perform(self):
+        super(SendSetCategoryEvent, self).on_perform()
+        #todo: проблемы с русским языком
+        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        party = self.agent.party
+        if party is None:
+            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
+            return
+        if not (party.owner is self.agent):
+            messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
+            return
+        user = self.agent.server.agents.get(self.username)
+        if (user is None) or (not (user in party)):
+            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
+                                       time=self.time).post()
+            return
+        party.get_member_by_agent(agent=user).set_category(category=self.category)
 
 
 class AgentAPI(API):
@@ -120,16 +185,17 @@ class AgentAPI(API):
                 agent=self.agent,
                 subj=self.car,
                 obj=vo,
+                time=time,
                 is_first=True,
             ).post()
 
         # отобразить информацию о стрельбе по нашей машинке и нашей машинки
-        self.car.send_auto_fire_messages(agent=self.agent, action=True)
+        self.car.send_auto_fire_messages(agent=self.agent, action=True, time=time)
 
         # для каждого VO узнать информацию о стрельбе
         for vo in vo_list:
             if isinstance(vo, Unit) and (vo.hp_state is not None):
-                vo.send_auto_fire_messages(agent=self.agent, action=True)
+                vo.send_auto_fire_messages(agent=self.agent, action=True, time=time)
 
     def update_agent_api(self, time=None, position=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
@@ -159,90 +225,34 @@ class AgentAPI(API):
         self.agent.append_car(car=self.car, time=time)
 
     @public_method
-    def open_window_create_party(self):
-        OpenTemplateWindowMessage(
-            agent=self.agent,
-            url='/party',
-            unique=True,
-            win_name='create_party',
-            page_type='create',
-        ).post()
-
-    @public_method
     def send_create_party_from_template(self, name, description):
         self.set_party(name=name, description=description)
-        CloseTemplateWindowMessage(
-            agent=self.agent,
-            unique=True,
-            win_name="create_party"
-        ).post()
 
     @public_method
     def send_join_party_from_template(self, name):
         self.set_party(name=name)
 
     @public_method
-    def set_party(self, name=None, id=None, description=''):
-        """
-        Create party or accept invitation
-        @param basestring|None name: new or existed name of party
-        @param str|int id: existed id of party
-        """
-        log.info('%s try to set or create party %s', self.agent.login, name)
-        time = self.agent.server.get_time()
-        if name is None:
-            if self.agent.party:
-                self.agent.party.exclude(self.agent, time=time)
-        else:
-            party = Party.search(name)
-            if party is None:
-                party = Party(time=time, owner=self.agent, name=name, description=description)
-            elif self.agent not in party:
-                party.include(self.agent, time=time)
+    def set_party(self, name=None, description=''):
+        SetPartyEvent(agent=self.agent, name=name, description=description,
+                      time=self.agent.server.get_time()).post()
 
     @public_method
     def send_invite(self, username):
-        #todo: проблемы с русским языком
-        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
-        user = self.agent.server.agents.get(username)
-        if user is None:
-            messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient').post()
-            return
-        party = self.agent.party
-        if party is None:
-            party = Party(owner=self.agent, time=self.agent.server.get_time())
-        party.invite(sender=self.agent, recipient=user)
+        SendInviteEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def delete_invite(self, invite_id):
+        DeleteInviteEvent(agent=self.agent, invite_id=invite_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_kick(self, username):
-        #todo: проблемы с русским языком
-        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
-        party = self.agent.party
-        if party is None:
-            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party').post()
-            return
-        user = self.agent.server.agents.get(username)
-        if (user is None) or (not (user in party)):
-            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick').post()
-            return
-        party.kick(kicker=self.agent, kicked=user, time=self.agent.server.get_time())
+        SendKickEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_set_category(self, username, category):
-        #todo: проблемы с русским языком
-        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
-        party = self.agent.party
-        if party is None:
-            messages.PartyErrorMessage(agent=self.agent, comment='Invalid party').post()
-            return
-        if not (party.owner is self.agent):
-            messages.PartyErrorMessage(agent=self.agent, comment='You dont have rights').post()
-            return
-        user = self.agent.server.agents.get(username)
-        if (user is None) or (not (user in party)):
-            messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category').post()
-            return
-        party.get_member_by_agent(agent=user).set_category(category=category)
+        SendSetCategoryEvent(agent=self.agent, username=username, category=category,
+                             time=self.agent.server.get_time()).post()
 
     @public_method
     def fire_discharge(self, side):
@@ -259,17 +269,18 @@ class AgentAPI(API):
 
     @public_method
     def chat_message(self, text):
-        log.info('Agent %s say: %r', self.agent.login, text)
-        app = self.agent.connection.application
-        me = self.agent
-        chat = app.chat
-        msg_id = len(chat)  # todo: get "client_id" from client message info
+        pass
+        #log.info('Agent %s say: %r', self.agent.login, text)
+        #app = self.agent.connection.application
+        #me = self.agent
+        #chat = app.chat
+        #msg_id = len(chat)  # todo: get "client_id" from client message info
 
-        message_params = dict(author=me, text=text, client_id=msg_id)
-        for client_connection in app.clients:
-            messages.Chat(agent=client_connection.agent, **message_params).post()
+        #message_params = dict(author=me, text=text, client_id=msg_id)
+        #for client_connection in app.clients:
+        #    messages.Chat(agent=client_connection.agent, **message_params).post()
 
-        chat.append(message_params)
+        #chat.append(message_params)
 
     @public_method
     def send_rocket(self):
@@ -332,28 +343,25 @@ class AgentAPI(API):
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
-        elif command == '/metric':
-            metric_name = args[0] if args else None
-            if metric_name:
-                if hasattr(self.car.stat_log, metric_name):
-                    if metric_name == 'frag':
-                        m_car = self.car.stat_log.get_metric('frag')
-                        m_agent = self.agent.stat_log.get_metric('frag')
-                        messages.Message(agent=self.agent, comment='{} / {}'.format(m_car, m_agent)).post()
-                    else:
-                        messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
-                elif metric_name == 'server':
-                    messages.Message(agent=self.agent, comment=self.agent.server.get_server_stat()).post()
+        # todo: отправку метрик необходимо сделать через евент (потому что мессаджи должны проходить через евент!)
+        #elif command == '/metric':
+        #    metric_name = args[0] if args else None
+        #    if metric_name:
+        #        if hasattr(self.car.stat_log, metric_name):
+        #            if metric_name == 'frag':
+        #                m_car = self.car.stat_log.get_metric('frag')
+        #                m_agent = self.agent.stat_log.get_metric('frag')
+        #                messages.Message(agent=self.agent, comment='{} / {}'.format(m_car, m_agent)).post()
+        #            else:
+        #                messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
+        #        elif metric_name == 'server':
+        #            messages.Message(agent=self.agent, comment=self.agent.server.get_server_stat()).post()
         elif command == '/delete':
             self.delete_car()
         elif command == '/init':
             self.update_agent_api()
         else:
             log.warning('Unknown console command "%s"', cmd)
-
-    @public_method
-    def delete_invite(self, invite_id):
-        self.agent.delete_invite(invite_id)
 
     @public_method
     def get_my_xmpp_room_invite(self):

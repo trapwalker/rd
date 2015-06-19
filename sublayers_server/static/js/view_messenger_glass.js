@@ -477,7 +477,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.party_create = function (event) {
         //console.log('ViewMessengerGlass.prototype.party_create');
         if ( user.party == null)
-            clientManager.sendOpenWindowCreateParty();
+            windowTemplateManager.openUniqueWindow('create_party', '/party', {page_type: 'create'});
         if ( user.party != null)
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
     };

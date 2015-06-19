@@ -609,22 +609,6 @@ var ClientManager = (function () {
         chat.party_info_message(event);
     };
 
-    ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
-        //console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
-        if (event.unique)
-            windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
-        else
-            console.log('Попытка открыть не уникальное окно по адресу: ', event.url);
-    };
-
-    ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
-        //console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
-        if (event.unique)
-            windowTemplateManager.closeUniqueWindow(event.win_name);
-        else
-            console.log('Попытка открыть не уникальное');
-    };
-
     ClientManager.prototype.EnterToTown = function (event) {
         //console.log('ClientManager.prototype.EnterToTown', event);
         var town_uid = event.town.uid;
@@ -789,16 +773,6 @@ var ClientManager = (function () {
                 x: target.x,
                 y: target.y
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendOpenWindowCreateParty = function () {
-        var mes = {
-            call: "open_window_create_party",
-            rpc_call_id: rpcCallList.getID(),
-            params: { }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

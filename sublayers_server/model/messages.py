@@ -21,16 +21,14 @@ def make_push_package(events):
 class Message(object):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, agent=None, time=None, comment=None):
+    def __init__(self, agent, time, comment=None):
         """
         @param sublayers_server.model.utils.TimeClass time: Time of message post
         """
-        if agent is not None:
-            if time is None:
-                time = agent.server.get_time()
         super(Message, self).__init__()
-        self.agent = agent
+        assert time is not None, 'classname event is {}'.format(self.classname)
         self.time = time
+        self.agent = agent
         self.comment = comment
 
     def post(self):
