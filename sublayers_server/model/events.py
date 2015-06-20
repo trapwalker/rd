@@ -319,3 +319,19 @@ class ActivateTownChats(Event):
     def on_perform(self):
         super(ActivateTownChats, self).on_perform()
         self.town.activate_chats(event=self)
+
+
+class InitServerEvent(Event):
+    def on_perform(self):
+        super(InitServerEvent, self).on_perform()
+        self.server.on_init_server(self)
+
+
+class InsertNewServerZone(Event):
+    def __init__(self, zone, **kw):
+        super(InsertNewServerZone, self).__init__(**kw)
+        self.zone = zone
+
+    def on_perform(self):
+        super(InsertNewServerZone, self).on_perform()
+        self.server.zones.append(self.zone)

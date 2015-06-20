@@ -7,13 +7,16 @@ from sublayers_server.model.image_to_tileset import MongoDBToTilesets
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.messages import ZoneMessage
+from sublayers_server.model.events import InsertNewServerZone
+from sublayers_server.model.async_tools import async_deco
 import sublayers_server.model.tags as tags
 
 
 import os
 
 
-def init_zones_on_server(server):
+def init_zones_on_server(server, time):
+
     def read_ts_from_file(zone_name, file_name, server, effects, zone_cls=ZoneTileset):
         zone = None
         if os.path.exists(file_name):
@@ -25,42 +28,43 @@ def init_zones_on_server(server):
                     ts=Tileset(open(file_name)),
                 )
         if zone:
-            server.zones.append(zone)
-            log.info('Successful read zone from file: %s', file_name)
+            log.info('Successful read zone from file: %s   zone_name is %s', file_name, zone_name)
+            return zone
         else:
-            log.info('Failed read zone from file: %s', file_name)
+            log.info('Failed read zone from file: %s   zone_name is %s', file_name, zone_name)
+            return None
 
-    # todo: считывать формат загрузки из конфигурационного файла
-    """
-    # Считывание из Mongo
-    log.info("Read zones tileset from Mongo.")
-    from pymongo import Connection
-    self.db_connection = Connection()
-    self.db_collections = self.db_connection.maindb
-    self.tss = MongoDBToTilesets(self.db_collections.tile_sets)
-    """
-    # Считывание из файлов
-    log.info("Read zones tileset from files.")
+    def on_result(result):
+        # создание эвента для добавления зоны в сервер
+        if result is not None:
+            InsertNewServerZone(server=server, time=time, zone=result).post()
 
-    read_ts_from_file(zone_name='Wood', file_name='tilesets/ts_wood', server=server, effects=[
+    def on_error(error):
+        """async call error handler"""
+        log.warning('Read Zone: on_error(%s)', error)
+
+    # загрузка особенной зоны - бездорожье
+    server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))
+
+    read_zone_func = async_deco(read_ts_from_file, result_callback=on_result, error_callback=on_error)
+
+    read_zone_func(zone_name='Road', file_name='tilesets/ts_road', server=server, effects=[
+        server.effects.get('EffectRoadRCCWood'),
+        server.effects.get('EffectRoadRCCWater'),
+        server.effects.get('EffectRoadRCCDirt'),
+    ])
+
+    read_zone_func(zone_name='Wood', file_name='tilesets/ts_wood', server=server, effects=[
         server.effects.get('EffectWoodCC'),
         server.effects.get('EffectWoodVisibility'),
         server.effects.get('EffectWoodObsRange'),
     ])
-    read_ts_from_file(zone_name='Water', file_name='tilesets/ts_water', server=server, effects=[server.effects.get('EffectWaterCC')])
 
-    '''
-    read_ts_from_file(zone_name='Road', file_name='tilesets/ts_road', server=server, effects=[
-        server.effects.get('EffectRoadRCCWood'),
-        server.effects.get('EffectRoadRCCWater'),
-        server.effects.get('EffectRoadRCCDirt'),
-        ])
-    '''
-    #read_ts_from_file(zone_name='Altitude', file_name='tilesets/ts_altitude_15', server=server, effects=[], zone_cls=AltitudeZoneTileset)
+    read_zone_func(zone_name='Water', file_name='tilesets/ts_water', server=server,
+                   effects=[server.effects.get('EffectWaterCC')])
 
-    server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))
-
-    log.info("Zones ready!")
+    read_zone_func(zone_name='Altitude', file_name='tilesets/ts_altitude_15', server=server, effects=[],
+                   zone_cls=AltitudeZoneTileset)
 
 
 class Zone(object):
