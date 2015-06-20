@@ -56,6 +56,7 @@
         overflow-y: auto;
         border: solid 1px #00f150;
         margin: 0px 3px 3px 3px;
+        display: none;
     }
 
     .mainCarInfoWindow-body-left {
@@ -507,6 +508,98 @@
         box-sizing: border-box;
         visibility: hidden;
     }
+
+    .mainCarInfoWindow-body-trunk {
+        position: relative;
+        float: left;
+        width: 652px;
+        height: 361px;
+        overflow-y: auto;
+        border: solid 1px #00f150;
+        margin: 0px 3px 3px 3px;
+    }
+
+    .mainCarInfoWindow-body-trunk-filter {
+        width: 297px;
+        height: 27px;
+    }
+
+    .mainCarInfoWindow-body-trunk-filter-all {
+        position: relative;
+        float: left;
+        margin-top: 5px;
+        margin-left: 7px;
+        text-align: center;
+        color: #30fc00;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-trunk-filter-cargo {
+        position: relative;
+        float: left;
+        margin-top: 5px;
+        margin-left: 24px;
+        text-align: center;
+        color: #135806;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-trunk-filter-ammo {
+        position: relative;
+        float: left;
+        margin-top: 5px;
+        margin-left: 24px;
+        text-align: center;
+        color: #135806;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-trunk-body {
+        border: solid 1px #00f150;
+        margin: 0px 7px 7px 7px;
+        height: 325px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left {
+        border-right: solid 1px #00f150;
+        width: 156px;
+        height: 315px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-picture {
+        border: solid 1px #00f150;
+        margin: 5px;
+        height: 100px;
+        line-height: 100px;
+        color: #0f4206;
+        text-align: center;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-name {
+        color: #30fc00;
+        text-align: center;
+        margin: 5px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-description {
+        color: #1e9604;
+        text-align: center;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-amount {
+        color: #1e9604;
+        text-align: center;
+        margin: 5px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-activate {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin: 5px;
+        cursor: pointer;
+    }
 </style>
 
 <div class="mainCarInfoWindow-main">
@@ -559,6 +652,25 @@
             </div>
             <div class="mainCarInfoWindow-body-right-list-history">
                 История
+            </div>
+        </div>
+    </div>
+
+    <div class="mainCarInfoWindow-body-trunk">
+        <div class="mainCarInfoWindow-body-trunk-filter">
+            <div class="mainCarInfoWindow-body-trunk-filter-all">[x] Всё</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-cargo">[ ] Груз</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-ammo">[ ] Боеприпасы</div>
+        </div>
+        <div class="mainCarInfoWindow-body-trunk-body">
+            <div class="mainCarInfoWindow-body-trunk-body-left">
+                <div class="mainCarInfoWindow-body-trunk-body-left-picture">Картинка</div>
+                <div class="mainCarInfoWindow-body-trunk-body-left-name">Канистра</div>
+                <div class="mainCarInfoWindow-body-trunk-body-left-description">
+                    Используется для переноски всяких горючих ништяков до локации поджигаемого. Лучший друг пироманьяка.
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-left-amount">В инвентаре: 2 ед.</div>
+                <div class="mainCarInfoWindow-body-trunk-body-left-activate">Активировать!</div>
             </div>
         </div>
     </div>
