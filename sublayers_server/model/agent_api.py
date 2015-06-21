@@ -17,6 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToTown, ExitFromTown
 from sublayers_server.model.units import Unit
+from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent
 
 
 class UpdateAgentAPIEvent(Event):
@@ -197,6 +198,9 @@ class AgentAPI(API):
             if isinstance(vo, Unit) and (vo.hp_state is not None):
                 vo.send_auto_fire_messages(agent=self.agent, action=True, time=time)
 
+        # переотправить чаты, в которых есть агент
+        ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
+
     def update_agent_api(self, time=None, position=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, position=position,
@@ -266,19 +270,9 @@ class AgentAPI(API):
         self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())
 
     @public_method
-    def chat_message(self, text):
-        pass
-        #log.info('Agent %s say: %r', self.agent.login, text)
-        #app = self.agent.connection.application
-        #me = self.agent
-        #chat = app.chat
-        #msg_id = len(chat)  # todo: get "client_id" from client message info
-
-        #message_params = dict(author=me, text=text, client_id=msg_id)
-        #for client_connection in app.clients:
-        #    messages.Chat(agent=client_connection.agent, **message_params).post()
-
-        #chat.append(message_params)
+    def chat_message(self, room_name, msg):
+        ChatRoomMessageEvent(room_name=room_name, agent=self.agent, msg=msg,
+                             time=self.agent.server.get_time()).post()
 
     @public_method
     def send_rocket(self):

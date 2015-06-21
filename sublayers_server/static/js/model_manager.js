@@ -633,6 +633,17 @@ var ClientManager = (function () {
 
     };
 
+    ClientManager.prototype.ChatRoomIncludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatRoomIncludeMessage', event);
+        chat.addChat(event.room_name);
+    };
+
+    ClientManager.prototype.ChatRoomExcludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatRoomExcludeMessage', event);
+        chat.removeChat(event.room_name);
+    };
+
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {

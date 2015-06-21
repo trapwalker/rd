@@ -77,6 +77,11 @@ class ChatRoom(object):
             if agent in room:
                 yield room
 
+    @classmethod
+    def resend_rooms_for_agent(cls, agent, time):
+        for room in cls.get_rooms_by_agent(agent=agent):
+            ChatRoomIncludeMessage(agent=agent, room_name=room.name, time=time).post()
+
     def as_dict(self):
         return dict(
             name=self.name,
@@ -95,7 +100,7 @@ class ChatRoom(object):
         if agent is None:
             return False
         for member in self.members:
-            if member.agent == agent:
+            if member == agent:
                 return True
         return False
 

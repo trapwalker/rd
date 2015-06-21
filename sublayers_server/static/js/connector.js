@@ -285,8 +285,15 @@ var WSConnector = (function(_super){
                 cbFunc: 'sendMessage',
                 subject: self
             });
+
+            message_stream.addOutEvent({
+                key: 'send_chat_message',
+                cbFunc: 'sendMessage',
+                subject: self
+            });
         };
     };
+
 
     WSConnector.prototype.sendMessage = function(msg){
         //alert('WSConnector sendMessage');

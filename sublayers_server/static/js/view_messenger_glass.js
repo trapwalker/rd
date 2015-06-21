@@ -85,14 +85,8 @@ var ViewMessengerGlass = (function () {
         var stream = this.options.stream_mes;
 
         stream.addInEvent({
-            key: 'message',
-            cbFunc: 'receiveMessage',
-            subject: this
-        });
-
-        stream.addInEvent({
             key: 'ws_message',
-            cbFunc: 'receiveMessageFromWS',
+            cbFunc: 'receiveMessage',
             subject: this
         });
 
@@ -256,6 +250,7 @@ var ViewMessengerGlass = (function () {
         // Найти чат для добавления в него сообщения
         var chat = this._getChatByJID(room_jid);
         if(! chat) {
+            // todo: просто создать чат с таким именем и продолжить
             console.error('Попытка записать сообщение в несуществующий чат');
             return;
         }
@@ -436,13 +431,21 @@ var ViewMessengerGlass = (function () {
             else {
                 var active = chat.activeChat;
                 if (active && (active.room_jid != null)) {
+                    var mes = {
+                        call: "chat_message",
+                        rpc_call_id: rpcCallList.getID(),
+                        params: {
+                            room_name: active.room_jid,
+                            msg: str
+                        }
+                    };
                     chat.options.stream_mes.sendMessage({
                         type: 'send_chat_message',
-                        body: {
-                            to: active.room_jid,
-                            body: str
-                        }
+                        body: mes
+
                     });
+
+                    rpcCallList.add(mes);
 
                     // добавление сообщения в историю
                     chat.addMessageToHistory(str);
@@ -462,7 +465,11 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
         //console.log('ViewMessengerGlass.prototype.receiveMessage', params);
-        this.addMessageByJID(params.room_jid, params.user, params.text);
+        if (params.message_type === "push") {
+            var msg = params.events[0];
+            if (msg.cls === "ChatRoomMessage")
+                this.addMessageByJID(msg.room_name, {login: msg.sender}, msg.msg);
+        }
         return true;
     };
 
