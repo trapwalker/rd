@@ -451,3 +451,46 @@ class ExitFromTown(Message):
             )
         return d
 
+
+class ChatRoomMessage(Message):
+    def __init__(self, room_name, msg, sender, **kw):
+        super(ChatRoomMessage, self).__init__(**kw)
+        self.room_name = room_name
+        self.msg = msg
+        self.sender = sender
+
+    def as_dict(self):
+        d = super(ChatRoomMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            msg=self.msg,
+            sender=self.sender.login,
+            )
+        return d
+
+
+class ChatRoomIncludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatRoomIncludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatRoomIncludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+
+
+class ChatRoomExcludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatRoomExcludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatRoomExcludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+

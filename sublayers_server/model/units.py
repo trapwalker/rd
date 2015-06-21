@@ -350,12 +350,12 @@ class Bot(Mobile):
     def add_to_chat(self, chat, time):
         super(Bot, self).add_to_chat(chat=chat, time=time)
         if self.owner:
-            self.owner.add_xmpp_room(room_jid=chat.room_jid)
+            chat.room.include(agent=self.owner, time=time)
 
     def del_from_chat(self, chat, time):
         super(Bot, self).del_from_chat(chat=chat, time=time)
         if self.owner:
-            self.owner.del_xmpp_room(room_jid=chat.room_jid)
+            chat.room.exclude(agent=self.owner, time=time)
 
 
 class ExtraMobile(Mobile):

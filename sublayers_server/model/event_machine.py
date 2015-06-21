@@ -69,12 +69,10 @@ class Server(object):
         base_point = Point(12496376, 27133643)
         RadioPoint(time=self.get_time(),
                    server=self,
-                   conference_name='radio_point_1',
                    position=base_point)
 
         RadioPoint(time=self.get_time(),
                    server=self,
-                   conference_name='radio_point_2',
                    position=Point(12496200, 27133643))
 
         Town(time=self.get_time(),

@@ -36,7 +36,6 @@ from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogou
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 from sublayers_server.model.event_machine import LocalServer
 from pymongo import Connection
-from sublayers_server.model.xmpp_manager import XMPPManager
 
 
 class Application(tornado.web.Application):
@@ -48,26 +47,7 @@ class Application(tornado.web.Application):
             log.warning("Can't get HG revision info: %s", e)
 
         self.db_connection = None
-        self.xmpp_manager = None
         self.auth_db = None
-
-        self.xmpp_settings = dict(
-            # for sublayers.net xmpp server
-            jid='srv@sublayers.net',
-            password='1',
-            server=('sublayers.net', 5222),
-            host_name='sublayers.net',
-            client_adress='http://sublayers.net:5280/http-bind',
-            conference_suffixes='@conference.sublayers.net',
-
-            # for localhost xmpp server
-            #jid='srv@sublayers.net',
-            #password='1',
-            #server=('localhost', 5222),
-            #host_name='example.com',
-            #client_adress='http://localhost:5280/http-bind',
-            #conference_suffixes='@conference.example.com',
-        )
 
         try:
             self.db_connection = Connection()
@@ -76,18 +56,6 @@ class Application(tornado.web.Application):
 
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db
-            try:
-                self.xmpp_manager = XMPPManager(
-                    jid=self.xmpp_settings['jid'],
-                    password=self.xmpp_settings['password'],
-                    server=self.xmpp_settings['server'],
-                    host_name=self.xmpp_settings['host_name']
-                )
-                if not self.xmpp_manager.connect():
-                    log.warn('XMPP not available')
-                    # self.xmpp_manager = None
-            except:
-                log.warn('XMPP not available')
         else:
             self.auth_db = None
 
