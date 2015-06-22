@@ -35,6 +35,15 @@
         color: #30fc00;
     }
 
+    .mainCarInfoWindow-menu-button.btnpressed {
+        background-color: #061108;
+        background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+        linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+        background-size: 2px 2px;
+        background-position: 0 0, 1px 1px;
+        color: #30fc00;
+    }
+
     .mainCarInfoWindow-menu-button:hover:before {
         position: absolute;
         margin-left: -7px;
@@ -605,12 +614,12 @@
 <div class="mainCarInfoWindow-main">
     {% include drag_close_header.html %}
     <div class="mainCarInfoWindow-menu">
-        <div class="mainCarInfoWindow-menu-button">&nbspХарактеристики&nbsp</div>
-        <div class="mainCarInfoWindow-menu-button">&nbspБагажник&nbsp</div>
-        <div class="mainCarInfoWindow-menu-button">&nbspТюнинг&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body_id">&nbspХарактеристики&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="">&nbspТюнинг&nbsp</div>
     </div>
 
-    <div class="mainCarInfoWindow-body">
+    <div id="mainCarInfoWindow-body_id" class="mainCarInfoWindow-body mainCarInfoWindow-page-div">
         <div class="mainCarInfoWindow-body-left">
             <div class="mainCarInfoWindow-body-left-picture">Картинка</div>
             <div class="mainCarInfoWindow-body-left-name">Nastoyatel's ride</div>
@@ -656,7 +665,7 @@
         </div>
     </div>
 
-    <div class="mainCarInfoWindow-body-trunk">
+    <div id="mainCarInfoWindow-body-trunk_id" class="mainCarInfoWindow-body-trunk mainCarInfoWindow-page-div">
         <div class="mainCarInfoWindow-body-trunk-filter">
             <div class="mainCarInfoWindow-body-trunk-filter-all">[x] Всё</div>
             <div class="mainCarInfoWindow-body-trunk-filter-cargo">[ ] Груз</div>
@@ -675,3 +684,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(".mainCarInfoWindow-menu-button").click(function (event) {
+        // выключить у всех кнопок состояние активности // btnpressed - дурацкое название, но зато точно не занято
+        $('.mainCarInfoWindow-menu-button').removeClass('btnpressed');
+        // включить только заданной кнопке "активна"
+        $(this).addClass('btnpressed');
+        // выключить отображение всех дивов
+        $('.mainCarInfoWindow-page-div').css('display', 'none'); // лучше тоже сделать через классы
+        // включить отображение только нужного дива (дата-атрибут - html5 атрибут, очень удобный...!)
+        // сейчас сделал на айдишниках, но можно сделать и на классах, так как у тебя классы тут разные
+        $('#'+$(this).data('page_id')).css('display', 'block');
+    });
+
+    // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
+    // открывании окна правильно отрабатывала подсветка
+    $(".mainCarInfoWindow-menu-button").first().click();
+</script>
