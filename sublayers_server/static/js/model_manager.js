@@ -643,6 +643,15 @@ var ClientManager = (function () {
         chat.removeChat(event.room_name);
     };
 
+    ClientManager.prototype.ChatPartyRoomIncludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatPartyRoomIncludeMessage', event);
+        chat.activateParty(event.room_name);
+    };
+
+    ClientManager.prototype.ChatPartyRoomExcludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatPartyRoomExcludeMessage', event);
+        chat.deactivateParty(event.room_name);
+    };
 
     // Исходящие сообщения
 

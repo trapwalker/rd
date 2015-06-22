@@ -5,7 +5,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
-from sublayers_server.model.messages import ChatRoomMessage, ChatRoomIncludeMessage, ChatRoomExcludeMessage
+from sublayers_server.model.messages import ChatRoomMessage, ChatRoomIncludeMessage, ChatRoomExcludeMessage, \
+    ChatPartyRoomIncludeMessage, ChatPartyRoomExcludeMessage
 
 
 def inc_name_number(name):
@@ -107,22 +108,22 @@ class ChatRoom(object):
     def include(self, agent, time):
         ChatRoomIncludeEvent(room=self, agent=agent, time=time).post()
 
-    def on_include(self, agent, time):
+    def on_include(self, agent, time, cls_message=ChatRoomIncludeMessage):
         if agent in self.members:
             log.warn('Agent %s is already in chat-room %s', agent, self)
             return
         self.members.append(agent)
-        ChatRoomIncludeMessage(agent=agent, room_name=self.name, time=time).post()
+        cls_message(agent=agent, room_name=self.name, time=time).post()
 
     def exclude(self, agent, time):
         ChatRoomExcludeEvent(room=self, agent=agent, time=time).post()
 
-    def on_exclude(self, agent, time):
+    def on_exclude(self, agent, time, cls_message=ChatRoomExcludeMessage):
         if agent not in self.members:
             log.warn('Agent %s not in chat-room %s', agent, self)
             return
         self.members.remove(agent)
-        ChatRoomExcludeMessage(agent=agent, room_name=self.name, time=time).post()
+        cls_message(agent=agent, room_name=self.name, time=time).post()
 
     def on_message(self, agent, msg, time):
         for member in self.members:
@@ -137,3 +138,9 @@ class PartyChatRoom(ChatRoom):
             self.on_exclude(agent=member, time=time)
         # удаление себя из списка rooms
         del self.rooms[self.name]
+
+    def on_include(self, agent, time, cls_message=ChatPartyRoomIncludeMessage):
+        super(PartyChatRoom, self).on_include(agent=agent, time=time, cls_message=cls_message)
+
+    def on_exclude(self, agent, time, cls_message=ChatPartyRoomExcludeMessage):
+        super(PartyChatRoom, self).on_exclude(agent=agent, time=time, cls_message=cls_message)

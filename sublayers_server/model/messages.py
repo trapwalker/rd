@@ -494,3 +494,29 @@ class ChatRoomExcludeMessage(Message):
             )
         return d
 
+
+class ChatPartyRoomIncludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatPartyRoomIncludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatPartyRoomIncludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+
+
+class ChatPartyRoomExcludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatPartyRoomExcludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatPartyRoomExcludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+

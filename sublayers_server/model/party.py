@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
     PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage)
-
+from sublayers_server.model.chat_room import PartyChatRoom
 
 def inc_name_number(name):
     clear_name = name.rstrip('0123456789')
@@ -208,12 +208,7 @@ class Party(object):
         self.invites = []
 
         # создание чат-комнаты пати
-        self.conference_name = 'party_' + name
-        self.xmpp = owner.server.app.xmpp_manager
-        self.room_jid = None
-        if self.xmpp is not None:
-            self.room_jid = self.xmpp.create_room(room=self.conference_name)
-
+        self.room = PartyChatRoom(time=time, name=name)
         self.include(owner, time=time)
 
     @property
@@ -290,7 +285,7 @@ class Party(object):
             member.agent.party_after_include(new_member=agent, party=self, time=time)
 
         # включить агента в чат-комнату пати
-        agent.add_xmpp_room(room_jid=self.room_jid)
+        self.room.include(agent=agent, time=time)
 
     def _on_include(self, agent, time):
         #log.info('==============Start include')
@@ -334,7 +329,7 @@ class Party(object):
             member.agent.party_after_exclude(old_member=agent, party=self, time=time)
 
         # исключить агента из чат-комнаты пати
-        agent.del_xmpp_room(room_jid=self.room_jid)
+        self.room.exclude(agent=agent, time=time)
 
     def _on_exclude(self, agent, time):
         #log.info('---------------Start exclude')
