@@ -16,20 +16,6 @@ from random import randint
 from bson.objectid import ObjectId
 
 
-def on_register_new_user(xmpp_manager, profiles, user_db_uid):
-    jid = user_db_uid + '@' + xmpp_manager.host_name
-    psw = str(hashlib.md5(jid + str(randint(0, 100))).hexdigest())
-    if xmpp_manager.register_new_jid(jid=jid, password=psw):
-        log.info('New XMPP user <<{}>> is registered'.format(jid))
-    else:
-        log.warning('New XMPP user <<{}>> is NOT registered'.format(jid))
-    is_upd = profiles.update({"_id": ObjectId(user_db_uid)}, {'$set': {'xmpp': {'jid': jid, 'password': psw}}})
-    if is_upd:
-        return True
-    else:
-        return False
-
-
 class SiteLoginHandler(BaseHandler):
     def get(self):
         if self.application.auth_db is None:
@@ -57,9 +43,13 @@ class StandardLoginHandler(BaseHandler):
         else:
             self.redirect("/login?msg=Ошибка%20авторизации")
 
-    def _db_request(self, email, password=None):
+    def _db_request(self, email, name=None, password=None):
         auth_db = self.application.auth_db
         db_res = None
+        if name is not None:
+            db_res = auth_db.profiles.find({'name': name})
+            if db_res.count() > 0:
+                return db_res[0]
         if password is None:
             db_res = auth_db.profiles.find({'auth.standard.email': email})
         else:
@@ -75,14 +65,14 @@ class StandardLoginHandler(BaseHandler):
     def _registration(self):
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
-        user = self.get_argument('username', None)
-        if (email is None) or (password is None) or (user is None):
+        username = self.get_argument('username', None)
+        if (email is None) or (password is None) or (username is None):
             self.redirect("/login?msg=Ошибка%20авторизации")
             return
-        user_id = self._db_request(email=email)
+        user_id = self._db_request(email=email, name=username)
         if user_id is None:
             user_db_uid = str(self.application.auth_db.profiles.insert({
-                'name': user,
+                'name': username,
                 'auth': {
                     'standard': {
                         'email': email,
@@ -90,8 +80,6 @@ class StandardLoginHandler(BaseHandler):
                     }
                 }
             }))
-            on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=self.application.auth_db.profiles,
-                                 user_db_uid=user_db_uid)
             self.set_secure_cookie("user", user_db_uid)
             self.redirect("/")
         else:
@@ -153,8 +141,6 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
                 user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
-                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=auth_db.profiles,
-                                     user_db_uid=user_db_uid)
                 return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
@@ -228,8 +214,6 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
                 user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
-                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=auth_db.profiles,
-                                     user_db_uid=user_db_uid)
                 return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
@@ -298,8 +282,6 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
                 user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
-                on_register_new_user(xmpp_manager=self.application.xmpp_manager, profiles=auth_db.profiles,
-                                     user_db_uid=user_db_uid)
                 return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
