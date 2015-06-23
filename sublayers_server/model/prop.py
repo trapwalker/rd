@@ -92,9 +92,9 @@ class Node(Persistent):
     doc = DocAttribute()
 
     def __init__(self, name, parent=None, abstract=False, values=None,  **kw):
+        super(Node, self).__init__()
         self.name = name
         self.parent = parent
-        self.abstract = abstract
         self.values = values or {}
         self.values.update(kw)
         self.childs = []  # todo: use weakref
