@@ -73,15 +73,9 @@ class ChatRoom(object):
         return cls.rooms.get(name)
 
     @classmethod
-    def get_rooms_by_agent(cls, agent):
-        for room in cls.rooms.values():
-            if agent in room:
-                yield room
-
-    @classmethod
     def resend_rooms_for_agent(cls, agent, time):
-        for room in cls.get_rooms_by_agent(agent=agent):
-            ChatRoomIncludeMessage(agent=agent, room_name=room.name, time=time).post()
+        for chat in agent.chats:
+            ChatRoomIncludeMessage(agent=agent, room_name=chat.name, time=time).post()
 
     def as_dict(self):
         return dict(
@@ -113,6 +107,7 @@ class ChatRoom(object):
             log.warn('Agent %s is already in chat-room %s', agent, self)
             return
         self.members.append(agent)
+        agent.chats.append(self)
         cls_message(agent=agent, room_name=self.name, time=time).post()
 
     def exclude(self, agent, time):
@@ -123,6 +118,7 @@ class ChatRoom(object):
             log.warn('Agent %s not in chat-room %s', agent, self)
             return
         self.members.remove(agent)
+        agent.chats.remove(self)
         cls_message(agent=agent, room_name=self.name, time=time).post()
 
     def on_message(self, agent, msg, time):

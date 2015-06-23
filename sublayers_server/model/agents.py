@@ -37,6 +37,8 @@ class Agent(Object):
         self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
         self.stat_log = StatLogger(owner=self)
 
+        self.chats = []
+
         # статистика сервера
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 

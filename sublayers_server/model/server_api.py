@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.agents import User, AI
-from sublayers_server.model.utils import NameGenerator
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API, public_method
 
@@ -20,12 +19,12 @@ class ServerAPI(API):
         """
         @rtype sublayers_server.model.agents.Agent
         """
-        agent_id = agent_id or NameGenerator.new(test=True)['login']
-        agent = self.server.agents.get(agent_id, None)  # todo: raise exceptions if absent but not make
+        db_res = self.server.app.auth_db.profiles.find({'_id': ObjectId(agent_id)})
+        login = db_res[0]['name']
+        agent = self.server.agents.get(login, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             cls = AI if ai else User
-            db_res = self.server.app.auth_db.profiles.find({'_id': ObjectId(agent_id)})
-            agent = cls(server=self.server, login=db_res[0]['name'], party=None, time=self.server.get_time())
+            agent = cls(server=self.server, login=login, party=None, time=self.server.get_time())
             log.info('Server API: New Agent is created: %s', agent_id)
         else:
             if agent and do_disconnect:
