@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
     PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage)
-
+from sublayers_server.model.chat_room import PartyChatRoom
 
 def inc_name_number(name):
     clear_name = name.rstrip('0123456789')
@@ -70,11 +70,11 @@ class PartyInviteDeleteEvent(Event):
 
     def on_perform(self):
         super(PartyInviteDeleteEvent, self).on_perform()
-        self.invite.delete_invite()
+        self.invite.delete_invite(time=self.time)
 
 
 class Invite(object):
-    def __init__(self, sender, recipient, party):
+    def __init__(self, sender, recipient, party, time):
         assert (recipient is not None) and (party is not None)
         self.sender = sender
         self.recipient = recipient
@@ -82,10 +82,12 @@ class Invite(object):
 
         # Все члены пати должны знать кого пригласили
         for member in self.party.members:
-            PartyInviteMessage(agent=member.agent, sender=sender, recipient=recipient, party=party, invite=self).post()
+            PartyInviteMessage(agent=member.agent, sender=sender, recipient=recipient, party=party, invite=self,
+                               time=time).post()
 
         # Приглашенный тоже должен об этом узнать
-        PartyInviteMessage(agent=recipient, sender=sender, recipient=recipient, party=party, invite=self).post()
+        PartyInviteMessage(agent=recipient, sender=sender, recipient=recipient, party=party, invite=self,
+                           time=time).post()
 
         # Добавляем приглашение в список приглашений party
         self.party.invites.append(self)
@@ -97,13 +99,13 @@ class Invite(object):
         # отменить инвайт могут: sender, recipient, owner пати
         return (agent == self.sender) or (agent == self.recipient) or (agent == self.party.owner)
 
-    def delete_invite(self):
+    def delete_invite(self, time):
         # все участники пати должны узнать, что инвайт отменён
         for member in self.party.members:
             PartyInviteDeleteMessage(agent=member.agent, sender=self.sender,
-                                     recipient=self.recipient, party=self.party, invite=self).post()
+                                     recipient=self.recipient, party=self.party, invite=self, time=time).post()
         # Приглашаемый тоже должен об этом узнать
-        PartyInviteDeleteMessage(agent=self.recipient, sender=self.sender,
+        PartyInviteDeleteMessage(agent=self.recipient, sender=self.sender, time=time,
                                  recipient=self.recipient, party=self.party, invite=self).post()
 
         if self in self.party.invites:
@@ -119,7 +121,7 @@ class PartyMember(object):
     #       'Admin' - заместитель главы пати
     #       'Normal' - обычный участник
 
-    def __init__(self, agent, party, category=2):
+    def __init__(self, agent, party, time, category=2):
         u'''
             category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
         '''
@@ -132,31 +134,31 @@ class PartyMember(object):
         # Включение в мемберы пати нового мембера
         party.members.append(self)
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
-        PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party).post()
+        PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party, time=time).post()
         # Рассылка всем агентам, которые видят машинки добавляемого агента
         for car in agent.cars:
             for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent).post()
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent, time=time).post()
 
-    def out_from_party(self):
+    def out_from_party(self, time):
         # Исключение мембера из пати
         self.party.members.remove(self)
         # Отправка специального сообщения исключённому (вышедшему) агенту
-        PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party).post()
+        PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party, time=time).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
         for car in self.agent.cars:
             for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
 
-    def kick_from_party(self):
+    def kick_from_party(self, time):
         # Исключение мембера из пати
         self.party.members.remove(self)
         # Отправка специального сообщения исключённому (вышедшему) агенту
-        PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party).post()
+        PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party, time=time).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
         for car in self.agent.cars:
             for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent).post()
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
 
     def set_category(self, category):
         self.category = category
@@ -206,12 +208,7 @@ class Party(object):
         self.invites = []
 
         # создание чат-комнаты пати
-        self.conference_name = 'party_' + name
-        self.xmpp = owner.server.app.xmpp_manager
-        self.room_jid = None
-        if self.xmpp is not None:
-            self.room_jid = self.xmpp.create_room(room=self.conference_name)
-
+        self.room = PartyChatRoom(time=time, name=name)
         self.include(owner, time=time)
 
     @property
@@ -232,11 +229,11 @@ class Party(object):
                 return True
         return False
 
-    def _del_invites_by_agent(self, agent):
+    def _del_invites_by_agent(self, agent, time):
         temp_invites = self.invites[:]
         for inv in temp_invites:
             if inv.recipient == agent:
-                inv.delete_invite()
+                inv.delete_invite(time=time)
 
     def as_dict(self, with_members=False):
         d = dict(
@@ -268,9 +265,9 @@ class Party(object):
         # проверка по инвайтам
         if agent != self.owner:
             if not self._has_invite(agent):
-                PartyErrorMessage(agent=agent, comment='You do not have invite for this party').post()
+                PartyErrorMessage(agent=agent, time=time, comment='You do not have invite for this party').post()
                 return
-            self._del_invites_by_agent(agent)
+            self._del_invites_by_agent(agent, time=time)
 
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self, time=time)
@@ -278,7 +275,7 @@ class Party(object):
             member.agent.party_before_include(new_member=agent, party=self, time=time)
 
         self._on_include(agent=agent, time=time)
-        PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2))
+        PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2), time=time)
         agent.party = self
         #todo: проблемы с русским языком
         #log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
@@ -288,7 +285,7 @@ class Party(object):
             member.agent.party_after_include(new_member=agent, party=self, time=time)
 
         # включить агента в чат-комнату пати
-        agent.add_xmpp_room(room_jid=self.room_jid)
+        self.room.include(agent=agent, time=time)
 
     def _on_include(self, agent, time):
         #log.info('==============Start include')
@@ -322,7 +319,7 @@ class Party(object):
             member.agent.party_before_exclude(old_member=agent, party=self, time=time)
 
         agent.party = None
-        out_member.out_from_party()
+        out_member.out_from_party(time=time)
         self._on_exclude(agent=agent, time=time)
         log.info('Agent %s excluded from party %s', agent, self)
 
@@ -332,7 +329,7 @@ class Party(object):
             member.agent.party_after_exclude(old_member=agent, party=self, time=time)
 
         # исключить агента из чат-комнаты пати
-        agent.del_xmpp_room(room_jid=self.room_jid)
+        self.room.exclude(agent=agent, time=time)
 
     def _on_exclude(self, agent, time):
         #log.info('---------------Start exclude')
@@ -364,8 +361,8 @@ class Party(object):
         for member in self.members:
             member.agent.add_observer(observer=observer, time=time)
 
-    def invite(self, sender, recipient):
-        PartyInviteEvent(party=self, sender=sender, recipient=recipient, time=sender.server.get_time() + 0.01).post()
+    def invite(self, sender, recipient, time):
+        PartyInviteEvent(party=self, sender=sender, recipient=recipient, time=time).post()
 
     def on_invite(self, event):
         sender = event.sender
@@ -384,7 +381,7 @@ class Party(object):
             if (inv.sender == sender) and (inv.recipient == recipient):
                 PartyErrorMessage(agent=sender, comment='Invite already exists').post()
                 return
-        Invite(sender=sender, recipient=recipient, party=self)
+        Invite(sender=sender, recipient=recipient, party=self, time=event.time)
 
     def __len__(self):
         return len(self.members)
@@ -421,7 +418,7 @@ class Party(object):
             member.agent.party_before_exclude(old_member=kicked, party=self, time=time)
 
         kicked.party = None
-        kicked_member.kick_from_party()
+        kicked_member.kick_from_party(time=time)
         self._on_exclude(agent=kicked, time=time)
         log.info('Agent %s kick from party %s', kicked, self)
 

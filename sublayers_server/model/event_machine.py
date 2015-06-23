@@ -14,6 +14,7 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.town import RadioPoint, Town
+from sublayers_server.model.events import InitServerEvent
 
 import sys
 from time import sleep
@@ -47,7 +48,6 @@ class Server(object):
         get_effects(server=self)
 
         self.zones = []
-        init_zones_on_server(server=self)
 
         self.stat_log = StatLogger(owner=self)
         self.visibility_mng = VisibilityManager(server=self)
@@ -57,15 +57,22 @@ class Server(object):
         return get_time()
 
     def init_scene(self):
+        InitServerEvent(server=self, time=self.get_time()).post()
+
+    def on_init_server(self, event):
+        # todo: регистрация эффектов, должно быть обязательно раньше зон
+
+        # создание зон
+        init_zones_on_server(server=self, time=event.time)
+
+        # установка стационарных объектов - радиоточек и городов
         base_point = Point(12496376, 27133643)
         RadioPoint(time=self.get_time(),
                    server=self,
-                   conference_name='radio_point_1',
                    position=base_point)
 
         RadioPoint(time=self.get_time(),
                    server=self,
-                   conference_name='radio_point_2',
                    position=Point(12496200, 27133643))
 
         Town(time=self.get_time(),

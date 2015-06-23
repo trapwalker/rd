@@ -609,22 +609,6 @@ var ClientManager = (function () {
         chat.party_info_message(event);
     };
 
-    ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
-        //console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
-        if (event.unique)
-            windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
-        else
-            console.log('Попытка открыть не уникальное окно по адресу: ', event.url);
-    };
-
-    ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
-        //console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
-        if (event.unique)
-            windowTemplateManager.closeUniqueWindow(event.win_name);
-        else
-            console.log('Попытка открыть не уникальное');
-    };
-
     ClientManager.prototype.EnterToTown = function (event) {
         //console.log('ClientManager.prototype.EnterToTown', event);
         var town_uid = event.town.uid;
@@ -647,6 +631,26 @@ var ClientManager = (function () {
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
 
+    };
+
+    ClientManager.prototype.ChatRoomIncludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatRoomIncludeMessage', event);
+        chat.addChat(event.room_name);
+    };
+
+    ClientManager.prototype.ChatRoomExcludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatRoomExcludeMessage', event);
+        chat.removeChat(event.room_name);
+    };
+
+    ClientManager.prototype.ChatPartyRoomIncludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatPartyRoomIncludeMessage', event);
+        chat.activateParty(event.room_name);
+    };
+
+    ClientManager.prototype.ChatPartyRoomExcludeMessage = function(event){
+        console.log('ClientManager.prototype.ChatPartyRoomExcludeMessage', event);
+        chat.deactivateParty(event.room_name);
     };
 
     // Исходящие сообщения
@@ -789,16 +793,6 @@ var ClientManager = (function () {
                 x: target.x,
                 y: target.y
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendOpenWindowCreateParty = function () {
-        var mes = {
-            call: "open_window_create_party",
-            rpc_call_id: rpcCallList.getID(),
-            params: { }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

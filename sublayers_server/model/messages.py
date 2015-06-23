@@ -21,16 +21,14 @@ def make_push_package(events):
 class Message(object):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, agent=None, time=None, comment=None):
+    def __init__(self, agent, time, comment=None):
         """
         @param sublayers_server.model.utils.TimeClass time: Time of message post
         """
-        if agent is not None:
-            if time is None:
-                time = agent.server.get_time()
         super(Message, self).__init__()
-        self.agent = agent
+        assert time is not None, 'classname event is {}'.format(self.classname)
         self.time = time
+        self.agent = agent
         self.comment = comment
 
     def post(self):
@@ -63,6 +61,10 @@ class Message(object):
             time=self.time,
             comment=self.comment,
         )
+
+
+class InitTime(Message):
+    pass
 
 
 class Init(Message):
@@ -446,6 +448,75 @@ class ExitFromTown(Message):
         d = super(ExitFromTown, self).as_dict()
         d.update(
             town=self.town.as_dict(time=self.time)
+            )
+        return d
+
+
+class ChatRoomMessage(Message):
+    def __init__(self, room_name, msg, sender, **kw):
+        super(ChatRoomMessage, self).__init__(**kw)
+        self.room_name = room_name
+        self.msg = msg
+        self.sender = sender
+
+    def as_dict(self):
+        d = super(ChatRoomMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            msg=self.msg,
+            sender=self.sender.login,
+            )
+        return d
+
+
+class ChatRoomIncludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatRoomIncludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatRoomIncludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+
+
+class ChatRoomExcludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatRoomExcludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatRoomExcludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+
+
+class ChatPartyRoomIncludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatPartyRoomIncludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatPartyRoomIncludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+
+
+class ChatPartyRoomExcludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatPartyRoomExcludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatPartyRoomExcludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
             )
         return d
 

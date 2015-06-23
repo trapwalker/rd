@@ -40,20 +40,6 @@ class Agent(Object):
         # статистика сервера
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 
-        # XMPP чат
-        self.xmpp = None
-        if self.server.app.auth_db is not None:
-            db_res = self.server.app.auth_db.profiles.find_one({"_id": ObjectId(login)}, {'xmpp': 1})
-            if db_res is not None:
-                self.xmpp = dict(
-                    jid=db_res.get(u'xmpp').get(u'jid'),
-                    password=db_res.get(u'xmpp').get(u'password')
-                )
-            else:
-                log.warn('User %s has not XMPP profile', self)
-         # комнаты для джаббера
-        self.xmpp_rooms = []
-
     @property
     def is_online(self):
         return self._connection is not None
@@ -91,7 +77,7 @@ class Agent(Object):
             is_first=is_first,
         ).post()
         if isinstance(obj, Unit):
-            obj.send_auto_fire_messages(agent=self, action=True)
+            obj.send_auto_fire_messages(agent=self, action=True, time=time)
 
     def on_out(self, time, subj, obj):
         # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
@@ -106,7 +92,7 @@ class Agent(Object):
             is_last=is_last,
         ).post()
         if isinstance(obj, Unit):
-            obj.send_auto_fire_messages(agent=self, action=False)
+            obj.send_auto_fire_messages(agent=self, action=False, time=time)
 
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
@@ -215,13 +201,13 @@ class Agent(Object):
                     return invite
         return None
 
-    def delete_invite(self, invite_id):
+    def delete_invite(self, invite_id, time):
         # получить инвайт с данным id
         invite = self._invite_by_id(invite_id)
         if (invite is not None) and (invite.can_delete_by_agent(self)):
-            PartyInviteDeleteEvent(invite=invite, time=self.server.get_time() + 0.01).post()
+            PartyInviteDeleteEvent(invite=invite, time=time).post()
         else:
-            messages.PartyErrorMessage(agent=self,
+            messages.PartyErrorMessage(agent=self, time=time,
                                        comment="You not have access for this invite {}".format(invite_id)).post()
 
     def is_target(self, target):
@@ -241,25 +227,6 @@ class Agent(Object):
             if t_agent.party is self.party:
                 return False
         return True
-
-    def add_xmpp_room(self, room_jid):
-        if (self.xmpp is not None) and (room_jid is not None):
-            self.server.app.xmpp_manager.invite_to_room(room_jid=room_jid, jid=self.xmpp.get('jid'))
-            if room_jid not in self.xmpp_rooms:
-                self.xmpp_rooms.append(room_jid)
-
-    def del_xmpp_room(self, room_jid):
-        if (self.xmpp is not None) and (room_jid is not None):
-            self.server.app.xmpp_manager.kick_from_room(room_jid=room_jid, jid=self.xmpp.get('jid'))
-            if room_jid in self.xmpp_rooms:
-                self.xmpp_rooms.remove(room_jid)
-
-    def reinvite_to_xmpp_rooms(self):
-        if self.xmpp is not None:
-            agent_jid = self.xmpp.get('jid')
-            xmpp_manager = self.server.app.xmpp_manager
-            for room_jid in self.xmpp_rooms:
-                xmpp_manager.invite_to_room(room_jid=room_jid, jid=agent_jid)
 
 
 class User(Agent):

@@ -16,13 +16,13 @@ class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
 
-    def __init__(self, server, time=None, callback_before=None, callback_after=None, comment=None):
+    def __init__(self, server, time, callback_before=None, callback_after=None, comment=None):
         """
         @param float time: Time of event
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
         assert time is not None, 'classname event is {}'.format(self.classname)
-        self.time = time or server.get_time()
+        self.time = time
         self.actual = True
         self.callback_before = callback_before
         self.callback_after = callback_after
@@ -225,9 +225,10 @@ class FireDischargeEffectEvent(Objective):
         for agent in self.server.agents.values():
             if len(targets) > 0:
                 for target in targets:
-                    FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target).post()
+                    FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target, time=self.time).post()
             else:
-                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=fake_position, is_fake=True).post()
+                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=fake_position, is_fake=True,
+                                    time=self.time).post()
 
 
 class FireAutoEnableEvent(Objective):
@@ -273,6 +274,7 @@ class BangEvent(Event):
             Bang(
                 position=self.center,
                 agent=agent,
+                time=self.time,
             ).post()
 
 
@@ -317,3 +319,19 @@ class ActivateTownChats(Event):
     def on_perform(self):
         super(ActivateTownChats, self).on_perform()
         self.town.activate_chats(event=self)
+
+
+class InitServerEvent(Event):
+    def on_perform(self):
+        super(InitServerEvent, self).on_perform()
+        self.server.on_init_server(self)
+
+
+class InsertNewServerZone(Event):
+    def __init__(self, zone, **kw):
+        super(InsertNewServerZone, self).__init__(**kw)
+        self.zone = zone
+
+    def on_perform(self):
+        super(InsertNewServerZone, self).on_perform()
+        self.server.zones.append(self.zone)

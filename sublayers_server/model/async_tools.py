@@ -36,14 +36,14 @@ class AsyncCallThread(Thread):
 
     def run(self):
         try:
-            log.debug('%s.run()', self)
+            #log.debug('%s.run()', self)
             if self.target:
                 result = self.target(*self.args, **self.kwargs)
-                log.debug('after target result: %s -> %s', result, self.result_callback)
+                #log.debug('after target result: %s -> %s', result, self.result_callback)
                 if self.result_callback:
-                    log.debug('before result callback')
+                    #log.debug('before result callback')
                     self.result_callback(result)
-                    log.debug('after result callback')
+                    #log.debug('after result callback')
         except self.exceptions as e:
             if self.error_callback:
                 self.error_callback(e)
@@ -55,17 +55,17 @@ class AsyncCallThread(Thread):
 
 def async_deco(func, result_callback=None, error_callback=None, exceptions=()):
     def closure(*args, **kwargs):
-        log.debug('before thread create')
+        #log.debug('before thread create')
         thread = AsyncCallThread(
             target=func,
             result_callback=result_callback, error_callback=error_callback, exceptions=exceptions,
             args=args, kwargs=kwargs)
-        log.debug('before thread start')
+        #log.debug('before thread start')
         thread.start()
-        log.debug('after thread start')
+        #log.debug('after thread start')
         return thread
 
-    update_wrapper(closure, f)
+    update_wrapper(closure, func)
     return closure
 
 

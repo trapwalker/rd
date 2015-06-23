@@ -49,7 +49,7 @@ class WeaponAuto(Weapon):
         self.targets.append(car)
         car.set_hp(dps=self.dps, add_shooter=self.owner, time=time)
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=True).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=True, time=time).post()
 
     def _end(self, car, time):
         # todo: остановить списывание патронов пулемёта
@@ -57,7 +57,7 @@ class WeaponAuto(Weapon):
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps, del_shooter=self.owner, time=time)
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=False).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sectors[0].side, action=False, time=time).post()
 
     def start(self, car, time):
         if self._enable:

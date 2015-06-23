@@ -8,20 +8,17 @@ from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.units import Unit
 from sublayers_server.model.messages import EnterToTown, ExitFromTown
 from sublayers_server.model.events import ActivateTownChats
+from sublayers_server.model.chat_room import ChatRoom
 
 
 class RadioPoint(Observer):
-    def __init__(self, time, conference_name, observing_range=BALANCE.RadioPoint.observing_range, **kw):
+    def __init__(self, time, observing_range=BALANCE.RadioPoint.observing_range, **kw):
         super(RadioPoint, self).__init__(time=time, observing_range=observing_range, **kw)
-        self.conference_name = conference_name
-        self.xmpp = self.server.app.xmpp_manager
-        self.room_jid = None
+        self.room = None
 
     def on_init(self, event):
         super(RadioPoint, self).on_init(event)
-        if self.xmpp is None:
-            return
-        self.room_jid = self.xmpp.create_room(room=self.conference_name)
+        self.room = ChatRoom(time=event.time)
 
     def on_contact_in(self, time, obj):
         super(RadioPoint, self).on_contact_in(time=time, obj=obj)
@@ -50,8 +47,8 @@ class Town(Observer):
     def activate_chats(self, event):
         agent = event.agent
         for chat in self.radio_points:
-            log.info('agent invite to %s', chat.room_jid)
-            agent.add_xmpp_room(room_jid=chat.room_jid)
+            log.info('agent invite to %s', chat.room)
+            chat.room.include(agent=agent, time=event.time)
 
     def on_enter(self, agent, time):
         log.info('agent %s coming in town %s', agent, self)
@@ -64,9 +61,9 @@ class Town(Observer):
         log.info('agent %s exit from town %s', agent, self)
         self.visitors.remove(agent)
         for chat in self.radio_points:
-            agent.del_xmpp_room(room_jid=chat.room_jid)
+            chat.room.exclude(agent=agent, time=time)
         ExitFromTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
-        agent.api.update_agent_api(time=time, position=self.position(time))
+        agent.api.update_agent_api(time=time + 0.1, position=self.position(time))
 
     def can_come(self, agent):
         if agent.api.car:
