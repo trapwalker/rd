@@ -615,7 +615,7 @@ var ClientManager = (function () {
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
-            url: "http://" + location.host + '/town',
+            url: "http://" + location.host + '/api/town',
             data:  { town_id: event.town.uid },
             success: function(data){
                 $('#activeTownDiv').append(data);

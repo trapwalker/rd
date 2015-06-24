@@ -70,13 +70,10 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r"/", SiteHandler),
-            (r"/main_car_info", MainCarInfoHandler),
-            (r"/party", PartyHandler),
             (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", PlayHandler),
-
 
             (r"/login", SiteLoginHandler),
             (r"/logout", SiteLogoutHandler),
@@ -87,7 +84,10 @@ class Application(tornado.web.Application):
 
             (r"/stat", ServerStatisticsHandler),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
-            (r"/town", TownHandler),
+
+            (r"/api/town", TownHandler),
+            (r"/api/main_car_info", MainCarInfoHandler),
+            (r"/api/party", PartyHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,
