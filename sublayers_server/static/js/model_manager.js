@@ -630,27 +630,36 @@ var ClientManager = (function () {
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
+        townVisitorsManager.clear_visitors();
 
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
-        console.log('ClientManager.prototype.ChatRoomIncludeMessage', event);
+        //console.log('ClientManager.prototype.ChatRoomIncludeMessage', event);
         chat.addChat(event.room_name);
     };
 
     ClientManager.prototype.ChatRoomExcludeMessage = function(event){
-        console.log('ClientManager.prototype.ChatRoomExcludeMessage', event);
+        //console.log('ClientManager.prototype.ChatRoomExcludeMessage', event);
         chat.removeChat(event.room_name);
     };
 
     ClientManager.prototype.ChatPartyRoomIncludeMessage = function(event){
-        console.log('ClientManager.prototype.ChatPartyRoomIncludeMessage', event);
+        //console.log('ClientManager.prototype.ChatPartyRoomIncludeMessage', event);
         chat.activateParty(event.room_name);
     };
 
     ClientManager.prototype.ChatPartyRoomExcludeMessage = function(event){
-        console.log('ClientManager.prototype.ChatPartyRoomExcludeMessage', event);
+        //console.log('ClientManager.prototype.ChatPartyRoomExcludeMessage', event);
         chat.deactivateParty(event.room_name);
+    };
+
+    ClientManager.prototype.ChangeTownVisitorsMessage = function(event){
+        //console.log('ClientManager.prototype.TownChangeVisitor', event);
+        if (event.action)
+            townVisitorsManager.add_visitor(event.visitor);
+        else
+            townVisitorsManager.del_visitor(event.visitor);
     };
 
     // Исходящие сообщения

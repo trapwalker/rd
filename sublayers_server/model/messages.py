@@ -452,6 +452,21 @@ class ExitFromTown(Message):
         return d
 
 
+class ChangeTownVisitorsMessage(Message):
+    def __init__(self, visitor_login, action, **kw):
+        super(ChangeTownVisitorsMessage, self).__init__(**kw)
+        self.visitor_login = visitor_login
+        self.action = action
+
+    def as_dict(self):
+        d = super(ChangeTownVisitorsMessage, self).as_dict()
+        d.update(
+            visitor=self.visitor_login,
+            action=self.action
+            )
+        return d
+
+
 class ChatRoomMessage(Message):
     def __init__(self, msg, **kw):
         super(ChatRoomMessage, self).__init__(**kw)

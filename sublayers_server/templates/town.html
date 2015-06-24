@@ -1,8 +1,10 @@
 
 <div>
     {% raw open(svg_link).read() %}
-
-    <div id="chatTownWrap" style="display: none"></div>
+    <div id="townChatPageWrap" style="display: none">
+        <div id="chatTownWrap"></div>
+        <div id="visitorListWrap"></div>
+    </div>
 
 </div>
 <script>
@@ -55,13 +57,13 @@
     });
 
     $("#btn_3_select").mouseup(function(event){
-        $('#chatTownWrap').css('display', 'block');
+        $('#townChatPageWrap').css('display', 'block');
         $('#layer1').css('display', 'none');
         $('#layer2').css('display', 'none');
     });
 
     $("#btn_2_select").mouseup(function(event){
-        $('#chatTownWrap').css('display', 'none');
+        $('#townChatPageWrap').css('display', 'none');
         $('#layer1').css('display', 'block');
         $('#layer2').css('display', 'block');
     });
@@ -88,6 +90,8 @@
         $("#path_h1").css("opacity", "0.2");
     });
     */
+
+
 
 
 </script>
