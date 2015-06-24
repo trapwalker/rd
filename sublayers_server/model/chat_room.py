@@ -51,6 +51,21 @@ class ChatRoomMessageEvent(Event):
             room.on_message(agent=self.agent, msg_text=self.msg, time=self.time)
 
 
+class ChatRoomPrivateCreateEvent(Event):
+    def __init__(self, agent, recipient_login, **kw):
+        super(ChatRoomPrivateCreateEvent, self).__init__(server=agent.server, **kw)
+        self.recipient_login = recipient_login
+        self.agent = agent
+
+    def on_perform(self):
+        super(ChatRoomPrivateCreateEvent, self).on_perform()
+        recipient = self.server.agents.get(self.recipient_login, None)
+        if not recipient:
+            log.warning('Agent with login %s not found', self.recipient_login)
+            return
+        PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
+
+
 class ChatMessage(object):
     __str_template__ = '<ChatMessage::{self.chat_name} [{self.time}] # {self.sender_login}: {self.text}>'
 
@@ -177,3 +192,16 @@ class PartyChatRoom(ChatRoom):
 
     def _send_exclude_message(self, agent, time):
         ChatPartyRoomExcludeMessage(agent=agent, room_name=self.name, time=time).post()
+
+
+class PrivateChatRoom(ChatRoom):
+    def __init__(self, agent, recipient, time):
+        super(PrivateChatRoom, self).__init__(time=time, name=(agent.login + '->' + recipient.login))
+        self.include(agent=agent, time=time)
+        self.include(agent=recipient, time=time)
+
+    def on_exclude(self, agent, time):
+        super(PrivateChatRoom, self).on_exclude(agent=agent, time=time)
+        if len(self.members) == 0:
+            # удаление себя из списка rooms
+            del self.rooms[self.name]
