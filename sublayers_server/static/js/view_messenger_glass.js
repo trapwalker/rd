@@ -246,7 +246,7 @@ var ViewMessengerGlass = (function () {
     };
 
     // Добавление сообщений в окно чата
-    ViewMessengerGlass.prototype.addMessageByJID = function (room_jid, aUser, aText) {
+    ViewMessengerGlass.prototype.addMessageByJID = function (room_jid, aUser, aText, time) {
         // Найти чат для добавления в него сообщения
         var chat = this._getChatByJID(room_jid);
         if(! chat) {
@@ -259,7 +259,7 @@ var ViewMessengerGlass = (function () {
         this.addMessageToCompact(chat, aUser, aText, type_for_compact);
         var messageID = chat.mesCount++;
         // получить локальное время
-        var tempTime = new Date().toLocaleTimeString();
+        var tempTime = new Date(time).toLocaleTimeString();
         // создать див сообщения и спаны
         var mesDiv = $('<div id="mesdiv' + room_jid + messageID + '" class="VMG-message-message"></div>');
         var spanTime = $('<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>');
@@ -468,7 +468,7 @@ var ViewMessengerGlass = (function () {
         if (params.message_type === "push") {
             var msg = params.events[0];
             if (msg.cls === "ChatRoomMessage")
-                this.addMessageByJID(msg.room_name, {login: msg.sender}, msg.msg);
+                this.addMessageByJID(msg.room_name, {login: msg.sender}, msg.msg, msg.msg_time);
         }
         return true;
     };

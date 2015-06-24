@@ -17,7 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToTown, ExitFromTown
 from sublayers_server.model.units import Unit
-from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent
+from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent
 
 
 class UpdateAgentAPIEvent(Event):
@@ -352,13 +352,17 @@ class AgentAPI(API):
             self.delete_car()
         elif command == '/init':
             self.update_agent_api()
+        elif command == '/p':
+            for name in args:
+                self.create_private_room(recipient=name)
         else:
             log.warning('Unknown console command "%s"', cmd)
 
     @public_method
-    def get_my_xmpp_room_invite(self):
-        # log.info('agent get xmpp invites')
-        self.agent.reinvite_to_xmpp_rooms()
+    def create_private_room(self, recipient):
+        log.info('agent %s try create private room with %s', self.agent, recipient)
+        ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient,
+                                   time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_town(self, town_id):

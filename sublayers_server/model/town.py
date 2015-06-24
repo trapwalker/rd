@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.units import Unit
-from sublayers_server.model.messages import EnterToTown, ExitFromTown
+from sublayers_server.model.messages import EnterToTown, ExitFromTown, ChangeTownVisitorsMessage
 from sublayers_server.model.events import ActivateTownChats
 from sublayers_server.model.chat_room import ChatRoom
 
@@ -53,8 +53,13 @@ class Town(Observer):
     def on_enter(self, agent, time):
         log.info('agent %s coming in town %s', agent, self)
         agent.api.car.delete(time=time)  # удалить машинку агента
-        ActivateTownChats(agent=agent, town=self, time=time + 1).post()
+        ActivateTownChats(agent=agent, town=self, time=time + 0.1).post()
         EnterToTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
+
+        for visitor in self.visitors:
+            ChangeTownVisitorsMessage(agent=visitor, visitor_login=agent.login, action=True, time=time).post()
+            ChangeTownVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
+
         self.visitors.append(agent)
 
     def on_exit(self, agent, time):
@@ -64,6 +69,9 @@ class Town(Observer):
             chat.room.exclude(agent=agent, time=time)
         ExitFromTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
         agent.api.update_agent_api(time=time + 0.1, position=self.position(time))
+
+        for visitor in self.visitors:
+            ChangeTownVisitorsMessage(agent=visitor, visitor_login=agent.login, action=False, time=time).post()
 
     def can_come(self, agent):
         if agent.api.car:
