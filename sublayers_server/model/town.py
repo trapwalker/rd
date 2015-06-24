@@ -53,7 +53,7 @@ class Town(Observer):
     def on_enter(self, agent, time):
         log.info('agent %s coming in town %s', agent, self)
         agent.api.car.delete(time=time)  # удалить машинку агента
-        ActivateTownChats(agent=agent, town=self, time=time + 1).post()
+        ActivateTownChats(agent=agent, town=self, time=time + 0.1).post()
         EnterToTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
         self.visitors.append(agent)
 
