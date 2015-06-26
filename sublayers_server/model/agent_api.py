@@ -207,7 +207,7 @@ class AgentAPI(API):
                             time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time, position=None):
-        if not self.agent.current_town is None:
+        if self.agent.current_town is not None:
             ReEnterToTown(agent=self.agent, town=self.agent.current_town, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return

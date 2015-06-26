@@ -8,7 +8,7 @@ from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.units import Unit
 from sublayers_server.model.messages import EnterToTown, ExitFromTown, ChangeTownVisitorsMessage
 from sublayers_server.model.events import ActivateTownChats
-from sublayers_server.model.chat_room import ChatRoom
+from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
 
 class RadioPoint(Observer):
@@ -76,6 +76,7 @@ class Town(Observer):
         agent.current_town = None
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
+        PrivateChatRoom.close_private(agent=agent, time=time)
         ExitFromTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
         agent.api.update_agent_api(time=time + 0.1, position=self.position(time))
 
