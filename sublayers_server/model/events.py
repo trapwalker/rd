@@ -294,6 +294,21 @@ class EnterToTown(Event):
             log.warning('agent %s try to coming in town %s, but access denied', self.agent, town)
 
 
+class ReEnterToTown(Event):
+    def __init__(self, agent, town, **kw):
+        server = agent.server
+        super(ReEnterToTown, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.town = town
+
+    def on_perform(self):
+        super(ReEnterToTown, self).on_perform()
+        if self.agent in self.town.visitors:
+            self.town.on_re_enter(agent=self.agent, time=self.time)
+        else:
+            log.warning('agent %s try to re_coming in town %s, but access denied', self.agent, self.town)
+
+
 class ExitFromTown(Event):
     def __init__(self, agent, town_id, **kw):
         server = agent.server

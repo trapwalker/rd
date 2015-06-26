@@ -15,7 +15,7 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToTown, ExitFromTown
+from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown
 from sublayers_server.model.units import Unit
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent
 
@@ -207,6 +207,11 @@ class AgentAPI(API):
                             time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time, position=None):
+        if not self.agent.current_town is None:
+            ReEnterToTown(agent=self.agent, town=self.agent.current_town, time=time).post()
+            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
+            return
+
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:

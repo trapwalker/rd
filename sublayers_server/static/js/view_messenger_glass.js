@@ -356,6 +356,7 @@ var ViewMessengerGlass = (function () {
 
     // Добавление произвольной чат-комнаты
     ViewMessengerGlass.prototype.addChat = function (room_jid){
+        //console.log('ViewMessengerGlass.prototype.addChat');
         if (this._getChatByJID(room_jid)) {
             console.warn('Попытка повторного создания чат-комнаты.');
             return;

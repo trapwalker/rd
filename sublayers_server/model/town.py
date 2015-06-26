@@ -60,11 +60,20 @@ class Town(Observer):
             ChangeTownVisitorsMessage(agent=visitor, visitor_login=agent.login, action=True, time=time).post()
             ChangeTownVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
 
+        agent.current_town = self
         self.visitors.append(agent)
+
+    def on_re_enter(self, agent, time):
+        log.info('agent %s re_coming in town %s', agent, self)
+        EnterToTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
+        for visitor in self.visitors:
+            if not visitor is agent:
+                ChangeTownVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
 
     def on_exit(self, agent, time):
         log.info('agent %s exit from town %s', agent, self)
         self.visitors.remove(agent)
+        agent.current_town = None
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         ExitFromTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
