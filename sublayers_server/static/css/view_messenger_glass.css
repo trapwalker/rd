@@ -6,6 +6,41 @@
     bottom: 0;
 }
 
+#chatTownWrap {
+    position: absolute;
+    height: 535px;
+    width: 450px;
+    top: 210px;
+    left: 632px;
+}
+
+#visitorListWrap {
+    position: absolute;
+    height: 491px;
+    width: 208px;
+    top: 250px;
+    left: 1083px;
+}
+
+#visitorList {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.visitorRecord {
+    opacity: 0.5;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.visitorRecord:hover {
+    opacity: 1;
+}
+
 #VMGDivHardware {
     position: absolute;
     height: 457px;
@@ -35,14 +70,6 @@
     left: 5px;
     bottom: 0;
     margin: 10px;
-}
-
-#chatTownWrap {
-    position: absolute;
-    height: 600px;
-    width: 500px;
-    top: 190px;
-    left: 705px;
 }
 
 #VMGMainDivChat {

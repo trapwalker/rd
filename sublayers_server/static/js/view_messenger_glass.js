@@ -839,10 +839,12 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.showChatInTown = function(){
         $('#chatTownWrap').append(this.parent);
+        $('#VMGDynamicAreaForBorder').css('border-width', '0px');
     };
 
     ViewMessengerGlass.prototype.showChatInMap = function(){
         this.chatWrapDiv.append(this.parent);
+        $('#VMGDynamicAreaForBorder').css('border-width', '1px');
     };
 
     return ViewMessengerGlass;

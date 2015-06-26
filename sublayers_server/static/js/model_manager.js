@@ -621,6 +621,7 @@ var ClientManager = (function () {
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
+                townVisitorsManager.update_visitors();
             }
         });
     };
@@ -900,6 +901,18 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 town_id: town_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCreatePrivateChat = function(recipient) {
+        var mes = {
+            call: "create_private_chat",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient: recipient
             }
         };
         rpcCallList.add(mes);

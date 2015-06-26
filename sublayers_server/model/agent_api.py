@@ -354,12 +354,12 @@ class AgentAPI(API):
             self.update_agent_api()
         elif command == '/p':
             for name in args:
-                self.create_private_room(recipient=name)
+                self.create_private_chat(recipient=name)
         else:
             log.warning('Unknown console command "%s"', cmd)
 
     @public_method
-    def create_private_room(self, recipient):
+    def create_private_chat(self, recipient):
         log.info('agent %s try create private room with %s', self.agent, recipient)
         ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient,
                                    time=self.agent.server.get_time()).post()
