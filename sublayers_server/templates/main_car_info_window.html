@@ -1,4 +1,4 @@
-{% set window_caption = 'NUKE:\Транспорт>' %}
+﻿{% set window_caption = 'NUKE:\Транспорт>' %}
 
 <style>
     .mainCarInfoWindow-main {
@@ -614,8 +614,10 @@
 <div class="mainCarInfoWindow-main">
     {% include drag_close_header.html %}
     <div class="mainCarInfoWindow-menu">
-        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body_id">&nbspХарактеристики&nbsp</div>
-        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body_id">&nbspХарактеристики&nbsp
+        </div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp
+        </div>
         <div class="mainCarInfoWindow-menu-button" data-page_id="">&nbspТюнинг&nbsp</div>
     </div>
 
@@ -695,7 +697,7 @@
         $('.mainCarInfoWindow-page-div').css('display', 'none'); // лучше тоже сделать через классы
         // включить отображение только нужного дива (дата-атрибут - html5 атрибут, очень удобный...!)
         // сейчас сделал на айдишниках, но можно сделать и на классах, так как у тебя классы тут разные
-        $('#'+$(this).data('page_id')).css('display', 'block');
+        $('#' + $(this).data('page_id')).css('display', 'block');
     });
 
     // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
