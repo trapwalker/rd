@@ -35,7 +35,12 @@ from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogou
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 from sublayers_server.model.event_machine import LocalServer
-from pymongo import Connection
+
+
+try:
+    from pymongo import Connection
+except ImportError:
+    from pymongo import MongoClient as Connection
 
 
 class Application(tornado.web.Application):
