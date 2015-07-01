@@ -17,7 +17,8 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown
 from sublayers_server.model.units import Unit
-from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent
+from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
+    ChatRoomPrivateCloseEvent
 
 
 class UpdateAgentAPIEvent(Event):
@@ -365,9 +366,14 @@ class AgentAPI(API):
 
     @public_method
     def create_private_chat(self, recipient):
-        log.info('agent %s try create private room with %s', self.agent, recipient)
+        #log.info('agent %s try create private room with %s', self.agent, recipient)
         ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient,
                                    time=self.agent.server.get_time()).post()
+
+    @public_method
+    def close_private_chat(self, name):
+        #log.info('agent %s try close private chat %s', self.agent, name)
+        ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_town(self, town_id):

@@ -317,7 +317,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.initGlobalPage = function (){
         var page = {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
-            pageControl: $('<div id="chatPageControlGlobal" class="VMGPartyPageControl"></div>'),
+            pageControl: $('<div id="chatPageControlGlobal" class="VMGGlobalPageControl"></div>'),
             chatArea: $('<div id="textAreaGlobal" class="VMGPartytextOutArea"></div>'),
             pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Radio</div>'),
             chat: null
@@ -355,17 +355,27 @@ var ViewMessengerGlass = (function () {
     };
 
     // Добавление произвольной чат-комнаты
-    ViewMessengerGlass.prototype.addChat = function (room_jid){
+    ViewMessengerGlass.prototype.addChat = function (room_jid, chat_type){
         //console.log('ViewMessengerGlass.prototype.addChat');
         if (this._getChatByJID(room_jid)) {
             console.warn('Попытка повторного создания чат-комнаты.');
             return;
         }
 
+        var pageButton = $('<div id="pageButton' + room_jid + '" class="VMGPartypageButton sublayers-clickable">' + room_jid + '</div>');
+
+        if (chat_type === 'PrivateChatRoom') {
+            console.log('Генерация приватного чата');
+            var close_str = 'clientManager.sendClosePrivateChat(\'' + room_jid + '\')';
+            var pageButtonClose = $('<div class="sublayers-clickable VMGPartypageButtonClose" ' +
+            'onClick="' + close_str + '"</div>');
+            pageButton.append(pageButtonClose);
+        }
+
         var chat = {
             room_jid: room_jid,
             chatArea: $('<div id="_charArea' + room_jid + '" class="VMGChatOutArea"></div>'),
-            pageButton: $('<div id="pageButton' + room_jid + '" class="VMGPartypageButton sublayers-clickable">' + room_jid + '</div>'),
+            pageButton: pageButton,
             mesList: [],
             mesCount: 0
         };

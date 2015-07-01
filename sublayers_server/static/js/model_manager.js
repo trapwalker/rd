@@ -637,7 +637,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
         //console.log('ClientManager.prototype.ChatRoomIncludeMessage', event);
-        chat.addChat(event.room_name);
+        chat.addChat(event.room_name, event.chat_type);
     };
 
     ClientManager.prototype.ChatRoomExcludeMessage = function(event){
@@ -913,6 +913,19 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 recipient: recipient
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendClosePrivateChat = function(chat_name) {
+        //console.log('ClientManager.prototype.sendClosePrivateChat', chat_name);
+        var mes = {
+            call: "close_private_chat",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: chat_name
             }
         };
         rpcCallList.add(mes);

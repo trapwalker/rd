@@ -213,6 +213,22 @@
     border-width: 0px 0px 1px 0px;
 }
 
+.VMGGlobalPageControl {
+    position: relative;
+    height: 30px;
+    max-height: 30px;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-top: 2px;
+    border-image-slice: 0 0 1 0;
+    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: linear-gradient(to right, transparent, lime, transparent);
+    border-width: 0px 0px 1px 0px;
+}
+
 .VMGPartypageButton {
     position: relative;
     opacity: 0.5;
@@ -232,6 +248,23 @@
 
 .VMGPartypageButton:hover {
     opacity: 1;
+}
+
+.VMGPartypageButtonClose {
+    position: relative;
+    height: 8px;
+    width: 8px;
+    float: right;
+    background: transparent url('/static/img/chat/tab_close_btn.png') 50% 50% no-repeat;
+    padding: 0px 0px 0px 5px;
+}
+
+.VMGPartypageButtonClose:hover {
+    background: transparent url('/static/img/chat/tab_close_btn_over.png') 50% 50% no-repeat;
+}
+
+.VMGPartypageButtonClose:active {
+    background: transparent url('/static/img/chat/tab_close_btn_pressed.png') 50% 50% no-repeat;
 }
 
 .VMGStandarttextOutArea{

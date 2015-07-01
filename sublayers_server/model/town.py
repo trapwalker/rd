@@ -76,7 +76,7 @@ class Town(Observer):
         agent.current_town = None
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
-        PrivateChatRoom.close_private(agent=agent, time=time)
+        PrivateChatRoom.close_privates(agent=agent, time=time)
         ExitFromTown(agent=agent, town=self, time=time).post()  # отправть сообщения входа в город
         agent.api.update_agent_api(time=time + 0.1, position=self.position(time))
 

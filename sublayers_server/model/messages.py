@@ -484,14 +484,16 @@ class ChatRoomMessage(Message):
 
 
 class ChatRoomIncludeMessage(Message):
-    def __init__(self, room_name, **kw):
+    def __init__(self, room_name, chat_type=None, **kw):
         super(ChatRoomIncludeMessage, self).__init__(**kw)
         self.room_name = room_name
+        self.chat_type = chat_type
 
     def as_dict(self):
         d = super(ChatRoomIncludeMessage, self).as_dict()
         d.update(
             room_name=self.room_name,
+            chat_type=self.chat_type
             )
         return d
 
@@ -509,28 +511,10 @@ class ChatRoomExcludeMessage(Message):
         return d
 
 
-class ChatPartyRoomIncludeMessage(Message):
-    def __init__(self, room_name, **kw):
-        super(ChatPartyRoomIncludeMessage, self).__init__(**kw)
-        self.room_name = room_name
-
-    def as_dict(self):
-        d = super(ChatPartyRoomIncludeMessage, self).as_dict()
-        d.update(
-            room_name=self.room_name,
-            )
-        return d
+class ChatPartyRoomIncludeMessage(ChatRoomIncludeMessage):
+    pass
 
 
-class ChatPartyRoomExcludeMessage(Message):
-    def __init__(self, room_name, **kw):
-        super(ChatPartyRoomExcludeMessage, self).__init__(**kw)
-        self.room_name = room_name
-
-    def as_dict(self):
-        d = super(ChatPartyRoomExcludeMessage, self).as_dict()
-        d.update(
-            room_name=self.room_name,
-            )
-        return d
+class ChatPartyRoomExcludeMessage(ChatRoomExcludeMessage):
+    pass
 
