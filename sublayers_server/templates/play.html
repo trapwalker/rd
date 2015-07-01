@@ -2,20 +2,27 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>NUKE Navigator {% if revision %}v.{{revision}}{% end %}</title>
+    <title>NUKE Navigator {% if revision %}v.{{ revision }}{% end %}</title>
 
     <style>
         @font-face {
             font-family: MICRADI;
             src: url({{ static_url('fonts/micradi.ttf') }});
         }
+
         @font-face {
             font-family: Gruppo-Regular;
             src: url({{ static_url('fonts/gruppo-regular.ttf') }});
         }
+
         @font-face {
-            font-family: fsex300;
-            src: url({{ static_url('fonts/fsex300.ttf') }});
+            font-family: Nouveau_IBM;
+            src: url({{ static_url('fonts/Nouveau_IBM.ttf') }});
+        }
+
+        @font-face {
+            font-family: FreePixel;
+            src: url({{ static_url('fonts/FreePixel.ttf') }});
         }
     </style>
 
@@ -41,7 +48,7 @@
     <link rel="stylesheet" href="{{ static_url('css/controls/cruise_control.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/controls/zoom_slider.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
-    
+
 
     <script src="{{ static_url('js/third_party/leaflet-src.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
@@ -49,7 +56,7 @@
     <script src="{{ static_url('js/third_party/strophe.js') }}"></script>
     <script src="{{ static_url('js/third_party/strophe_muc.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.jrumble.1.3.js') }}"></script>
-    
+
     <!-- SVG JS Lib -->
     <script src="{{ static_url('js/third_party/svgjs/svg.js') }}"></script>
 
@@ -96,7 +103,7 @@
     <script src="{{ static_url('js/effects/e_points_tracer.js') }}"></script>
     <script src="{{ static_url('js/effects/e_autofire_on_shooter.js') }}"></script>
     <script src="{{ static_url('js/effects/e_fire_discharge_png_animation.js') }}"></script>
-    
+
     <script src="{{ static_url('js/rpc_list.js') }}"></script>
     <script src="{{ static_url('js/leaflet_addon.js') }}"></script>
 

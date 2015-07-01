@@ -7,7 +7,7 @@
         height: 422px;
         background-color: rgba(0, 0, 0, 0.75);
         color: #ffffff;
-        font: 12pt fsex300;
+        font: 12pt FreePixel;
     }
 
     .mainCarInfoWindow-menu {
@@ -24,6 +24,7 @@
         text-align: center;
         color: #135806;
         cursor: pointer;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-menu-button:hover {
@@ -104,6 +105,7 @@
     .mainCarInfoWindow-body-right-menu {
         width: 297px;
         height: 40px;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-right-menu-button-model {
@@ -116,7 +118,7 @@
         cursor: pointer;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-model:hover {
+    .mainCarInfoWindow-body-right-menu-button-model {
         background-color: #061108;
         background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
         linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
@@ -142,7 +144,7 @@
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 24px;
+        margin-left: 20px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -174,7 +176,7 @@
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 24px;
+        margin-left: 20px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -206,7 +208,7 @@
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 24px;
+        margin-left: 20px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -239,7 +241,7 @@
         width: 297px;
         height: 314px;
         border: solid 1px #00f150;
-        padding-top: 25px;
+        padding-top: 17px;
         padding-left: 10px;
         padding-right: 10px;
         box-sizing: border-box;
@@ -529,8 +531,9 @@
     }
 
     .mainCarInfoWindow-body-trunk-filter {
-        width: 297px;
+        width: 310px;
         height: 27px;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-trunk-filter-all {
@@ -573,6 +576,8 @@
         border-right: solid 1px #00f150;
         width: 156px;
         height: 315px;
+        margin-top: 5px;
+        float: left;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-picture {
@@ -588,6 +593,7 @@
         color: #30fc00;
         text-align: center;
         margin: 5px;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-description {
@@ -608,6 +614,72 @@
         background-color: #0d3707;
         margin: 5px;
         cursor: pointer;
+        font: 12pt Nouveau_IBM;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right {
+        position: relative;
+        width: 465px;
+        height: 315px;
+        margin-left: 165px;
+        margin-top: 5px;
+        overflow-y: scroll;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item {
+        width: 140px;
+        height: 100px;
+        float: left;
+        margin-left: 7px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-name {
+        font: 12pt Nouveau_IBM;
+        color: #30fc00;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-picture {
+        background-color: #000000;
+        background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
+        linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+        background-size: 2px 2px;
+        background-position: 0 0, 1px 1px;
+        text-align: center;
+        color: #0f4206;
+        height: 85px;
+        margin-top: 3px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-picture-count {
+        text-align: right;
+        margin-top: 45px;
+        margin-right: 5px;
+        color: #30fc00;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-line {
+        border-top: 2px dotted #0a2e03;
+        height: 3px;
+        margin-top: 10px;
+        float: left;
+        width: 450px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-name-empty {
+        font: 12pt Nouveau_IBM;
+        color: #135806;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-picture-empty {
+        background-color: #000000;
+        background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+        linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+        background-size: 2px 2px;
+        background-position: 0 0, 1px 1px;
+        text-align: center;
+        color: #0f4206;
+        height: 85px;
+        margin-top: 3px;
     }
 </style>
 
@@ -682,6 +754,74 @@
                 </div>
                 <div class="mainCarInfoWindow-body-trunk-body-left-amount">В инвентаре: 2 ед.</div>
                 <div class="mainCarInfoWindow-body-trunk-body-left-activate">Активировать!</div>
+            </div>
+            <div class="mainCarInfoWindow-body-trunk-body-right">
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name">
+                        Канистра
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture">
+                        Картинка
+                        <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-count">x2</div>
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-line"></div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-line"></div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
+                    </div>
+                </div>
+                <div class="mainCarInfoWindow-body-trunk-body-right-item">
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
+                        Пусто
+                    </div>
+                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty"></div>
+                </div>
             </div>
         </div>
     </div>
