@@ -10,7 +10,7 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 #import copy_reg
-#from collections import Callable
+from collections import deque
 from pprint import pformat
 
 
@@ -83,6 +83,10 @@ class PersistentMeta(type):
                 v.attach(name=k, cls=self)
 
 
+class ThingParentLinkIsCycle(Exception):
+    pass
+
+
 class ContainerMeta(type):
     def __init__(cls, name, bases, attrs):
         super(ContainerMeta, cls).__init__(name, bases, attrs)
@@ -91,12 +95,29 @@ class ContainerMeta(type):
     def __process_attrs__(self):
         for k, v in self.__dict__.items():
             if isinstance(v, Node):
-                v._attach_to_container(self)
+                v._attach_to_container(container=self, name=k)
+
+    def save(cls, stream):
+        for c in cls:
+            c.save(stream)
 
     def __iter__(cls):
-        for c in cls.__dict__.values():
-            if isinstance(c, Node):
+        """Iter with consistent parent lines"""
+        q = deque()
+        done = {None}
+        q.extend((c for c in cls.__dict__.values() if isinstance(c, Node)))
+        cnt = 0
+        while q:
+            c = q.pop()
+            if c.parent in done:
                 yield c
+                done.add(c)
+                cnt = 0
+            else:
+                q.appendleft(c)
+                cnt += 1
+                if cnt > len(q):
+                    raise ThingParentLinkIsCycle()
 
 
 class Persistent(object):
@@ -107,10 +128,12 @@ class Node(Persistent):
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     doc = DocAttribute()
 
-    def _attach_to_container(self, container):
+    def _attach_to_container(self, container, name):
         self.container = container
+        if self.name is None:
+            self.name = name
 
-    def __init__(self, name, parent=None, abstract=False, values=None, container=None, **kw):
+    def __init__(self, name=None, parent=None, abstract=False, values=None, container=None, **kw):
         super(Node, self).__init__()
         self.name = name
         self.parent = parent
@@ -120,6 +143,9 @@ class Node(Persistent):
         self.container = container
         if parent:
             parent._add_child(self)
+
+    def __hash__(self):
+        return hash((self.container, self.name))
 
     def __repr__(self):
         return '<{self.container.__name__}.{self.name}[{parent_name}]>'.format(
@@ -147,19 +173,17 @@ class Node(Persistent):
     def _has_attr_value(self, name):
         return name in self.values
 
-    def save(self, storage):
-        pass
+    def save(self, stream):
+        stream.write(repr(self))
+        stream.write('\n')
 
 
 class Container(object):
     __metaclass__ = ContainerMeta
 
-    @classmethod
-    def save(cls):
-        pass
-
 
 if __name__ == '__main__':
+    from pprint import pprint as pp
     # from pickle import dumps, loads
     # import jsonpickle as jp
     class Car(Node):
@@ -167,8 +191,9 @@ if __name__ == '__main__':
         max_velocity = Attribute(default=100, caption=u'Макс. скорость', doc=u'Максимальная скорость транспортного средства')
 
     class C(Container):
-        anyCar = Car(name='AnyCar')
-        carLite = Car(name='CarLite', parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
-        carMidle = Car(name='CarMiddle', parent=anyCar, doc=u'Легковая техника')
-        carHavy = Car(name='CarHavy', parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
+        anyCar = Car()
+        carLite = Car(parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
+        carMidle = Car(parent=anyCar, doc=u'Легковая техника')
+        carHavy = Car(parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
+        carMoto = Car(parent=carLite)
 
