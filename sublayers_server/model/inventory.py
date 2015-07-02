@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import logging
 log = logging.getLogger(__name__)
-from sublayers_server.model.tasks import Task, TaskPerformEvent
+from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 
 class ETimeIsNotInState(Exception):
     pass
@@ -62,15 +62,15 @@ class Inventory(object):
                 return i
         return None
 
-    def get_item_by_cls(self, balance_cls_list):
+    def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():
             item = self._items[position]
-            if (item.balance_cls in balance_cls_list) and (item.limbo is False):
+            if (item.balance_cls in balance_cls_list) and (item.limbo is False) and (item.val(time=time) > min_value):
                 return item
         return None
 
 
-class ItemTask(Task):
+class ItemTask(TaskSingleton):
     def __init__(self, dv=None, ddvs=None, consumer=None, action=None, **kw):
         super(ItemTask, self).__init__(**kw)
         self.dv = dv
@@ -80,23 +80,19 @@ class ItemTask(Task):
             (action is None) or (action in ['on_use', 'on_start', 'on_stop']))
         self.action = action
 
-    def _clear_tasks(self, time):
-        events = self.owner.task.events[:]
-        for event in events:
-            if event.time >= time:
-                event.cancel()
-
     def on_perform(self, event):
         super(ItemTask, self).on_perform(event=event)
-        # удалить итем
+        self.owner.set_item_empty(time=event.time)
         self.owner.set_inventory(inventory=None, time=event.time)
 
     def on_start(self, event):
-        self._clear_tasks(time=event.time)
         super(ItemTask, self).on_start(event=event)
         item = self.owner
         time = event.time
-        if (self.dv is not None) and (item.val(t=time) > self.dv):
+
+        log.debug('ItemTask:: on_start --> item = %s (%s, %s)', item, self.dv, self.ddvs)
+
+        if (self.dv is not None) and (self.dv < 0.0) and (item.val(t=time) < -self.dv):
             # отправить потребителю месагу о том, что итем кончился
             if self.consumer is not None:
                 self.consumer.on_empty_item(item=item, time=time, action=self.action)
@@ -105,22 +101,21 @@ class ItemTask(Task):
 
         if self.action is not None:
             # отправить сообщение consumer'у с учётом экшена
-            self.consumer[self.action](item=item, time=time)
+            self.consumer.__getattribute__(self.action)(item=item, time=time)
 
         if t_empty is not None:
             TaskPerformEvent(time=t_empty, task=self).post()
 
 
 class ItemState(object):
-    __str_template__ = 'Item: class={self.balance_cls} object={self.balance_obj} count={self.count}'
+    __str_template__ = 'Item: <limbo={self.limbo}> class={self.balance_cls} value0={self.val0}'
 
-    def __init__(self, server, time, balance_cls, balance_obj=None, count=1):
-        assert (count == 1) or ((count != 1) and (balance_obj is None))
+    def __init__(self, server, time, balance_cls, count=1):
+        assert count > 0
         self.server = server
         self.balance_cls = balance_cls
-        self.balance_obj = balance_obj
         self.inventory = None
-        self.task = None
+        self.tasks = []
 
         # настроки стейта
         self.max_val = 64  # todo: взять из balance_cls
@@ -131,6 +126,7 @@ class ItemState(object):
         self.consumers = []  # список потребителей
 
         self.limbo = False
+        self.is_alive = True  # костыль для тасков
 
     def _fix_item_state(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
@@ -147,13 +143,22 @@ class ItemState(object):
         self.t_empty = None
         if dv:
             self.val0 += dv
-            assert (dv <= 0.0) and (self.val0 >= 0.0)
+            assert (dv <= 0.0) and (self.val0 >= 0.0), 'val0 = {}    dv = {}'.format(self.val0, dv)
         if ddvs is not None:
             self.dvs += ddvs
             assert self.dvs >= 0.0
         if self.dvs > 0.0:
             self.t_empty = self.t0 + self.val0 / self.dvs
+        else:
+            if self.val0 == 0.0:
+                self.t_empty = self.t0
         return self.t_empty
+
+    def set_item_empty(self, time):
+        self.t0 = time
+        self.t_empty = None
+        self.val0 = 0
+        self.dvs = 0
 
     def export_item_state(self):
         return dict(
@@ -170,19 +175,20 @@ class ItemState(object):
     # если inventory = None, то работает как удаление итема
     def set_inventory(self, time, inventory, position=None):
         old_inventory = self.inventory
+        assert inventory is not old_inventory
         if (inventory is None) or inventory.add_item(item=self, position=position):
+             # запретить потребление итема пока он не в инвентаре
+            self.limbo = inventory is None
+
+            # отправить всем потребителям месагу о том, что итем кончился
+            consumers = self.consumers[:]
+            for consumer in consumers:
+                log.debug('set _ inventory ---> on_empty_item')
+                consumer.on_empty_item(item=self, time=time, action=None)
+
             if old_inventory is not None:
                 old_inventory.del_item(item=self)
             self.inventory = inventory
-
-            assert inventory is not old_inventory
-             # отправить всем потребителям месагу о том, что итем кончился
-            consumers = self.consumers[:]
-            for consumer in consumers:
-                consumer.on_empty_item(item=self, time=time, action=None)
-
-            # запретить потребление итема пока он не в инвентаре
-            self.limbo = inventory is None
 
             return True
         else:
@@ -219,7 +225,7 @@ class ItemState(object):
 
     def change(self, consumer, dv, ddvs, action, time):
         if consumer in self.consumers and not self.limbo:
-            ItemTask(consumer=consumer, time=time, owner=self, dv=dv, ddvs=ddvs, action=action).start()
+            ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
 
 
 class Consumer(object):
@@ -273,6 +279,7 @@ class Consumer(object):
         # останавливаем использование
         if started:
             self.stop(time=time)
+            self.is_started = False  # перестать стрелять, если что старт потом установит стрельбу
         # разряжаем итем
         if self.item is not None:
             self.item.unlinking(consumer=self)
@@ -287,12 +294,18 @@ class Consumer(object):
             self.use(time=time)
 
     def on_empty_item(self, item, time, action):
+        log.debug('!!!!!!!!!! on_empty_item !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        old_is_started = self.is_started
         balance_cls_list = []
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
             balance_cls_list = [item.balance_cls]
-        new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list)
+        new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
+        log.debug('new item = %s', new_item)
+        if self.is_started:
+            self.on_stop(item=item, time=time)
+        self.is_started = old_is_started
         self.set_item(item=new_item, time=time, action=action)
 
 

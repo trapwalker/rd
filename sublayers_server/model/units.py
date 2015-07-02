@@ -17,6 +17,7 @@ from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEven
     SearchZones, Die, FireAutoTestEvent
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
+from sublayers_server.model.inventory import Inventory, ItemState
 
 
 class Unit(Observer):
@@ -51,9 +52,16 @@ class Unit(Observer):
         self.check_auto_fire_interval = None
         self.fire_sectors = []
         """@type: list[sublayers_server.model.sectors.FireSector]"""
+
+        # костыль для инвенторя
+        self.inventory = Inventory(max_size=10)
+        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
+
         if weapons:
             for weapon in weapons:
-                self.setup_weapon(dict_weapon=weapon)
+                self.setup_weapon(dict_weapon=weapon, time=time)
+
 
         # обновляем статистику сервера
         server_stat = self.server.stat_log
@@ -77,14 +85,16 @@ class Unit(Observer):
         HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
             .start(time=time)
 
-    def setup_weapon(self, dict_weapon):
+    def setup_weapon(self, dict_weapon, time):
         sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
+        weapon = None
         if dict_weapon['is_auto']:
-            WeaponAuto(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
-                       dps=dict_weapon['dps'])
+            weapon = WeaponAuto(owner=self, sector=sector, dps=dict_weapon['dps'])
         else:
-            WeaponDischarge(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
-                            dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
+            weapon = WeaponDischarge(owner=self, sector=sector, dmg=dict_weapon['dmg'],
+                                     time_recharge=dict_weapon['time_recharge'])
+
+        weapon.set_item(item=self.item_ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
