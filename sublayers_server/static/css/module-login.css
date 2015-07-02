@@ -42,14 +42,6 @@ body {
 #login input[type="submit"]:hover {	background-color: #F5FF00; }
 #login input[type="submit"]:active { padding: 13px 20px 11px; text-shadow: -1px -1px 1px rgba(255,255,255,.6); box-shadow: inset 0 1px 4px rgba(0,0,0,.2); }
 
-/* flip animation */
-.flip { position: relative; -webkit-transition: 0.6s; -webkit-transform-style: preserve-3d; }
-.form-login, 
-.form-signup { position: absolute; top: 0; left: 0; -webkit-backface-visibility: hidden; }
-.form-signup { z-index: 2; }
-.form-login { -webkit-transform: rotateY(180deg); }
-.flip.flipped { -webkit-transform: rotateY(-180deg); }
-
 #login input.login-err,
 #login input.login-err:focus { color: #C4550B; background-color: #FFEDD7; border-color: #EB975F; }
 #login input.login-err::-webkit-input-placeholder { color: #C4550B; }
@@ -58,3 +50,26 @@ body {
 #login input.login-ok::-webkit-input-placeholder { color: #4E831F; }
 
 #login p.login-msg { display: none; margin: 0 0 5px; font-size: 13px; font-weight: bold; color: #C4550B; }
+
+
+/* flip animation */
+.flip {
+    position: relative;
+}
+
+.form-login, .form-signup {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.form-signup {
+    z-index: 2;
+}
+
+.form-login {
+}
+
+.flipped1 {
+    display: none;
+}
