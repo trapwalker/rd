@@ -65,7 +65,7 @@ class Inventory(object):
     def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():
             item = self._items[position]
-            if (item.balance_cls in balance_cls_list) and (item.limbo is False) and (item.val(time=time) > min_value):
+            if (item.balance_cls in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
                 return item
         return None
 
@@ -183,7 +183,6 @@ class ItemState(object):
             # отправить всем потребителям месагу о том, что итем кончился
             consumers = self.consumers[:]
             for consumer in consumers:
-                log.debug('set _ inventory ---> on_empty_item')
                 consumer.on_empty_item(item=self, time=time, action=None)
 
             if old_inventory is not None:
@@ -294,7 +293,6 @@ class Consumer(object):
             self.use(time=time)
 
     def on_empty_item(self, item, time, action):
-        log.debug('!!!!!!!!!! on_empty_item !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         old_is_started = self.is_started
         balance_cls_list = []
         if self.swap:
