@@ -83,6 +83,22 @@ class PersistentMeta(type):
                 v.attach(name=k, cls=self)
 
 
+class ContainerMeta(type):
+    def __init__(cls, name, bases, attrs):
+        super(ContainerMeta, cls).__init__(name, bases, attrs)
+        cls.__process_attrs__()
+
+    def __process_attrs__(self):
+        for k, v in self.__dict__.items():
+            if isinstance(v, Node):
+                v._attach_to_container(self)
+
+    def __iter__(cls):
+        for c in cls.__dict__.values():
+            if isinstance(c, Node):
+                yield c
+
+
 class Persistent(object):
     __metaclass__ = PersistentMeta
 
@@ -91,15 +107,25 @@ class Node(Persistent):
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     doc = DocAttribute()
 
-    def __init__(self, name, parent=None, abstract=False, values=None,  **kw):
+    def _attach_to_container(self, container):
+        self.container = container
+
+    def __init__(self, name, parent=None, abstract=False, values=None, container=None, **kw):
         super(Node, self).__init__()
         self.name = name
         self.parent = parent
         self.values = values or {}
         self.values.update(kw)
         self.childs = []  # todo: use weakref
+        self.container = container
         if parent:
             parent._add_child(self)
+
+    def __repr__(self):
+        return '<{self.container.__name__}.{self.name}[{parent_name}]>'.format(
+            self=self,
+            parent_name=self.parent.name if self.parent else '',
+        )
 
     def _add_child(self, child):
         self.childs.append(child)
@@ -121,6 +147,17 @@ class Node(Persistent):
     def _has_attr_value(self, name):
         return name in self.values
 
+    def save(self, storage):
+        pass
+
+
+class Container(object):
+    __metaclass__ = ContainerMeta
+
+    @classmethod
+    def save(cls):
+        pass
+
 
 if __name__ == '__main__':
     # from pickle import dumps, loads
@@ -129,8 +166,9 @@ if __name__ == '__main__':
         u"""Абстрактная машина"""
         max_velocity = Attribute(default=100, caption=u'Макс. скорость', doc=u'Максимальная скорость транспортного средства')
 
-    anyCar = Car(name='AnyCar')
-    carLite = Car(name='CarLite', parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
-    carMidle = Car(name='CarMiddle', parent=anyCar, doc=u'Легковая техника')
-    carHavy = Car(name='CarHavy', parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
+    class C(Container):
+        anyCar = Car(name='AnyCar')
+        carLite = Car(name='CarLite', parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
+        carMidle = Car(name='CarMiddle', parent=anyCar, doc=u'Легковая техника')
+        carHavy = Car(name='CarHavy', parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
 
