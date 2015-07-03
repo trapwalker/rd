@@ -128,6 +128,9 @@ class Node(Persistent):
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     doc = DocAttribute()
 
+    def __getstate__(self):
+        return self.__dict__
+
     def _attach_to_container(self, container, name):
         self.container = container
         if self.name is None:
