@@ -143,7 +143,7 @@ class ItemState(object):
         self.t_empty = None
         if dv:
             self.val0 += dv
-            assert (dv <= 0.0) and (self.val0 >= 0.0), 'val0 = {}    dv = {}'.format(self.val0, dv)
+            assert self.val0 >= 0.0, 'val0 = {}    dv = {}'.format(self.val0, dv)
         if ddvs is not None:
             self.dvs += ddvs
             assert self.dvs >= 0.0
@@ -174,6 +174,7 @@ class ItemState(object):
 
     # если inventory = None, то работает как удаление итема
     def set_inventory(self, time, inventory, position=None):
+        assert not self.limbo
         old_inventory = self.inventory
         assert inventory is not old_inventory
         if (inventory is None) or inventory.add_item(item=self, position=position):
@@ -193,23 +194,39 @@ class ItemState(object):
         else:
             return False
 
+    def _div_item(self, count, time):
+        if self.val(t=time) < count:
+            return None
+        ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
+        return ItemState(server=self.server, time=time, balance_cls=self.balance_cls, count=count)
+
+    def div_item(self, count, time, inventory, position):
+        assert not self.limbo
+        assert (position is None) or ((position is not None) and (inventory is not None))
+        if (position is not None) and (inventory.getItem(position=position) is not None):
+            return
+        if (position is None) and (inventory is not None):
+            position = inventory.get_free_position()
+            if position is None:  # если инвентарь оказался полный
+                return
+        item = self._div_item(count=count, time=time)
+        if item is not None:
+            item.set_inventory(time=time, inventory=inventory, position=position)
+
     def add_another_item(self, item, time):
-        pass
-        # todo: переделать под state
-        '''
-        if (self.balance_obj is not None) or (item.balance_obj is not None) or (self.balance_cls != item.balance_cls):
-            return False
-        if self.count + item.count <= self.max_val:
-            self.count += item.count
-            if item.inventory is not None:
-                item.inventory.del_item(item=item)
-                item.inventory = None
-            item.count = 0
+        assert not self.limbo and not item.limbo
+        if self.balance_cls != item.balance_cls:
+            return
+        self_val = self.val(t=time)
+        item_val = item.val(t=time)
+        d_value = 0.0
+
+        if (self_val + item_val) <= self.max_val:
+            d_value = item_val
         else:
-            item.count -= self.max_val - self.count
-            self.count = self.max_val
-        return True
-        '''
+            d_value = self.max_val - self_val
+        ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
+        ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
 
     # Интерфейс работы с итемом
     def linking(self, consumer):
