@@ -520,6 +520,18 @@ class InventoryShowMessage(Message):
         return d
 
 
+class InventoryHideMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryHideMessage, self).__init__(**kw)
+        self.inventory = inventory
+
+    def as_dict(self):
+        d = super(InventoryHideMessage, self).as_dict()
+        d.update(
+            inventory_owner_id=self.inventory.owner.uid
+            )
+        return d
+
 class InventoryItemMessage(Message):
     def __init__(self, item, inventory, position, **kw):
         super(InventoryItemMessage, self).__init__(**kw)

@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
-    InventoryDelItemMessage
+    InventoryDelItemMessage, InventoryHideMessage
 
 class ETimeIsNotInState(Exception):
     pass
@@ -32,9 +32,10 @@ class Inventory(object):
             self.visitors.append(agent)
             self.send_inventory(agent=agent, time=time)
 
-    def del_visitor(self, agent):
+    def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
+            InventoryHideMessage(time=time, agent=agent, inventory=self).post()
 
     def add_item(self, item, time, position=None):
         if position is None:

@@ -665,18 +665,27 @@ var ClientManager = (function () {
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
         console.log('ClientManager.prototype.InventoryShowMessage', event);
+        // создание модельного объекта инвентаря
+    };
+
+    ClientManager.prototype.InventoryHideMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryHideMessage', event);
+        // удаление модельного объекта инвентаря
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
         console.log('ClientManager.prototype.InventoryItemMessage', event);
+        // изменение стейта у итема инвентаря
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
         console.log('ClientManager.prototype.InventoryAddItemMessage', event);
+        // добавление итема в инвентарь (создание модельного объекта итема)
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
         console.log('ClientManager.prototype.InventoryDelItemMessage', event);
+        // удаление итема из инвентаря (удаление модельного объекта итема)
     };
 
     // Исходящие сообщения
