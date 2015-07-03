@@ -2,6 +2,8 @@
 import logging
 log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
+from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
+    InventoryDelItemMessage
 
 class ETimeIsNotInState(Exception):
     pass
@@ -17,11 +19,24 @@ def assert_time_in_items(f):
 
 
 class Inventory(object):
-    def __init__(self, max_size):
+    def __init__(self, owner, max_size, time):
         self.max_size = max_size
         self._items = dict()
+        self.owner = owner
+        self.visitors = []
+        if owner.main_agent is not None:
+            self.add_visitor(agent=owner.main_agent, time=time)
 
-    def add_item(self, item, position=None):
+    def add_visitor(self, agent, time):
+        if agent not in self.visitors:
+            self.visitors.append(agent)
+            self.send_inventory(agent=agent, time=time)
+
+    def del_visitor(self, agent):
+        if agent in self.visitors:
+            self.visitors.remove(agent)
+
+    def add_item(self, item, time, position=None):
         if position is None:
             position = self.get_free_position()
         if position is None:
@@ -30,20 +45,26 @@ class Inventory(object):
         if self.get_item(position=position) is not None:
             return False
         self._items.update({position: item})
+        for agent in self.visitors:
+            InventoryAddItemMessage(agent=agent, time=time, item=item, inventory=self, position=position).post()
         return True
 
-    def del_item(self, position=None, item=None):
+    def del_item(self, time, position=None, item=None):
         assert (position is not None) or (item is not None) or \
                ((position is not None) and (item is not None) and (self._items[position] == item))
         if position is None:
             position = self.get_position(item=item)
         assert position is not None
-        self._items.pop(position)
+        deleted_item = self._items.pop(position)
 
-    def change_position(self, item, new_position):
+        for agent in self.visitors:
+            InventoryDelItemMessage(agent=agent, time=time, item=deleted_item, inventory=self,
+                                     position=position).post()
+
+    def change_position(self, item, new_position, time):
         old_position = self.get_position(item=item)
-        if self.add_item(item=item, position=new_position):
-            self.del_item(position=old_position)
+        if self.add_item(item=item, position=new_position, time=time):
+            self.del_item(position=old_position, time=time)
 
     def get_position(self, item):
         for rec in self._items.items():
@@ -69,6 +90,16 @@ class Inventory(object):
                 return item
         return None
 
+    def as_dict(self):
+        return dict(
+            max_size=self.max_size,
+            items=[item.export_item_state() for item in self._items.values()],
+            owner_id=self.owner.uid
+        )
+
+    def send_inventory(self, agent, time):
+        InventoryShowMessage(agent=agent, time=time, inventory=self).post()
+
 
 class ItemTask(TaskSingleton):
     def __init__(self, dv=None, ddvs=None, consumer=None, action=None, **kw):
@@ -83,28 +114,30 @@ class ItemTask(TaskSingleton):
     def on_perform(self, event):
         super(ItemTask, self).on_perform(event=event)
         self.owner.set_item_empty(time=event.time)
+        self.owner.on_update(time=event.time)
         self.owner.set_inventory(inventory=None, time=event.time)
 
     def on_start(self, event):
         super(ItemTask, self).on_start(event=event)
         item = self.owner
         time = event.time
-
-        log.debug('ItemTask:: on_start --> item = %s (%s, %s)', item, self.dv, self.ddvs)
-
+        #log.debug('ItemTask:: on_start --> item = %s (%s, %s)', item, self.dv, self.ddvs)
         if (self.dv is not None) and (self.dv < 0.0) and (item.val(t=time) < -self.dv):
             # отправить потребителю месагу о том, что итем кончился
             if self.consumer is not None:
                 self.consumer.on_empty_item(item=item, time=time, action=self.action)
             return
         t_empty = item.update_item_state(t=time, dv=self.dv, ddvs=self.ddvs)
-
+        item.on_update(time=time)
         if self.action is not None:
             # отправить сообщение consumer'у с учётом экшена
             self.consumer.__getattribute__(self.action)(item=item, time=time)
-
         if t_empty is not None:
-            TaskPerformEvent(time=t_empty, task=self).post()
+            if t_empty > time:
+                TaskPerformEvent(time=t_empty, task=self).post()
+            else:
+                self.owner.set_item_empty(time=event.time)
+                self.owner.set_inventory(inventory=None, time=event.time)
 
 
 class ItemState(object):
@@ -154,6 +187,12 @@ class ItemState(object):
                 self.t_empty = self.t0
         return self.t_empty
 
+    def on_update(self, time):
+        if self.inventory:
+            for agent in self.inventory.visitors:
+                InventoryItemMessage(agent=agent, time=time, item=self, inventory=self.inventory,
+                                     position=self.inventory.get_position(item=self)).post()
+
     def set_item_empty(self, time):
         self.t0 = time
         self.t_empty = None
@@ -163,8 +202,9 @@ class ItemState(object):
     def export_item_state(self):
         return dict(
             cls=self.__class__.__name__,
-            t0=self.t0,
+            balance_cls=self.balance_cls,
             max_val=self.max_val,
+            t0=self.t0,
             val0=self.val0,
             dvs=self.dvs,
         )
@@ -177,7 +217,7 @@ class ItemState(object):
         assert not self.limbo
         old_inventory = self.inventory
         assert inventory is not old_inventory
-        if (inventory is None) or inventory.add_item(item=self, position=position):
+        if (inventory is None) or inventory.add_item(item=self, position=position, time=time):
              # запретить потребление итема пока он не в инвентаре
             self.limbo = inventory is None
 
@@ -187,7 +227,7 @@ class ItemState(object):
                 consumer.on_empty_item(item=self, time=time, action=None)
 
             if old_inventory is not None:
-                old_inventory.del_item(item=self)
+                old_inventory.del_item(item=self, time=time)
             self.inventory = inventory
 
             return True
@@ -228,10 +268,10 @@ class ItemState(object):
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
 
-    def change_position(self, position):
+    def change_position(self, position, time):
         assert not self.limbo
         if self.inventory is not None:
-            self.inventory.change_position(item=self, new_position=position)
+            self.inventory.change_position(item=self, new_position=position, time=time)
 
     # Интерфейс работы с итемом
     def linking(self, consumer):

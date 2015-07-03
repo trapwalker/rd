@@ -663,6 +663,22 @@ var ClientManager = (function () {
             townVisitorsManager.del_visitor(event.visitor);
     };
 
+    ClientManager.prototype.InventoryShowMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryShowMessage', event);
+    };
+
+    ClientManager.prototype.InventoryItemMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryItemMessage', event);
+    };
+
+    ClientManager.prototype.InventoryAddItemMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryAddItemMessage', event);
+    };
+
+    ClientManager.prototype.InventoryDelItemMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryDelItemMessage', event);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {

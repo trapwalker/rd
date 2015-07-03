@@ -54,7 +54,7 @@ class Unit(Observer):
         """@type: list[sublayers_server.model.sectors.FireSector]"""
 
         # костыль для инвенторя
-        self.inventory = Inventory(max_size=10)
+        self.inventory = Inventory(max_size=10, owner=self, time=time)
         self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=3)
         self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
         item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=4)

@@ -202,6 +202,10 @@ class AgentAPI(API):
         # переотправить чаты, в которых есть агент
         ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
 
+        # временная отправка инвентаря
+        self.car.inventory.send_inventory(agent=self.agent, time=time)
+
+
     def update_agent_api(self, time=None, position=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, position=position,
