@@ -228,6 +228,11 @@ class ItemState(object):
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
 
+    def change_position(self, position):
+        assert not self.limbo
+        if self.inventory is not None:
+            self.inventory.change_position(item=self, new_position=position)
+
     # Интерфейс работы с итемом
     def linking(self, consumer):
         if consumer not in self.consumers and not self.limbo:
