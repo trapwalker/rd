@@ -541,6 +541,7 @@ var UserCarMarker = (function () {
 
     UserCarMarker.prototype.addContactLine = function(objID){
         // TODO: разобраться почему не обновляет линии и насколько правилно он их добавляет
+        /*
         var carO;
         var m1, m2;
         if(listMapObject.exist(objID))
@@ -561,6 +562,7 @@ var UserCarMarker = (function () {
         });
         if(cookieStorage.optionsShowDebugLine)// если рисовать линию
             plln.addTo(myMap);
+        */
 
 
     };

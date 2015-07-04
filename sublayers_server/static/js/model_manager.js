@@ -293,18 +293,6 @@ var ClientManager = (function () {
         //user.userCar.debugLines = [];
     };
 
-    ClientManager.prototype.InitXMPPClient = function (event) {
-        console.log('ClientManager.prototype.InitXMPPClient', event);
-        if (! j_connector) {
-            j_connector = new JabberConnector({
-                jid: event.jid + '/sublayers',
-                password: event.password,
-                adress_server: event.adress,
-                conference_suffixes: event.conference_suffixes
-            });
-            j_connector.connect();
-        }
-    };
 
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update', event);
@@ -689,6 +677,19 @@ var ClientManager = (function () {
     };
 
     // Исходящие сообщения
+
+    ClientManager.prototype.sendConsoleCmd = function (atext) {
+        //sendServConsole
+        var mes = {
+            call: "console_cmd",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                cmd: atext
+            }
+        };
+        rpcCallList.add(mes);
+        clientManager._sendMessage(mes);
+    };
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         //console.log('ClientManager.prototype.sendSetSpeed');

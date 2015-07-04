@@ -231,8 +231,10 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.viewMessengerClickSpanUser = function (event) {
         // подстветить все машинки данного пользователя
+        /*
         var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
+
         if (cookieStorage.optionsSelectAnybody && owner.cars)
             for (var i = 0; i < owner.cars.length; i++) {
                 if (listMapObject.exist(owner.cars[i].ID)) {
@@ -243,6 +245,7 @@ var ViewMessengerGlass = (function () {
                         carMarkerList.addToBackLight(car);
                 }
             }
+        */
     };
 
     // Добавление сообщений в окно чата
@@ -437,7 +440,7 @@ var ViewMessengerGlass = (function () {
         var str = chat.main_input.val();
         if (str.length) {
             if (str[0] === '#' || str[0] === '\\' || str[0] === '/') {
-                sendServConsole(str);
+                clientManager.sendConsoleCmd(str);
             }
             else {
                 var active = chat.activeChat;
@@ -502,7 +505,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.party_leave = function (event) {
         //alert('Окно для подтверждения выхода из пати');
-        sendServConsole('/leave');
+        clientManager.sendConsoleCmd('/leave');
         chat.main_input.focus();
     };
 
