@@ -51,7 +51,7 @@ $(document).ready(function () {
     document.getElementById('divMainMenuBtnCharacter').onclick = returnFocusToMap;
 
     document.getElementById('divMainMenuBtnCar').onclick =
-        function(){
+        function() {
             windowTemplateManager.openUniqueWindow('car_info', '/main_car_info', null);
             returnFocusToMap();
         };

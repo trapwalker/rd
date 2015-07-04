@@ -24,8 +24,6 @@ class Inventory(object):
         self._items = dict()
         self.owner = owner
         self.visitors = []
-        if owner.main_agent is not None:
-            self.add_visitor(agent=owner.main_agent, time=time)
 
     def add_visitor(self, agent, time):
         if agent not in self.visitors:
@@ -369,31 +367,3 @@ class Consumer(object):
             self.on_stop(item=item, time=time)
         self.is_started = old_is_started
         self.set_item(item=new_item, time=time, action=action)
-
-
-if __name__ == '__main__':
-    inv1 = Inventory(max_size=3)
-    inv2 = Inventory(max_size=3)
-    itm1 = ItemState(balance_cls=ItemState, count=40)
-    print itm1.set_inventory(inventory=inv1, position=2)
-    itm2 = ItemState(balance_cls=ItemState, count=30)
-    print itm2.set_inventory(inventory=inv2, position=2)
-    print itm1.add_another_item(itm2)
-
-
-    for rec in inv1._items.items():
-        print 'inv1 ', rec[0], ' ', rec[1]
-
-    for rec in inv2._items.items():
-        print 'inv2 ', rec[0], ' ', rec[1]
-
-
-    itm3 = ItemState(balance_cls=Inventory, count=3)
-
-    print inv2.add_item(itm3)
-
-
-    for rec in inv2._items.items():
-        print 'inv2 ', rec[0], ' ', rec[1]
-
-

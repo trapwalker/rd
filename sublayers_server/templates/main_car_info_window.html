@@ -755,73 +755,7 @@
                 <div class="mainCarInfoWindow-body-trunk-body-left-amount">В инвентаре: 2 ед.</div>
                 <div class="mainCarInfoWindow-body-trunk-body-left-activate">Активировать!</div>
             </div>
-            <div class="mainCarInfoWindow-body-trunk-body-right">
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name">
-                        Канистра
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture">
-                        Картинка
-                        <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-count">x2</div>
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-line"></div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-line"></div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">
-                    </div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-right-item">
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">
-                        Пусто
-                    </div>
-                    <div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty"></div>
-                </div>
+            <div class="mainCarInfoWindow-body-trunk-body-right inventory-{{ car_id }}">
             </div>
         </div>
     </div>
@@ -843,4 +777,10 @@
     // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
     // открывании окна правильно отрабатывала подсветка
     $(".mainCarInfoWindow-menu-button").first().click();
+
+    $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function(event) {
+            console.log('111');
+    });
+
+    inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
 </script>

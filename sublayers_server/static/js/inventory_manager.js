@@ -27,7 +27,20 @@ var InventoryItem = (function (_super) {
         this._in_tm = false;
         this.position = position;
         this.balance_cls = balance_cls;
+        this.inventory = null;
     }
+
+    InventoryItem.prototype.setInventory = function(inventory) {
+        this.inventory = inventory;
+        var self = this;
+        $('.inventory-' + inventory.owner_id).each(function() {
+            self.showItem(this);
+        });
+    };
+
+    InventoryItem.prototype.showItem = function(inventory_div) {
+        $(inventory_div).find('.inventory-pos-' + this.position).find('.mainCarInfoWindow-body-trunk-body-right-item-name-empty').text(this.balance_cls);
+    };
 
     InventoryItem.prototype.getCurrentVal = function (time) {
         return this._item_state.val(time);
@@ -71,11 +84,27 @@ var Inventory = (function () {
         this.items = {};
         this.owner_id = owner_id;
         this.max_size = max_size;
+
+        var self = this;
+        $('.inventory-' + owner_id).each(function() {
+            self.showInventory(this);
+        });
     }
+
+    Inventory.prototype.showInventory = function (inventory_div) {
+        console.log('Inventory.prototype.showInventory', this, inventory_div);
+        for (var i = 0; i < this.max_size; i++) {
+            var empty_item_div = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-pos-' + i + '">' +
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty"></div></div>';
+            $(inventory_div).append(empty_item_div);
+        }
+    };
 
     Inventory.prototype.addItem = function (item) {
         if (this.items[item.position] != null) return;
         this.items[item.position] = item;
+        item.setInventory(this);
     };
 
     Inventory.prototype.delItem = function (position) {
@@ -120,6 +149,14 @@ var InventoryList = (function () {
 
     InventoryList.prototype.getInventory = function (owner_id) {
         return this.inventories[owner_id]
+    };
+
+    InventoryList.prototype.showInventory = function (owner_id, inventory_div) {
+        var inv = this.getInventory(owner_id);
+        if (inv)
+            inv.showInventory(inventory_div);
+        else
+            clientManager.sendShowInventory(owner_id);
     };
 
     return InventoryList;

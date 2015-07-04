@@ -986,6 +986,32 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendShowInventory = function(owner_id) {
+        console.log('ClientManager.prototype.sendShowInventory');
+        var mes = {
+            call: "show_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHideInventory = function(owner_id) {
+        console.log('ClientManager.prototype.sendHideInventory');
+        var mes = {
+            call: "hide_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();
 

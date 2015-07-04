@@ -9,8 +9,6 @@ from sublayers_server.model.messages import FireDischargeEffect
 
 from functools import total_ordering
 
-
-
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
@@ -350,3 +348,27 @@ class InsertNewServerZone(Event):
     def on_perform(self):
         super(InsertNewServerZone, self).on_perform()
         self.server.zones.append(self.zone)
+
+
+class ShowInventoryEvent(Event):
+    def __init__(self, agent, owner_id, **kw):
+        server = agent.server
+        super(ShowInventoryEvent, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+
+    def on_perform(self):
+        super(ShowInventoryEvent, self).on_perform()
+        obj = self.server.objects.get(self.owner_id)
+        assert (obj is not None) and (obj.inventory is not None)
+        if obj in self.agent.cars:
+            obj.inventory.add_visitor(agent=self.agent, time=self.time)
+
+
+class HideInventoryEvent(ShowInventoryEvent):
+
+    def on_perform(self):
+        super(HideInventoryEvent, self).on_perform()
+        obj = self.server.objects.get(self.owner_id)
+        assert (obj is not None) and (obj.inventory is not None)
+        obj.inventory.del_visitor(agent=self.agent, time=self.time)
