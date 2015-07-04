@@ -94,7 +94,8 @@ class Inventory(object):
     def as_dict(self):
         return dict(
             max_size=self.max_size,
-            items=[item.export_item_state() for item in self._items.values()],
+            items=[dict({'item': item.export_item_state(),
+                         'position': self.get_position(item=item)}) for item in self._items.values()],
             owner_id=self.owner.uid
         )
 

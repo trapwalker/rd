@@ -8,32 +8,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
-var ListMapObject = (function () {
-    function ListMapObject() {
-        this.objects = [];
-    }
-
-    ListMapObject.prototype.add = function (aObject) {
-        this.objects[aObject.ID] = aObject;
-    };
-
-    ListMapObject.prototype.del = function (aID) {
-        delete this.objects[aID];
-    };
-
-    ListMapObject.prototype.exist = function (aID) {
-        return this.objects[aID] != null
-    };
-
-    ListMapObject.prototype.setState = function (aID, aState) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("state"))) {
-            this.objects[aID].state = aState;
-        }
-    };
-
-    return ListMapObject;
-})();
-
 
 var ClientObject = (function () {
     function ClientObject(ID) {
@@ -527,7 +501,6 @@ var FuelState = (function () {
         return this.dfs != 0.0;
     };
 
-
     return FuelState;
 })();
 
@@ -543,7 +516,6 @@ var User = (function () {
 
     return User;
 })();
-
 
 // Владелец машины
 var Owner = (function () {
@@ -661,6 +633,3 @@ var OwnerParty = (function () {
 
     return OwnerParty;
 })();
-
-
-

@@ -532,6 +532,7 @@ class InventoryHideMessage(Message):
             )
         return d
 
+
 class InventoryItemMessage(Message):
     def __init__(self, item, inventory, position, **kw):
         super(InventoryItemMessage, self).__init__(**kw)
