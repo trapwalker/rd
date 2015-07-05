@@ -28,18 +28,17 @@ var InventoryItem = (function (_super) {
         this.position = position;
         this.balance_cls = balance_cls;
         this.inventory = null;
+        this.widget = null;
     }
 
     InventoryItem.prototype.setInventory = function(inventory) {
+        //console.log('InventoryItem.prototype.setInventory');
         this.inventory = inventory;
-        var self = this;
-        $('.inventory-' + inventory.owner_id).each(function() {
-            self.showItem(this);
-        });
+        this.widget = new WInventoryItem(this);
     };
 
-    InventoryItem.prototype.showItem = function(inventory_div) {
-        $(inventory_div).find('.inventory-pos-' + this.position).find('.mainCarInfoWindow-body-trunk-body-right-item-name-empty').text(this.balance_cls);
+    InventoryItem.prototype.showItem = function(inventoryDiv) {
+        this.widget.addViewDiv(inventoryDiv);
     };
 
     InventoryItem.prototype.getCurrentVal = function (time) {
@@ -91,14 +90,20 @@ var Inventory = (function () {
         });
     }
 
-    Inventory.prototype.showInventory = function (inventory_div) {
-        console.log('Inventory.prototype.showInventory', this, inventory_div);
+    Inventory.prototype.showInventory = function (inventoryDiv) {
+        //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
         for (var i = 0; i < this.max_size; i++) {
-            var empty_item_div = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-pos-' + i + '">' +
+            var empty_item_div = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
+                '-pos-' + i + '">' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty"></div></div>';
-            $(inventory_div).append(empty_item_div);
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div>';
+            $(inventoryDiv).append(empty_item_div);
         }
+
+        for (var pos in this.items)
+            if (this.items.hasOwnProperty(pos))
+                this.items[pos].showItem(inventoryDiv);
     };
 
     Inventory.prototype.addItem = function (item) {

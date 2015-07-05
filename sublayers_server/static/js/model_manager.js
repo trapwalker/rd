@@ -242,8 +242,7 @@ var ClientManager = (function () {
             data.max_size
         );
         for (var i=0; i < data.items.length; i++)
-            inv.addItem(this._getItem(data.items[i]))
-
+            inv.addItem(this._getItem(data.items[i]));
         return inv;
     };
 
