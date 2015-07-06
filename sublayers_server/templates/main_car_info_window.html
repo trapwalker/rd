@@ -531,7 +531,7 @@
     }
 
     .mainCarInfoWindow-body-trunk-filter {
-        width: 310px;
+        width: 100%;
         height: 27px;
         font: 12pt Nouveau_IBM;
     }
@@ -540,30 +540,19 @@
         position: relative;
         float: left;
         margin-top: 5px;
+        margin-right: 20px;
         margin-left: 7px;
         text-align: center;
+        color: #135806;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-trunk-filter-all.activateFilter {
         color: #30fc00;
-        cursor: pointer;
     }
 
-    .mainCarInfoWindow-body-trunk-filter-cargo {
-        position: relative;
-        float: left;
-        margin-top: 5px;
-        margin-left: 24px;
-        text-align: center;
-        color: #135806;
-        cursor: pointer;
-    }
-
-    .mainCarInfoWindow-body-trunk-filter-ammo {
-        position: relative;
-        float: left;
-        margin-top: 5px;
-        margin-left: 24px;
-        text-align: center;
-        color: #135806;
-        cursor: pointer;
+    .mainCarInfoWindow-body-trunk-filter-all:hover {
+        color: #30fc00;
     }
 
     .mainCarInfoWindow-body-trunk-body {
@@ -724,12 +713,12 @@
 
     <div id="mainCarInfoWindow-body-trunk_id" class="mainCarInfoWindow-body-trunk mainCarInfoWindow-page-div">
         <div class="mainCarInfoWindow-body-trunk-filter">
-            <div class="mainCarInfoWindow-body-trunk-filter-all"
-                 onclick="filterInventory(null)">[x] Всё</div>
-            <div class="mainCarInfoWindow-body-trunk-filter-cargo"
-                 onclick="filterInventory('Cargo')">[ ] Груз</div>
-            <div class="mainCarInfoWindow-body-trunk-filter-ammo"
-                 onclick="filterInventory('Ammo')">[ ] Боеприпасы</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="">
+                <span class="inventoryFilterChecker">[x]</span> Всё</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="Cargo">
+                <span class="inventoryFilterChecker">[ ]</span> Груз</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="Ammo">
+                <span class="inventoryFilterChecker">[ ]</span> Боеприпасы</div>
         </div>
         <div class="mainCarInfoWindow-body-trunk-body">
             <div class="mainCarInfoWindow-body-trunk-body-left">
@@ -748,6 +737,7 @@
 </div>
 
 <script>
+
     $(".mainCarInfoWindow-menu-button").click(function (event) {
         // выключить у всех кнопок состояние активности // btnpressed - дурацкое название, но зато точно не занято
         $('.mainCarInfoWindow-menu-button').removeClass('btnpressed');
@@ -764,9 +754,19 @@
     // открывании окна правильно отрабатывала подсветка
     $(".mainCarInfoWindow-menu-button").first().click();
 
-    function filterInventory(filter){
-        inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), filter);
-    };
+    $('#mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-filter-all').click(function(event){
+        var inv_id_this_window = $('#mainCarInfoWindow-body-trunk_id');
+        // отключить во всех фильтрах "выбранный"
+        inv_id_this_window.find('.inventoryFilterChecker').text('[ ]');
+        inv_id_this_window.find('.mainCarInfoWindow-body-trunk-filter-all').removeClass('activateFilter');
+        // у себя включить, что фильтр выбран
+        $(this).find('.inventoryFilterChecker').text('[x]');
+        $(this).addClass('activateFilter');
+        // вызов фильтрации
+        inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
+    });
+
+
 
     $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function(event) {
             console.log('111');
