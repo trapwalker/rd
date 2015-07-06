@@ -13,7 +13,7 @@ def assert_time_in_items(f):
     from functools import update_wrapper
     def cover(self, t=None, *av, **kw):
         if self.t_empty is not None and t is not None and t > self.t_empty:
-            raise ETimeIsNotInState('Time {} given, but {} is last in this fuel state'.format(t, self.t_empty))
+            raise ETimeIsNotInState('Time {} given, but {} is last in this item state'.format(t, self.t_empty))
         return f(self, t=t, *av, **kw)
     return update_wrapper(cover, f)
 
@@ -121,17 +121,21 @@ class ItemTask(TaskSingleton):
         super(ItemTask, self).on_start(event=event)
         item = self.owner
         time = event.time
+        t_empty = None
         #log.debug('ItemTask:: on_start --> item = %s (%s, %s)', item, self.dv, self.ddvs)
         if (self.dv is not None) and (self.dv < 0.0) and (item.val(t=time) < -self.dv):
             # отправить потребителю месагу о том, что итем кончился
             if self.consumer is not None:
                 self.consumer.on_empty_item(item=item, time=time, action=self.action)
-            return
-        t_empty = item.update_item_state(t=time, dv=self.dv, ddvs=self.ddvs)
-        item.on_update(time=time)
-        if self.action is not None:
-            # отправить сообщение consumer'у с учётом экшена
-            self.consumer.__getattribute__(self.action)(item=item, time=time)
+            # здесь нельзя сделать просто ретурн, так как ивент с окончанием уже удалён. Пересоздать его позже
+            t_empty = self.owner.t_empty
+        else:
+            t_empty = item.update_item_state(t=time, dv=self.dv, ddvs=self.ddvs)
+            item.on_update(time=time)
+            if self.action is not None:
+                # отправить сообщение consumer'у с учётом экшена
+                self.consumer.__getattribute__(self.action)(item=item, time=time)
+
         if t_empty is not None:
             if t_empty > time:
                 TaskPerformEvent(time=t_empty, task=self).post()
@@ -362,7 +366,6 @@ class Consumer(object):
         else:
             balance_cls_list = [item.balance_cls]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
-        log.debug('new item = %s', new_item)
         if self.is_started:
             self.on_stop(item=item, time=time)
         self.is_started = old_is_started
