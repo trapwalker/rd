@@ -396,6 +396,7 @@ var ClientManager = (function () {
             case 'ScoutDroid':
             case 'StationaryTurret':
             case 'SlowMine':
+            case 'Mobile':
                 this._contactBot(event);
                 break;
             case 'Town':

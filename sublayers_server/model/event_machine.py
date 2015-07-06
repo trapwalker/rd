@@ -15,6 +15,7 @@ from sublayers_server.model import errors
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.town import RadioPoint, Town
 from sublayers_server.model.events import InitServerEvent
+from sublayers_server.model.units import Mobile
 
 import sys
 from time import sleep
@@ -67,21 +68,34 @@ class Server(object):
 
         # установка стационарных объектов - радиоточек и городов
         base_point = Point(12496376, 27133643)
-        RadioPoint(time=self.get_time(),
+        RadioPoint(time=event.time,
                    server=self,
                    position=base_point)
 
-        RadioPoint(time=self.get_time(),
+        RadioPoint(time=event.time,
                    server=self,
                    position=Point(12496200, 27133643))
 
-        Town(time=self.get_time(),
+        Town(time=event.time,
              server=self,
              #svg_link = "C:/Projects/Sublayers/sublayers_server/static/img/towns/town_2/town.svg",
              svg_link='static/img/towns/town_2/town.svg',
              #svg_link='img/towns/town_2/town.svg',
              town_name='Prior',
              position=Point(12496200, 27133590))
+
+        Mobile(server=self,
+               time=event.time,
+               max_hp=1000,
+               position=Point(12496376, 27133550),
+               r_min=10,
+               ac_max=50,
+               v_forward=5,
+               v_backward=-5,
+               a_forward=5,
+               a_backward=-5,
+               a_braking=-5,
+        )
         
     def post_message(self, message):
         """
