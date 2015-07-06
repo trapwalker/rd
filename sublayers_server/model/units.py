@@ -60,6 +60,13 @@ class Unit(Observer):
         item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=4)
         item_ammo2.set_inventory(time=time, inventory=self.inventory)
 
+        ItemState(server=self.server, time=time, balance_cls='Cargo1', count=10)\
+            .set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo2', count=28
+        ).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo2', count=8)\
+            .set_inventory(time=time, inventory=self.inventory)
+
         if weapons:
             for weapon in weapons:
                 self.setup_weapon(dict_weapon=weapon, time=time)

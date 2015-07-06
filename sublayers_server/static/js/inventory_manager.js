@@ -41,6 +41,17 @@ var InventoryItem = (function (_super) {
         this.widget.addViewDiv(inventoryDiv);
     };
 
+    InventoryItem.prototype.visibleItemForInvDiv = function(inventoryDiv, filter) {
+        if (filter) {
+            if (this.balance_cls.indexOf(filter) >= 0)
+                this.widget.visibleViewForInvDiv(inventoryDiv, true);
+            else
+                this.widget.visibleViewForInvDiv(inventoryDiv, false);
+        }
+        else
+            this.widget.visibleViewForInvDiv(inventoryDiv, true);
+    };
+
     InventoryItem.prototype.getCurrentVal = function (time) {
         return this._item_state.val(time);
     };
@@ -131,6 +142,13 @@ var Inventory = (function () {
         return this.items[position]
     };
 
+    Inventory.prototype.showInvByFilter = function (inventoryDiv, filter) {
+        //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
+        for (var pos in this.items)
+            if (this.items.hasOwnProperty(pos))
+                this.items[pos].visibleItemForInvDiv(inventoryDiv, filter);
+    };
+
     return Inventory;
 })();
 
@@ -162,6 +180,15 @@ var InventoryList = (function () {
             inv.showInventory(inventory_div);
         else
             clientManager.sendShowInventory(owner_id);
+    };
+
+
+    InventoryList.prototype.showInvByFilter = function (owner_id, inventory_div, filter) {
+        var inv = this.getInventory(owner_id);
+        if (inv)
+            inv.showInvByFilter(inventory_div, filter);
+        else
+            console.error('showInvByFilter:: Инвентарь машинки <', owner_id ,'>  не найден');
     };
 
     return InventoryList;

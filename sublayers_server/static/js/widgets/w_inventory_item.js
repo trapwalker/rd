@@ -29,6 +29,15 @@ var WInventoryItem = (function (_super) {
         this.change();
     };
 
+
+    WInventoryItem.prototype.visibleViewForInvDiv = function(inventoryDiv, visible) {
+        //console.log('WInventoryItem.prototype.hideViewForDiv', inventoryDiv, this.item);
+        if (visible)
+            $(inventoryDiv).find(this.itemDivStr).css('display', 'block');
+        else
+            $(inventoryDiv).find(this.itemDivStr).css('display', 'none');
+    };
+
     WInventoryItem.prototype.change = function() {
         var time = clock.getCurrentTime();
         var value = this.item.getCurrentVal(time);
