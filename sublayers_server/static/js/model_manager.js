@@ -219,6 +219,33 @@ var ClientManager = (function () {
         }
     };
 
+    ClientManager.prototype._getItemState = function (data) {
+        return new InventoryItemState(
+            data.t0,
+            data.max_val,
+            data.val0,
+            data.dvs
+        );
+    };
+
+    ClientManager.prototype._getItem = function (data) {
+        return new InventoryItem(
+            this._getItemState(data.item),
+            data.position,
+            data.item.balance_cls
+        )
+    };
+
+    ClientManager.prototype._getInventory = function (data) {
+        var inv =  new Inventory(
+            data.owner_id,
+            data.max_size
+        );
+        for (var i=0; i < data.items.length; i++)
+            inv.addItem(this._getItem(data.items[i]));
+        return inv;
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.Init = function (event) {
@@ -293,18 +320,6 @@ var ClientManager = (function () {
         //user.userCar.debugLines = [];
     };
 
-    ClientManager.prototype.InitXMPPClient = function (event) {
-        console.log('ClientManager.prototype.InitXMPPClient', event);
-        if (! j_connector) {
-            j_connector = new JabberConnector({
-                jid: event.jid + '/sublayers',
-                password: event.password,
-                adress_server: event.adress,
-                conference_suffixes: event.conference_suffixes
-            });
-            j_connector.connect();
-        }
-    };
 
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update', event);
@@ -663,7 +678,45 @@ var ClientManager = (function () {
             townVisitorsManager.del_visitor(event.visitor);
     };
 
+    ClientManager.prototype.InventoryShowMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryShowMessage', event);
+        inventoryList.addInventory(this._getInventory(event.inventory));
+    };
+
+    ClientManager.prototype.InventoryHideMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryHideMessage', event);
+        inventoryList.delInventory(event.inventory_owner_id);
+    };
+
+    ClientManager.prototype.InventoryItemMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryItemMessage', event);
+        inventoryList.getInventory(event.owner_id).getItem(event.position).setState(this._getItemState(event.item));
+    };
+
+    ClientManager.prototype.InventoryAddItemMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryAddItemMessage', event);
+        inventoryList.getInventory(event.owner_id).addItem(this._getItem(event));
+    };
+
+    ClientManager.prototype.InventoryDelItemMessage = function (event) {
+        console.log('ClientManager.prototype.InventoryDelItemMessage', event);
+        inventoryList.getInventory(event.owner_id).delItem(event.position);
+    };
+
     // Исходящие сообщения
+
+    ClientManager.prototype.sendConsoleCmd = function (atext) {
+        //sendServConsole
+        var mes = {
+            call: "console_cmd",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                cmd: atext
+            }
+        };
+        rpcCallList.add(mes);
+        clientManager._sendMessage(mes);
+    };
 
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         //console.log('ClientManager.prototype.sendSetSpeed');
@@ -926,6 +979,32 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 name: chat_name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendShowInventory = function(owner_id) {
+        console.log('ClientManager.prototype.sendShowInventory');
+        var mes = {
+            call: "show_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHideInventory = function(owner_id) {
+        console.log('ClientManager.prototype.sendHideInventory');
+        var mes = {
+            call: "hide_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
             }
         };
         rpcCallList.add(mes);

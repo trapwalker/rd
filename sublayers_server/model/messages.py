@@ -79,18 +79,6 @@ class Init(Message):
         return d
 
 
-class InitXMPPClient(Message):
-    def as_dict(self):
-        d = super(InitXMPPClient, self).as_dict()
-        d.update(
-            jid=self.agent.xmpp.get('jid'),
-            password=self.agent.xmpp.get('password'),
-            adress=self.agent.server.app.xmpp_settings['client_adress'],
-            conference_suffixes=self.agent.server.app.xmpp_settings['conference_suffixes'],
-        )
-        return d
-
-
 class Die(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
@@ -518,3 +506,53 @@ class ChatPartyRoomIncludeMessage(ChatRoomIncludeMessage):
 class ChatPartyRoomExcludeMessage(ChatRoomExcludeMessage):
     pass
 
+
+class InventoryShowMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryShowMessage, self).__init__(**kw)
+        self.inventory = inventory
+
+    def as_dict(self):
+        d = super(InventoryShowMessage, self).as_dict()
+        d.update(
+            inventory=self.inventory.as_dict()
+            )
+        return d
+
+
+class InventoryHideMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryHideMessage, self).__init__(**kw)
+        self.inventory = inventory
+
+    def as_dict(self):
+        d = super(InventoryHideMessage, self).as_dict()
+        d.update(
+            inventory_owner_id=self.inventory.owner.uid
+            )
+        return d
+
+
+class InventoryItemMessage(Message):
+    def __init__(self, item, inventory, position, **kw):
+        super(InventoryItemMessage, self).__init__(**kw)
+        self.item = item
+        self.inventory = inventory
+        self.position = position
+
+    def as_dict(self):
+        d = super(InventoryItemMessage, self).as_dict()
+        d.update(
+            item=self.item.export_item_state(),
+            position=self.position,
+            owner_id=self.inventory.owner.uid,
+            )
+        return d
+
+
+class InventoryAddItemMessage(InventoryItemMessage):
+    pass
+
+
+class InventoryDelItemMessage(InventoryItemMessage):
+    pass

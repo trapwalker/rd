@@ -15,7 +15,8 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown
+from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
+    HideInventoryEvent
 from sublayers_server.model.units import Unit
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
@@ -384,3 +385,13 @@ class AgentAPI(API):
     def exit_from_town(self, town_id):
         log.info('agent %s want exit from town_id is %s', self.agent, town_id)
         ExitFromTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def show_inventory(self, owner_id):
+        log.info('agent %s want show inventory from %s', self.agent, owner_id)
+        ShowInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def hide_inventory(self, owner_id):
+        log.info('agent %s want hide inventory from %s', self.agent, owner_id)
+        HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()

@@ -413,7 +413,7 @@ var ViewMessenger = (function (_super) {
                             }}
                     );
                 else
-                    sendServConsole(str); // попробовать отправить команду на сервер
+                    clientManager.sendConsoleCmd(str);
             chat.vMI.val('').focus();
             // Добавление сообщения в историю
             chat.addMessageToHistory(str);
@@ -430,6 +430,7 @@ var ViewMessenger = (function (_super) {
 
     ViewMessenger.prototype.viewMessengerClickSpanUser = function (event) {
         // подстветить все машинки данного пользователя
+        /*
         var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
         if (cookieStorage.optionsSelectAnybody && owner.cars)
@@ -442,6 +443,7 @@ var ViewMessenger = (function (_super) {
                         carMarkerList.addToBackLight(car);
                 }
             }
+        */
     };
 
 

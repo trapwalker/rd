@@ -146,6 +146,9 @@ class BALANCE(BalanceSettingsABS):
         radius = 50.0
         width = pi / 2
         time_recharge = 6
+        items_cls_list = ['Ammo1', 'Ammo2']
+        dv = -1
+        ddvs = 1
 
     class ScoutDroid(Mobile):
         observing_range = 500.0
