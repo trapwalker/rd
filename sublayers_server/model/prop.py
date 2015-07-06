@@ -87,19 +87,9 @@ class ThingParentLinkIsCycle(Exception):
     pass
 
 
-class ContainerMeta(type):
-    def __init__(cls, name, bases, attrs):
-        super(ContainerMeta, cls).__init__(name, bases, attrs)
-        cls.__process_attrs__()
-
-    def __process_attrs__(self):
-        for k, v in self.__dict__.items():
-            if isinstance(v, Node):
-                v._attach_to_container(container=self, name=k)
-
-    def save(cls, stream):
-        for c in cls:
-            c.save(stream)
+class Regystry(object):
+    def __init__(self):
+        self.items = []
 
     def __iter__(cls):
         """Iter with consistent parent lines"""
@@ -118,6 +108,19 @@ class ContainerMeta(type):
                 cnt += 1
                 if cnt > len(q):
                     raise ThingParentLinkIsCycle()
+
+
+class ContainerMeta(type):
+    def __init__(cls, name, bases, attrs):
+        super(ContainerMeta, cls).__init__(name, bases, attrs)
+        parents = [c for c in bases if c is not Container and c is not object]
+        cls._parent = parents[0] if parents else None
+        cls.__process_attrs__()
+
+    def __process_attrs__(self):
+        for k, v in self.__dict__.items():
+            if isinstance(v, Node):
+                v._attach_to_container(container=self, name=k)
 
 
 class Persistent(object):
