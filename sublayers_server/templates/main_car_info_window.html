@@ -8,6 +8,7 @@
         background-color: rgba(0, 0, 0, 0.75);
         color: #ffffff;
         font: 12pt FreePixel;
+        cursor: default;
     }
 
     .mainCarInfoWindow-menu {
@@ -45,18 +46,20 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-menu-button:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-menu-button:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-menu-button:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-menu-button:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body {
         position: relative;
@@ -112,7 +115,7 @@
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 7px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -127,24 +130,26 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-model:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-model:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-model:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-model:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-menu-button-tth {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 20px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -159,24 +164,26 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-tth:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-tth:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-tth:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-tth:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-menu-button-weapons {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 20px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -191,24 +198,26 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-weapons:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-weapons:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-weapons:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-weapons:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-menu-button-history {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 20px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -223,18 +232,20 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-history:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-history:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-history:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-history:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-list-model {
         position: absolute;
@@ -768,8 +779,8 @@
 
 
 
-    $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function(event) {
-            console.log('111');
+    $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
+        console.log('111');
     });
 
     inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
