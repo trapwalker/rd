@@ -1012,6 +1012,22 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos) {
+        console.log('ClientManager.prototype.sendItemActionInventory');
+        var mes = {
+            call: "item_action_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                start_owner_id: start_owner_id,
+                start_pos: start_pos,
+                end_owner_id: end_owner_id,
+                end_pos: end_pos
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();
 

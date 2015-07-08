@@ -29,7 +29,6 @@ var WInventoryItem = (function (_super) {
         this.change();
     };
 
-
     WInventoryItem.prototype.visibleViewForInvDiv = function(inventoryDiv, visible) {
         //console.log('WInventoryItem.prototype.hideViewForDiv', inventoryDiv, this.item);
         if (visible)

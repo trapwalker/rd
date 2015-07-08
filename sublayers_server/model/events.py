@@ -352,8 +352,7 @@ class InsertNewServerZone(Event):
 
 class ShowInventoryEvent(Event):
     def __init__(self, agent, owner_id, **kw):
-        server = agent.server
-        super(ShowInventoryEvent, self).__init__(server=server, **kw)
+        super(ShowInventoryEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.owner_id = owner_id
 
@@ -372,3 +371,42 @@ class HideInventoryEvent(ShowInventoryEvent):
         obj = self.server.objects.get(self.owner_id)
         assert (obj is not None) and (obj.inventory is not None)
         obj.inventory.del_visitor(agent=self.agent, time=self.time)
+
+
+
+class ItemActionInventoryEvent(Event):
+    def __init__(self, agent, start_owner_id, start_pos, end_owner_id, end_pos, **kw):
+        super(ItemActionInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.start_owner_id = start_owner_id
+        self.start_pos = start_pos
+        self.end_owner_id = end_owner_id
+        self.end_pos = end_pos
+
+    def on_perform(self):
+        super(ItemActionInventoryEvent, self).on_perform()
+
+        # пытаемся получить инвентари и итемы
+        start_obj = self.server.objects.get(self.start_owner_id)
+        start_inventory = start_obj.inventory
+        start_item = start_inventory.get_item(position=self.start_pos)
+        if start_item is None:
+            return
+
+        end_obj = None
+        end_inventory = None
+        end_item = None
+        if self.end_owner_id is not None:
+            end_obj = self.server.objects.get(self.end_owner_id, None)
+            if end_obj is not None:
+                end_inventory = end_obj.inventory
+                end_item = end_inventory.get_item(position=self.end_pos)
+
+        # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
+        if (self.agent.api.car is not start_obj) or (self.agent.api.car is not end_obj):
+            return
+
+        if end_item is not None:
+            end_item.add_another_item(item=start_item, time=self.time)
+        else:
+            start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)

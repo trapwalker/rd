@@ -104,12 +104,32 @@ var Inventory = (function () {
     Inventory.prototype.showInventory = function (inventoryDiv) {
         //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
         for (var i = 0; i < this.max_size; i++) {
-            var empty_item_div = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
-                '-pos-' + i + '">' +
+            var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
+                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div>';
-            $(inventoryDiv).append(empty_item_div);
+            $(inventoryDiv).append(emptyItemDiv);
+
+            var emptyItemDivJQ =  $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '');
+            emptyItemDivJQ.droppable({
+                greedy: true,
+                accept: function(target) {
+                    return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item');
+                },
+                drop: function(event, ui) {
+                    clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
+                        $(event.target).data('owner_id'), $(event.target).data('pos'));
+                }
+            });
+            emptyItemDivJQ.draggable({
+                //disabled: true,
+                helper: 'clone',
+                opacity: 0.8,
+                revert: true,
+                revertDuration: 10,
+                scrollSpeed: 5
+            });
         }
 
         for (var pos in this.items)
@@ -181,7 +201,6 @@ var InventoryList = (function () {
         else
             clientManager.sendShowInventory(owner_id);
     };
-
 
     InventoryList.prototype.showInvByFilter = function (owner_id, inventory_div, filter) {
         var inv = this.getInventory(owner_id);

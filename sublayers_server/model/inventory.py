@@ -64,6 +64,8 @@ class Inventory(object):
         old_position = self.get_position(item=item)
         if self.add_item(item=item, position=new_position, time=time):
             self.del_item(position=old_position, time=time)
+            return True
+        return False
 
     def get_position(self, item):
         for rec in self._items.items():
@@ -220,7 +222,8 @@ class ItemState(object):
     def set_inventory(self, time, inventory, position=None):
         assert not self.limbo
         old_inventory = self.inventory
-        assert inventory is not old_inventory
+        if inventory is old_inventory:
+            return self.change_position(position=position, time=time)
         if (inventory is None) or inventory.add_item(item=self, position=position, time=time):
              # запретить потребление итема пока он не в инвентаре
             self.limbo = inventory is None
@@ -275,7 +278,8 @@ class ItemState(object):
     def change_position(self, position, time):
         assert not self.limbo
         if self.inventory is not None:
-            self.inventory.change_position(item=self, new_position=position, time=time)
+            return self.inventory.change_position(item=self, new_position=position, time=time)
+        return False
 
     # Интерфейс работы с итемом
     def linking(self, consumer):

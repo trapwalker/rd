@@ -16,7 +16,7 @@ from sublayers_server.model.slave_objects.stationary_turret import StationaryTur
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
-    HideInventoryEvent
+    HideInventoryEvent, ItemActionInventoryEvent
 from sublayers_server.model.units import Unit
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
@@ -395,3 +395,9 @@ class AgentAPI(API):
     def hide_inventory(self, owner_id):
         log.info('agent %s want hide inventory from %s', self.agent, owner_id)
         HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def item_action_inventory(self, start_owner_id, start_pos, end_owner_id, end_pos):
+        log.info('agent %s try make item action', self.agent)
+        ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
+                                 end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time()).post()
