@@ -170,7 +170,7 @@ class ItemState(object):
     def _fix_item_state(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
         if t != self.t0:
-            self.fuel0 = self.val(t)
+            self.val0 = self.val(t)
             self.t0 = t
 
     def val(self, t):
@@ -305,6 +305,11 @@ class Consumer(object):
         self.ddvs = ddvs
         self.swap = swap
         self.is_started = False
+
+    def __str__(self):
+        dv = self.dv if self.dv is not None else 'None'
+        ddvs = self.ddvs if self.ddvs is not None else 'None'
+        return 'Consumer:: dv={}, ddvs={}'.format(dv, ddvs)
 
     def set_item_params(self, dv, ddvs, swap, time):
         assert ((dv is not None) or (ddvs is not None)) and isinstance(swap, bool)
