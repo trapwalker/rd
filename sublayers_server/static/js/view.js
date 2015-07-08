@@ -56,9 +56,14 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
-
     document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
-    document.getElementById('divMainMenuBtnNucoil').onclick = returnFocusToMap;
+
+    document.getElementById('divMainMenuBtnNucoil').onclick =
+        function() {
+            windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
+            returnFocusToMap();
+        };
+
     document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnMain').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
