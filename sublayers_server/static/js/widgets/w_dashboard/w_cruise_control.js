@@ -161,11 +161,13 @@ var WCruiseControl = (function (_super) {
         this.zoneWoodIconDiv = $("<div id='cruiseControlZoneWoodIconDiv'></div>");
         this.zoneRoadIconDiv = $("<div id='cruiseControlZoneRoadIconDiv'></div>");
         this.zoneWaterIconDiv = $("<div id='cruiseControlZoneWaterIconDiv'></div>");
+        this.zoneSlopeIconDiv = $("<div id='cruiseControlZoneSlopeIconDiv'></div>");
 
         this.zoneIconAreaDiv.append(this.zoneDirtIconDiv);
         this.zoneIconAreaDiv.append(this.zoneWoodIconDiv);
         this.zoneIconAreaDiv.append(this.zoneRoadIconDiv);
         this.zoneIconAreaDiv.append(this.zoneWaterIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneSlopeIconDiv);
 
         this.zones = {
             Dirt: {
@@ -186,6 +188,11 @@ var WCruiseControl = (function (_super) {
             Road: {
                 jqselector: this.zoneRoadIconDiv,
                 zoneName: "road",
+                active: false
+            },
+            Slope: {
+                jqselector: this.zoneSlopeIconDiv,
+                zoneName: "slope",
                 active: false
             }
         };
