@@ -252,12 +252,15 @@ class Unit(Observer):
         return self.owner
 
     def on_change_altitude(self, new_altitude, time):
+        #log.debug(new_altitude, self.altitude)
+        if new_altitude is None:
+            print('errror')
         if new_altitude != self.altitude:
             old_altitude = self.altitude
             self.altitude = new_altitude
             # todo: взять коэффициенты из баланса
-            self.p_observing_range.current -= old_altitude * 1.0
-            self.p_observing_range.current += new_altitude * 1.0
+            self.params.get('p_observing_range').current -= old_altitude * 1.0
+            self.params.get('p_observing_range').current += new_altitude * 1.0
             if self.owner:
                 messages.ChangeAltitude(
                     agent=self.owner,
