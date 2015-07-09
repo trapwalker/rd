@@ -9,46 +9,64 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
-from attr import Attribute
+from attr import Attribute, DocAttribute
 
 from collections import deque
 from pprint import pformat
-
-
-# todo: override attributes in subclasses
-
-class PersistentMeta(type):
-    def __getinitargs__(cls):
-        return cls.__name__, cls.__bases__, {}
-
-    def __new__(mcs, name, bases, attrs):
-        log.debug(pformat(locals()))
-        c = super(PersistentMeta, mcs).__new__(mcs, name, bases, attrs)
-        return c
-
-    def __init__(cls, name, bases, attrs):
-        super(PersistentMeta, cls).__init__(name, bases, attrs)
-        # cls.__process_attrs__()
-
-    def __process_attrs__(self):
-        for k, v in self.__dict__.items():
-            if isinstance(v, Attribute):
-                v.attach(name=k, cls=self)
 
 
 class ThingParentLinkIsCycle(Exception):
     pass
 
 
+class AttrUpdaterMeta(type):
+    def __init__(cls, name, bases, attrs):
+        super(AttrUpdaterMeta, cls).__init__(name, bases, attrs)
+        for k, v in cls.__dict__.items():
+            cls.prepare_attr(k, v)
+
+        for k, v in cls.__dict__.items():
+            cls.update_attr(k, v)
+
+    def prepare_attr(self, name, value):
+        pass
+
+    def update_attr(self, name, value):
+        pass
+
+
+class PersistentMeta(AttrUpdaterMeta):
+
+    def update_attr(self, name, value):
+        super(PersistentMeta, self).update_attr(name, value)
+        if isinstance(value, Attribute):
+            value.attach(name=name, cls=self)
+
+
+class ContainerMeta(AttrUpdaterMeta):
+    def __init__(self, *av, **kw):
+        super(ContainerMeta, self).__init__(*av, **kw)
+        self.attrs = {}
+
+    def prepare_attr(self, name, value):
+        if not isinstance(value, Persistent):
+            pass
+
+
+    def update_attr(self, name, value):
+        super(ContainerMeta, self).update_attr(name, value)
+        if isinstance(value, Attribute):
+            value.attach(name=name, cls=self)
+
+
 class Regystry(object):
     def __init__(self):
         self.items = []
 
-    def __iter__(cls):
+    def __iter__(self):
         """Iter with consistent parent lines~"""
-        q = deque()
+        q = deque(self.items)
         done = {None}
-        q.extend((c for c in cls.__dict__.values() if isinstance(c, Node)))
         cnt = 0
         while q:
             c = q.pop()
@@ -63,17 +81,17 @@ class Regystry(object):
                     raise ThingParentLinkIsCycle()
 
 
-class ContainerMeta(type):
-    def __init__(cls, name, bases, attrs):
-        super(ContainerMeta, cls).__init__(name, bases, attrs)
-        #parents = [c for c in bases if not c is not Container and c is not object]
-        cls._parent = #parents[0] if parents else None
-        cls.__process_attrs__()
-
-    def __process_attrs__(self):
-        for k, v in self.__dict__.items():
-            if isinstance(v, Node):
-                v._attach_to_container(container=self, name=k)
+# class ContainerMeta(type):
+#     def __init__(cls, name, bases, attrs):
+#         super(ContainerMeta, cls).__init__(name, bases, attrs)
+#         #parents = [c for c in bases if not c is not Container and c is not object]
+#         cls._parent = #parents[0] if parents else None
+#         cls.__process_attrs__()
+#
+#     def __process_attrs__(self):
+#         for k, v in self.__dict__.items():
+#             if isinstance(v, Node):
+#                 v._attach_to_container(container=self, name=k)
 
 
 class Persistent(object):
@@ -81,6 +99,7 @@ class Persistent(object):
 
 
 class Node(Persistent):
+    # todo: override attributes in subclasses
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     doc = DocAttribute()
 
