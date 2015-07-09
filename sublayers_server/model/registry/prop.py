@@ -9,60 +9,13 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
-#import copy_reg
+from attr import Attribute
+
 from collections import deque
 from pprint import pformat
 
 
 # todo: override attributes in subclasses
-
-class Attribute(object):
-    def __init__(self, default=None, doc=None, caption=None):
-        # todo: add param: null
-        self.name = None
-        self.cls = None
-        self.default = default
-        self.doc = doc
-        self.caption = caption
-
-    @property
-    def title(self):
-        assert self.name, 'Attribute is not attached'
-        return self.caption or self.name
-
-    def __str__(self):
-        return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
-
-    def __get__(self, obj, cls):
-        value = obj._get_attr_value(self.name, self.default)  # todo: cascade getter
-        log.debug('__get__ %s.%s() => %s', obj, self.name, value)
-        return value
-
-    def __set__(self, obj, value):
-        log.debug('__set__ %s.%s = %s', obj, self.name, value)
-        obj._set_attr_value(self.name, value)
-
-    def __delete__(self, obj):
-        log.debug('__gelete__ %s.%s() => %s', obj, self.name)
-        obj._del_attr_value(self.name)
-
-    def attach(self, name, cls):
-        self.name = name
-        self.cls = cls
-        # todo: global attribute registration
-
-# todo: reserved attr names checking
-
-
-class DocAttribute(Attribute):
-    def __init__(self):
-        super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
-
-    def __get__(self, obj, cls):
-        default = cls.__doc__
-        value = obj._get_attr_value(self.name, self.default or default)  # todo: cascade getter
-        return value
-
 
 class PersistentMeta(type):
     def __getinitargs__(cls):
@@ -92,7 +45,7 @@ class Regystry(object):
         self.items = []
 
     def __iter__(cls):
-        """Iter with consistent parent lines"""
+        """Iter with consistent parent lines~"""
         q = deque()
         done = {None}
         q.extend((c for c in cls.__dict__.values() if isinstance(c, Node)))
@@ -113,8 +66,8 @@ class Regystry(object):
 class ContainerMeta(type):
     def __init__(cls, name, bases, attrs):
         super(ContainerMeta, cls).__init__(name, bases, attrs)
-        parents = [c for c in bases if c is not Container and c is not object]
-        cls._parent = parents[0] if parents else None
+        #parents = [c for c in bases if not c is not Container and c is not object]
+        cls._parent = #parents[0] if parents else None
         cls.__process_attrs__()
 
     def __process_attrs__(self):
