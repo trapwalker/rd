@@ -44,7 +44,7 @@ class Attribute(object):
 
 class DocAttribute(Attribute):
     def __init__(self):
-        super(DocAttribute, self).__init__(caption=u'��������', doc=u'�������� ����')
+        super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
 
     def __get__(self, obj, cls):
         default = cls.__doc__
