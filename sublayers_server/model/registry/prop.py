@@ -111,14 +111,14 @@ class Node(Persistent):
         if self.name is None:
             self.name = name
 
-    def __init__(self, name=None, parent=None, abstract=False, values=None, container=None, **kw):
+    def __init__(self, name=None, parent=None, abstract=False, values=None, registry=None, **kw):
         super(Node, self).__init__()
         self.name = name
         self.parent = parent
         self.values = values or {}
         self.values.update(kw)
         self.childs = []  # todo: use weakref
-        self.container = container
+        self.registry = registry
         if parent:
             parent._add_child(self)
 
@@ -133,6 +133,7 @@ class Node(Persistent):
 
     def _add_child(self, child):
         self.childs.append(child)
+        child.registry = self.registry
 
     def _get_attr_value(self, name, default):
         if name in self.values:
