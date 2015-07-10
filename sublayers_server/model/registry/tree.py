@@ -12,7 +12,6 @@ if __name__ == '__main__':
 from attr import Attribute, DocAttribute
 
 from collections import deque
-from pprint import pformat
 
 
 class ThingParentLinkIsCycle(Exception):
@@ -43,24 +42,9 @@ class PersistentMeta(AttrUpdaterMeta):
             value.attach(name=name, cls=self)
 
 
-class ContainerMeta(AttrUpdaterMeta):
-    def __init__(self, *av, **kw):
-        super(ContainerMeta, self).__init__(*av, **kw)
-        self.attrs = {}
-
-    def prepare_attr(self, name, value):
-        if not isinstance(value, Persistent):
-            pass
-
-
-    def update_attr(self, name, value):
-        super(ContainerMeta, self).update_attr(name, value)
-        if isinstance(value, Attribute):
-            value.attach(name=name, cls=self)
-
-
-class Regystry(object):
+class Registry(object):
     def __init__(self):
+        self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
         self.items = []
 
     def __iter__(self):
@@ -81,19 +65,6 @@ class Regystry(object):
                     raise ThingParentLinkIsCycle()
 
 
-# class ContainerMeta(type):
-#     def __init__(cls, name, bases, attrs):
-#         super(ContainerMeta, cls).__init__(name, bases, attrs)
-#         #parents = [c for c in bases if not c is not Container and c is not object]
-#         cls._parent = #parents[0] if parents else None
-#         cls.__process_attrs__()
-#
-#     def __process_attrs__(self):
-#         for k, v in self.__dict__.items():
-#             if isinstance(v, Node):
-#                 v._attach_to_container(container=self, name=k)
-
-
 class Persistent(object):
     __metaclass__ = PersistentMeta
 
@@ -106,12 +77,7 @@ class Node(Persistent):
     def __getstate__(self):
         return self.__dict__
 
-    def _attach_to_container(self, container, name):
-        self.container = container
-        if self.name is None:
-            self.name = name
-
-    def __init__(self, name=None, parent=None, abstract=False, values=None, registry=None, **kw):
+    def __init__(self, name=None, parent=None, values=None, registry=None, **kw):
         super(Node, self).__init__()
         self.name = name
         self.parent = parent
@@ -123,7 +89,7 @@ class Node(Persistent):
             parent._add_child(self)
 
     def __hash__(self):
-        return hash((self.container, self.name))
+        return hash((self.registry, self.name))
 
     def __repr__(self):
         return '<{self.container.__name__}.{self.name}[{parent_name}]>'.format(
@@ -157,22 +123,23 @@ class Node(Persistent):
         stream.write('\n')
 
 
-class Container(object):
-    __metaclass__ = ContainerMeta
+class Root(Node):
+    pass
 
 
 if __name__ == '__main__':
-    from pprint import pprint as pp
+    # from pprint import pprint as pp
     # from pickle import dumps, loads
     # import jsonpickle as jp
     class Car(Node):
         u"""Абстрактная машина"""
         max_velocity = Attribute(default=100, caption=u'Макс. скорость', doc=u'Максимальная скорость транспортного средства')
 
-    class C(Container):
-        anyCar = Car()
-        carLite = Car(parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
-        carMidle = Car(parent=anyCar, doc=u'Легковая техника')
-        carHavy = Car(parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
-        carMoto = Car(parent=carLite)
+    reg = Registry()
 
+    # class C(Container):
+    #     anyCar = Car()
+    #     carLite = Car(parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
+    #     carMidle = Car(parent=anyCar, doc=u'Легковая техника')
+    #     carHavy = Car(parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
+    #     carMoto = Car(parent=carLite)
