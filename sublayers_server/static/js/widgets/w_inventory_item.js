@@ -34,9 +34,9 @@ var WInventoryItem = (function (_super) {
     WInventoryItem.prototype.visibleViewForInvDiv = function(inventoryDiv, visible) {
         //console.log('WInventoryItem.prototype.hideViewForDiv', inventoryDiv, this.item);
         if (visible)
-            $(inventoryDiv).find(this.itemDivStr).css('display', 'block');
+            $(inventoryDiv).find(this.itemDivStr).parent().css('display', 'block');
         else
-            $(inventoryDiv).find(this.itemDivStr).css('display', 'none');
+            $(inventoryDiv).find(this.itemDivStr).parent().css('display', 'none');
     };
 
     WInventoryItem.prototype.change = function() {

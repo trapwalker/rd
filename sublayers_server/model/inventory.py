@@ -55,7 +55,6 @@ class Inventory(object):
             position = self.get_position(item=item)
         assert position is not None
         deleted_item = self._items.pop(position)
-
         for agent in self.visitors:
             InventoryDelItemMessage(agent=agent, time=time, item=deleted_item, inventory=self,
                                      position=position).post()
@@ -115,9 +114,7 @@ class ItemTask(TaskSingleton):
 
     def on_perform(self, event):
         super(ItemTask, self).on_perform(event=event)
-        self.owner.set_item_empty(time=event.time)
-        self.owner.on_update(time=event.time)
-        self.owner.set_inventory(inventory=None, time=event.time)
+        self.owner.on_empty(time=event.time)
 
     def on_start(self, event):
         super(ItemTask, self).on_start(event=event)
@@ -142,8 +139,7 @@ class ItemTask(TaskSingleton):
             if t_empty > time:
                 TaskPerformEvent(time=t_empty, task=self).post()
             else:
-                self.owner.set_item_empty(time=event.time)
-                self.owner.set_inventory(inventory=None, time=event.time)
+                self.owner.on_empty(time=time)
 
 
 class ItemState(object):
@@ -199,11 +195,22 @@ class ItemState(object):
                 InventoryItemMessage(agent=agent, time=time, item=self, inventory=self.inventory,
                                      position=self.inventory.get_position(item=self)).post()
 
-    def set_item_empty(self, time):
+    def on_empty(self, time):
+        assert not self.limbo
+        self.limbo = True
         self.t0 = time
         self.t_empty = None
         self.val0 = 0
         self.dvs = 0
+
+        # отправить всем потребителям месагу о том, что итем кончился
+        consumers = self.consumers[:]
+        for consumer in consumers:
+            consumer.on_empty_item(item=self, time=time, action=None)
+
+        # удаляем итем
+        if self.inventory is not None:
+            self.inventory.del_item(item=self, time=time)
 
     def export_item_state(self):
         return dict(
@@ -218,15 +225,27 @@ class ItemState(object):
     def __str__(self):
         return self.__str_template__.format(self=self)
 
-    # если inventory = None, то работает как удаление итема
+    def _div_item(self, count, time):
+        if self.val(t=time) < count:
+            return None
+        ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
+        return ItemState(server=self.server, time=time, balance_cls=self.balance_cls, count=count)
+
+    # Интерфейс работы с итемом со стороны окна клиента
     def set_inventory(self, time, inventory, position=None):
         assert not self.limbo
         old_inventory = self.inventory
         if inventory is old_inventory:
             return self.change_position(position=position, time=time)
         if (inventory is None) or inventory.add_item(item=self, position=position, time=time):
-             # запретить потребление итема пока он не в инвентаре
+            # запретить потребление итема пока он не в инвентаре
             self.limbo = inventory is None
+
+            # это отработает когда мы выкинем из инвентаря используемые патроны
+            if self.limbo:
+                tasks = self.tasks[:]
+                for task in tasks:
+                    task.done()
 
             # отправить всем потребителям месагу о том, что итем кончился
             consumers = self.consumers[:]
@@ -240,12 +259,6 @@ class ItemState(object):
             return True
         else:
             return False
-
-    def _div_item(self, count, time):
-        if self.val(t=time) < count:
-            return None
-        ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
-        return ItemState(server=self.server, time=time, balance_cls=self.balance_cls, count=count)
 
     def div_item(self, count, time, inventory, position):
         assert not self.limbo
@@ -281,7 +294,7 @@ class ItemState(object):
             return self.inventory.change_position(item=self, new_position=position, time=time)
         return False
 
-    # Интерфейс работы с итемом
+    # Интерфейс работы с итемом со стороны потребителя
     def linking(self, consumer):
         if consumer not in self.consumers and not self.limbo:
             self.consumers.append(consumer)

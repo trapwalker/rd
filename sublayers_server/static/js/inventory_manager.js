@@ -23,12 +23,12 @@ var InventoryItem = (function (_super) {
 
     function InventoryItem(state, position, balance_cls) {
         _super.call(this, null);
-        this._item_state = state;
         this._in_tm = false;
         this.position = position;
         this.balance_cls = balance_cls;
         this.inventory = null;
         this.widget = null;
+        this.setState(state);
     }
 
     InventoryItem.prototype.setInventory = function(inventory) {
