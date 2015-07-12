@@ -297,17 +297,10 @@ var MapManager = (function(_super){
         mapDiv.droppable({
             greedy: true,
             drop: function(event, ui) {
-                //console.log('Drop on map');
-                var dragOwnerID = ui.draggable.data('owner_id');
-                var dragPos = ui.draggable.data('pos');
-                var dropOwnerID = null;
-                var dropPos = null;
-
-                // Проверим не сами ли в себя мы перемещаемся
-                if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
-                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
-                //clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
-                //    $(event.target).data('owner_id'), $(event.target).data('pos'));
+                // Эта проверка нужна так как таскание окон также порождает событие дропа
+                if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item'))
+                    clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
+                                                          null, null);
             }
         });
 

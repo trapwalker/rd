@@ -320,7 +320,6 @@ var ClientManager = (function () {
         //user.userCar.debugLines = [];
     };
 
-
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);

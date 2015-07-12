@@ -139,8 +139,7 @@ var Inventory = (function () {
                 helper: 'clone',
                 opacity: 0.8,
                 revert: true,
-                revertDuration: 10,
-                scrollSpeed: 5,
+                revertDuration: 0,
                 zIndex: 1,
                 appendTo: '#map'
             });
