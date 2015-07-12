@@ -3,12 +3,10 @@
 * В данный модуль писать все методы и функции для работы с картой
 */
 
-
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
-
 
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
@@ -288,8 +286,30 @@ var MapManager = (function(_super){
         };
         canvasTiles.addTo(myMap);
 
+        /*
+            Карта является глобальным droppabl'ом в качестве мусорки
+            P.S.
+            Тут дропабл вешается именно на бодидив, а не на мап, т.к. мап и например окно инвентаря лежат в разных
+            ветках дом-дерева и запрет делегирования дропа не отрабатывает корректно (одновременно отрабатывает и дроп
+            на карту и дроп в ячейку инвентаря)
+        */
+        var mapDiv = $('#bodydiv');
+        mapDiv.droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                //console.log('Drop on map');
+                var dragOwnerID = ui.draggable.data('owner_id');
+                var dragPos = ui.draggable.data('pos');
+                var dropOwnerID = null;
+                var dropPos = null;
 
-
+                // Проверим не сами ли в себя мы перемещаемся
+                if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
+                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
+                //clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
+                //    $(event.target).data('owner_id'), $(event.target).data('pos'));
+            }
+        });
 
     };
 

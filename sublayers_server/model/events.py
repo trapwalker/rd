@@ -403,7 +403,7 @@ class ItemActionInventoryEvent(Event):
                 end_item = end_inventory.get_item(position=self.end_pos)
 
         # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
-        if (self.agent.api.car is not start_obj) or (self.agent.api.car is not end_obj):
+        if (self.agent.api.car is not start_obj) or ((end_obj is not None) and (self.agent.api.car is not end_obj)):
             return
 
         if end_item is not None:

@@ -104,31 +104,45 @@ var Inventory = (function () {
     Inventory.prototype.showInventory = function (inventoryDiv) {
         //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
         for (var i = 0; i < this.max_size; i++) {
-            var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
+            /*
+                Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
+                можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
+            */
+            var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap inventory-wrap-' + this.owner_id +
+                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
                 '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div>';
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
             $(inventoryDiv).append(emptyItemDiv);
 
-            var emptyItemDivJQ =  $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '');
-            emptyItemDivJQ.droppable({
+            $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + i + '').droppable({
                 greedy: true,
                 accept: function(target) {
                     return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item');
                 },
                 drop: function(event, ui) {
-                    clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
-                        $(event.target).data('owner_id'), $(event.target).data('pos'));
+                    var dragOwnerID = ui.draggable.data('owner_id');
+                    var dragPos = ui.draggable.data('pos');
+                    var dropOwnerID = $(event.target).data('owner_id');
+                    var dropPos = $(event.target).data('pos');
+
+                    // Проверим не сами ли в себя мы перемещаемся
+                    if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
+                        clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
                 }
             });
-            emptyItemDivJQ.draggable({
-                //disabled: true,
+
+            $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '').draggable({
+                disabled: true,
                 helper: 'clone',
                 opacity: 0.8,
                 revert: true,
                 revertDuration: 10,
-                scrollSpeed: 5
+                scrollSpeed: 5,
+                zIndex: 1,
+                appendTo: '#map'
             });
         }
 

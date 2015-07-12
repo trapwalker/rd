@@ -695,12 +695,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryAddItemMessage', event);
+        //console.log('ClientManager.prototype.InventoryAddItemMessage', event);
         inventoryList.getInventory(event.owner_id).addItem(this._getItem(event));
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryDelItemMessage', event);
+        //console.log('ClientManager.prototype.InventoryDelItemMessage', event);
         inventoryList.getInventory(event.owner_id).delItem(event.position);
     };
 
@@ -1013,7 +1013,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos) {
-        console.log('ClientManager.prototype.sendItemActionInventory');
+        //console.log('ClientManager.prototype.sendItemActionInventory');
         var mes = {
             call: "item_action_inventory",
             rpc_call_id: rpcCallList.getID(),
