@@ -124,12 +124,10 @@ class FireSector(Sector):
         for vo in self.owner.visible_objects:
             if self._test_target_in_sector(target=vo, time=time):
                 cars.append(vo)
-        t_rch = 0
         self.target_list = cars
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
-                t_rch = max(t_rch, wp.fire(time=time))
-        return t_rch
+                wp.fire(time=time)
 
     def out_car(self, target, time):
         if target in self.target_list:

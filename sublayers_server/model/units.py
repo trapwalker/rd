@@ -64,8 +64,9 @@ class Unit(Observer):
             .set_inventory(time=time, inventory=self.inventory)
         ItemState(server=self.server, time=time, balance_cls='Cargo2', count=28
         ).set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo2', count=8)\
-            .set_inventory(time=time, inventory=self.inventory)
+
+        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=2)
+        self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
 
         if weapons:
             for weapon in weapons:
@@ -103,7 +104,10 @@ class Unit(Observer):
             weapon = WeaponDischarge(owner=self, sector=sector, dmg=dict_weapon['dmg'],
                                      time_recharge=dict_weapon['time_recharge'])
 
-        weapon.set_item(item=self.item_ammo1, time=time)
+        if dict_weapon['radius'] == 50:
+            weapon.set_item(item=self.item_ammo2, time=time)
+        else:
+            weapon.set_item(item=self.item_ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -121,28 +125,17 @@ class Unit(Observer):
     def on_fire_discharge(self, event):
         time = event.time
         side = event.side
+
         # сначала проверяем можем ли мы стрельнуть бортом
         for sector in self.fire_sectors:
             if sector.side == side:
                 if not sector.can_discharge_fire(time=time):
                     return
-        t_rch = 0
+
         for sector in self.fire_sectors:
             if sector.side == side:
-                t_rch = max(t_rch, sector.fire_discharge(time=time))
+                sector.fire_discharge(time=time)
 
-        # для себя: side, time, t_rch
-        if t_rch > 0.0:
-            # евент залповая стрельба
-            FireDischargeEffectEvent(obj=self, side=side, time=event.time).post()
-            # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
-            for agent in self.watched_agents:
-                messages.FireDischarge(
-                    agent=agent,
-                    side=side,
-                    t_rch=t_rch,
-                    time=event.time
-                ).post()
 
     def on_fire_auto_enable(self, enable, time):
         #log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)

@@ -471,8 +471,6 @@ var ClientManager = (function () {
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 
-        //console.log('etime = ', event.time, '    ctime = ', clock.getClientMS());
-
         // установка last_shoot
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
@@ -483,30 +481,8 @@ var ClientManager = (function () {
             console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
-        user.userCar.setShootTime(event.side, etime);
-/*
-        var dir_side = null;
-        switch (event.side) {
-            case 'front':
-                dir_side = 0;
-                break;
-            case 'left':
-                dir_side = Math.PI / 2.;
-                break;
-            case 'right':
-                dir_side = -Math.PI / 2.;
-                break;
-            case 'back':
-                dir_side = Math.PI;
-                break;
-            default:
-                console.error('Невозможно отрисовать эффект. Неизвестный борт!', event.side);
-                return;
-        }
-        if (dir_side != null)
-            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-                    user.userCar.getCurrentDirection(clock.getCurrentTime()) + dir_side).start();
-*/
+        user.userCar.setShootTime(event.side, etime, event.t_rch);
+
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {

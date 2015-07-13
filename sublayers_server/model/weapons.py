@@ -4,8 +4,9 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.balance import BALANCE
-from sublayers_server.model.messages import FireAutoEffect
+from sublayers_server.model.messages import FireAutoEffect, FireDischarge
 from sublayers_server.model.inventory import Consumer
+from sublayers_server.model.events import FireDischargeEffectEvent
 
 
 
@@ -116,14 +117,26 @@ class WeaponDischarge(Weapon):
     def fire(self, time):
         if self.can_fire(time=time):
             self.use(time=time)
-            self.last_shoot = time
-            return self.t_rch
-        return 0
 
     def on_use(self, item, time):
         super(WeaponDischarge, self).on_use(item=item, time=time)
+        # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
+        self.last_shoot = time
         for car in self.sector.target_list:
             car.set_hp(dhp=self.dmg, shooter=self.owner, time=time)
+
+        # евент залповая стрельба
+        FireDischargeEffectEvent(obj=self.owner, side=self.sector.side, time=time).post()
+
+        # отправка сообщения агентам о перезарядке
+        for agent in self.owner.watched_agents:
+            FireDischarge(
+                agent=agent,
+                side=self.sector.side,
+                t_rch=self.t_rch,
+                time=time
+            ).post()
+
 
     def can_fire(self, time):
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)
