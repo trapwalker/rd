@@ -101,7 +101,7 @@ var WAltmetrRadial = (function (_super) {
             .fill(this.svg_params.text_HEALTH.fill)
             .dmove(size, size - 2 * this.d_radius);
 
-        this.draw_fill_area(0.5);
+        this.draw_fill_area(0.0);
 
         this.change(clock.getCurrentTime());
     }
@@ -180,6 +180,7 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype.draw_fill_area = function(prc) {
+        console.log('Altitude draw_fill_area', this.car.altitude, this.value_prc);
         if (prc > 1.0) prc = 1.0;
         if (prc < 0.0) prc = 0.0;
         var size = this.center;

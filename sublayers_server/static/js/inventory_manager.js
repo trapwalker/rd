@@ -23,12 +23,12 @@ var InventoryItem = (function (_super) {
 
     function InventoryItem(state, position, balance_cls) {
         _super.call(this, null);
-        this._item_state = state;
         this._in_tm = false;
         this.position = position;
         this.balance_cls = balance_cls;
         this.inventory = null;
         this.widget = null;
+        this.setState(state);
     }
 
     InventoryItem.prototype.setInventory = function(inventory) {
@@ -39,6 +39,17 @@ var InventoryItem = (function (_super) {
 
     InventoryItem.prototype.showItem = function(inventoryDiv) {
         this.widget.addViewDiv(inventoryDiv);
+    };
+
+    InventoryItem.prototype.visibleItemForInvDiv = function(inventoryDiv, filter) {
+        if (filter) {
+            if (this.balance_cls.indexOf(filter) >= 0)
+                this.widget.visibleViewForInvDiv(inventoryDiv, true);
+            else
+                this.widget.visibleViewForInvDiv(inventoryDiv, false);
+        }
+        else
+            this.widget.visibleViewForInvDiv(inventoryDiv, true);
     };
 
     InventoryItem.prototype.getCurrentVal = function (time) {
@@ -93,12 +104,45 @@ var Inventory = (function () {
     Inventory.prototype.showInventory = function (inventoryDiv) {
         //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
         for (var i = 0; i < this.max_size; i++) {
-            var empty_item_div = '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
-                '-pos-' + i + '">' +
+            /*
+                Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
+                можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
+            */
+            var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap inventory-wrap-' + this.owner_id +
+                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
+                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div>';
-            $(inventoryDiv).append(empty_item_div);
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
+            $(inventoryDiv).append(emptyItemDiv);
+
+            $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + i + '').droppable({
+                greedy: true,
+                accept: function(target) {
+                    return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item');
+                },
+                drop: function(event, ui) {
+                    var dragOwnerID = ui.draggable.data('owner_id');
+                    var dragPos = ui.draggable.data('pos');
+                    var dropOwnerID = $(event.target).data('owner_id');
+                    var dropPos = $(event.target).data('pos');
+
+                    // Проверим не сами ли в себя мы перемещаемся
+                    if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
+                        clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
+                }
+            });
+
+            $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '').draggable({
+                disabled: true,
+                helper: 'clone',
+                opacity: 0.8,
+                revert: true,
+                revertDuration: 0,
+                zIndex: 1,
+                appendTo: '#map'
+            });
         }
 
         for (var pos in this.items)
@@ -129,6 +173,13 @@ var Inventory = (function () {
 
     Inventory.prototype.getItem = function (position) {
         return this.items[position]
+    };
+
+    Inventory.prototype.showInvByFilter = function (inventoryDiv, filter) {
+        //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
+        for (var pos in this.items)
+            if (this.items.hasOwnProperty(pos))
+                this.items[pos].visibleItemForInvDiv(inventoryDiv, filter);
     };
 
     return Inventory;
@@ -162,6 +213,14 @@ var InventoryList = (function () {
             inv.showInventory(inventory_div);
         else
             clientManager.sendShowInventory(owner_id);
+    };
+
+    InventoryList.prototype.showInvByFilter = function (owner_id, inventory_div, filter) {
+        var inv = this.getInventory(owner_id);
+        if (inv)
+            inv.showInvByFilter(inventory_div, filter);
+        else
+            console.error('showInvByFilter:: Инвентарь машинки <', owner_id ,'>  не найден');
     };
 
     return InventoryList;

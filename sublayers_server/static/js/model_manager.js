@@ -320,7 +320,6 @@ var ClientManager = (function () {
         //user.userCar.debugLines = [];
     };
 
-
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update', event);
         var motion_state = this._getState(event.object.state);
@@ -396,6 +395,7 @@ var ClientManager = (function () {
             case 'ScoutDroid':
             case 'StationaryTurret':
             case 'SlowMine':
+            case 'Mobile':
                 this._contactBot(event);
                 break;
             case 'Town':
@@ -471,8 +471,6 @@ var ClientManager = (function () {
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 
-        //console.log('etime = ', event.time, '    ctime = ', clock.getClientMS());
-
         // установка last_shoot
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
@@ -483,30 +481,8 @@ var ClientManager = (function () {
             console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
-        user.userCar.setShootTime(event.side, etime);
-/*
-        var dir_side = null;
-        switch (event.side) {
-            case 'front':
-                dir_side = 0;
-                break;
-            case 'left':
-                dir_side = Math.PI / 2.;
-                break;
-            case 'right':
-                dir_side = -Math.PI / 2.;
-                break;
-            case 'back':
-                dir_side = Math.PI;
-                break;
-            default:
-                console.error('Невозможно отрисовать эффект. Неизвестный борт!', event.side);
-                return;
-        }
-        if (dir_side != null)
-            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-                    user.userCar.getCurrentDirection(clock.getCurrentTime()) + dir_side).start();
-*/
+        user.userCar.setShootTime(event.side, etime, event.t_rch);
+
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
@@ -694,12 +670,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryAddItemMessage', event);
+        //console.log('ClientManager.prototype.InventoryAddItemMessage', event);
         inventoryList.getInventory(event.owner_id).addItem(this._getItem(event));
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryDelItemMessage', event);
+        //console.log('ClientManager.prototype.InventoryDelItemMessage', event);
         inventoryList.getInventory(event.owner_id).delItem(event.position);
     };
 
@@ -1005,6 +981,22 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos) {
+        //console.log('ClientManager.prototype.sendItemActionInventory');
+        var mes = {
+            call: "item_action_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                start_owner_id: start_owner_id,
+                start_pos: start_pos,
+                end_owner_id: end_owner_id,
+                end_pos: end_pos
             }
         };
         rpcCallList.add(mes);

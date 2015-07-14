@@ -40,7 +40,14 @@ var WCarMarker = (function (_super) {
         else
             marker.on('click', onClickUserCarMarker);
 
-        marker.on('contextmenu', function(){alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)});
+        marker.on('contextmenu', function () {
+            var car = visualManager.getModelObject(this.carID);
+            if (car && car.getCurrentHP) {
+                var hp = car.getCurrentHP(clock.getCurrentTime());
+                console.info(this.carID, '  have  ', hp, ' hp points');
+            }
+            //alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)
+        });
     };
 
     WCarMarker.prototype.change = function(){
@@ -128,8 +135,13 @@ var WCarMarker = (function (_super) {
             else { // значит объект не имеет владельца, нужно использовать main_agent_login
                 if (this.car.cls == 'Rocket' || this.car.cls == 'SlowMine')
                     label_str = label_str = label_str1 + label_str2;
-                else
-                    label_str = label_str1 + '-=by ' + this.car.main_agent_login + '=-' + label_str2;
+                else {
+                    if (this.car.main_agent_login)
+                        label_str = label_str1 + '-=by ' + this.car.main_agent_login + '=-' + label_str2;
+                    else
+                        label_str = label_str1 + '-=' + this.car.cls + '=-' + label_str2;
+
+                }
             }
         }
         this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());

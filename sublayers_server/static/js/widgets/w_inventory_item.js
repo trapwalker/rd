@@ -25,8 +25,18 @@ var WInventoryItem = (function (_super) {
 
     WInventoryItem.prototype.addViewDiv = function(inventoryDiv) {
         //console.log('WInventoryItem.prototype.addViewDiv', inventoryDiv, this.item);
-        $(inventoryDiv).find(this.itemDivStr).find(this.itemDivCaptionStr).text(this.item.balance_cls);
+        var itemDiv = $(inventoryDiv).find(this.itemDivStr);
+        itemDiv.find(this.itemDivCaptionStr).text(this.item.balance_cls);
+        itemDiv.draggable("option", "disabled", false);
         this.change();
+    };
+
+    WInventoryItem.prototype.visibleViewForInvDiv = function(inventoryDiv, visible) {
+        //console.log('WInventoryItem.prototype.hideViewForDiv', inventoryDiv, this.item);
+        if (visible)
+            $(inventoryDiv).find(this.itemDivStr).parent().css('display', 'block');
+        else
+            $(inventoryDiv).find(this.itemDivStr).parent().css('display', 'none');
     };
 
     WInventoryItem.prototype.change = function() {
@@ -39,11 +49,11 @@ var WInventoryItem = (function (_super) {
         //console.log('WInventoryItem.prototype.delFromVisualManager');
         this.item = null;
 
-        // снетси верстку
-        var target = $(this.inventoryDivStr).find(this.itemDivStr);
-        target.find(this.itemDivCaptionStr).text('Пусто');
-        target.find(this.itemDivCountStr).text('');
-
+        // снетси верстку и отключить таскание
+        var itemDiv = $(this.inventoryDivStr).find(this.itemDivStr);
+        itemDiv.find(this.itemDivCaptionStr).text('Пусто');
+        itemDiv.find(this.itemDivCountStr).text('');
+        itemDiv.draggable("option", "disabled", true);
         _super.prototype.delFromVisualManager.call(this);
     };
 
