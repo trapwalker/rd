@@ -27,9 +27,9 @@ class TilePicker(object):
         self.extension = extension
 
     @lru_cache(maxsize=DEFAULT_CACHE_SIZE)
-    def _load_tile(self, tile):
-        fn = self.tile_path(tile)
-        log.debug('Try to load tile %s from %s', tile.xyz(), fn)
+    def get_tile(self, tid):
+        fn = self.tile_path(tid)
+        log.debug('Try to load tile %s from %s', tid.xyz(), fn)
         try:
             img = Image.open(fn)
             return img.load()
@@ -37,13 +37,13 @@ class TilePicker(object):
             log.warning('Tile %s not found', fn)
             # todo: other exceptions
 
-    def tile_path(self, tile):
-        return os.path.join(self.path, r'{2}/{1}/{0}{ext}'.format(*tile.xyz(), ext=self.extension))
+    def tile_path(self, tid):
+        return os.path.join(self.path, r'{2}/{1}/{0}{ext}'.format(*tid.xyz(), ext=self.extension))
 
     def get_pixel(self, x, y):
         tid = Tileid(x, y, self.pixel_depth)
         dx, dy, dz = (tid % ONE_TILE_DEPTH).xyz()
-        tile = self._load_tile(tid.parent(ONE_TILE_DEPTH))
+        tile = self.get_tile(tid.parent(ONE_TILE_DEPTH))
         if tile:
             return tile[dx, dy]
 
@@ -52,10 +52,13 @@ class TilePicker(object):
 
 
 if __name__ == '__main__':
-    # D:\Home\svp\projects\sublayers\sublayers_server\temp\tiles_map_terrain_14_0-255\14\3012\6591.jpg
-    p = r"D:\Home\svp\projects\sublayers\sublayers_server\temp\tiles_map_terrain_14_0-255"
-    x, y, z = 6591, 93012, 14
-    dx, dy = 90, 240
-    tp = TilePicker(path=p, pixel_depth=14 + ONE_TILE_DEPTH)
-    for i in xrange(100):
-        print tp[x * 256 + dx, y * 256 + dy]
+    from vectors import Point
+    pth = r"..\temp\tiles_map_terrain_14_0-255"
+    x, y, z = 6591, 3012, 14  # center of test area
+    tp = TilePicker(path=pth, pixel_depth=14 + ONE_TILE_DEPTH)
+    for i in xrange(2000):
+        p = Point.random_gauss(Point(x * 256 + 127, y * 256 + 127), 500)
+        xy = int(p.x), int(p.y)
+        print xy, tp[xy]
+
+    print tp.get_tile.cache_info()
