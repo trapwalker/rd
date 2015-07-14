@@ -10,6 +10,7 @@ from sublayers_server.model.messages import ZoneMessage
 from sublayers_server.model.events import InsertNewServerZone
 from sublayers_server.model.async_tools import async_deco
 import sublayers_server.model.tags as tags
+from sublayers_server.model.tile_pixel_picker import TilePicker
 
 
 import os
@@ -70,6 +71,18 @@ def init_zones_on_server(server, time):
 
     #read_zone_func(zone_name='Altitude', file_name='D:/ts_map_terrain_14_0-255', server=server, effects=[],
     #               zone_cls=AltitudeZoneTileset)
+
+    InsertNewServerZone(
+        server=server,
+        time=time,
+        zone=AltitudeZonePicker(
+            name='Altitude',
+            server=server,
+            effects=[],
+            tiles_path=r"map/altitude",
+            pixel_depth=14 + 8,
+        )
+    ).post()
 
 
 class Zone(object):
@@ -135,3 +148,26 @@ class AltitudeZoneTileset(ZoneTileset):
         position = obj.position(time=time)
         obj.on_change_altitude(
             new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)), time=time)
+
+
+class AltitudeZonePicker(Zone):
+    def __init__(self, tiles_path, pixel_depth, extension='.jpg', **kw):
+        super(AltitudeZonePicker, self).__init__(**kw)
+        self._picker = TilePicker(path=tiles_path, pixel_depth=pixel_depth, extension=extension)
+        self.max_map_zoom = 18  # todo: вынести в конфигурацию
+
+    def test_in_zone(self, obj, time):
+        if tags.UnZoneTag in obj.tags or tags.UnAltitudeTag in obj.tags:
+            return
+
+        position = obj.position(time=time)
+        x, y, z = Tileid(
+            long(position.x),
+            long(position.y),
+            self.max_map_zoom + 8
+        ).parent(self.max_map_zoom + 8 - self._picker.pixel_depth).xyz()
+
+        alt = self._picker[x, y]
+
+        if alt is not None:
+            obj.on_change_altitude(alt, time=time)
