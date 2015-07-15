@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
-from sublayers_server.model.units import Unit
 from sublayers_server.model.messages import EnterToTown, ExitFromTown, ChangeTownVisitorsMessage
 from sublayers_server.model.events import ActivateTownChats
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
@@ -96,4 +95,8 @@ class Town(Observer):
         super(Town, self).del_from_chat(chat=chat, time=time)
         # info: не нужно делать ездящие города, иначе могут быть проблемы
         self.radio_points.remove(chat)
+
+class GasStation(Observer):
+    def __init__(self, time, observing_range=BALANCE.GasStation.observing_range, **kw):
+        super(GasStation, self).__init__(time=time, observing_range=observing_range, **kw)
 

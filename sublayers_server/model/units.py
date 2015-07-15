@@ -55,17 +55,25 @@ class Unit(Observer):
 
         # костыль для инвенторя
         self.inventory = Inventory(max_size=10, owner=self, time=time)
-        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
         self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
-        item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
-        item_ammo2.set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                             inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                             inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                             inventory=self.inventory)
 
-        ItemState(server=self.server, time=time, balance_cls='Cargo1', count=10)\
-            .set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Cargo2', count=28
-        ).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=16).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=24).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
 
-        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=2)
+        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
         self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
 
         if weapons:

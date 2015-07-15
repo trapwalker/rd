@@ -1,7 +1,6 @@
 /*
- * Виджет для отрисовки маркера машинки
+ * Виджет для отрисовки маркеров
 */
-
 
 var WCarMarker = (function (_super) {
     __extends(WCarMarker, _super);
@@ -53,7 +52,6 @@ var WCarMarker = (function (_super) {
     WCarMarker.prototype.change = function(){
         //console.log('WCarMarker.prototype.change');
         if (mapManager.inZoomChange && this.car != user.userCar) return;
-
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
@@ -107,7 +105,13 @@ var WCarMarker = (function (_super) {
         }
 
         if(car.cls == 'Town') {
-            icon_id = 32;
+            marker.setIcon(iconsLeaflet.getIcon('icon_city'));
+            return;
+        }
+
+        if(car.cls == 'GasStation') {
+            marker.setIcon(iconsLeaflet.getIcon('icon_station'));
+            return;
         }
 
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
@@ -176,10 +180,9 @@ function onClickTownMarker() {
 }
 
 function onClickUserCarMarker(){
-    //alert('click to my marker');
+    //console.log('Смена иконки -', this._old_icon_id);
     if(! this._old_icon_id) this._old_icon_id = 0;
     this._old_icon_id++;
     this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
-
 }
 

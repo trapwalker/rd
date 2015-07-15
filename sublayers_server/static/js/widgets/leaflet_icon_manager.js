@@ -26,7 +26,6 @@ var LeafletIconManager = (function(){
             id: this.max_id++
         };
 
-
         // Создание иконки движущейся машинки V 1
         icons['icon_moving_V1'] = {
             icon: new L.icon({
@@ -90,7 +89,6 @@ var LeafletIconManager = (function(){
             id: this.max_id++
         };
 
-
         // Создание иконки движущейся машинки V 3
         icons['icon_moving_V3'] = {
             icon: new L.icon({
@@ -117,7 +115,6 @@ var LeafletIconManager = (function(){
             }),
             id: this.max_id++
         };
-
 
         // новые транспортные иконки
         icons['big_truck_001'] = {
@@ -270,11 +267,9 @@ var LeafletIconManager = (function(){
         };
     }
 
-
     LeafletIconManager.prototype.getIcon = function(icon_name){
         return this.icons[icon_name].icon;
     };
-
 
     LeafletIconManager.prototype.getIconByID = function(ID) {
         var tid = ID % this.max_id;

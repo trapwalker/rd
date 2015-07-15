@@ -13,7 +13,7 @@ from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.town import RadioPoint, Town
+from sublayers_server.model.town import RadioPoint, Town, GasStation
 from sublayers_server.model.events import InitServerEvent
 from sublayers_server.model.units import Mobile
 
@@ -66,11 +66,10 @@ class Server(object):
         # создание зон
         init_zones_on_server(server=self, time=event.time)
 
-        # установка стационарных объектов - радиоточек и городов
-        base_point = Point(12496376, 27133643)
+        # установка стационарных объектов - радиоточек, городов и заправок
         RadioPoint(time=event.time,
                    server=self,
-                   position=base_point)
+                   position=Point(12496376, 27133643))
 
         RadioPoint(time=event.time,
                    server=self,
@@ -83,6 +82,10 @@ class Server(object):
              #svg_link='img/towns/town_2/town.svg',
              town_name='Prior',
              position=Point(12496200, 27133590))
+
+        GasStation(time=event.time,
+                   server=self,
+                   position=Point(12496288, 27133590))
 
         Mobile(server=self,
                time=event.time,

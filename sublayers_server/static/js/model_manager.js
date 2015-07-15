@@ -192,8 +192,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype._contactStaticObject = function (event) {
-        //console.log('ClientManager.prototype._contactRadioPoint', event);
-        if (event.is_first) { // только если первый раз добавляется машинка
+        //console.log('ClientManager.prototype._contactStaticObject', event);
+        if (event.is_first) {
             var uid = event.object.uid;
             var radius_visible = event.object.r;
             var obj_marker;
@@ -203,7 +203,17 @@ var ClientManager = (function () {
             if (obj) return;
 
             // Создание объекта
-            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y));
+            var direction = null;
+            switch (event.object.cls) {
+                case 'GasStation':
+                case 'Town':
+                    direction = - 2 * Math.PI;
+                    break;
+                case 'RadioPoint':
+                    direction = 0.5 * Math.PI;
+                    break;
+            }
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
 
             // Создание/инициализация виджетов
@@ -400,8 +410,11 @@ var ClientManager = (function () {
                 break;
             case 'Town':
             case 'RadioPoint':
+            case 'GasStation':
                 this._contactStaticObject(event);
                 break;
+            default:
+            console.warn('Контакт с неизвестным объектом ', event.object);
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
