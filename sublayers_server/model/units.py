@@ -246,21 +246,21 @@ class Unit(Observer):
 
     def on_change_altitude(self, new_altitude, time):
         pass
-        # if isinstance(self, Bot):
+        #if isinstance(self, Bot):
         #     log.debug('on_alt_change: %s, %s', new_altitude, self.altitude)
-        # if new_altitude != self.altitude:
-        #     old_altitude = self.altitude
-        #     self.altitude = new_altitude
-        #     # todo: взять коэффициенты из баланса
-        #     self.params.get('p_observing_range').current -= old_altitude * 1.0
-        #     self.params.get('p_observing_range').current += new_altitude * 1.0
-        #     if self.owner:
-        #         messages.ChangeAltitude(
-        #             agent=self.owner,
-        #             altitude=new_altitude,
-        #             obj_id=self.id,
-        #             time=time
-        #         ).post()
+        if new_altitude != self.altitude:
+            old_altitude = self.altitude
+            self.altitude = new_altitude
+            # todo: взять коэффициенты из баланса
+            self.params.get('p_observing_range').current -= old_altitude * 1.0
+            self.params.get('p_observing_range').current += new_altitude * 1.0
+            if self.owner:
+                messages.ChangeAltitude(
+                    agent=self.owner,
+                    altitude=new_altitude,
+                    obj_id=self.id,
+                    time=time
+                ).post()
 
 
 class Mobile(Unit):

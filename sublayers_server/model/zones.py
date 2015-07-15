@@ -49,28 +49,25 @@ def init_zones_on_server(server, time):
 
     read_zone_func = async_deco(read_ts_from_file, result_callback=on_result, error_callback=on_error)
 
-    read_zone_func(zone_name='Road', file_name='tilesets/ts_road', server=server, effects=[
+    read_zone_func(zone_name='Road', file_name='map/tilesets/ts_road', server=server, effects=[
         server.effects.get('EffectRoadRCCWood'),
         server.effects.get('EffectRoadRCCWater'),
         server.effects.get('EffectRoadRCCDirt'),
         server.effects.get('EffectRoadRCCSlope'),
     ])
 
-    read_zone_func(zone_name='Wood', file_name='tilesets/ts_wood', server=server, effects=[
+    read_zone_func(zone_name='Wood', file_name='map/tilesets/ts_wood', server=server, effects=[
         server.effects.get('EffectWoodCC'),
         server.effects.get('EffectWoodVisibility'),
         server.effects.get('EffectWoodObsRange'),
     ])
 
-    read_zone_func(zone_name='Slope', file_name='D:/tiles_map_slope_14_black_80', server=server, effects=[
+    read_zone_func(zone_name='Slope', file_name='map/tilesets/tiles_map_slope_14_black_80', server=server, effects=[
         server.effects.get('EffectSlopeCC'),
     ])
 
-    read_zone_func(zone_name='Water', file_name='tilesets/ts_water', server=server,
+    read_zone_func(zone_name='Water', file_name='map/tilesets/ts_water', server=server,
                    effects=[server.effects.get('EffectWaterCC')])
-
-    #read_zone_func(zone_name='Altitude', file_name='D:/ts_map_terrain_14_0-255', server=server, effects=[],
-    #               zone_cls=AltitudeZoneTileset)
 
     InsertNewServerZone(
         server=server,
@@ -170,4 +167,4 @@ class AltitudeZonePicker(Zone):
         alt = self._picker[x, y]
 
         if alt is not None:
-            obj.on_change_altitude(alt, time=time)
+            obj.on_change_altitude(alt[0], time=time)
