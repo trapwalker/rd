@@ -782,10 +782,8 @@
         inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
     });
 
-
-
     $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
-        console.log('111');
+        clientManager.sendHideInventory(user.userCar.ID);
     });
 
     inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())

@@ -655,28 +655,40 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryShowMessage', event);
+        //console.log('ClientManager.prototype.InventoryShowMessage', event);
         inventoryList.addInventory(this._getInventory(event.inventory));
     };
 
     ClientManager.prototype.InventoryHideMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryHideMessage', event);
+        //console.log('ClientManager.prototype.InventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryItemMessage', event);
-        inventoryList.getInventory(event.owner_id).getItem(event.position).setState(this._getItemState(event.item));
+        //console.log('ClientManager.prototype.InventoryItemMessage', event);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.getItem(event.position).setState(this._getItemState(event.item));
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryAddItemMessage', event);
-        inventoryList.getInventory(event.owner_id).addItem(this._getItem(event));
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.addItem(this._getItem(event));
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryDelItemMessage', event);
-        inventoryList.getInventory(event.owner_id).delItem(event.position);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.delItem(event.position);
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
     // Исходящие сообщения
@@ -962,7 +974,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendShowInventory = function(owner_id) {
-        console.log('ClientManager.prototype.sendShowInventory');
+        //console.log('ClientManager.prototype.sendShowInventory');
         var mes = {
             call: "show_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -975,7 +987,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendHideInventory = function(owner_id) {
-        console.log('ClientManager.prototype.sendHideInventory');
+        //console.log('ClientManager.prototype.sendHideInventory');
         var mes = {
             call: "hide_inventory",
             rpc_call_id: rpcCallList.getID(),
