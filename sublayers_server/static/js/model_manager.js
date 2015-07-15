@@ -636,7 +636,10 @@ var ClientManager = (function () {
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
         townVisitorsManager.clear_visitors();
+    };
 
+    ClientManager.prototype.EnterToGasStation = function (event) {
+        console.log('ClientManager.prototype.EnterToGasStation', event);
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -1022,6 +1025,19 @@ var ClientManager = (function () {
                 start_pos: start_pos,
                 end_owner_id: end_owner_id,
                 end_pos: end_pos
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendEnterToGasStation = function (station_id) {
+        //console.log('ClientManager.prototype.sendEnterToGasStation');
+        var mes = {
+            call: "enter_to_gas_station",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                station_id: station_id
             }
         };
         rpcCallList.add(mes);

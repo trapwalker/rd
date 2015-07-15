@@ -15,7 +15,7 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
+from sublayers_server.model.events import Event, EnterToMapObject, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
     HideInventoryEvent, ItemActionInventoryEvent
 from sublayers_server.model.units import Unit
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
@@ -378,22 +378,27 @@ class AgentAPI(API):
 
     @public_method
     def enter_to_town(self, town_id):
-        log.info('agent %s want to enter in town_id is %s', self.agent, town_id)
-        EnterToTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
+        #log.info('agent %s want enter to town is %s', self.agent, town_id)
+        EnterToMapObject(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def exit_from_town(self, town_id):
-        log.info('agent %s want exit from town_id is %s', self.agent, town_id)
+        #log.info('agent %s want exit from town is %s', self.agent, town_id)
         ExitFromTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
 
     @public_method
+    def enter_to_gas_station(self, station_id):
+        log.info('agent %s want enter to station is %s', self.agent, station_id)
+        EnterToMapObject(agent=self.agent, obj_id=station_id, time=self.agent.server.get_time()).post()
+
+    @public_method
     def show_inventory(self, owner_id):
-        log.info('agent %s want show inventory from %s', self.agent, owner_id)
+        #log.info('agent %s want show inventory from %s', self.agent, owner_id)
         ShowInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def hide_inventory(self, owner_id):
-        log.info('agent %s want hide inventory from %s', self.agent, owner_id)
+        #log.info('agent %s want hide inventory from %s', self.agent, owner_id)
         HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
