@@ -170,4 +170,4 @@ class AltitudeZonePicker(Zone):
         alt = self._picker[x, y]
 
         if alt is not None:
-            obj.on_change_altitude(alt, time=time)
+            obj.on_change_altitude(alt[0], time=time)
