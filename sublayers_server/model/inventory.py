@@ -28,12 +28,12 @@ class Inventory(object):
     def add_visitor(self, agent, time):
         if agent not in self.visitors:
             self.visitors.append(agent)
-            self.send_inventory(agent=agent, time=time)
+        self.send_inventory(agent=agent, time=time)
 
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
-            InventoryHideMessage(time=time, agent=agent, inventory=self).post()
+        InventoryHideMessage(time=time, agent=agent, inventory=self).post()
 
     def add_item(self, item, time, position=None):
         if position is None:
@@ -60,11 +60,17 @@ class Inventory(object):
                                      position=position).post()
 
     def change_position(self, item, new_position, time):
+        log.info('change_position')
         old_position = self.get_position(item=item)
-        if self.add_item(item=item, position=new_position, time=time):
-            self.del_item(position=old_position, time=time)
-            return True
-        return False
+        if new_position == old_position:
+            return False
+        item2 = self.get_item(new_position)
+        self.del_item(position=old_position, time=time)
+        if item2 is not None:
+            self.del_item(position=new_position, time=time)
+            self.add_item(item=item2, position=old_position, time=time + 0.1)
+        self.add_item(item=item, position=new_position, time=time + 0.1)
+        return True
 
     def get_position(self, item):
         for rec in self._items.items():
@@ -276,6 +282,8 @@ class ItemState(object):
     def add_another_item(self, item, time):
         assert not self.limbo and not item.limbo
         if self.balance_cls != item.balance_cls:
+            if self.inventory is item.inventory:
+                self.change_position(position=self.inventory.get_position(item=item), time=time)
             return
         self_val = self.val(t=time)
         item_val = item.val(t=time)

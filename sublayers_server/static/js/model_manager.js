@@ -192,8 +192,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype._contactStaticObject = function (event) {
-        //console.log('ClientManager.prototype._contactRadioPoint', event);
-        if (event.is_first) { // только если первый раз добавляется машинка
+        //console.log('ClientManager.prototype._contactStaticObject', event);
+        if (event.is_first) {
             var uid = event.object.uid;
             var radius_visible = event.object.r;
             var obj_marker;
@@ -203,7 +203,17 @@ var ClientManager = (function () {
             if (obj) return;
 
             // Создание объекта
-            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y));
+            var direction = null;
+            switch (event.object.cls) {
+                case 'GasStation':
+                case 'Town':
+                    direction = - 2 * Math.PI;
+                    break;
+                case 'RadioPoint':
+                    direction = 0.5 * Math.PI;
+                    break;
+            }
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
 
             // Создание/инициализация виджетов
@@ -400,8 +410,11 @@ var ClientManager = (function () {
                 break;
             case 'Town':
             case 'RadioPoint':
+            case 'GasStation':
                 this._contactStaticObject(event);
                 break;
+            default:
+            console.warn('Контакт с неизвестным объектом ', event.object);
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -623,7 +636,10 @@ var ClientManager = (function () {
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
         townVisitorsManager.clear_visitors();
+    };
 
+    ClientManager.prototype.EnterToGasStation = function (event) {
+        console.log('ClientManager.prototype.EnterToGasStation', event);
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -655,28 +671,40 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryShowMessage', event);
+        //console.log('ClientManager.prototype.InventoryShowMessage', event);
         inventoryList.addInventory(this._getInventory(event.inventory));
     };
 
     ClientManager.prototype.InventoryHideMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryHideMessage', event);
+        //console.log('ClientManager.prototype.InventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryItemMessage', event);
-        inventoryList.getInventory(event.owner_id).getItem(event.position).setState(this._getItemState(event.item));
+        //console.log('ClientManager.prototype.InventoryItemMessage', event);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.getItem(event.position).setState(this._getItemState(event.item));
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryAddItemMessage', event);
-        inventoryList.getInventory(event.owner_id).addItem(this._getItem(event));
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.addItem(this._getItem(event));
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryDelItemMessage', event);
-        inventoryList.getInventory(event.owner_id).delItem(event.position);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.delItem(event.position);
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
     // Исходящие сообщения
@@ -962,7 +990,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendShowInventory = function(owner_id) {
-        console.log('ClientManager.prototype.sendShowInventory');
+        //console.log('ClientManager.prototype.sendShowInventory');
         var mes = {
             call: "show_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -975,7 +1003,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendHideInventory = function(owner_id) {
-        console.log('ClientManager.prototype.sendHideInventory');
+        //console.log('ClientManager.prototype.sendHideInventory');
         var mes = {
             call: "hide_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -997,6 +1025,19 @@ var ClientManager = (function () {
                 start_pos: start_pos,
                 end_owner_id: end_owner_id,
                 end_pos: end_pos
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendEnterToGasStation = function (station_id) {
+        //console.log('ClientManager.prototype.sendEnterToGasStation');
+        var mes = {
+            call: "enter_to_gas_station",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                station_id: station_id
             }
         };
         rpcCallList.add(mes);

@@ -455,6 +455,19 @@ class ChangeTownVisitorsMessage(Message):
         return d
 
 
+class EnterToGasStation(Message):
+    def __init__(self, station, **kw):
+        super(EnterToGasStation, self).__init__(**kw)
+        self.station = station
+
+    def as_dict(self):
+        d = super(EnterToGasStation, self).as_dict()
+        d.update(
+            station=self.station.as_dict(time=self.time)
+            )
+        return d
+
+
 class ChatRoomMessage(Message):
     def __init__(self, msg, **kw):
         super(ChatRoomMessage, self).__init__(**kw)

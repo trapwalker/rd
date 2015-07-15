@@ -276,20 +276,20 @@ class BangEvent(Event):
             ).post()
 
 
-class EnterToTown(Event):
-    def __init__(self, agent, town_id, **kw):
+class EnterToMapObject(Event):
+    def __init__(self, agent, obj_id, **kw):
         server = agent.server
-        super(EnterToTown, self).__init__(server=server, **kw)
+        super(EnterToMapObject, self).__init__(server=server, **kw)
         self.agent = agent
-        self.town_id = town_id
+        self.obj_id = obj_id
 
     def on_perform(self):
-        super(EnterToTown, self).on_perform()
-        town = self.server.objects.get(self.town_id)
-        if town and town.can_come(agent=self.agent):
-            town.on_enter(agent=self.agent, time=self.time)
+        super(EnterToMapObject, self).on_perform()
+        obj = self.server.objects.get(self.obj_id)
+        if obj and obj.can_come(agent=self.agent):
+            obj.on_enter(agent=self.agent, time=self.time)
         else:
-            log.warning('agent %s try to coming in town %s, but access denied', self.agent, town)
+            log.warning('agent %s try to enter the map-object %s, but access denied', self.agent, obj)
 
 
 class ReEnterToTown(Event):
@@ -371,7 +371,6 @@ class HideInventoryEvent(ShowInventoryEvent):
         obj = self.server.objects.get(self.owner_id)
         assert (obj is not None) and (obj.inventory is not None)
         obj.inventory.del_visitor(agent=self.agent, time=self.time)
-
 
 
 class ItemActionInventoryEvent(Event):

@@ -179,10 +179,9 @@ var WAltmetrRadial = (function (_super) {
         };
     };
 
-    WAltmetrRadial.prototype.draw_fill_area = function(prc) {
-        console.log('Altitude draw_fill_area', this.car.altitude, this.value_prc);
-        if (prc > 1.0) prc = 1.0;
-        if (prc < 0.0) prc = 0.0;
+    WAltmetrRadial.prototype.draw_fill_area = function() {
+        //console.log('Altitude draw_fill_area', this.car.altitude, this.value_prc);
+        var prc = this.value_prc;
         var size = this.center;
         var angle = prc * this.full_angle;
         var pa1 = polarPoint(-this.out_r, -gradToRad(this.start_angle));
@@ -239,9 +238,10 @@ var WAltmetrRadial = (function (_super) {
     WAltmetrRadial.prototype.change = function () {
         var prc = this.car.altitude / 255.;
         if (prc < 0.0) prc = 0.0;
+        if (prc > 1.0) prc = 1.0;
         if (Math.abs(this.value_prc - prc) > 0.005) {
             this.value_prc = prc;
-            this.draw_fill_area(prc);
+            this.draw_fill_area();
         }
     };
 

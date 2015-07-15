@@ -55,17 +55,25 @@ class Unit(Observer):
 
         # костыль для инвенторя
         self.inventory = Inventory(max_size=10, owner=self, time=time)
-        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
         self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
-        item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
-        item_ammo2.set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                             inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                             inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                             inventory=self.inventory)
 
-        ItemState(server=self.server, time=time, balance_cls='Cargo1', count=10)\
-            .set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Cargo2', count=28
-        ).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=16).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=24).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
 
-        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=2)
+        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
         self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
 
         if weapons:
@@ -246,21 +254,21 @@ class Unit(Observer):
 
     def on_change_altitude(self, new_altitude, time):
         pass
-        # if isinstance(self, Bot):
+        #if isinstance(self, Bot):
         #     log.debug('on_alt_change: %s, %s', new_altitude, self.altitude)
-        # if new_altitude != self.altitude:
-        #     old_altitude = self.altitude
-        #     self.altitude = new_altitude
-        #     # todo: взять коэффициенты из баланса
-        #     self.params.get('p_observing_range').current -= old_altitude * 1.0
-        #     self.params.get('p_observing_range').current += new_altitude * 1.0
-        #     if self.owner:
-        #         messages.ChangeAltitude(
-        #             agent=self.owner,
-        #             altitude=new_altitude,
-        #             obj_id=self.id,
-        #             time=time
-        #         ).post()
+        if new_altitude != self.altitude:
+            old_altitude = self.altitude
+            self.altitude = new_altitude
+            # todo: взять коэффициенты из баланса
+            self.params.get('p_observing_range').current -= old_altitude * 1.0
+            self.params.get('p_observing_range').current += new_altitude * 1.0
+            if self.owner:
+                messages.ChangeAltitude(
+                    agent=self.owner,
+                    altitude=new_altitude,
+                    obj_id=self.id,
+                    time=time
+                ).post()
 
 
 class Mobile(Unit):

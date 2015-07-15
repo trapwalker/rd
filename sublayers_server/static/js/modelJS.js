@@ -30,10 +30,13 @@ var ClientObject = (function () {
 var StaticObject = (function (_super) {
     __extends(StaticObject, _super);
 
-    function StaticObject(ID, position) {
+    function StaticObject(ID, position, direction) {
         _super.call(this, ID);
         this.position = position;
-        this.direction = - 0.5 * Math.PI;
+        if (direction)
+            this.direction = direction;
+        else
+            this.direction = - 0.5 * Math.PI;
     }
 
     StaticObject.prototype.getCurrentDirection = function (time) {

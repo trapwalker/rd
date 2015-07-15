@@ -782,11 +782,16 @@
         inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
     });
 
+    // Заполнение информационных полей
+    // Поле "Слотов багажника"
+    $('.mainCarInfoWindow-main').find('.mainCarInfoWindow-body-right-list-model-trunkvol-value').text('{{ car.inventory.max_size }}')
 
-
+    // Обработка нажатия на крестик (закрытие окна)
     $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
-        console.log('111');
+        // Тут именно так, потому как мы отписываемся от инвентаря на сервере
+        clientManager.sendHideInventory(user.userCar.ID);
     });
 
+    // Запрашиваем инвентарь
     inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
 </script>
