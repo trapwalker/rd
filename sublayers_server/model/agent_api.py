@@ -15,9 +15,11 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToTown, ExitFromTown
+from sublayers_server.model.events import Event, EnterToTown, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
+    HideInventoryEvent, ItemActionInventoryEvent
 from sublayers_server.model.units import Unit
-from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent
+from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
+    ChatRoomPrivateCloseEvent
 
 
 class UpdateAgentAPIEvent(Event):
@@ -207,6 +209,11 @@ class AgentAPI(API):
                             time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time, position=None):
+        if self.agent.current_town is not None:
+            ReEnterToTown(agent=self.agent, town=self.agent.current_town, time=time).post()
+            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
+            return
+
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
@@ -354,15 +361,20 @@ class AgentAPI(API):
             self.update_agent_api()
         elif command == '/p':
             for name in args:
-                self.create_private_room(recipient=name)
+                self.create_private_chat(recipient=name)
         else:
             log.warning('Unknown console command "%s"', cmd)
 
     @public_method
-    def create_private_room(self, recipient):
-        log.info('agent %s try create private room with %s', self.agent, recipient)
+    def create_private_chat(self, recipient):
+        #log.info('agent %s try create private room with %s', self.agent, recipient)
         ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient,
                                    time=self.agent.server.get_time()).post()
+
+    @public_method
+    def close_private_chat(self, name):
+        #log.info('agent %s try close private chat %s', self.agent, name)
+        ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_town(self, town_id):
@@ -373,3 +385,18 @@ class AgentAPI(API):
     def exit_from_town(self, town_id):
         log.info('agent %s want exit from town_id is %s', self.agent, town_id)
         ExitFromTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def show_inventory(self, owner_id):
+        log.info('agent %s want show inventory from %s', self.agent, owner_id)
+        ShowInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def hide_inventory(self, owner_id):
+        log.info('agent %s want hide inventory from %s', self.agent, owner_id)
+        HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None):
+        ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
+                                 end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time()).post()

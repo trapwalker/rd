@@ -203,6 +203,10 @@ class Tileid(long):
             self._x, self._y, self._z = bin2xyz(self)
         return self._z
 
+    def __mod__(self, depth):
+        u"""Возвращает хвост пути длиной depth."""
+        return Tileid(self[-depth:])
+
     def __getitem__(self, idx):
         u"""
         @param slice|int idx: Index or slice for get item or subset of tileid

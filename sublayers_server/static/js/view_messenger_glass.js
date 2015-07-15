@@ -231,8 +231,10 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.viewMessengerClickSpanUser = function (event) {
         // подстветить все машинки данного пользователя
+        /*
         var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
+
         if (cookieStorage.optionsSelectAnybody && owner.cars)
             for (var i = 0; i < owner.cars.length; i++) {
                 if (listMapObject.exist(owner.cars[i].ID)) {
@@ -243,6 +245,7 @@ var ViewMessengerGlass = (function () {
                         carMarkerList.addToBackLight(car);
                 }
             }
+        */
     };
 
     // Добавление сообщений в окно чата
@@ -317,7 +320,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.initGlobalPage = function (){
         var page = {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
-            pageControl: $('<div id="chatPageControlGlobal" class="VMGPartyPageControl"></div>'),
+            pageControl: $('<div id="chatPageControlGlobal" class="VMGGlobalPageControl"></div>'),
             chatArea: $('<div id="textAreaGlobal" class="VMGPartytextOutArea"></div>'),
             pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Radio</div>'),
             chat: null
@@ -355,16 +358,27 @@ var ViewMessengerGlass = (function () {
     };
 
     // Добавление произвольной чат-комнаты
-    ViewMessengerGlass.prototype.addChat = function (room_jid){
+    ViewMessengerGlass.prototype.addChat = function (room_jid, chat_type){
+        //console.log('ViewMessengerGlass.prototype.addChat');
         if (this._getChatByJID(room_jid)) {
             console.warn('Попытка повторного создания чат-комнаты.');
             return;
         }
 
+        var pageButton = $('<div id="pageButton' + room_jid + '" class="VMGPartypageButton sublayers-clickable">' + room_jid + '</div>');
+
+        if (chat_type === 'PrivateChatRoom') {
+            console.log('Генерация приватного чата');
+            var close_str = 'clientManager.sendClosePrivateChat(\'' + room_jid + '\')';
+            var pageButtonClose = $('<div class="sublayers-clickable VMGPartypageButtonClose" ' +
+            'onClick="' + close_str + '"</div>');
+            pageButton.append(pageButtonClose);
+        }
+
         var chat = {
             room_jid: room_jid,
             chatArea: $('<div id="_charArea' + room_jid + '" class="VMGChatOutArea"></div>'),
-            pageButton: $('<div id="pageButton' + room_jid + '" class="VMGPartypageButton sublayers-clickable">' + room_jid + '</div>'),
+            pageButton: pageButton,
             mesList: [],
             mesCount: 0
         };
@@ -426,7 +440,7 @@ var ViewMessengerGlass = (function () {
         var str = chat.main_input.val();
         if (str.length) {
             if (str[0] === '#' || str[0] === '\\' || str[0] === '/') {
-                sendServConsole(str);
+                clientManager.sendConsoleCmd(str);
             }
             else {
                 var active = chat.activeChat;
@@ -491,7 +505,7 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.party_leave = function (event) {
         //alert('Окно для подтверждения выхода из пати');
-        sendServConsole('/leave');
+        clientManager.sendConsoleCmd('/leave');
         chat.main_input.focus();
     };
 
@@ -839,10 +853,12 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.showChatInTown = function(){
         $('#chatTownWrap').append(this.parent);
+        $('#VMGDynamicAreaForBorder').css('border-width', '0px');
     };
 
     ViewMessengerGlass.prototype.showChatInMap = function(){
         this.chatWrapDiv.append(this.parent);
+        $('#VMGDynamicAreaForBorder').css('border-width', '1px');
     };
 
     return ViewMessengerGlass;

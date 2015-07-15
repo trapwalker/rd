@@ -17,6 +17,7 @@ from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEven
     SearchZones, Die, FireAutoTestEvent
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
+from sublayers_server.model.inventory import Inventory, ItemState
 
 
 class Unit(Observer):
@@ -51,9 +52,26 @@ class Unit(Observer):
         self.check_auto_fire_interval = None
         self.fire_sectors = []
         """@type: list[sublayers_server.model.sectors.FireSector]"""
+
+        # костыль для инвенторя
+        self.inventory = Inventory(max_size=10, owner=self, time=time)
+        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
+        item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        item_ammo2.set_inventory(time=time, inventory=self.inventory)
+
+        ItemState(server=self.server, time=time, balance_cls='Cargo1', count=10)\
+            .set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo2', count=28
+        ).set_inventory(time=time, inventory=self.inventory)
+
+        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=2)
+        self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
+
         if weapons:
             for weapon in weapons:
-                self.setup_weapon(dict_weapon=weapon)
+                self.setup_weapon(dict_weapon=weapon, time=time)
+
 
         # обновляем статистику сервера
         server_stat = self.server.stat_log
@@ -77,14 +95,19 @@ class Unit(Observer):
         HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
             .start(time=time)
 
-    def setup_weapon(self, dict_weapon):
+    def setup_weapon(self, dict_weapon, time):
         sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
+        weapon = None
         if dict_weapon['is_auto']:
-            WeaponAuto(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
-                       dps=dict_weapon['dps'])
+            weapon = WeaponAuto(owner=self, sector=sector, dps=dict_weapon['dps'])
         else:
-            WeaponDischarge(owner=self, sectors=[sector], radius=dict_weapon['radius'], width=dict_weapon['width'],
-                            dmg=dict_weapon['dmg'], time_recharge=dict_weapon['time_recharge'])
+            weapon = WeaponDischarge(owner=self, sector=sector, dmg=dict_weapon['dmg'],
+                                     time_recharge=dict_weapon['time_recharge'])
+
+        if dict_weapon['radius'] == 50:
+            weapon.set_item(item=self.item_ammo2, time=time)
+        else:
+            weapon.set_item(item=self.item_ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -102,28 +125,17 @@ class Unit(Observer):
     def on_fire_discharge(self, event):
         time = event.time
         side = event.side
+
         # сначала проверяем можем ли мы стрельнуть бортом
         for sector in self.fire_sectors:
             if sector.side == side:
                 if not sector.can_discharge_fire(time=time):
                     return
-        t_rch = 0
+
         for sector in self.fire_sectors:
             if sector.side == side:
-                t_rch = max(t_rch, sector.fire_discharge(time=time))
+                sector.fire_discharge(time=time)
 
-        # для себя: side, time, t_rch
-        if t_rch > 0.0:
-            # евент залповая стрельба
-            FireDischargeEffectEvent(obj=self, side=side, time=event.time).post()
-            # значит выстрел всё-таки был произведён. Отправить на клиенты для отрисовки
-            for agent in self.watched_agents:
-                messages.FireDischarge(
-                    agent=agent,
-                    side=side,
-                    t_rch=t_rch,
-                    time=event.time
-                ).post()
 
     def on_fire_auto_enable(self, enable, time):
         #log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
@@ -233,19 +245,22 @@ class Unit(Observer):
         return self.owner
 
     def on_change_altitude(self, new_altitude, time):
-        if new_altitude != self.altitude:
-            old_altitude = self.altitude
-            self.altitude = new_altitude
-            # todo: взять коэффициенты из баланса
-            self.p_observing_range.current -= old_altitude * 1.0
-            self.p_observing_range.current += new_altitude * 1.0
-            if self.owner:
-                messages.ChangeAltitude(
-                    agent=self.owner,
-                    altitude=new_altitude,
-                    obj_id=self.id,
-                    time=time
-                ).post()
+        pass
+        # if isinstance(self, Bot):
+        #     log.debug('on_alt_change: %s, %s', new_altitude, self.altitude)
+        # if new_altitude != self.altitude:
+        #     old_altitude = self.altitude
+        #     self.altitude = new_altitude
+        #     # todo: взять коэффициенты из баланса
+        #     self.params.get('p_observing_range').current -= old_altitude * 1.0
+        #     self.params.get('p_observing_range').current += new_altitude * 1.0
+        #     if self.owner:
+        #         messages.ChangeAltitude(
+        #             agent=self.owner,
+        #             altitude=new_altitude,
+        #             obj_id=self.id,
+        #             time=time
+        #         ).post()
 
 
 class Mobile(Unit):

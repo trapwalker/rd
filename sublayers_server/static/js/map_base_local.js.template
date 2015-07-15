@@ -1,2 +1,0 @@
-//Путь к карте в локальном каталоге
-ConstMapPathLocal = 'http://localhost/static/map/{z}/{x}/{y}.jpg';

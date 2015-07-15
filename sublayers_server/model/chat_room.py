@@ -63,7 +63,29 @@ class ChatRoomPrivateCreateEvent(Event):
         if not recipient:
             log.warning('Agent with login %s not found', self.recipient_login)
             return
-        PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
+        if (self.agent.current_town is recipient.current_town) and (self.agent.current_town is not None):
+            if PrivateChatRoom.search_private(agent1=self.agent, agent2=recipient) is None:
+                PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
+            else:
+                log.warning('%s try create second private with %s ', self.agent, recipient)
+
+
+class ChatRoomPrivateCloseEvent(Event):
+    def __init__(self, agent, chat_name, **kw):
+        super(ChatRoomPrivateCloseEvent, self).__init__(server=agent.server, **kw)
+        self.chat_name = chat_name
+        self.agent = agent
+
+    def on_perform(self):
+        super(ChatRoomPrivateCloseEvent, self).on_perform()
+        chat = ChatRoom.search(name=self.chat_name)
+        if not chat or not isinstance(chat, PrivateChatRoom):
+            log.warning('Private Chat with name %s not found', self.chat_name)
+            return
+        if self.agent in chat:
+            chat.exclude(agent=self.agent, time=self.time)
+        else:
+            log.warning('%s not in chat: %s', self.agent, self.chat_name)
 
 
 class ChatMessage(object):
@@ -145,7 +167,7 @@ class ChatRoom(object):
         self.send_history(recipient=agent, time=time)
 
     def _send_include_message(self, agent, time):
-        ChatRoomIncludeMessage(agent=agent, room_name=self.name, time=time).post()
+        ChatRoomIncludeMessage(agent=agent, room_name=self.name, chat_type=self.classname, time=time).post()
 
     def exclude(self, agent, time):
         ChatRoomExcludeEvent(room=self, agent=agent, time=time).post()
@@ -195,6 +217,21 @@ class PartyChatRoom(ChatRoom):
 
 
 class PrivateChatRoom(ChatRoom):
+    @classmethod
+    def search_private(cls, agent1, agent2):
+        for chat in cls.rooms.values():
+            if isinstance(chat, cls):
+                if (agent1 in chat) and (agent2 in chat):
+                    return chat
+        return None
+
+    @classmethod
+    def close_privates(cls, agent, time):
+        for chat in agent.chats:
+            if isinstance(chat, cls):
+                if agent in chat:
+                    chat.exclude(agent=agent, time=time)
+
     def __init__(self, agent, recipient, time):
         super(PrivateChatRoom, self).__init__(time=time, name=(agent.login + '->' + recipient.login))
         self.include(agent=agent, time=time)
@@ -202,6 +239,9 @@ class PrivateChatRoom(ChatRoom):
 
     def on_exclude(self, agent, time):
         super(PrivateChatRoom, self).on_exclude(agent=agent, time=time)
+
         if len(self.members) == 0:
             # удаление себя из списка rooms
             del self.rooms[self.name]
+
+        self.on_message(agent=agent, msg_text=u'Пользователь покинул чат', time=time)

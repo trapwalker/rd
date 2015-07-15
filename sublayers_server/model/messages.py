@@ -79,18 +79,6 @@ class Init(Message):
         return d
 
 
-class InitXMPPClient(Message):
-    def as_dict(self):
-        d = super(InitXMPPClient, self).as_dict()
-        d.update(
-            jid=self.agent.xmpp.get('jid'),
-            password=self.agent.xmpp.get('password'),
-            adress=self.agent.server.app.xmpp_settings['client_adress'],
-            conference_suffixes=self.agent.server.app.xmpp_settings['conference_suffixes'],
-        )
-        return d
-
-
 class Die(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
@@ -484,14 +472,16 @@ class ChatRoomMessage(Message):
 
 
 class ChatRoomIncludeMessage(Message):
-    def __init__(self, room_name, **kw):
+    def __init__(self, room_name, chat_type=None, **kw):
         super(ChatRoomIncludeMessage, self).__init__(**kw)
         self.room_name = room_name
+        self.chat_type = chat_type
 
     def as_dict(self):
         d = super(ChatRoomIncludeMessage, self).as_dict()
         d.update(
             room_name=self.room_name,
+            chat_type=self.chat_type
             )
         return d
 
@@ -509,28 +499,60 @@ class ChatRoomExcludeMessage(Message):
         return d
 
 
-class ChatPartyRoomIncludeMessage(Message):
-    def __init__(self, room_name, **kw):
-        super(ChatPartyRoomIncludeMessage, self).__init__(**kw)
-        self.room_name = room_name
+class ChatPartyRoomIncludeMessage(ChatRoomIncludeMessage):
+    pass
+
+
+class ChatPartyRoomExcludeMessage(ChatRoomExcludeMessage):
+    pass
+
+
+class InventoryShowMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryShowMessage, self).__init__(**kw)
+        self.inventory = inventory
 
     def as_dict(self):
-        d = super(ChatPartyRoomIncludeMessage, self).as_dict()
+        d = super(InventoryShowMessage, self).as_dict()
         d.update(
-            room_name=self.room_name,
+            inventory=self.inventory.as_dict()
             )
         return d
 
 
-class ChatPartyRoomExcludeMessage(Message):
-    def __init__(self, room_name, **kw):
-        super(ChatPartyRoomExcludeMessage, self).__init__(**kw)
-        self.room_name = room_name
+class InventoryHideMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryHideMessage, self).__init__(**kw)
+        self.inventory = inventory
 
     def as_dict(self):
-        d = super(ChatPartyRoomExcludeMessage, self).as_dict()
+        d = super(InventoryHideMessage, self).as_dict()
         d.update(
-            room_name=self.room_name,
+            inventory_owner_id=self.inventory.owner.uid
             )
         return d
 
+
+class InventoryItemMessage(Message):
+    def __init__(self, item, inventory, position, **kw):
+        super(InventoryItemMessage, self).__init__(**kw)
+        self.item = item
+        self.inventory = inventory
+        self.position = position
+
+    def as_dict(self):
+        d = super(InventoryItemMessage, self).as_dict()
+        d.update(
+            item=self.item.export_item_state(),
+            position=self.position,
+            owner_id=self.inventory.owner.uid,
+            )
+        return d
+
+
+class InventoryAddItemMessage(InventoryItemMessage):
+    pass
+
+
+class InventoryDelItemMessage(InventoryItemMessage):
+    pass

@@ -8,32 +8,6 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
-var ListMapObject = (function () {
-    function ListMapObject() {
-        this.objects = [];
-    }
-
-    ListMapObject.prototype.add = function (aObject) {
-        this.objects[aObject.ID] = aObject;
-    };
-
-    ListMapObject.prototype.del = function (aID) {
-        delete this.objects[aID];
-    };
-
-    ListMapObject.prototype.exist = function (aID) {
-        return this.objects[aID] != null
-    };
-
-    ListMapObject.prototype.setState = function (aID, aState) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("state"))) {
-            this.objects[aID].state = aState;
-        }
-    };
-
-    return ListMapObject;
-})();
-
 
 var ClientObject = (function () {
     function ClientObject(ID) {
@@ -226,8 +200,8 @@ var UserCar = (function (_super) {
         }
     };
 
-    UserCar.prototype.setShootTime = function (aSideStr, shoot_time) {
-        this.fireSidesMng.setShootTime(aSideStr, shoot_time);
+    UserCar.prototype.setShootTime = function (aSideStr, shoot_time, t_rch) {
+        this.fireSidesMng.setShootTime(aSideStr, shoot_time, t_rch);
         // добавить в тайм-менеджер, чтобы оно начало обновляться
         if (this.fireSidesMng.inRecharge(clock.getCurrentTime()) && !this._in_tm) {
             timeManager.addTimerEvent(this, 'change');
@@ -254,8 +228,23 @@ var FireSideMng = (function () {
             this.sides[side].addSector(fireSector)
     };
 
-    FireSideMng.prototype.setShootTime = function (sideStr, shoot_time) {
-        this.sides[sideStr].last_shoot = shoot_time;
+    FireSideMng.prototype.setShootTime = function (sideStr, shoot_time, t_rch) {
+        var side = this.sides[sideStr];
+        // это сообщение приходит с сервера. Значит был выстрел.
+        // Значит если shoot_time отличается, то обновить и перезарядку и last_shoot
+
+        // если старая перезарядка больше, чем новая, то ничего не делать
+        if (side.last_shoot + side.sideRecharge > shoot_time + t_rch)
+            return;
+
+        if (Math.abs(side.last_shoot - shoot_time) > 0.01) {
+            side.last_shoot = shoot_time; // обновляем время выстрела
+            side.sideRecharge = 0.0;  // сбрасываем старую перезарядку
+        }
+        // если время окончания перезарядки больше, чем предыдущее, то обновить перезарядку
+        if (side.last_shoot + side.sideRecharge < side.last_shoot + t_rch)
+            side.sideRecharge = t_rch;
+
     };
 
     FireSideMng.prototype.getSectors = function (filterSides, isDischarge, isAuto) {
@@ -349,11 +338,12 @@ var FireSide = (function () {
             prc: 1.,
             time: 0.0
         };
-        if (dt - this.sideRecharge > 0.1) {
+        if (dt - this.sideRecharge > 0.3) {
             // todo: разобраться с синхронизацией времени, иначе будут проблемы!!!
             console.error(' !!!! Логическая ошибка !!!! dt > sideRecharge');
             console.log(' dt            = ', dt);
             console.log(' sideRecharge  = ', this.sideRecharge);
+            console.log(' time  = ', time);
             return null;
         }
         return {
@@ -527,7 +517,6 @@ var FuelState = (function () {
         return this.dfs != 0.0;
     };
 
-
     return FuelState;
 })();
 
@@ -543,7 +532,6 @@ var User = (function () {
 
     return User;
 })();
-
 
 // Владелец машины
 var Owner = (function () {
@@ -661,6 +649,3 @@ var OwnerParty = (function () {
 
     return OwnerParty;
 })();
-
-
-

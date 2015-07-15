@@ -5,3 +5,4 @@ pymongo
 sleekxmpp
 #PIL
 #pyzmq
+cachetools

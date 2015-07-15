@@ -76,12 +76,12 @@ class FireSector(Sector):
     def _fire_auto_start(self, target, time):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.start(car=target, time=time)
+                w.add_car(car=target, time=time)
 
     def _fire_auto_end(self, target, time):
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.end(car=target, time=time)
+                w.del_car(car=target, time=time)
 
     def add_weapon(self, weapon):
         assert not (weapon in self.weapon_list)
@@ -124,17 +124,15 @@ class FireSector(Sector):
         for vo in self.owner.visible_objects:
             if self._test_target_in_sector(target=vo, time=time):
                 cars.append(vo)
-        t_rch = 0
         self.target_list = cars
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
-                t_rch = max(t_rch, wp.fire(cars, time))
-        return t_rch
+                wp.fire(time=time)
 
     def out_car(self, target, time):
         if target in self.target_list:
-            self._fire_auto_end(target=target, time=time)
             self.target_list.remove(target)
+            self._fire_auto_end(target=target, time=time)
 
     def can_discharge_fire(self, time):
         for wp in self.weapon_list:
@@ -143,13 +141,11 @@ class FireSector(Sector):
                     return False
         return True
 
-    def enable_auto_fire(self, time, enable=False):
+    def enable_auto_fire(self, time, enable):
         #log.debug('%s  enable auto_fire: %s    on side: %s', self.owner.uid, enable, self.side)
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
-                w.set_enable(enable=enable, cars=self.target_list, time=time)
-        if not enable:
-            self.target_list = []  # todo: можно ли так чистить список?
+                w.set_enable(enable=enable, time=time)
 
     def is_discharge(self):
         return self._is_discharge > 0
@@ -158,6 +154,7 @@ class FireSector(Sector):
         return self._is_auto > 0
 
     def is_auto_enable(self):
+        # todo: переписать, проверка не логична, но пока верно работает (так как 1 сектор = 1 оружие)
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 if w.get_enable():

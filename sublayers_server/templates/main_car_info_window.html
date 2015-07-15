@@ -1,4 +1,4 @@
-{% set window_caption = 'NUKE:\Транспорт>' %}
+﻿{% set window_caption = 'NUKE:\Транспорт>' %}
 
 <style>
     .mainCarInfoWindow-main {
@@ -7,7 +7,8 @@
         height: 422px;
         background-color: rgba(0, 0, 0, 0.75);
         color: #ffffff;
-        font: 12pt fsex300;
+        font: 12pt FreePixel;
+        cursor: default;
     }
 
     .mainCarInfoWindow-menu {
@@ -24,6 +25,7 @@
         text-align: center;
         color: #135806;
         cursor: pointer;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-menu-button:hover {
@@ -44,18 +46,20 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-menu-button:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-menu-button:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-menu-button:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-menu-button:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body {
         position: relative;
@@ -104,19 +108,20 @@
     .mainCarInfoWindow-body-right-menu {
         width: 297px;
         height: 40px;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-right-menu-button-model {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 7px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-model:hover {
+    .mainCarInfoWindow-body-right-menu-button-model {
         background-color: #061108;
         background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
         linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
@@ -125,24 +130,26 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-model:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-model:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-model:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-model:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-menu-button-tth {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 24px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -157,24 +164,26 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-tth:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-tth:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-tth:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-tth:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-menu-button-weapons {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 24px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -189,24 +198,26 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-weapons:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-weapons:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-weapons:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-weapons:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-menu-button-history {
         position: relative;
         float: left;
         margin-top: 12px;
-        margin-left: 24px;
+        margin-left: 14px;
         text-align: center;
         color: #135806;
         cursor: pointer;
@@ -221,25 +232,27 @@
         color: #30fc00;
     }
 
-    .mainCarInfoWindow-body-right-menu-button-history:hover:before {
-        position: absolute;
-        margin-left: -7px;
-        color: #30fc00;
-        content: "►";
-    }
+    /*
+        .mainCarInfoWindow-body-right-menu-button-history:hover:before {
+            position: absolute;
+            margin-left: -7px;
+            color: #30fc00;
+            content: "►";
+        }
 
-    .mainCarInfoWindow-body-right-menu-button-history:hover:after {
-        position: absolute;
-        color: #30fc00;
-        content: "◄";
-    }
+        .mainCarInfoWindow-body-right-menu-button-history:hover:after {
+            position: absolute;
+            color: #30fc00;
+            content: "◄";
+        }
+    */
 
     .mainCarInfoWindow-body-right-list-model {
         position: absolute;
         width: 297px;
         height: 314px;
         border: solid 1px #00f150;
-        padding-top: 25px;
+        padding-top: 17px;
         padding-left: 10px;
         padding-right: 10px;
         box-sizing: border-box;
@@ -529,38 +542,28 @@
     }
 
     .mainCarInfoWindow-body-trunk-filter {
-        width: 297px;
+        width: 100%;
         height: 27px;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-trunk-filter-all {
         position: relative;
         float: left;
         margin-top: 5px;
+        margin-right: 20px;
         margin-left: 7px;
         text-align: center;
+        color: #135806;
+        cursor: pointer;
+    }
+
+    .mainCarInfoWindow-body-trunk-filter-all.activateFilter {
         color: #30fc00;
-        cursor: pointer;
     }
 
-    .mainCarInfoWindow-body-trunk-filter-cargo {
-        position: relative;
-        float: left;
-        margin-top: 5px;
-        margin-left: 24px;
-        text-align: center;
-        color: #135806;
-        cursor: pointer;
-    }
-
-    .mainCarInfoWindow-body-trunk-filter-ammo {
-        position: relative;
-        float: left;
-        margin-top: 5px;
-        margin-left: 24px;
-        text-align: center;
-        color: #135806;
-        cursor: pointer;
+    .mainCarInfoWindow-body-trunk-filter-all:hover {
+        color: #30fc00;
     }
 
     .mainCarInfoWindow-body-trunk-body {
@@ -573,6 +576,8 @@
         border-right: solid 1px #00f150;
         width: 156px;
         height: 315px;
+        margin-top: 5px;
+        float: left;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-picture {
@@ -588,6 +593,7 @@
         color: #30fc00;
         text-align: center;
         margin: 5px;
+        font: 12pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-description {
@@ -608,14 +614,70 @@
         background-color: #0d3707;
         margin: 5px;
         cursor: pointer;
+        font: 12pt Nouveau_IBM;
     }
+
+    .mainCarInfoWindow-body-trunk-body-right {
+        position: relative;
+        width: 465px;
+        height: 315px;
+        margin-left: 165px;
+        margin-top: 5px;
+        overflow-y: scroll;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap {
+        width: 140px;
+        height: 100px;
+        float: left;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item {
+        width: 140px;
+        height: 100px;
+        float: left;
+        margin-bottom: 10px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-line {
+        border-top: 2px dotted #0a2e03;
+        height: 3px;
+        margin-top: 10px;
+        float: left;
+        width: 450px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-name-empty {
+        font: 12pt Nouveau_IBM;
+        color: #135806;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-picture-empty {
+        background-color: #000000;
+        background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+        linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+        background-size: 2px 2px;
+        background-position: 0 0, 1px 1px;
+        text-align: center;
+        color: #0f4206;
+        height: 85px;
+        margin-top: 3px;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-count-empty {
+        text-align: right;
+        color: #30fc00;
+    }
+
 </style>
 
 <div class="mainCarInfoWindow-main">
     {% include drag_close_header.html %}
     <div class="mainCarInfoWindow-menu">
-        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body_id">&nbspХарактеристики&nbsp</div>
-        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp</div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body_id">&nbspХарактеристики&nbsp
+        </div>
+        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp
+        </div>
         <div class="mainCarInfoWindow-menu-button" data-page_id="">&nbspТюнинг&nbsp</div>
     </div>
 
@@ -667,9 +729,12 @@
 
     <div id="mainCarInfoWindow-body-trunk_id" class="mainCarInfoWindow-body-trunk mainCarInfoWindow-page-div">
         <div class="mainCarInfoWindow-body-trunk-filter">
-            <div class="mainCarInfoWindow-body-trunk-filter-all">[x] Всё</div>
-            <div class="mainCarInfoWindow-body-trunk-filter-cargo">[ ] Груз</div>
-            <div class="mainCarInfoWindow-body-trunk-filter-ammo">[ ] Боеприпасы</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-all activateFilter" data-filter="">
+                <span class="inventoryFilterChecker">[x]</span> Всё</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="Cargo">
+                <span class="inventoryFilterChecker">[ ]</span> Груз</div>
+            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="Ammo">
+                <span class="inventoryFilterChecker">[ ]</span> Боеприпасы</div>
         </div>
         <div class="mainCarInfoWindow-body-trunk-body">
             <div class="mainCarInfoWindow-body-trunk-body-left">
@@ -681,11 +746,14 @@
                 <div class="mainCarInfoWindow-body-trunk-body-left-amount">В инвентаре: 2 ед.</div>
                 <div class="mainCarInfoWindow-body-trunk-body-left-activate">Активировать!</div>
             </div>
+            <div class="mainCarInfoWindow-body-trunk-body-right inventory-{{ car_id }}">
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+
     $(".mainCarInfoWindow-menu-button").click(function (event) {
         // выключить у всех кнопок состояние активности // btnpressed - дурацкое название, но зато точно не занято
         $('.mainCarInfoWindow-menu-button').removeClass('btnpressed');
@@ -695,10 +763,30 @@
         $('.mainCarInfoWindow-page-div').css('display', 'none'); // лучше тоже сделать через классы
         // включить отображение только нужного дива (дата-атрибут - html5 атрибут, очень удобный...!)
         // сейчас сделал на айдишниках, но можно сделать и на классах, так как у тебя классы тут разные
-        $('#'+$(this).data('page_id')).css('display', 'block');
+        $('#' + $(this).data('page_id')).css('display', 'block');
     });
 
     // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
     // открывании окна правильно отрабатывала подсветка
     $(".mainCarInfoWindow-menu-button").first().click();
+
+    $('#mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-filter-all').click(function(event){
+        var inv_id_this_window = $('#mainCarInfoWindow-body-trunk_id');
+        // отключить во всех фильтрах "выбранный"
+        inv_id_this_window.find('.inventoryFilterChecker').text('[ ]');
+        inv_id_this_window.find('.mainCarInfoWindow-body-trunk-filter-all').removeClass('activateFilter');
+        // у себя включить, что фильтр выбран
+        $(this).find('.inventoryFilterChecker').text('[x]');
+        $(this).addClass('activateFilter');
+        // вызов фильтрации
+        inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
+    });
+
+
+
+    $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
+        console.log('111');
+    });
+
+    inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
 </script>

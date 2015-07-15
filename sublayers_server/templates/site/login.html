@@ -10,7 +10,7 @@
     <div id="background">
         <div id="login">
             <div class="flip flipped">
-                <div class="form-signup">
+                <div class="form-signup flip1">
                     <h1>Регистрация</h1>
                     <fieldset>
                         <p class="login-msg"></p>
@@ -33,7 +33,7 @@
                         <a href="#" class="flipper">Войти.</a>
                     </fieldset>
                 </div>
-                <div class="form-login">
+                <div class="form-login flip1 flipped1">
                     <h1>Авторизация</h1>
                     <fieldset>
                         <form action="/login/standard" method="post">
@@ -62,7 +62,7 @@
 <script>
     $(document).ready(function () {
         $('a.flipper').click(function(){
-            $('.flip').toggleClass('flipped');
+            $('.flip1').toggleClass('flipped1');
         });
         if ('{{ msg }}' != '') alert('{{ msg }}');
     });

@@ -126,6 +126,5 @@ var TemplateWindow = (function (_super) {
         });
     }
 
-
     return TemplateWindow;
 })(Window);
