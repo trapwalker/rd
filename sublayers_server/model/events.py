@@ -13,6 +13,13 @@ from functools import total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
+    _unumber_counter = 0
+
+    @classmethod
+    def _gen_unumber(cls):
+        # todo: thread lock
+        cls._unumber_counter += 1
+        return cls._unumber_counter
 
     def __init__(self, server, time, callback_before=None, callback_after=None, comment=None):
         """
@@ -22,6 +29,7 @@ class Event(object):
         assert time is not None, 'classname event is {}'.format(self.classname)
         assert time < 3.5e+18, 'classname event is {}'.format(self.classname)
         self.time = time
+        self._unumber = self._gen_unumber()
         self.actual = True
         self.callback_before = callback_before
         self.callback_after = callback_after
@@ -48,10 +56,10 @@ class Event(object):
         return hash((self.time,))
 
     def __lt__(self, other):
-        return (self.time, id(self)) < (other.time, id(other))
+        return (self.time, self._unumber) < (other.time, other._unumber)
 
     def __le__(self, other):
-        return (self.time, id(self)) <= (other.time, id(other))
+        return (self.time, self._unumber) <= (other.time, other._unumber)
 
     def __nonzero__(self):
         return self.actual
