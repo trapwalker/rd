@@ -4,6 +4,9 @@ import logging
 log = logging.getLogger(__name__)
 
 
+EPS = 1e-5
+
+
 class ETimeIsNotInState(Exception):
     pass
 
@@ -68,6 +71,8 @@ class HPState(object):
                 self.hp0 = self.max_hp
         if dps:
             self.dps += dps
+            if abs(self.dps) < EPS:
+                self.dps = 0.0
         if self.dps > 0.0:
             self.t_die = self.t0 + self.hp0 / self.dps
         return self.t_die

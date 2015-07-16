@@ -20,6 +20,7 @@ class Event(object):
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
         assert time is not None, 'classname event is {}'.format(self.classname)
+        assert time < 3.5e+18, 'classname event is {}'.format(self.classname)
         self.time = time
         self.actual = True
         self.callback_before = callback_before
@@ -409,3 +410,34 @@ class ItemActionInventoryEvent(Event):
             end_item.add_another_item(item=start_item, time=self.time)
         else:
             start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
+
+
+class ItemActivationEvent(Event):
+    def __init__(self, agent, owner_id, position, balance_cls_name, **kw):
+        super(ItemActivationEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+        self.position = position
+        self.balance_cls_name = balance_cls_name
+
+    def on_perform(self):
+        super(ItemActivationEvent, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.owner_id)
+        inventory = obj.inventory
+        item = inventory.get_item(position=self.position)
+        if (item is None) or (item.balance_cls != self.balance_cls_name):  # todo: item.balance_cls.name
+            return
+
+        # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
+        if self.agent.api.car is not obj:
+            return
+
+        if item.balance_cls == 'Tank10':
+            item.set_inventory(time=self.time, inventory=None)
+            obj.set_fuel(df=10, time=self.time)
+
+        if item.balance_cls == 'Tank20':
+            item.set_inventory(time=self.time, inventory=None)
+            obj.set_fuel(df=20, time=self.time)

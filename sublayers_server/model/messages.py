@@ -569,3 +569,18 @@ class InventoryAddItemMessage(InventoryItemMessage):
 
 class InventoryDelItemMessage(InventoryItemMessage):
     pass
+
+
+class BalanceClsInfo(Message):
+    def __init__(self, balance_cls_name, **kw):
+        super(BalanceClsInfo, self).__init__(**kw)
+        self.balance_cls_name = balance_cls_name
+
+    def as_dict(self):
+        d = super(BalanceClsInfo, self).as_dict()
+        d.update(
+            balance_cls={
+                'name': self.balance_cls_name,
+            }
+        )
+        return d

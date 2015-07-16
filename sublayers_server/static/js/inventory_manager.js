@@ -154,6 +154,7 @@ var Inventory = (function () {
         if (this.items[item.position] != null) return;
         this.items[item.position] = item;
         item.setInventory(this);
+        item_balance_cls_manager.load_from_server(item.balance_cls)
     };
 
     Inventory.prototype.delItem = function (position) {

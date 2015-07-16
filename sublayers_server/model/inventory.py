@@ -5,6 +5,8 @@ from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
     InventoryDelItemMessage, InventoryHideMessage
 
+EPS = 1e-5
+
 class ETimeIsNotInState(Exception):
     pass
 
@@ -151,7 +153,7 @@ class ItemTask(TaskSingleton):
 class ItemState(object):
     __str_template__ = 'Item: <limbo={self.limbo}> class={self.balance_cls} value0={self.val0}'
 
-    def __init__(self, server, time, balance_cls, count=1):
+    def __init__(self, server, time, balance_cls, count=1, max_count=64):
         assert count > 0
         self.server = server
         self.balance_cls = balance_cls
@@ -159,7 +161,7 @@ class ItemState(object):
         self.tasks = []
 
         # настроки стейта
-        self.max_val = 64  # todo: взять из balance_cls
+        self.max_val = max_count  # todo: взять из balance_cls
         self.dvs = 0.0
         self.val0 = count
         self.t_empty = None
@@ -187,6 +189,8 @@ class ItemState(object):
             assert self.val0 >= 0.0, 'val0 = {}    dv = {}'.format(self.val0, dv)
         if ddvs is not None:
             self.dvs += ddvs
+            if abs(self.dvs) < EPS:
+                self.dvs = 0.0
             assert self.dvs >= 0.0
         if self.dvs > 0.0:
             self.t_empty = self.t0 + self.val0 / self.dvs
