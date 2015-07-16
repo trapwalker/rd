@@ -707,6 +707,11 @@ var ClientManager = (function () {
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
+    ClientManager.prototype.BalanceClsInfo = function (event) {
+        console.log('ClientManager.prototype.SetBalanceCls', event);
+        item_balance_cls_manager.add_balance_cls(event.balance_cls)
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1038,6 +1043,35 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 station_id: station_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetBalanceCls = function (balance_cls_name) {
+        console.log('ClientManager.prototype.sendGetBalanceCls', balance_cls_name);
+        var mes = {
+            call: "get_balance_cls",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                balance_cls_name: balance_cls_name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    ClientManager.prototype.sendActivateItem = function (item) {
+        console.log('ClientManager.prototype.sendActivateItem', item);
+        var mes = {
+            call: "activate_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                balance_cls_name: item.balance_cls,
+                owner_id: item.inventory.owner_id,
+                position: item.position
             }
         };
         rpcCallList.add(mes);

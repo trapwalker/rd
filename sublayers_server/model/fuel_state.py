@@ -4,6 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 
+EPS = 1e-5
+
 class ETimeIsNotInState(Exception):
     pass
 
@@ -56,6 +58,8 @@ class FuelState(object):
                 return self.t_fuel_empty
         if dfs is not None:
             self.dfs = dfs
+            if abs(self.dfs) < EPS:
+                self.dfs = 0.0
         if self.dfs > 0.0:
             self.t_fuel_empty = self.t0 + self.fuel0 / self.dfs
         return self.t_fuel_empty

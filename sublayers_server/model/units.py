@@ -58,20 +58,21 @@ class Unit(Observer):
         self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
         self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
         ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                             inventory=self.inventory)
+                                                                                              inventory=self.inventory)
         ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                             inventory=self.inventory)
+                                                                                              inventory=self.inventory)
         ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                             inventory=self.inventory)
+                                                                                              inventory=self.inventory)
 
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=16).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=24).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
         ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
                                                                                               inventory=self.inventory)
         ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
                                                                                               inventory=self.inventory)
+
+        ItemState(server=self.server, time=time, balance_cls='Tank10', max_count=1).set_inventory(time=time,
+                                                                                                  inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
+                                                                                                  inventory=self.inventory)
 
         self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
         self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
@@ -146,7 +147,7 @@ class Unit(Observer):
 
 
     def on_fire_auto_enable(self, enable, time):
-        #log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
+        # log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
         if self.turn_on_auto_fire == enable:
             return
         else:

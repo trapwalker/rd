@@ -28,6 +28,11 @@ var WInventoryItem = (function (_super) {
         var itemDiv = $(inventoryDiv).find(this.itemDivStr);
         itemDiv.find(this.itemDivCaptionStr).text(this.item.balance_cls);
         itemDiv.draggable("option", "disabled", false);
+
+        var self = this;
+        itemDiv.on('dblclick', function () {
+            item_balance_cls_manager.activate_item(self.item);
+        });
         this.change();
     };
 
@@ -54,6 +59,7 @@ var WInventoryItem = (function (_super) {
         itemDiv.find(this.itemDivCaptionStr).text('Пусто');
         itemDiv.find(this.itemDivCountStr).text('');
         itemDiv.draggable("option", "disabled", true);
+        itemDiv.off('dblclick');
         _super.prototype.delFromVisualManager.call(this);
     };
 

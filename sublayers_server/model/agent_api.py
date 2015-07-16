@@ -16,10 +16,12 @@ from sublayers_server.model.slave_objects.stationary_turret import StationaryTur
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToMapObject, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
-    HideInventoryEvent, ItemActionInventoryEvent
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
 from sublayers_server.model.units import Unit
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
+
+from sublayers_server.model.inventory import ItemState
 
 
 class UpdateAgentAPIEvent(Event):
@@ -359,9 +361,10 @@ class AgentAPI(API):
             self.delete_car()
         elif command == '/init':
             self.update_agent_api()
-        elif command == '/p':
-            for name in args:
-                self.create_private_chat(recipient=name)
+        elif command == '/fuel':
+            car = self.car
+            ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
+                set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
         else:
             log.warning('Unknown console command "%s"', cmd)
 
@@ -405,3 +408,15 @@ class AgentAPI(API):
     def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None):
         ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
                                  end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def get_balance_cls(self, balance_cls_name):
+        log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
+        messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
+                                balance_cls_name=balance_cls_name).post()
+
+    @public_method
+    def activate_item(self, owner_id, position, balance_cls_name):
+        log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
+        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position,
+                                 balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
