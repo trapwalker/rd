@@ -142,7 +142,9 @@ class FireSector(Sector):
         return True
 
     def enable_auto_fire(self, time, enable):
-        #log.debug('%s  enable auto_fire: %s    on side: %s', self.owner.uid, enable, self.side)
+        # log.debug('%s  enable auto_fire: %s    on side: %s', self.owner.uid, enable, self.side)
+        if enable:
+            self.target_list = []
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable=enable, time=time)

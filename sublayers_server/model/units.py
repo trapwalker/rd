@@ -146,7 +146,7 @@ class Unit(Observer):
 
 
     def on_fire_auto_enable(self, enable, time):
-        #log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
+        # log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
         if self.turn_on_auto_fire == enable:
             return
         else:

@@ -252,7 +252,7 @@ var MapManager = (function(_super){
         map.on('click', onMouseUpMap);
         //map.on('mousedown', onMouseDownMap);
         //map.on('mouseup', onMouseUpMap);
-        map.on('dblclick', onMouseDblClick);
+        map.on('contextmenu', onMouseDblClick);
         map.on('mousemove', onMouseMoveMap);
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
