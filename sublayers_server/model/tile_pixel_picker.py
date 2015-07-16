@@ -12,7 +12,7 @@ if __name__ == '__main__':
 from tileid import Tileid
 from async_tools import async_deco
 
-import os.path
+import os
 from PIL import Image
 from cachetools import LRUCache
 
@@ -45,7 +45,7 @@ class TilePicker(object):
             img = Image.open(fn)
             return tid, img.load()
         except IOError as e:
-            log.warning('Tile %s not found', fn)
+            log.warning('Tile %s not found. cd=%s', fn, os.getcwd())
             # todo: other exceptions
 
         return tid, None
