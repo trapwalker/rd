@@ -42,6 +42,7 @@ class WeaponAuto(Weapon):
         self.targets = []
         self.dps = dps
         self.is_enable = False
+        self.call_start = False  # Равна True, если start уже вызван, но on_start ещё не было
 
     def as_dict(self, **kw):
         d = super(WeaponAuto, self).as_dict(**kw)
@@ -51,12 +52,17 @@ class WeaponAuto(Weapon):
         )
         return d
 
+    def start(self, time):
+        super(WeaponAuto, self).start(time=time)
+        self.call_start = True
+
     def add_car(self, car, time):
-        if self.is_enable:
-            if not self.is_started:
-                self.start(time=time)
-            else:
-                self._start_fire_to_car(car=car, time=time)
+        if self.is_enable:  # если оружию разрешено вести стрельбу
+            if not self.call_start:  # если ещё не вызывался старт ведения стрельбы
+                if not self.is_started:  # если стрельба ещё не началась
+                    self.start(time=time)  # вызвать начало стрельбы по всем таргетам в таргет листе
+                else:
+                    self._start_fire_to_car(car=car, time=time)  # вызвать начало стрельбы по данному таргету
 
     def del_car(self, car, time):
         if self.is_enable and self.is_started:
@@ -77,6 +83,7 @@ class WeaponAuto(Weapon):
 
     def on_start(self, item, time):
         super(WeaponAuto, self).on_start(item=item, time=time)
+        self.call_start = False  # сделать False, так как уже on_start произошёл и отсеивать другие страрты не нужно
         for car in self.sector.target_list:
             self._start_fire_to_car(car=car, time=time)
 
