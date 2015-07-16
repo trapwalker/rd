@@ -52,13 +52,11 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent.on_disconnect(self)
         self.application.clients.remove(self)
 
-        '''
-        while self.agent.cars:
-            car = self.agent.cars[0]
-            if car.is_alive:
-                self.agent.drop_car(car)
-                car.delete()
-        '''
+        # while self.agent.cars:
+        #     car = self.agent.cars[0]
+        #     if car.is_alive:
+        #         self.agent.drop_car(car)
+        #         car.delete()
 
     def on_message(self, message):
         # log.debug("Got message from %s: %r", self.agent, message)
