@@ -156,14 +156,45 @@
         font: 12pt Nouveau_IBM;
     }
 
+    .mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background {
+        margin: 5px 241px 5px 5px;
+        height: 26px;
+        width: 180px; /* тут менять прогресс от 0px(0%) до 240px(100%)... сейчас стоит 180рх(75%)... */
+        background-image: url("/static/img/progressbar_division.png");
+        background-repeat: repeat-x;
+        float: left;
+    }
+
     .mainMenuNucoilWindow-body-fuel-center-tank-progressbar {
+        position: absolute;
         color: #30fc00;
-        margin: 5px 0px 5px 5px;
-        height: 60px;
-        line-height: 60px;
+        margin: 4px 0px 5px 4px;
+        height: 26px;
+        width: 241px;
+        line-height: 26px;
         text-align: center;
         font-size: 12pt;
         border: solid 1px #00f150;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-tank-empty {
+        color: #30fc00;
+        text-align: center;
+        float: left;
+        margin-left: 1px;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-tank-half {
+        color: #30fc00;
+        text-align: center;
+        float: left;
+        margin-left: 104px;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-tank-full {
+        color: #30fc00;
+        text-align: center;
+        margin-left: 237px;
     }
 
     .mainMenuNucoilWindow-body-fuel-center-count {
@@ -191,9 +222,16 @@
     }
 
     .mainMenuNucoilWindow-body-fuel-center-count-amount-change {
-        margin: 10px 0px 0px 5px;
+        margin: 0px 0px 0px 5px;
         color: #30fc00;
         float: left;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-count-amount-change-up {
+        cursor: pointer;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-count-amount-change-down {
         cursor: pointer;
     }
 
@@ -216,7 +254,7 @@
     }
 
     .mainMenuNucoilWindow-body-fuel-center-down {
-        margin: 5px 10px 0px 20px;
+        margin: 0px 10px 0px 20px;
     }
 
     .mainMenuNucoilWindow-body-fuel-center-down-cans-label {
@@ -391,12 +429,19 @@
             </div>
             <div class="mainMenuNucoilWindow-body-fuel-center-tank">
                 <div class="mainMenuNucoilWindow-body-fuel-center-tank-label">Топливо в баке:</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background"></div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar">75%</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-tank-empty">&#9650;<br/>E</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-tank-half">&#9650;<br/>1/2</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-tank-full">&#9650;<br/>F</div>
             </div>
             <div class="mainMenuNucoilWindow-body-fuel-center-count">
                 <div class="mainMenuNucoilWindow-body-fuel-center-count-label">Объем:</div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-count-amount">20 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change">&#8597;</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change">
+                    <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change-up">&#9650;</div>
+                    <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change-down">&#9660;</div>
+                </div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-count-text">Или</div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-count-button">Полный бак</div>
             </div>
