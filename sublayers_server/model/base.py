@@ -160,6 +160,12 @@ class VisibleObject(PointObject):
         for d in BALANCE.default_modifiers:
             Parameter(owner=self, **d)
 
+    def add_to_chat(self, chat, time):
+        pass
+
+    def del_from_chat(self, chat, time):
+        pass
+
 
 class Observer(VisibleObject):
 
@@ -169,33 +175,18 @@ class Observer(VisibleObject):
         self.watched_agents = CounterSet()
         self.visible_objects = []
 
-    def on_contact_in(self, time, obj, is_boundary=False, comment=None):
-        """
-        @param float time: contact time
-        @param VisibleObject obj: contacted object
-        @param bool is_boundary: True if this contact is visible range penetration
-        @param str comment: debug comment
-        """
+    def on_contact_in(self, time, obj):
         self.visible_objects.append(obj)
         obj.subscribed_observers.append(self)
         # add all subscribed _agents_ into to the _visible object_
         for agent in self.watched_agents:
             for i in range(self.watched_agents[agent]):
-                agent.on_see(time=time, subj=self, obj=obj, is_boundary=is_boundary)
+                agent.on_see(time=time, subj=self, obj=obj)
 
-    # todo: check calls
-    def on_contact_out(self, time, obj, is_boundary=False, comment=None):
-        """
-        @param float time: contact time
-        @param VisibleObject obj: contacted object
-        @param bool is_boundary: True if this contact is visible range penetration
-        @param str comment: debug comment
-        """
-        # remove all subscribed _agents_ from _visible object_
+    def on_contact_out(self, time, obj):
         for agent in self.watched_agents:
             for i in range(self.watched_agents[agent]):
-                agent.on_out(time=time, subj=self, obj=obj, is_boundary=is_boundary)
-
+                agent.on_out(time=time, subj=self, obj=obj)
         self.visible_objects.remove(obj)
         obj.subscribed_observers.remove(self)
 

@@ -1,0 +1,33 @@
+#background {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background: transparent url('/static/img/background.jpg') 100% 100% no-repeat;
+    background-position: center;
+}
+
+body {
+    margin: 0px;
+}
+
+h1 {
+    font: 72pt agency_fb_cyrillic;
+    font-weight: bolder;
+    color: #30fc00;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.btn {
+    font: 18pt Nouveau_IBM;
+    color: #30fc00;
+    border: solid 2px #125306;
+    border-radius: 0px;
+    background-color: #0d3707;
+}

@@ -3,17 +3,10 @@
 * В данный модуль писать все методы и функции для работы с картой
 */
 
-
-//Путь к карте на сервере
-//var ConstMapPath = 'http://sublayers.net:88/static/map/{z}/{x}/{y}.jpg';
-var ConstMapPath = 'http://sublayers.net/map/{z}/{x}/{y}.jpg';
-//var ConstMapPath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-
 //Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
-
 
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
@@ -28,6 +21,7 @@ function onMouseUpMap(mouseEventObject) {
 
 function onMouseDblClick(mouseEventObject) {
     clientManager.sendScoutDroid(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    //console.log(map.project(mouseEventObject.latlng, myMap.getMaxZoom()))
 }
 
 function onMouseMoveMap(mouseEventObject) {
@@ -96,7 +90,7 @@ function onKeyDownMap(event) {
         case 38:
             if (!pressedArrowUp) {
                 clientManager.sendSetSpeed(user.userCar.v_forward);
-                wCruiseControl.startKeyboardControl();
+                if (wCruiseControl) wCruiseControl.startKeyboardControl();
                 pressedArrowUp = true;
             }
             break;
@@ -109,7 +103,7 @@ function onKeyDownMap(event) {
         case 40:
             if (!pressedArrowDown) {
                 clientManager.sendSetSpeed(user.userCar.v_backward);
-                wCruiseControl.startKeyboardControl();
+                if (wCruiseControl) wCruiseControl.startKeyboardControl();
                 pressedArrowDown = true;
             }
             break;
@@ -182,7 +176,7 @@ function onKeyUpMap(event) {
             break;
         case 38:
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-            wCruiseControl.stopKeyboardControl();
+            if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowUp = false;
             break;
         case 39:
@@ -191,7 +185,7 @@ function onKeyUpMap(event) {
             break;
         case 40:
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-            wCruiseControl.stopKeyboardControl();
+            if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowDown = false;
             break;
     }
@@ -229,7 +223,7 @@ var MapManager = (function(_super){
 
     MapManager.prototype._init = function () {
 
-        this.tileLayerPath = ConstMapPath;
+        this.tileLayerPath = $('#settings_map_link').text();
 
         map = L.map('map',
             {
@@ -258,7 +252,7 @@ var MapManager = (function(_super){
         map.on('click', onMouseUpMap);
         //map.on('mousedown', onMouseDownMap);
         //map.on('mouseup', onMouseUpMap);
-        map.on('dblclick', onMouseDblClick);
+        map.on('contextmenu', onMouseDblClick);
         map.on('mousemove', onMouseMoveMap);
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);
@@ -292,8 +286,23 @@ var MapManager = (function(_super){
         };
         canvasTiles.addTo(myMap);
 
-
-
+        /*
+            Карта является глобальным droppabl'ом в качестве мусорки
+            P.S.
+            Тут дропабл вешается именно на бодидив, а не на мап, т.к. мап и например окно инвентаря лежат в разных
+            ветках дом-дерева и запрет делегирования дропа не отрабатывает корректно (одновременно отрабатывает и дроп
+            на карту и дроп в ячейку инвентаря)
+        */
+        var mapDiv = $('#bodydiv');
+        mapDiv.droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                // Эта проверка нужна так как таскание окон также порождает событие дропа
+                if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item'))
+                    clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
+                                                          null, null);
+            }
+        });
 
     };
 
@@ -346,15 +355,17 @@ var MapManager = (function(_super){
         if (event.zoom) {
             if (event.zoom < 15) {
                 // убрать сетку и секутора
-                //wFireController.setVisible(false);
-                mapManager.widget_fire_radial_grid.setVisible(false);
-                mapManager.widget_fire_sectors.setVisible(false);
+                if (mapManager.widget_fire_radial_grid)
+                    mapManager.widget_fire_radial_grid.setVisible(false);
+                if (mapManager.widget_fire_sectors)
+                    mapManager.widget_fire_sectors.setVisible(false);
             }
             else {
                 // показать сетку и сектора, если боевой режим
-                //wFireController.setVisible(wFireController.combatState);
-                mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
-                mapManager.widget_fire_sectors.setVisible(wFireController.visible);
+                if ((mapManager.widget_fire_radial_grid) && (wFireController))
+                    mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
+                if ((mapManager.widget_fire_sectors) && (wFireController))
+                    mapManager.widget_fire_sectors.setVisible(wFireController.visible);
             }
         }
     };

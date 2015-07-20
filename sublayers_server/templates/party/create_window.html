@@ -91,5 +91,6 @@
         var name = $("#divNamePartyCreatePartyWindow_{{ current_user }}").find('input').first().val();
         var descr = $("#divNotesPartyCreatePartyWindow_{{ current_user }}").find('textarea').first().val();
         clientManager.sendCreatePartyFromTemplate(name, descr);
+        windowTemplateManager.closeUniqueWindow('create_party');
     });
 </script>

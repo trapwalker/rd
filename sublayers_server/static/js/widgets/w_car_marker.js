@@ -1,7 +1,6 @@
 /*
- * Виджет для отрисовки маркера машинки
+ * Виджет для отрисовки маркеров
 */
-
 
 var WCarMarker = (function (_super) {
     __extends(WCarMarker, _super);
@@ -15,7 +14,7 @@ var WCarMarker = (function (_super) {
         this.change();
     }
 
-    WCarMarker.prototype._createMarker = function(){
+    WCarMarker.prototype._createMarker = function() {
         var car = this.car;
         var marker;
         marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
@@ -30,18 +29,32 @@ var WCarMarker = (function (_super) {
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
         marker.addTo(map);
+        switch (car.cls) {
+            case 'Town':
+                marker.on('click', onClickTownMarker);
+                marker.obj_id = car.ID;
+                break;
+            case 'GasStation':
+                marker.on('click', onClickGasStationMarker);
+                marker.obj_id = car.ID;
+                break;
+            default:
+                marker.on('click', onClickUserCarMarker);
+        }
 
-
-
-        //if (car == user.userCar)
-        marker.on('click', onClickUserCarMarker);
-        marker.on('contextmenu', function(){alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)});
+        marker.on('contextmenu', function () {
+            var car = visualManager.getModelObject(this.carID);
+            if (car && car.getCurrentHP) {
+                var hp = car.getCurrentHP(clock.getCurrentTime());
+                console.info(this.carID, '  have  ', hp, ' hp points');
+            }
+            //alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)
+        });
     };
 
-    WCarMarker.prototype.change = function(){
+    WCarMarker.prototype.change = function() {
         //console.log('WCarMarker.prototype.change');
         if (mapManager.inZoomChange && this.car != user.userCar) return;
-
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
@@ -57,7 +70,7 @@ var WCarMarker = (function (_super) {
 
     };
 
-    WCarMarker.prototype.updateIcon = function(){
+    WCarMarker.prototype.updateIcon = function() {
         var car = this.car;
         var marker = this.marker;
         var icon_id = 1;
@@ -90,13 +103,24 @@ var WCarMarker = (function (_super) {
             icon_id = 31;
         }
 
+        if(car.cls == 'RadioPoint') {
+            icon_id = 7;
+        }
+
+        if(car.cls == 'Town') {
+            marker.setIcon(iconsLeaflet.getIcon('icon_city'));
+            return;
+        }
+
+        if(car.cls == 'GasStation') {
+            marker.setIcon(iconsLeaflet.getIcon('icon_station'));
+            return;
+        }
+
         marker.setIcon(iconsLeaflet.getIconByID(icon_id));
-
-
-
     };
 
-    WCarMarker.prototype.updateLabel = function(new_label){
+    WCarMarker.prototype.updateLabel = function(new_label) {
         this.marker.unbindLabel();
         var label_str1 = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">';
         //var label_str1 = '<span>';
@@ -118,8 +142,13 @@ var WCarMarker = (function (_super) {
             else { // значит объект не имеет владельца, нужно использовать main_agent_login
                 if (this.car.cls == 'Rocket' || this.car.cls == 'SlowMine')
                     label_str = label_str = label_str1 + label_str2;
-                else
-                    label_str = label_str1 + '-=by ' + this.car.main_agent_login + '=-' + label_str2;
+                else {
+                    if (this.car.main_agent_login)
+                        label_str = label_str1 + '-=by ' + this.car.main_agent_login + '=-' + label_str2;
+                    else
+                        label_str = label_str1 + '-=' + this.car.cls + '=-' + label_str2;
+
+                }
             }
         }
         this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
@@ -137,23 +166,28 @@ var WCarMarker = (function (_super) {
 
 // todo: внести следующие функции в класс WCarMarker
 
-function onMouseOverForLabels(){
+function onMouseOverForLabels() {
     //if(this._labelNoHide) return false;
     this.setLabelNoHide(true);
     this.getLabel().setOpacity(0.95);
 }
 
-function onMouseOutForLabels(){
+function onMouseOutForLabels() {
     this.setLabelNoHide(cookieStorage.visibleLabel());
     this.getLabel().setOpacity(0.4);
 }
 
+function onClickTownMarker() {
+    clientManager.sendEnterToTown(this.obj_id)
+}
 
-function onClickUserCarMarker(){
-    //alert('click to my marker');
+function onClickGasStationMarker() {
+    clientManager.sendEnterToGasStation(this.obj_id)
+}
+
+function onClickUserCarMarker() {
+    //console.log('Смена иконки -', this._old_icon_id);
     if(! this._old_icon_id) this._old_icon_id = 0;
     this._old_icon_id++;
     this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
-
 }
-

@@ -36,6 +36,14 @@ var ClientManager = (function () {
         return null;
     };
 
+    ClientManager.prototype._getMObj = function (uid) {
+        //console.log("ClientManager.prototype._getMObj");
+        var obj = visualManager.getModelObject(uid);
+        if (obj)
+            console.warn('Contact: Такой объект уже есть на клиенте!');
+        return obj;
+    };
+
     ClientManager.prototype._getHPState = function (data) {
         if (data)
             return new HPState(
@@ -107,19 +115,6 @@ var ClientManager = (function () {
         return sectors;
     };
 
-    ClientManager.prototype._setClientState = function (state) {
-        if (state === 'death_car') {
-            // Перевести клиент в состояние, пока машинка мертва
-            //cookieStorage.optionsDraggingMap = true; // значит радиальное меню не будет отображаться!
-            //map.dragging.enable(); // разрешить тягать карту
-            modalWindow.modalDeathShow();
-            return true;
-        }
-        // Если ни одно из состояний не выбрано, то перевести в нормальное состояние
-        cookieStorage.optionsDraggingMap = false; // значит радиальное меню снова будет отображаться и карта будет двигаться за машинкой!
-        myMap.dragging.disable(); // запретить двигать карту
-    };
-
     ClientManager.prototype._sendMessage = function (msg) {
         //console.log('ClientManager.prototype._sendMessage');
         message_stream.sendMessage({
@@ -162,10 +157,109 @@ var ClientManager = (function () {
 
     };
 
+    ClientManager.prototype._contactBot = function (event) {
+        //console.log('ClientManager.prototype._contactBot');
+        if (event.is_first) { // только если первый раз добавляется машинка
+            var state = this._getState(event.object.state);
+            var hp_state = this._getHPState(event.object.hp_state);
+            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
+            var uid = event.object.uid;
+            var aOwner = this._getOwner(event.object.owner);
+            var radius_visible = event.object.r;
+            var main_agent_login = event.object.main_agent_login;
+
+            // Проверка: нет ли уже такой машинки.
+            var car = this._getMObj(uid);
+            if (car) return;
+            if (car == user.userCar) {
+                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
+                return;
+            }
+
+            // Создание новой машинки
+            car = new MapCar(uid, state, hp_state, fuel_state);
+            car.role = event.object.role;
+            car.cls = event.object.cls;
+            car.main_agent_login = main_agent_login;
+
+            if (aOwner)
+                aOwner.bindCar(car);
+
+            // Создание/инициализация виджетов
+            new WCarMarker(car);                 // виджет маркера
+            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+        }
+    };
+
+    ClientManager.prototype._contactStaticObject = function (event) {
+        //console.log('ClientManager.prototype._contactStaticObject', event);
+        if (event.is_first) {
+            var uid = event.object.uid;
+            var radius_visible = event.object.r;
+            var obj_marker;
+
+            // Проверка: нет ли уже такого объекта.
+            var obj = this._getMObj(uid);
+            if (obj) return;
+
+            // Создание объекта
+            var direction = null;
+            switch (event.object.cls) {
+                case 'GasStation':
+                case 'Town':
+                    direction = - 2 * Math.PI;
+                    break;
+                case 'RadioPoint':
+                    direction = 0.5 * Math.PI;
+                    break;
+            }
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
+            obj.cls = event.object.cls;
+
+            // Создание/инициализация виджетов
+            obj_marker = new WCarMarker(obj); // виджет маркера
+            if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+
+            // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
+            if (obj.cls == 'Town')
+                obj_marker.updateLabel(event.object.town_name);
+            if (obj.cls == 'RadioPoint')
+                obj_marker.updateLabel('Radio Point');
+
+        }
+    };
+
+    ClientManager.prototype._getItemState = function (data) {
+        return new InventoryItemState(
+            data.t0,
+            data.max_val,
+            data.val0,
+            data.dvs
+        );
+    };
+
+    ClientManager.prototype._getItem = function (data) {
+        return new InventoryItem(
+            this._getItemState(data.item),
+            data.position,
+            data.item.balance_cls
+        )
+    };
+
+    ClientManager.prototype._getInventory = function (data) {
+        var inv =  new Inventory(
+            data.owner_id,
+            data.max_size
+        );
+        for (var i=0; i < data.items.length; i++)
+            inv.addItem(this._getItem(data.items[i]));
+        return inv;
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.Init = function (event) {
-        console.log('ClientManager.prototype.Init', event);
+        //console.log('ClientManager.prototype.Init', event);
         var servtime = event.time;
         var v_forward = event.cars[0].v_forward;
         var v_backward = event.cars[0].v_backward;
@@ -185,7 +279,7 @@ var ClientManager = (function () {
             user.ID = event.agent.uid;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-                chat._getChatByName('party').partyButtons.create.text('Отряд');
+                chat.page_party.buttons.create.text('Отряд');
             }
         }
 
@@ -298,45 +392,29 @@ var ClientManager = (function () {
 
     };
 
-    ClientManager.prototype.Contact = function (event) {
-        //console.log('ClientManager.prototype.Contact', event);
-
+    ClientManager.prototype.See = function (event) {
+        //console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
             console.warn('Контакт ивент до инициализации своей машинки!');
             return;
         }
-        if (event.is_first) { // только если первый раз добавляется машинка
-            var state = this._getState(event.object.state);
-            var hp_state = this._getHPState(event.object.hp_state);
-            var fuel_state = null; //this._getFuelState(event.object.fuel_state);
-            var uid = event.object.uid;
-            var aOwner = this._getOwner(event.object.owner);
-            var radius_visible = event.object.r;
-            var main_agent_login = event.object.main_agent_login;
 
-            // Проверка: нет ли уже такой машинки.
-            var car = visualManager.getModelObject(uid);
-            if (car) {
-                console.error('Contact Error: Такая машинка уже есть на клиенте! Ошибка!');
-                return;
-            }
-            if (car == user.userCar) {
-                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
-                return;
-            }
-
-            // Создание новой машинки
-            car = new MapCar(uid, state, hp_state, fuel_state);
-            car.role = event.object.role;
-            car.cls = event.object.cls;
-            car.main_agent_login = main_agent_login;
-
-            if (aOwner)
-                aOwner.bindCar(car);
-
-            // Создание/инициализация виджетов
-            new WCarMarker(car);                 // виджет маркера
-            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+        switch (event.object.cls) {
+            case 'Bot':
+            case 'Rocket':
+            case 'ScoutDroid':
+            case 'StationaryTurret':
+            case 'SlowMine':
+            case 'Mobile':
+                this._contactBot(event);
+                break;
+            case 'Town':
+            case 'RadioPoint':
+            case 'GasStation':
+                this._contactStaticObject(event);
+                break;
+            default:
+            console.warn('Контакт с неизвестным объектом ', event.object);
         }
 
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
@@ -351,63 +429,37 @@ var ClientManager = (function () {
                 )
                     .addTo(myMap)
             );
-
-        // отрисовка линии от объекта к субъекту event.subject_id, event.object.uid
-
-        if(cookieStorage.enableShowDebugLine()) {
-            var scar = visualManager.getModelObject(event.subject_id);
-            var ocar = visualManager.getModelObject(event.object.uid);
-            if (!scar || !ocar) {
-                console.error('Contact Error: невозможно отобразить Contact-Line, так как на клиенте отсутствует одна из машин: ', scar, ocar);
-                return;
-            }
-            new WRedContactLine(scar, ocar);
-        }
-        
-    };
-
-    ClientManager.prototype.See = function (event) {
-        //console.log('ClientManager.prototype.See');
-        this.Contact(event);
     };
 
     ClientManager.prototype.Out = function (event) {
-        //console.log('ClientManager.prototype.Out', event.is_last, event.subject_id, event.object_id);
+        //console.log('ClientManager.prototype.Out');
         if(event.is_last) { // только если машинку нужно совсем убирать
-            // очистить все виджеты машинки
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
             if (! car) {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
-            if (car.owner)
-                car.owner.unbindCar(car);
 
-            var list_vo = visualManager.getVobjsByMobj(car);
-            for(var i = 0; i< list_vo.length; i++)
-                list_vo[i].delModelObject(car);
+            // Удалить привязку к владельцу
+            if (car.owner) car.owner.unbindCar(car);
 
-            // убрать саму машинку из визуалменеджера
-            visualManager.delModelObject(car);
+            // Удаление машинки (убрать саму машинку из визуалменеджера)
+            car.delFromVisualManager();
 
-            // стирание линий
-            //carMarkerList.delContactLine(event.subject_id, event.object_id);
-            // удаление машинки
-            //carMarkerList.del(event.object_id);
+            if (car == user.userCar) user.userCar = null;
         }
     };
 
     ClientManager.prototype.Die = function (event) {
-        console.log('ClientManager.prototype.Die');
-        this._setClientState('death_car');
-        timeManager.timerStop();
+        // console.log('ClientManager.prototype.Die');
+        modalWindow.modalDeathShow();
     };
 
     ClientManager.prototype.Chat = function (event){
         //console.log('ClientManager.prototype.Chat', event);
-        //chat.addMessage(-1, '', getOwner(event.author), event.text);
-        //chat.addMessage(-1, '', event.author, event.text);
+        //chat.addMessageByID(-1, getOwner(event.author), event.text);
+        //chat.addMessageByID(-1, event.author, event.text);
     };
 
     ClientManager.prototype.Message = function (event){
@@ -432,8 +484,6 @@ var ClientManager = (function () {
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
 
-        //console.log('etime = ', event.time, '    ctime = ', clock.getClientMS());
-
         // установка last_shoot
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
@@ -444,30 +494,8 @@ var ClientManager = (function () {
             console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
-        user.userCar.setShootTime(event.side, etime);
-/*
-        var dir_side = null;
-        switch (event.side) {
-            case 'front':
-                dir_side = 0;
-                break;
-            case 'left':
-                dir_side = Math.PI / 2.;
-                break;
-            case 'right':
-                dir_side = -Math.PI / 2.;
-                break;
-            case 'back':
-                dir_side = Math.PI;
-                break;
-            default:
-                console.error('Невозможно отрисовать эффект. Неизвестный борт!', event.side);
-                return;
-        }
-        if (dir_side != null)
-            new EDischargeFire(user.userCar.getCurrentCoord(clock.getCurrentTime()),
-                    user.userCar.getCurrentDirection(clock.getCurrentTime()) + dir_side).start();
-*/
+        user.userCar.setShootTime(event.side, etime, event.t_rch);
+
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
@@ -511,6 +539,7 @@ var ClientManager = (function () {
         }
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
+        chat.party_info_message(event);
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
@@ -520,7 +549,8 @@ var ClientManager = (function () {
         user.party = new OwnerParty(event.party.id, event.party.name);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Отряд');
+        chat.page_party.buttons.create.text('Отряд');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
 
         if (windowTemplateManager.isOpen('create_party'))
@@ -531,7 +561,7 @@ var ClientManager = (function () {
             windowTemplateManager.closeUniqueWindow('party_info');
 
         windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
-
+        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -539,12 +569,15 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Создать');
+        chat.page_party.buttons.create.text('Создать');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
+
+        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
@@ -552,7 +585,8 @@ var ClientManager = (function () {
         user.party = null;
         var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
         widget_marker.updateLabel();
-        chat._getChatByName('party').partyButtons.create.text('Создать');
+        chat.page_party.buttons.create.text('Создать');
+        chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.closeUniqueWindow('party');
@@ -562,67 +596,168 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PartyInviteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteMessage', event);
+        chat.party_info_message(event);
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyInviteDeleteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteDeleteMessage', event);
+        chat.party_info_message(event);
         if (windowTemplateManager.isOpen('my_invites'))
             windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyErrorMessage = function (event) {
         console.log('ClientManager.prototype.PartyErrorMessage', event);
+        chat.party_info_message(event);
     };
 
-    ClientManager.prototype.OpenTemplateWindowMessage = function (event) {
-        console.log('ClientManager.prototype.OpenTemplateWindowMessage', event);
-        if (event.unique)
-            windowTemplateManager.openUniqueWindow(event.win_name, event.url, {page_type: event.page_type});
-        else
-            console.log('Попытка открыть не уникальное окно по адресу: ', event.url);
+    ClientManager.prototype.EnterToTown = function (event) {
+        //console.log('ClientManager.prototype.EnterToTown', event);
+        var town_uid = event.town.uid;
+        // POST запрос на получение города и вывод его на экран.
+        // К этому моменту машинка уже удаляется или вот-вот удалится
+        $.ajax({
+            url: "http://" + location.host + '/api/town',
+            data:  { town_id: event.town.uid },
+            success: function(data){
+                $('#activeTownDiv').append(data);
+                $('#activeTownDiv').css('display', 'block');
+                chat.showChatInTown();
+                townVisitorsManager.update_visitors();
+            }
+        });
     };
 
-    ClientManager.prototype.CloseTemplateWindowMessage = function (event) {
-        console.log('ClientManager.prototype.CloseTemplateWindowMessage', event);
-        if (event.unique)
-            windowTemplateManager.closeUniqueWindow(event.win_name);
+    ClientManager.prototype.ExitFromTown = function (event) {
+        //console.log('ClientManager.prototype.ExitFromTown', event);
+        chat.showChatInMap();
+        $('#activeTownDiv').empty();
+        $('#activeTownDiv').css('display', 'none');
+        townVisitorsManager.clear_visitors();
+    };
+
+    ClientManager.prototype.EnterToGasStation = function (event) {
+        console.log('ClientManager.prototype.EnterToGasStation', event);
+    };
+
+    ClientManager.prototype.ChatRoomIncludeMessage = function(event){
+        //console.log('ClientManager.prototype.ChatRoomIncludeMessage', event);
+        chat.addChat(event.room_name, event.chat_type);
+    };
+
+    ClientManager.prototype.ChatRoomExcludeMessage = function(event){
+        //console.log('ClientManager.prototype.ChatRoomExcludeMessage', event);
+        chat.removeChat(event.room_name);
+    };
+
+    ClientManager.prototype.ChatPartyRoomIncludeMessage = function(event){
+        //console.log('ClientManager.prototype.ChatPartyRoomIncludeMessage', event);
+        chat.activateParty(event.room_name);
+    };
+
+    ClientManager.prototype.ChatPartyRoomExcludeMessage = function(event){
+        //console.log('ClientManager.prototype.ChatPartyRoomExcludeMessage', event);
+        chat.deactivateParty(event.room_name);
+    };
+
+    ClientManager.prototype.ChangeTownVisitorsMessage = function(event){
+        //console.log('ClientManager.prototype.TownChangeVisitor', event);
+        if (event.action)
+            townVisitorsManager.add_visitor(event.visitor);
         else
-            console.log('Попытка открыть не уникальное');
+            townVisitorsManager.del_visitor(event.visitor);
+    };
+
+    ClientManager.prototype.InventoryShowMessage = function (event) {
+        //console.log('ClientManager.prototype.InventoryShowMessage', event);
+        inventoryList.addInventory(this._getInventory(event.inventory));
+    };
+
+    ClientManager.prototype.InventoryHideMessage = function (event) {
+        //console.log('ClientManager.prototype.InventoryHideMessage', event);
+        inventoryList.delInventory(event.inventory_owner_id);
+    };
+
+    ClientManager.prototype.InventoryItemMessage = function (event) {
+        //console.log('ClientManager.prototype.InventoryItemMessage', event);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.getItem(event.position).setState(this._getItemState(event.item));
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+    };
+
+    ClientManager.prototype.InventoryAddItemMessage = function (event) {
+        //console.log('ClientManager.prototype.InventoryAddItemMessage', event);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.addItem(this._getItem(event));
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+    };
+
+    ClientManager.prototype.InventoryDelItemMessage = function (event) {
+        //console.log('ClientManager.prototype.InventoryDelItemMessage', event);
+        var inventory = inventoryList.getInventory(event.owner_id);
+        if (inventory)
+            inventory.delItem(event.position);
+        else
+            console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+    };
+
+    ClientManager.prototype.BalanceClsInfo = function (event) {
+        console.log('ClientManager.prototype.SetBalanceCls', event);
+        item_balance_cls_manager.add_balance_cls(event.balance_cls)
     };
 
     // Исходящие сообщения
 
+    ClientManager.prototype.sendConsoleCmd = function (atext) {
+        //sendServConsole
+        var mes = {
+            call: "console_cmd",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                cmd: atext
+            }
+        };
+        rpcCallList.add(mes);
+        clientManager._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
-        //console.log('sendSetSpeed', newSpeed, user.userCar.maxSpeed);
+        //console.log('ClientManager.prototype.sendSetSpeed');
+        if (!user.userCar) return;
         this.sendMotion(null, newSpeed, null)
     };
 
     ClientManager.prototype.sendStopCar = function () {
-        //console.log('sendStopCar');
+        //console.log('ClientManager.prototype.sendStopCar');
+        if (!user.userCar) return;
         this.sendMotion(null, 0.0, null)
     };
 
     ClientManager.prototype.sendTurn = function (turn) {
-        //console.log('sendTurn', turn);
+        //console.log('ClientManager.prototype.sendTurn');
+        if (!user.userCar) return;
         this.sendMotion(null, null, turn)
     };
 
     ClientManager.prototype.sendGoto = function (target) {
         //console.log('ClientManager.prototype.sendGoto');
-        //var currentSpeed = wCruiseControl.getSpeedHandleValue();
-        var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
-       // if (currentSpeed == 0) {
-       //     return;
-            //currentSpeed = user.userCar.maxSpeed * 0.2;
-            //wCruiseControl.setSpeedHandleValue(0.2);
-       // }
+        if (!user.userCar) return;
+        var currentSpeed = wCruiseControl.getSpeedHandleValue();
+        if (currentSpeed == 0)
+            wCruiseControl.setSpeedHandleValue(0.2);
+        currentSpeed = wCruiseControl.getSpeedHandleValue();
         this.sendMotion(target, currentSpeed, null);
     };
 
     ClientManager.prototype.sendMotion = function (target, newSpeed, turn) {
-        //console.log('ClientManager.prototype.sendMotion', target, newSpeed, turn);
+        //console.log('ClientManager.prototype.sendMotion');
+        if (!user.userCar) return;
         var new_speed = newSpeed;
         if (new_speed) {
             new_speed = new_speed / ( new_speed >= 0 ? user.userCar.v_forward : -user.userCar.v_backward);
@@ -653,6 +788,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireDischarge = function (side) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if (!user.userCar) return;
         if(! wFireController.visible) return;
         var mes = {
             call: "fire_discharge",
@@ -667,6 +803,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFireAutoEnable = function (enable) {
         //console.log('ClientManager.prototype.sendFireDischarge');
+        if (!user.userCar) return;
         var mes = {
             call: "fire_auto_enable",
             rpc_call_id: rpcCallList.getID(),
@@ -728,16 +865,6 @@ var ClientManager = (function () {
                 x: target.x,
                 y: target.y
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendOpenWindowCreateParty = function () {
-        var mes = {
-            call: "open_window_create_party",
-            rpc_call_id: rpcCallList.getID(),
-            params: { }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -811,6 +938,140 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 invite_id: invite_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendEnterToTown = function (town_id) {
+        //console.log('ClientManager.prototype.sendEnterToTown');
+        var mes = {
+            call: "enter_to_town",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_id: town_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendExitFromTown = function (town_id) {
+        var mes = {
+            call: "exit_from_town",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_id: town_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCreatePrivateChat = function(recipient) {
+        var mes = {
+            call: "create_private_chat",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient: recipient
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendClosePrivateChat = function(chat_name) {
+        //console.log('ClientManager.prototype.sendClosePrivateChat', chat_name);
+        var mes = {
+            call: "close_private_chat",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: chat_name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendShowInventory = function(owner_id) {
+        //console.log('ClientManager.prototype.sendShowInventory');
+        var mes = {
+            call: "show_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHideInventory = function(owner_id) {
+        //console.log('ClientManager.prototype.sendHideInventory');
+        var mes = {
+            call: "hide_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos) {
+        //console.log('ClientManager.prototype.sendItemActionInventory');
+        var mes = {
+            call: "item_action_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                start_owner_id: start_owner_id,
+                start_pos: start_pos,
+                end_owner_id: end_owner_id,
+                end_pos: end_pos
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendEnterToGasStation = function (station_id) {
+        //console.log('ClientManager.prototype.sendEnterToGasStation');
+        var mes = {
+            call: "enter_to_gas_station",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                station_id: station_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetBalanceCls = function (balance_cls_name) {
+        console.log('ClientManager.prototype.sendGetBalanceCls', balance_cls_name);
+        var mes = {
+            call: "get_balance_cls",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                balance_cls_name: balance_cls_name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    ClientManager.prototype.sendActivateItem = function (item) {
+        console.log('ClientManager.prototype.sendActivateItem', item);
+        var mes = {
+            call: "activate_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                balance_cls_name: item.balance_cls,
+                owner_id: item.inventory.owner_id,
+                position: item.position
             }
         };
         rpcCallList.add(mes);

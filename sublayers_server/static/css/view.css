@@ -185,6 +185,14 @@ input:focus {
 
 }
 
+#activeTownDiv {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: #0078A8;
+}
+
 .my-effect-icon {
     background-color: transparent;
     pointer-events: none;
@@ -192,25 +200,6 @@ input:focus {
 
 .my-effect-icon-debug {
     background-color: #ffffff;
-}
-
-::-webkit-scrollbar {
-    width: 16px;
-}
-
-::-webkit-scrollbar-button {
-    height: 16px;
-    background: darkgreen;
-    border: 1px solid limegreen;
-}
-
-::-webkit-scrollbar-thumb {
-    background: darkgreen;
-    border: 1px solid limegreen;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
 }
 
 
@@ -235,7 +224,61 @@ input:focus {
     color: rgb(42, 253, 10);
 }
 
-
 .main-menu-btn-up:active {
     color: rgba(42, 253, 10, 0.3);
+}
+
+/* Настройка скроллбара !!! */
+/* Общие характеристикики скролбара*/
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+/* Вид кнопок для скролбара*/
+::-webkit-scrollbar-button {
+    height: 10px;
+}
+
+/* Верхняя кнопка */
+::-webkit-scrollbar-button:decrement {
+    background: transparent url('/static/img/windows/temp_scroll/scroll_btn_up.png') 50% 50% no-repeat;
+}
+
+::-webkit-scrollbar-button:decrement:hover {
+    background: transparent url('/static/img/windows/temp_scroll/scroll_btn_up_over.png') 50% 50% no-repeat;
+}
+
+::-webkit-scrollbar-button:decrement:active {
+    background: transparent url('/static/img/windows/temp_scroll/scroll_btn_up_pressed.png') 50% 50% no-repeat;
+}
+
+/* Нижняя кнопка */
+::-webkit-scrollbar-button:increment {
+    background: transparent url('/static/img/windows/temp_scroll/scroll_btn_down.png') 50% 50% no-repeat;
+}
+
+::-webkit-scrollbar-button:increment:hover {
+    background: transparent url('/static/img/windows/temp_scroll/scroll_btn_down_over.png') 50% 50% no-repeat;
+}
+
+::-webkit-scrollbar-button:increment:active {
+   background: transparent url('/static/img/windows/temp_scroll/scroll_btn_down_pressed.png') 50% 50% no-repeat;
+}
+
+/* Вид каретки скролбара */
+::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #30fc00 25%, transparent 25%, transparent 74%, #30fc00 75%, #30fc00),
+    linear-gradient(45deg, #30fc00 25%, transparent 25%, transparent 74%, #30fc00 75%, #30fc00);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+/* Фон, где передвигается каретка */
+::-webkit-scrollbar-track {
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
+    linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
 }

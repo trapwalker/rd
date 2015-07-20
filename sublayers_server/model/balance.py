@@ -33,10 +33,17 @@ class EffectsDict:
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
         dict(name='EffectRoadRCCDirt', param_name='r_cc_dirt', m_name='m_r_cc_dirt_on_road',
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
+        dict(name='EffectRoadRCCSlope', param_name='r_cc_slope', m_name='m_r_cc_slope_on_road',
+             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
+
+        # slope
+        dict(name='EffectSlopeCC', param_name='p_cc', m_name='m_cc_slope', r_name='r_cc_slope',
+             upd_method='set_motion', sign=-1.0),
 
         # mine effects
         dict(name='EffectMineCC', param_name='p_cc', m_name='m_cc_mine', r_name='r_cc_mine',
              upd_method='set_motion', sign=-1.0),
+
     ]
 
 
@@ -51,6 +58,8 @@ class BALANCE(BalanceSettingsABS):
         dict(name='r_cc_wood', original=0.0, max_value=1.0),
         dict(name='r_visibility_wood', original=0.0, max_value=1.0),
         dict(name='r_observing_range_wood', original=0.0, max_value=1.0),
+
+        dict(name='r_cc_slope', original=0.0, max_value=1.0),
 
         dict(name='r_cc_water', original=0.0, max_value=1.0),
 
@@ -68,11 +77,14 @@ class BALANCE(BalanceSettingsABS):
         dict(name='m_visibility_wood', original=0.5),
         dict(name='m_observing_range_wood', original=0.5),
 
+        dict(name='m_cc_slope', original=0.2),
+
         dict(name='m_cc_water', original=0.45),
 
         dict(name='m_r_cc_wood_on_road', original=1.0),
         dict(name='m_r_cc_water_on_road', original=1.0),
         dict(name='m_r_cc_dirt_on_road', original=1.0),
+        dict(name='m_r_cc_slope_on_road', original=1.0),
 
         dict(name='m_cc_mine', original=0.5),
     ]
@@ -81,6 +93,15 @@ class BALANCE(BalanceSettingsABS):
 
     class Observer(BalanceSettingsABS):
         observing_range = 1000.0
+
+    class RadioPoint(BalanceSettingsABS):
+        observing_range = 300.0
+
+    class Town(BalanceSettingsABS):
+        observing_range = 50.0
+
+    class GasStation(BalanceSettingsABS):
+        observing_range = 50.0
 
     class Unit(Observer):
         defence = 1.0
@@ -97,8 +118,8 @@ class BALANCE(BalanceSettingsABS):
         a_accelerate = 4.0
         a_braking = -8.0
         max_control_speed = 30.0  # max_control_speed <= v_max
-        max_fuel = 1000.0
-        fuel = 1000.0
+        max_fuel = 100.0
+        fuel = 100.0
 
     class Bot(Mobile):
         velocity = 100.0  # m/s
@@ -140,6 +161,9 @@ class BALANCE(BalanceSettingsABS):
         radius = 50.0
         width = pi / 2
         time_recharge = 6
+        items_cls_list = ['Ammo1', 'Ammo2']
+        dv = -1
+        ddvs = 1
 
     class ScoutDroid(Mobile):
         observing_range = 500.0

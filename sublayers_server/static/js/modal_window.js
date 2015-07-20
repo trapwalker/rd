@@ -176,7 +176,6 @@ var ModalWindow = (function () {
 
 
 
-
     ModalWindow.prototype.modalDeathShow = function () {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
         //this._modalBackShow();
@@ -202,7 +201,7 @@ var ModalWindow = (function () {
             $('#deathPageButtonResp').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
                 //sendServConsole('change_car()');
-                location.reload();
+                //location.reload();
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalDeathHide();
             });

@@ -9,20 +9,19 @@ from sublayers_server.model.messages import FireDischargeEffect
 
 from functools import total_ordering
 
-
-
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
 
-    def __init__(self, server, time=None, callback_before=None, callback_after=None, comment=None):
+    def __init__(self, server, time, callback_before=None, callback_after=None, comment=None):
         """
         @param float time: Time of event
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
         assert time is not None, 'classname event is {}'.format(self.classname)
-        self.time = time or server.get_time()
+        assert time < 3.5e+18, 'classname event is {}'.format(self.classname)
+        self.time = time
         self.actual = True
         self.callback_before = callback_before
         self.callback_after = callback_after
@@ -225,9 +224,10 @@ class FireDischargeEffectEvent(Objective):
         for agent in self.server.agents.values():
             if len(targets) > 0:
                 for target in targets:
-                    FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target).post()
+                    FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target, time=self.time).post()
             else:
-                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=fake_position, is_fake=True).post()
+                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=fake_position, is_fake=True,
+                                    time=self.time).post()
 
 
 class FireAutoEnableEvent(Objective):
@@ -273,4 +273,171 @@ class BangEvent(Event):
             Bang(
                 position=self.center,
                 agent=agent,
+                time=self.time,
             ).post()
+
+
+class EnterToMapObject(Event):
+    def __init__(self, agent, obj_id, **kw):
+        server = agent.server
+        super(EnterToMapObject, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.obj_id = obj_id
+
+    def on_perform(self):
+        super(EnterToMapObject, self).on_perform()
+        obj = self.server.objects.get(self.obj_id)
+        if obj and obj.can_come(agent=self.agent):
+            obj.on_enter(agent=self.agent, time=self.time)
+        else:
+            log.warning('agent %s try to enter the map-object %s, but access denied', self.agent, obj)
+
+
+class ReEnterToTown(Event):
+    def __init__(self, agent, town, **kw):
+        server = agent.server
+        super(ReEnterToTown, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.town = town
+
+    def on_perform(self):
+        super(ReEnterToTown, self).on_perform()
+        if self.agent in self.town.visitors:
+            self.town.on_re_enter(agent=self.agent, time=self.time)
+        else:
+            log.warning('agent %s try to re_coming in town %s, but access denied', self.agent, self.town)
+
+
+class ExitFromTown(Event):
+    def __init__(self, agent, town_id, **kw):
+        server = agent.server
+        super(ExitFromTown, self).__init__(server=server, **kw)
+        self.agent = agent
+        self.town_id = town_id
+
+    def on_perform(self):
+        super(ExitFromTown, self).on_perform()
+        town = self.server.objects.get(self.town_id)
+        if town:
+            town.on_exit(agent=self.agent, time=self.time)
+        else:
+            log.warning('agent %s try to exit from town %s, but town not find', self.agent, town)
+
+
+class ActivateTownChats(Event):
+    def __init__(self, agent, town, **kw):
+        super(ActivateTownChats, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.town = town
+
+    def on_perform(self):
+        super(ActivateTownChats, self).on_perform()
+        self.town.activate_chats(event=self)
+
+
+class InitServerEvent(Event):
+    def on_perform(self):
+        super(InitServerEvent, self).on_perform()
+        self.server.on_init_server(self)
+
+
+class InsertNewServerZone(Event):
+    def __init__(self, zone, **kw):
+        super(InsertNewServerZone, self).__init__(**kw)
+        self.zone = zone
+
+    def on_perform(self):
+        super(InsertNewServerZone, self).on_perform()
+        self.server.zones.append(self.zone)
+
+
+class ShowInventoryEvent(Event):
+    def __init__(self, agent, owner_id, **kw):
+        super(ShowInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+
+    def on_perform(self):
+        super(ShowInventoryEvent, self).on_perform()
+        obj = self.server.objects.get(self.owner_id)
+        assert (obj is not None) and (obj.inventory is not None)
+        if obj in self.agent.cars:
+            obj.inventory.add_visitor(agent=self.agent, time=self.time)
+
+
+class HideInventoryEvent(ShowInventoryEvent):
+
+    def on_perform(self):
+        super(HideInventoryEvent, self).on_perform()
+        obj = self.server.objects.get(self.owner_id)
+        assert (obj is not None) and (obj.inventory is not None)
+        obj.inventory.del_visitor(agent=self.agent, time=self.time)
+
+
+class ItemActionInventoryEvent(Event):
+    def __init__(self, agent, start_owner_id, start_pos, end_owner_id, end_pos, **kw):
+        super(ItemActionInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.start_owner_id = start_owner_id
+        self.start_pos = start_pos
+        self.end_owner_id = end_owner_id
+        self.end_pos = end_pos
+
+    def on_perform(self):
+        super(ItemActionInventoryEvent, self).on_perform()
+
+        # пытаемся получить инвентари и итемы
+        start_obj = self.server.objects.get(self.start_owner_id)
+        start_inventory = start_obj.inventory
+        start_item = start_inventory.get_item(position=self.start_pos)
+        if start_item is None:
+            return
+
+        end_obj = None
+        end_inventory = None
+        end_item = None
+        if self.end_owner_id is not None:
+            end_obj = self.server.objects.get(self.end_owner_id, None)
+            if end_obj is not None:
+                end_inventory = end_obj.inventory
+                end_item = end_inventory.get_item(position=self.end_pos)
+
+        # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
+        if (self.agent.api.car is not start_obj) or ((end_obj is not None) and (self.agent.api.car is not end_obj)):
+            return
+
+        if end_item is not None:
+            end_item.add_another_item(item=start_item, time=self.time)
+        else:
+            start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
+
+
+class ItemActivationEvent(Event):
+    def __init__(self, agent, owner_id, position, balance_cls_name, **kw):
+        super(ItemActivationEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+        self.position = position
+        self.balance_cls_name = balance_cls_name
+
+    def on_perform(self):
+        super(ItemActivationEvent, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.owner_id)
+        inventory = obj.inventory
+        item = inventory.get_item(position=self.position)
+        if (item is None) or (item.balance_cls != self.balance_cls_name):  # todo: item.balance_cls.name
+            return
+
+        # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
+        if self.agent.api.car is not obj:
+            return
+
+        if item.balance_cls == 'Tank10':
+            item.set_inventory(time=self.time, inventory=None)
+            obj.set_fuel(df=10, time=self.time)
+
+        if item.balance_cls == 'Tank20':
+            item.set_inventory(time=self.time, inventory=None)
+            obj.set_fuel(df=20, time=self.time)

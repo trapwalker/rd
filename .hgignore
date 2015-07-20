@@ -6,7 +6,6 @@ syntax: glob
 *.bak
 temp/*
 -/*
-*.jpg
 *.old.json
 *.sqlite3
 */build/*
@@ -37,3 +36,5 @@ sublayers_server/static/js/map_base_local.js
 .hgrc
 local.*.conf
 sublayers_server/static/map/*
+map/altitude
+map/tilesets

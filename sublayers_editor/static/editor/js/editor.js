@@ -27,7 +27,7 @@ $(document).ready(function () {
         zoomControl: true,      // добавить стандартные кнопки изменения масштаба
         boxZoom: false,          // отключить зумирование через прямоугольник
         minZoom: 4
-    }).setView([50.595, 36.59], 6);
+    }).setView([33.02732, -112.97], 16);
     tileLayerShow = L.tileLayer(mapBasePath).addTo(myMap);
     myMap.on('moveend', requestViewRect);
 
@@ -73,7 +73,7 @@ $(document).ready(function () {
 
     // подключение к серверу
     ws_connector.connect();
-    myMap.setView([50.595, 36.58], 6);
+    myMap.setView([33.02732, -112.97], 16);
 
 
     /* Рисовалка на канвасе

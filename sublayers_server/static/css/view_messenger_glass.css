@@ -1,19 +1,50 @@
 #chatAreaGlass {
     position: absolute;
-    left: 0;
-    bottom: 0;
     pointer-events: none;
-    width: 555px;
     height: 457px;
+    width: 555px;
+    bottom: 0;
+}
+
+#chatTownWrap {
+    position: absolute;
+    height: 535px;
+    width: 450px;
+    top: 210px;
+    left: 632px;
+}
+
+#visitorListWrap {
+    position: absolute;
+    height: 491px;
+    width: 208px;
+    top: 250px;
+    left: 1083px;
+}
+
+#visitorList {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.visitorRecord {
+    opacity: 0.5;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.visitorRecord:hover {
+    opacity: 1;
 }
 
 #VMGDivHardware {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 28px;
     height: 457px;
-    overflow: hidden;
+    width: 28px;
     background: transparent url('/static/img/chat/chat_port.png') 50% 50% no-repeat;
 }
 
@@ -26,82 +57,69 @@
 
 #VMGMainDivGlass {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 555px;
     height: 377px;
-    overflow: hidden;
+    width: 555px;
+    bottom: 0;
     background: transparent url('/static/img/chat/chat_glass.png') 50% 50% no-repeat;
 }
 
-#VMGMainDivChat {
-    width: 480px;
-    height: 310px;
+#VMGDivWrapChat {
     position: absolute;
+    height: 310px;
+    width: 465px;
+    left: 5px;
     bottom: 0;
-    background-color: transparent;
     margin: 10px;
 }
 
-#VMGPageControlArea {
+#VMGMainDivChat {
     width: 100%;
-    height: 40px;
-    box-sizing: border-box;
+    height: 100%;
+}
+
+#VMGPageControlArea {
     position: relative;
-    top: 0;
-    left: 0;
+    box-sizing: border-box;
+    height: 40px;
+    width: 100%;
     padding-top: 6px;
-    background-color: transparent;
 }
 
 #VMGDynamicAreaForBorder {
-    height: 260px;
-    width: 450px;
-    left: 0;
+    position: relative;
+    box-sizing: border-box;
+    height: calc(100% - 45px);
+    width: 100%;
     border: 1px #00ff55 solid;
     border-radius: 2px;
-    margin-left: 10px;
-    margin-bottom: 15px;
-    position: relative;
-    background-color: transparent;
 }
 
 #VMGDynamicArea {
-    height: 230px;
-    width: 100%;
-    left: 0;
     position: relative;
-    background-color: transparent;
-    box-sizing: border-box;
+    pointer-events: auto;
+    height: calc(100% - 30px);
+    width: 100%;
 }
 
 #VMGFooterArea {
+    position: relative;
+    pointer-events: auto;
     height: 30px;
     width: 100%;
-    left: 0;
-    position: relative;
-    background-color: transparent;
-    pointer-events: auto;
-    box-sizing: border-box;
     border-image-slice: 1 0 0 0;
     border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
     border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
     border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 0;
-    border-top: 1px;
-    margin-top: 0;
+    border-width: 1px 0px 0px 0px;
 }
 
 #VMGEnterButtonDIV {
     position: absolute;
-    margin-top: 0;
+    height: 20px;
+    width: 50px;
     right: 3px;
     top: 4px;
-    width: 50px;
-    height: 20px;
     border-radius: 2px;
     border: 1px #00ff55 solid;
     background-color: rgba(42, 253, 10, 0.20);
@@ -116,11 +134,9 @@
 
 #VMGInputArea {
     position: absolute;
-    left: 0;
-    top: 2px;
-    width: 390px;
     height: 25px;
-    background-color: transparent;
+    width: calc(100% - 70px);
+    top: 2px;
 }
 
 #VMGMainInput {
@@ -136,18 +152,12 @@
     font: 10pt MICRADI;
 }
 
-#VMGTextArea {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    pointer-events: auto;
-}
-
 .VMGChatOutArea {
+    position: relative;
     height: 100%;
     width: 100%;
-    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: none;
 }
 
@@ -155,40 +165,17 @@
     display: block;
 }
 
-.VMGtextOutArea {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: block;
-}
-
-.VMGtextOutAreaActive {
-    display: block;
-}
-
-
-
-.VMGMessageOutArea {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
 .VMGpageButton {
-    opacity: 0.5;
-    float: left;
     position: relative;
+    pointer-events: auto;
+    float: left;
+    opacity: 0.5;
     color: #2afd0a;
     border: solid lime 0px;
     border-radius: 3px;
     margin: 3px;
     padding: 3px 5px 3px 5px;
     font: 11pt MICRADI;
-    pointer-events: auto;
 }
 
 .VMGpageButtonActive {
@@ -203,60 +190,49 @@
     content: " >";
 }
 
-.VMGtriangle-left {
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-right: 10px solid red;
-    border-bottom: 5px solid transparent;
-}
-
-.VMGtriangle-right {
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-left: 10px solid red;
-    border-bottom: 5px solid transparent;
-}
-
 .VMGPartytextOutArea {
-    height: 200px;
-    width: 100%;
     position: relative;
-    top: 0;
-    left: 0;
+    height: calc(100% - 30px);
+    width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     display: block;
-    background-color: transparent;
 }
 
 .VMGPartyPageControl {
-    width: 100%;
-    height: 30px;
-    box-sizing: border-box;
     position: relative;
-    top: 0;
-    left: 0;
+    height: 30px;
+    width: 100%;
+    box-sizing: border-box;
     padding-top: 2px;
-    background-color: transparent;
     border-image-slice: 0 0 1 0;
     border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
     border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
     border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
-    border-left: 0;
-    border-right: 0;
-    border-top: 0;
-    border-bottom: 1px;
-    margin-top: 0;
+    border-width: 0px 0px 1px 0px;
 }
 
+.VMGGlobalPageControl {
+    position: relative;
+    height: 30px;
+    max-height: 30px;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-top: 2px;
+    border-image-slice: 0 0 1 0;
+    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
+    border-image-source: linear-gradient(to right, transparent, lime, transparent);
+    border-width: 0px 0px 1px 0px;
+}
 
 .VMGPartypageButton {
+    position: relative;
     opacity: 0.5;
     float: left;
-    position: relative;
     color: #2afd0a;
     border: solid lime 0px;
     border-radius: 3px;
@@ -266,10 +242,39 @@
     pointer-events: auto;
 }
 
+.VMGPartypageButtonActive {
+    opacity: 1;
+}
+
 .VMGPartypageButton:hover {
     opacity: 1;
 }
 
+.VMGPartypageButtonClose {
+    position: relative;
+    height: 8px;
+    width: 8px;
+    float: right;
+    background: transparent url('/static/img/chat/tab_close_btn.png') 50% 50% no-repeat;
+    padding: 0px 0px 0px 5px;
+}
+
+.VMGPartypageButtonClose:hover {
+    background: transparent url('/static/img/chat/tab_close_btn_over.png') 50% 50% no-repeat;
+}
+
+.VMGPartypageButtonClose:active {
+    background: transparent url('/static/img/chat/tab_close_btn_pressed.png') 50% 50% no-repeat;
+}
+
+.VMGStandarttextOutArea{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+}
 
 .VMG-message-message {
     padding-left: 3px;

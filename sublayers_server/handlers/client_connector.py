@@ -16,6 +16,11 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         # for iOS 5.0 Safari
         return True
 
+    def check_origin(self, origin):
+        log.warning('origin=%s', origin)
+        # todo: reject connections from wrong servers
+        return True
+
     def open(self):
         # todo: make agent_init event
         self.user_id = self.get_secure_cookie("user")
@@ -47,13 +52,11 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         self.agent.on_disconnect(self)
         self.application.clients.remove(self)
 
-        '''
-        while self.agent.cars:
-            car = self.agent.cars[0]
-            if car.is_alive:
-                self.agent.drop_car(car)
-                car.delete()
-        '''
+        # while self.agent.cars:
+        #     car = self.agent.cars[0]
+        #     if car.is_alive:
+        #         self.agent.drop_car(car)
+        #         car.delete()
 
     def on_message(self, message):
         # log.debug("Got message from %s: %r", self.agent, message)

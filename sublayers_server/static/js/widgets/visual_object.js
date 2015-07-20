@@ -1,9 +1,8 @@
 var VisualObject = (function () {
     function VisualObject(model_objects) {
         this._model_objects = [];
-        for (var i = 0; i < model_objects.length; i++) {
+        for (var i = 0; i < model_objects.length; i++)
             this._model_objects.push(model_objects[i])
-        }
         this.addToVisualManager();
     }
 
@@ -37,6 +36,7 @@ var VisualObject = (function () {
     };
 
     VisualObject.prototype.addToVisualManager = function () {
+        //console.log('VisualObject.prototype.addToVisualManager');
         visualManager.addVisualObject(this, this._model_objects);
     };
 

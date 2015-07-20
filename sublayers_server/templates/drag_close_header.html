@@ -2,39 +2,44 @@
     .windowDragCloseHeader-main {
         position: relative;
         box-sizing: border-box;
-        height: 25px;
+        height: 26px;
         width: 100%;
+        border-bottom: solid 1px #27cc02;
+        background-color: #114609;
+        background-image: linear-gradient(45deg, #13a11a 25%, transparent 25%, transparent 74%, #13a11a 75%, #13a11a),
+        linear-gradient(45deg, #13a11a 25%, transparent 25%, transparent 74%, #13a11a 75%, #13a11a);
+        background-size: 2px 2px;
+        background-position: 0 0, 1px 1px;
     }
 
     .windowDragCloseHeader-close {
         position: absolute;
-        right: 2px;
-        top: 3px;
-        height: 18px;
-        width: 23px;
-        background: transparent url('/static/img/window_interface/share_elements/close_big.png') 50% 50% no-repeat;
+        right: 6px;
+        top: 6px;
+        height: 14px;
+        width: 14px;
+        background: transparent url('/static/img/windows/close_cross/cross.png') 50% 50% no-repeat;
         box-sizing: border-box;
     }
 
     .windowDragCloseHeader-close:hover {
-        background: transparent url('/static/img/window_interface/share_elements/close_big_over.png') 50% 50% no-repeat;
+        background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
     }
 
     .windowDragCloseHeader-close:active {
-        background: transparent url('/static/img/window_interface/share_elements/close_big_pressed.png') 50% 50% no-repeat;
-
+        background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
     }
 
     .windowDragCloseHeader-caption {
         position: relative;
-        top: 5px;
-        left: 5px;
+        top: 4px;
+        left: 15px;
         pointer-events: none;
         float: left;
-        color: lime;
+        color: black;
         background-color: transparent;
         box-sizing: border-box;
-        font: 10pt MICRADI;
+        font: 12pt Nouveau_IBM;
     }
 </style>
 

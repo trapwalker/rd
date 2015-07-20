@@ -21,16 +21,14 @@ def make_push_package(events):
 class Message(object):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}]>'
 
-    def __init__(self, agent=None, time=None, comment=None):
+    def __init__(self, agent, time, comment=None):
         """
         @param sublayers_server.model.utils.TimeClass time: Time of message post
         """
-        if agent is not None:
-            if time is None:
-                time = agent.server.get_time()
         super(Message, self).__init__()
-        self.agent = agent
+        assert time is not None, 'classname event is {}'.format(self.classname)
         self.time = time
+        self.agent = agent
         self.comment = comment
 
     def post(self):
@@ -63,6 +61,10 @@ class Message(object):
             time=self.time,
             comment=self.comment,
         )
+
+
+class InitTime(Message):
+    pass
 
 
 class Init(Message):
@@ -150,20 +152,18 @@ class Update(Message):
 class Contact(Subjective):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}; obj={self.obj}>'
 
-    def __init__(self, obj, is_boundary, **kw):
+    def __init__(self, obj, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Object
         @param bool is_boundary: True if this contact about penetration into the visibility sphere
         """
         super(Contact, self).__init__(**kw)
         self.obj = obj
-        self.is_boundary = is_boundary
 
     def as_dict(self):
         d = super(Subjective, self).as_dict()
         d.update(
             subject_id=self.subj.uid,
-            is_boundary=self.is_boundary,
         )
         return d
 
@@ -413,3 +413,174 @@ class ChangeAltitude(Message):
                  )
         return d
 
+
+class EnterToTown(Message):
+    def __init__(self, town, **kw):
+        super(EnterToTown, self).__init__(**kw)
+        self.town = town
+
+    def as_dict(self):
+        d = super(EnterToTown, self).as_dict()
+        d.update(
+            town=self.town.as_dict(time=self.time)
+            )
+        return d
+
+
+class ExitFromTown(Message):
+    def __init__(self, town, **kw):
+        super(ExitFromTown, self).__init__(**kw)
+        self.town = town
+
+    def as_dict(self):
+        d = super(ExitFromTown, self).as_dict()
+        d.update(
+            town=self.town.as_dict(time=self.time)
+            )
+        return d
+
+
+class ChangeTownVisitorsMessage(Message):
+    def __init__(self, visitor_login, action, **kw):
+        super(ChangeTownVisitorsMessage, self).__init__(**kw)
+        self.visitor_login = visitor_login
+        self.action = action
+
+    def as_dict(self):
+        d = super(ChangeTownVisitorsMessage, self).as_dict()
+        d.update(
+            visitor=self.visitor_login,
+            action=self.action
+            )
+        return d
+
+
+class EnterToGasStation(Message):
+    def __init__(self, station, **kw):
+        super(EnterToGasStation, self).__init__(**kw)
+        self.station = station
+
+    def as_dict(self):
+        d = super(EnterToGasStation, self).as_dict()
+        d.update(
+            station=self.station.as_dict(time=self.time)
+            )
+        return d
+
+
+class ChatRoomMessage(Message):
+    def __init__(self, msg, **kw):
+        super(ChatRoomMessage, self).__init__(**kw)
+        self.msg = msg
+
+    def as_dict(self):
+        d = super(ChatRoomMessage, self).as_dict()
+        d.update(
+            room_name=self.msg.chat_name,
+            msg=self.msg.text,
+            sender=self.msg.sender_login,
+            msg_time=self.msg.time,
+            )
+        return d
+
+
+class ChatRoomIncludeMessage(Message):
+    def __init__(self, room_name, chat_type=None, **kw):
+        super(ChatRoomIncludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+        self.chat_type = chat_type
+
+    def as_dict(self):
+        d = super(ChatRoomIncludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            chat_type=self.chat_type
+            )
+        return d
+
+
+class ChatRoomExcludeMessage(Message):
+    def __init__(self, room_name, **kw):
+        super(ChatRoomExcludeMessage, self).__init__(**kw)
+        self.room_name = room_name
+
+    def as_dict(self):
+        d = super(ChatRoomExcludeMessage, self).as_dict()
+        d.update(
+            room_name=self.room_name,
+            )
+        return d
+
+
+class ChatPartyRoomIncludeMessage(ChatRoomIncludeMessage):
+    pass
+
+
+class ChatPartyRoomExcludeMessage(ChatRoomExcludeMessage):
+    pass
+
+
+class InventoryShowMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryShowMessage, self).__init__(**kw)
+        self.inventory = inventory
+
+    def as_dict(self):
+        d = super(InventoryShowMessage, self).as_dict()
+        d.update(
+            inventory=self.inventory.as_dict()
+            )
+        return d
+
+
+class InventoryHideMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryHideMessage, self).__init__(**kw)
+        self.inventory = inventory
+
+    def as_dict(self):
+        d = super(InventoryHideMessage, self).as_dict()
+        d.update(
+            inventory_owner_id=self.inventory.owner.uid
+            )
+        return d
+
+
+class InventoryItemMessage(Message):
+    def __init__(self, item, inventory, position, **kw):
+        super(InventoryItemMessage, self).__init__(**kw)
+        self.item = item
+        self.inventory = inventory
+        self.position = position
+
+    def as_dict(self):
+        d = super(InventoryItemMessage, self).as_dict()
+        d.update(
+            item=self.item.export_item_state(),
+            position=self.position,
+            owner_id=self.inventory.owner.uid,
+            )
+        return d
+
+
+class InventoryAddItemMessage(InventoryItemMessage):
+    pass
+
+
+class InventoryDelItemMessage(InventoryItemMessage):
+    pass
+
+
+class BalanceClsInfo(Message):
+    def __init__(self, balance_cls_name, **kw):
+        super(BalanceClsInfo, self).__init__(**kw)
+        self.balance_cls_name = balance_cls_name
+
+    def as_dict(self):
+        d = super(BalanceClsInfo, self).as_dict()
+        d.update(
+            balance_cls={
+                'name': self.balance_cls_name,
+            }
+        )
+        return d

@@ -8,36 +8,11 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
-var ListMapObject = (function () {
-    function ListMapObject() {
-        this.objects = [];
-    }
-
-    ListMapObject.prototype.add = function (aObject) {
-        this.objects[aObject.ID] = aObject;
-    };
-
-    ListMapObject.prototype.del = function (aID) {
-        delete this.objects[aID];
-    };
-
-    ListMapObject.prototype.exist = function (aID) {
-        return this.objects[aID] != null
-    };
-
-    ListMapObject.prototype.setState = function (aID, aState) {
-        if (!(this.objects[aID] == null) && (this.objects[aID].hasOwnProperty("state"))) {
-            this.objects[aID].state = aState;
-        }
-    };
-
-    return ListMapObject;
-})();
-
 
 var ClientObject = (function () {
     function ClientObject(ID) {
         this.ID = ID || generator_ID.getID();
+        this.addToVisualManager();
     }
 
     ClientObject.prototype.addToVisualManager = function () {
@@ -52,13 +27,36 @@ var ClientObject = (function () {
 })();
 
 
+var StaticObject = (function (_super) {
+    __extends(StaticObject, _super);
+
+    function StaticObject(ID, position, direction) {
+        _super.call(this, ID);
+        this.position = position;
+        if (direction)
+            this.direction = direction;
+        else
+            this.direction = - 0.5 * Math.PI;
+    }
+
+    StaticObject.prototype.getCurrentDirection = function (time) {
+        return this.direction
+    };
+
+    StaticObject.prototype.getCurrentCoord = function (time) {
+        return this.position;
+    };
+
+    return StaticObject;
+})(ClientObject);
+
+
 var DynamicObject = (function (_super) {
     __extends(DynamicObject, _super);
 
     function DynamicObject(ID, state, hp_state, fuel_state) {
         _super.call(this, ID);
         this._in_tm = false;
-        this.addToVisualManager();
         this._motion_state = state;
         this._hp_state = hp_state;
         this._fuel_state = fuel_state;
@@ -205,8 +203,8 @@ var UserCar = (function (_super) {
         }
     };
 
-    UserCar.prototype.setShootTime = function (aSideStr, shoot_time) {
-        this.fireSidesMng.setShootTime(aSideStr, shoot_time);
+    UserCar.prototype.setShootTime = function (aSideStr, shoot_time, t_rch) {
+        this.fireSidesMng.setShootTime(aSideStr, shoot_time, t_rch);
         // добавить в тайм-менеджер, чтобы оно начало обновляться
         if (this.fireSidesMng.inRecharge(clock.getCurrentTime()) && !this._in_tm) {
             timeManager.addTimerEvent(this, 'change');
@@ -233,8 +231,23 @@ var FireSideMng = (function () {
             this.sides[side].addSector(fireSector)
     };
 
-    FireSideMng.prototype.setShootTime = function (sideStr, shoot_time) {
-        this.sides[sideStr].last_shoot = shoot_time;
+    FireSideMng.prototype.setShootTime = function (sideStr, shoot_time, t_rch) {
+        var side = this.sides[sideStr];
+        // это сообщение приходит с сервера. Значит был выстрел.
+        // Значит если shoot_time отличается, то обновить и перезарядку и last_shoot
+
+        // если старая перезарядка больше, чем новая, то ничего не делать
+        if (side.last_shoot + side.sideRecharge > shoot_time + t_rch)
+            return;
+
+        if (Math.abs(side.last_shoot - shoot_time) > 0.01) {
+            side.last_shoot = shoot_time; // обновляем время выстрела
+            side.sideRecharge = 0.0;  // сбрасываем старую перезарядку
+        }
+        // если время окончания перезарядки больше, чем предыдущее, то обновить перезарядку
+        if (side.last_shoot + side.sideRecharge < side.last_shoot + t_rch)
+            side.sideRecharge = t_rch;
+
     };
 
     FireSideMng.prototype.getSectors = function (filterSides, isDischarge, isAuto) {
@@ -328,11 +341,12 @@ var FireSide = (function () {
             prc: 1.,
             time: 0.0
         };
-        if (dt - this.sideRecharge > 0.1) {
+        if (dt - this.sideRecharge > 0.3) {
             // todo: разобраться с синхронизацией времени, иначе будут проблемы!!!
             console.error(' !!!! Логическая ошибка !!!! dt > sideRecharge');
             console.log(' dt            = ', dt);
             console.log(' sideRecharge  = ', this.sideRecharge);
+            console.log(' time  = ', time);
             return null;
         }
         return {
@@ -440,9 +454,6 @@ var State = (function () {
         return Math.log(this.r(t) / this.r_min) / this._sp_m
     };
 
-
-
-
     State.prototype.fi = function (t) {
         if (!this._c) return this.fi0;
         if (this.a == 0.0)
@@ -456,7 +467,6 @@ var State = (function () {
             return this._fi0 - this.s(t) / this.r(t) * this._turn_sign;
         return this._fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
     };
-
 
     State.prototype.p = function (t) {
         if (!this._c)
@@ -510,9 +520,9 @@ var FuelState = (function () {
         return this.dfs != 0.0;
     };
 
-
     return FuelState;
 })();
+
 
 var User = (function () {
     function User(aID) {
@@ -525,7 +535,6 @@ var User = (function () {
 
     return User;
 })();
-
 
 // Владелец машины
 var Owner = (function () {
@@ -643,6 +652,3 @@ var OwnerParty = (function () {
 
     return OwnerParty;
 })();
-
-
-

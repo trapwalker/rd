@@ -12,7 +12,6 @@ var EditorManager = (function(){
 
     EditorManager.prototype.sendMessage = function(msg){
         //alert('EditorManager  sendMessage');
-        // TODO: сейчас данная функция вызывается из функций wsjson.js, позже переделать!
 
         // формирование и отправка мессаджа
         message_stream.sendMessage({

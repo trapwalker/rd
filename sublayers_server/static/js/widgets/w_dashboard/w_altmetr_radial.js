@@ -101,7 +101,7 @@ var WAltmetrRadial = (function (_super) {
             .fill(this.svg_params.text_HEALTH.fill)
             .dmove(size, size - 2 * this.d_radius);
 
-        this.draw_fill_area(0.5);
+        this.draw_fill_area(0.0);
 
         this.change(clock.getCurrentTime());
     }
@@ -179,9 +179,9 @@ var WAltmetrRadial = (function (_super) {
         };
     };
 
-    WAltmetrRadial.prototype.draw_fill_area = function(prc) {
-        if (prc > 1.0) prc = 1.0;
-        if (prc < 0.0) prc = 0.0;
+    WAltmetrRadial.prototype.draw_fill_area = function() {
+        //console.log('Altitude draw_fill_area', this.car.altitude, this.value_prc);
+        var prc = this.value_prc;
         var size = this.center;
         var angle = prc * this.full_angle;
         var pa1 = polarPoint(-this.out_r, -gradToRad(this.start_angle));
@@ -238,14 +238,15 @@ var WAltmetrRadial = (function (_super) {
     WAltmetrRadial.prototype.change = function () {
         var prc = this.car.altitude / 255.;
         if (prc < 0.0) prc = 0.0;
+        if (prc > 1.0) prc = 1.0;
         if (Math.abs(this.value_prc - prc) > 0.005) {
             this.value_prc = prc;
-            this.draw_fill_area(prc);
+            this.draw_fill_area();
         }
     };
 
     WAltmetrRadial.prototype.delFromVisualManager = function () {
-        // todo: удалить свою вёрстку (просто удалить $('#' + this.div_id), по идее)
+        $('#' + this.div_id).remove();
         this.car = null;
         _super.prototype.delFromVisualManager.call(this);
     };

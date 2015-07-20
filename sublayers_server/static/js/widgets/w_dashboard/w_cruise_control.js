@@ -10,13 +10,12 @@ var WCruiseControl = (function (_super) {
 
         this.keyBoardControl = false;
         this.lastSpeed = -100;
+        this.reverse = false;
 
         // Механизм скрытия
         this.visible = true;
         this.glassDiv = $('#cruiseControlGlassDiv');
-        this.hardWareDiv = $('#cruiseControlHardwareDiv');
-        this.visibleButtonDiv = $("<div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>");
-        this.hardWareDiv.append(this.visibleButtonDiv);
+        this.visibleButtonDiv = $("#cruiseControlVisibleButtonDiv");
         this.visibleButtonDiv.click(this, this._onClickChangeVisible);
 
         // Компактный вид
@@ -162,11 +161,13 @@ var WCruiseControl = (function (_super) {
         this.zoneWoodIconDiv = $("<div id='cruiseControlZoneWoodIconDiv'></div>");
         this.zoneRoadIconDiv = $("<div id='cruiseControlZoneRoadIconDiv'></div>");
         this.zoneWaterIconDiv = $("<div id='cruiseControlZoneWaterIconDiv'></div>");
+        this.zoneSlopeIconDiv = $("<div id='cruiseControlZoneSlopeIconDiv'></div>");
 
         this.zoneIconAreaDiv.append(this.zoneDirtIconDiv);
         this.zoneIconAreaDiv.append(this.zoneWoodIconDiv);
         this.zoneIconAreaDiv.append(this.zoneRoadIconDiv);
         this.zoneIconAreaDiv.append(this.zoneWaterIconDiv);
+        this.zoneIconAreaDiv.append(this.zoneSlopeIconDiv);
 
         this.zones = {
             Dirt: {
@@ -187,6 +188,11 @@ var WCruiseControl = (function (_super) {
             Road: {
                 jqselector: this.zoneRoadIconDiv,
                 zoneName: "road",
+                active: false
+            },
+            Slope: {
+                jqselector: this.zoneSlopeIconDiv,
+                zoneName: "slope",
                 active: false
             }
         };
@@ -214,6 +220,10 @@ var WCruiseControl = (function (_super) {
         this.change();
         this.setSpeedHandleValue(0);
     }
+
+    WCruiseControl.prototype._getCurrentMaxSpeed = function () {
+        return this.reverse ? user.userCar.v_backward : user.userCar.v_forward;
+    };
 
     WCruiseControl.prototype._onClickChangeVisible = function (event) {
         //console.log('WCruiseControl.prototype._onClickChangeVisible');
@@ -286,12 +296,10 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype._setSpeedHandleText = function(prc) {
-        /*
-        var currentSpeed = (user.userCar.maxSpeed / 1000 * 3600) * prc;
+        var currentSpeed = (this._getCurrentMaxSpeed() / 1000 * 3600) * prc;
         currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
         this.speedHandleDiv1.text(currentSpeedWords[0] + '.');
         this.speedHandleDiv2.text(currentSpeedWords[1]);
-        */
     };
 
     WCruiseControl.prototype.setSpeedHandleValue = function(prc) {
@@ -303,7 +311,7 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype.getSpeedHandleValue = function() {
         //console.log('WCruiseControl.prototype.getSpeedHandleValue');
-        //return user.userCar.maxSpeed * this.speedHandlePrc;
+        return this._getCurrentMaxSpeed() * this.speedHandlePrc;
     };
 
     WCruiseControl.prototype._onMoveSpeedHandle = function (event, ui) {
@@ -313,23 +321,22 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype._onStopSpeedHandle = function (event, ui) {
         //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
-        /*
-        var currentSpeed = user.userCar.maxSpeed * (1 - (ui.position.top / event.data.constScaleHeight));
+        var prc = 1 - (ui.position.top / event.data.constScaleHeight);
+        var currentSpeed = event.data._getCurrentMaxSpeed() * prc;
+        event.data.speedHandlePrc = prc;
         clientManager.sendSetSpeed(currentSpeed);
         document.getElementById('map').focus();
-        */
     };
 
     WCruiseControl.prototype._onClickScaleArea = function (event) {
         //console.log('WCruiseControl.prototype._onClickScaleArea');
-        /*var prc = (event.data.constScaleHeight + event.data.constSpeedHandleHeight) - event.offsetY - event.data.svgScaleDY;
+        var prc = (event.data.constScaleHeight + event.data.constSpeedHandleHeight) - event.offsetY - event.data.svgScaleDY;
         if (prc < 0) prc = 0;
         if (prc > event.data.constScaleHeight) prc = event.data.constScaleHeight;
         prc /= event.data.constScaleHeight;
         event.data.setSpeedHandleValue(prc);
-        clientManager.sendSetSpeed(user.userCar.maxSpeed * prc);
+        clientManager.sendSetSpeed(event.data._getCurrentMaxSpeed() * prc);
         document.getElementById('map').focus();
-        */
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
@@ -341,7 +348,17 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype._onClickR = function (event) {
         //console.log('WCruiseControl.prototype._onClickR');
+        event.data.changeReverse(!event.data.reverse);
+        var currentSpeed = event.data._getCurrentMaxSpeed() * event.data.speedHandlePrc;
+        event.data._setSpeedHandleText(event.data.speedHandlePrc);
+        clientManager.sendSetSpeed(currentSpeed);
         document.getElementById('map').focus();
+    };
+
+    WCruiseControl.prototype.changeReverse = function (reverse) {
+        if (this.reverse != reverse) {
+            this.reverse = reverse;
+        }
     };
 
     WCruiseControl.prototype._drawFillArea = function (prc) {
@@ -366,9 +383,7 @@ var WCruiseControl = (function (_super) {
             .stroke(this.svg_params.fill_area.stroke)
             .style('pointer-events: none');
 
-
         //this.fill_area.setAttribute('class', 'cruise-control-fill-area');
-
 
         this.close_line = this.svgScaleArea.line(topLeft.x, topLeft.y, topRight.x, topRight.y + 0.0001)
             .stroke({width: 1, color: this.svg_params.gradients.line_grad3});
@@ -404,8 +419,9 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype.setSpeedRange = function(speedRange) {
         //console.log('WCruiseControl.prototype.setSpeedRange', speedRange);
-        //var topValue = (1 - speedRange) * this.constScaleHeight + this.svgScaleDY - this.zoneHandleDiv.height() / 2;
-        //this.zoneHandleDiv.css({top: topValue});
+        var absCC = Math.abs(speedRange);
+        var topValue = (1 - absCC) * this.constScaleHeight + this.svgScaleDY - this.zoneHandleDiv.height() / 2;
+        this.zoneHandleDiv.css({top: topValue});
     };
 
     WCruiseControl.prototype.startKeyboardControl = function() {
@@ -422,9 +438,14 @@ var WCruiseControl = (function (_super) {
         //console.log('WCruiseControl.prototype.change');
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
         if (Math.abs(currentSpeed - this.lastSpeed) > 0.01) {
+            // Сохраняем последнюю скорость
+            this.lastSpeed = currentSpeed;
+
             // Обновление шкалы скорости
-            //var prc = currentSpeed / user.userCar.maxSpeed;
-            //this._drawFillArea(prc);
+            var prc = 0;
+            if (currentSpeed >= 0) prc = currentSpeed / user.userCar.v_forward;
+            else prc = currentSpeed / user.userCar.v_backward;
+            this._drawFillArea(prc);
 
             // Вывод текущей скорости
             currentSpeed = (currentSpeed / 1000 * 3600);
@@ -432,11 +453,28 @@ var WCruiseControl = (function (_super) {
             this.topTextDiv1.text(currentSpeedWords[0] + '.');
             this.topTextDiv2.text(currentSpeedWords[1]);
             this.compactViewSpeedTextDiv.text(currentSpeed.toFixed(1) + ' km/h');
-            //if (this.keyBoardControl) this.setSpeedHandleValue(prc);
-
-            // Сохраняем последнюю скорость
-            this.lastSpeed = currentSpeed;
+            if (this.keyBoardControl) {
+                this.setSpeedHandleValue(prc);
+                this.changeReverse(this.lastSpeed < 0)
+            }
         }
+    };
+
+    WCruiseControl.prototype.delFromVisualManager = function () {
+        this.car = null;
+
+        this.speedHandleDiv.unbind();
+        this.speedHandleDiv.draggable("destroy");
+        this.scaleArea.unbind();
+        this.reverseDiv.unbind();
+        this.stopDiv.unbind();
+        this.visibleButtonDiv.unbind();
+        wCruiseControl = null;
+
+        this.compactView.remove();
+        this.mainDiv.remove();
+
+        _super.prototype.delFromVisualManager.call(this);
     };
 
     return WCruiseControl;

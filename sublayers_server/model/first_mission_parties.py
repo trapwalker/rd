@@ -11,7 +11,7 @@ from math import pi, radians
 class RandomCarList:
     def __init__(self):
         self.params_cars = []
-        self.base_point = Point(12494648, 27025580)
+        self.base_point = Point(12496376, 27133643)
         self.params_cars.append(
             dict(
                 max_hp=100,
@@ -25,6 +25,7 @@ class RandomCarList:
                 observing_range=270,
                 weapons=[
                     dict(fi=0, is_auto=False, radius=200, width=radians(40), dmg=10, time_recharge=5),
+                    dict(fi=0, is_auto=False, radius=50, width=radians(60), dmg=2, time_recharge=10),
                     dict(fi=pi / 2, is_auto=True, radius=200, width=radians(30), dps=0.5),
                     dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(30), dps=0.5),
                 ],
@@ -44,12 +45,13 @@ class RandomCarList:
                 observing_range=300,
                 weapons=[
                     dict(fi=0, is_auto=False, radius=150, width=radians(40), dmg=5, time_recharge=3),
+                    dict(fi=0, is_auto=False, radius=50, width=radians(60), dmg=2, time_recharge=10),
                     dict(fi=0, is_auto=True, radius=300, width=radians(30), dps=0.8),
                 ],
             )
         )
 
-    def get_random_car(self, agent, time, id=None):
+    def get_random_car(self, agent, time, position=None, id=None):
         import random
         id_car = -1
         if (id is not None) and (id < len(self.params_cars)):
@@ -60,6 +62,6 @@ class RandomCarList:
             time=time,
             server=agent.server,
             owner=agent,
-            position=self.base_point,
+            position=position if position is not None else self.base_point,
             **self.params_cars[id_car]
         )

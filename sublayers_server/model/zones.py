@@ -7,13 +7,17 @@ from sublayers_server.model.image_to_tileset import MongoDBToTilesets
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.messages import ZoneMessage
+from sublayers_server.model.events import InsertNewServerZone
+from sublayers_server.model.async_tools import async_deco
 import sublayers_server.model.tags as tags
+from sublayers_server.model.tile_pixel_picker import TilePicker
 
 
 import os
 
 
-def init_zones_on_server(server):
+def init_zones_on_server(server, time):
+
     def read_ts_from_file(zone_name, file_name, server, effects, zone_cls=ZoneTileset):
         zone = None
         if os.path.exists(file_name):
@@ -25,39 +29,57 @@ def init_zones_on_server(server):
                     ts=Tileset(open(file_name)),
                 )
         if zone:
-            server.zones.append(zone)
-            log.info('Successful read zone from file: %s', file_name)
+            log.info('Successful read zone from file: %s   zone_name is %s', file_name, zone_name)
+            return zone
         else:
-            log.info('Failed read zone from file: %s', file_name)
+            log.info('Failed read zone from file: %s   zone_name is %s', file_name, zone_name)
+            return None
 
-    # todo: считывать формат загрузки из конфигурационного файла
-    """
-    # Считывание из Mongo
-    log.info("Read zones tileset from Mongo.")
-    from pymongo import Connection
-    self.db_connection = Connection()
-    self.db_collections = self.db_connection.maindb
-    self.tss = MongoDBToTilesets(self.db_collections.tile_sets)
-    """
-    # Считывание из файлов
-    log.info("Read zones tileset from files.")
+    def on_result(result):
+        # создание эвента для добавления зоны в сервер
+        if result is not None:
+            InsertNewServerZone(server=server, time=time, zone=result).post()
 
-    read_ts_from_file(zone_name='Wood', file_name='tilesets/ts_wood', server=server, effects=[
+    def on_error(error):
+        """async call error handler"""
+        log.warning('Read Zone: on_error(%s)', error)
+
+    # загрузка особенной зоны - бездорожье
+    server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))
+
+    read_zone_func = async_deco(read_ts_from_file, result_callback=on_result, error_callback=on_error)
+
+    read_zone_func(zone_name='Road', file_name='map/tilesets/ts_road', server=server, effects=[
+        server.effects.get('EffectRoadRCCWood'),
+        server.effects.get('EffectRoadRCCWater'),
+        server.effects.get('EffectRoadRCCDirt'),
+        server.effects.get('EffectRoadRCCSlope'),
+    ])
+
+    read_zone_func(zone_name='Wood', file_name='map/tilesets/ts_wood', server=server, effects=[
         server.effects.get('EffectWoodCC'),
         server.effects.get('EffectWoodVisibility'),
         server.effects.get('EffectWoodObsRange'),
     ])
-    read_ts_from_file(zone_name='Water', file_name='tilesets/ts_water', server=server, effects=[server.effects.get('EffectWaterCC')])
-    read_ts_from_file(zone_name='Road', file_name='tilesets/ts_road', server=server, effects=[
-        server.effects.get('EffectRoadRCCWood'),
-        server.effects.get('EffectRoadRCCWater'),
-        server.effects.get('EffectRoadRCCDirt'),
-        ])
-    #read_ts_from_file(zone_name='Altitude', file_name='tilesets/ts_altitude_15', server=server, effects=[], zone_cls=AltitudeZoneTileset)
 
-    server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))
+    read_zone_func(zone_name='Slope', file_name='map/tilesets/tiles_map_slope_14_black_80', server=server, effects=[
+        server.effects.get('EffectSlopeCC'),
+    ])
 
-    log.info("Zones ready!")
+    read_zone_func(zone_name='Water', file_name='map/tilesets/ts_water', server=server,
+                   effects=[server.effects.get('EffectWaterCC')])
+
+    InsertNewServerZone(
+        server=server,
+        time=time,
+        zone=AltitudeZonePicker(
+            name='Altitude',
+            server=server,
+            effects=[],
+            tiles_path=r"map/altitude",
+            pixel_depth=14 + 8,
+        )
+    ).post()
 
 
 class Zone(object):
@@ -121,4 +143,28 @@ class AltitudeZoneTileset(ZoneTileset):
         if tags.UnAltitudeTag in obj.tags:
             return
         position = obj.position(time=time)
-        obj.on_change_altitude(new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)))
+        obj.on_change_altitude(
+            new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)), time=time)
+
+
+class AltitudeZonePicker(Zone):
+    def __init__(self, tiles_path, pixel_depth, extension='.jpg', **kw):
+        super(AltitudeZonePicker, self).__init__(**kw)
+        self._picker = TilePicker(path=tiles_path, pixel_depth=pixel_depth, extension=extension)
+        self.max_map_zoom = 18  # todo: вынести в конфигурацию
+
+    def test_in_zone(self, obj, time):
+        if tags.UnZoneTag in obj.tags or tags.UnAltitudeTag in obj.tags:
+            return
+
+        position = obj.position(time=time)
+        x, y, z = Tileid(
+            long(position.x),
+            long(position.y),
+            self.max_map_zoom + 8
+        ).parent(self.max_map_zoom + 8 - self._picker.pixel_depth).xyz()
+
+        alt = self._picker[x, y]
+
+        if alt is not None:
+            obj.on_change_altitude(alt[0], time=time)
