@@ -98,7 +98,8 @@ class WeaponAuto(Weapon):
 
     def on_stop(self, item, time):
         super(WeaponAuto, self).on_stop(item=item, time=time)
-        for car in self.sector.target_list:
+        targets = self.targets[:]
+        for car in targets:
             self._stop_fire_to_car(car=car, time=time)
         if not self.call_stop:
             self.start(time=time + 0.01)
