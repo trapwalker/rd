@@ -167,7 +167,7 @@ class BALANCE(BalanceSettingsABS):
 
     class ScoutDroid(Mobile):
         observing_range = 500.0
-        max_hp = 60.0
+        max_hp = 10.0
         r_min=5.0
         a_forward = 5.0
         a_braking = -5.0
