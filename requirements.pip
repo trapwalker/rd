@@ -7,3 +7,4 @@ jsonpickle
 #PIL
 #pyzmq
 cachetools
+PyYAML
