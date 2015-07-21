@@ -46,7 +46,7 @@ var WCarMarker = (function (_super) {
             var car = visualManager.getModelObject(this.carID);
             if (car && car.getCurrentHP) {
                 var hp = car.getCurrentHP(clock.getCurrentTime());
-                console.info(this.carID, '  have  ', hp, ' hp points');
+                console.info(this.carID, '  have  ', hp, ' hp points', '  car dps = ', car._hp_state.dps);
             }
             //alert('Номер текущей иконки: ' + this._old_icon_id + '   ' + this.carID)
         });

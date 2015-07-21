@@ -177,7 +177,7 @@ class BALANCE(BalanceSettingsABS):
         fuel = 70.0
         max_fuel = 70.0
         weapons = [
-            dict(fi=0.0, is_auto=True, radius=200, width=radians(360), dps=0.1)
+            dict(fi=0.0, is_auto=True, radius=200, width=radians(360), dps=0.5)
         ]
 
     class StationaryTurret(Mobile):
