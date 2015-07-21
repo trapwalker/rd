@@ -212,11 +212,12 @@ class Tileid(long):
         @param slice|int idx: Index or slice for get item or subset of tileid
         """
         if isinstance(idx, slice):
-            return [i for i in self][idx]
-
+            return list(self)[idx]
+        zoom = self.zoom()
         if idx < 0:
-            idx = self.zoom() + idx
-        assert idx < self.zoom(), u'Out of range'
+            idx = zoom + idx
+        if idx >= zoom:
+            raise IndexError(u'Tileid path index {} is out of range [0-{})'.format(idx, zoom))
         return int((self >> (idx * 2)) & 0b11)
 
     def __reversed__(self):
@@ -238,6 +239,5 @@ class Tileid(long):
 ROOT = Tileid()
 ##############################################################################
 if __name__ == '__main__':
-    import test_tileid
-
+    from pytile import test_tileid
     test_tileid.test_main()
