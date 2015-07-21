@@ -55,27 +55,7 @@ class Unit(Observer):
 
         # костыль для инвенторя
         self.inventory = Inventory(max_size=10, owner=self, time=time)
-        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
-        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-
-        ItemState(server=self.server, time=time, balance_cls='Tank10', max_count=1).set_inventory(time=time,
-                                                                                                  inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
-                                                                                                  inventory=self.inventory)
-
-        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
-        self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
+        self.set_def_items(time=time)
 
         if weapons:
             for weapon in weapons:
@@ -96,6 +76,28 @@ class Unit(Observer):
     def hp(self, time):
         return self.hp_state.hp(t=time)
 
+    def set_def_items(self, time):
+        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
+        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
+                                                                                              inventory=self.inventory)
+
+        ItemState(server=self.server, time=time, balance_cls='Tank10', max_count=1).set_inventory(time=time,
+                                                                                                  inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
+                                                                                                  inventory=self.inventory)
+        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
+        self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
+
     @property
     def max_hp(self):
         return self.hp_state.max_hp
@@ -114,9 +116,11 @@ class Unit(Observer):
                                      time_recharge=dict_weapon['time_recharge'])
 
         if dict_weapon['radius'] == 50:
-            weapon.set_item(item=self.item_ammo2, time=time)
+            if self.item_ammo2:
+                weapon.set_item(item=self.item_ammo2, time=time)
         else:
-            weapon.set_item(item=self.item_ammo1, time=time)
+            if self.item_ammo1:
+                weapon.set_item(item=self.item_ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -144,7 +148,6 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             if sector.side == side:
                 sector.fire_discharge(time=time)
-
 
     def on_fire_auto_enable(self, enable, time):
         # log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
