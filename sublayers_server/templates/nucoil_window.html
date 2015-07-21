@@ -1,4 +1,4 @@
-﻿{% set window_caption = 'NUKE:\Нукойл>' %}
+{% set window_caption = 'NUKE:\Нукойл>' %}
 
 <style>
     .mainMenuNucoilWindow-main {
@@ -403,7 +403,6 @@
 </style>
 
 <div class="mainMenuNucoilWindow-main">
-    {% include drag_close_header.html %}
     <div class="mainMenuNucoilWindow-menu">
         <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-fuel_id">&nbspТопливо&nbsp
         </div>
@@ -518,5 +517,5 @@
         console.log('111');
     });
 
-    inventoryList.showInventory({{ car_id }}, $('#mainMenuNucoilWindow-body-fuel_id').find('.inventory-{{ car_id }}').first())
+    //inventoryList.showInventory({{ car_id }}, $('#mainMenuNucoilWindow-body-fuel_id').find('.inventory-{{ car_id }}').first())
 </script>
