@@ -1,67 +1,52 @@
 <div>
     {% raw open(svg_link).read() %}
-    <div id="townChatPageWrap" class="townPageWrap" style="display: none">
+    <div id="townChatPageWrap" style="display: none">
         <div id="chatTownWrap"></div>
         <div id="visitorListWrap">
             <div id="visitorList">
             </div>
         </div>
     </div>
-    <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
-        {% include nucoil_window.html %}
-    </div>
+
 </div>
 <script>
-    // Открытие зданий
-    function openNucoil() {
-         $('.townPageWrap').css('display', 'none');
-         $('#townNucoilPageWrap').css('display', 'block');
-    }
-
-    // Обработчики кнопок-зданий
     {% for i in xrange(10) %}
-    $("#img_house{{i}}_off").mouseenter(function() {
+    $("#img_house{{i}}_off").mouseenter(function(){
         $("#img_house{{i}}_on").css("display", "block");
         $("#img_house{{i}}_off").css("display", "none");
     });
-    $("#img_house{{i}}_on").mouseleave(function() {
+    $("#img_house{{i}}_on").mouseleave(function(){
         $("#img_house{{i}}_off").css("display", "block");
         $("#img_house{{i}}_on").css("display", "none");
     });
-    $("#img_house{{i}}_on").click(function(event) {
-        switch (event.target.id) {
-            case "img_house5_on":
-                openNucoil();
-                break;
-            default:
-                console.log(event.target.id);
-        }
+    $("#img_house{{i}}_on").click(function(event){
+        console.log(event.target.id);
     });
     {% end %}
 
     // Кнопки меню
     {% for i in xrange(8) %}
-    $("#btn_{{i}}").mouseenter(function() {
+    $("#btn_{{i}}").mouseenter(function(){
         $("#btn_{{i}}_over").css("display", "block");
         $("#btn_{{i}}").css("display", "none");
     });
-    $("#btn_{{i}}_over").mouseleave(function() {
+    $("#btn_{{i}}_over").mouseleave(function(){
         $("#btn_{{i}}_over").css("display", "none");
         $("#btn_{{i}}").css("display", "block");
     });
 
-     $("#btn_{{i}}_select").mouseleave(function() {
+     $("#btn_{{i}}_select").mouseleave(function(){
         $("#btn_{{i}}_over").css("display", "none");
         $("#btn_{{i}}_select").css("display", "none");
         $("#btn_{{i}}").css("display", "block");
     });
 
-    $("#btn_{{i}}_over").mousedown(function() {
+    $("#btn_{{i}}_over").mousedown(function(){
         $("#btn_{{i}}_select").css("display", "block");
         $("#btn_{{i}}_over").css("display", "none");
         $("#btn_{{i}}").css("display", "block");
     });
-    $("#btn_{{i}}_select").mouseup(function(event) {
+    $("#btn_{{i}}_select").mouseup(function(event){
         console.log(event.target.id);
         $("#btn_{{i}}_select").css("display", "none");
         $("#btn_{{i}}_over").css("display", "block");
@@ -69,23 +54,21 @@
     });
     {% end %}
 
-    $("#btn_4_select").mouseup(function(event) {
+    $("#btn_4_select").mouseup(function(event){
         clientManager.sendExitFromTown({{ town.uid }})
     });
 
-    $("#btn_3_select").mouseup(function(event) {
-        $('.townPageWrap').css('display', 'none');
+    $("#btn_3_select").mouseup(function(event){
         $('#townChatPageWrap').css('display', 'block');
+        $('#layer1').css('display', 'none');
+        $('#layer2').css('display', 'none');
     });
 
-    $("#btn_2_select").mouseup(function(event) {
-        $('.townPageWrap').css('display', 'none');
+    $("#btn_2_select").mouseup(function(event){
+        $('#townChatPageWrap').css('display', 'none');
         $('#layer1').css('display', 'block');
         $('#layer2').css('display', 'block');
     });
-
-
-
 
     /* // подсветка градиентных заливок
     $("#img_house1_off").mouseenter(function(){

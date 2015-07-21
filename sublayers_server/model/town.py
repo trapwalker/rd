@@ -104,8 +104,13 @@ class Town(MapObject):
 
 class GasStation(MapObject):
     def __init__(self, time, observing_range=BALANCE.GasStation.observing_range, **kw):
+        self.visitors = []
         super(GasStation, self).__init__(time=time, observing_range=observing_range, **kw)
 
     def on_enter(self, agent, time):
-        log.info('agent %s coming to gas-station %s', agent, self)
+        agent.api.car.delete(time=time)  # удалить машинку агента
         EnterToGasStation(agent=agent, station=self, time=time).post()
+        self.visitors.append(agent)
+
+
+
