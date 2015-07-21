@@ -7,6 +7,7 @@ from sublayers_server.model.units import Slave
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.events import Event
 import sublayers_server.model.tags as tags
+from sublayers_server.model.inventory import ItemState
 
 u'''
     Двигающаяся турель! Дрон-разведчик.
@@ -68,3 +69,13 @@ class ScoutDroid(Slave):
 
     def set_default_tags(self):
         self.tags.add(tags.UnZoneTag)
+
+    def set_def_items(self, time):
+        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=6).set_inventory(time=time, inventory=self.inventory)
+

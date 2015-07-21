@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="41.458004"
-     inkscape:cy="464.95177"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="506.16877"
+     inkscape:cy="419.60363"
      inkscape:document-units="px"
      inkscape:current-layer="svg2"
      showgrid="false"
@@ -62,7 +62,8 @@
      inkscape:label="background"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-2.36216)">
+     transform="translate(0,-2.36216)"
+     class="townPageWrap">
     <image
        y="451.0379"
        x="904.6499"
@@ -135,8 +136,13 @@
   </g>
   <g
      inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="build_path" />
+  <g
+     inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="building">
+     inkscape:label="building"
+     class="townPageWrap">
     <image
        y="422.43359"
        x="580.92859"

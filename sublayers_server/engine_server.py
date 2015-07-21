@@ -32,6 +32,7 @@ from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.town import TownHandler
+from sublayers_server.handlers.gas_station import GasStationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
 from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
@@ -93,6 +94,7 @@ class Application(tornado.web.Application):
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
 
             (r"/api/town", TownHandler),
+            (r"/api/gas_station", GasStationHandler),
             (r"/api/main_car_info", MainCarInfoHandler),
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/party", PartyHandler),

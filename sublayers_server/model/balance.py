@@ -167,7 +167,7 @@ class BALANCE(BalanceSettingsABS):
 
     class ScoutDroid(Mobile):
         observing_range = 500.0
-        max_hp = 60.0
+        max_hp = 10.0
         r_min=5.0
         a_forward = 5.0
         a_braking = -5.0
@@ -177,10 +177,7 @@ class BALANCE(BalanceSettingsABS):
         fuel = 70.0
         max_fuel = 70.0
         weapons = [
-            dict(fi=0.0, is_auto=True, radius=200, width=radians(90), dps=0.1),
-            dict(fi=-pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),
-            dict(fi=pi / 2, is_auto=True, radius=200, width=radians(90), dps=0.1),
-            dict(fi=-pi, is_auto=True, radius=200, width=radians(90), dps=0.1)
+            dict(fi=0.0, is_auto=True, radius=200, width=radians(360), dps=0.5)
         ]
 
     class StationaryTurret(Mobile):

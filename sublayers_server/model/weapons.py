@@ -79,12 +79,14 @@ class WeaponAuto(Weapon):
 
     def _start_fire_to_car(self, car, time):
         car.set_hp(dps=self.dps, add_shooter=self.owner, time=time)
+        self.targets.append(car)
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
 
     def _stop_fire_to_car(self, car, time):
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps, del_shooter=self.owner, time=time)
+        self.targets.remove(car)
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
 
@@ -96,7 +98,8 @@ class WeaponAuto(Weapon):
 
     def on_stop(self, item, time):
         super(WeaponAuto, self).on_stop(item=item, time=time)
-        for car in self.sector.target_list:
+        targets = self.targets[:]
+        for car in targets:
             self._stop_fire_to_car(car=car, time=time)
         if not self.call_stop:
             self.start(time=time + 0.01)
