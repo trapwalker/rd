@@ -20,6 +20,8 @@ class ServerAPI(API):
         @rtype sublayers_server.model.agents.Agent
         """
         db_res = self.server.app.auth_db.profiles.find({'_id': ObjectId(agent_id)})
+        if db_res.count() == 0:
+            return None
         login = db_res[0]['name']
         agent = self.server.agents.get(login, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
