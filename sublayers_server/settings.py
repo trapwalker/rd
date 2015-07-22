@@ -40,4 +40,6 @@ define("port", default=80, help="run on the given port", type=int)
 define("ws_port", default=80, help="run ws on the given port", type=int)
 define("map_link", default='http://localhost/map/{z}/{x}/{y}.jpg', help="map link", type=str)
 
+define("world_path", default='', help="./world", type=str)
+
 

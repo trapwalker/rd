@@ -12,21 +12,22 @@ from sublayers_server.model.async_tools import async_deco
 import sublayers_server.model.tags as tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
 
-
+from tornado.options import options
 import os
 
 
 def init_zones_on_server(server, time):
 
     def read_ts_from_file(zone_name, file_name, server, effects, zone_cls=ZoneTileset):
+        file_path = os.path.join(options.world_path, 'tilesets', file_name)
         zone = None
-        if os.path.exists(file_name):
-            if os.path.isfile(file_name):
+        if os.path.exists(file_path):
+            if os.path.isfile(file_path):
                 zone = zone_cls(
                     name=zone_name,
                     server=server,
                     effects=effects,
-                    ts=Tileset(open(file_name)),
+                    ts=Tileset(open(file_path)),
                 )
         if zone:
             log.info('Successful read zone from file: %s   zone_name is %s', file_name, zone_name)
@@ -49,24 +50,24 @@ def init_zones_on_server(server, time):
 
     read_zone_func = async_deco(read_ts_from_file, result_callback=on_result, error_callback=on_error)
 
-    read_zone_func(zone_name='Road', file_name='map/tilesets/ts_road', server=server, effects=[
+    read_zone_func(zone_name='Road', file_name='ts_road', server=server, effects=[
         server.effects.get('EffectRoadRCCWood'),
         server.effects.get('EffectRoadRCCWater'),
         server.effects.get('EffectRoadRCCDirt'),
         server.effects.get('EffectRoadRCCSlope'),
     ])
 
-    read_zone_func(zone_name='Wood', file_name='map/tilesets/ts_wood', server=server, effects=[
+    read_zone_func(zone_name='Wood', file_name='ts_wood', server=server, effects=[
         server.effects.get('EffectWoodCC'),
         server.effects.get('EffectWoodVisibility'),
         server.effects.get('EffectWoodObsRange'),
     ])
 
-    read_zone_func(zone_name='Slope', file_name='map/tilesets/tiles_map_slope_14_black_80', server=server, effects=[
+    read_zone_func(zone_name='Slope', file_name='tiles_map_slope_14_black_80', server=server, effects=[
         server.effects.get('EffectSlopeCC'),
     ])
 
-    read_zone_func(zone_name='Water', file_name='map/tilesets/ts_water', server=server,
+    read_zone_func(zone_name='Water', file_name='ts_water', server=server,
                    effects=[server.effects.get('EffectWaterCC')])
 
     InsertNewServerZone(
@@ -76,7 +77,7 @@ def init_zones_on_server(server, time):
             name='Altitude',
             server=server,
             effects=[],
-            tiles_path=r"map/altitude",
+            tiles_path=os.path.join(options.world_path, 'altitude'),
             pixel_depth=14 + 8,
         )
     ).post()
