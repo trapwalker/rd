@@ -69,6 +69,7 @@ class StandardLoginHandler(BaseHandler):
         if (email is None) or (password is None) or (username is None):
             self.redirect("/login?msg=Ошибка%20авторизации")
             return
+        username = username[0:20]                    
         user_id = self._db_request(email=email, name=username)
         if user_id is None:
             user_db_uid = str(self.application.auth_db.profiles.insert({
