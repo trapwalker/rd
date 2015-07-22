@@ -400,16 +400,123 @@
         text-align: center;
         float: left;
     }
+
+    .mainMenuNucoilWindow-body-insurance {
+        position: relative;
+        float: left;
+        width: 652px;
+        height: 361px;
+        overflow-y: hidden;
+        border: solid 1px #00f150;
+        margin: 0px 3px 3px 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left {
+        border-right: solid 1px #00f150;
+        width: 166px;
+        height: 340px;
+        margin-top: 10px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left-name {
+        color: #30fc00;
+        text-align: center;
+        margin: 10px;
+        font: 12pt Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left-description {
+        color: #30fc00;
+        font-size: 10pt;
+        overflow-y: scroll;
+        height: 265px;
+        margin: 0px 5px 0px 5px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left-activate {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin: 10px;
+        cursor: pointer;
+        font: 12pt Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-up {
+        width: 463px;
+        height: 69px;
+        margin: 10px 10px 0px 10px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        border-bottom: solid 1px #00f150;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center {
+        width: 443px;
+        height: 203px;
+        margin: 10px 20px 0px 20px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription {
+        border: solid 1px #00f150;
+        width: 443px;
+        height: 57px;
+        margin: 0px 20px 0px 20px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription-left-picture {
+        border: solid 1px #00f150;
+        margin: 3px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        color: #0f4206;
+        font-size: 8pt;
+        text-align: center;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription-text {
+        width: 327px;
+        margin-top: 5px;
+        font-size: 10pt;
+        text-align: center;
+        float: left;
+        color: #30fc00;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription-right-picture {
+        border: solid 1px #00f150;
+        margin: 3px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        color: #0f4206;
+        font-size: 8pt;
+        text-align: center;
+        float: left;
+    }
 </style>
 
 <div class="mainMenuNucoilWindow-main">
     {% include drag_close_header.html %}
     <div class="mainMenuNucoilWindow-menu">
-        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-fuel_id">&nbspТопливо&nbsp
+        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-fuel_id">
+            &nbspТопливо&nbsp
         </div>
-        <div class="mainMenuNucoilWindow-menu-button" data-page_id="">&nbspСтраховка&nbsp
+        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-insurance_id">
+            &nbspСтраховка&nbsp
         </div>
-        <div class="mainMenuNucoilWindow-menu-button" data-page_id="">&nbspАпелляции&nbsp</div>
+        <div class="mainMenuNucoilWindow-menu-button" data-page_id="">
+            &nbspАпелляции&nbsp
+        </div>
     </div>
 
     <div id="mainMenuNucoilWindow-body-fuel_id" class="mainMenuNucoilWindow-body-fuel mainMenuNucoilWindow-page-div">
@@ -493,6 +600,36 @@
                 <b>"Гептил Нукойл"</b>: Замена поршней в подарок!
             </div>
             <div class="mainMenuNucoilWindow-body-fuel-subscription-right-picture">Картинка</div>
+        </div>
+    </div>
+
+    <div id="mainMenuNucoilWindow-body-insurance_id"
+         class="mainMenuNucoilWindow-body-insurance mainMenuNucoilWindow-page-div">
+        <div class="mainMenuNucoilWindow-body-insurance-left">
+            <div class="mainMenuNucoilWindow-body-insurance-left-name">Тариф "Стандарт"</div>
+            <div class="mainMenuNucoilWindow-body-insurance-left-description">
+                Стандартная страховка является обязательной и входит в оборудование Nuke Commander как базовая опция.
+                В случае уничтожения транспортного средства и отключения систем жизнеобеспечения водителя наша служба
+                спасения бесплатно эвакуирует Вас в ближайший город в течение 15 минут. Так же мы возместим рыночную
+                стоимость транспортного средства без учета установленного на нем оборудования.
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-left-activate">Оформить</div>
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-up">
+            Уважаемый Vasya78, статус Вашей страховки (т.п. "Премиум") истекает через 26 дней.
+            В этой форме Вы можете продлить договор или сменить тарифный план в любое время.
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-center">
+            Выберите тариф:
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-subscription">
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-left-picture">Картинка</div>
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-text">
+                Не ждите, пока Ваши потери спросят Вас:<br/>
+                <strong><em>"Э, слышь! Страховка есть? А если поищу?"</em></strong><br/>
+                Полис <strong>"Нукойл VIP"</strong>: Все сгорело? Ну и хрен с ним!
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-right-picture">Картинка</div>
         </div>
     </div>
 </div>
