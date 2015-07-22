@@ -625,7 +625,7 @@ var ClientManager = (function () {
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
-                townVisitorsManager.update_visitors();
+                locationVisitorsManager.update_visitors();
             }
         });
     };
@@ -635,7 +635,7 @@ var ClientManager = (function () {
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
-        townVisitorsManager.clear_visitors();
+        locationVisitorsManager.clear_visitors();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -661,9 +661,9 @@ var ClientManager = (function () {
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
         //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
         if (event.action)
-            townVisitorsManager.add_visitor(event.visitor);
+            locationVisitorsManager.add_visitor(event.visitor);
         else
-            townVisitorsManager.del_visitor(event.visitor);
+            locationVisitorsManager.del_visitor(event.visitor);
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
