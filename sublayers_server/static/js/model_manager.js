@@ -613,14 +613,14 @@ var ClientManager = (function () {
         chat.party_info_message(event);
     };
 
-    ClientManager.prototype.EnterToTown = function (event) {
-        //console.log('ClientManager.prototype.EnterToTown', event);
-        var town_uid = event.town.uid;
+    ClientManager.prototype.EnterToLocation = function (event) {
+        //console.log('ClientManager.prototype.EnterToLocation', event);
+        var location_uid = event.location.uid;
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
-            url: "http://" + location.host + '/api/town',
-            data:  { town_id: event.town.uid },
+            url: "http://" + location.host + '/api/location',
+            data:  { location_id: event.location.uid },
             success: function(data){
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
@@ -630,16 +630,12 @@ var ClientManager = (function () {
         });
     };
 
-    ClientManager.prototype.ExitFromTown = function (event) {
+    ClientManager.prototype.ExitFromLocation = function (event) {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
         townVisitorsManager.clear_visitors();
-    };
-
-    ClientManager.prototype.EnterToGasStation = function (event) {
-        console.log('ClientManager.prototype.EnterToGasStation', event);
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -662,8 +658,8 @@ var ClientManager = (function () {
         chat.deactivateParty(event.room_name);
     };
 
-    ClientManager.prototype.ChangeTownVisitorsMessage = function(event){
-        //console.log('ClientManager.prototype.TownChangeVisitor', event);
+    ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
+        //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
         if (event.action)
             townVisitorsManager.add_visitor(event.visitor);
         else

@@ -15,7 +15,7 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToMapObject, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
+from sublayers_server.model.events import Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, \
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
 from sublayers_server.model.units import Unit
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
@@ -211,8 +211,8 @@ class AgentAPI(API):
                             time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time, position=None):
-        if self.agent.current_town is not None:
-            ReEnterToTown(agent=self.agent, town=self.agent.current_town, time=time).post()
+        if self.agent.current_location is not None:
+            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
@@ -382,17 +382,17 @@ class AgentAPI(API):
     @public_method
     def enter_to_town(self, town_id):
         #log.info('agent %s want enter to town is %s', self.agent, town_id)
-        EnterToMapObject(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
+        EnterToMapLocation(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def exit_from_town(self, town_id):
         #log.info('agent %s want exit from town is %s', self.agent, town_id)
-        ExitFromTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
+        ExitFromMapLocation(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_gas_station(self, station_id):
         log.info('agent %s want enter to station is %s', self.agent, station_id)
-        EnterToMapObject(agent=self.agent, obj_id=station_id, time=self.agent.server.get_time()).post()
+        EnterToMapLocation(agent=self.agent, obj_id=station_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):
