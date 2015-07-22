@@ -20,10 +20,13 @@ class MapLocationHandler(BaseHandler):
             return
         location_id = self.get_argument('location_id')
         location = self.application.srv.objects.get(int(location_id))
-        if isinstance(location, Town):
+        if location:
             svg_link = os.path.join(os.getcwd(), location.svg_link)
-            self.render("town.html", town=location, svg_link=svg_link, car_id=agent.api.car.uid)
-        elif isinstance(location, GasStation):
-            pass
+            if isinstance(location, Town):
+                self.render("town.html", town=location, svg_link=svg_link)
+            elif isinstance(location, GasStation):
+                self.render("gas_station.html", station=location, svg_link=svg_link)
+            else:
+                log.warn('Unknown type location: %s', location)
         else:
             log.warn('Location not found id: %s', location_id)

@@ -380,19 +380,14 @@ class AgentAPI(API):
         ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
 
     @public_method
-    def enter_to_town(self, town_id):
+    def enter_to_location(self, location_id):
         #log.info('agent %s want enter to town is %s', self.agent, town_id)
-        EnterToMapLocation(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
+        EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def exit_from_town(self, town_id):
+    def exit_from_location(self, location_id):
         #log.info('agent %s want exit from town is %s', self.agent, town_id)
-        ExitFromMapLocation(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def enter_to_gas_station(self, station_id):
-        log.info('agent %s want enter to station is %s', self.agent, station_id)
-        EnterToMapLocation(agent=self.agent, obj_id=station_id, time=self.agent.server.get_time()).post()
+        ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):

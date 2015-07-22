@@ -940,25 +940,25 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendEnterToTown = function (town_id) {
-        //console.log('ClientManager.prototype.sendEnterToTown');
+    ClientManager.prototype.sendEnterToLocation = function (location_id) {
+        //console.log('ClientManager.prototype.sendEnterToLocation');
         var mes = {
-            call: "enter_to_town",
+            call: "enter_to_location",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                town_id: town_id
+                location_id: location_id
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendExitFromTown = function (town_id) {
+    ClientManager.prototype.sendExitFromLocation = function (location_id) {
         var mes = {
-            call: "exit_from_town",
+            call: "exit_from_location",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                town_id: town_id
+                location_id: location_id
             }
         };
         rpcCallList.add(mes);
@@ -1032,19 +1032,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendEnterToGasStation = function (station_id) {
-        //console.log('ClientManager.prototype.sendEnterToGasStation');
-        var mes = {
-            call: "enter_to_gas_station",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                station_id: station_id
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
     ClientManager.prototype.sendGetBalanceCls = function (balance_cls_name) {
         console.log('ClientManager.prototype.sendGetBalanceCls', balance_cls_name);
         var mes = {
@@ -1057,7 +1044,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     ClientManager.prototype.sendActivateItem = function (item) {
         console.log('ClientManager.prototype.sendActivateItem', item);

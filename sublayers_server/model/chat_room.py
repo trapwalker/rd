@@ -63,7 +63,7 @@ class ChatRoomPrivateCreateEvent(Event):
         if not recipient:
             log.warning('Agent with login %s not found', self.recipient_login)
             return
-        if (self.agent.current_town is recipient.current_town) and (self.agent.current_town is not None):
+        if (self.agent.current_location is recipient.current_location) and (self.agent.current_location is not None):
             if PrivateChatRoom.search_private(agent1=self.agent, agent2=recipient) is None:
                 PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
             else:
