@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import logging
 log = logging.getLogger(__name__)
-
-import sys
 
 if __name__ == '__main__':
     log.level = logging.DEBUG
@@ -11,8 +10,9 @@ if __name__ == '__main__':
 
 from attr import Attribute, DocAttribute
 
-from collections import deque, OrderedDict
+from collections import deque, OrderedDict, namedtuple
 import yaml  # todo: extract serialization layer
+import os
 
 
 class ThingParentLinkIsCycle(Exception):
@@ -37,6 +37,12 @@ class AttrUpdaterMeta(type):
 
 class PersistentMeta(AttrUpdaterMeta):
 
+    classes = {}
+
+    def __init__(cls, name, bases, attrs):
+        super(PersistentMeta, cls).__init__(name, bases, attrs)
+        cls.classes[name] = cls
+
     def update_attr(self, name, value):
         super(PersistentMeta, self).update_attr(name, value)
         if isinstance(value, Attribute):
@@ -52,9 +58,40 @@ class NamespaceMeta(AttrUpdaterMeta):
 
 
 class Registry(object):
-    def __init__(self):
+    def __init__(self, path=None):
         self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
         self.items = []
+        self.path = path
+        if path is not None:
+            self.load(path)
+
+    def _load_node(self, path, parent):
+        attr_files = []
+        attrs = {}
+        for f in os.listdir(path):
+            p = os.path.join(path, f)
+            if not f.startswith('_') and os.path.isfile(p):
+                with open(p) as attr_file:
+                    d = yaml.load(attr_file)  # todo: exceptions
+                    attrs.update(d)
+
+        class_name = attrs.pop('__cls__', None)
+        cls = Root.classes.get(class_name, None)
+        cls = cls or parent and parent.__class__
+        assert cls
+        name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
+        return cls(name=name, parent=parent, registry=self, values=attrs)
+
+    def load(self, path):
+        stack = deque([(path, None)])
+        while stack:
+            pth, parent = stack.pop()
+            node = self._load_node(pth, parent)
+            if node:
+                for f in os.listdir(pth):
+                    next_path = os.path.join(pth, f)
+                    if os.path.isdir(next_path):
+                        stack.append((next_path, node))
 
     def __iter__(self):
         """Iter with consistent parent lines~"""
@@ -80,19 +117,6 @@ class Registry(object):
 
         return yaml.dump(self, stream, allow_unicode=True, default_flow_style=False, Dumper=Dumper)
 
-    @classmethod
-    def load(cls, src):
-        """Load registry from src.
-        @src - stream or filename
-        """
-
-        stream = src if hasattr(src, 'read') else open(src)
-        try:
-            return yaml.load(stream)
-        finally:
-            if not hasattr(src, 'read'):
-                stream.close()
-
 
 class Persistent(object):
     __metaclass__ = PersistentMeta
@@ -104,7 +128,7 @@ class Node(Persistent):
     doc = DocAttribute()
 
     def __getstate__(self):
-        do_not_store = ('registry',)
+        do_not_store = ('registry', 'childs',)
         log.debug('%s.__getstate__', self)
         d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         return d
@@ -166,7 +190,6 @@ class Dumper(yaml.Dumper):
             return super(Dumper, self).generate_anchor(node)
 
 
-
 class Root(Node):
     pass
 
@@ -179,24 +202,5 @@ if __name__ == '__main__':
     # from pprint import pprint as pp
     # from pickle import dumps, loads
     # import jsonpickle as jp
-    class Car(Node):
-        u"""Абстрактная машина"""
-        max_velocity = Attribute(default=100, caption=u'Макс. скорость', doc=u'Максимальная скорость')
+    reg = Registry(path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
 
-
-    reg = Registry()
-
-    class C(Container):
-        anyCar = Car(parent=reg.root)
-        carLite = Car(parent=anyCar, doc=u'Лёгкая техника (мото-, вело-, скейт, коньки, тапки)')
-        carMidle = Car(parent=anyCar, doc=u'Легковая техника')
-        carHavy = Car(parent=anyCar, doc=u'Транспорт тяжелго класса (грузовики, тягачи, танки')
-        carMoto = Car(parent=carLite, max_velocity=300, x=15, y=range(5))
-
-    data = reg.save()
-    fn = 'registry.rt'
-    with open(fn, 'w') as f:
-        f.write(data)
-    print data
-
-    reg2 = Registry.load(fn)
