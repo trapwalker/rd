@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import logging
 log = logging.getLogger(__name__)
-
-if __name__ == '__main__':
-    log.level = logging.DEBUG
-    log.addHandler(logging.StreamHandler(sys.stderr))
 
 from attr import Attribute, DocAttribute
 
@@ -59,11 +54,12 @@ class NamespaceMeta(AttrUpdaterMeta):
 
 class Registry(object):
     def __init__(self, path=None):
-        self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
         self.items = []
         self.path = path
-        if path is not None:
-            self.load(path)
+        if path is None:
+            self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
+        else:
+            self.root = self.load(path)
 
     def _load_node(self, path, parent):
         attr_files = []
@@ -75,23 +71,31 @@ class Registry(object):
                     d = yaml.load(attr_file)  # todo: exceptions
                     attrs.update(d)
 
+        cls = None
         class_name = attrs.pop('__cls__', None)
-        cls = Root.classes.get(class_name, None)
+        if class_name:
+            cls = Root.classes.get(class_name)
+            if cls is None:
+                log.error('Unregistered registry class (%s) found into the path: %s', class_name, path)
         cls = cls or parent and parent.__class__
         assert cls
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
         return cls(name=name, parent=parent, registry=self, values=attrs)
 
     def load(self, path):
+        root = None
         stack = deque([(path, None)])
         while stack:
             pth, parent = stack.pop()
             node = self._load_node(pth, parent)
             if node:
+                if parent is None:
+                    root = node  # todo need refactoring
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
                     if os.path.isdir(next_path):
                         stack.append((next_path, node))
+        return root
 
     def __iter__(self):
         """Iter with consistent parent lines~"""
@@ -202,5 +206,5 @@ if __name__ == '__main__':
     # from pprint import pprint as pp
     # from pickle import dumps, loads
     # import jsonpickle as jp
-    reg = Registry(path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    pass
 
