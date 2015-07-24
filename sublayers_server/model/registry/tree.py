@@ -107,30 +107,6 @@ class Registry(object):
                         stack.append((next_path, node))
         return root
 
-    def __iter__(self):
-        """Iter with consistent parent lines~"""
-        q = deque(self.items)
-        done = {None}
-        cnt = 0
-        while q:
-            c = q.pop()
-            if c.parent in done:
-                yield c
-                done.add(c)
-                cnt = 0
-            else:
-                q.appendleft(c)
-                cnt += 1
-                if cnt > len(q):
-                    raise ThingParentLinkIsCycle()
-
-    def save(self, stream=None):
-        # if stream is None:
-        #     from io import BytesIO
-        #     stream = BytesIO()
-
-        return yaml.dump(self, stream, allow_unicode=True, default_flow_style=False, Dumper=Dumper)
-
 
 class Persistent(object):
     __metaclass__ = PersistentMeta
