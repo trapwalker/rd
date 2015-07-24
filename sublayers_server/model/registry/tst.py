@@ -13,7 +13,7 @@ from sublayers_server.model.registry.tree import Registry
 
 if __name__ == '__main__':
     reg = Registry(path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
-    cars = reg['mobiles/cars']
+    cars = reg['/mobiles/cars']
     print cars.uri
 
 

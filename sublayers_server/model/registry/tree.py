@@ -8,8 +8,10 @@ from attr import Attribute, DocAttribute
 from collections import deque, OrderedDict, namedtuple
 import yaml  # todo: extract serialization layer
 import os
+import re
 
 
+URI_PROTOCOL = 'reg'
 PROTOCOL_PREFIX = 'reg://'
 
 
@@ -29,7 +31,11 @@ class RegistryNodeFormatError(RegistryError):
     pass
 
 
-class RegistryNodeNotFound(RegistryError):
+class RegistryLinkFormatError(RegistryError):
+    pass
+
+
+class ObjectNotFound(RegistryError):
     pass
 
 
@@ -71,31 +77,62 @@ class NamespaceMeta(AttrUpdaterMeta):
             value.attach(name=name, cls=self)
 
 
-class Registry(object):
+class AbstractStorage(object):
+
+    _RE_URI = re.compile(r'''
+	    ^
+        (?:(?P<proto>\w+)://)?
+        (?P<storage>[^/]+)?
+        (?P<path>(?:/\w+)*)
+        (?P<tail_slash>/)?
+        $
+    ''', re.X)
+
+    @staticmethod
+    def parse_uri(uri):
+        """Parse uri like 'protocol://path/to/the/some/object'
+        and return tuple like: ('protocol', ['path', 'to', 'the', 'some', 'object'])
+        """
+        m = AbstractStorage._RE_URI.match(uri)
+        if m is None:
+            raise RegistryLinkFormatError('Wrong link format: "{}"'.format(uri))
+
+        d = m.groupdict()
+        proto = d.get('proto')
+        storage = d.get('storage')
+        path = d.get('path', '')
+        path = path.split('/')
+        return proto, storage, path
+
+    def test_uri(self, uri):
+        return False
+
+    def __getitem__(self, item):
+        pass
+
+    def get(self, index, default=None):
+        try:
+            return self[index]
+        except ObjectNotFound:
+            return default
+
+
+
+class Registry(AbstractStorage):
     def __init__(self, path=None):
+        super(Registry, self).__init__()
         self.path = path
         if path is None:
             self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
         else:
             self.root = self.load(path)
 
-    def get(self, index, default=None):
-        try:
-            return self[index]
-        except RegistryNodeNotFound:
-            return default
-
     def __getitem__(self, item):
-        if isinstance(item, str):
-            uri = item
-            uri = uri.rstrip('/')
-            if uri.startswith(PROTOCOL_PREFIX):
-                uri = uri[len(PROTOCOL_PREFIX):]
-            path = uri.split('/') if uri else []
-        else:
-            path = list(item)
+        proto, storage, path = self.parse_uri(item) if isinstance(item, str) else ('reg', None, list(item))
+        assert storage == 'registry' or storage is None, 'Wrong storage: {}'.format(storage)
+        assert proto == URI_PROTOCOL or proto is None, 'Wrong protocol: {}'.format(proto)
 
-        if path and path[0] == 'root':
+        if path and path[0] == '':
             path = path[1:]
 
         node = self.root
@@ -103,7 +140,7 @@ class Registry(object):
             name = path.pop(0)
             next_node = node.childs.get(name)
             if next_node is None:
-                raise RegistryNodeNotFound('Node "{}" is not found in the node "{}" by link: {}'.format(
+                raise ObjectNotFound('Node "{}" is not found in the node "{}" by link: {}'.format(
                     name, node.name, item))
             node = next_node
 
@@ -176,21 +213,21 @@ class Node(Persistent):
 
     @property
     def path(self):
-        return '/'.join(self.path_tuple)
+        return '/' + '/'.join(self.path_tuple)
 
     @property
     def uri(self):
         return '{}{}'.format(PROTOCOL_PREFIX, self.path)
 
-    def __init__(self, name=None, parent=None, values=None, registry=None, **kw):
+    def __init__(self, name=None, parent=None, values=None, storage=None, **kw):
         super(Node, self).__init__()
         self.name = name
-        self.parent = parent
+        self.parent = parent  # todo: parent must be an Attribute (!)
         self.values = values or {}
         self.values.update(kw)
         self.childs = {}  # todo: use weakref
-        self.registry = registry
-        if parent:
+        self.storage = storage
+        if parent and parent.storage is storage:
             parent._add_child(self)
 
     def attach(self, name, cls):

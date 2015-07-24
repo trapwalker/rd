@@ -55,6 +55,4 @@ class DocAttribute(Attribute):
 
 class RegistryLink(Attribute):
     def __get__(self, obj, cls):
-        pass  # todo: realization
-        #value = obj._get_attr_value(self.name, self.default)
-        #return value
+        return obj.registry.get(super(RegistryLink, self).__get__(obj, cls))
