@@ -22,7 +22,7 @@ class Attribute(object):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
 
     def __get__(self, obj, cls):
-        value = obj._get_attr_value(self.name, self.default)  # todo: cascade getter (!)
+        value = obj._get_attr_value(self.name, self.default)
         log.debug('__get__ %s.%s() => %s', obj, self.name, value)
         return value
 

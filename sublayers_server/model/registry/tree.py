@@ -116,7 +116,7 @@ class Registry(object):
             if not f.startswith('_') and os.path.isfile(p):
                 with open(p) as attr_file:
                     try:
-                        d = yaml.load(attr_file)  # todo: exceptions
+                        d = yaml.load(attr_file)
                     except yaml.ScannerError as e:
                         raise RegistryNodeFormatError(e)
                     attrs.update(d)
