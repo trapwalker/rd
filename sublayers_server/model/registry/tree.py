@@ -10,6 +10,9 @@ import yaml  # todo: extract serialization layer
 import os
 
 
+PROTOCOL_PREFIX = 'reg://'
+
+
 class RegistryError(Exception):
     pass
 
@@ -19,6 +22,14 @@ class NodeClassError(RegistryError):
 
 
 class ThingParentLinkIsCycle(RegistryError):
+    pass
+
+
+class RegistryNodeFormatError(RegistryError):
+    pass
+
+
+class RegistryNodeNotFound(RegistryError):
     pass
 
 
@@ -62,21 +73,52 @@ class NamespaceMeta(AttrUpdaterMeta):
 
 class Registry(object):
     def __init__(self, path=None):
-        self.items = []
         self.path = path
         if path is None:
             self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
         else:
             self.root = self.load(path)
 
+    def get(self, index, default=None):
+        try:
+            return self[index]
+        except RegistryNodeNotFound:
+            return default
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            uri = item
+            uri = uri.rstrip('/')
+            if uri.startswith(PROTOCOL_PREFIX):
+                uri = uri[len(PROTOCOL_PREFIX):]
+            path = uri.split('/') if uri else []
+        else:
+            path = list(item)
+
+        if path and path[0] == 'root':
+            path = path[1:]
+
+        node = self.root
+        while path:
+            name = path.pop(0)
+            next_node = node.childs.get(name)
+            if next_node is None:
+                raise RegistryNodeNotFound('Node "{}" is not found in the node "{}" by link: {}'.format(
+                    name, node.name, item))
+            node = next_node
+
+        return node
+
     def _load_node(self, path, parent):
-        attr_files = []
         attrs = {}
         for f in os.listdir(path):
             p = os.path.join(path, f)
             if not f.startswith('_') and os.path.isfile(p):
                 with open(p) as attr_file:
-                    d = yaml.load(attr_file)  # todo: exceptions
+                    try:
+                        d = yaml.load(attr_file)  # todo: exceptions
+                    except yaml.ScannerError as e:
+                        raise RegistryNodeFormatError(e)
                     attrs.update(d)
 
         cls = None
@@ -123,13 +165,30 @@ class Node(Persistent):
         d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         return d
 
+    @property
+    def path_tuple(self):
+        # todo: cache
+        if self is self.registry.root:
+            return ()
+        else:
+            parent = self.parent
+            return (parent.path_tuple if parent else ()) + (self.name,)
+
+    @property
+    def path(self):
+        return '/'.join(self.path_tuple)
+
+    @property
+    def uri(self):
+        return '{}{}'.format(PROTOCOL_PREFIX, self.path)
+
     def __init__(self, name=None, parent=None, values=None, registry=None, **kw):
         super(Node, self).__init__()
         self.name = name
         self.parent = parent
         self.values = values or {}
         self.values.update(kw)
-        self.childs = []  # todo: use weakref
+        self.childs = {}  # todo: use weakref
         self.registry = registry
         if parent:
             parent._add_child(self)
@@ -150,7 +209,7 @@ class Node(Persistent):
         )
 
     def _add_child(self, child):
-        self.childs.append(child)
+        self.childs[child.name] = child
         child.registry = self.registry
 
     def _get_attr_value(self, name, default):

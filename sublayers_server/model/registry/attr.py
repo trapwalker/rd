@@ -22,7 +22,7 @@ class Attribute(object):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
 
     def __get__(self, obj, cls):
-        value = obj._get_attr_value(self.name, self.default)  # todo: cascade getter
+        value = obj._get_attr_value(self.name, self.default)  # todo: cascade getter (!)
         log.debug('__get__ %s.%s() => %s', obj, self.name, value)
         return value
 
@@ -39,6 +39,7 @@ class Attribute(object):
         self.cls = cls
         # todo: global attribute registration
 
+
 # todo: reserved attr names checking
 
 
@@ -50,3 +51,10 @@ class DocAttribute(Attribute):
         default = cls.__doc__
         value = obj._get_attr_value(self.name, self.default or default)  # todo: cascade getter
         return value
+
+
+class RegistryLink(Attribute):
+    def __get__(self, obj, cls):
+        pass  # todo: realization
+        #value = obj._get_attr_value(self.name, self.default)
+        #return value
