@@ -26,7 +26,7 @@ class Agent(Root):
 
 
 class Mobile(Root):
-    pass
+    max_speed = Attribute(caption=u'V_max', doc=u'Максимальная скорость')
 
 
 class Car(Mobile):
