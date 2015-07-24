@@ -10,7 +10,15 @@ import yaml  # todo: extract serialization layer
 import os
 
 
-class ThingParentLinkIsCycle(Exception):
+class RegistryError(Exception):
+    pass
+
+
+class NodeClassError(RegistryError):
+    pass
+
+
+class ThingParentLinkIsCycle(RegistryError):
     pass
 
 
@@ -74,11 +82,13 @@ class Registry(object):
         cls = None
         class_name = attrs.pop('__cls__', None)
         if class_name:
-            cls = Root.classes.get(class_name)
+            cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
             if cls is None:
-                log.error('Unregistered registry class (%s) found into the path: %s', class_name, path)
+                raise NodeClassError(
+                    'Unregistered registry class ({}) found into the path: {}'.format(class_name, path))
         cls = cls or parent and parent.__class__
-        assert cls
+        if cls is None:
+            raise NodeClassError('Node class unspecified on path: {}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
         return cls(name=name, parent=parent, registry=self, values=attrs)
 

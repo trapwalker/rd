@@ -25,5 +25,17 @@ class Agent(Root):
     # todo: chats list?
 
 
+class Mobile(Root):
+    pass
+
+
+class Car(Mobile):
+    pass
+
+
+class Drone(Mobile):
+    pass
+
+
 if __name__ == '__main__':
     pass
