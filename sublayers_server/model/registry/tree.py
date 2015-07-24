@@ -103,7 +103,7 @@ class Registry(object):
                     root = node  # todo need refactoring
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
-                    if os.path.isdir(next_path):
+                    if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                         stack.append((next_path, node))
         return root
 
