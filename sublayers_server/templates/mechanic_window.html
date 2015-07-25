@@ -1,0 +1,100 @@
+<style>
+    #townAutoServicePageWrap {
+        position: absolute;
+        top: 140px;
+        left: 592px;
+    }
+
+    .autoServiceWindow-main {
+        position: relative;
+        width: 734px;
+        height: 661px;
+        background-color: rgba(0, 0, 0, 0);
+        color: #ffffff;
+        font: 12pt FreePixel;
+        cursor: default;
+    }
+
+    .autoService-header {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 692px;
+        height: 205px;
+        padding-bottom: 6px;
+        background-color: rgba(50, 50, 50, 1);
+    }
+
+    .autoService-center {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 734px;
+        height: 330px;
+        padding-bottom: 5px;
+    }
+
+    .autoService-car {
+        width: 492px;
+        height: 100%;
+        float: left;
+        background-color: rgba(50, 50, 0, 1);
+    }
+
+    .autoService-sectors {
+        width: 242px;
+        height: 100%;
+        float: left;
+        background-color: rgba(100, 0, 100, 1);
+    }
+
+    .autoService-footer {
+        position: relative;
+        margin-right: auto;
+        margin-left: auto;
+        width: 606px;
+        height: 126px;
+        background-color: rgba(50, 0, 50, 1);
+    }
+
+</style>
+
+<div class="autoServiceWindow-main">
+    <div class="autoService-header"></div>
+    <div class="autoService-center">
+        <div class="autoService-car"></div>
+        <div class="autoService-sectors"></div>
+    </div>
+    <div class="autoService-footer"></div>
+</div>
+
+
+
+
+
+
+
+
+<script>
+    $(".mainMenuNucoilWindow-menu-button").click(function (event) {
+        // выключить у всех кнопок состояние активности // btnpressed - дурацкое название, но зато точно не занято
+        $('.mainMenuNucoilWindow-menu-button').removeClass('btnpressed');
+        // включить только заданной кнопке "активна"
+        $(this).addClass('btnpressed');
+        // выключить отображение всех дивов
+        $('.mainMenuNucoilWindow-page-div').css('display', 'none'); // лучше тоже сделать через классы
+        // включить отображение только нужного дива (дата-атрибут - html5 атрибут, очень удобный...!)
+        // сейчас сделал на айдишниках, но можно сделать и на классах, так как у тебя классы тут разные
+        $('#' + $(this).data('page_id')).css('display', 'block');
+    });
+
+    // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
+    // открывании окна правильно отрабатывала подсветка
+    $(".mainMenuNucoilWindow-menu-button").first().click();
+
+    $('.mainMenuNucoilWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
+        console.log('111');
+    });
+</script>

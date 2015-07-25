@@ -10,12 +10,20 @@
     <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
         {% include nucoil_window.html %}
     </div>
+    <div id="townAutoServicePageWrap" class="townPageWrap" style="display: none">
+        {% include mechanic_window.html %}
+    </div>
 </div>
 <script>
     // Открытие зданий
     function openNucoil() {
          $('.townPageWrap').css('display', 'none');
          $('#townNucoilPageWrap').css('display', 'block');
+    }
+
+    function openAutoService() {
+         $('.townPageWrap').css('display', 'none');
+         $('#townAutoServicePageWrap').css('display', 'block');
     }
 
     // Обработчики кнопок-зданий
@@ -50,6 +58,9 @@
             case "img_house5_on":
                 openNucoil();
                 break;
+            case "img_house2_on":
+                openAutoService();
+                break;
             default:
                 console.log(event.target.id);
         }
@@ -58,6 +69,9 @@
         switch (event.target.id) {
             case "path_h5":
                 openNucoil();
+                break;
+            case "path_h2":
+                openAutoService();
                 break;
             default:
                 console.log(event.target.id);
