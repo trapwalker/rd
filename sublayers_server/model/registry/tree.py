@@ -12,7 +12,6 @@ import re
 
 
 URI_PROTOCOL = 'reg'
-PROTOCOL_PREFIX = 'reg://'
 
 
 class RegistryError(Exception):
@@ -79,6 +78,8 @@ class NamespaceMeta(AttrUpdaterMeta):
 
 class AbstractStorage(object):
 
+    uri_protocol = URI_PROTOCOL
+
     _RE_URI = re.compile(r'''
 	    ^
         (?:(?P<proto>\w+)://)?
@@ -116,6 +117,12 @@ class AbstractStorage(object):
         except ObjectNotFound:
             return default
 
+    def put(self, node):
+        raise Exception('Unimplemented abstract method')
+
+    def get_path_tuple(self, node):
+        raise Exception('Unimplemented abstract method')
+
 
 
 class Registry(AbstractStorage):
@@ -123,7 +130,7 @@ class Registry(AbstractStorage):
         super(Registry, self).__init__()
         self.path = path
         if path is None:
-            self.root = Root(name='root', registry=self, doc=u'Корневой узел реестра')
+            self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра')
         else:
             self.root = self.load(path)
 
@@ -138,13 +145,24 @@ class Registry(AbstractStorage):
         node = self.root
         while path:
             name = path.pop(0)
-            next_node = node.childs.get(name)
+            next_node = node._childs.get(name)
             if next_node is None:
                 raise ObjectNotFound('Node "{}" is not found in the node "{}" by link: {}'.format(
                     name, node.name, item))
             node = next_node
 
         return node
+
+    def put(self, node):
+        if not hasattr(node, '_childs'):
+            node._childs = {}
+
+        parent = node.parent
+        if parent:
+            assert parent.storage is self
+            parent._childs[node.name] = node  # todo: use weakref
+        else:
+            self.root = node
 
     def _load_node(self, path, parent):
         attrs = {}
@@ -164,12 +182,12 @@ class Registry(AbstractStorage):
             cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
             if cls is None:
                 raise NodeClassError(
-                    'Unregistered registry class ({}) found into the path: {}'.format(class_name, path))
+                    'Unknown registry class ({}) found into the path: {}'.format(class_name, path))
         cls = cls or parent and parent.__class__
         if cls is None:
             raise NodeClassError('Node class unspecified on path: {}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
-        return cls(name=name, parent=parent, registry=self, values=attrs)
+        return cls(name=name, parent=parent, storage=self, values=attrs)
 
     def load(self, path):
         root = None
@@ -179,12 +197,23 @@ class Registry(AbstractStorage):
             node = self._load_node(pth, parent)
             if node:
                 if parent is None:
-                    root = node  # todo need refactoring
+                    root = node  # todo: optimize
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
                     if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                         stack.append((next_path, node))
         return root
+
+    def get_path_tuple(self, node):
+        # todo: cache
+        path = []
+        while node is not self.root:
+            assert node.storage is self, 'THis node from other storage'
+            path.append(node.name)
+            node = node.parent
+
+        path.reverse()
+        return path
 
 
 class Persistent(object):
@@ -196,39 +225,35 @@ class Node(Persistent):
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     doc = DocAttribute()
 
-    def __getstate__(self):
-        do_not_store = ('registry', 'childs',)
-        log.debug('%s.__getstate__', self)
-        d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
-        return d
-
-    @property
-    def path_tuple(self):
-        # todo: cache
-        if self is self.registry.root:
-            return ()
-        else:
-            parent = self.parent
-            return (parent.path_tuple if parent else ()) + (self.name,)
-
-    @property
-    def path(self):
-        return '/' + '/'.join(self.path_tuple)
-
-    @property
-    def uri(self):
-        return '{}{}'.format(PROTOCOL_PREFIX, self.path)
-
     def __init__(self, name=None, parent=None, values=None, storage=None, **kw):
+        """
+        @param str name: Name of node
+        @param Node parent: Parent of node
+        @param dict values: Override attributes values dict
+        @param AbstractStorage storage: Storage o this node
+        """
         super(Node, self).__init__()
         self.name = name
         self.parent = parent  # todo: parent must be an Attribute (!)
         self.values = values or {}
         self.values.update(kw)
-        self.childs = {}  # todo: use weakref
         self.storage = storage
-        if parent and parent.storage is storage:
-            parent._add_child(self)
+        if storage:
+            storage.put(self)
+
+    def __getstate__(self):
+        do_not_store = ('storage', '_childs',)
+        log.debug('%s.__getstate__', self)
+        d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
+        return d
+
+    @property
+    def path(self):
+        return '/' + '/'.join(self.storage.get_path_tuple(self))
+
+    @property
+    def uri(self):
+        return '{}://{}'.format(self.storage.uri_protocol, self.path)
 
     def attach(self, name, cls):
         assert self.name is None
@@ -236,7 +261,7 @@ class Node(Persistent):
         # todo: tags apply
 
     def __hash__(self):
-        return hash((self.registry, self.name))
+        return hash((self.storage, self.name))
 
     def __repr__(self):
         return '<{self.name}[{parent_name}]({overrides})>'.format(
@@ -244,10 +269,6 @@ class Node(Persistent):
             parent_name=self.parent.name if self.parent else '',
             overrides=', '.join(('{0}={1!r}'.format(*kv) for kv in sorted(self.values.items()))),
         )
-
-    def _add_child(self, child):
-        self.childs[child.name] = child
-        child.registry = self.registry
 
     def _get_attr_value(self, name, default):
         if name in self.values:
