@@ -88,12 +88,12 @@ class AbstractStorage(object):
         $
     ''', re.X)
 
-    @staticmethod
-    def parse_uri(uri):
+    @classmethod
+    def parse_uri(cls, uri):
         """Parse uri like 'protocol://path/to/the/some/object'
         and return tuple like: ('protocol', ['path', 'to', 'the', 'some', 'object'])
         """
-        m = AbstractStorage._RE_URI.match(uri)
+        m = cls._RE_URI.match(uri)
         if m is None:
             raise RegistryLinkFormatError('Wrong link format: "{}"'.format(uri))
 
@@ -128,7 +128,7 @@ class Registry(AbstractStorage):
             self.root = self.load(path)
 
     def __getitem__(self, item):
-        proto, storage, path = self.parse_uri(item) if isinstance(item, str) else ('reg', None, list(item))
+        proto, storage, path = self.parse_uri(item) if isinstance(item, str) else (URI_PROTOCOL, None, list(item))
         assert storage == 'registry' or storage is None, 'Wrong storage: {}'.format(storage)
         assert proto == URI_PROTOCOL or proto is None, 'Wrong protocol: {}'.format(proto)
 
