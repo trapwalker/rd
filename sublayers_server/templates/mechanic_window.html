@@ -40,14 +40,12 @@
         width: 492px;
         height: 100%;
         float: left;
-        background-color: rgba(50, 50, 0, 1);
     }
 
     .autoService-sectors {
         width: 242px;
         height: 100%;
         float: left;
-        background-color: rgba(100, 0, 100, 1);
     }
 
     .autoService-footer {
@@ -64,37 +62,48 @@
 <div class="autoServiceWindow-main">
     <div class="autoService-header"></div>
     <div class="autoService-center">
-        <div class="autoService-car"></div>
-        <div class="autoService-sectors"></div>
+        <div class="autoService-car">
+            {% raw open(car_svg_link).read() %}
+        </div>
+        <div class="autoService-sectors">
+            {% raw open(sector_svg_link).read() %}
+        </div>
     </div>
     <div class="autoService-footer"></div>
 </div>
 
-
-
-
-
-
-
-
 <script>
-    $(".mainMenuNucoilWindow-menu-button").click(function (event) {
-        // выключить у всех кнопок состояние активности // btnpressed - дурацкое название, но зато точно не занято
-        $('.mainMenuNucoilWindow-menu-button').removeClass('btnpressed');
-        // включить только заданной кнопке "активна"
-        $(this).addClass('btnpressed');
-        // выключить отображение всех дивов
-        $('.mainMenuNucoilWindow-page-div').css('display', 'none'); // лучше тоже сделать через классы
-        // включить отображение только нужного дива (дата-атрибут - html5 атрибут, очень удобный...!)
-        // сейчас сделал на айдишниках, но можно сделать и на классах, так как у тебя классы тут разные
-        $('#' + $(this).data('page_id')).css('display', 'block');
+    // Подсветка слотов
+    function setSlotOpacity(slot_name, opacity) {
+        $("#top_" + slot_name).css("opacity", opacity);
+        $("#side_" + slot_name).css("opacity", opacity);
+    }
+    {% for slot in car_slots %}
+    $("#top_{{slot}}").mouseenter(function() {
+        setSlotOpacity("{{slot}}", 0.8);
+    });
+    $("#side_{{slot}}").mouseenter(function() {
+        setSlotOpacity("{{slot}}", 0.8);
     });
 
-    // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
-    // открывании окна правильно отрабатывала подсветка
-    $(".mainMenuNucoilWindow-menu-button").first().click();
-
-    $('.mainMenuNucoilWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
-        console.log('111');
+    $("#top_{{slot}}").mouseleave(function() {
+        setSlotOpacity("{{slot}}", 0.5);
     });
+    $("#side_{{slot}}").mouseleave(function() {
+        setSlotOpacity("{{slot}}", 0.5);
+    });
+    {% end %}
+
+    // Подсветка секторов
+    function setSectorOpacity(sector_name, opacity) {
+        $("#sector_" + sector_name).css("opacity", opacity);
+    }
+    {% for sector in ['front', 'back', 'left', 'right'] %}
+    $("#sector_{{sector}}").mouseenter(function() {
+        setSectorOpacity("{{sector}}", 1);
+    });
+    $("#sector_{{sector}}").mouseleave(function() {
+        setSectorOpacity("{{sector}}", 0.3);
+    });
+    {% end %}
 </script>

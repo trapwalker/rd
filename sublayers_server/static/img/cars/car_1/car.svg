@@ -27,7 +27,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="192.57143"
+     inkscape:cx="197.57143"
      inkscape:cy="172.10674"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
@@ -70,28 +70,28 @@
        width="32.163956"
        height="32.163956"
        x="99.560883"
-       y="47.989449" />
+       y="41.989449" />
     <rect
        style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="top_slot_br"
        width="32.163956"
        height="32.163956"
        x="98.918022"
-       y="99.632309" />
+       y="97.632309" />
     <rect
        style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="top_slot_cc"
        width="32.163956"
        height="32.163956"
-       x="226.06088"
-       y="68.91803" />
+       x="221.34659"
+       y="69.775177" />
     <rect
        style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="top_slot_fc"
        width="32.163956"
        height="32.163956"
-       x="332.34659"
-       y="68.918022" />
+       x="331.63229"
+       y="69.632309" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -121,26 +121,26 @@
        preserveAspectRatio="none"
        height="73"
        width="327" />
+    <rect
+       style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="side_slot_br"
+       width="32.163956"
+       height="32.163956"
+       x="98.918022"
+       y="211.63231" />
+    <rect
+       style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="side_slot_cc"
+       width="32.163956"
+       height="32.163956"
+       x="221.06087"
+       y="189.0609" />
+    <rect
+       style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="side_slot_fc"
+       width="32.163956"
+       height="32.163956"
+       x="331.77518"
+       y="210.20374" />
   </g>
-  <rect
-     style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-     id="rect4190-7"
-     width="32.163956"
-     height="32.163956"
-     x="98.918022"
-     y="211.63231" />
-  <rect
-     style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-     id="rect4190-0"
-     width="32.163956"
-     height="32.163956"
-     x="225.34659"
-     y="186.48947" />
-  <rect
-     style="opacity:0.5;fill:#00ff00;fill-opacity:0.14214047;stroke:#00ff00;stroke-width:0.978903;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-     id="rect4190-0-2"
-     width="32.163956"
-     height="32.163956"
-     x="331.77518"
-     y="211.06088" />
 </svg>

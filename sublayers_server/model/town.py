@@ -97,6 +97,5 @@ class Town(MapLocation):
 
 class GasStation(MapLocation):
     def __init__(self, observing_range=BALANCE.GasStation.observing_range, **kw):
-
         super(GasStation, self).__init__(svg_link='static/img/gas_station/gas_station.svg',
                                          observing_range=observing_range, **kw)
