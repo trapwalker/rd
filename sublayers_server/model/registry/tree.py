@@ -68,14 +68,6 @@ class PersistentMeta(AttrUpdaterMeta):
             value.attach(name=name, cls=self)
 
 
-class NamespaceMeta(AttrUpdaterMeta):
-
-    def update_attr(self, name, value):
-        super(NamespaceMeta, self).update_attr(name, value)
-        if isinstance(value, Node):
-            value.attach(name=name, cls=self)
-
-
 class AbstractStorage(object):
 
     uri_protocol = URI_PROTOCOL
@@ -122,7 +114,6 @@ class AbstractStorage(object):
 
     def get_path_tuple(self, node):
         raise Exception('Unimplemented abstract method')
-
 
 
 class Registry(AbstractStorage):
@@ -299,10 +290,6 @@ class Dumper(yaml.Dumper):
 
 class Root(Node):
     pass
-
-
-class Container(object):
-    __metaclass__ = NamespaceMeta
 
 
 if __name__ == '__main__':
