@@ -116,6 +116,17 @@ class AbstractStorage(object):
     def get_path_tuple(self, node):
         raise Exception('Unimplemented abstract method')
 
+    def get_path(self, node):
+        raise Exception('Unimplemented abstract method')
+
+    def get_uri(self, node):
+        raise Exception('Unimplemented abstract method')
+
+
+class Collection(AbstractStorage):
+    def __init__(self, name=None):
+        pass
+
 
 class Registry(AbstractStorage):
     def __init__(self, path=None):
@@ -219,6 +230,12 @@ class Registry(AbstractStorage):
         path.reverse()
         return path
 
+    def get_path(self, node):
+        return '/' + '/'.join(self.get_path_tuple(node))
+
+    def get_uri(self, node):
+        return '{}://{}'.format(self.uri_protocol, self.get_path(node))
+
 
 class Persistent(object):
     __metaclass__ = PersistentMeta
@@ -255,11 +272,11 @@ class Node(Persistent):
 
     @property
     def path(self):
-        return '/' + '/'.join(self.storage.get_path_tuple(self))
+        return self.storage.get_path(self)
 
     @property
     def uri(self):
-        return '{}://{}'.format(self.storage.uri_protocol, self.path)
+        return self.storage.get_uri(self)
 
     def attach(self, name, cls):
         assert self.name is None
