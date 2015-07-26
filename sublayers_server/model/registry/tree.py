@@ -5,8 +5,9 @@ log = logging.getLogger(__name__)
 
 from attr import Attribute, DocAttribute
 
-from collections import deque, OrderedDict, namedtuple
-import yaml  # todo: extract serialization layer
+from collections import deque, OrderedDict
+import yaml
+import yaml.scanner  # todo: extract serialization layer
 import os
 import re
 
@@ -73,7 +74,7 @@ class AbstractStorage(object):
     uri_protocol = URI_PROTOCOL
 
     _RE_URI = re.compile(r'''
-	    ^
+        ^
         (?:(?P<proto>\w+)://)?
         (?P<storage>[^/]+)?
         (?P<path>(?:/\w+)*)
@@ -163,7 +164,7 @@ class Registry(AbstractStorage):
                 with open(p) as attr_file:
                     try:
                         d = yaml.load(attr_file)
-                    except yaml.ScannerError as e:
+                    except yaml.scanner.ScannerError as e:
                         raise RegistryNodeFormatError(e)
                     attrs.update(d)
 
