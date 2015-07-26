@@ -136,7 +136,7 @@ class Registry(AbstractStorage):
         node = self.root
         while path:
             name = path.pop(0)
-            next_node = node._childs.get(name)
+            next_node = node._subnodes.get(name)
             if next_node is None:
                 raise ObjectNotFound('Node "{}" is not found in the node "{}" by link: {}'.format(
                     name, node.name, item))
@@ -145,17 +145,17 @@ class Registry(AbstractStorage):
         return node
 
     def put(self, node):
-        if not hasattr(node, '_childs'):
-            node._childs = {}
+        if not hasattr(node, '_subnodes'):
+            node._subnodes = {}
 
-        parent = node.parent
-        if parent:
-            assert parent.storage is self
-            parent._childs[node.name] = node  # todo: use weakref
+        owner = node.owner
+        if owner:
+            assert owner.storage is self
+            owner._subnodes[node.name] = node
         else:
             self.root = node
 
-    def _load_node(self, path, parent):
+    def _load_node(self, path, owner):
         attrs = {}
         for f in os.listdir(path):
             p = os.path.join(path, f)
@@ -174,20 +174,32 @@ class Registry(AbstractStorage):
             if cls is None:
                 raise NodeClassError(
                     'Unknown registry class ({}) found into the path: {}'.format(class_name, path))
+
+        # todo: get parent
+        parent = None
+        parent_addr = attrs.pop('__parent__', None)
+        if parent_addr:
+            parent = self.get(parent_addr, None)
+            if parent is None:
+                raise ObjectNotFound("Can't resolve parent link")  # todo: make lazy resolving
+
+        if parent is None:  # todo: make option 'owner_is_parent_by_default'
+            parent = owner
+
         cls = cls or parent and parent.__class__
         if cls is None:
             raise NodeClassError('Node class unspecified on path: {}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
-        return cls(name=name, parent=parent, storage=self, values=attrs)
+        return cls(name=name, parent=parent, owner=owner, storage=self, values=attrs)
 
     def load(self, path):
         root = None
         stack = deque([(path, None)])
         while stack:
-            pth, parent = stack.pop()
-            node = self._load_node(pth, parent)
+            pth, owner = stack.pop()
+            node = self._load_node(pth, owner)
             if node:
-                if parent is None:
+                if owner is None:
                     root = node  # todo: optimize
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
@@ -201,7 +213,7 @@ class Registry(AbstractStorage):
         while node is not self.root:
             assert node.storage is self, 'THis node from other storage'
             path.append(node.name)
-            node = node.parent
+            node = node.owner
 
         path.reverse()
         return path
@@ -216,16 +228,18 @@ class Node(Persistent):
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     doc = DocAttribute()
 
-    def __init__(self, name=None, parent=None, values=None, storage=None, **kw):
+    def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, **kw):
         """
         @param str name: Name of node
         @param Node parent: Parent of node
         @param dict values: Override attributes values dict
         @param AbstractStorage storage: Storage o this node
+        @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
         self.name = name
-        self.parent = parent  # todo: parent must be an Attribute (!)
+        self.parent = parent  # todo: parent must be an Attribute (?)
+        self.owner = owner
         self.values = values or {}
         self.values.update(kw)
         self.storage = storage
@@ -233,7 +247,7 @@ class Node(Persistent):
             storage.put(self)
 
     def __getstate__(self):
-        do_not_store = ('storage', '_childs',)
+        do_not_store = ('storage', '_subnodes',)
         log.debug('%s.__getstate__', self)
         d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         return d
@@ -255,11 +269,8 @@ class Node(Persistent):
         return hash((self.storage, self.name))
 
     def __repr__(self):
-        return '<{self.name}[{parent_name}]({overrides})>'.format(
-            self=self,
-            parent_name=self.parent.name if self.parent else '',
-            overrides=', '.join(('{0}={1!r}'.format(*kv) for kv in sorted(self.values.items()))),
-        )
+        # todo: make correct representation
+        return '<{self.uri}>'.format(self=self)
 
     def _get_attr_value(self, name, default):
         if name in self.values:
