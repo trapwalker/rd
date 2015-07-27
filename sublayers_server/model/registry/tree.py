@@ -39,6 +39,14 @@ class ObjectNotFound(RegistryError):
     pass
 
 
+class WrongStorageError(RegistryError):
+    pass
+
+
+class StorageNotFound(RegistryError):
+    pass
+
+
 class AttrUpdaterMeta(type):
     def __init__(cls, name, bases, attrs):
         super(AttrUpdaterMeta, cls).__init__(name, bases, attrs)
@@ -71,6 +79,12 @@ class PersistentMeta(AttrUpdaterMeta):
 
 class AbstractStorage(object):
 
+    def __init__(self, name=None, dispatcher=None):
+        self.name = name
+        self.dispatcher = dispatcher
+        if dispatcher:
+            dispatcher.add_storage(self)
+
     uri_protocol = URI_PROTOCOL
 
     _RE_URI = re.compile(r'''
@@ -98,16 +112,28 @@ class AbstractStorage(object):
         path = path.split('/')
         return proto, storage, path
 
-    def test_uri(self, uri):
-        return False
+    def get_local(self, path):
+        raise Exception('Unimplemented abstract method')
+
+    def get_node(self, proto, storage, path):
+        if storage is None or storage == self.name:
+            # todo: test protocol
+            return self.get_local(path)
+
+        dispatcher = self.dispatcher
+        if dispatcher:
+            return dispatcher.get_node(path)
+
+        raise WrongStorageError("Can't resolve storage {}".format(storage))
 
     def __getitem__(self, item):
-        pass
+        proto, storage, path = self.parse_uri(item) if isinstance(item, str) else (URI_PROTOCOL, None, list(item))
+        return self.get_node(proto, storage, path)
 
     def get(self, index, default=None):
         try:
             return self[index]
-        except ObjectNotFound:
+        except (ObjectNotFound, WrongStorageError, StorageNotFound):
             return default
 
     def put(self, node):
@@ -122,26 +148,53 @@ class AbstractStorage(object):
     def get_uri(self, node):
         raise Exception('Unimplemented abstract method')
 
+    def close(self):
+        dispatcher = self.dispatcher
+        if dispatcher:
+            dispatcher.remove_storage(self)
+            self.dispatcher = None
+
+
+class Dispatcher(AbstractStorage):
+    def __init__(self, storage_list=None, **kw):
+        super(Dispatcher, self).__init__(**kw)
+        self.storage_map = {}
+        for storage in storage_list:
+            self.add_storage(storage)
+
+    def add_storage(self, storage):
+        self.storage_map[storage.name] = storage
+
+    def remove_storage(self, storage):
+        name = storage if isinstance(storage, basestring) else storage.name
+        del(self.storage_map[name])
+
+    def get_node(self, proto, storage_name, path):
+        try:
+            storage = self.storage_map[storage_name]
+        except KeyError:
+            raise StorageNotFound('Storage {} not found. [{}] avalable'.format(
+                storage_name, ', '.join(self.storage_map.keys())))
+
+        return storage.get_local(path)
+
 
 class Collection(AbstractStorage):
-    def __init__(self, name=None):
-        pass
+    def __init__(self, **kw):
+        super(Collection, self).__init__(**kw)
 
 
+# noinspection PyProtectedMember
 class Registry(AbstractStorage):
-    def __init__(self, path=None):
-        super(Registry, self).__init__()
+    def __init__(self, path=None, **kw):
+        super(Registry, self).__init__(**kw)
         self.path = path
         if path is None:
             self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра')
         else:
             self.root = self.load(path)
 
-    def __getitem__(self, item):
-        proto, storage, path = self.parse_uri(item) if isinstance(item, str) else (URI_PROTOCOL, None, list(item))
-        assert storage == 'registry' or storage is None, 'Wrong storage: {}'.format(storage)
-        assert proto == URI_PROTOCOL or proto is None, 'Wrong protocol: {}'.format(proto)
-
+    def get_local(self, path):
         if path and path[0] == '':
             path = path[1:]
 
@@ -150,8 +203,8 @@ class Registry(AbstractStorage):
             name = path.pop(0)
             next_node = node._subnodes.get(name)
             if next_node is None:
-                raise ObjectNotFound('Node "{}" is not found in the node "{}" by link: {}'.format(
-                    name, node.name, item))
+                raise ObjectNotFound('Node "{}" is not found in the node "{}" by path: {}'.format(
+                    name, node.name, path))
             node = next_node
 
         return node
@@ -278,6 +331,7 @@ class Node(Persistent):
     def uri(self):
         return self.storage.get_uri(self)
 
+    # noinspection PyUnusedLocal
     def attach(self, name, cls):
         assert self.name is None
         self.name = name
@@ -326,4 +380,3 @@ if __name__ == '__main__':
     # from pickle import dumps, loads
     # import jsonpickle as jp
     pass
-
