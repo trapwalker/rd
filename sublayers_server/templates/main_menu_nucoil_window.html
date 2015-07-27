@@ -1,6 +1,6 @@
 ﻿{% set window_caption = 'NUKE:\Нукойл>' %}
 
-<style>
+<style xmlns="http://www.w3.org/1999/html">
     .mainMenuNucoilWindow-main {
         position: relative;
         width: 660px;
@@ -610,6 +610,64 @@
         float: left;
     }
 
+    .mainMenuNucoilWindow-body-appeals-left {
+        border-right: solid 1px #00f150;
+        width: 166px;
+        height: 340px;
+        margin-top: 10px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-theme-closed {
+        float: left;
+        margin-left: 5px;
+        color: #1c8804;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-theme-opened {
+        float: left;
+        margin-left: 5px;
+        color: #30fc00;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-title-opened {
+        float: left;
+        margin-left: 15px;
+        color: #30fc00;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-title-opened {
+        float: left;
+        margin-left: 15px;
+        color: #30fc00;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-reply {
+        float: left;
+        margin-left: 25px;
+        color: #1c8804;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 135px;
+        text-overflow: ellipsis;
+        word-wrap: normal;
+    }
+
     .mainMenuNucoilWindow-body-appeals-up {
         width: 463px;
         height: 85px;
@@ -617,14 +675,89 @@
         float: left;
         color: #1c8804;
         font-family: Nouveau_IBM;
-        border-bottom: solid 1px #00f150;
     }
 
     .mainMenuNucoilWindow-body-appeals-center {
-        width: 443px;
-        height: 187px;
-        margin: 10px 20px 0px 20px;
+        width: 465px;
+        height: 188px;
+        margin: 0px 10px 10px 10px;
         float: left;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-message {
+        border: solid 1px #00f150;
+        width: 465px;
+        height: 145px;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-message-title {
+        color: #30fc00;
+        border-bottom: solid 1px #00f150;
+        font-family: Nouveau_IBM;
+        margin: 0px 10px 0px 10px;
+        height: 23px;
+        line-height: 23px;
+        cursor: text;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-message-text {
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        margin: 10px 10px 0px 10px;
+        cursor: text;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-theme-technical {
+        float: left;
+        cursor: pointer;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+        margin-top: 5px;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-theme-complaints {
+        float: left;
+        margin-left: 9px;
+        margin-top: 5px;
+        cursor: pointer;
+        color: #1c8804;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-theme-questions {
+        float: left;
+        margin-left: 9px;
+        margin-top: 5px;
+        cursor: pointer;
+        color: #1c8804;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-buttons-back {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin-top: 5px;
+        cursor: pointer;
+        font: 12pt Nouveau_IBM;
+        float: left;
+        width: 122px;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-buttons-send {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin: 5px 0px 0px 217px;
+        cursor: pointer;
+        font: 12pt Nouveau_IBM;
+        float: left;
+        width: 122px;
     }
 </style>
 
@@ -782,15 +915,44 @@
 
     <div id="mainMenuNucoilWindow-body-appeals_id"
          class="mainMenuNucoilWindow-body-insurance mainMenuNucoilWindow-page-div">
-        <div class="mainMenuNucoilWindow-body-insurance-left">
+        <div class="mainMenuNucoilWindow-body-appeals-left">
             <div class="mainMenuNucoilWindow-body-insurance-left-name">Ваши сообщения:</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-theme-closed">&#9658; Тех. проблемы</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-theme-closed">&#9658; Жалобы на игроков</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-theme-opened">&#9660; Вопросы</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-reply">Re:Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-reply">Re2:Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-reply">Re3:Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?#3</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?#4</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?#5</div>
         </div>
         <div class="mainMenuNucoilWindow-body-appeals-up">
             Уважаемый Vasya78, на этой странице Вы можете насрать в душу и публично покарать каждого негодяя,
             кой смеет читерствовать в этой игре, или же морально уничтожить админов, оповестивши их,
             что проект - угэ, багов - море.
         </div>
-        <div class="mainMenuNucoilWindow-body-appeals-center"></div>
+        <div class="mainMenuNucoilWindow-body-appeals-center">
+            <div class="mainMenuNucoilWindow-body-appeals-center-message">
+                <div class="mainMenuNucoilWindow-body-appeals-center-message-title">Почему не еду?</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-message-text">
+                    Одмине! Вы олене! Игра ваша шлак, и йа вас всех вычислю по ойпи, лична найду
+                    и выпилю кровавейше и жэстачайше! Каждага! Пащады нибудед!<br/>
+                    <br/>
+                    Ваш школьнег!
+                </div>
+            </div>
+            <div class="mainMenuNucoilWindow-body-appeals-center-theme">
+                <div class="mainMenuNucoilWindow-body-appeals-center-theme-technical">[х] Технические проблемы</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-theme-complaints">[ ] Жалобы на игроков</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-theme-questions">[ ] Вопросы</div>
+            </div>
+            <div class="mainMenuNucoilWindow-body-appeals-center-buttons">
+                <div class="mainMenuNucoilWindow-body-appeals-center-buttons-back">Назад</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-buttons-send">Отправить</div>
+            </div>
+        </div>
         <div class="mainMenuNucoilWindow-body-insurance-subscription">
             <div class="mainMenuNucoilWindow-body-insurance-subscription-left-picture">Картинка</div>
             <div class="mainMenuNucoilWindow-body-insurance-subscription-text">
