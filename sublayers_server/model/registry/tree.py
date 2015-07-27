@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from attr import Attribute, DocAttribute
 
 from collections import deque, OrderedDict
+import shelve
+from uuid import uuid4 as uid_func
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
@@ -112,8 +114,9 @@ class AbstractStorage(object):
         path = path.split('/')
         return proto, storage, path
 
-    def get_local(self, path):
-        raise Exception('Unimplemented abstract method')
+    @staticmethod
+    def gen_uid():
+        return uid_func()
 
     def get_node(self, proto, storage, path):
         if storage is None or storage == self.name:
@@ -136,23 +139,26 @@ class AbstractStorage(object):
         except (ObjectNotFound, WrongStorageError, StorageNotFound):
             return default
 
-    def put(self, node):
-        raise Exception('Unimplemented abstract method')
-
-    def get_path_tuple(self, node):
-        raise Exception('Unimplemented abstract method')
-
     def get_path(self, node):
-        raise Exception('Unimplemented abstract method')
+        return '/' + '/'.join(self.get_path_tuple(node))
 
     def get_uri(self, node):
-        raise Exception('Unimplemented abstract method')
+        return '{}://{}'.format(self.uri_protocol, self.get_path(node))
 
     def close(self):
         dispatcher = self.dispatcher
         if dispatcher:
             dispatcher.remove_storage(self)
             self.dispatcher = None
+
+    def get_local(self, path):
+        raise Exception('Unimplemented abstract method')
+
+    def put(self, node):
+        raise Exception('Unimplemented abstract method')
+
+    def get_path_tuple(self, node):
+        raise Exception('Unimplemented abstract method')
 
 
 class Dispatcher(AbstractStorage):
@@ -180,8 +186,26 @@ class Dispatcher(AbstractStorage):
 
 
 class Collection(AbstractStorage):
-    def __init__(self, **kw):
+    def __init__(self, fn, **kw):
         super(Collection, self).__init__(**kw)
+        self.fn = fn
+        self._raw_storage = shelve.open(fn)
+
+    def make_key(self, path):
+        return path if isinstance(path, basestring) else ('/' + '/'.join(path))
+
+    def close(self):
+        self._raw_storage.close()
+        super(Collection,self).close()
+
+    def get_local(self, path):
+        return self._raw_storage[path]
+
+    def put(self, node):
+        self._raw_storage[node.path] = node
+
+    def get_path_tuple(self, node):
+        return [node.name]
 
 
 # noinspection PyProtectedMember
@@ -189,10 +213,7 @@ class Registry(AbstractStorage):
     def __init__(self, path=None, **kw):
         super(Registry, self).__init__(**kw)
         self.path = path
-        if path is None:
-            self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра')
-        else:
-            self.root = self.load(path)
+        self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
 
     def get_local(self, path):
         if path and path[0] == '':
@@ -283,12 +304,6 @@ class Registry(AbstractStorage):
         path.reverse()
         return path
 
-    def get_path(self, node):
-        return '/' + '/'.join(self.get_path_tuple(node))
-
-    def get_uri(self, node):
-        return '{}://{}'.format(self.uri_protocol, self.get_path(node))
-
 
 class Persistent(object):
     __metaclass__ = PersistentMeta
@@ -316,6 +331,10 @@ class Node(Persistent):
         self.storage = storage
         if storage:
             storage.put(self)
+
+    def instantiate(self, overrides=None):
+        # todo: test to abstract sign
+        inst = self.__class__()
 
     def __getstate__(self):
         do_not_store = ('storage', '_subnodes',)
