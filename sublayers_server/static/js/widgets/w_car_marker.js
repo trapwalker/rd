@@ -31,11 +31,8 @@ var WCarMarker = (function (_super) {
         marker.addTo(map);
         switch (car.cls) {
             case 'Town':
-                marker.on('click', onClickTownMarker);
-                marker.obj_id = car.ID;
-                break;
             case 'GasStation':
-                marker.on('click', onClickGasStationMarker);
+                marker.on('click', onClickLocationMarker);
                 marker.obj_id = car.ID;
                 break;
             default:
@@ -177,12 +174,8 @@ function onMouseOutForLabels() {
     this.getLabel().setOpacity(0.4);
 }
 
-function onClickTownMarker() {
-    clientManager.sendEnterToTown(this.obj_id)
-}
-
-function onClickGasStationMarker() {
-    clientManager.sendEnterToGasStation(this.obj_id)
+function onClickLocationMarker() {
+    clientManager.sendEnterToLocation(this.obj_id)
 }
 
 function onClickUserCarMarker() {

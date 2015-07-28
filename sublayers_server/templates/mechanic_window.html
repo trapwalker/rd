@@ -1,0 +1,109 @@
+<style>
+    #townAutoServicePageWrap {
+        position: absolute;
+        top: 140px;
+        left: 592px;
+    }
+
+    .autoServiceWindow-main {
+        position: relative;
+        width: 734px;
+        height: 661px;
+        background-color: rgba(0, 0, 0, 0);
+        color: #ffffff;
+        font: 12pt FreePixel;
+        cursor: default;
+    }
+
+    .autoService-header {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 692px;
+        height: 205px;
+        padding-bottom: 6px;
+        background-color: rgba(50, 50, 50, 1);
+    }
+
+    .autoService-center {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 734px;
+        height: 330px;
+        padding-bottom: 5px;
+    }
+
+    .autoService-car {
+        width: 492px;
+        height: 100%;
+        float: left;
+    }
+
+    .autoService-sectors {
+        width: 242px;
+        height: 100%;
+        float: left;
+    }
+
+    .autoService-footer {
+        position: relative;
+        margin-right: auto;
+        margin-left: auto;
+        width: 606px;
+        height: 126px;
+        background-color: rgba(50, 0, 50, 1);
+    }
+
+</style>
+
+<div class="autoServiceWindow-main">
+    <div class="autoService-header"></div>
+    <div class="autoService-center">
+        <div class="autoService-car">
+            {% raw open(car_svg_link).read() %}
+        </div>
+        <div class="autoService-sectors">
+            {% raw open(sector_svg_link).read() %}
+        </div>
+    </div>
+    <div class="autoService-footer"></div>
+</div>
+
+<script>
+    // Подсветка слотов
+    function setSlotOpacity(slot_name, opacity) {
+        $("#top_" + slot_name).css("opacity", opacity);
+        $("#side_" + slot_name).css("opacity", opacity);
+    }
+    {% for slot in car_slots %}
+    $("#top_{{slot}}").mouseenter(function() {
+        setSlotOpacity("{{slot}}", 0.8);
+    });
+    $("#side_{{slot}}").mouseenter(function() {
+        setSlotOpacity("{{slot}}", 0.8);
+    });
+
+    $("#top_{{slot}}").mouseleave(function() {
+        setSlotOpacity("{{slot}}", 0.5);
+    });
+    $("#side_{{slot}}").mouseleave(function() {
+        setSlotOpacity("{{slot}}", 0.5);
+    });
+    {% end %}
+
+    // Подсветка секторов
+    function setSectorOpacity(sector_name, opacity) {
+        $("#sector_" + sector_name).css("opacity", opacity);
+    }
+    {% for sector in ['front', 'back', 'left', 'right'] %}
+    $("#sector_{{sector}}").mouseenter(function() {
+        setSectorOpacity("{{sector}}", 1);
+    });
+    $("#sector_{{sector}}").mouseleave(function() {
+        setSectorOpacity("{{sector}}", 0.3);
+    });
+    {% end %}
+</script>

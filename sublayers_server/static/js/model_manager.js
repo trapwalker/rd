@@ -613,33 +613,29 @@ var ClientManager = (function () {
         chat.party_info_message(event);
     };
 
-    ClientManager.prototype.EnterToTown = function (event) {
-        //console.log('ClientManager.prototype.EnterToTown', event);
-        var town_uid = event.town.uid;
+    ClientManager.prototype.EnterToLocation = function (event) {
+        //console.log('ClientManager.prototype.EnterToLocation', event);
+        var location_uid = event.location.uid;
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
-            url: "http://" + location.host + '/api/town',
-            data:  { town_id: event.town.uid },
+            url: "http://" + location.host + '/api/location',
+            data:  { location_id: event.location.uid },
             success: function(data){
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
-                townVisitorsManager.update_visitors();
+                locationVisitorsManager.update_visitors();
             }
         });
     };
 
-    ClientManager.prototype.ExitFromTown = function (event) {
+    ClientManager.prototype.ExitFromLocation = function (event) {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
-        townVisitorsManager.clear_visitors();
-    };
-
-    ClientManager.prototype.EnterToGasStation = function (event) {
-        console.log('ClientManager.prototype.EnterToGasStation', event);
+        locationVisitorsManager.clear_visitors();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -662,12 +658,12 @@ var ClientManager = (function () {
         chat.deactivateParty(event.room_name);
     };
 
-    ClientManager.prototype.ChangeTownVisitorsMessage = function(event){
-        //console.log('ClientManager.prototype.TownChangeVisitor', event);
+    ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
+        //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
         if (event.action)
-            townVisitorsManager.add_visitor(event.visitor);
+            locationVisitorsManager.add_visitor(event.visitor);
         else
-            townVisitorsManager.del_visitor(event.visitor);
+            locationVisitorsManager.del_visitor(event.visitor);
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
@@ -944,25 +940,25 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendEnterToTown = function (town_id) {
-        //console.log('ClientManager.prototype.sendEnterToTown');
+    ClientManager.prototype.sendEnterToLocation = function (location_id) {
+        //console.log('ClientManager.prototype.sendEnterToLocation');
         var mes = {
-            call: "enter_to_town",
+            call: "enter_to_location",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                town_id: town_id
+                location_id: location_id
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendExitFromTown = function (town_id) {
+    ClientManager.prototype.sendExitFromLocation = function (location_id) {
         var mes = {
-            call: "exit_from_town",
+            call: "exit_from_location",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                town_id: town_id
+                location_id: location_id
             }
         };
         rpcCallList.add(mes);
@@ -1036,19 +1032,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendEnterToGasStation = function (station_id) {
-        //console.log('ClientManager.prototype.sendEnterToGasStation');
-        var mes = {
-            call: "enter_to_gas_station",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                station_id: station_id
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
     ClientManager.prototype.sendGetBalanceCls = function (balance_cls_name) {
         console.log('ClientManager.prototype.sendGetBalanceCls', balance_cls_name);
         var mes = {
@@ -1061,7 +1044,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     ClientManager.prototype.sendActivateItem = function (item) {
         console.log('ClientManager.prototype.sendActivateItem', item);

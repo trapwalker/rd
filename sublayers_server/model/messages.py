@@ -414,56 +414,43 @@ class ChangeAltitude(Message):
         return d
 
 
-class EnterToTown(Message):
-    def __init__(self, town, **kw):
-        super(EnterToTown, self).__init__(**kw)
-        self.town = town
+class EnterToLocation(Message):
+    def __init__(self, location, **kw):
+        super(EnterToLocation, self).__init__(**kw)
+        self.location = location
 
     def as_dict(self):
-        d = super(EnterToTown, self).as_dict()
+        d = super(EnterToLocation, self).as_dict()
         d.update(
-            town=self.town.as_dict(time=self.time)
+            location=self.location.as_dict(time=self.time)
             )
         return d
 
 
-class ExitFromTown(Message):
-    def __init__(self, town, **kw):
-        super(ExitFromTown, self).__init__(**kw)
-        self.town = town
+class ExitFromLocation(Message):
+    def __init__(self, location, **kw):
+        super(ExitFromLocation, self).__init__(**kw)
+        self.location = location
 
     def as_dict(self):
-        d = super(ExitFromTown, self).as_dict()
+        d = super(ExitFromLocation, self).as_dict()
         d.update(
-            town=self.town.as_dict(time=self.time)
+            location=self.location.as_dict(time=self.time)
             )
         return d
 
 
-class ChangeTownVisitorsMessage(Message):
+class ChangeLocationVisitorsMessage(Message):
     def __init__(self, visitor_login, action, **kw):
-        super(ChangeTownVisitorsMessage, self).__init__(**kw)
+        super(ChangeLocationVisitorsMessage, self).__init__(**kw)
         self.visitor_login = visitor_login
         self.action = action
 
     def as_dict(self):
-        d = super(ChangeTownVisitorsMessage, self).as_dict()
+        d = super(ChangeLocationVisitorsMessage, self).as_dict()
         d.update(
             visitor=self.visitor_login,
             action=self.action
-            )
-        return d
-
-
-class EnterToGasStation(Message):
-    def __init__(self, station, **kw):
-        super(EnterToGasStation, self).__init__(**kw)
-        self.station = station
-
-    def as_dict(self):
-        d = super(EnterToGasStation, self).as_dict()
-        d.update(
-            station=self.station.as_dict(time=self.time)
             )
         return d
 

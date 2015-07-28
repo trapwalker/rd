@@ -43,7 +43,7 @@ class Agent(Object):
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 
         # текущий город, если агент не в городе то None
-        self.current_town = None
+        self.current_location = None
 
     @property
     def is_online(self):

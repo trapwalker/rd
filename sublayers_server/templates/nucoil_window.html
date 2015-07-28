@@ -1,11 +1,15 @@
-{% set window_caption = 'NUKE:\Нукойл>' %}
-
 <style>
+    #townNucoilPageWrap {
+        position: absolute;
+        top: 250px;
+        left: 625px;
+    }
+
     .mainMenuNucoilWindow-main {
         position: relative;
         width: 660px;
         height: 422px;
-        background-color: rgba(0, 0, 0, 0.75);
+        background-color: rgba(0, 0, 0, 0);
         color: #ffffff;
         font: 12pt FreePixel;
         cursor: default;
@@ -512,10 +516,4 @@
     // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
     // открывании окна правильно отрабатывала подсветка
     $(".mainMenuNucoilWindow-menu-button").first().click();
-
-    $('.mainMenuNucoilWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
-        console.log('111');
-    });
-
-    //inventoryList.showInventory({{ car_id }}, $('#mainMenuNucoilWindow-body-fuel_id').find('.inventory-{{ car_id }}').first())
 </script>

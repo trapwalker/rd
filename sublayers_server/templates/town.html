@@ -10,6 +10,9 @@
     <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
         {% include nucoil_window.html %}
     </div>
+    <div id="townAutoServicePageWrap" class="townPageWrap" style="display: none">
+        {% include mechanic_window.html %}
+    </div>
 </div>
 <script>
     // Открытие зданий
@@ -18,20 +21,57 @@
          $('#townNucoilPageWrap').css('display', 'block');
     }
 
+    function openAutoService() {
+         $('.townPageWrap').css('display', 'none');
+         $('#townAutoServicePageWrap').css('display', 'block');
+    }
+
     // Обработчики кнопок-зданий
     {% for i in xrange(10) %}
     $("#img_house{{i}}_off").mouseenter(function() {
         $("#img_house{{i}}_on").css("display", "block");
         $("#img_house{{i}}_off").css("display", "none");
+        $("#path_h{{i}}").css("opacity", "0.8");
+        $("#path_text_h{{i}}").css("opacity", "0.8");
     });
     $("#img_house{{i}}_on").mouseleave(function() {
         $("#img_house{{i}}_off").css("display", "block");
         $("#img_house{{i}}_on").css("display", "none");
+        $("#path_h{{i}}").css("opacity", "0.2");
+        $("#path_text_h{{i}}").css("opacity", "0.2");
     });
+    $("#path_h{{i}}").mouseenter(function(){
+        $("#img_house{{i}}_on").css("display", "block");
+        $("#img_house{{i}}_off").css("display", "none");
+        $("#path_h{{i}}").css("opacity", "0.8");
+        $("#path_text_h{{i}}").css("opacity", "0.8");
+    });
+    $("#path_h{{i}}").mouseleave(function(){
+        $("#img_house{{i}}_off").css("display", "block");
+        $("#img_house{{i}}_on").css("display", "none");
+        $("#path_h{{i}}").css("opacity", "0.2");
+        $("#path_text_h{{i}}").css("opacity", "0.2");
+    });
+
     $("#img_house{{i}}_on").click(function(event) {
         switch (event.target.id) {
             case "img_house5_on":
                 openNucoil();
+                break;
+            case "img_house2_on":
+                openAutoService();
+                break;
+            default:
+                console.log(event.target.id);
+        }
+    });
+    $("#path_h{{i}}").click(function(event) {
+        switch (event.target.id) {
+            case "path_h5":
+                openNucoil();
+                break;
+            case "path_h2":
+                openAutoService();
                 break;
             default:
                 console.log(event.target.id);
@@ -70,7 +110,7 @@
     {% end %}
 
     $("#btn_4_select").mouseup(function(event) {
-        clientManager.sendExitFromTown({{ town.uid }})
+        clientManager.sendExitFromLocation({{ town.uid }})
     });
 
     $("#btn_3_select").mouseup(function(event) {
@@ -83,30 +123,4 @@
         $('#layer1').css('display', 'block');
         $('#layer2').css('display', 'block');
     });
-
-
-
-
-    /* // подсветка градиентных заливок
-    $("#img_house1_off").mouseenter(function(){
-        $("#img_house1_on").css("display", "block");
-        $("#img_house1_off").css("display", "none");
-        $("#path_h1").css("opacity", "0.4");
-    });
-    $("#img_house1_on").mouseleave(function(){
-        $("#img_house1_off").css("display", "block");
-        $("#img_house1_on").css("display", "none");
-        $("#path_h1").css("opacity", "0.2");
-    });
-    $("#path_h1").mouseenter(function(){
-        $("#img_house1_on").css("display", "block");
-        $("#img_house1_off").css("display", "none");
-        $("#path_h1").css("opacity", "0.4");
-    });
-    $("#path_h1").mouseleave(function(){
-        $("#img_house1_off").css("display", "block");
-        $("#img_house1_on").css("display", "none");
-        $("#path_h1").css("opacity", "0.2");
-    });
-    */
 </script>
