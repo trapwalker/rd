@@ -8,6 +8,7 @@ class Attribute(object):
     def __init__(self, default=None, doc=None, caption=None):
         # todo: add param: null
         self.name = None
+        self._cache_name = None
         self.cls = None
         self.default = default
         self.doc = doc
@@ -36,6 +37,7 @@ class Attribute(object):
 
     def attach(self, name, cls):
         self.name = name
+        self._cache_name = name
         self.cls = cls
         # todo: global attribute registration
 
@@ -55,4 +57,21 @@ class DocAttribute(Attribute):
 
 class RegistryLink(Attribute):
     def __get__(self, obj, cls):
-        return obj.registry.get(super(RegistryLink, self).__get__(obj, cls))
+        if hasattr(obj, self._cache_name):
+            value = getattr(obj, self._cache_name)
+        else:
+            value = obj.storage.get(super(RegistryLink, self).__get__(obj, cls))
+            setattr(obj, self._cache_name, value)
+
+        return value
+
+    def __set__(self, obj, value):
+        setattr(obj, self._cache_name, value)
+        link = None if value is None else value.uri
+        super(RegistryLink, self).__set__(obj, link)
+
+
+class Slot(RegistryLink):
+    LOCK_URI = "reg://registry/items/slot_item/slot_lock"
+    def __init__(self, default=LOCK_URI, **kw):
+        super(Slot, self).__init__(default=default, **kw)
