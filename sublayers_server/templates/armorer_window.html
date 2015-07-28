@@ -1,0 +1,188 @@
+<style>
+    #townArmorerPageWrap {
+        position: absolute;
+        top: 140px;
+        left: 592px;
+    }
+
+    .armorerWindow-main {
+        position: relative;
+        width: 734px;
+        height: 661px;
+        cursor: default;
+    }
+
+    .armorer-header {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 692px;
+        height: 205px;
+        padding-bottom: 6px;
+    }
+
+    .armorer-info {
+        position: relative;
+        width: 170px;
+        top: 12px;
+        left: 15px;
+    }
+
+    .armorer-name {
+        position: relative;
+        top: 8px;
+        text-align: center;
+        color: #29F200;
+        font: 13pt Nouveau_IBM;
+    }
+
+    .armorer-center {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 734px;
+        height: 330px;
+        padding-bottom: 5px;
+    }
+
+    .armorer-car {
+        width: 492px;
+        height: 100%;
+        float: left;
+    }
+
+    .armorerSectors {
+        width: 242px;
+        height: 100%;
+        float: left;
+    }
+
+    .armorerSectors-slotName {
+        box-sizing: border-box;
+        padding-top: 15px;
+        height: 50px;
+        text-align: center;
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+    }
+
+    .armorerSectors-svg {
+        position: relative;
+        width: 220px;
+        height: 220px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .armorer-footer {
+        position: relative;
+        margin-right: auto;
+        margin-left: auto;
+        width: 606px;
+        height: 126px;
+    }
+
+    .armorer-footerLabel {
+        box-sizing: border-box;
+        padding-left: 70px;
+        height: 21px;
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+    }
+
+    .armorer-inventoryWrap {
+        width: 100%;
+        height: 105px;
+        overflow-x: scroll;
+    }
+
+    .armorer-itemWrap {
+        box-sizing: border-box;
+        width: 140px;
+        height: 100px;
+        float: left;
+        border: 1px solid white;
+    }
+</style>
+
+<div class="armorerWindow-main">
+    <div class="armorer-header">
+        <div class="armorer-info">
+            <img class="armorer-foto" src="{{ town.npc['armorer']['img'] }}" alt="Оружейник" />
+            <div class="armorer-name"> {{ town.npc['armorer']['name'] }} </div>
+        </div>
+    </div>
+    <div class="armorer-center">
+        <div class="armorer-car">
+            {% raw open(car_svg_link).read() %}
+        </div>
+        <div class="armorerSectors">
+            <div class="armorerSectors-slotName">Имя слота</div>
+            <div class="armorerSectors-svg">
+                {% raw open(sector_svg_link).read() %}
+            </div>
+
+        </div>
+    </div>
+    <div class="armorer-footer">
+        <div class="armorer-footerLabel">Инвентарь:</div>
+        <div class="armorer-inventoryWrap">
+            <div class="armorer-inventory"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*
+    Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
+    данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
+    горизонтальный слайдер будер расти вниз)
+    */
+    function resizeArmorerInventory() {
+        var inventory = $(".armorer-inventory:first");
+        var width = 0;
+        if (inventory) {
+            $(inventory).find('.armorer-itemWrap').each(function (index, element) {
+               width += $(element).outerWidth();
+            });
+            $(inventory).width(width);
+        }
+    }
+    resizeArmorerInventory();
+
+    // Подсветка слотов
+    function setSlotOpacity(slot_name, opacity) {
+        $("#top_" + slot_name).css("opacity", opacity);
+        $("#side_" + slot_name).css("opacity", opacity);
+    }
+    {% for slot in car_slots %}
+    $("#top_{{slot}}").mouseenter(function() {
+        setSlotOpacity("{{slot}}", 0.8);
+    });
+    $("#side_{{slot}}").mouseenter(function() {
+        setSlotOpacity("{{slot}}", 0.8);
+    });
+
+    $("#top_{{slot}}").mouseleave(function() {
+        setSlotOpacity("{{slot}}", 0.5);
+    });
+    $("#side_{{slot}}").mouseleave(function() {
+        setSlotOpacity("{{slot}}", 0.5);
+    });
+    {% end %}
+
+    // Подсветка секторов
+    function setSectorOpacity(sector_name, opacity) {
+        $("#sector_" + sector_name).css("opacity", opacity);
+    }
+    {% for sector in ['front', 'back', 'left', 'right'] %}
+    $("#sector_{{sector}}").mouseenter(function() {
+        setSectorOpacity("{{sector}}", 1);
+    });
+    $("#sector_{{sector}}").mouseleave(function() {
+        setSectorOpacity("{{sector}}", 0.3);
+    });
+    {% end %}
+</script>

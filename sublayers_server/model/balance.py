@@ -98,7 +98,7 @@ class BALANCE(BalanceSettingsABS):
         observing_range = 300.0
 
     class Town(BalanceSettingsABS):
-        observing_range = 50.0
+        observing_range = 500.0
 
     class GasStation(BalanceSettingsABS):
         observing_range = 50.0
