@@ -90,13 +90,10 @@ class Town(MapLocation):
         self.town_name = town_name
         #todo: продумать механизм загрузки и хранения npc в городе
         self.npc = dict()
-        '''
         self.npc['armorer'] = {
             'name': u'Тимофей',
             'img': 'static/img/npc/1.png'
         }
-        '''
-
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
