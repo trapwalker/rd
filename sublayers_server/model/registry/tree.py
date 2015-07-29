@@ -136,14 +136,14 @@ class AbstractStorage(object):
     def get(self, index, default=None):
         try:
             return self[index]
-        except (ObjectNotFound, WrongStorageError, StorageNotFound):
+        except ObjectNotFound:
             return default
 
     def get_path(self, node):
         return '/' + '/'.join(self.get_path_tuple(node))
 
     def get_uri(self, node):
-        return '{}://{}'.format(self.uri_protocol, self.get_path(node))
+        return '{}://{}{}'.format(self.uri_protocol, self.name or '', self.get_path(node))
 
     def close(self):
         dispatcher = self.dispatcher
@@ -323,6 +323,7 @@ class Node(Persistent):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self._cache = {}
         self.name = name
         self.parent = parent  # todo: parent must be an Attribute (?)
         self.owner = owner
