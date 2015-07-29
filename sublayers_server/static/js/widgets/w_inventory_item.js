@@ -49,13 +49,13 @@ var WInventoryItem = (function (_super) {
     };
 
     WInventoryItem.prototype.change = function() {
+        //console.log(' WInventoryItem.prototype.change', this.item.position, this);
         var time = clock.getCurrentTime();
         var value = this.item.getCurrentVal(time);
         $(this.itemDivStr).find(this.itemDivCountStr).text(value.toFixed(1));
     };
 
     WInventoryItem.prototype.delFromVisualManager = function () {
-        //console.log('WInventoryItem.prototype.delFromVisualManager');
         this.item = null;
 
         // снетси верстку и отключить таскание

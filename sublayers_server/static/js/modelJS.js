@@ -19,6 +19,7 @@ var ClientObject = (function () {
     };
 
     ClientObject.prototype.delFromVisualManager = function () {
+        timeManager.delObjectFromTimer(this);
         visualManager.delModelObject(this);
     };
 

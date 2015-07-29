@@ -704,7 +704,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.BalanceClsInfo = function (event) {
-        console.log('ClientManager.prototype.SetBalanceCls', event);
+        //console.log('ClientManager.prototype.SetBalanceCls', event);
         item_balance_cls_manager.add_balance_cls(event.balance_cls)
     };
 
@@ -1033,7 +1033,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGetBalanceCls = function (balance_cls_name) {
-        console.log('ClientManager.prototype.sendGetBalanceCls', balance_cls_name);
+        //console.log('ClientManager.prototype.sendGetBalanceCls', balance_cls_name);
         var mes = {
             call: "get_balance_cls",
             rpc_call_id: rpcCallList.getID(),

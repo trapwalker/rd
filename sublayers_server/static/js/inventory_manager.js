@@ -167,6 +167,7 @@ var Inventory = (function () {
     };
 
     Inventory.prototype.destroyInventory = function () {
+        //console.log("Inventory.prototype.destroyInventory");
         for (var key in this.items)
             if (this.items.hasOwnProperty(key)) {
                 this.items[key].delItem();
@@ -253,6 +254,7 @@ var InventoryNPC = (function (_super) {
     };
 
     InventoryNPC.prototype.destroyInventory = function () {
+        //console.log("InventoryNPC.prototype.destroyInventory");
         for (var key in this.items)
             if (this.items.hasOwnProperty(key)) {
                 this.items[key].delItem();
@@ -274,6 +276,7 @@ var InventoryList = (function () {
     }
 
     InventoryList.prototype.addInventory = function (inventory) {
+        //console.log('InventoryList.prototype.addInventory');
         if (this.inventories[inventory.owner_id] != null) return;
         this.inventories[inventory.owner_id] = inventory;
     };
