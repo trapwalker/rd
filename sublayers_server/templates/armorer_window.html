@@ -84,7 +84,7 @@
         height: 126px;
     }
 
-    .armorer-footerLabel {
+    .npcInventory-label {
         box-sizing: border-box;
         padding-left: 70px;
         height: 21px;
@@ -92,19 +92,50 @@
         font: 11pt Nouveau_IBM;
     }
 
-    .armorer-inventoryWrap {
+    .npcInventory-wrap {
         width: 100%;
         height: 105px;
         overflow-x: scroll;
     }
 
-    .armorer-itemWrap {
+    .npcInventory-itemWrap {
         box-sizing: border-box;
         width: 119px;
         height: 85px;
         float: left;
         border: 1px solid white;
     }
+
+    .npcInventory-item {
+        width: 100%;
+        height: 100%;
+        float: left;
+        margin-bottom: 10px;
+    }
+
+    .npcInventory-nameEmpty {
+        font: 12pt Nouveau_IBM;
+        color: #135806;
+    }
+
+    .npcInventory-pictureEmpty {
+        background-color: #000000;
+        background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+        linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+        background-size: 2px 2px;
+        background-position: 0 0, 1px 1px;
+        text-align: center;
+        color: #0f4206;
+        height: 80px;
+        margin-top: 3px;
+    }
+
+    .npcInventory-countEmpty {
+        text-align: right;
+        color: #30fc00;
+    }
+
+
 </style>
 
 <div class="armorerWindow-main">
@@ -123,20 +154,12 @@
             <div class="armorerSectors-svg">
                 {% raw open(sector_svg_link).read() %}
             </div>
-
         </div>
     </div>
     <div class="armorer-footer">
-        <div class="armorer-footerLabel">Инвентарь:</div>
-        <div class="armorer-inventoryWrap">
-            <div class="armorer-inventory">
-                <div class="armorer-itemWrap"></div>
-                <div class="armorer-itemWrap"></div>
-                <div class="armorer-itemWrap"></div>
-                <div class="armorer-itemWrap"></div>
-                <div class="armorer-itemWrap"></div>
-                <div class="armorer-itemWrap"></div>
-            </div>
+        <div class="npcInventory-label">Инвентарь:</div>
+        <div class="npcInventory-wrap">
+            <div class="npcInventory-inventory npcInventory-{{ car['uid'] }}"></div>
         </div>
     </div>
 </div>
@@ -148,10 +171,10 @@
     горизонтальный слайдер будер расти вниз)
     */
     function resizeArmorerInventory() {
-        var inventory = $(".armorer-inventory:first");
+        var inventory = $(".npcInventory-inventory:first");
         var width = 0;
         if (inventory) {
-            $(inventory).find('.armorer-itemWrap').each(function (index, element) {
+            $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
                width += $(element).outerWidth();
             });
             $(inventory).width(width);

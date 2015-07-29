@@ -25,12 +25,15 @@ class MapLocationHandler(BaseHandler):
             if isinstance(location, Town):
 
                 #todo: забирать из реестра
+                car = {
+                    "uid": 0
+                }
                 car_svg_link = os.path.join(os.getcwd(), 'static/img/cars/car_1/car.svg')
                 sector_svg_link = os.path.join(os.getcwd(), 'static/img/cars/car_1/sector.svg')
                 car_slots = ['slot_bl', 'slot_br', 'slot_cc', 'slot_fc']
 
                 self.render("town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
-                            sector_svg_link=sector_svg_link, car_slots=car_slots)
+                            sector_svg_link=sector_svg_link, car_slots=car_slots, car=car)
             elif isinstance(location, GasStation):
                 self.render("gas_station.html", station=location, svg_link=svg_link)
             else:
