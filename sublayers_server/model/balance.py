@@ -94,9 +94,6 @@ class BALANCE(BalanceSettingsABS):
     class Observer(BalanceSettingsABS):
         observing_range = 1000.0
 
-    class GasStation(BalanceSettingsABS):
-        observing_range = 50.0
-
     class Unit(Observer):
         defence = 1.0
         max_hp = 100.0

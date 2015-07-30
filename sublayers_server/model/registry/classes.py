@@ -85,6 +85,10 @@ class MapLocation(POI):
     title = Attribute(caption=u"Название локации")
 
 
+class GasStation(MapLocation):
+    u"""Заправочная станция"""
+
+
 class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
 

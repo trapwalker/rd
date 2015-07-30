@@ -101,10 +101,19 @@ class Server(object):
                  position=t_exm.position,
             )
 
+        # загрузка заправочных станций
+        gs_root = self.reg['/poi/locations/gas_stations']
+        for gs_exm in gs_root:
+            GasStation(time=event.time,
+                       server=self,
+                       example=gs_exm,
+                       observing_range=gs_exm.enter_range,
+                       svg_link=gs_exm.svg_link,
+                       position=gs_exm.position)
 
-        GasStation(time=event.time,
-                   server=self,
-                   position=Point(12496288, 27133590))
+
+
+
 
         Mobile(server=self,
                time=event.time,
