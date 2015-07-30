@@ -88,6 +88,12 @@ class Town(MapLocation):
     def __init__(self, town_name, observing_range=BALANCE.Town.observing_range, **kw):
         super(Town, self).__init__(observing_range=observing_range, **kw)
         self.town_name = town_name
+        #todo: продумать механизм загрузки и хранения npc в городе
+        self.npc = dict()
+        self.npc['armorer'] = {
+            'name': u'Тимофей',
+            'img': 'static/img/npc/1.png'
+        }
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)

@@ -365,7 +365,11 @@ class ShowInventoryEvent(Event):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
-class HideInventoryEvent(ShowInventoryEvent):
+class HideInventoryEvent(Event):
+    def __init__(self, agent, owner_id, **kw):
+        super(HideInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
 
     def on_perform(self):
         super(HideInventoryEvent, self).on_perform()

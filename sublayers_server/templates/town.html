@@ -10,9 +10,12 @@
     <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
         {% include nucoil_window.html %}
     </div>
-    <div id="townAutoServicePageWrap" class="townPageWrap" style="display: none">
-        {% include mechanic_window.html %}
+    {% if town.npc.get('armorer') is not None %}
+    <div id="townArmorerPageWrap" class="townPageWrap" style="display: none">
+        {% include armorer_window.html %}
     </div>
+    {% end %}
+
 </div>
 <script>
     // Открытие зданий
@@ -21,9 +24,9 @@
          $('#townNucoilPageWrap').css('display', 'block');
     }
 
-    function openAutoService() {
+    function openArmorer() {
          $('.townPageWrap').css('display', 'none');
-         $('#townAutoServicePageWrap').css('display', 'block');
+         $('#townArmorerPageWrap').css('display', 'block');
     }
 
     // Обработчики кнопок-зданий
@@ -59,7 +62,7 @@
                 openNucoil();
                 break;
             case "img_house2_on":
-                openAutoService();
+                openArmorer();
                 break;
             default:
                 console.log(event.target.id);
@@ -71,7 +74,7 @@
                 openNucoil();
                 break;
             case "path_h2":
-                openAutoService();
+                openArmorer();
                 break;
             default:
                 console.log(event.target.id);
