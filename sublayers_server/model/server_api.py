@@ -27,13 +27,16 @@ class ServerAPI(API):
         if not agent and make:
             agent_exemplar = self.server.reg_agents.get([login])  # todo: fix it
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['/agents/user'].instantiate(
-                    storage=self.server.reg_agents, name=login, login=login)
+                agent_exemplar = self.server.reg['/agents/user'].instantiate(storage=self.server.reg_agents,
+                                                                             name=login, login=login)
+                car_example = agent_exemplar.get_random_car_type().instantiate(storage=self.server.reg_agents)
+                agent_exemplar.car = car_example
 
             log.debug('Use agent exemplar: %s', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
-            agent = User(server=self.server, login=agent_exemplar.login, time=self.server.get_time())
+            agent = User(server=self.server, login=agent_exemplar.login, time=self.server.get_time(),
+                         example=agent_exemplar)
             log.info('Server API: New Agent is created: %s', agent_id)
         else:
             if agent and do_disconnect:

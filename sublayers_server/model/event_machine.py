@@ -115,31 +115,31 @@ class Server(object):
 
 
 
-        Mobile(server=self,
-               time=event.time,
-               max_hp=1000,
-               position=Point(12496376, 27133550),
-               r_min=10,
-               ac_max=50,
-               v_forward=5,
-               v_backward=-5,
-               a_forward=5,
-               a_backward=-5,
-               a_braking=-5,
-        )
-
-        Mobile(server=self,
-               time=event.time,
-               max_hp=1000,
-               position=Point(12496356, 27133550),
-               r_min=10,
-               ac_max=50,
-               v_forward=5,
-               v_backward=-5,
-               a_forward=5,
-               a_backward=-5,
-               a_braking=-5,
-        )
+        # Mobile(server=self,
+        #        time=event.time,
+        #        max_hp=1000,
+        #        position=Point(12496376, 27133550),
+        #        r_min=10,
+        #        ac_max=50,
+        #        v_forward=5,
+        #        v_backward=-5,
+        #        a_forward=5,
+        #        a_backward=-5,
+        #        a_braking=-5,
+        # )
+        #
+        # Mobile(server=self,
+        #        time=event.time,
+        #        max_hp=1000,
+        #        position=Point(12496356, 27133550),
+        #        r_min=10,
+        #        ac_max=50,
+        #        v_forward=5,
+        #        v_backward=-5,
+        #        a_forward=5,
+        #        a_backward=-5,
+        #        a_braking=-5,
+        # )
         
     def post_message(self, message):
         """

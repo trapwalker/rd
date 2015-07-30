@@ -17,7 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, \
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
-from sublayers_server.model.units import Unit
+from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
 
@@ -205,7 +205,7 @@ class AgentAPI(API):
         # переотправить чаты, в которых есть агент
         ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
 
-    def update_agent_api(self, time=None, position=None):
+    def update_agent_api(self, time=None, position=Point(12496376, 27133643)):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, position=position,
                             time=time if time is not None else self.agent.server.get_time()).post()
@@ -231,8 +231,34 @@ class AgentAPI(API):
 
         self.send_init_package(time=time)
 
-    def make_car(self, time, position=None, position_sigma=Point(100, 100)):
-        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent, time=time, position=position)
+    def make_car(self, time, position):
+        ex_car = self.agent.example.car
+        car = Bot(time=time,
+                  position=position,
+                  server=self.agent.server,
+                  owner=self.agent,
+                  visibility=ex_car.p_visibility,
+                  observing_range=ex_car.p_observing_range,
+                  max_hp=ex_car.max_hp,
+                  defence=ex_car.p_defence,
+                  direction=ex_car.direction,
+                  weapons=[],
+                  r_min=ex_car.r_min,
+                  ac_max=ex_car.ac_max,
+                  v_forward=ex_car.v_forward,
+                  v_backward=ex_car.v_backward,
+                  a_forward=ex_car.a_forward,
+                  a_backward=ex_car.a_backward,
+                  a_braking=ex_car.a_braking,
+                  max_fuel=ex_car.max_fuel
+        )
+
+        # todo: hp = Attribute(default=100, caption=u"Текущее значение HP")
+        # todo: fuel = Attribute(default=100, caption=u"Текущее количество топлива")
+        # todo: p_cc = Parameter(default=1, caption=u"Броня")
+        # todo: p_fuel_rate = Parameter(default=0.5, caption=u"Броня")
+
+        self.car = car
         self.agent.append_car(car=self.car, time=time)
 
     @public_method

@@ -107,6 +107,7 @@ class PointObject(Object):
 class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
+    # todo: внести visibility в реестровую ветку MapLocations
     def __init__(self, time, visibility=1.0, **kw):
         super(VisibleObject, self).__init__(time=time, **kw)
         self.params = dict()
@@ -169,9 +170,9 @@ class VisibleObject(PointObject):
 
 class Observer(VisibleObject):
 
-    def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
+    def __init__(self, observing_range, **kw):
         super(Observer, self).__init__(**kw)
-        Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
+        Parameter(original=observing_range, name='p_observing_range', owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 

@@ -17,8 +17,9 @@ from bson import ObjectId
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login}>'
 
-    def __init__(self, login, time, connection=None, party=None, **kw):
+    def __init__(self, login, time, example, connection=None, party=None, **kw):
         super(Agent, self).__init__(time=time, **kw)
+        self.example = example
         self.observers = CounterSet()
         self.api = None
         # todo: replace Counter to CounterSet
@@ -44,6 +45,9 @@ class Agent(Object):
 
         # текущий город, если агент не в городе то None
         self.current_location = None
+
+    def create_reg_car(self):
+        pass
 
     @property
     def is_online(self):

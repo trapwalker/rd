@@ -44,6 +44,9 @@ class Attribute(object):
 
 # todo: reserved attr names checking
 
+class Parameter(Attribute):
+    pass
+
 
 class Position(Attribute):
     @staticmethod

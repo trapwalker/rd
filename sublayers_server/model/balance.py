@@ -94,7 +94,7 @@ class BALANCE(BalanceSettingsABS):
     class Observer(BalanceSettingsABS):
         observing_range = 1000.0
 
-    class Unit(Observer):
+    class Unit(BalanceSettingsABS):
         defence = 1.0
         max_hp = 100.0
         direction = -pi/2
