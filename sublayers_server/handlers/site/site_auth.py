@@ -3,8 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado.web
 from handlers.base import BaseHandler
+
+import tornado.web
 from tornado.web import RequestHandler
 from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin
 from tornado.httputil import url_concat

@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot
+from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position
 
 
 class Item(Root):
@@ -69,6 +69,14 @@ class Car(Mobile):
 
 class Drone(Mobile):
     pass
+
+
+class POI(Root):
+    position = Position(caption=u"Координаты")
+
+
+class RadioTower(POI):
+    range = Attribute(default=300, caption=u"Радиус покрытия", doc=u"Радиус, на котором слышна радиостанция")
 
 
 if __name__ == '__main__':

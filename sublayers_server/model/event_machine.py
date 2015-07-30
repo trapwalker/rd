@@ -14,14 +14,18 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.town import RadioPoint, Town, GasStation
-from sublayers_server.model.events import InitServerEvent
+from sublayers_server.model.events import LoadWorldEvent
 from sublayers_server.model.units import Mobile
+from sublayers_server.model.registry.tree import Registry, Collection, Dispatcher  # todo: rename
+import sublayers_server.model.registry.classes  # todo: autoregistry classes
 
+import os
 import sys
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
 from collections import deque
+from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -43,6 +47,15 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
+        self.reg_dispatcher = Dispatcher()
+        reg_path = os.path.join(options.world_path, 'registry')
+        self.reg = Registry(
+            dispatcher=self.reg_dispatcher,
+            name='registry',
+            path=reg_path,
+        )
+        self.reg_agents = Collection(dispatcher=self.reg_dispatcher, name='agents', path=None)  # todo: set path
+
         self.randomCarList = RandomCarList()
 
         self.effects = dict()
@@ -57,29 +70,34 @@ class Server(object):
     def get_time():
         return get_time()
 
-    def init_scene(self):
-        InitServerEvent(server=self, time=self.get_time()).post()
+    def load_world(self):
+        LoadWorldEvent(server=self, time=self.get_time()).post()
 
-    def on_init_server(self, event):
+    def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
         init_zones_on_server(server=self, time=event.time)
 
-        # установка стационарных объектов - радиоточек, городов и заправок
-        RadioPoint(time=event.time,
-                   server=self,
-                   position=Point(12496376, 27133643))
+        # загрузка радиоточек
+        towers_root = self.reg['/poi/radio_towers']
+        for rt_exm in towers_root:
+            RadioPoint(time=event.time,
+                       observing_range=rt_exm.range,
+                       name=rt_exm.name,
+                       server=self,
+                       position=rt_exm.position,
+            )
 
-        RadioPoint(time=event.time,
-                   server=self,
-                   position=Point(12496200, 27133643))
+        # загрузка городов
+
+
+
+
 
         Town(time=event.time,
              server=self,
-             #svg_link = "C:/Projects/Sublayers/sublayers_server/static/img/towns/town_2/town.svg",
              svg_link='static/img/towns/town_2/town.svg',
-             #svg_link='img/towns/town_2/town.svg',
              town_name='Prior',
              position=Point(12496200, 27133590))
 

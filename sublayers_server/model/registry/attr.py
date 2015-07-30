@@ -3,6 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_server.model.vectors import Point
+
 
 class Attribute(object):
     def __init__(self, default=None, doc=None, caption=None):
@@ -41,6 +43,23 @@ class Attribute(object):
 
 
 # todo: reserved attr names checking
+
+
+class Position(Attribute):
+    @staticmethod
+    def to_ser(v):
+        return tuple(v)
+
+    @staticmethod
+    def from_ser(data):
+        return Point(*data)
+
+    def __get__(self, obj, cls):
+        data = super(Position, self).__get__(obj, cls)
+        return self.from_ser(data)
+
+    def __set__(self, obj, value):
+        super(Position, self).__set__(obj, self.to_ser(value))
 
 
 class DocAttribute(Attribute):

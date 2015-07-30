@@ -11,13 +11,14 @@ from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
 
 class RadioPoint(Observer):
-    def __init__(self, time, observing_range=BALANCE.RadioPoint.observing_range, **kw):
+    def __init__(self, name, time, observing_range, **kw):
         super(RadioPoint, self).__init__(time=time, observing_range=observing_range, **kw)
         self.room = None
+        self.name = name
 
     def on_init(self, event):
         super(RadioPoint, self).on_init(event)
-        self.room = ChatRoom(time=event.time)
+        self.room = ChatRoom(time=event.time, name=self.name)
 
     def on_contact_in(self, time, obj):
         super(RadioPoint, self).on_contact_in(time=time, obj=obj)

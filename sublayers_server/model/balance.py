@@ -94,9 +94,6 @@ class BALANCE(BalanceSettingsABS):
     class Observer(BalanceSettingsABS):
         observing_range = 1000.0
 
-    class RadioPoint(BalanceSettingsABS):
-        observing_range = 300.0
-
     class Town(BalanceSettingsABS):
         observing_range = 500.0
 

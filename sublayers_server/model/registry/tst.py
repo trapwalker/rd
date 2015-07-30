@@ -9,6 +9,7 @@ if __name__ == '__main__':
 
 from sublayers_server.model.registry import classes
 from sublayers_server.model.registry.tree import Registry, Collection, Dispatcher
+from sublayers_server.model.vectors import Point
 
 
 if __name__ == '__main__':
@@ -20,10 +21,13 @@ if __name__ == '__main__':
     jeep = reg['/mobiles/cars/jeep']
     my_jeep = jeep.instantiate(storage=c)
 
+    towers = reg['reg://registry/poi/radio_towers']
+
     print jeep.uri
     print jeep.slot_CC
     print my_jeep
     print my_jeep.uri
-    #print reg[my_jeep.uri]
 
-
+    print u'Башни:'
+    for tower in towers:
+        print tower

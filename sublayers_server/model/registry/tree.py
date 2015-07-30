@@ -204,7 +204,12 @@ class Collection(AbstractStorage):
         # todo: refactoring
         if path and path[0] == '':
             path = path[1:]
-        return self._raw_storage[self.make_key(path)]
+
+        key = self.make_key(path)
+        try:
+            return self._raw_storage[key]
+        except KeyError:
+            raise ObjectNotFound('Object not found by key="{}"'.format(key))
 
     def put(self, node):
         key = self.make_key(node.path)
@@ -330,6 +335,7 @@ class Node(Persistent):
         """
         super(Node, self).__init__()
         self._cache = {}
+        self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name
         self.parent = parent  # todo: parent must be an Attribute (?)
         self.owner = owner
@@ -339,11 +345,12 @@ class Node(Persistent):
         if storage:
             storage.put(self)
 
-    def instantiate(self, storage, name=None):
+    def instantiate(self, storage, name=None, **kw):
         # todo: test to abstract sign
         # todo: clear abstract sign
         name = name or storage.gen_uid().get_hex()
-        inst = self.__class__(name=name, storage=storage, parent=self)
+        inst = self.__class__(name=name, storage=storage, parent=self, **kw)
+        log.debug('Maked new instance %s', inst.uri)
         return inst
 
     def __getstate__(self):
@@ -365,6 +372,9 @@ class Node(Persistent):
         assert self.name is None
         self.name = name
         # todo: tags apply
+
+    def __iter__(self):
+        return iter(self._subnodes.values())
 
     def __hash__(self):
         return hash((self.storage, self.name))
