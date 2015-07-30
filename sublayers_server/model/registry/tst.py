@@ -12,15 +12,18 @@ from sublayers_server.model.registry.tree import Registry, Collection, Dispatche
 
 
 if __name__ == '__main__':
-    reg = Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
-    c = Collection(r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    storages = Dispatcher()
 
-    storages = Dispatcher([reg, c])
+    reg = Registry(dispatcher=storages, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    c = Collection(dispatcher=storages, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
 
     jeep = reg['/mobiles/cars/jeep']
-    #my_jeep = jeep.in
+    my_jeep = jeep.instantiate(storage=c)
 
     print jeep.uri
     print jeep.slot_CC
+    print my_jeep
+    print my_jeep.uri
+    #print reg[my_jeep.uri]
 
 

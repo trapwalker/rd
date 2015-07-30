@@ -125,7 +125,7 @@ class AbstractStorage(object):
 
         dispatcher = self.dispatcher
         if dispatcher:
-            return dispatcher.get_node(path)
+            return dispatcher.get_node(proto=proto, storage=storage, path=path)
 
         raise WrongStorageError("Can't resolve storage {}".format(storage))
 
@@ -165,31 +165,33 @@ class Dispatcher(AbstractStorage):
     def __init__(self, storage_list=None, **kw):
         super(Dispatcher, self).__init__(**kw)
         self.storage_map = {}
-        for storage in storage_list:
-            self.add_storage(storage)
+        if storage_list:
+            for storage in storage_list:
+                self.add_storage(storage)
 
     def add_storage(self, storage):
         self.storage_map[storage.name] = storage
+        # todo: set dispatcher to storage
 
     def remove_storage(self, storage):
         name = storage if isinstance(storage, basestring) else storage.name
         del(self.storage_map[name])
 
-    def get_node(self, proto, storage_name, path):
+    def get_node(self, proto, storage, path):
         try:
-            storage = self.storage_map[storage_name]
+            storage_obj = self.storage_map[storage]
         except KeyError:
             raise StorageNotFound('Storage {} not found. [{}] avalable'.format(
-                storage_name, ', '.join(self.storage_map.keys())))
+                storage, ', '.join(self.storage_map.keys())))
 
-        return storage.get_local(path)
+        return storage_obj.get_local(path)
 
 
 class Collection(AbstractStorage):
-    def __init__(self, fn, **kw):
+    def __init__(self, path, **kw):
         super(Collection, self).__init__(**kw)
-        self.fn = fn
-        self._raw_storage = shelve.open(fn)
+        self.path = path
+        self._raw_storage = {}  # shelve.open(path)  # todo: make persistent
 
     def make_key(self, path):
         return path if isinstance(path, basestring) else ('/' + '/'.join(path))
@@ -199,10 +201,14 @@ class Collection(AbstractStorage):
         super(Collection,self).close()
 
     def get_local(self, path):
-        return self._raw_storage[path]
+        # todo: refactoring
+        if path and path[0] == '':
+            path = path[1:]
+        return self._raw_storage[self.make_key(path)]
 
     def put(self, node):
-        self._raw_storage[node.path] = node
+        key = self.make_key(node.path)
+        self._raw_storage[key] = node
 
     def get_path_tuple(self, node):
         return [node.name]
@@ -333,9 +339,12 @@ class Node(Persistent):
         if storage:
             storage.put(self)
 
-    def instantiate(self, overrides=None):
+    def instantiate(self, storage, name=None):
         # todo: test to abstract sign
-        inst = self.__class__()
+        # todo: clear abstract sign
+        name = name or storage.gen_uid().get_hex()
+        inst = self.__class__(name=name, storage=storage, parent=self)
+        return inst
 
     def __getstate__(self):
         do_not_store = ('storage', '_subnodes',)
