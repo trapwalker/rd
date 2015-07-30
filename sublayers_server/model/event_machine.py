@@ -90,16 +90,17 @@ class Server(object):
             )
 
         # загрузка городов
+        towns_root = self.reg['/poi/locations/towns']
+        for t_exm in towns_root:
+            Town(time=event.time,
+                 server=self,
+                 example=t_exm,
+                 observing_range=t_exm.enter_range,
+                 svg_link=t_exm.svg_link,
+                 town_name=t_exm.title,
+                 position=t_exm.position,
+            )
 
-
-
-
-
-        Town(time=event.time,
-             server=self,
-             svg_link='static/img/towns/town_2/town.svg',
-             town_name='Prior',
-             position=Point(12496200, 27133590))
 
         GasStation(time=event.time,
                    server=self,

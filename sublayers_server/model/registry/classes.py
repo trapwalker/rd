@@ -79,5 +79,24 @@ class RadioTower(POI):
     range = Attribute(default=300, caption=u"Радиус покрытия", doc=u"Радиус, на котором слышна радиостанция")
 
 
+class MapLocation(POI):
+    enter_range = Attribute(default=50, caption=u"Радиус входа", doc=u"Радиус входа в город")
+    svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
+    title = Attribute(caption=u"Название локации")
+
+
+class Town(MapLocation):
+    armorer = RegistryLink(caption=u'Оружейник')
+
+
+class Institution(Root):
+    title = Attribute(caption=u"Имя", doc=u"Радиус входа в город")
+    photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
+
+
+class Armorer(Institution):
+    pass
+
+
 if __name__ == '__main__':
     pass

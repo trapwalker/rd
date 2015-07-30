@@ -84,17 +84,12 @@ class MapLocation(Observer):
 
 
 class Town(MapLocation):
-    __str_template__ = '<{self.classname} #{self.id}> => {self.town_name}'
+    __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
 
-    def __init__(self, town_name, observing_range=BALANCE.Town.observing_range, **kw):
+    def __init__(self, town_name, example, observing_range, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(observing_range=observing_range, **kw)
         self.town_name = town_name
-        #todo: продумать механизм загрузки и хранения npc в городе
-        self.npc = dict()
-        self.npc['armorer'] = {
-            'name': u'Тимофей',
-            'img': 'static/img/npc/1.png'
-        }
+        self.example = example
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)

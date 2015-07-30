@@ -24,7 +24,7 @@ class MapLocationHandler(BaseHandler):
             svg_link = os.path.join(os.getcwd(), location.svg_link)
             if isinstance(location, Town):
 
-                #todo: забирать из реестра
+                # todo: заьрать id из реестра
                 car = {
                     "uid": 0
                 }
