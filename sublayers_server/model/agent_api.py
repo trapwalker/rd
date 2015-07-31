@@ -25,14 +25,13 @@ from sublayers_server.model.inventory import ItemState
 
 
 class UpdateAgentAPIEvent(Event):
-    def __init__(self, api, position, **kw):
+    def __init__(self, api, **kw):
         super(UpdateAgentAPIEvent, self).__init__(server=api.agent.server, **kw)
         self.api = api
-        self.position = position
 
     def on_perform(self):
         super(UpdateAgentAPIEvent, self).on_perform()
-        self.api.on_update_agent_api(position=self.position, time=self.time)
+        self.api.on_update_agent_api(time=self.time)
 
 
 class InitTimeEvent(Event):
@@ -205,12 +204,11 @@ class AgentAPI(API):
         # переотправить чаты, в которых есть агент
         ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
 
-    def update_agent_api(self, time=None, position=Point(12496376, 27133643)):
+    def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
-        UpdateAgentAPIEvent(api=self, position=position,
-                            time=time if time is not None else self.agent.server.get_time()).post()
+        UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
-    def on_update_agent_api(self, time, position=None):
+    def on_update_agent_api(self, time):
         if self.agent.current_location is not None:
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
@@ -219,7 +217,7 @@ class AgentAPI(API):
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
-            self.make_car(time=time, position=position)
+            self.make_car(time=time)
         assert self.car.hp(time=time) > 0, 'Car HP <= 0'
 
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
@@ -231,10 +229,12 @@ class AgentAPI(API):
 
         self.send_init_package(time=time)
 
-    def make_car(self, time, position):
+    def make_car(self, time):
         ex_car = self.agent.example.car
         car = Bot(time=time,
-                  position=position,
+                  example=ex_car,
+                  hp=ex_car.hp,
+                  position=ex_car.position,
                   server=self.agent.server,
                   owner=self.agent,
                   visibility=ex_car.p_visibility,
@@ -250,11 +250,10 @@ class AgentAPI(API):
                   a_forward=ex_car.a_forward,
                   a_backward=ex_car.a_backward,
                   a_braking=ex_car.a_braking,
+                  fuel=ex_car.fuel,
                   max_fuel=ex_car.max_fuel
         )
 
-        # todo: hp = Attribute(default=100, caption=u"Текущее значение HP")
-        # todo: fuel = Attribute(default=100, caption=u"Текущее количество топлива")
         # todo: p_cc = Parameter(default=1, caption=u"Броня")
         # todo: p_fuel_rate = Parameter(default=0.5, caption=u"Броня")
 

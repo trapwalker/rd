@@ -15,6 +15,10 @@ class Point(complex):
     x = complex.real
     y = complex.imag
 
+    def as_tuple(self):
+        # todo: refactor it
+        return self.x, self.y
+
     @staticmethod
     def polar(r, fi):
         return Point(r * cos(fi), r * sin(fi))

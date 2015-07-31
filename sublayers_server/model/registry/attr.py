@@ -51,7 +51,7 @@ class Parameter(Attribute):
 class Position(Attribute):
     @staticmethod
     def to_ser(v):
-        return tuple(v)
+        return None if v is None else v.as_tuple()
 
     @staticmethod
     def from_ser(data):

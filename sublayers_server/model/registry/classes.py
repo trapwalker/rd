@@ -42,6 +42,8 @@ class MachineGun(Weapon):
 class Agent(Root):
     login = Attribute(caption=u'Уникальное имя пользователя')
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
+
+    position = Position(caption=u"Последние координаты агента")
     # todo: current car
     # todo: car list
     # todo: current location link

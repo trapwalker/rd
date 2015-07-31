@@ -69,7 +69,7 @@ class MapLocation(Observer):
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
         ExitFromLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
-        agent.api.update_agent_api(time=time + 0.1, position=self.position(time))
+        agent.api.update_agent_api(time=time + 0.1)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=False, time=time).post()
 
@@ -86,10 +86,9 @@ class MapLocation(Observer):
 class Town(MapLocation):
     __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
 
-    def __init__(self, town_name, example, observing_range, **kw):  # todo: Конструировать на основе example
+    def __init__(self, town_name, observing_range, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(observing_range=observing_range, **kw)
         self.town_name = town_name
-        self.example = example
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
@@ -98,6 +97,4 @@ class Town(MapLocation):
 
 
 class GasStation(MapLocation):
-    def __init__(self, example, **kw):
-        super(GasStation, self).__init__(**kw)
-        self.example = example
+    pass

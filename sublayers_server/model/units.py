@@ -25,9 +25,10 @@ class Unit(Observer):
 
     def __init__(self,
                  time,
+                 hp,
+                 max_hp,
+                 direction,
                  owner=None,
-                 max_hp=BALANCE.Unit.max_hp,
-                 direction=BALANCE.Unit.direction,
                  defence=BALANCE.Unit.defence,
                  weapons=None,
                  **kw):
@@ -40,7 +41,7 @@ class Unit(Observer):
         super(Unit, self).__init__(time=time, **kw)
         self.owner = owner
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp)
+        self.hp_state = HPState(t=time, max_hp=max_hp, hp=hp)
         self._direction = direction
         self.altitude = 0.0
         self.check_zone_interval = None
@@ -274,6 +275,11 @@ class Unit(Observer):
                     time=time
                 ).post()
 
+    def save(self, time):
+        super(Unit, self).save(time=time)
+        self.example.hp = self.hp(time=time)
+        self.example.direction = self.direction(time=time)
+
 
 class Mobile(Unit):
     u"""Class of mobile units"""
@@ -287,9 +293,9 @@ class Mobile(Unit):
                  a_forward,
                  a_backward,
                  a_braking,
+                 fuel,
+                 max_fuel,
                  max_control_speed=BALANCE.Mobile.max_control_speed,
-                 max_fuel=BALANCE.Mobile.max_fuel,
-                 fuel=BALANCE.Mobile.fuel,
                  **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params(
@@ -368,6 +374,12 @@ class Mobile(Unit):
     def direction(self, time):
         return self.state.fi(t=time)
 
+    def fuel(self, time):
+        return self.fuel_state.fuel(t=time)
+
+    def save(self, time):
+        super(Mobile, self).save(time=time)
+        self.example.fuel = self.fuel(time=time)
 
 class Bot(Mobile):
     @property

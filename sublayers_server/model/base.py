@@ -86,14 +86,22 @@ class Object(object):
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
-    def __init__(self, position, **kw):
+    def __init__(self, position, example=None, **kw):
         super(PointObject, self).__init__(**kw)
         self._position = position
+        self.example = example
+        if example is None:
+            log.warning('Object %s has no example node', self)
         self.server.geo_objects.append(self)
 
     def on_after_delete(self, event):
         self.server.geo_objects.remove(self)
         super(PointObject, self).on_after_delete(event=event)
+        if self.example is not None:  # todo: в example добавить флаг необходимости сохранения
+            self.save(time=event.time)
+
+    def save(self, time):
+        self.example.position = self.position(time)
 
     def as_dict(self, time):
         d = super(PointObject, self).as_dict(time=time)
