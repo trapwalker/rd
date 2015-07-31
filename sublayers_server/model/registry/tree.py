@@ -371,7 +371,7 @@ class Node(Persistent):
         for attr in self.iter_attrs():
             if isinstance(attr, RegistryLink):
                 if attr.need_to_instantiate:
-                    link = attr.get_raw(self, self.__class__)
+                    link = attr.get_raw(self)
                     # todo: Отловить и обработать исключения
                     if link:
                         uri = dict(zip('proto storage path params'.split(), self.storage.parse_uri(link)))

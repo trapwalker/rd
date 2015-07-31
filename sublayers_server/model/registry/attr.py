@@ -23,19 +23,31 @@ class Attribute(object):
     def __str__(self):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
 
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
+    def get_raw(self, obj):
         value = obj._get_attr_value(self.name, self.default)
         log.debug('__get__ %s.%s() => %s', obj, self.name, value)
         return value
 
+    def from_str(self, s, obj):
+        return s
+
+    def from_raw(self, raw, obj):
+        return raw
+
+    def to_raw(self, value, obj):
+        return value
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        return self.from_raw(self.get_raw(obj), obj)
+
     def __set__(self, obj, value):
         log.debug('__set__ %s.%s = %s', obj, self.name, value)
-        obj._set_attr_value(self.name, value)
+        obj._set_attr_value(self.name, self.to_raw(value, obj))
 
     def __delete__(self, obj):
-        log.debug('__gelete__ %s.%s() => %s', obj, self.name)
+        log.debug('__delete__ %s.%s() => %s', obj, self.name)
         obj._del_attr_value(self.name)
 
     def attach(self, name, cls):
@@ -51,34 +63,19 @@ class Parameter(Attribute):
 
 
 class Position(Attribute):
-    @staticmethod
-    def to_ser(v):
+    def to_raw(self, v, obj):
         return None if v is None else v.as_tuple()
 
-    @staticmethod
-    def from_ser(data):
+    def from_raw(self, data, obj):
         return Point(*data)
-
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        data = super(Position, self).__get__(obj, cls)
-        return self.from_ser(data)
-
-    def __set__(self, obj, value):
-        super(Position, self).__set__(obj, self.to_ser(value))
 
 
 class DocAttribute(Attribute):
     def __init__(self):
         super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
 
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        default = cls.__doc__
-        value = obj._get_attr_value(self.name, self.default or default)  # todo: cascade getter
-        return value
+    def get_raw(self, obj):
+        return obj._get_attr_value(self.name, self.default or self.__doc__)
 
 
 class RegistryLink(Attribute):
@@ -86,9 +83,11 @@ class RegistryLink(Attribute):
         super(RegistryLink, self).__init__(**kw)
         self.need_to_instantiate = need_to_instantiate
 
-    def get_raw(self, obj, cls):
-        # todo: refactoring
-        return super(RegistryLink, self).__get__(obj, cls)
+    def from_raw(self, raw, obj):
+        return obj.storage.get(raw) if raw else None
+
+    def to_raw(self, value, obj):
+        return None if value is None else value.uri
 
     def __get__(self, obj, cls):
         if obj is None:
@@ -96,16 +95,15 @@ class RegistryLink(Attribute):
         if self.name in obj._cache:
             value = obj._cache[self.name]
         else:
-            link = self.get_raw(obj, cls)
-            value = obj.storage.get(link) if link else None
+            link = self.get_raw(obj)
+            value = self.from_raw(link, obj)
             obj._cache[self.name] = value
 
         return value
 
     def __set__(self, obj, value):
         obj._cache[self.name] = value
-        link = None if value is None else value.uri
-        super(RegistryLink, self).__set__(obj, link)
+        super(RegistryLink, self).__set__(obj, value)
 
 
 class Slot(RegistryLink):
