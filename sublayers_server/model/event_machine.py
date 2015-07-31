@@ -79,64 +79,18 @@ class Server(object):
         # загрузка радиоточек
         towers_root = self.reg['/poi/radio_towers']
         for rt_exm in towers_root:
-            RadioPoint(time=event.time,
-                       observing_range=rt_exm.range,
-                       name=rt_exm.name,
-                       server=self,
-                       position=rt_exm.position,
-            )
+            RadioPoint(time=event.time, example=rt_exm, server=self)
 
         # загрузка городов
         towns_root = self.reg['/poi/locations/towns']
         for t_exm in towns_root:
-            Town(time=event.time,
-                 server=self,
-                 example=t_exm,
-                 observing_range=t_exm.enter_range,
-                 svg_link=t_exm.svg_link,
-                 town_name=t_exm.title,
-                 position=t_exm.position,
-            )
+            Town(time=event.time, server=self, example=t_exm)
 
         # загрузка заправочных станций
         gs_root = self.reg['/poi/locations/gas_stations']
         for gs_exm in gs_root:
-            GasStation(time=event.time,
-                       server=self,
-                       example=gs_exm,
-                       observing_range=gs_exm.enter_range,
-                       svg_link=gs_exm.svg_link,
-                       position=gs_exm.position)
+            GasStation(time=event.time, server=self, example=gs_exm)
 
-
-
-
-
-        # Mobile(server=self,
-        #        time=event.time,
-        #        max_hp=1000,
-        #        position=Point(12496376, 27133550),
-        #        r_min=10,
-        #        ac_max=50,
-        #        v_forward=5,
-        #        v_backward=-5,
-        #        a_forward=5,
-        #        a_backward=-5,
-        #        a_braking=-5,
-        # )
-        #
-        # Mobile(server=self,
-        #        time=event.time,
-        #        max_hp=1000,
-        #        position=Point(12496356, 27133550),
-        #        r_min=10,
-        #        ac_max=50,
-        #        v_forward=5,
-        #        v_backward=-5,
-        #        a_forward=5,
-        #        a_backward=-5,
-        #        a_braking=-5,
-        # )
         
     def post_message(self, message):
         """

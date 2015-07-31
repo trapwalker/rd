@@ -77,14 +77,14 @@ class Mobile(Root):
 
     # атрибуты от Unit
     p_defence = Parameter(default=1, caption=u"Броня")
-    max_hp = Attribute(default=100, caption=u"Максимальное значение HP")
-    hp = Attribute(default=100, caption=u"Текущее значение HP")
+    max_hp = Attribute(caption=u"Максимальное значение HP")
+    hp = Attribute(caption=u"Текущее значение HP")
     direction = Attribute(default=-pi/2, caption=u"Текущее направление машины")
 
     # атрибуты Mobile
     r_min = Attribute(default=10, caption=u"Минимальный радиус разворота")
     ac_max = Attribute(default=14, caption=u"Максимальная перегрузка при развороте")
-    v_forward = Attribute(default=28, caption=u"Максимальная скорость движения вперед")
+    v_forward = Attribute(default=28, caption=u"Абсолютная максимальная скорость движения вперед")
     v_backward = Attribute(default=-10, caption=u"Максимальная скорость движения назад")
     a_forward = Attribute(default=5, caption=u"Ускорение разгона вперед")
     a_backward = Attribute(default=-3, caption=u"Ускорение разгона назад")
@@ -92,7 +92,8 @@ class Mobile(Root):
     max_fuel = Attribute(default=100, caption=u"Максимальное количество топлива")
     fuel = Attribute(default=100, caption=u"Текущее количество топлива")
     p_cc = Parameter(default=1, caption=u"Броня")
-    p_fuel_rate = Parameter(default=0.5, caption=u"Броня")
+    p_fuel_rate = Parameter(default=0.5, caption=u"Расход топлива (л/с)")
+    max_control_speed = Attribute(default=20, caption=u"Максимальная скорость машинки без бафов")
 
 
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот')
@@ -132,14 +133,15 @@ class Drone(Mobile):
 
 class POI(Root):
     position = Position(caption=u"Координаты")
+    p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
 
 
 class RadioTower(POI):
-    range = Attribute(default=300, caption=u"Радиус покрытия", doc=u"Радиус, на котором слышна радиостанция")
+    p_observing_range = Parameter(default=1000, caption=u"Радиус покрытия")
 
 
 class MapLocation(POI):
-    enter_range = Attribute(default=50, caption=u"Радиус входа", doc=u"Радиус входа в город")
+    p_observing_range = Parameter(default=100, caption=u"Радиус входа")
     svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
     title = Attribute(caption=u"Название локации")
 

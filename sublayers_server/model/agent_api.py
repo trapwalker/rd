@@ -149,6 +149,7 @@ class AgentAPI(API):
     def __init__(self, agent):
         super(AgentAPI, self).__init__()
         self.agent = agent
+        self.car = None
         agent.api = self
         self.update_agent_api()
 
@@ -230,34 +231,7 @@ class AgentAPI(API):
         self.send_init_package(time=time)
 
     def make_car(self, time):
-        ex_car = self.agent.example.car
-        car = Bot(time=time,
-                  example=ex_car,
-                  hp=ex_car.hp,
-                  position=ex_car.position,
-                  server=self.agent.server,
-                  owner=self.agent,
-                  visibility=ex_car.p_visibility,
-                  observing_range=ex_car.p_observing_range,
-                  max_hp=ex_car.max_hp,
-                  defence=ex_car.p_defence,
-                  direction=ex_car.direction,
-                  weapons=[],
-                  r_min=ex_car.r_min,
-                  ac_max=ex_car.ac_max,
-                  v_forward=ex_car.v_forward,
-                  v_backward=ex_car.v_backward,
-                  a_forward=ex_car.a_forward,
-                  a_backward=ex_car.a_backward,
-                  a_braking=ex_car.a_braking,
-                  fuel=ex_car.fuel,
-                  max_fuel=ex_car.max_fuel
-        )
-
-        # todo: p_cc = Parameter(default=1, caption=u"Броня")
-        # todo: p_fuel_rate = Parameter(default=0.5, caption=u"Броня")
-
-        self.car = car
+        self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
     @public_method

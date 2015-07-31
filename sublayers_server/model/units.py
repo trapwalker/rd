@@ -25,15 +25,7 @@ from math import radians
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self,
-                 time,
-                 hp,
-                 max_hp,
-                 direction,
-                 owner=None,
-                 defence=BALANCE.Unit.defence,
-                 weapons=None,
-                 **kw):
+    def __init__(self, time, direction=None, owner=None, **kw):
         """
         @param sublayers_server.model.agents.Agent owner: Object owner
         @param float max_hp: Maximum health level
@@ -43,8 +35,8 @@ class Unit(Observer):
         super(Unit, self).__init__(time=time, **kw)
         self.owner = owner
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-        self.hp_state = HPState(t=time, max_hp=max_hp, hp=hp)
-        self._direction = direction
+        self.hp_state = HPState(t=time, max_hp=self.example.max_hp, hp=self.example.hp)
+        self._direction = self.example.direction or direction
         self.altitude = 0.0
         self.check_zone_interval = None
         self.zones = []
@@ -61,7 +53,6 @@ class Unit(Observer):
         self.set_def_items(time=time)
 
         self.setup_weapon(time=time)
-
 
         # обновляем статистику сервера
         server_stat = self.server.stat_log
@@ -286,46 +277,28 @@ class Unit(Observer):
 class Mobile(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self,
-                 time,
-                 r_min,
-                 ac_max,
-                 v_forward,
-                 v_backward,
-                 a_forward,
-                 a_backward,
-                 a_braking,
-                 fuel,
-                 max_fuel,
-                 max_control_speed=BALANCE.Mobile.max_control_speed,
-                 **kw):
+    def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
-        self.state = MotionState(t=time, **self.init_state_params(
-            r_min=r_min,
-            ac_max=ac_max,
-            v_forward=v_forward,
-            v_backward=v_backward,
-            a_forward=a_forward,
-            a_backward=a_backward,
-            a_braking=a_braking,
-        ))
-        self.fuel_state = FuelState(t=time, max_fuel=max_fuel, fuel=fuel)
+        self.state = MotionState(t=time, **self.init_state_params())
+        self.fuel_state = FuelState(t=time, max_fuel=self.example.max_fuel, fuel=self.example.fuel)
         self.cur_motion_task = None
-        # Parametrs
-        Parameter(original=1.0, min_value=0.0, max_value=1.0, owner=self, name='p_cc')  # todo: вычислить так: max_control_speed / v_max
-        Parameter(original=0.5, owner=self, name='p_fuel_rate')
 
-    def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
+        assert self.example.max_control_speed <= self.example.v_forward
+        Parameter(original=self.example.max_control_speed / self.example.v_forward,
+                  min_value=0.0, max_value=1.0, owner=self, name='p_cc')
+        Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
+
+    def init_state_params(self):
         return dict(
             p=self._position,
             fi=self._direction,
-            r_min=r_min,
-            ac_max=ac_max,
-            v_forward=v_forward,
-            v_backward=v_backward,
-            a_forward=a_forward,
-            a_backward=a_backward,
-            a_braking=a_braking,
+            r_min=self.example.r_min,
+            ac_max=self.example.ac_max,
+            v_forward=self.example.v_forward,
+            v_backward=self.example.v_backward,
+            a_forward=self.example.a_forward,
+            a_backward=self.example.a_backward,
+            a_braking=self.example.a_braking,
         )
 
     def as_dict(self, time):

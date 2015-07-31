@@ -11,10 +11,10 @@ from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
 
 class RadioPoint(Observer):
-    def __init__(self, name, time, observing_range, **kw):
-        super(RadioPoint, self).__init__(time=time, observing_range=observing_range, **kw)
+    def __init__(self, time, **kw):
+        super(RadioPoint, self).__init__(time=time, **kw)
         self.room = None
-        self.name = name
+        self.name = self.example.name
 
     def on_init(self, event):
         super(RadioPoint, self).on_init(event)
@@ -30,9 +30,9 @@ class RadioPoint(Observer):
 
 
 class MapLocation(Observer):
-    def __init__(self, svg_link, **kw):
+    def __init__(self, **kw):
         super(MapLocation, self).__init__(**kw)
-        self.svg_link = svg_link  # todo: забрать из example
+        self.svg_link = self.example.svg_link
         self.visitors = []
         self.radio_points = []
 
@@ -86,9 +86,9 @@ class MapLocation(Observer):
 class Town(MapLocation):
     __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
 
-    def __init__(self, town_name, observing_range, **kw):  # todo: Конструировать на основе example
-        super(Town, self).__init__(observing_range=observing_range, **kw)
-        self.town_name = town_name
+    def __init__(self, **kw):  # todo: Конструировать на основе example
+        super(Town, self).__init__(**kw)
+        self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся name)
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
