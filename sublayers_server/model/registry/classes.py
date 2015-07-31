@@ -33,7 +33,7 @@ class Weapon(SlotItem):
     ammo_per_shot = Attribute(default=0, caption=u'Расход патронов на выстрел')
     ammo_per_second = Attribute(default=0, caption=u'Расход патронов в секунду')
     radius = Attribute(caption=u'Прицельная дальность (м)')
-    width = Attribute(caption=u'Ширина сектора стрельбы (град)')  # todo: перевести на градусы
+    width = Attribute(caption=u'Ширина сектора стрельбы (град)')
 
 
 class Cannon(Weapon):

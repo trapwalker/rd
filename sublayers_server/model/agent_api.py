@@ -362,8 +362,8 @@ class AgentAPI(API):
             self.update_agent_api()
         elif command == '/fuel':
             car = self.car
-            ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
-                set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+            #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
+            #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
         else:
             log.warning('Unknown console command "%s"', cmd)
 
@@ -406,8 +406,8 @@ class AgentAPI(API):
     @public_method
     def get_balance_cls(self, balance_cls_name):
         log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
-        messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
-                                balance_cls_name=balance_cls_name).post()
+        # messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
+        #                         balance_cls_name=balance_cls_name).post()
 
     @public_method
     def activate_item(self, owner_id, position, balance_cls_name):

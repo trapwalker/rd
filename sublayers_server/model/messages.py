@@ -567,7 +567,7 @@ class BalanceClsInfo(Message):
         d = super(BalanceClsInfo, self).as_dict()
         d.update(
             balance_cls={
-                'name': self.balance_cls_name,
+                'name': self.balance_cls_name.name,
             }
         )
         return d

@@ -69,26 +69,20 @@ class Unit(Observer):
         return self.hp_state.hp(t=time)
 
     def set_def_items(self, time):
-        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
-        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
 
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
+        ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
+        ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
 
-        ItemState(server=self.server, time=time, balance_cls='Tank10', max_count=1).set_inventory(time=time,
-                                                                                                  inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
-                                                                                                  inventory=self.inventory)
-        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
-        self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
+        self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
+        self.ammo1.set_inventory(time=time, inventory=self.inventory)
+        self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
+        self.ammo2.set_inventory(time=time, inventory=self.inventory)
+
+        #
+        # ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
+        #                                                                                           inventory=self.inventory)
+        # self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
+        # self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
 
     @property
     def max_hp(self):
@@ -103,11 +97,15 @@ class Unit(Observer):
             sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
             weapon = None
             if w_ex.is_auto:
+                log.debug('========================================= %s', w_ex.ammo)
                 weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps,
                                     dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)
+                weapon.set_item(item=self.ammo2, time=time)
             else:
+                log.debug('========================================= %s', w_ex.ammo)
                 weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, dv=w_ex.ammo_per_shot,
                                          ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
+                weapon.set_item(item=self.ammo1, time=time)
 
             # if dict_weapon['radius'] == 50:
             #     if self.item_ammo2:
