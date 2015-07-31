@@ -286,19 +286,19 @@ class AgentAPI(API):
     def send_rocket(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        #RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_slow_mine(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        #SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_stationary_turret(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        #StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_scout_droid(self, x, y):
@@ -306,7 +306,7 @@ class AgentAPI(API):
             return
         assert x and y
         p = Point(x, y)
-        ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
+        #ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
