@@ -24,9 +24,13 @@ if __name__ == '__main__':
 
     towers = reg['reg://registry/poi/radio_towers']
 
+    zis5 = reg['/items/slot_item/weapons/cannons/wc_zis5']
+    my_zis5 = zis5.instantiate(storage=c)
+
     print jeep, jeep.slot_CC
     print my_jeep, my_jeep.slot_CC
+    my_jeep.slot_BR = my_zis5
 
     for w in my_jeep.iter_weapons():
-        print w
+        print w, w.parent
 

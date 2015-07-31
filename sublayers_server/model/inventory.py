@@ -89,7 +89,6 @@ class Inventory(object):
         for i in xrange(self.max_size):
             if self.get_item(position=i) is None:
                 return i
-        return None
 
     def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():
