@@ -282,9 +282,6 @@ class Unit(Observer):
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
 
-        # костыль!
-        self.example.slot_CC.direction += 90
-
 
 class Mobile(Unit):
     u"""Class of mobile units"""
@@ -385,6 +382,7 @@ class Mobile(Unit):
     def save(self, time):
         super(Mobile, self).save(time=time)
         self.example.fuel = self.fuel(time=time)
+
 
 class Bot(Mobile):
     @property
