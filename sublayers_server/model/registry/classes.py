@@ -114,6 +114,13 @@ class Mobile(Root):
                 if isinstance(v, Weapon):
                     yield v
 
+    def iter_slots(self):
+        for attr in self.iter_attrs():
+            if isinstance(attr, Slot):
+                v = getattr(self, attr.name)
+                if not isinstance(v, SlotLock):
+                    yield attr.name, v
+
 
 class Car(Mobile):
     pass

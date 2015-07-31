@@ -31,6 +31,14 @@ if __name__ == '__main__':
     print my_jeep, my_jeep.slot_CC
     my_jeep.slot_BR = my_zis5
 
-    for w in my_jeep.iter_weapons():
-        print w, w.parent
+    print 'before delete'
+    for name, value in my_jeep.iter_slots():
+        print name, value, value.parent if value else ''
+
+    my_jeep.slot_BR = None
+
+    print 'after delete'
+    for name, value in my_jeep.iter_slots():
+        print name, value, value.parent if value else ''
+
 

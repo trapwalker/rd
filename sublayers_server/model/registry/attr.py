@@ -97,7 +97,7 @@ class RegistryLink(Attribute):
             value = obj._cache[self.name]
         else:
             link = self.get_raw(obj, cls)
-            value = obj.storage.get(link)
+            value = obj.storage.get(link) if link else None
             obj._cache[self.name] = value
 
         return value
