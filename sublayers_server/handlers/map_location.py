@@ -21,15 +21,17 @@ class MapLocationHandler(BaseHandler):
         location_id = self.get_argument('location_id')
         location = self.application.srv.objects.get(int(location_id))
         if location:
-            svg_link = os.path.join(os.getcwd(), location.svg_link)
+            svg_link = os.path.join(os.getcwd(), location.example.svg_link)
             if isinstance(location, Town):
+                car_ex = agent.example.car
 
-                # todo: заьрать id из реестра
+                # todo: забрать id из реестра
                 car = {
                     "uid": 0
                 }
-                car_svg_link = os.path.join(os.getcwd(), 'static/img/cars/car_1/car.svg')
-                sector_svg_link = os.path.join(os.getcwd(), 'static/img/cars/car_1/sector.svg')
+
+                car_svg_link = os.path.join(os.getcwd(), car_ex.armorer_car_svg)
+                sector_svg_link = os.path.join(os.getcwd(), car_ex.armorer_sectors_svg)
                 car_slots = ['slot_bl', 'slot_br', 'slot_cc', 'slot_fc']
 
                 self.render("town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,

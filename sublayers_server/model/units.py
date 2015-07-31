@@ -52,7 +52,7 @@ class Unit(Observer):
         self.inventory = Inventory(max_size=10, owner=self, time=time)
         self.set_def_items(time=time)
 
-        self.setup_weapon(time=time)
+        self.setup_weapons(time=time)
 
         # обновляем статистику сервера
         server_stat = self.server.stat_log
@@ -98,7 +98,7 @@ class Unit(Observer):
         HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
             .start(time=time)
 
-    def setup_weapon(self, time):
+    def setup_weapons(self, time):
         for w_ex in self.example.iter_weapons():
             sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
             weapon = None

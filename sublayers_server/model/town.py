@@ -32,7 +32,6 @@ class RadioPoint(Observer):
 class MapLocation(Observer):
     def __init__(self, **kw):
         super(MapLocation, self).__init__(**kw)
-        self.svg_link = self.example.svg_link
         self.visitors = []
         self.radio_points = []
 

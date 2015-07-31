@@ -124,8 +124,8 @@ class Mobile(Root):
 
 
 class Car(Mobile):
-    pass
-
+    armorer_car_svg = Attribute(caption=u"Представление машинки у оружейника")
+    armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
 
 class Drone(Mobile):
     pass
