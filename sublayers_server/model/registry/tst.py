@@ -13,6 +13,7 @@ from sublayers_server.model.vectors import Point
 
 
 if __name__ == '__main__':
+    from pprint import pprint as pp
     storages = Dispatcher()
 
     reg = Registry(dispatcher=storages, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
@@ -23,11 +24,9 @@ if __name__ == '__main__':
 
     towers = reg['reg://registry/poi/radio_towers']
 
-    print jeep.uri
-    print jeep.slot_CC
-    print my_jeep
-    print my_jeep.uri
+    print jeep, jeep.slot_CC
+    print my_jeep, my_jeep.slot_CC
 
-    print u'Башни:'
-    for tower in towers:
-        print tower
+    for w in my_jeep.iter_weapons():
+        print w
+

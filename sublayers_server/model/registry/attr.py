@@ -24,6 +24,8 @@ class Attribute(object):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
 
     def __get__(self, obj, cls):
+        if obj is None:
+            return self
         value = obj._get_attr_value(self.name, self.default)
         log.debug('__get__ %s.%s() => %s', obj, self.name, value)
         return value
@@ -58,6 +60,8 @@ class Position(Attribute):
         return Point(*data)
 
     def __get__(self, obj, cls):
+        if obj is None:
+            return self
         data = super(Position, self).__get__(obj, cls)
         return self.from_ser(data)
 
@@ -70,17 +74,29 @@ class DocAttribute(Attribute):
         super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
 
     def __get__(self, obj, cls):
+        if obj is None:
+            return self
         default = cls.__doc__
         value = obj._get_attr_value(self.name, self.default or default)  # todo: cascade getter
         return value
 
 
 class RegistryLink(Attribute):
+    def __init__(self, need_to_instantiate=True, **kw):
+        super(RegistryLink, self).__init__(**kw)
+        self.need_to_instantiate = need_to_instantiate
+
+    def get_raw(self, obj, cls):
+        # todo: refactoring
+        return super(RegistryLink, self).__get__(obj, cls)
+
     def __get__(self, obj, cls):
+        if obj is None:
+            return self
         if self.name in obj._cache:
             value = obj._cache[self.name]
         else:
-            link = super(RegistryLink, self).__get__(obj, cls)
+            link = self.get_raw(obj, cls)
             value = obj.storage.get(link)
             obj._cache[self.name] = value
 

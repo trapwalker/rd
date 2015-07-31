@@ -7,7 +7,6 @@ from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
 from sublayers_server.model.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
-from sublayers_server.model.first_mission_parties import RandomCarList
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
@@ -55,8 +54,6 @@ class Server(object):
             path=reg_path,
         )
         self.reg_agents = Collection(dispatcher=self.reg_dispatcher, name='agents', path=None)  # todo: set path
-
-        self.randomCarList = RandomCarList()
 
         self.effects = dict()
         get_effects(server=self)

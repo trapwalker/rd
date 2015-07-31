@@ -11,8 +11,7 @@ from sublayers_server.model.events import FireDischargeEffectEvent
 
 
 class Weapon(Consumer):
-    def __init__(self, owner, sector, items_cls_list=BALANCE.Weapon.items_cls_list, dv=BALANCE.Weapon.dv,
-                 ddvs=BALANCE.Weapon.ddvs):
+    def __init__(self, owner, sector, dv, ddvs, items_cls_list=BALANCE.Weapon.items_cls_list):
         super(Weapon, self).__init__(items_cls_list=items_cls_list, dv=dv, ddvs=ddvs)
         self.owner = owner
         self.sector = sector
@@ -37,7 +36,7 @@ class Weapon(Consumer):
 
 
 class WeaponAuto(Weapon):
-    def __init__(self, dps=BALANCE.Weapon.dps, **kw):
+    def __init__(self, dps, **kw):
         super(WeaponAuto, self).__init__(**kw)
         self.targets = []
         self.dps = dps
@@ -121,7 +120,7 @@ class WeaponAuto(Weapon):
 
 
 class WeaponDischarge(Weapon):
-    def __init__(self, dmg=BALANCE.Weapon.dmg, time_recharge=BALANCE.Weapon.time_recharge, **kw):
+    def __init__(self, dmg, time_recharge, **kw):
         super(WeaponDischarge, self).__init__(**kw)
         self.dmg = dmg
         self.last_shoot = None

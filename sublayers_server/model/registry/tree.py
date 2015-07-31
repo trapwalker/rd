@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from attr import Attribute, DocAttribute
+from attr import Attribute, DocAttribute, RegistryLink
 
 from collections import deque, OrderedDict
 import shelve
@@ -95,6 +95,7 @@ class AbstractStorage(object):
         (?P<storage>[^/]+)?
         (?P<path>(?:/\w+)*)
         (?P<tail_slash>/)?
+        (?P<params>(?:\?[^#]*))?
         $
     ''', re.X)
 
@@ -112,7 +113,11 @@ class AbstractStorage(object):
         storage = d.get('storage')
         path = d.get('path', '')
         path = path.split('/')
-        return proto, storage, path
+        params = d.get('params', '') or ''
+        params = params.lstrip('?')
+        params = params.split('&') if params else []
+        params = dict([s.split('=') for s in params])  # todo: errors
+        return proto, storage, path, params
 
     @staticmethod
     def gen_uid():
@@ -130,7 +135,10 @@ class AbstractStorage(object):
         raise WrongStorageError("Can't resolve storage {}".format(storage))
 
     def __getitem__(self, item):
-        proto, storage, path = self.parse_uri(item) if isinstance(item, str) else (URI_PROTOCOL, None, list(item))
+        if isinstance(item, str):
+            proto, storage, path, params = self.parse_uri(item)
+        else:
+            proto, storage, path = (URI_PROTOCOL, None, list(item))
         return self.get_node(proto, storage, path)
 
     def get(self, index, default=None):
@@ -323,6 +331,7 @@ class Persistent(object):
 class Node(Persistent):
     # todo: override attributes in subclasses
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
+    can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
 
     def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, **kw):
@@ -345,12 +354,32 @@ class Node(Persistent):
         if storage:
             storage.put(self)
 
+    def iter_attrs(self):
+        cls = self.__class__
+        for k in dir(cls):
+            attr = getattr(cls, k)
+            if isinstance(attr, Attribute):
+                yield attr
+
     def instantiate(self, storage, name=None, **kw):
         # todo: test to abstract sign
         # todo: clear abstract sign
         name = name or storage.gen_uid().get_hex()
         inst = self.__class__(name=name, storage=storage, parent=self, **kw)
         log.debug('Maked new instance %s', inst.uri)
+
+        for attr in self.iter_attrs():
+            if isinstance(attr, RegistryLink):
+                if attr.need_to_instantiate:
+                    link = attr.get_raw(self, self.__class__)
+                    # todo: Отловить и обработать исключения
+                    if link:
+                        uri = dict(zip('proto storage path params'.split(), self.storage.parse_uri(link)))
+                        v = getattr(self, attr.name)  # todo: typehint
+                        if v and v.can_instantiate:
+                            setattr(inst, attr.name, v.instantiate(storage=storage, owner=self, **uri['params']))
+                            # todo: тест на негомогенных владельцев
+
         return inst
 
     def __getstate__(self):
@@ -415,7 +444,7 @@ class Root(Node):
 
 
 if __name__ == '__main__':
-    # from pprint import pprint as pp
+    #from pprint import pprint as pp
     # from pickle import dumps, loads
     # import jsonpickle as jp
     pass

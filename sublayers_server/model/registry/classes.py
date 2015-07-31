@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position, Parameter
 
-from math import pi
+from math import pi, radians
 import random
 
 
@@ -26,17 +26,25 @@ class SlotLock(SlotItem):
 
 
 class Weapon(SlotItem):
-    ammo = RegistryLink(caption=u'Боеприпас')  # todo: store set of ammo types
+    ammo = RegistryLink(caption=u'Боеприпас', need_to_instantiate=False)  # todo: store set of ammo types
     ammo_start_speed = Attribute(default=500, caption=u'Начальная скорость снаряда (м/с)')
-    effective_rabge = Attribute(default=1000, caption=u'Прицельная дальность (м)')
+    effective_range = Attribute(default=1000, caption=u'Прицельная дальность (м)')
+    direction = Attribute(default=0, caption=u'Направление (град)')  # todo: Убрать default
+    ammo_per_shot = Attribute(default=0, caption=u'Расход патронов на выстрел')
+    ammo_per_second = Attribute(default=0, caption=u'Расход патронов в секунду')
+    radius = Attribute(caption=u'Прицельная дальность (м)')
+    width = Attribute(caption=u'Ширина сектора стрельбы (град)')  # todo: перевести на градусы
 
 
 class Cannon(Weapon):
-    ammo_per_shot = Attribute(default=1, caption=u'Расход патронов на выстрел')
+    is_auto = False
+    dmg = Attribute(caption=u'Урон за выстрел')
+    time_recharge = Attribute(caption=u'Время перезарядки (с)')
 
 
 class MachineGun(Weapon):
-    ammo_per_second = Attribute(default=1, caption=u'Расход патронов в секунду')
+    is_auto = True
+    dps = Attribute(caption=u'Урон в секунду')
 
 
 class Agent(Root):
@@ -98,6 +106,13 @@ class Mobile(Root):
     slot_FR = Slot(caption=u'ForwardRightSlot', doc=u'Передний правый слот')
     slot_CR = Slot(caption=u'RightSlot', doc=u'Центральный правый слот')
     slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
+
+    def iter_weapons(self):
+        for attr in self.iter_attrs():
+            if isinstance(attr, Slot):
+                v = getattr(self, attr.name)
+                if isinstance(v, Weapon):
+                    yield v
 
 
 class Car(Mobile):

@@ -19,6 +19,8 @@ from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
 
+from math import radians
+
 
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
@@ -58,9 +60,7 @@ class Unit(Observer):
         self.inventory = Inventory(max_size=10, owner=self, time=time)
         self.set_def_items(time=time)
 
-        if weapons:
-            for weapon in weapons:
-                self.setup_weapon(dict_weapon=weapon, time=time)
+        self.setup_weapon(time=time)
 
 
         # обновляем статистику сервера
@@ -107,21 +107,23 @@ class Unit(Observer):
         HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
             .start(time=time)
 
-    def setup_weapon(self, dict_weapon, time):
-        sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
-        weapon = None
-        if dict_weapon['is_auto']:
-            weapon = WeaponAuto(owner=self, sector=sector, dps=dict_weapon['dps'])
-        else:
-            weapon = WeaponDischarge(owner=self, sector=sector, dmg=dict_weapon['dmg'],
-                                     time_recharge=dict_weapon['time_recharge'])
+    def setup_weapon(self, time):
+        for w_ex in self.example.iter_weapons():
+            sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
+            weapon = None
+            if w_ex.is_auto:
+                weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps,
+                                    dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)
+            else:
+                weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, dv=w_ex.ammo_per_shot,
+                                         ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
 
-        if dict_weapon['radius'] == 50:
-            if self.item_ammo2:
-                weapon.set_item(item=self.item_ammo2, time=time)
-        else:
-            if self.item_ammo1:
-                weapon.set_item(item=self.item_ammo1, time=time)
+            # if dict_weapon['radius'] == 50:
+            #     if self.item_ammo2:
+            #         weapon.set_item(item=self.item_ammo2, time=time)
+            # else:
+            #     if self.item_ammo1:
+            #         weapon.set_item(item=self.item_ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -279,6 +281,9 @@ class Unit(Observer):
         super(Unit, self).save(time=time)
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
+
+        # костыль!
+        self.example.slot_CC.direction += 90
 
 
 class Mobile(Unit):
