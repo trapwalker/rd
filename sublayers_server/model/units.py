@@ -95,7 +95,6 @@ class Unit(Observer):
     def setup_weapons(self, time):
         for w_ex in self.example.iter_weapons():
             sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
-            weapon = None
             if w_ex.is_auto:
                 weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo],
                                     dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)

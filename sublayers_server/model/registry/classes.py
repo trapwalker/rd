@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position, Parameter
+from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position, Parameter, ClientAttribute
 
 from math import pi, radians
 import random
@@ -15,6 +15,25 @@ class Item(Root):
     icon = Attribute(caption=u'Пиктограмма предмета')
     stack_size = Attribute(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
     base_price = Attribute(caption=u'Базовая цена за 1')
+
+    description = ClientAttribute(caption=u'Расширенное описание предмета')
+    inv_icon_big = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
+    inv_icon_mid = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
+    inv_icon_small = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
+    title = ClientAttribute(caption=u'Название предмета для отображения в инвентаре')
+
+
+    def _iter_client_attr(self):
+        for attr in self.iter_attrs():
+            if isinstance(attr, ClientAttribute):
+                v = getattr(self, attr.name)
+                yield attr.name, v
+
+    def as_client_dict(self):
+        d = dict()
+        for p in self._iter_client_attr():
+            d.update([p])
+        return d
 
 
 class SlotItem(Item):
@@ -126,6 +145,7 @@ class Mobile(Root):
 class Car(Mobile):
     armorer_car_svg = Attribute(caption=u"Представление машинки у оружейника")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
+
 
 class Drone(Mobile):
     pass

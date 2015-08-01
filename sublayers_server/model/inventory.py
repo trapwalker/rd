@@ -225,6 +225,7 @@ class ItemState(object):
         return dict(
             cls=self.__class__.__name__,
             balance_cls=self.example.name,
+            example=self.example.as_client_dict(),
             max_val=self.max_val,
             t0=self.t0,
             val0=self.val0,
