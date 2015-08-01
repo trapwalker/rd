@@ -30,7 +30,7 @@ class Weapon(SlotItem):
     ammo_start_speed = Attribute(default=500, caption=u'Начальная скорость снаряда (м/с)')
     effective_range = Attribute(default=1000, caption=u'Прицельная дальность (м)')
     direction = Attribute(default=0, caption=u'Направление (град)')  # todo: Убрать default
-    ammo_per_shot = Attribute(default=0, caption=u'Расход патронов на выстрел')
+    ammo_per_shot = Attribute(default=0, caption=u'Расход патронов за выстрел (< 0)')
     ammo_per_second = Attribute(default=0, caption=u'Расход патронов в секунду')
     radius = Attribute(caption=u'Прицельная дальность (м)')
     width = Attribute(caption=u'Ширина сектора стрельбы (град)')
