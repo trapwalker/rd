@@ -95,24 +95,14 @@ class Unit(Observer):
     def setup_weapons(self, time):
         for w_ex in self.example.iter_weapons():
             sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
-            weapon = None
             if w_ex.is_auto:
-                log.debug('========================================= %s', w_ex.ammo)
-                weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps,
+                weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo],
                                     dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)
                 weapon.set_item(item=self.ammo2, time=time)
             else:
-                log.debug('========================================= %s', w_ex.ammo)
-                weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, dv=w_ex.ammo_per_shot,
-                                         ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
+                weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
+                                         dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
                 weapon.set_item(item=self.ammo1, time=time)
-
-            # if dict_weapon['radius'] == 50:
-            #     if self.item_ammo2:
-            #         weapon.set_item(item=self.item_ammo2, time=time)
-            # else:
-            #     if self.item_ammo1:
-            #         weapon.set_item(item=self.item_ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)

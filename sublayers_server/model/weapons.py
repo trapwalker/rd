@@ -11,8 +11,8 @@ from sublayers_server.model.events import FireDischargeEffectEvent
 
 
 class Weapon(Consumer):
-    def __init__(self, owner, sector, dv, ddvs, items_cls_list=BALANCE.Weapon.items_cls_list):
-        super(Weapon, self).__init__(items_cls_list=items_cls_list, dv=dv, ddvs=ddvs)
+    def __init__(self, owner, sector, **kw):
+        super(Weapon, self).__init__(**kw)
         self.owner = owner
         self.sector = sector
         sector.add_weapon(self)

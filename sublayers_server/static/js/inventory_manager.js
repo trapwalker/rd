@@ -21,13 +21,14 @@ var InventoryItemState = (function () {
 var InventoryItem = (function (_super) {
     __extends(InventoryItem, _super);
 
-    function InventoryItem(state, position, balance_cls) {
+    function InventoryItem(state, position, balance_cls, example) {
         _super.call(this, null);
         this._in_tm = false;
         this.position = position;
         this.balance_cls = balance_cls;
         this.inventory = null;
         this.widget = null;
+        this.example = example;
         this.setState(state);
     }
 

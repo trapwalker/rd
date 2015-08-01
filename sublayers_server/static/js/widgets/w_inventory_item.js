@@ -30,8 +30,9 @@ var WInventoryItem = (function (_super) {
     WInventoryItem.prototype.addViewDiv = function(inventoryDiv) {
         //console.log('WInventoryItem.prototype.addViewDiv', inventoryDiv, this.item);
         var itemDiv = $(inventoryDiv).find(this.itemDivStr);
-        itemDiv.find(this.itemDivCaptionStr).text(this.item.balance_cls);
+        itemDiv.find(this.itemDivCaptionStr).text(this.item.example.title);
         itemDiv.draggable("option", "disabled", false);
+        itemDiv.find(this.itemDivPictureStr).css('background', 'transparent url(' + this.item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
         var self = this;
         itemDiv.on('dblclick', function () {
@@ -62,6 +63,7 @@ var WInventoryItem = (function (_super) {
         var itemDiv = $(this.inventoryDivStr).find(this.itemDivStr);
         itemDiv.find(this.itemDivCaptionStr).text('Пусто');
         itemDiv.find(this.itemDivCountStr).text('');
+        itemDiv.find(this.itemDivPictureStr).css('background', '');
         itemDiv.draggable("option", "disabled", true);
         itemDiv.off('dblclick');
         _super.prototype.delFromVisualManager.call(this);

@@ -242,7 +242,8 @@ var ClientManager = (function () {
         return new InventoryItem(
             this._getItemState(data.item),
             data.position,
-            data.item.balance_cls
+            data.item.balance_cls,
+            data.item.example
         )
     };
 
