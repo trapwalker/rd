@@ -14,6 +14,7 @@ from sublayers_server.model.vectors import Point
 
 if __name__ == '__main__':
     from pprint import pprint as pp
+    import yaml
     storages = Dispatcher()
 
     reg = Registry(dispatcher=storages, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
@@ -32,3 +33,32 @@ if __name__ == '__main__':
     print 'Slots of {}:'.format(my_jeep)
     for name, value in my_jeep.iter_slots():
         print name, value, value.parent if value else ''
+
+
+    class C(object):
+        x = 3
+        def __init__(self, y):
+            self.y = y
+            self.x = y * 2
+        def __getinitargs__(self):
+            print 'getinitagrs'
+            return self.y
+
+        # def __getstate__(self):
+        #     print 'getstate'
+        #     return dict(x=5, y=7)
+        #
+        # def __setstate__(self, state):
+        #     print 'setstate(%s), old=%s' % (state, self.__dict__)
+
+    c = C(1)
+    c.z = 11
+
+    s = yaml.dump(c)
+    print s
+
+    cc = yaml.load(s)
+    print cc, cc.x, cc.y,
+
+
+
