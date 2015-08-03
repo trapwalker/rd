@@ -8,7 +8,7 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.tree import Registry, Collection, Dispatcher
+from sublayers_server.model.registry.storage import Registry, Collection, Dispatcher
 from sublayers_server.model.vectors import Point
 
 
@@ -32,5 +32,3 @@ if __name__ == '__main__':
     print 'Slots of {}:'.format(my_jeep)
     for name, value in my_jeep.iter_slots():
         print name, value, value.parent if value else ''
-
-

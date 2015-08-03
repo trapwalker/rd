@@ -4,10 +4,10 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position, Parameter, ClientAttribute
+from sublayers_server.model.registry.storage import Root
+from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position, Parameter
 
-from math import pi, radians
+from math import pi
 import random
 
 
