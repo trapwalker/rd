@@ -7,13 +7,19 @@ from sublayers_server.model.vectors import Point
 
 
 class Attribute(object):
-    def __init__(self, default=None, doc=None, caption=None):
+    def __init__(self, default=None, doc=None, caption=None, tags=None):
         # todo: add param: null
         self.name = None
         self.cls = None
         self.default = default
         self.doc = doc
         self.caption = caption
+        if tags is None:
+            tags = set()
+        elif isinstance(tags, basestring):
+            tags = tags.split()
+
+        self.tags = set(tags)
 
     @property
     def title(self):
@@ -54,6 +60,11 @@ class Attribute(object):
         self.name = name
         self.cls = cls
         # todo: global attribute registration
+
+
+class ClientAttribute(Attribute):
+    # todo: Убрать
+    pass
 
 
 # todo: reserved attr names checking

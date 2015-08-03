@@ -355,12 +355,22 @@ class Node(Persistent):
         if storage:
             storage.put(self)
 
-    def iter_attrs(self):
+    def iter_attrs(self, tags=None, classes=None):
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
+
         cls = self.__class__
         for k in dir(cls):
             attr = getattr(cls, k)
-            if isinstance(attr, Attribute):
-                yield attr
+            if (
+                isinstance(attr, Attribute)
+                and (not tags or attr.tags & tags)
+                and (not classes or isinstance(attr, classes))
+            ):
+                getter = lambda: attr.__get__(self, cls)
+                yield attr, getter
 
     def instantiate(self, storage, name=None, **kw):
         # todo: test to abstract sign
@@ -369,17 +379,17 @@ class Node(Persistent):
         inst = self.__class__(name=name, storage=storage, parent=self, **kw)
         log.debug('Maked new instance %s', inst.uri)
 
-        for attr in self.iter_attrs():
-            if isinstance(attr, RegistryLink):
-                if attr.need_to_instantiate:
-                    link = attr.get_raw(self)
-                    # todo: Отловить и обработать исключения
-                    if link:
-                        uri = dict(zip('proto storage path params'.split(), self.storage.parse_uri(link)))
-                        v = getattr(self, attr.name)  # todo: typehint
-                        if v and v.can_instantiate:
-                            setattr(inst, attr.name, v.instantiate(storage=storage, owner=self, **uri['params']))
-                            # todo: тест на негомогенных владельцев
+        for attr, getter in self.iter_attrs(classes=RegistryLink):
+            if attr.need_to_instantiate:
+                link = attr.get_raw(self)
+                # todo: Отловить и обработать исключения
+                if link:
+                    uri = dict(zip('proto storage path params'.split(), self.storage.parse_uri(link)))
+                    v = getter()
+                    if v and v.can_instantiate:
+                        new_v = v.instantiate(storage=storage, owner=self, **uri['params'])
+                        setattr(inst, attr.name, new_v)
+                        # todo: тест на негомогенных владельцев
 
         return inst
 

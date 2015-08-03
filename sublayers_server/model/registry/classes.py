@@ -22,17 +22,10 @@ class Item(Root):
     inv_icon_small = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
     title = ClientAttribute(caption=u'Название предмета для отображения в инвентаре')
 
-
-    def _iter_client_attr(self):
-        for attr in self.iter_attrs():
-            if isinstance(attr, ClientAttribute):
-                v = getattr(self, attr.name)
-                yield attr.name, v
-
     def as_client_dict(self):
-        d = dict()
-        for p in self._iter_client_attr():
-            d.update([p])
+        d = {}
+        for attr, getter in self.iter_attrs(classes=ClientAttribute):
+            d[attr.name] = getter()
         return d
 
 
