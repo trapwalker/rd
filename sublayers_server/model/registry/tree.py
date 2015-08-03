@@ -205,7 +205,8 @@ class Collection(AbstractStorage):
         return path if isinstance(path, basestring) else ('/' + '/'.join(path))
 
     def close(self):
-        self._raw_storage.close()
+        if hasattr(self._raw_storage, 'close'):
+            self._raw_storage.close()
         super(Collection,self).close()
 
     def get_local(self, path):
@@ -390,10 +391,14 @@ class Node(Persistent):
 
     @property
     def path(self):
+        if self.storage is None:
+            return
         return self.storage.get_path(self)
 
     @property
     def uri(self):
+        if self.storage is None:
+            return
         return self.storage.get_uri(self)
 
     # noinspection PyUnusedLocal
