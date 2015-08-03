@@ -62,11 +62,6 @@ class Attribute(object):
         # todo: global attribute registration
 
 
-class ClientAttribute(Attribute):
-    # todo: Убрать
-    pass
-
-
 # todo: reserved attr names checking
 
 class Parameter(Attribute):

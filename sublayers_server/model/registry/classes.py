@@ -16,15 +16,17 @@ class Item(Root):
     stack_size = Attribute(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
     base_price = Attribute(caption=u'Базовая цена за 1')
 
-    description = ClientAttribute(caption=u'Расширенное описание предмета')
-    inv_icon_big = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
-    inv_icon_mid = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
-    inv_icon_small = ClientAttribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей')
-    title = ClientAttribute(caption=u'Название предмета для отображения в инвентаре')
+    description = Attribute(caption=u'Расширенное описание предмета', tags='client')
+    inv_icon_big = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
+    inv_icon_mid = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
+    inv_icon_small = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
+    # todo: move title attr to the root
+    title = Attribute(caption=u'Название предмета для отображения в инвентаре', tags='client')
 
     def as_client_dict(self):
+        # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
         d = {}
-        for attr, getter in self.iter_attrs(classes=ClientAttribute):
+        for attr, getter in self.iter_attrs(tags='client'):
             d[attr.name] = getter()
         return d
 
@@ -106,7 +108,6 @@ class Mobile(Root):
     p_cc = Parameter(default=1, caption=u"Броня")
     p_fuel_rate = Parameter(default=0.5, caption=u"Расход топлива (л/с)")
     max_control_speed = Attribute(default=20, caption=u"Максимальная скорость машинки без бафов")
-
 
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот')
     slot_CL = Slot(caption=u'LeftSlot', doc=u'Центральный левый слот')
