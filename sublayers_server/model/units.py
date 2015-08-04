@@ -69,7 +69,6 @@ class Unit(Observer):
         return self.hp_state.hp(t=time)
 
     def set_def_items(self, time):
-
         ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
         ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
         f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
@@ -90,7 +89,6 @@ class Unit(Observer):
                                                                                      inventory=self.inventory)
         ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
                                                                                      inventory=self.inventory)
-
         #
         # ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
         #                                                                                           inventory=self.inventory)

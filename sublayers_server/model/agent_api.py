@@ -411,6 +411,18 @@ class AgentAPI(API):
 
     @public_method
     def activate_item(self, owner_id, position, balance_cls_name):
-        log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
+        #log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
         ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position,
-                                 balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
+                            balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def fuel_station_active(self, fuel):
+        log.info('agent %s want active fuel station, with value=%s', self.agent, fuel)
+        self.agent.example.balance -= fuel
+        cur_fuel = self.agent.example.car.fuel + fuel
+        max_fuel = self.agent.example.car.max_fuel
+        if cur_fuel <= max_fuel:
+            self.agent.example.car.fuel = cur_fuel
+        else:
+            self.agent.example.car.fuel = max_fuel
+        messages.GasStationUpdate(agent=self.agent, time=self.agent.server.get_time()).post()

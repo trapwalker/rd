@@ -35,9 +35,9 @@ class MapLocationHandler(BaseHandler):
                 car_slots = ['slot_bl', 'slot_br', 'slot_cc', 'slot_fc']
 
                 self.render("town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
-                            sector_svg_link=sector_svg_link, car_slots=car_slots, car=car)
+                            sector_svg_link=sector_svg_link, car_slots=car_slots, car=car, agent=agent)
             elif isinstance(location, GasStation):
-                self.render("gas_station.html", station=location, svg_link=svg_link)
+                self.render("gas_station.html", station=location, svg_link=svg_link, agent=agent)
             else:
                 log.warn('Unknown type location: %s', location)
         else:

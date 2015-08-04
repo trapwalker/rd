@@ -70,6 +70,8 @@ class Agent(Root):
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
 
     position = Position(caption=u"Последние координаты агента")
+    balance = Attribute(default=1000, caption=u"Количество литров на счете агента")
+
     # todo: current car
     # todo: car list
     # todo: current location link

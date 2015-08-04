@@ -1,5 +1,5 @@
-<style>
-    #townNucoilPageWrap {
+<style xmlns="http://www.w3.org/1999/html">
+     #townNucoilPageWrap {
         position: absolute;
         top: 250px;
         left: 625px;
@@ -9,8 +9,6 @@
         position: relative;
         width: 660px;
         height: 422px;
-        background-color: rgba(0, 0, 0, 0);
-        color: #ffffff;
         font: 12pt FreePixel;
         cursor: default;
     }
@@ -88,8 +86,6 @@
         margin: 10px;
         height: 120px;
         line-height: 120px;
-        color: #0f4206;
-        text-align: center;
     }
 
     .mainMenuNucoilWindow-body-fuel-left-name {
@@ -102,22 +98,6 @@
     .mainMenuNucoilWindow-body-fuel-left-description {
         color: #1e9604;
         text-align: center;
-    }
-
-    .mainMenuNucoilWindow-body-fuel-left-amount {
-        color: #1e9604;
-        text-align: center;
-        margin: 10px;
-    }
-
-    .mainMenuNucoilWindow-body-fuel-left-activate {
-        color: #30fc00;
-        text-align: center;
-        border: solid 1px #125306;
-        background-color: #0d3707;
-        margin: 10px;
-        cursor: pointer;
-        font: 12pt Nouveau_IBM;
     }
 
     .mainMenuNucoilWindow-body-fuel-center {
@@ -141,7 +121,7 @@
 
     .mainMenuNucoilWindow-body-fuel-center-balance-amount {
         color: #30fc00;
-        margin: 5px 0px 5px 75px;
+        margin: 5px auto 5px auto;
         width: 100px;
         height: 25px;
         line-height: 25px;
@@ -161,23 +141,28 @@
     }
 
     .mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background {
-        margin: 5px 241px 5px 5px;
-        height: 26px;
-        width: 180px; /* тут менять прогресс от 0px(0%) до 240px(100%)... сейчас стоит 180рх(75%)... */
+        position: absolute;
+        height: 100%;
+        width: 75%;
         background-image: url("/static/img/progressbar_division.png");
         background-repeat: repeat-x;
         float: left;
     }
 
-    .mainMenuNucoilWindow-body-fuel-center-tank-progressbar {
-        position: absolute;
+    .mainMenuNucoilWindow-body-fuel-center-tank-progressbar-label {
+        position: relative;
         color: #30fc00;
-        margin: 4px 0px 5px 4px;
+        margin: 0px auto 0px auto;
+        line-height: 26px;
+        font-size: 12pt;
+        text-align: center;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-tank-progressbar {
+        position: relative;
+        margin: 4px auto 0px auto;
         height: 26px;
         width: 241px;
-        line-height: 26px;
-        text-align: center;
-        font-size: 12pt;
         border: solid 1px #00f150;
     }
 
@@ -233,10 +218,20 @@
 
     .mainMenuNucoilWindow-body-fuel-center-count-amount-change-up {
         cursor: pointer;
+        opacity: 0.6;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-count-amount-change-up:hover {
+        opacity: 1;
     }
 
     .mainMenuNucoilWindow-body-fuel-center-count-amount-change-down {
         cursor: pointer;
+        opacity: 0.6;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-count-amount-change-down:hover {
+        opacity: 1;
     }
 
     .mainMenuNucoilWindow-body-fuel-center-count-text {
@@ -255,6 +250,11 @@
         font: 12pt Nouveau_IBM;
         float: left;
         width: 120px;
+        opacity: 0.6;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-center-count-button:hover {
+        opacity: 1;
     }
 
     .mainMenuNucoilWindow-body-fuel-center-down {
@@ -362,6 +362,11 @@
         font: 12pt Nouveau_IBM;
         float: left;
         width: 168px;
+        opacity: 0.6;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-down-button:hover {
+        opacity: 1;
     }
 
     .mainMenuNucoilWindow-body-fuel-subscription {
@@ -404,43 +409,405 @@
         text-align: center;
         float: left;
     }
+
+    .mainMenuNucoilWindow-body-insurance {
+        position: relative;
+        float: left;
+        width: 652px;
+        height: 361px;
+        overflow-y: hidden;
+        border: solid 1px #00f150;
+        margin: 0px 3px 3px 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left {
+        border-right: solid 1px #00f150;
+        width: 166px;
+        height: 340px;
+        margin-top: 10px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left-name {
+        color: #30fc00;
+        text-align: center;
+        margin: 10px;
+        font: 12pt Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left-description {
+        color: #30fc00;
+        font-size: 10pt;
+        overflow-y: scroll;
+        height: 265px;
+        margin: 0px 5px 0px 5px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-left-activate {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin: 10px;
+        cursor: pointer;
+        font: 12pt Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-up {
+        width: 463px;
+        height: 69px;
+        margin: 10px 10px 0px 10px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        border-bottom: solid 1px #00f150;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center {
+        width: 443px;
+        height: 203px;
+        margin: 10px 20px 0px 20px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-title {
+        width: 443px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard {
+        width: 132px;
+        height: 157px;
+        margin: 10px 0px 0px 1px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        border: 1px solid #1c8804;
+        text-align: center;
+        font-size: 10pt;
+        cursor: pointer;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard:hover {
+        border: 1px solid #00f150;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard-title {
+        margin-top: 5px;
+        color: #1c8804;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard-picture {
+        border: 1px solid #00f150;
+        width: 75px;
+        height: 65px;
+        line-height: 65px;
+        font-family: FreePixel;
+        margin-left: 27px;
+        color: #0f4206;
+        margin-top: 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard-evacuation {
+        color: #1c8804;
+        text-align: left;
+        margin-left: 7px;
+        margin-top: 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard-point {
+        color: #1c8804;
+        text-align: left;
+        margin-left: 7px;
+        margin-top: 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard-payment {
+        color: #1c8804;
+        text-align: left;
+        margin-left: 7px;
+        margin-top: 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-standard-cost {
+        margin-top: 3px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-premium {
+        width: 132px;
+        height: 157px;
+        margin: 10px 0px 0px 20px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        border: 1px solid #00f150;
+        text-align: center;
+        font-size: 10pt;
+        cursor: pointer;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-premium:hover {
+        border: 1px solid #00f150;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-premium-title {
+        margin-top: 5px;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-vip {
+        width: 132px;
+        height: 157px;
+        margin: 10px 0px 0px 20px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        border: 1px solid #1c8804;
+        text-align: center;
+        font-size: 10pt;
+        cursor: pointer;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-vip:hover {
+        border: 1px solid #00f150;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-center-vip-title {
+        margin-top: 5px;
+        color: #1c8804;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription {
+        border: solid 1px #00f150;
+        width: 443px;
+        height: 57px;
+        margin: 0px 20px 0px 20px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription-left-picture {
+        border: solid 1px #00f150;
+        margin: 3px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        color: #0f4206;
+        font-size: 8pt;
+        text-align: center;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription-text {
+        width: 327px;
+        margin-top: 5px;
+        font-size: 10pt;
+        text-align: center;
+        float: left;
+        color: #30fc00;
+    }
+
+    .mainMenuNucoilWindow-body-insurance-subscription-right-picture {
+        border: solid 1px #00f150;
+        margin: 3px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        color: #0f4206;
+        font-size: 8pt;
+        text-align: center;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left {
+        border-right: solid 1px #00f150;
+        width: 166px;
+        height: 340px;
+        margin-top: 10px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-theme-closed {
+        float: left;
+        margin-left: 5px;
+        color: #1c8804;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-theme-opened {
+        float: left;
+        margin-left: 5px;
+        color: #30fc00;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-title-opened {
+        float: left;
+        margin-left: 15px;
+        color: #30fc00;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-title-opened {
+        float: left;
+        margin-left: 15px;
+        color: #30fc00;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-left-reply {
+        float: left;
+        margin-left: 25px;
+        color: #1c8804;
+        cursor: pointer;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 135px;
+        text-overflow: ellipsis;
+        word-wrap: normal;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-up {
+        width: 463px;
+        height: 85px;
+        margin: 10px 10px 0px 10px;
+        float: left;
+        color: #1c8804;
+        font-family: Nouveau_IBM;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center {
+        width: 465px;
+        height: 188px;
+        margin: 0px 10px 10px 10px;
+        float: left;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-message {
+        border: solid 1px #00f150;
+        width: 465px;
+        height: 145px;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-message-title {
+        color: #30fc00;
+        border-bottom: solid 1px #00f150;
+        font-family: Nouveau_IBM;
+        margin: 0px 10px 0px 10px;
+        height: 23px;
+        line-height: 23px;
+        cursor: text;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-message-text {
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        margin: 10px 10px 0px 10px;
+        cursor: text;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-theme-technical {
+        float: left;
+        cursor: pointer;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+        margin-top: 5px;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-theme-complaints {
+        float: left;
+        margin-left: 9px;
+        margin-top: 5px;
+        cursor: pointer;
+        color: #1c8804;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-theme-questions {
+        float: left;
+        margin-left: 9px;
+        margin-top: 5px;
+        cursor: pointer;
+        color: #1c8804;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-buttons-back {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin-top: 5px;
+        cursor: pointer;
+        font: 12pt Nouveau_IBM;
+        float: left;
+        width: 122px;
+    }
+
+    .mainMenuNucoilWindow-body-appeals-center-buttons-send {
+        color: #30fc00;
+        text-align: center;
+        border: solid 1px #125306;
+        background-color: #0d3707;
+        margin: 5px 0px 0px 217px;
+        cursor: pointer;
+        font: 12pt Nouveau_IBM;
+        float: left;
+        width: 122px;
+    }
 </style>
 
 <div class="mainMenuNucoilWindow-main">
     <div class="mainMenuNucoilWindow-menu">
-        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-fuel_id">&nbspТопливо&nbsp
+        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-fuel_id">
+            &nbspТопливо&nbsp
         </div>
-        <div class="mainMenuNucoilWindow-menu-button" data-page_id="">&nbspСтраховка&nbsp
+        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-insurance_id">
+            &nbspСтраховка&nbsp
         </div>
-        <div class="mainMenuNucoilWindow-menu-button" data-page_id="">&nbspАпелляции&nbsp</div>
+        <div class="mainMenuNucoilWindow-menu-button" data-page_id="mainMenuNucoilWindow-body-appeals_id">
+            &nbspКонтакт-центр&nbsp
+        </div>
     </div>
 
     <div id="mainMenuNucoilWindow-body-fuel_id" class="mainMenuNucoilWindow-body-fuel mainMenuNucoilWindow-page-div">
         <div class="mainMenuNucoilWindow-body-fuel-left">
-            <div class="mainMenuNucoilWindow-body-fuel-left-picture">Картинка</div>
-            <div class="mainMenuNucoilWindow-body-fuel-left-name">Канистра</div>
+            <div class="mainMenuNucoilWindow-body-fuel-left-picture"></div>
+            <div class="mainMenuNucoilWindow-body-fuel-left-name"></div>
             <div class="mainMenuNucoilWindow-body-fuel-left-description">
-                Используется для переноски всяких горючих ништяков до локации поджигаемого. Лучший друг пироманьяка.
             </div>
-            <div class="mainMenuNucoilWindow-body-fuel-left-amount">В инвентаре: 2 ед.</div>
-            <div class="mainMenuNucoilWindow-body-fuel-left-activate">Активировать!</div>
         </div>
         <div class="mainMenuNucoilWindow-body-fuel-center">
             <div class="mainMenuNucoilWindow-body-fuel-center-balance">
                 <div class="mainMenuNucoilWindow-body-fuel-center-balance-label">Топлива на вашем балансе:</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-balance-amount">78 л.</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-balance-amount"></div>
             </div>
             <div class="mainMenuNucoilWindow-body-fuel-center-tank">
                 <div class="mainMenuNucoilWindow-body-fuel-center-tank-label">Топливо в баке:</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background"></div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar">75%</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar">
+                    <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background"></div>
+                    <div class="mainMenuNucoilWindow-body-fuel-center-tank-progressbar-label"></div>
+                </div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-tank-empty">&#9650;<br/>E</div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-tank-half">&#9650;<br/>1/2</div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-tank-full">&#9650;<br/>F</div>
             </div>
             <div class="mainMenuNucoilWindow-body-fuel-center-count">
                 <div class="mainMenuNucoilWindow-body-fuel-center-count-label">Объем:</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-count-amount">20 л.</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-count-amount">0 л.</div>
                 <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change">
                     <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change-up">&#9650;</div>
                     <div class="mainMenuNucoilWindow-body-fuel-center-count-amount-change-down">&#9660;</div>
@@ -485,7 +852,7 @@
         </div>
         <div class="mainMenuNucoilWindow-body-fuel-down">
             <div class="mainMenuNucoilWindow-body-fuel-down-label">Итого:</div>
-            <div class="mainMenuNucoilWindow-body-fuel-down-amount">65 л.</div>
+            <div class="mainMenuNucoilWindow-body-fuel-down-amount"></div>
             <div class="mainMenuNucoilWindow-body-fuel-down-button">Залить</div>
         </div>
         <div class="mainMenuNucoilWindow-body-fuel-subscription">
@@ -498,9 +865,121 @@
             <div class="mainMenuNucoilWindow-body-fuel-subscription-right-picture">Картинка</div>
         </div>
     </div>
+
+    <div id="mainMenuNucoilWindow-body-insurance_id"
+         class="mainMenuNucoilWindow-body-insurance mainMenuNucoilWindow-page-div">
+        <div class="mainMenuNucoilWindow-body-insurance-left">
+            <div class="mainMenuNucoilWindow-body-insurance-left-name">Тариф "Стандарт"</div>
+            <div class="mainMenuNucoilWindow-body-insurance-left-description">
+                Стандартная страховка является обязательной и входит в оборудование Nuke Commander как базовая опция.
+                В случае уничтожения транспортного средства и отключения систем жизнеобеспечения водителя наша служба
+                спасения бесплатно эвакуирует Вас в ближайший город в течение 15 минут. Так же мы возместим рыночную
+                стоимость транспортного средства без учета установленного на нем оборудования.
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-left-activate">Оформить</div>
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-up">
+            Уважаемый Vasya78, статус Вашей страховки (т.п. "Премиум") истекает через 26 дней.
+            В этой форме Вы можете продлить договор или сменить тарифный план в любое время.
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-center">
+            <div class="mainMenuNucoilWindow-body-insurance-center-title">Выберите тариф:</div>
+            <div class="mainMenuNucoilWindow-body-insurance-center-standard">
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-title">[ ] Стандарт</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-picture">Картинка</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-evacuation">Эвакуация: 1</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-point">Выбор точки: х</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-payment">Выплата: 1</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-cost">15 000 кр\год</div>
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-center-premium">
+                <div class="mainMenuNucoilWindow-body-insurance-center-premium-title">[&radic;] Премиум</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-picture">Картинка</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-evacuation">Эвакуация: 2</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-point">Выбор точки: х</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-payment">Выплата: 2</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-cost">25 000 кр\год</div>
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-center-vip">
+                <div class="mainMenuNucoilWindow-body-insurance-center-vip-title">[ ] V.I.P.</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-picture">Картинка</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-evacuation">Эвакуация: 3</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-point">Выбор точки: &radic;</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-payment">Выплата: 3</div>
+                <div class="mainMenuNucoilWindow-body-insurance-center-standard-cost">55 000 кр\год</div>
+            </div>
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-subscription">
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-left-picture">Картинка</div>
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-text">
+                Не ждите, пока Ваши потери спросят Вас:<br/>
+                <strong><em>"Э, слышь! Страховка есть? А если поищу?"</em></strong><br/>
+                Полис <strong>"Нукойл VIP"</strong>: Все сгорело? Ну и хрен с ним!
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-right-picture">Картинка</div>
+        </div>
+    </div>
+
+    <div id="mainMenuNucoilWindow-body-appeals_id"
+         class="mainMenuNucoilWindow-body-insurance mainMenuNucoilWindow-page-div">
+        <div class="mainMenuNucoilWindow-body-appeals-left">
+            <div class="mainMenuNucoilWindow-body-insurance-left-name">Ваши сообщения:</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-theme-closed">&#9658; Тех. проблемы</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-theme-closed">&#9658; Жалобы на игроков</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-theme-opened">&#9660; Вопросы</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-reply">Re:Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-reply">Re2:Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-reply">Re3:Почему не еду?</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?#3</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?#4</div>
+            <div class="mainMenuNucoilWindow-body-appeals-left-title-opened">&#9660; Почему не еду?#5</div>
+        </div>
+        <div class="mainMenuNucoilWindow-body-appeals-up">
+            Уважаемый Vasya78, на этой странице Вы можете насрать в душу и публично покарать каждого негодяя,
+            кой смеет читерствовать в этой игре, или же морально уничтожить админов, оповестивши их,
+            что проект - угэ, багов - море.
+        </div>
+        <div class="mainMenuNucoilWindow-body-appeals-center">
+            <div class="mainMenuNucoilWindow-body-appeals-center-message">
+                <div class="mainMenuNucoilWindow-body-appeals-center-message-title">Почему не еду?</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-message-text">
+                    Одмине! Вы олене! Игра ваша шлак, и йа вас всех вычислю по ойпи, лична найду
+                    и выпилю кровавейше и жэстачайше! Каждага! Пащады нибудед!<br/>
+                    <br/>
+                    Ваш школьнег!
+                </div>
+            </div>
+            <div class="mainMenuNucoilWindow-body-appeals-center-theme">
+                <div class="mainMenuNucoilWindow-body-appeals-center-theme-technical">[х] Технические проблемы</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-theme-complaints">[ ] Жалобы на игроков</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-theme-questions">[ ] Вопросы</div>
+            </div>
+            <div class="mainMenuNucoilWindow-body-appeals-center-buttons">
+                <div class="mainMenuNucoilWindow-body-appeals-center-buttons-back">Назад</div>
+                <div class="mainMenuNucoilWindow-body-appeals-center-buttons-send">Отправить</div>
+            </div>
+        </div>
+        <div class="mainMenuNucoilWindow-body-insurance-subscription">
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-left-picture">Картинка</div>
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-text">
+                Не ждите, пока Ваши потери спросят Вас:<br/>
+                <strong><em>"Э, слышь! Страховка есть? А если поищу?"</em></strong><br/>
+                Полис <strong>"Нукойл VIP"</strong>: Все сгорело? Ну и хрен с ним!
+            </div>
+            <div class="mainMenuNucoilWindow-body-insurance-subscription-right-picture">Картинка</div>
+        </div>
+    </div>
 </div>
 
 <script>
+    var userBalanceFuel = {{ agent.example.balance }};
+    var userCarMaxFuel = {{ agent.example.car.max_fuel }};
+    var userCarCurrentFuel = {{ agent.example.car.fuel }};
+    var maxAvailableFuel;
+    var currentFuelValue;
+    var totalFuelValue;
+
     $(".mainMenuNucoilWindow-menu-button").click(function (event) {
         // выключить у всех кнопок состояние активности // btnpressed - дурацкое название, но зато точно не занято
         $('.mainMenuNucoilWindow-menu-button').removeClass('btnpressed');
@@ -512,6 +991,57 @@
         // сейчас сделал на айдишниках, но можно сделать и на классах, так как у тебя классы тут разные
         $('#' + $(this).data('page_id')).css('display', 'block');
     });
+
+    // Клики кнопок "вверх" и "вниз"
+    function setupCurrentFuelValue() {
+        currentFuelValue = Math.round(currentFuelValue);
+        $('.mainMenuNucoilWindow-body-fuel-center-count-amount').text(currentFuelValue + ' л.');
+        setupFuelTotal();
+    }
+
+    $('.mainMenuNucoilWindow-body-fuel-center-count-amount-change-up').on('mousedown', function(event) {
+        currentFuelValue++;
+        currentFuelValue = (currentFuelValue >= maxAvailableFuel) ? maxAvailableFuel : currentFuelValue;
+        setupCurrentFuelValue()
+    });
+
+    $('.mainMenuNucoilWindow-body-fuel-center-count-amount-change-down').on('mousedown', function(event) {
+        currentFuelValue--;
+        currentFuelValue = (currentFuelValue <= 0) ? 0 : currentFuelValue;
+        setupCurrentFuelValue()
+    });
+
+    // Клик кнопки "полный бак"
+    $('.mainMenuNucoilWindow-body-fuel-center-count-button').on('click', function(event){
+        currentFuelValue = maxAvailableFuel;
+        setupCurrentFuelValue();
+    });
+
+    // Клик кнопки "заправить"
+    $('.mainMenuNucoilWindow-body-fuel-down-button').on('click', function(event){
+        clientManager.sendFuelStationActive(totalFuelValue);
+    });
+
+    // Пересчитать "итого"
+    function setupFuelTotal() {
+        totalFuelValue = currentFuelValue;
+        $('.mainMenuNucoilWindow-body-fuel-down-amount').text(totalFuelValue + ' л.');
+    }
+
+    // Инициализация заправки
+    function initGasStation(aUserBalanceFuel, aUserCarCurrentFuel) {
+        userBalanceFuel = aUserBalanceFuel;
+        userCarCurrentFuel = aUserCarCurrentFuel;
+        maxAvailableFuel = Math.min((userCarMaxFuel - userCarCurrentFuel), userBalanceFuel);
+        currentFuelValue = 0;
+
+        $('.mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background')
+            .css('width', Math.round(100 * userCarCurrentFuel / userCarMaxFuel) + '%');
+        $('.mainMenuNucoilWindow-body-fuel-center-tank-progressbar-label').text(Math.round(userCarCurrentFuel) + ' л.');
+        $('.mainMenuNucoilWindow-body-fuel-center-balance-amount').text(userBalanceFuel + ' л.');
+        setupCurrentFuelValue();
+    }
+    initGasStation(userBalanceFuel, userCarCurrentFuel);
 
     // нужно выполнить какую-то функцию клика, например на первую кнопку, чтобы при
     // открывании окна правильно отрабатывала подсветка

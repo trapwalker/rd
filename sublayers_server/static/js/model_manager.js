@@ -709,6 +709,11 @@ var ClientManager = (function () {
         item_balance_cls_manager.add_balance_cls(event.balance_cls)
     };
 
+    ClientManager.prototype.GasStationUpdate = function (event) {
+        //console.log('ClientManager.prototype.GasStationUpdate', event);
+        initGasStation(event.balance, event.fuel);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -966,7 +971,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendCreatePrivateChat = function(recipient) {
+    ClientManager.prototype.sendCreatePrivateChat = function (recipient) {
         var mes = {
             call: "create_private_chat",
             rpc_call_id: rpcCallList.getID(),
@@ -978,7 +983,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendClosePrivateChat = function(chat_name) {
+    ClientManager.prototype.sendClosePrivateChat = function (chat_name) {
         //console.log('ClientManager.prototype.sendClosePrivateChat', chat_name);
         var mes = {
             call: "close_private_chat",
@@ -991,7 +996,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendShowInventory = function(owner_id) {
+    ClientManager.prototype.sendShowInventory = function (owner_id) {
         //console.log('ClientManager.prototype.sendShowInventory');
         var mes = {
             call: "show_inventory",
@@ -1004,7 +1009,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendHideInventory = function(owner_id) {
+    ClientManager.prototype.sendHideInventory = function (owner_id) {
         //console.log('ClientManager.prototype.sendHideInventory');
         var mes = {
             call: "hide_inventory",
@@ -1047,7 +1052,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivateItem = function (item) {
-        console.log('ClientManager.prototype.sendActivateItem', item);
+        //console.log('ClientManager.prototype.sendActivateItem', item);
         var mes = {
             call: "activate_item",
             rpc_call_id: rpcCallList.getID(),
@@ -1055,6 +1060,18 @@ var ClientManager = (function () {
                 balance_cls_name: item.balance_cls,
                 owner_id: item.inventory.owner_id,
                 position: item.position
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendFuelStationActive = function (fuel) {
+        var mes = {
+            call: "fuel_station_active",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                fuel: fuel
             }
         };
         rpcCallList.add(mes);
