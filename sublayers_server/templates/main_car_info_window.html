@@ -627,16 +627,24 @@
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item-wrap {
+        position: relative;
+        box-sizing: border-box;
+        border: 1px solid #054E05;
         width: 140px;
         height: 100px;
         float: left;
+        margin: 5px 10px 5px 0px;
+        opacity: 0.6;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap:hover {
+        opacity: 1;
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item {
+        position: relative;
         width: 140px;
         height: 100px;
-        float: left;
-        margin-bottom: 10px;
     }
 
     .mainCarInfoWindow-body-trunk-body-right-line {
@@ -648,7 +656,9 @@
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item-name-empty {
-        font: 12pt Nouveau_IBM;
+        box-sizing: border-box;
+        padding: 5px 0px 0px 5px;
+        font: 11pt Nouveau_IBM;
         color: #135806;
     }
 
@@ -658,13 +668,15 @@
         linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
         background-size: 2px 2px;
         background-position: 0 0, 1px 1px;
-        text-align: center;
-        color: #0f4206;
-        height: 85px;
-        margin-top: 3px;
+        height: 78px;
+        width: 138px;
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item-count-empty {
+        position: relative;
+        box-sizing: border-box;
+        padding: 0px 5px 0px 0px;
+        top: 58px;
         text-align: right;
         color: #30fc00;
     }

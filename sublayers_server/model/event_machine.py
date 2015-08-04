@@ -11,11 +11,9 @@ from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
-from sublayers_server.model.vectors import Point
 from sublayers_server.model.town import RadioPoint, Town, GasStation
 from sublayers_server.model.events import LoadWorldEvent
-from sublayers_server.model.units import Mobile
-from sublayers_server.model.registry.tree import Registry, Collection, Dispatcher  # todo: rename
+from sublayers_server.model.registry.storage import Registry, Collection, Dispatcher
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 
 import os
