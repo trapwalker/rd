@@ -1,4 +1,3 @@
-
 var ItemBalanceClsManager = (function () {
     function ItemBalanceClsManager() {
         this.balance_cls = {};
@@ -26,14 +25,10 @@ var ItemBalanceClsManager = (function () {
         switch (balance_cls.name) {
             case 'aaaaa':
                 break;
-
             default:
                 clientManager.sendActivateItem(item);
-
         }
     };
-
-
 
     return ItemBalanceClsManager;
 })();

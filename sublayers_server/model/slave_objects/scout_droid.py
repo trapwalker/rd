@@ -71,11 +71,12 @@ class ScoutDroid(Slave):
         self.tags.add(tags.UnZoneTag)
 
     def set_def_items(self, time):
-        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
-        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=6).set_inventory(time=time, inventory=self.inventory)
+        pass
+        # self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
+        # self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
+        # ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        # ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        # ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        # ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5).set_inventory(time=time, inventory=self.inventory)
+        # ItemState(server=self.server, time=time, balance_cls='Ammo1', count=6).set_inventory(time=time, inventory=self.inventory)
 

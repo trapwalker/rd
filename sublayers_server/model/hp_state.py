@@ -24,8 +24,8 @@ def assert_time_in_hpstate(f):
 
 
 class HPState(object):
-    def __init__(self, t, max_hp=100.0, hp=100.0, dps=0.0):
-        assert (max_hp > 0) and (max_hp >= hp)
+    def __init__(self, t, max_hp, hp, dps=0.0):
+        assert (max_hp > 0) and (max_hp >= hp), 'Wrong value hp={} max={}'.format(hp, max_hp)
         self.shooters = []
         self.t0 = t
         self.t_die = None

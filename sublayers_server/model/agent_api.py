@@ -15,9 +15,9 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToMapObject, ReEnterToTown, ExitFromTown, ShowInventoryEvent, \
+from sublayers_server.model.events import Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, \
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
-from sublayers_server.model.units import Unit
+from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
 
@@ -25,14 +25,13 @@ from sublayers_server.model.inventory import ItemState
 
 
 class UpdateAgentAPIEvent(Event):
-    def __init__(self, api, position, **kw):
+    def __init__(self, api, **kw):
         super(UpdateAgentAPIEvent, self).__init__(server=api.agent.server, **kw)
         self.api = api
-        self.position = position
 
     def on_perform(self):
         super(UpdateAgentAPIEvent, self).on_perform()
-        self.api.on_update_agent_api(position=self.position, time=self.time)
+        self.api.on_update_agent_api(time=self.time)
 
 
 class InitTimeEvent(Event):
@@ -150,6 +149,7 @@ class AgentAPI(API):
     def __init__(self, agent):
         super(AgentAPI, self).__init__()
         self.agent = agent
+        self.car = None
         agent.api = self
         self.update_agent_api()
 
@@ -205,21 +205,20 @@ class AgentAPI(API):
         # переотправить чаты, в которых есть агент
         ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
 
-    def update_agent_api(self, time=None, position=None):
+    def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
-        UpdateAgentAPIEvent(api=self, position=position,
-                            time=time if time is not None else self.agent.server.get_time()).post()
+        UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
-    def on_update_agent_api(self, time, position=None):
-        if self.agent.current_town is not None:
-            ReEnterToTown(agent=self.agent, town=self.agent.current_town, time=time).post()
+    def on_update_agent_api(self, time):
+        if self.agent.current_location is not None:
+            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
         if self.agent.cars:
             self.car = self.agent.cars[0]
         else:
-            self.make_car(time=time, position=position)
+            self.make_car(time=time)
         assert self.car.hp(time=time) > 0, 'Car HP <= 0'
 
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
@@ -231,8 +230,8 @@ class AgentAPI(API):
 
         self.send_init_package(time=time)
 
-    def make_car(self, time, position=None, position_sigma=Point(100, 100)):
-        self.car = self.agent.server.randomCarList.get_random_car(agent=self.agent, time=time, position=position)
+    def make_car(self, time):
+        self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
     @public_method
@@ -287,19 +286,19 @@ class AgentAPI(API):
     def send_rocket(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        #RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_slow_mine(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        #SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_stationary_turret(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        #StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_scout_droid(self, x, y):
@@ -307,7 +306,7 @@ class AgentAPI(API):
             return
         assert x and y
         p = Point(x, y)
-        ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
+        #ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
@@ -363,8 +362,8 @@ class AgentAPI(API):
             self.update_agent_api()
         elif command == '/fuel':
             car = self.car
-            ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
-                set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+            #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
+            #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
         else:
             log.warning('Unknown console command "%s"', cmd)
 
@@ -380,19 +379,14 @@ class AgentAPI(API):
         ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
 
     @public_method
-    def enter_to_town(self, town_id):
+    def enter_to_location(self, location_id):
         #log.info('agent %s want enter to town is %s', self.agent, town_id)
-        EnterToMapObject(agent=self.agent, obj_id=town_id, time=self.agent.server.get_time()).post()
+        EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def exit_from_town(self, town_id):
+    def exit_from_location(self, location_id):
         #log.info('agent %s want exit from town is %s', self.agent, town_id)
-        ExitFromTown(agent=self.agent, town_id=town_id, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def enter_to_gas_station(self, station_id):
-        log.info('agent %s want enter to station is %s', self.agent, station_id)
-        EnterToMapObject(agent=self.agent, obj_id=station_id, time=self.agent.server.get_time()).post()
+        ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):
@@ -412,11 +406,23 @@ class AgentAPI(API):
     @public_method
     def get_balance_cls(self, balance_cls_name):
         log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
-        messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
-                                balance_cls_name=balance_cls_name).post()
+        # messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
+        #                         balance_cls_name=balance_cls_name).post()
 
     @public_method
     def activate_item(self, owner_id, position, balance_cls_name):
-        log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
+        #log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
         ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position,
-                                 balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
+                            balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def fuel_station_active(self, fuel):
+        log.info('agent %s want active fuel station, with value=%s', self.agent, fuel)
+        self.agent.example.balance -= fuel
+        cur_fuel = self.agent.example.car.fuel + fuel
+        max_fuel = self.agent.example.car.max_fuel
+        if cur_fuel <= max_fuel:
+            self.agent.example.car.fuel = cur_fuel
+        else:
+            self.agent.example.car.fuel = max_fuel
+        messages.GasStationUpdate(agent=self.agent, time=self.agent.server.get_time()).post()

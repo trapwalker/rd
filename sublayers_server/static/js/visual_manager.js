@@ -5,7 +5,7 @@ var VisualManager = (function () {
     }
 
     VisualManager.prototype.addModelObject = function (mobj) {
-        //console.log('VisualManager.prototype.addModelObject');
+        //console.log('VisualManager.prototype.addModelObject', mobj);
         if (!this._model_list[mobj.ID])
             this._model_list[mobj.ID] = {
                 obj: mobj,
@@ -22,7 +22,7 @@ var VisualManager = (function () {
     };
 
     VisualManager.prototype.changeModelObject = function (mobj) {
-        //console.log('VisualManager.prototype.changeModelObject');
+        //console.log('VisualManager.prototype.changeModelObject', this._model_list[mobj.ID]);
         if (this._model_list[mobj.ID]) {
             var m_list = this._model_list[mobj.ID].list;
             for (var i = 0; i < m_list.length; i++)

@@ -89,12 +89,11 @@ class Inventory(object):
         for i in xrange(self.max_size):
             if self.get_item(position=i) is None:
                 return i
-        return None
 
     def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():
             item = self._items[position]
-            if (item.balance_cls in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
+            if (item.example in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
                 return item
         return None
 
@@ -153,15 +152,15 @@ class ItemTask(TaskSingleton):
 class ItemState(object):
     __str_template__ = 'Item: <limbo={self.limbo}> class={self.balance_cls} value0={self.val0}'
 
-    def __init__(self, server, time, balance_cls, count=1, max_count=64):
+    def __init__(self, server, time, example, count=1):
         assert count > 0
         self.server = server
-        self.balance_cls = balance_cls
+        self.example = example
         self.inventory = None
         self.tasks = []
 
         # настроки стейта
-        self.max_val = max_count  # todo: взять из balance_cls
+        self.max_val = example.stack_size
         self.dvs = 0.0
         self.val0 = count
         self.t_empty = None
@@ -225,7 +224,8 @@ class ItemState(object):
     def export_item_state(self):
         return dict(
             cls=self.__class__.__name__,
-            balance_cls=self.balance_cls,
+            balance_cls=self.example.name,
+            example=self.example.as_client_dict(),
             max_val=self.max_val,
             t0=self.t0,
             val0=self.val0,
@@ -239,7 +239,7 @@ class ItemState(object):
         if self.val(t=time) < count:
             return None
         ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
-        return ItemState(server=self.server, time=time, balance_cls=self.balance_cls, count=count)
+        return ItemState(server=self.server, time=time, example=self.example, count=count)
 
     # Интерфейс работы с итемом со стороны окна клиента
     def set_inventory(self, time, inventory, position=None):
@@ -285,7 +285,7 @@ class ItemState(object):
 
     def add_another_item(self, item, time):
         assert not self.limbo and not item.limbo
-        if self.balance_cls != item.balance_cls:
+        if self.example != item.example:
             if self.inventory is item.inventory:
                 self.change_position(position=self.inventory.get_position(item=item), time=time)
             return
@@ -383,7 +383,7 @@ class Consumer(object):
         if self.item is not None:
             self.item.unlinking(consumer=self)
         # пытаемся зарядить итем
-        if (item is not None) and (item.balance_cls in self.items_cls_list):
+        if (item is not None) and (item.example in self.items_cls_list):
             item.linking(consumer=self)
         # если нужно, пытаемся восстановить использование
         if started:
@@ -398,7 +398,7 @@ class Consumer(object):
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
-            balance_cls_list = [item.balance_cls]
+            balance_cls_list = [item.example]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
         if self.is_started:
             self.on_stop(item=item, time=time)

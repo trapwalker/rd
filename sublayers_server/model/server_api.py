@@ -15,7 +15,7 @@ class ServerAPI(API):
         """
         self.server = server
 
-    def get_agent(self, agent_id=None, make=False, do_disconnect=False, ai=False):
+    def get_agent(self, agent_id=None, make=False, do_disconnect=False):
         """
         @rtype sublayers_server.model.agents.Agent
         """
@@ -25,8 +25,19 @@ class ServerAPI(API):
         login = db_res[0]['name']
         agent = self.server.agents.get(login, None)  # todo: raise exceptions if absent but not make
         if not agent and make:
-            cls = AI if ai else User
-            agent = cls(server=self.server, login=login, party=None, time=self.server.get_time())
+            agent_exemplar = self.server.reg_agents.get([login])  # todo: fix it
+            if agent_exemplar is None:
+                agent_exemplar = self.server.reg['/agents/user'].instantiate(storage=self.server.reg_agents,
+                                                                             name=login, login=login)
+                car_example = agent_exemplar.get_random_car_type().instantiate(storage=self.server.reg_agents)
+                car_example.position = agent_exemplar.position
+                agent_exemplar.car = car_example
+
+            log.debug('Use agent exemplar: %s', agent_exemplar)
+
+            # todo: Создавать агента на основе экземпляра
+            agent = User(server=self.server, login=agent_exemplar.login, time=self.server.get_time(),
+                         example=agent_exemplar)
             log.info('Server API: New Agent is created: %s', agent_id)
         else:
             if agent and do_disconnect:

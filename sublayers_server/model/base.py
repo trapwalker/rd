@@ -86,14 +86,22 @@ class Object(object):
 class PointObject(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
 
-    def __init__(self, position, **kw):
+    def __init__(self, example, position=None, **kw):
         super(PointObject, self).__init__(**kw)
-        self._position = position
+        self._position = example.position or position
+        self.example = example
+        if example is None:
+            log.warning('Object %s has no example node', self)
         self.server.geo_objects.append(self)
 
     def on_after_delete(self, event):
         self.server.geo_objects.remove(self)
         super(PointObject, self).on_after_delete(event=event)
+        if self.example is not None:  # todo: в example добавить флаг необходимости сохранения
+            self.save(time=event.time)
+
+    def save(self, time):
+        self.example.position = self.position(time)
 
     def as_dict(self, time):
         d = super(PointObject, self).as_dict(time=time)
@@ -107,12 +115,13 @@ class PointObject(Object):
 class VisibleObject(PointObject):
     """Observers subscribes to VisibleObject updates.
     """
-    def __init__(self, time, visibility=1.0, **kw):
+    # todo: внести visibility в реестровую ветку MapLocations
+    def __init__(self, time, **kw):
         super(VisibleObject, self).__init__(time=time, **kw)
         self.params = dict()
         self.set_default_params()
 
-        Parameter(original=visibility, name='p_visibility', owner=self)
+        Parameter(original=self.example.p_visibility, name='p_visibility', owner=self)
 
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
@@ -169,9 +178,9 @@ class VisibleObject(PointObject):
 
 class Observer(VisibleObject):
 
-    def __init__(self, observing_range=BALANCE.Observer.observing_range, **kw):
+    def __init__(self, **kw):
         super(Observer, self).__init__(**kw)
-        Parameter(original=observing_range, max_value=10000.0, name='p_observing_range', owner=self)
+        Parameter(original=self.example.p_observing_range, name='p_observing_range', owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 

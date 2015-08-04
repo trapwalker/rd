@@ -285,68 +285,68 @@ class BangEvent(Event):
             ).post()
 
 
-class EnterToMapObject(Event):
+class EnterToMapLocation(Event):
     def __init__(self, agent, obj_id, **kw):
         server = agent.server
-        super(EnterToMapObject, self).__init__(server=server, **kw)
+        super(EnterToMapLocation, self).__init__(server=server, **kw)
         self.agent = agent
         self.obj_id = obj_id
 
     def on_perform(self):
-        super(EnterToMapObject, self).on_perform()
+        super(EnterToMapLocation, self).on_perform()
         obj = self.server.objects.get(self.obj_id)
         if obj and obj.can_come(agent=self.agent):
             obj.on_enter(agent=self.agent, time=self.time)
         else:
-            log.warning('agent %s try to enter the map-object %s, but access denied', self.agent, obj)
+            log.warning('agent %s try to enter the location %s, but access denied', self.agent, obj)
 
 
-class ReEnterToTown(Event):
-    def __init__(self, agent, town, **kw):
+class ReEnterToLocation(Event):
+    def __init__(self, agent, location, **kw):
         server = agent.server
-        super(ReEnterToTown, self).__init__(server=server, **kw)
+        super(ReEnterToLocation, self).__init__(server=server, **kw)
         self.agent = agent
-        self.town = town
+        self.location = location
 
     def on_perform(self):
-        super(ReEnterToTown, self).on_perform()
-        if self.agent in self.town.visitors:
-            self.town.on_re_enter(agent=self.agent, time=self.time)
+        super(ReEnterToLocation, self).on_perform()
+        if self.agent in self.location.visitors:
+            self.location.on_re_enter(agent=self.agent, time=self.time)
         else:
-            log.warning('agent %s try to re_coming in town %s, but access denied', self.agent, self.town)
+            log.warning('agent %s try to enter the location %s, but access denied', self.agent, self.location)
 
 
-class ExitFromTown(Event):
-    def __init__(self, agent, town_id, **kw):
+class ExitFromMapLocation(Event):
+    def __init__(self, agent, obj_id, **kw):
         server = agent.server
-        super(ExitFromTown, self).__init__(server=server, **kw)
+        super(ExitFromMapLocation, self).__init__(server=server, **kw)
         self.agent = agent
-        self.town_id = town_id
+        self.obj_id = obj_id
 
     def on_perform(self):
-        super(ExitFromTown, self).on_perform()
-        town = self.server.objects.get(self.town_id)
-        if town:
-            town.on_exit(agent=self.agent, time=self.time)
+        super(ExitFromMapLocation, self).on_perform()
+        obj = self.server.objects.get(self.obj_id)
+        if obj:
+            obj.on_exit(agent=self.agent, time=self.time)
         else:
-            log.warning('agent %s try to exit from town %s, but town not find', self.agent, town)
+            log.warning('agent %s try to exit from location %s, but location not find', self.agent, obj)
 
 
-class ActivateTownChats(Event):
-    def __init__(self, agent, town, **kw):
-        super(ActivateTownChats, self).__init__(server=agent.server, **kw)
+class ActivateLocationChats(Event):
+    def __init__(self, agent, location, **kw):
+        super(ActivateLocationChats, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.town = town
+        self.location = location
 
     def on_perform(self):
-        super(ActivateTownChats, self).on_perform()
-        self.town.activate_chats(event=self)
+        super(ActivateLocationChats, self).on_perform()
+        self.location.activate_chats(event=self)
 
 
-class InitServerEvent(Event):
+class LoadWorldEvent(Event):
     def on_perform(self):
-        super(InitServerEvent, self).on_perform()
-        self.server.on_init_server(self)
+        super(LoadWorldEvent, self).on_perform()
+        self.server.on_load_world(self)
 
 
 class InsertNewServerZone(Event):
@@ -373,7 +373,11 @@ class ShowInventoryEvent(Event):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
-class HideInventoryEvent(ShowInventoryEvent):
+class HideInventoryEvent(Event):
+    def __init__(self, agent, owner_id, **kw):
+        super(HideInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
 
     def on_perform(self):
         super(HideInventoryEvent, self).on_perform()

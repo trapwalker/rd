@@ -21,20 +21,21 @@ var InventoryItemState = (function () {
 var InventoryItem = (function (_super) {
     __extends(InventoryItem, _super);
 
-    function InventoryItem(state, position, balance_cls) {
+    function InventoryItem(state, position, balance_cls, example) {
         _super.call(this, null);
         this._in_tm = false;
         this.position = position;
         this.balance_cls = balance_cls;
         this.inventory = null;
         this.widget = null;
+        this.example = example;
         this.setState(state);
     }
 
-    InventoryItem.prototype.setInventory = function(inventory) {
+    InventoryItem.prototype.setInventory = function(inventory, widget_class) {
         //console.log('InventoryItem.prototype.setInventory');
         this.inventory = inventory;
-        this.widget = new WInventoryItem(this);
+        this.widget = new widget_class(this);
     };
 
     InventoryItem.prototype.showItem = function(inventoryDiv) {
@@ -95,6 +96,8 @@ var Inventory = (function () {
         this.owner_id = owner_id;
         this.max_size = max_size;
 
+        this.item_widget_class = WInventoryItem;
+
         var self = this;
         $('.inventory-' + owner_id).each(function() {
             self.showInventory(this);
@@ -148,12 +151,25 @@ var Inventory = (function () {
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
                 this.items[pos].showItem(inventoryDiv);
+
+        var activateBtn = $(inventoryDiv).parent().find('.mainCarInfoWindow-body-trunk-body-left-activate');
+        activateBtn.data('inv_id', -1);
+        activateBtn.data('item_pos', -1);
+        activateBtn.on('click', function(event) {
+            var target = $(event.target);
+            var inv_id = target.data('inv_id');
+            var item_pos = target.data('item_pos');
+            if ((item_pos != - 1) && (inv_id != -1)) {
+                console.log("Activate pos=", item_pos, " inv=", inv_id);
+            }
+        })
+
     };
 
     Inventory.prototype.addItem = function (item) {
         if (this.items[item.position] != null) return;
         this.items[item.position] = item;
-        item.setInventory(this);
+        item.setInventory(this, this.item_widget_class);
         item_balance_cls_manager.load_from_server(item.balance_cls)
     };
 
@@ -165,6 +181,7 @@ var Inventory = (function () {
     };
 
     Inventory.prototype.destroyInventory = function () {
+        //console.log("Inventory.prototype.destroyInventory");
         for (var key in this.items)
             if (this.items.hasOwnProperty(key)) {
                 this.items[key].delItem();
@@ -187,12 +204,93 @@ var Inventory = (function () {
 })();
 
 
+var InventoryNPC = (function (_super) {
+    __extends(InventoryNPC, _super);
+
+    function InventoryNPC(owner_id, max_size) {
+        this.items = {};
+        this.owner_id = owner_id;
+        this.max_size = max_size;
+
+        this.item_widget_class = WInventoryItemNPC;
+
+        var self = this;
+        $('.npcInventory-' + owner_id).each(function() {
+            self.showInventory(this);
+        });
+    }
+
+    InventoryNPC.prototype.showInventory = function (inventoryDiv) {
+        //console.log('InventoryNPC.prototype.showInventory');
+        for (var i = 0; i < this.max_size; i++) {
+            /*
+             Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
+             можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
+             */
+            var emptyItemDiv =
+                '<div class="npcInventory-itemWrap inventory-wrap-' + this.owner_id +
+                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
+
+
+                '<div class="npcInventory-item inventory-' + this.owner_id +
+                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
+                '<div class="npcInventory-nameEmpty">Пусто</div>' +
+                '<div class="npcInventory-pictureEmpty">' +
+                '<div class="npcInventory-countEmpty"></div></div></div></div>';
+
+
+            $(inventoryDiv).append(emptyItemDiv);
+
+            $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + i + '').droppable({
+                greedy: true,
+                accept: function(target) {
+                    return target.hasClass('npcInventory-item');
+                },
+                drop: function(event, ui) {
+                    console.log('Was dropt', event, ui);
+                }
+            });
+
+            $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '').draggable({
+                disabled: true,
+                helper: 'clone',
+                opacity: 0.8,
+                revert: true,
+                revertDuration: 0,
+                zIndex: 1,
+                appendTo: '#map'
+            });
+        }
+
+        for (var pos in this.items)
+            if (this.items.hasOwnProperty(pos))
+                this.items[pos].showItem(inventoryDiv);
+    };
+
+    InventoryNPC.prototype.destroyInventory = function () {
+        //console.log("InventoryNPC.prototype.destroyInventory");
+        for (var key in this.items)
+            if (this.items.hasOwnProperty(key)) {
+                this.items[key].delItem();
+                delete this.items[key];
+            }
+        $('.npcInventory-npc-' + owner_id).each(function() {
+            $(this).find().off(); // снять со всемх дивов, так как они скорее всего кнопки
+            $(this).empty();
+        });
+    };
+
+    return InventoryNPC;
+})(Inventory);
+
+
 var InventoryList = (function () {
     function InventoryList() {
         this.inventories = {};
     }
 
     InventoryList.prototype.addInventory = function (inventory) {
+        //console.log('InventoryList.prototype.addInventory');
         if (this.inventories[inventory.owner_id] != null) return;
         this.inventories[inventory.owner_id] = inventory;
     };

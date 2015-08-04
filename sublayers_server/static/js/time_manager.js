@@ -151,6 +151,15 @@ var TimeManager = (function () {
                     list.splice(i, 1);
     };
 
+    // Удаление подписчика со всеми его ивентами таймера
+    TimeManager.prototype.delObjectFromTimer = function (obj) {
+        var list = this._timer_list;
+        for (var i = list.length - 1; i >= 0; i--)
+            if (list[i].obj == obj)
+                list.splice(i, 1);
+    };
+
+
     // Запустить авто-контроль FPS
     TimeManager.prototype.autoFPSStart = function () {
         this._FPSEvent = this.addTimeoutEvent(this, '_autoFPSPerform', ConstSetFPSTimeout);

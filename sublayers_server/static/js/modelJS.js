@@ -3,7 +3,6 @@ var __extends = this.__extends || function (d, b) {
     function __() {
         this.constructor = d;
     }
-
     __.prototype = b.prototype;
     d.prototype = new __();
 };
@@ -20,6 +19,7 @@ var ClientObject = (function () {
     };
 
     ClientObject.prototype.delFromVisualManager = function () {
+        timeManager.delObjectFromTimer(this);
         visualManager.delModelObject(this);
     };
 
