@@ -87,10 +87,11 @@ class Node(Persistent):
                 getter = lambda: attr.__get__(self, cls)
                 yield attr, getter
 
-    def instantiate(self, storage, name=None, **kw):
+    def instantiate(self, storage=None, name=None, **kw):
         # todo: test to abstract sign
         # todo: clear abstract sign
-        name = name or storage.gen_uid().get_hex()
+        if storage:
+            name = name or storage.gen_uid().get_hex()
         inst = self.__class__(name=name, storage=storage, parent=self, **kw)
         log.debug('Maked new instance %s', inst.uri)
 
@@ -140,7 +141,8 @@ class Node(Persistent):
 
     def __repr__(self):
         # todo: make correct representation
-        return '<{self.uri}>'.format(self=self)
+        return '<{self.__class__.__name__}@{details}>'.format(
+            self=self, details=self.uri if self.storage else id(self))
 
     def _get_attr_value(self, name, default):
         if name in self.values:

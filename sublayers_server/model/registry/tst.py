@@ -23,16 +23,8 @@ if __name__ == '__main__':
     jeep = reg['/mobiles/cars/jeep']
     my_jeep = jeep.instantiate(storage=c)
 
-    zis5 = reg['/items/slot_item/weapons/cannons/wc_zis5']
-    my_zis5 = zis5.instantiate(storage=c)
-
-    print jeep, jeep.slot_CC
     print my_jeep, my_jeep.slot_CC
-    my_jeep.slot_BR = my_zis5
 
-    print 'Slots of {}:'.format(my_jeep)
-    for name, value in my_jeep.iter_slots():
-        print name, value, value.parent if value else ''
 
     print '\n' + '=' * 30
 
