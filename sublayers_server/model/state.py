@@ -117,7 +117,7 @@ class BaseMotionState(object):
 class MotionState(BaseMotionState):
 
     def __init__(
-        self, t, p, fi=0.0,
+        self, t, p, fi,
         r_min=10.0,
         ac_max=20.0,
         v_forward=30.0,

@@ -19,18 +19,13 @@ from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
 
+from math import radians
+
 
 class Unit(Observer):
     u"""Abstract class for any controlled GEO-entities"""
 
-    def __init__(self,
-                 time,
-                 owner=None,
-                 max_hp=BALANCE.Unit.max_hp,
-                 direction=BALANCE.Unit.direction,
-                 defence=BALANCE.Unit.defence,
-                 weapons=None,
-                 **kw):
+    def __init__(self, time, direction=None, owner=None, **kw):
         """
         @param sublayers_server.model.agents.Agent owner: Object owner
         @param float max_hp: Maximum health level
@@ -40,8 +35,8 @@ class Unit(Observer):
         super(Unit, self).__init__(time=time, **kw)
         self.owner = owner
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-        self.hp_state = HPState(t=time, max_hp=max_hp, hp=max_hp)
-        self._direction = direction
+        self.hp_state = HPState(t=time, max_hp=self.example.max_hp, hp=self.example.hp)
+        self._direction = self.example.direction or direction
         self.altitude = 0.0
         self.check_zone_interval = None
         self.zones = []
@@ -57,10 +52,7 @@ class Unit(Observer):
         self.inventory = Inventory(max_size=10, owner=self, time=time)
         self.set_def_items(time=time)
 
-        if weapons:
-            for weapon in weapons:
-                self.setup_weapon(dict_weapon=weapon, time=time)
-
+        self.setup_weapons(time=time)
 
         # обновляем статистику сервера
         server_stat = self.server.stat_log
@@ -77,26 +69,33 @@ class Unit(Observer):
         return self.hp_state.hp(t=time)
 
     def set_def_items(self, time):
-        self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64)
-        self.item_ammo1.set_inventory(time=time, inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Ammo1', count=64).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
 
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=32).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Cargo', count=48).set_inventory(time=time,
-                                                                                              inventory=self.inventory)
+        ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
+        ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
+        f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
+        f_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
+        e_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
+        e_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
 
-        ItemState(server=self.server, time=time, balance_cls='Tank10', max_count=1).set_inventory(time=time,
-                                                                                                  inventory=self.inventory)
-        ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
-                                                                                                  inventory=self.inventory)
-        self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
-        self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
+        self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
+        self.ammo1.set_inventory(time=time, inventory=self.inventory)
+        self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
+        self.ammo2.set_inventory(time=time, inventory=self.inventory)
+
+        ItemState(server=self.server, time=time, example=f_tank10_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+        ItemState(server=self.server, time=time, example=f_tank20_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+        ItemState(server=self.server, time=time, example=e_tank10_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+        ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+
+        #
+        # ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
+        #                                                                                           inventory=self.inventory)
+        # self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
+        # self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
 
     @property
     def max_hp(self):
@@ -106,21 +105,17 @@ class Unit(Observer):
         HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
             .start(time=time)
 
-    def setup_weapon(self, dict_weapon, time):
-        sector = FireSector(owner=self, radius=dict_weapon['radius'], width=dict_weapon['width'], fi=dict_weapon['fi'])
-        weapon = None
-        if dict_weapon['is_auto']:
-            weapon = WeaponAuto(owner=self, sector=sector, dps=dict_weapon['dps'])
-        else:
-            weapon = WeaponDischarge(owner=self, sector=sector, dmg=dict_weapon['dmg'],
-                                     time_recharge=dict_weapon['time_recharge'])
-
-        if dict_weapon['radius'] == 50:
-            if self.item_ammo2:
-                weapon.set_item(item=self.item_ammo2, time=time)
-        else:
-            if self.item_ammo1:
-                weapon.set_item(item=self.item_ammo1, time=time)
+    def setup_weapons(self, time):
+        for w_ex in self.example.iter_weapons():
+            sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
+            if w_ex.is_auto:
+                weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo],
+                                    dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)
+                weapon.set_item(item=self.ammo2, time=time)
+            else:
+                weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
+                                         dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
+                weapon.set_item(item=self.ammo1, time=time)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -274,50 +269,37 @@ class Unit(Observer):
                     time=time
                 ).post()
 
+    def save(self, time):
+        super(Unit, self).save(time=time)
+        self.example.hp = self.hp(time=time)
+        self.example.direction = self.direction(time=time)
+
 
 class Mobile(Unit):
     u"""Class of mobile units"""
 
-    def __init__(self,
-                 time,
-                 r_min,
-                 ac_max,
-                 v_forward,
-                 v_backward,
-                 a_forward,
-                 a_backward,
-                 a_braking,
-                 max_control_speed=BALANCE.Mobile.max_control_speed,
-                 max_fuel=BALANCE.Mobile.max_fuel,
-                 fuel=BALANCE.Mobile.fuel,
-                 **kw):
+    def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
-        self.state = MotionState(t=time, **self.init_state_params(
-            r_min=r_min,
-            ac_max=ac_max,
-            v_forward=v_forward,
-            v_backward=v_backward,
-            a_forward=a_forward,
-            a_backward=a_backward,
-            a_braking=a_braking,
-        ))
-        self.fuel_state = FuelState(t=time, max_fuel=max_fuel, fuel=fuel)
+        self.state = MotionState(t=time, **self.init_state_params())
+        self.fuel_state = FuelState(t=time, max_fuel=self.example.max_fuel, fuel=self.example.fuel)
         self.cur_motion_task = None
-        # Parametrs
-        Parameter(original=1.0, min_value=0.0, max_value=1.0, owner=self, name='p_cc')  # todo: вычислить так: max_control_speed / v_max
-        Parameter(original=0.5, owner=self, name='p_fuel_rate')
 
-    def init_state_params(self, r_min, ac_max, v_forward, v_backward, a_forward, a_backward, a_braking):
+        assert self.example.max_control_speed <= self.example.v_forward
+        Parameter(original=self.example.max_control_speed / self.example.v_forward,
+                  min_value=0.0, max_value=1.0, owner=self, name='p_cc')
+        Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
+
+    def init_state_params(self):
         return dict(
             p=self._position,
             fi=self._direction,
-            r_min=r_min,
-            ac_max=ac_max,
-            v_forward=v_forward,
-            v_backward=v_backward,
-            a_forward=a_forward,
-            a_backward=a_backward,
-            a_braking=a_braking,
+            r_min=self.example.r_min,
+            ac_max=self.example.ac_max,
+            v_forward=self.example.v_forward,
+            v_backward=self.example.v_backward,
+            a_forward=self.example.a_forward,
+            a_backward=self.example.a_backward,
+            a_braking=self.example.a_braking,
         )
 
     def as_dict(self, time):
@@ -367,6 +349,13 @@ class Mobile(Unit):
 
     def direction(self, time):
         return self.state.fi(t=time)
+
+    def fuel(self, time):
+        return self.fuel_state.fuel(t=time)
+
+    def save(self, time):
+        super(Mobile, self).save(time=time)
+        self.example.fuel = self.fuel(time=time)
 
 
 class Bot(Mobile):

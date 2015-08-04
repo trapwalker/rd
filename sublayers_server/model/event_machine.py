@@ -7,21 +7,22 @@ from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
 from sublayers_server.model.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
-from sublayers_server.model.first_mission_parties import RandomCarList
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
-from sublayers_server.model.vectors import Point
 from sublayers_server.model.town import RadioPoint, Town, GasStation
-from sublayers_server.model.events import InitServerEvent
-from sublayers_server.model.units import Mobile
+from sublayers_server.model.events import LoadWorldEvent
+from sublayers_server.model.registry.storage import Registry, Collection, Dispatcher
+import sublayers_server.model.registry.classes  # todo: autoregistry classes
 
+import os
 import sys
 from time import sleep
 from threading import Thread
 from pprint import pprint as pp
 from collections import deque
+from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 
 MAX_SERVER_SLEEP_TIME = 0.1
 
@@ -43,7 +44,14 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
-        self.randomCarList = RandomCarList()
+        self.reg_dispatcher = Dispatcher()
+        reg_path = os.path.join(options.world_path, 'registry')
+        self.reg = Registry(
+            dispatcher=self.reg_dispatcher,
+            name='registry',
+            path=reg_path,
+        )
+        self.reg_agents = Collection(dispatcher=self.reg_dispatcher, name='agents', path=None)  # todo: set path
 
         self.effects = dict()
         get_effects(server=self)
@@ -57,61 +65,30 @@ class Server(object):
     def get_time():
         return get_time()
 
-    def init_scene(self):
-        InitServerEvent(server=self, time=self.get_time()).post()
+    def load_world(self):
+        LoadWorldEvent(server=self, time=self.get_time()).post()
 
-    def on_init_server(self, event):
+    def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
         init_zones_on_server(server=self, time=event.time)
 
-        # установка стационарных объектов - радиоточек, городов и заправок
-        RadioPoint(time=event.time,
-                   server=self,
-                   position=Point(12496376, 27133643))
+        # загрузка радиоточек
+        towers_root = self.reg['/poi/radio_towers']
+        for rt_exm in towers_root:
+            RadioPoint(time=event.time, example=rt_exm, server=self)
 
-        RadioPoint(time=event.time,
-                   server=self,
-                   position=Point(12496200, 27133643))
+        # загрузка городов
+        towns_root = self.reg['/poi/locations/towns']
+        for t_exm in towns_root:
+            Town(time=event.time, server=self, example=t_exm)
 
-        Town(time=event.time,
-             server=self,
-             #svg_link = "C:/Projects/Sublayers/sublayers_server/static/img/towns/town_2/town.svg",
-             svg_link='static/img/towns/town_2/town.svg',
-             #svg_link='img/towns/town_2/town.svg',
-             town_name='Prior',
-             position=Point(12496200, 27133590))
+        # загрузка заправочных станций
+        gs_root = self.reg['/poi/locations/gas_stations']
+        for gs_exm in gs_root:
+            GasStation(time=event.time, server=self, example=gs_exm)
 
-        GasStation(time=event.time,
-                   server=self,
-                   position=Point(12496288, 27133590))
-
-        Mobile(server=self,
-               time=event.time,
-               max_hp=1000,
-               position=Point(12496376, 27133550),
-               r_min=10,
-               ac_max=50,
-               v_forward=5,
-               v_backward=-5,
-               a_forward=5,
-               a_backward=-5,
-               a_braking=-5,
-        )
-
-        Mobile(server=self,
-               time=event.time,
-               max_hp=1000,
-               position=Point(12496356, 27133550),
-               r_min=10,
-               ac_max=50,
-               v_forward=5,
-               v_backward=-5,
-               a_forward=5,
-               a_backward=-5,
-               a_braking=-5,
-        )
         
     def post_message(self, message):
         """

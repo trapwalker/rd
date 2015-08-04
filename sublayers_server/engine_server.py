@@ -73,7 +73,7 @@ class Application(tornado.web.Application):
         self.chat = []
         # todo: tuncate chat history
 
-        self.srv.init_scene()
+        self.srv.load_world()
 
         handlers = [
             (r"/", SiteHandler),

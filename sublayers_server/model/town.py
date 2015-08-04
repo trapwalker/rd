@@ -11,13 +11,14 @@ from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
 
 class RadioPoint(Observer):
-    def __init__(self, time, observing_range=BALANCE.RadioPoint.observing_range, **kw):
-        super(RadioPoint, self).__init__(time=time, observing_range=observing_range, **kw)
+    def __init__(self, time, **kw):
+        super(RadioPoint, self).__init__(time=time, **kw)
         self.room = None
+        self.name = self.example.name
 
     def on_init(self, event):
         super(RadioPoint, self).on_init(event)
-        self.room = ChatRoom(time=event.time)
+        self.room = ChatRoom(time=event.time, name=self.name)
 
     def on_contact_in(self, time, obj):
         super(RadioPoint, self).on_contact_in(time=time, obj=obj)
@@ -29,9 +30,8 @@ class RadioPoint(Observer):
 
 
 class MapLocation(Observer):
-    def __init__(self, svg_link, **kw):
+    def __init__(self, **kw):
         super(MapLocation, self).__init__(**kw)
-        self.svg_link = svg_link
         self.visitors = []
         self.radio_points = []
 
@@ -68,7 +68,7 @@ class MapLocation(Observer):
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
         ExitFromLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
-        agent.api.update_agent_api(time=time + 0.1, position=self.position(time))
+        agent.api.update_agent_api(time=time + 0.1)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=False, time=time).post()
 
@@ -83,17 +83,11 @@ class MapLocation(Observer):
 
 
 class Town(MapLocation):
-    __str_template__ = '<{self.classname} #{self.id}> => {self.town_name}'
+    __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
 
-    def __init__(self, town_name, observing_range=BALANCE.Town.observing_range, **kw):
-        super(Town, self).__init__(observing_range=observing_range, **kw)
-        self.town_name = town_name
-        #todo: продумать механизм загрузки и хранения npc в городе
-        self.npc = dict()
-        self.npc['armorer'] = {
-            'name': u'Тимофей',
-            'img': 'static/img/npc/1.png'
-        }
+    def __init__(self, **kw):  # todo: Конструировать на основе example
+        super(Town, self).__init__(**kw)
+        self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся name)
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
@@ -102,6 +96,4 @@ class Town(MapLocation):
 
 
 class GasStation(MapLocation):
-    def __init__(self, observing_range=BALANCE.GasStation.observing_range, **kw):
-        super(GasStation, self).__init__(svg_link='static/img/gas_station/gas_station.svg',
-                                         observing_range=observing_range, **kw)
+    pass

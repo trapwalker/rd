@@ -671,8 +671,6 @@ var WFireRadialGrid = (function (_super) {
 
     };
 
-
-
     WFireRadialGrid.prototype.delFromVisualManager = function () {
         //console.log('WFireRadialGrid.prototype.delFromVisualManager');
         this.car = null;

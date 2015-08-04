@@ -94,16 +94,7 @@ class BALANCE(BalanceSettingsABS):
     class Observer(BalanceSettingsABS):
         observing_range = 1000.0
 
-    class RadioPoint(BalanceSettingsABS):
-        observing_range = 300.0
-
-    class Town(BalanceSettingsABS):
-        observing_range = 500.0
-
-    class GasStation(BalanceSettingsABS):
-        observing_range = 50.0
-
-    class Unit(Observer):
+    class Unit(BalanceSettingsABS):
         defence = 1.0
         max_hp = 100.0
         direction = -pi/2
@@ -155,15 +146,6 @@ class BALANCE(BalanceSettingsABS):
 
             return r
 
-    class Weapon(BalanceSettingsABS):
-        dmg = 10.0
-        dps = 1
-        radius = 50.0
-        width = pi / 2
-        time_recharge = 6
-        items_cls_list = ['Ammo1', 'Ammo2']
-        dv = -1
-        ddvs = 1
 
     class ScoutDroid(Mobile):
         observing_range = 500.0
