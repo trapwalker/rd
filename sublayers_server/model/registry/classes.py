@@ -122,18 +122,13 @@ class Mobile(Root):
     slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
 
     def iter_weapons(self):
-        for attr in self.iter_attrs():
-            if isinstance(attr, Slot):
-                v = getattr(self, attr.name)
-                if isinstance(v, Weapon):
-                    yield v
+        return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))
 
     def iter_slots(self):
-        for attr in self.iter_attrs():
-            if isinstance(attr, Slot):
-                v = getattr(self, attr.name)
-                if not isinstance(v, SlotLock):
-                    yield attr.name, v
+        for attr, getter in self.iter_attrs(classes=Slot):
+            v = getter()
+            if not isinstance(v, SlotLock):
+                yield attr.name, v
 
 
 class Car(Mobile):
