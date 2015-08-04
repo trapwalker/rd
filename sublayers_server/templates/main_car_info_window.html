@@ -584,9 +584,14 @@
         border: solid 1px #00f150;
         margin: 5px;
         height: 100px;
-        line-height: 100px;
-        color: #0f4206;
-        text-align: center;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-picture-picture {
+        margin-top: 15px;
+        height: 70px;
+        width: 130px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-name {
@@ -594,17 +599,19 @@
         text-align: center;
         margin: 5px;
         font: 12pt Nouveau_IBM;
+        height: 16px;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-description {
+        box-sizing: border-box;
+        margin: auto;
+        width: 150px;
+        padding: 10px 3px 0px 3px;
         color: #1e9604;
         text-align: center;
-    }
-
-    .mainCarInfoWindow-body-trunk-body-left-amount {
-        color: #1e9604;
-        text-align: center;
-        margin: 5px;
+        height: 145px;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-activate {
@@ -612,9 +619,15 @@
         text-align: center;
         border: solid 1px #125306;
         background-color: #0d3707;
-        margin: 5px;
+        margin: 15px auto 5px auto;
         cursor: pointer;
         font: 12pt Nouveau_IBM;
+        width: 130px;
+        opacity: 0.6;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-left-activate:hover {
+        opacity: 1;
     }
 
     .mainCarInfoWindow-body-trunk-body-right {
@@ -638,6 +651,10 @@
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item-wrap:hover {
+        opacity: 1;
+    }
+
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap.active {
         opacity: 1;
     }
 
@@ -670,6 +687,7 @@
         background-position: 0 0, 1px 1px;
         height: 78px;
         width: 138px;
+        pointer-events: none;
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item-count-empty {
@@ -750,12 +768,11 @@
         </div>
         <div class="mainCarInfoWindow-body-trunk-body">
             <div class="mainCarInfoWindow-body-trunk-body-left">
-                <div class="mainCarInfoWindow-body-trunk-body-left-picture">Картинка</div>
-                <div class="mainCarInfoWindow-body-trunk-body-left-name">Канистра</div>
-                <div class="mainCarInfoWindow-body-trunk-body-left-description">
-                    Используется для переноски всяких горючих ништяков до локации поджигаемого. Лучший друг пироманьяка.
+                <div class="mainCarInfoWindow-body-trunk-body-left-picture">
+                    <div class="mainCarInfoWindow-body-trunk-body-left-picture-picture"></div>
                 </div>
-                <div class="mainCarInfoWindow-body-trunk-body-left-amount">В инвентаре: 2 ед.</div>
+                <div class="mainCarInfoWindow-body-trunk-body-left-name"></div>
+                <div class="mainCarInfoWindow-body-trunk-body-left-description"></div>
                 <div class="mainCarInfoWindow-body-trunk-body-left-activate">Активировать!</div>
             </div>
             <div class="mainCarInfoWindow-body-trunk-body-right inventory-{{ car_id }}">

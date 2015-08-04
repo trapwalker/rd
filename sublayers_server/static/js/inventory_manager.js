@@ -151,6 +151,19 @@ var Inventory = (function () {
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
                 this.items[pos].showItem(inventoryDiv);
+
+        var activateBtn = $(inventoryDiv).parent().find('.mainCarInfoWindow-body-trunk-body-left-activate');
+        activateBtn.data('inv_id', -1);
+        activateBtn.data('item_pos', -1);
+        activateBtn.on('click', function(event) {
+            var target = $(event.target);
+            var inv_id = target.data('inv_id');
+            var item_pos = target.data('item_pos');
+            if ((item_pos != - 1) && (inv_id != -1)) {
+                console.log("Activate pos=", item_pos, " inv=", inv_id);
+            }
+        })
+
     };
 
     Inventory.prototype.addItem = function (item) {
