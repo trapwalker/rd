@@ -31,7 +31,6 @@ class Attribute(object):
 
     def get_raw(self, obj):
         value = obj._get_attr_value(self.name, self.default)
-        log.debug('__get__ %s.%s() => %s', obj, self.name, value)
         return value
 
     def from_str(self, s, obj):
@@ -49,11 +48,9 @@ class Attribute(object):
         return self.from_raw(self.get_raw(obj), obj)
 
     def __set__(self, obj, value):
-        log.debug('__set__ %s.%s = %s', obj, self.name, value)
         obj._set_attr_value(self.name, self.to_raw(value, obj))
 
     def __delete__(self, obj):
-        log.debug('__delete__ %s.%s() => %s', obj, self.name)
         obj._del_attr_value(self.name)
 
     def attach(self, name, cls):
