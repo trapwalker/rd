@@ -571,3 +571,13 @@ class BalanceClsInfo(Message):
             }
         )
         return d
+
+
+class GasStationUpdate(Message):
+    def as_dict(self):
+        d = super(GasStationUpdate, self).as_dict()
+        d.update(
+            balance=self.agent.example.balance,
+            fuel=self.agent.example.car.fuel,
+        )
+        return d
