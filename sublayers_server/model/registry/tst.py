@@ -34,6 +34,7 @@ if __name__ == '__main__':
     for name, value in my_jeep.iter_slots():
         print name, value, value.parent if value else ''
 
+    print '\n' + '=' * 30
 
     class C(object):
         x = 3
