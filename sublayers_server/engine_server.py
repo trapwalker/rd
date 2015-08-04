@@ -2,14 +2,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import sys, os
+import sys
+import os
+
 
 def parent_folder(fn):
     return os.path.abspath(os.path.join(os.path.dirname(fn), '..'))
 
+
 sys.path.append(parent_folder(__file__))
 
 import logging.config
+
 logging.config.fileConfig("logging.conf")
 log = logging.getLogger(__name__)
 
@@ -28,6 +32,7 @@ from sublayers_server import uimodules
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
+from sublayers_server.handlers.main_menu_character import MainMenuCharacterHandler
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.party_handler import PartyHandler
@@ -37,7 +42,6 @@ from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogou
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 from sublayers_server.model.event_machine import LocalServer
-
 
 try:
     from pymongo import Connection
@@ -92,6 +96,7 @@ class Application(tornado.web.Application):
             (r"/stat", ServerStatisticsHandler),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
             (r"/api/location", MapLocationHandler),
+            (r"/api/main_menu_character", MainMenuCharacterHandler),
             (r"/api/main_car_info", MainCarInfoHandler),
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/party", PartyHandler),
@@ -125,13 +130,11 @@ class Application(tornado.web.Application):
             self.srv.stop()
 
 
-
-
 def main():
     settings.load('server.conf')
     service_tools.pidfile_save(options.pidfile)
     app = Application()
-    #service_tools.set_terminate_handler(app.stop)
+    # service_tools.set_terminate_handler(app.stop)
     try:
         app.listen(options.port)
     except socket.error as e:
