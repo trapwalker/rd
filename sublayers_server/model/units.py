@@ -72,11 +72,24 @@ class Unit(Observer):
 
         ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
         ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
+        f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
+        f_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
+        e_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
+        e_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
 
         self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
         self.ammo1.set_inventory(time=time, inventory=self.inventory)
         self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
         self.ammo2.set_inventory(time=time, inventory=self.inventory)
+
+        ItemState(server=self.server, time=time, example=f_tank10_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+        ItemState(server=self.server, time=time, example=f_tank20_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+        ItemState(server=self.server, time=time, example=e_tank10_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
+        ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
+                                                                                     inventory=self.inventory)
 
         #
         # ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,

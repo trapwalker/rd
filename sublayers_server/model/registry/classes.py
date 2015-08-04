@@ -31,6 +31,10 @@ class Item(Root):
         return d
 
 
+class Tank(Item):
+    value = Attribute(caption=u'Объем канистры')
+
+
 class SlotItem(Item):
     pass
 
