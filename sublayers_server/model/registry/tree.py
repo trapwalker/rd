@@ -5,6 +5,8 @@ log = logging.getLogger(__name__)
 
 from attr import Attribute, DocAttribute, RegistryLink
 
+import yaml
+
 
 class StorageUnspecified(Exception):
     # todo: refactor declaration of exception
@@ -171,6 +173,9 @@ class Node(Persistent):
         # todo: make correct representation
         return '<{self.__class__.__name__}@{details}>'.format(
             self=self, details=self.uri if self.storage else id(self))
+
+    def resume(self):
+        return yaml.dump(self, default_flow_style=False, allow_unicode=True)
 
     def _get_attr_value(self, name, default):
         if name in self.values:
