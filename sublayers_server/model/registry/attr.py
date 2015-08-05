@@ -70,7 +70,7 @@ class Position(Attribute):
         return None if v is None else v.as_tuple()
 
     def from_raw(self, data, obj):
-        return Point(*data)
+        return None if data is None else Point(*data)
 
 
 class DocAttribute(Attribute):
@@ -87,10 +87,16 @@ class RegistryLink(Attribute):
         self.need_to_instantiate = need_to_instantiate
 
     def from_raw(self, raw, obj):
-        return obj.storage.get(raw) if raw else None
+        if raw is None:
+            return
+
+        return obj._dispatcher.get(raw) if isinstance(raw, basestring) else raw
 
     def to_raw(self, value, obj):
-        return None if value is None else value.uri
+        if value is None:
+            return None
+
+        return value.uri or value
 
     def __get__(self, obj, cls):
         if obj is None:

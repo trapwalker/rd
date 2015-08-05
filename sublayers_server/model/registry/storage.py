@@ -6,10 +6,11 @@ log = logging.getLogger(__name__)
 from tree import Node
 
 from collections import deque
-#import shelve
 from uuid import uuid4 as uid_func
+import shelve
 import yaml
 import yaml.scanner  # todo: extract serialization layer
+import sys
 import os
 import re
 
@@ -109,7 +110,7 @@ class AbstractStorage(object):
         raise WrongStorageError("Can't resolve storage {}".format(storage))
 
     def __getitem__(self, item):
-        if isinstance(item, str):
+        if isinstance(item, basestring):
             proto, storage, path, params = self.parse_uri(item)
         else:
             proto, storage, path = (URI_PROTOCOL, None, list(item))
@@ -142,6 +143,9 @@ class AbstractStorage(object):
     def get_path_tuple(self, node):
         raise Exception('Unimplemented abstract method')
 
+    def save_node(self, node):
+        raise Exception('Unimplemented abstract method')
+
 
 class Dispatcher(AbstractStorage):
     def __init__(self, storage_list=None, **kw):
@@ -168,12 +172,26 @@ class Dispatcher(AbstractStorage):
 
         return storage_obj.get_local(path)
 
+    def save_node(self, node):
+        raise Exception('Method is not supported by this storage type')
+
 
 class Collection(AbstractStorage):
-    def __init__(self, path, **kw):
+    def __init__(self, path, filename=None, **kw):
         super(Collection, self).__init__(**kw)
         self.path = path
-        self._raw_storage = {}  # shelve.open(path)  # todo: make persistent
+        self.filename = filename or self.name
+
+        if self.filename is None:
+            raise WrongStorageError('Storage name or filename is not specified')
+
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)  # todo: exceptions
+
+        if not os.path.isdir(self.path):
+            raise WrongStorageError('Wrong path to storage: {}'.format(self.path))
+
+        self._raw_storage = shelve.open(os.path.join(self.path, self.filename))  # todo: make persistent
 
     def make_key(self, path):
         return path if isinstance(path, basestring) else ('/' + '/'.join(path))
@@ -190,16 +208,35 @@ class Collection(AbstractStorage):
 
         key = self.make_key(path)
         try:
-            return self._raw_storage[key]
+            data = self._raw_storage[key]
+            return self._load(stream=data)
         except KeyError:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
 
+    def _load(self, stream):
+        loader = Loader(stream=stream, storage=self)
+        try:
+            node = loader.get_single_data()
+        finally:
+            loader.dispose()
+        node.storage = self
+        return node
+
     def put(self, node):
         key = self.make_key(node.path)
-        self._raw_storage[key] = node
+        data = yaml.dump(node, default_flow_style=False, allow_unicode=True, Dumper=Dumper)
+        self._raw_storage[key] = data
 
     def get_path_tuple(self, node):
         return [node.name]
+
+    def save_node(self, node):
+        self.put(node)
+        self.sync()
+
+    def sync(self):
+        if hasattr(self._raw_storage, 'sync'):
+            self._raw_storage.sync()
 
 
 # noinspection PyProtectedMember
@@ -298,11 +335,38 @@ class Registry(AbstractStorage):
         path.reverse()
         return path
 
+    def save_node(self, node):
+        raise Exception('Method is not supported by this storage type')
+
 
 class Dumper(yaml.Dumper):
-    def generate_anchor(self, node):
-        log.debug('gen_anchor: node=%r', node)
-        if isinstance(node, Node):
-            return node.name
+    # def generate_anchor(self, node):
+    #     log.debug('gen_anchor: node=%r', node)
+    #     if isinstance(node, Node):
+    #         return node.name
+    #     else:
+    #         return super(Dumper, self).generate_anchor(node)
+
+    @classmethod
+    def node_to_yaml(cls, dumper, data):
+        storage = data.storage
+        if storage and storage.name == 'registry':
+            node = dumper.represent_str(data=data.uri)
+            node.tag = 'link'
+            return node
         else:
-            return super(Dumper, self).generate_anchor(node)
+            return dumper.represent_object(data=data)
+
+Dumper.add_multi_representer(Node, Dumper.node_to_yaml)
+
+
+class Loader(yaml.Loader):
+    def __init__(self, storage, **kw):
+        super(Loader, self).__init__(**kw)
+        self.storage = storage
+
+    @classmethod
+    def link_from_yaml(cls, loader, node):
+        return loader.storage[node.value]  # todo: exceptions
+
+Loader.add_constructor('link', Loader.link_from_yaml)

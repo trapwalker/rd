@@ -5,9 +5,10 @@ log = logging.getLogger(__name__)
 
 from attr import Attribute, DocAttribute, RegistryLink
 
-from collections import OrderedDict
-import yaml
-import yaml.scanner  # todo: extract serialization layer
+
+class StorageUnspecified(Exception):
+    # todo: refactor declaration of exception
+    pass
 
 
 class AttrUpdaterMeta(type):
@@ -47,6 +48,7 @@ class Persistent(object):
 class Node(Persistent):
     # todo: override attributes in subclasses
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
+    parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
 
@@ -62,13 +64,18 @@ class Node(Persistent):
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name
-        self.parent = parent  # todo: parent must be an Attribute (?)
         self.owner = owner
         self.values = values or {}
         self.values.update(kw)
         self.storage = storage
+        self.parent = parent
         if storage:
             storage.put(self)
+        self._dispatcher = (
+            storage
+            or owner and owner._dispatcher
+            or parent and parent._dispatcher
+        )
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -100,20 +107,38 @@ class Node(Persistent):
                 link = attr.get_raw(self)
                 # todo: Отловить и обработать исключения
                 if link:
-                    uri = dict(zip('proto storage path params'.split(), self.storage.parse_uri(link)))
+                    uri = dict(zip('proto storage path params'.split(), self._dispatcher.parse_uri(link)))
                     v = getter()
                     if v and v.can_instantiate:
-                        new_v = v.instantiate(storage=storage, owner=self, **uri['params'])
+                        new_v = v.instantiate(owner=inst, **uri['params'])
                         setattr(inst, attr.name, new_v)
                         # todo: тест на негомогенных владельцев
 
         return inst
 
     def __getstate__(self):
-        do_not_store = ('storage', '_subnodes',)
-        log.debug('%s.__getstate__', self)
-        d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
+        #do_not_store = ('storage', '_subnodes', '_cache', '_dispatcher', 'owner',)
+        #log.debug('%s.__getstate__', self)
+        #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
+        values = self.values
+        d = dict(name=self.name)
+        for attr, getter in self.iter_attrs():
+            if attr.name in values:  # todo: refactor it
+                d[attr.name] = getter()
         return d
+
+    def __setstate__(self, state):
+        self._cache = {}
+        self._subnodes = {}  # todo: проверить при переподчинении нода
+        self.name = None
+        self.owner = None
+        self.values = {}
+        self.storage = None
+
+        for k, v in state.items():
+            setattr(self, k, v)
+
+        self._dispatcher = self.parent._dispatcher
 
     @property
     def path(self):
@@ -132,6 +157,12 @@ class Node(Persistent):
         assert self.name is None
         self.name = name
         # todo: tags apply
+
+    def save(self, storage=None):
+        storage = storage or self.storage
+        if storage is None:
+            raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
+        storage.save_node(node=self)
 
     def __iter__(self):
         return iter(self._subnodes.values())
@@ -160,15 +191,6 @@ class Node(Persistent):
 
     def _has_attr_value(self, name):
         return name in self.values
-
-
-class Dumper(yaml.Dumper):
-    def generate_anchor(self, node):
-        log.debug('gen_anchor: node=%r', node)
-        if isinstance(node, Node):
-            return node.name
-        else:
-            return super(Dumper, self).generate_anchor(node)
 
 
 if __name__ == '__main__':
