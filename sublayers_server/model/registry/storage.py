@@ -10,7 +10,6 @@ from uuid import uuid4 as uid_func
 import shelve
 import yaml
 import yaml.scanner  # todo: extract serialization layer
-import sys
 import os
 import re
 
@@ -178,7 +177,7 @@ class Dispatcher(AbstractStorage):
 
 class Collection(AbstractStorage):
     def __init__(self, path, filename=None, **kw):
-        super(Collection, self).__init__(**kw)
+        super(Collection, self).__init__(dispatcher=Node.DISPATCHER, **kw)
         self.path = path
         self.filename = filename or self.name
 
@@ -208,24 +207,20 @@ class Collection(AbstractStorage):
 
         key = self.make_key(path)
         try:
-            data = self._raw_storage[key]
-            return data # self._load(stream=data)
+            return self._deserialize(self._raw_storage[key])
         except KeyError:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
 
-    def _load(self, stream):
-        loader = Loader(stream=stream, storage=self)
-        try:
-            node = loader.get_single_data()
-        finally:
-            loader.dispose()
-        node.storage = self
+    def _deserialize(self, data):
+        # todo: Перейти на MongoDB
+        return data
+
+    def _serialize(self, node):
         return node
 
     def put(self, node):
         key = self.make_key(node.path)
-        data = node  # yaml.dump(node, default_flow_style=False, allow_unicode=True, Dumper=Dumper)
-        self._raw_storage[key] = data
+        self._raw_storage[key] = self._serialize(node)
 
     def get_path_tuple(self, node):
         return [node.name]
@@ -242,7 +237,7 @@ class Collection(AbstractStorage):
 # noinspection PyProtectedMember
 class Registry(AbstractStorage):
     def __init__(self, path=None, **kw):
-        super(Registry, self).__init__(**kw)
+        super(Registry, self).__init__(dispatcher=Node.DISPATCHER, **kw)
         self.path = path
         self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
 
@@ -336,7 +331,7 @@ class Registry(AbstractStorage):
         return path
 
     def save_node(self, node):
-        raise Exception('Method is not supported by this storage type')
+        raise Exception('Method is not supported by this storage type')  # todo: Use other exception class
 
 
 Node.DISPATCHER = Dispatcher()  # todo: remove singleton (!)

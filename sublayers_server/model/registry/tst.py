@@ -16,16 +16,14 @@ if __name__ == '__main__':
     from pprint import pprint as pp
     import yaml
 
-    reg = storage.Registry(dispatcher=storage.Node.DISPATCHER, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
-    c = storage.Collection(dispatcher=storage.Node.DISPATCHER, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    reg = storage.Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
 
     jeep = reg['/mobiles/cars/jeep']
 
     mj0 = jeep.instantiate(storage=c)
     mj0.slot_CC = None
     mj0.slot_FC.ammo_per_second = 10
-
-    #mj0 = c['cars/7c90c7ca3d06447698e08d543fbcee53']
 
     print 'mj0.__getstate__()->'
     pp(mj0.__getstate__())
@@ -42,16 +40,8 @@ if __name__ == '__main__':
     print 'mj1.__getstate__()->'
     pp(mj1.__getstate__())
 
-
-    # print
-    # print 'Load:'
-    # mj2 = c._load(s)
-    # print mj2
-    # print 'cc=', mj2.slot_CC
-    # print 'fc=', mj2.slot_FC
-
     c.close()
-    cc = storage.Collection(dispatcher=storage.Node.DISPATCHER, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    cc = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
     mj3 = cc['/' + car_id]
     print 'mj3.__getstate__()->'
     pp(mj3.__getstate__())
