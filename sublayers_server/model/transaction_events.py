@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
+import sublayers_server.model.messages as messages
 
 
 class TransactionEvent(Event):
@@ -45,3 +46,23 @@ class TransactionActivateTank(TransactionActivateItem):
         e_tank_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank' + str(item.example.value_fuel)]
         ItemState(server=self.server, time=self.time, example=e_tank_cls)\
             .set_inventory(time=self.time, inventory=inventory, position=position)
+
+
+class TransactionGasStation(TransactionEvent):
+    def __init__(self, agent, fuel, **kw):
+        super(TransactionGasStation, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.fuel = fuel
+
+    def on_perform(self):
+        super(TransactionGasStation, self).on_perform()
+        fuel = self.fuel
+        agent = self.agent
+        agent.example.balance -= fuel
+        cur_fuel = agent.example.car.fuel + fuel
+        max_fuel = agent.example.car.max_fuel
+        if cur_fuel <= max_fuel:
+            agent.example.car.fuel = cur_fuel
+        else:
+            agent.example.car.fuel = max_fuel
+        messages.GasStationUpdate(agent=agent, time=self.time).post()

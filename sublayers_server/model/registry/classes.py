@@ -36,6 +36,7 @@ class Item(Root):
     def activate(cls):
         pass
 
+
 class Tank(Item):
     value_fuel = Attribute(caption=u'Объем канистры')
 

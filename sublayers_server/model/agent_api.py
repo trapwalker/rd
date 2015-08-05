@@ -17,6 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, \
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
+from sublayers_server.model.transaction_events import TransactionGasStation
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
@@ -419,11 +420,4 @@ class AgentAPI(API):
     @public_method
     def fuel_station_active(self, fuel):
         log.info('agent %s want active fuel station, with value=%s', self.agent, fuel)
-        self.agent.example.balance -= fuel
-        cur_fuel = self.agent.example.car.fuel + fuel
-        max_fuel = self.agent.example.car.max_fuel
-        if cur_fuel <= max_fuel:
-            self.agent.example.car.fuel = cur_fuel
-        else:
-            self.agent.example.car.fuel = max_fuel
-        messages.GasStationUpdate(agent=self.agent, time=self.agent.server.get_time()).post()
+        TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel).post()
