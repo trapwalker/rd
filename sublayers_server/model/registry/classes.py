@@ -38,7 +38,7 @@ class Item(Root):
 
 
 class Tank(Item):
-    value_fuel = Attribute(caption=u'Объем канистры')
+    value_fuel = Attribute(caption=u'Объем канистры', tags='client')
 
 
 class TankFull(Tank):

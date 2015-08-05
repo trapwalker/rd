@@ -49,10 +49,11 @@ class TransactionActivateTank(TransactionActivateItem):
 
 
 class TransactionGasStation(TransactionEvent):
-    def __init__(self, agent, fuel, **kw):
+    def __init__(self, agent, fuel, tank_list, **kw):
         super(TransactionGasStation, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.fuel = fuel
+        self.tank_list = tank_list
 
     def on_perform(self):
         super(TransactionGasStation, self).on_perform()
@@ -65,4 +66,13 @@ class TransactionGasStation(TransactionEvent):
             agent.example.car.fuel = cur_fuel
         else:
             agent.example.car.fuel = max_fuel
+
+
+        # todo: Заправить все канстры из tank_list и заменить их на что-то там
+        # todo: Не забыть списать топливо за канистры (расчитать его здесь же)
+        messages.ExampleInventoryShowMessage(agent=agent, time=self.time).post()
+
         messages.GasStationUpdate(agent=agent, time=self.time).post()
+
+
+

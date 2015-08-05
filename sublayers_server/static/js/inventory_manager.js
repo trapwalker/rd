@@ -53,6 +53,10 @@ var InventoryItem = (function (_super) {
             this.widget.visibleViewForInvDiv(inventoryDiv, true);
     };
 
+    InventoryItem.prototype.in_filter = function (filter) {
+        return filter.indexOf(this.balance_cls) >= 0;
+    };
+
     InventoryItem.prototype.getCurrentVal = function (time) {
         return this._item_state.val(time);
     };
@@ -212,88 +216,17 @@ var Inventory = (function () {
                 this.items[pos].visibleItemForInvDiv(inventoryDiv, filter);
     };
 
-    return Inventory;
-})();
-
-
-var InventoryNPC = (function (_super) {
-    __extends(InventoryNPC, _super);
-
-    function InventoryNPC(owner_id, max_size) {
-        this.items = {};
-        this.owner_id = owner_id;
-        this.max_size = max_size;
-
-        this.item_widget_class = WInventoryItemNPC;
-
-        var self = this;
-        $('.npcInventory-' + owner_id).each(function() {
-            self.showInventory(this);
-        });
-    }
-
-    InventoryNPC.prototype.showInventory = function (inventoryDiv) {
-        //console.log('InventoryNPC.prototype.showInventory');
-        for (var i = 0; i < this.max_size; i++) {
-            /*
-             Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
-             можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
-             */
-            var emptyItemDiv =
-                '<div class="npcInventory-itemWrap inventory-wrap-' + this.owner_id +
-                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
-
-
-                '<div class="npcInventory-item inventory-' + this.owner_id +
-                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
-                '<div class="npcInventory-nameEmpty">Пусто</div>' +
-                '<div class="npcInventory-pictureEmpty">' +
-                '<div class="npcInventory-countEmpty"></div></div></div></div>';
-
-
-            $(inventoryDiv).append(emptyItemDiv);
-
-            $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + i + '').droppable({
-                greedy: true,
-                accept: function(target) {
-                    return target.hasClass('npcInventory-item');
-                },
-                drop: function(event, ui) {
-                    console.log('Was dropt', event, ui);
-                }
-            });
-
-            $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '').draggable({
-                disabled: true,
-                helper: 'clone',
-                opacity: 0.8,
-                revert: true,
-                revertDuration: 0,
-                zIndex: 1,
-                appendTo: '#map'
-            });
-        }
-
+    Inventory.prototype.getItemsByFilter = function (filter) {
+        var res_list = [];
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
-                this.items[pos].showItem(inventoryDiv);
+                if (this.items[pos].in_filter(filter))
+                    res_list.push(this.items[pos]);
+        return res_list;
     };
 
-    InventoryNPC.prototype.destroyInventory = function () {
-        //console.log("InventoryNPC.prototype.destroyInventory");
-        for (var key in this.items)
-            if (this.items.hasOwnProperty(key)) {
-                this.items[key].delItem();
-                delete this.items[key];
-            }
-        $('.npcInventory-npc-' + owner_id).each(function() {
-            $(this).find().off(); // снять со всемх дивов, так как они скорее всего кнопки
-            $(this).empty();
-        });
-    };
-
-    return InventoryNPC;
-})(Inventory);
+    return Inventory;
+})();
 
 
 var InventoryList = (function () {

@@ -628,6 +628,7 @@ var ClientManager = (function () {
                 chat.showChatInTown();
                 locationVisitorsManager.update_visitors();
                 windowTemplateManager.closeAllWindows();
+                nucoilManager.update();
             }
         });
     };
@@ -680,7 +681,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ExampleInventoryShowMessage = function (event) {
         console.log('ClientManager.prototype.ExampleInventoryMessage', event);
-        inventoryList.addInventory(this._getInventory(event.inventory));
+        var inv = this._getInventory(event.inventory);
+        if (inventoryList.getInventory(inv.owner_id))
+            inventoryList.delInventory(inv.owner_id);
+        inventoryList.addInventory(inv);
+        nucoilManager.update();
     };
 
     ClientManager.prototype.ExampleInventoryHideMessage = function (event) {
@@ -1077,6 +1082,7 @@ var ClientManager = (function () {
             call: "fuel_station_active",
             rpc_call_id: rpcCallList.getID(),
             params: {
+                tank_list: nucoilManager.tank_list,
                 fuel: fuel
             }
         };

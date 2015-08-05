@@ -418,6 +418,6 @@ class AgentAPI(API):
                             time=self.agent.server.get_time()).post()
 
     @public_method
-    def fuel_station_active(self, fuel):
-        log.info('agent %s want active fuel station, with value=%s', self.agent, fuel)
-        TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel).post()
+    def fuel_station_active(self, fuel, tank_list):
+        log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
+        TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel, tank_list=tank_list).post()
