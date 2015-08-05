@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tree import Node
+from sublayers_server.model.registry.tree import Node
 
 from collections import deque
 from uuid import uuid4 as uid_func
@@ -209,7 +209,7 @@ class Collection(AbstractStorage):
         key = self.make_key(path)
         try:
             data = self._raw_storage[key]
-            return self._load(stream=data)
+            return data # self._load(stream=data)
         except KeyError:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
 
@@ -224,7 +224,7 @@ class Collection(AbstractStorage):
 
     def put(self, node):
         key = self.make_key(node.path)
-        data = yaml.dump(node, default_flow_style=False, allow_unicode=True, Dumper=Dumper)
+        data = node  # yaml.dump(node, default_flow_style=False, allow_unicode=True, Dumper=Dumper)
         self._raw_storage[key] = data
 
     def get_path_tuple(self, node):
@@ -339,34 +339,4 @@ class Registry(AbstractStorage):
         raise Exception('Method is not supported by this storage type')
 
 
-class Dumper(yaml.Dumper):
-    # def generate_anchor(self, node):
-    #     log.debug('gen_anchor: node=%r', node)
-    #     if isinstance(node, Node):
-    #         return node.name
-    #     else:
-    #         return super(Dumper, self).generate_anchor(node)
-
-    @classmethod
-    def node_to_yaml(cls, dumper, data):
-        storage = data.storage
-        if storage and storage.name == 'registry':
-            node = dumper.represent_str(data=data.uri)
-            node.tag = 'link'
-            return node
-        else:
-            return dumper.represent_object(data=data)
-
-Dumper.add_multi_representer(Node, Dumper.node_to_yaml)
-
-
-class Loader(yaml.Loader):
-    def __init__(self, storage, **kw):
-        super(Loader, self).__init__(**kw)
-        self.storage = storage
-
-    @classmethod
-    def link_from_yaml(cls, loader, node):
-        return loader.storage[node.value]  # todo: exceptions
-
-Loader.add_constructor('link', Loader.link_from_yaml)
+Node.DISPATCHER = Dispatcher()  # todo: remove singleton (!)

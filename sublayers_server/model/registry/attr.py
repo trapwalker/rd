@@ -90,28 +90,29 @@ class RegistryLink(Attribute):
         if raw is None:
             return
 
-        return obj._dispatcher.get(raw) if isinstance(raw, basestring) else raw
+        return obj.DISPATCHER.get(raw) if isinstance(raw, basestring) else raw
 
     def to_raw(self, value, obj):
-        if value is None:
-            return None
+        if value is None or isinstance(value, basestring):
+            return value
 
         return value.uri or value
 
     def __get__(self, obj, cls):
         if obj is None:
             return self
+
         if self.name in obj._cache:
             value = obj._cache[self.name]
         else:
-            link = self.get_raw(obj)
-            value = self.from_raw(link, obj)
+            value = super(RegistryLink, self).__get__(obj, cls)
             obj._cache[self.name] = value
 
         return value
 
     def __set__(self, obj, value):
-        obj._cache[self.name] = value
+        if not isinstance(value, basestring):
+            obj._cache[self.name] = value
         super(RegistryLink, self).__set__(obj, value)
 
 

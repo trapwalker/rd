@@ -8,45 +8,51 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.storage import Registry, Collection, Dispatcher
-from sublayers_server.model.registry.storage import Dumper
-from sublayers_server.model.vectors import Point
+from sublayers_server.model.registry import storage
 
 
 if __name__ == '__main__':
+    from sublayers_server.model.vectors import Point
     from pprint import pprint as pp
     import yaml
-    storages = Dispatcher()
 
-    reg = Registry(dispatcher=storages, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
-    c = Collection(dispatcher=storages, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    reg = storage.Registry(dispatcher=storage.Node.DISPATCHER, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    c = storage.Collection(dispatcher=storage.Node.DISPATCHER, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
 
     jeep = reg['/mobiles/cars/jeep']
-    my_jeep = jeep.instantiate(storage=c)
-    #my_jeep = c['cars/7c90c7ca3d06447698e08d543fbcee53']
 
-    print my_jeep, my_jeep.slot_CC
-    print
-    my_jeep.slot_CC = None
-    my_jeep.slot_FC.ammo_per_second = 10
-    my_jeep.save()
+    mj0 = jeep.instantiate(storage=c)
+    mj0.slot_CC = None
+    mj0.slot_FC.ammo_per_second = 10
+
+    #mj0 = c['cars/7c90c7ca3d06447698e08d543fbcee53']
+
+    print 'mj0.__getstate__()->'
+    pp(mj0.__getstate__())
+    car_id = mj0.name
+
+    mj0.save()
 
     print
-    print 'my_jeep dump:'
-    s = yaml.dump(my_jeep, default_flow_style=False, allow_unicode=True, Dumper=Dumper)
+    print 'mj0 dump:'
+    s = yaml.dump(mj0, default_flow_style=False, allow_unicode=True)
     print s
 
-    print
-    print 'Load:'
-    mj2 = c._load(s)
-    print mj2
-    print 'cc=', mj2.slot_CC
-    print 'fc=', mj2.slot_FC
+    mj1 = yaml.load(s)
+    print 'mj1.__getstate__()->'
+    pp(mj1.__getstate__())
 
-    car_id = my_jeep.name
+
+    # print
+    # print 'Load:'
+    # mj2 = c._load(s)
+    # print mj2
+    # print 'cc=', mj2.slot_CC
+    # print 'fc=', mj2.slot_FC
 
     c.close()
-    cc = Collection(dispatcher=storages, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    cc = storage.Collection(dispatcher=storage.Node.DISPATCHER, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
     mj3 = cc['/' + car_id]
-    print mj3
+    print 'mj3.__getstate__()->'
+    pp(mj3.__getstate__())
 

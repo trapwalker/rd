@@ -46,6 +46,7 @@ class Persistent(object):
 
 
 class Node(Persistent):
+
     # todo: override attributes in subclasses
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
     parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
@@ -71,11 +72,6 @@ class Node(Persistent):
         self.parent = parent
         if storage:
             storage.put(self)
-        self._dispatcher = (
-            storage
-            or owner and owner._dispatcher
-            or parent and parent._dispatcher
-        )
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -107,7 +103,7 @@ class Node(Persistent):
                 link = attr.get_raw(self)
                 # todo: Отловить и обработать исключения
                 if link:
-                    uri = dict(zip('proto storage path params'.split(), self._dispatcher.parse_uri(link)))
+                    uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))
                     v = getter()
                     if v and v.can_instantiate:
                         new_v = v.instantiate(owner=inst, **uri['params'])
@@ -117,14 +113,17 @@ class Node(Persistent):
         return inst
 
     def __getstate__(self):
-        #do_not_store = ('storage', '_subnodes', '_cache', '_dispatcher', 'owner',)
+        #do_not_store = ('storage', '_subnodes', '_cache', 'owner',)
         #log.debug('%s.__getstate__', self)
         #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         values = self.values
         d = dict(name=self.name)
         for attr, getter in self.iter_attrs():
             if attr.name in values:  # todo: refactor it
-                d[attr.name] = getter()
+                v = getter()
+                if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
+                    v = v.uri
+                d[attr.name] = v
         return d
 
     def __setstate__(self, state):
@@ -137,8 +136,6 @@ class Node(Persistent):
 
         for k, v in state.items():
             setattr(self, k, v)
-
-        self._dispatcher = self.parent._dispatcher
 
     @property
     def path(self):
