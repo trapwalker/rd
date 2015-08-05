@@ -225,6 +225,9 @@ class Unit(Observer):
         # обновляем статистику по живым юнитам
         self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
 
+        # очистка всех визиторов из инвентаря машинки
+        self.inventory.del_all_visitors(time=event.time)
+
         super(Unit, self).on_before_delete(event=event)
 
         # необходимо ради правильных out этой машинки.

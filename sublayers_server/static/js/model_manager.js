@@ -252,7 +252,7 @@ var ClientManager = (function () {
             data.owner_id,
             data.max_size
         );
-        for (var i=0; i < data.items.length; i++)
+        for (var i = 0; i < data.items.length; i++)
             inv.addItem(this._getItem(data.items[i]));
         return inv;
     };
@@ -627,6 +627,7 @@ var ClientManager = (function () {
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
                 locationVisitorsManager.update_visitors();
+                windowTemplateManager.closeAllWindows();
             }
         });
     };

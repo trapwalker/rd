@@ -96,7 +96,6 @@ var Window = (function () {
         else this.mainDiv.css('display', 'none');
     };
 
-
     Window.prototype.setNewSize = function (height, width) {
         if (height) this.mainDiv.height(height);
         if (width) this.mainDiv.width(width);

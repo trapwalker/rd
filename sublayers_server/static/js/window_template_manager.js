@@ -3,6 +3,11 @@ var WindowTemplateManager = (function () {
         this.unique = {}; // ассоциативный массив для уникальных окон, имеющих имя
     }
 
+    WindowTemplateManager.prototype.closeAllWindows = function () {
+        for(var key in this.unique)
+            if (this.unique.hasOwnProperty(key))
+                this.closeUniqueWindow(key);
+    };
 
     WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data) {
         var self = this;
@@ -30,7 +35,6 @@ var WindowTemplateManager = (function () {
         });
     };
 
-
     WindowTemplateManager.prototype.openWindow = function (win_url, win_data) {
         $.ajax({
             url: "http://" + location.host + win_url,
@@ -49,7 +53,6 @@ var WindowTemplateManager = (function () {
         });
     };
 
-
     WindowTemplateManager.prototype.closeUniqueWindow = function (win_name) {
         if (this.unique[win_name] != null) {
             if (this.unique[win_name] != 'waiting')
@@ -65,7 +68,6 @@ var WindowTemplateManager = (function () {
     WindowTemplateManager.prototype.isClose = function (win_name) {
         return (!this.unique[win_name]) || (this.unique[win_name] == null)
     };
-
 
     return WindowTemplateManager;
 })();
