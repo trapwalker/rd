@@ -33,5 +33,3 @@ var ItemBalanceClsManager = (function () {
     return ItemBalanceClsManager;
 })();
 
-
-var item_balance_cls_manager = new ItemBalanceClsManager();

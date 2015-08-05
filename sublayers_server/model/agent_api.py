@@ -405,15 +405,16 @@ class AgentAPI(API):
 
     @public_method
     def get_balance_cls(self, balance_cls_name):
-        log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
+        pass
+        # log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
         # messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
         #                         balance_cls_name=balance_cls_name).post()
 
     @public_method
-    def activate_item(self, owner_id, position, balance_cls_name):
-        #log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
-        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position,
-                            balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
+    def activate_item(self, owner_id, position, target_id):
+        log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
+        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
+                            time=self.agent.server.get_time()).post()
 
     @public_method
     def fuel_station_active(self, fuel):

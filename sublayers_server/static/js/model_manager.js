@@ -704,11 +704,6 @@ var ClientManager = (function () {
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
     };
 
-    ClientManager.prototype.BalanceClsInfo = function (event) {
-        //console.log('ClientManager.prototype.SetBalanceCls', event);
-        item_balance_cls_manager.add_balance_cls(event.balance_cls)
-    };
-
     ClientManager.prototype.GasStationUpdate = function (event) {
         //console.log('ClientManager.prototype.GasStationUpdate', event);
         initGasStation(event.balance, event.fuel);
@@ -1052,12 +1047,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivateItem = function (item) {
-        //console.log('ClientManager.prototype.sendActivateItem', item);
+        // console.log('ClientManager.prototype.sendActivateItem', item);
         var mes = {
             call: "activate_item",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                balance_cls_name: item.balance_cls,
+                target_id: item.inventory.owner_id,
                 owner_id: item.inventory.owner_id,
                 position: item.position
             }

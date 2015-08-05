@@ -36,7 +36,7 @@ var WInventoryItem = (function (_super) {
 
         var self = this;
         itemDiv.on('dblclick', function () {
-            item_balance_cls_manager.activate_item(self.item);
+            self.item.activate();
         });
         this.change();
 

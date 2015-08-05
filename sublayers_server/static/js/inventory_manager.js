@@ -86,6 +86,19 @@ var InventoryItem = (function (_super) {
         this.delFromVisualManager();
     };
 
+    InventoryItem.prototype.activate = function () {
+        switch (this.example.activate_type) {
+            case 'none':
+                console.warn('Активация неактивируемого итема');
+                break;
+            case 'self':
+                clientManager.sendActivateItem(this);
+                break;
+            default:
+                console.warn('Неизвестный типа активации итема !');
+        }
+    };
+
     return InventoryItem;
 })(ClientObject);
 
@@ -170,7 +183,6 @@ var Inventory = (function () {
         if (this.items[item.position] != null) return;
         this.items[item.position] = item;
         item.setInventory(this, this.item_widget_class);
-        item_balance_cls_manager.load_from_server(item.balance_cls)
     };
 
     Inventory.prototype.delItem = function (position) {
