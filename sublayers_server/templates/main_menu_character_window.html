@@ -1,0 +1,69 @@
+﻿{% set window_caption = 'NUKE:\Персонаж>' %}
+
+<style xmlns="http://www.w3.org/1999/html">
+    .mainTraderWindow {
+        position: relative;
+        width: 650px;
+        height: 661px;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #ffffff;
+        font: 11pt FreePixel;
+        cursor: default;
+    }
+
+    .mainTraderWindow-up {
+        height: 220px;
+        width: 650px;
+        float: left;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
+    .mainTraderWindow-up-name {
+        height: 23px;
+        width: 650px;
+        line-height: 23px;
+        text-align: center;
+        float: left;
+    }
+
+    .mainTraderWindow-up-picture {
+        height: 166px;
+        width: 121px;
+        background: transparent url('/static/img/trader/pers_buchman.png') 50% 50% no-repeat;
+        float: left;
+        line-height: 348px;
+        text-align: center;
+        margin-left: 50px;
+    }
+
+    .mainTraderWindow-up-text {
+        height: 162px;
+        width: 395px;
+        margin: 6px 0px 0px 23px;
+        overflow-y: scroll;
+        float: left;
+        border-top: solid 1px #135806;
+        padding-top: 9px;
+    }
+
+    .mainTraderWindow-down {
+
+    }
+</style>
+
+<div class="mainTraderWindow">
+    {% include drag_close_header.html %}
+    <div class="mainTraderWindow-up">
+        <div class="mainTraderWindow-up-name">Бухман:</div>
+        <div class="mainTraderWindow-up-picture">Йаков Бухман</div>
+        <div class="mainTraderWindow-up-text">
+            Таки ты сподобился задвинуть мне предложение века! Мы ведь серьезная корпорация и херни потерпеть не можем.
+            Давай, гой, завязывай уже с обменом канистр на канистры. Ибо социальное пространство ядерного Щита в Нижнем
+            Гульденберговске ограничено границами клуба "Людвиг-Рак" и ее обитателями (слюдой в породе, урюками и
+            прочими не систематическими элементами, подлежащими утилизации через Священный Огонь печей Пе...
+        </div>
+    </div>
+    <div class="mainTraderWindow-down"></div>
+</div>

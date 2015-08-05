@@ -17,6 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, \
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
+from sublayers_server.model.transaction_events import TransactionGasStation
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
     ChatRoomPrivateCloseEvent
@@ -405,24 +406,18 @@ class AgentAPI(API):
 
     @public_method
     def get_balance_cls(self, balance_cls_name):
-        log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
+        pass
+        # log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
         # messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
         #                         balance_cls_name=balance_cls_name).post()
 
     @public_method
-    def activate_item(self, owner_id, position, balance_cls_name):
-        #log.info('agent %s want activate item with balance_cls %s  in position %s', self.agent, balance_cls_name, position)
-        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position,
-                            balance_cls_name=balance_cls_name, time=self.agent.server.get_time()).post()
+    def activate_item(self, owner_id, position, target_id):
+        log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
+        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
+                            time=self.agent.server.get_time()).post()
 
     @public_method
-    def fuel_station_active(self, fuel):
-        log.info('agent %s want active fuel station, with value=%s', self.agent, fuel)
-        self.agent.example.balance -= fuel
-        cur_fuel = self.agent.example.car.fuel + fuel
-        max_fuel = self.agent.example.car.max_fuel
-        if cur_fuel <= max_fuel:
-            self.agent.example.car.fuel = cur_fuel
-        else:
-            self.agent.example.car.fuel = max_fuel
-        messages.GasStationUpdate(agent=self.agent, time=self.agent.server.get_time()).post()
+    def fuel_station_active(self, fuel, tank_list):
+        log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
+        TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel, tank_list=tank_list).post()

@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Attribute, RegistryLink, Slot, Position, Parameter
+from sublayers_server.model.transaction_events import TransactionActivateTank
 
 from math import pi
 import random
@@ -22,6 +23,7 @@ class Item(Root):
     inv_icon_small = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
     # todo: move title attr to the root
     title = Attribute(caption=u'Название предмета для отображения в инвентаре', tags='client')
+    activate_type = Attribute(default='none', caption=u'Способ активации: none, self ...', tags='client')
 
     def as_client_dict(self):
         # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
@@ -30,9 +32,25 @@ class Item(Root):
             d[attr.name] = getter()
         return d
 
+    @classmethod
+    def activate(cls):
+        pass
+
 
 class Tank(Item):
-    value = Attribute(caption=u'Объем канистры')
+    value_fuel = Attribute(caption=u'Объем канистры', tags='client')
+
+
+class TankFull(Tank):
+    pass
+
+    @classmethod
+    def activate(cls):
+        return TransactionActivateTank
+
+
+class TankEmpty(Tank):
+    pass
 
 
 class SlotItem(Item):
@@ -156,7 +174,7 @@ class RadioTower(POI):
 
 
 class MapLocation(POI):
-    p_observing_range = Parameter(default=100, caption=u"Радиус входа")
+    p_observing_range = Parameter(default=1000, caption=u"Радиус входа")
     svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
     title = Attribute(caption=u"Название локации")
 

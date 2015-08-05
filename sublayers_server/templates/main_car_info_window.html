@@ -817,7 +817,8 @@
     // Обработка нажатия на крестик (закрытие окна)
     $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
         // Тут именно так, потому как мы отписываемся от инвентаря на сервере
-        clientManager.sendHideInventory(user.userCar.ID);
+        if (user.userCar)
+            clientManager.sendHideInventory(user.userCar.ID);
     });
 
     // Запрашиваем инвентарь

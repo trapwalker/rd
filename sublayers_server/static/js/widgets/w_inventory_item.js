@@ -36,7 +36,7 @@ var WInventoryItem = (function (_super) {
 
         var self = this;
         itemDiv.on('dblclick', function () {
-            item_balance_cls_manager.activate_item(self.item);
+            self.item.activate();
         });
         this.change();
 
@@ -116,30 +116,3 @@ var WInventoryItem = (function (_super) {
 
     return WInventoryItem;
 })(VisualObject);
-
-
-var WInventoryItemNPC = (function (_super) {
-    __extends(WInventoryItemNPC, _super);
-
-    function WInventoryItemNPC(item) {
-        _super.call(this, item);
-    }
-
-    WInventoryItemNPC.prototype._setDivInfo = function() {
-        this.inventoryDivStr = '.npcInventory-' + this.item.inventory.owner_id;
-        this.itemDivStr = '.inventory-' + this.item.inventory.owner_id + '-pos-' + this.item.position;
-        this.itemDivCaptionStr = '.npcInventory-nameEmpty';
-        this.itemDivPictureStr = '.npcInventory-pictureEmpty';
-        this.itemDivCountStr = '.npcInventory-countEmpty';
-    };
-
-    WInventoryItemNPC.prototype.addViewDiv = function(inventoryDiv) {
-        //console.log('WInventoryItemNPC.prototype.addViewDiv');
-        var itemDiv = $(inventoryDiv).find(this.itemDivStr);
-        itemDiv.find(this.itemDivCaptionStr).text(this.item.balance_cls);
-        itemDiv.draggable("option", "disabled", false);
-        this.change();
-    };
-
-    return WInventoryItemNPC;
-})(WInventoryItem);

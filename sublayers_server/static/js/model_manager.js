@@ -252,7 +252,7 @@ var ClientManager = (function () {
             data.owner_id,
             data.max_size
         );
-        for (var i=0; i < data.items.length; i++)
+        for (var i = 0; i < data.items.length; i++)
             inv.addItem(this._getItem(data.items[i]));
         return inv;
     };
@@ -627,6 +627,8 @@ var ClientManager = (function () {
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
                 locationVisitorsManager.update_visitors();
+                windowTemplateManager.closeAllWindows();
+                nucoilManager.update();
             }
         });
     };
@@ -677,6 +679,20 @@ var ClientManager = (function () {
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
+    ClientManager.prototype.ExampleInventoryShowMessage = function (event) {
+        console.log('ClientManager.prototype.ExampleInventoryMessage', event);
+        var inv = this._getInventory(event.inventory);
+        if (inventoryList.getInventory(inv.owner_id))
+            inventoryList.delInventory(inv.owner_id);
+        inventoryList.addInventory(inv);
+        nucoilManager.update();
+    };
+
+    ClientManager.prototype.ExampleInventoryHideMessage = function (event) {
+        //console.log('ClientManager.prototype.ExampleInventoryHideMessage', event);
+        inventoryList.delInventory(event.inventory_owner_id);
+    };
+
     ClientManager.prototype.InventoryItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryItemMessage', event);
         var inventory = inventoryList.getInventory(event.owner_id);
@@ -702,11 +718,6 @@ var ClientManager = (function () {
             inventory.delItem(event.position);
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
-    };
-
-    ClientManager.prototype.BalanceClsInfo = function (event) {
-        //console.log('ClientManager.prototype.SetBalanceCls', event);
-        item_balance_cls_manager.add_balance_cls(event.balance_cls)
     };
 
     ClientManager.prototype.GasStationUpdate = function (event) {
@@ -1052,12 +1063,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivateItem = function (item) {
-        //console.log('ClientManager.prototype.sendActivateItem', item);
+        // console.log('ClientManager.prototype.sendActivateItem', item);
         var mes = {
             call: "activate_item",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                balance_cls_name: item.balance_cls,
+                target_id: item.inventory.owner_id,
                 owner_id: item.inventory.owner_id,
                 position: item.position
             }
@@ -1071,6 +1082,7 @@ var ClientManager = (function () {
             call: "fuel_station_active",
             rpc_call_id: rpcCallList.getID(),
             params: {
+                tank_list: nucoilManager.tank_list,
                 fuel: fuel
             }
         };
