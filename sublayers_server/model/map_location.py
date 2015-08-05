@@ -5,7 +5,8 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
-from sublayers_server.model.messages import EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage
+from sublayers_server.model.messages import EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, \
+    ExampleInventoryHideMessage, ExampleInventoryShowMessage
 from sublayers_server.model.events import ActivateLocationChats
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
@@ -54,6 +55,8 @@ class MapLocation(Observer):
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
         agent.current_location = self
         self.visitors.append(agent)
+        # отправить инвентарь из экземпляра на клиент
+        ExampleInventoryShowMessage(agent=agent, time=time).post()
 
     def on_re_enter(self, agent, time):
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
@@ -71,6 +74,7 @@ class MapLocation(Observer):
         agent.api.update_agent_api(time=time + 0.1)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=False, time=time).post()
+        ExampleInventoryHideMessage(agent=agent, time=time).post()
 
     def add_to_chat(self, chat, time):
         super(MapLocation, self).add_to_chat(chat=chat, time=time)

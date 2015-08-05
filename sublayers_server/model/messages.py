@@ -581,3 +581,51 @@ class GasStationUpdate(Message):
             fuel=self.agent.example.car.fuel,
         )
         return d
+
+
+class ExampleInventoryShowMessage(Message):
+    def as_dict(self):
+        d = super(ExampleInventoryShowMessage, self).as_dict()
+
+        example = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
+
+        empty_tank10 = dict(
+            cls='ItemState',
+            balance_cls='tank10',
+            example=example.as_client_dict(),
+            max_val=1,
+            t0=self.time,
+            val0=1,
+            dvs=0,
+        )
+
+        d.update(
+            inventory=dict(
+                max_size=10,
+                items=[
+                    {
+                        'item': empty_tank10,
+                        'position': 1
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 2
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 4
+                    }
+                ],
+                owner_id=self.agent.uid
+            )
+        )
+        return d
+
+
+class ExampleInventoryHideMessage(Message):
+    def as_dict(self):
+        d = super(ExampleInventoryHideMessage, self).as_dict()
+        d.update(
+            inventory_owner_id=self.agent.uid
+            )
+        return d

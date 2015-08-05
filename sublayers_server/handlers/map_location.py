@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from .base import BaseHandler
 
-from sublayers_server.model.town import Town, GasStation
+from sublayers_server.model.map_location import Town, GasStation
 import tornado.web
 import os
 

@@ -174,7 +174,7 @@ class RadioTower(POI):
 
 
 class MapLocation(POI):
-    p_observing_range = Parameter(default=100, caption=u"Радиус входа")
+    p_observing_range = Parameter(default=1000, caption=u"Радиус входа")
     svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
     title = Attribute(caption=u"Название локации")
 

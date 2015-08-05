@@ -678,6 +678,16 @@ var ClientManager = (function () {
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
+    ClientManager.prototype.ExampleInventoryShowMessage = function (event) {
+        console.log('ClientManager.prototype.ExampleInventoryMessage', event);
+        inventoryList.addInventory(this._getInventory(event.inventory));
+    };
+
+    ClientManager.prototype.ExampleInventoryHideMessage = function (event) {
+        //console.log('ClientManager.prototype.ExampleInventoryHideMessage', event);
+        inventoryList.delInventory(event.inventory_owner_id);
+    };
+
     ClientManager.prototype.InventoryItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryItemMessage', event);
         var inventory = inventoryList.getInventory(event.owner_id);
