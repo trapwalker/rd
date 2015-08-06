@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from attr import Attribute, DocAttribute, RegistryLink
+from sublayers_server.model.registry.attr import Attribute, DocAttribute, RegistryLink, InventoryAttribute
 
 import yaml
 
@@ -68,12 +68,14 @@ class Node(Persistent):
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name
         self.owner = owner
-        self.values = values or {}
-        self.values.update(kw)
+        self.values = values and values.copy() or {}
         self.storage = storage
         self.parent = parent
         if storage:
             storage.put(self)
+
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -100,17 +102,23 @@ class Node(Persistent):
         inst = self.__class__(name=name, storage=storage, parent=self, **kw)
         log.debug('Maked new instance %s', inst.uri)
 
-        for attr, getter in self.iter_attrs(classes=RegistryLink):
-            if attr.need_to_instantiate:
-                link = attr.get_raw(self)
-                # todo: Отловить и обработать исключения
-                if link:
-                    uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))
-                    v = getter()
-                    if v and v.can_instantiate:
-                        new_v = v.instantiate(owner=inst, **uri['params'])
-                        setattr(inst, attr.name, new_v)
-                        # todo: тест на негомогенных владельцев
+        for attr, getter in self.iter_attrs():
+            if isinstance(attr, RegistryLink):
+                if attr.need_to_instantiate:
+                    link = attr.get_raw(self)
+                    # todo: Отловить и обработать исключения
+                    if link:
+                        value = getter()
+                        uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))
+                        if value and value.can_instantiate:
+                            new_value = value.instantiate(owner=inst, **uri['params'])
+                            setattr(inst, attr.name, new_value)
+                            # todo: тест на негомогенных владельцев
+            # elif isinstance(attr, InventoryAttribute):
+            #     from sublayers_server.model.registry.classes import Inventory  # todo: refactor
+            #     value = getter()
+            #     new_value = value.instantiate() if value else Inventory()
+            #     setattr(inst, attr.name, new_value)
 
         return inst
 
@@ -174,8 +182,26 @@ class Node(Persistent):
         return '<{self.__class__.__name__}@{details}>'.format(
             self=self, details=self.uri if self.storage else id(self))
 
-    def resume(self):
+    def dump(self):
         return yaml.dump(self, default_flow_style=False, allow_unicode=True)
+
+    def resume_dict(self):
+        d = dict(
+            __cls__=self.__class__.__name__,
+            name=self.name,
+        )
+        for attr, getter in self.iter_attrs():
+            v = getter()
+            if isinstance(v, Node):
+                if v.storage and v.storage.name == 'registry':
+                    v = v.uri
+                else:
+                    v = v.resume_dict()
+            d[attr.name] = v
+        return d
+
+    def resume(self):
+        return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
 
     def _get_attr_value(self, name, default):
         if name in self.values:

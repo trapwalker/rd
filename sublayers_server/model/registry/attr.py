@@ -37,7 +37,7 @@ class Attribute(object):
         return s
 
     def from_raw(self, raw, obj):
-        return raw
+        return self.from_str(raw, obj) if isinstance(raw, basestring) else raw
 
     def to_raw(self, value, obj):
         return value
@@ -59,7 +59,48 @@ class Attribute(object):
         # todo: global attribute registration
 
 
+class TextAttribute(Attribute):
+    pass
+
+
+class NumericAttribute(Attribute):
+    # todo: validation
+    pass
+
+
+class IntAttribute(NumericAttribute):
+    # todo: validation
+    def from_str(self, s, obj):
+        # todo: validation
+        try:
+            v = int(s)
+        except:
+            if s:
+                raise ValueError('Wrong value of {}.{}'.format(obj, self.name))
+            else:
+                v = None
+        return v
+
+
+class FloatAttribute(NumericAttribute):
+    def from_str(self, s, obj):
+        # todo: validation
+        try:
+            v = float(s)
+        except:
+            if s:
+                raise ValueError('Wrong value of {}.{}'.format(obj, self.name))
+            else:
+                v = None
+        return v
+
+
 # todo: reserved attr names checking
+
+
+class InventoryAttribute(Attribute):
+    pass
+
 
 class Parameter(Attribute):
     pass
@@ -73,7 +114,7 @@ class Position(Attribute):
         return None if data is None else Point(*data)
 
 
-class DocAttribute(Attribute):
+class DocAttribute(TextAttribute):
     def __init__(self):
         super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
 
@@ -81,7 +122,7 @@ class DocAttribute(Attribute):
         return obj._get_attr_value(self.name, self.default or self.__doc__)
 
 
-class RegistryLink(Attribute):
+class RegistryLink(TextAttribute):
     def __init__(self, need_to_instantiate=True, **kw):
         super(RegistryLink, self).__init__(**kw)
         self.need_to_instantiate = need_to_instantiate
