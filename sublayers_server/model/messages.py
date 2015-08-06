@@ -583,16 +583,27 @@ class GasStationUpdate(Message):
         return d
 
 
-class ExampleInventoryShowMessage(Message):
+class ExamplesShowMessage(Message):
     def as_dict(self):
-        d = super(ExampleInventoryShowMessage, self).as_dict()
+        d = super(ExamplesShowMessage, self).as_dict()
 
-        example = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
+        example10 = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
+        example20 = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
 
         empty_tank10 = dict(
             cls='ItemState',
             balance_cls='tank10',
-            example=example.as_client_dict(),
+            example=example10.as_client_dict(),
+            max_val=1,
+            t0=self.time,
+            val0=1,
+            dvs=0,
+        )
+
+        empty_tank20 = dict(
+            cls='ItemState',
+            balance_cls='tank20',
+            example=example20.as_client_dict(),
             max_val=1,
             t0=self.time,
             val0=1,
@@ -600,6 +611,25 @@ class ExampleInventoryShowMessage(Message):
         )
 
         d.update(
+            # slots=[{v[0]:v[1].as_client_dict()} for v in self.agent.example.car.iter_slots()], # довести до ума
+            armorer_slots=[
+                {
+                    'name': 'slot_FC',
+                    'value': example10.as_client_dict()
+                },
+                {
+                    'name': 'slot_CC',
+                    'value': None
+                },
+                {
+                    'name': 'slot_BR',
+                    'value': None
+                },
+                {
+                    'name': 'slot_BL',
+                    'value': None
+                },
+            ],
             inventory=dict(
                 max_size=10,
                 items=[
@@ -608,7 +638,7 @@ class ExampleInventoryShowMessage(Message):
                         'position': 1
                     },
                     {
-                        'item': empty_tank10,
+                        'item': empty_tank20,
                         'position': 2
                     },
                     {
@@ -622,9 +652,9 @@ class ExampleInventoryShowMessage(Message):
         return d
 
 
-class ExampleInventoryHideMessage(Message):
+class ExamplesHideMessage(Message):
     def as_dict(self):
-        d = super(ExampleInventoryHideMessage, self).as_dict()
+        d = super(ExamplesHideMessage, self).as_dict()
         d.update(
             inventory_owner_id=self.agent.uid
             )

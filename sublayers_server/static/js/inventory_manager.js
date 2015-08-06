@@ -205,6 +205,7 @@ var Inventory = (function () {
                 this.items[key].delItem();
                 delete this.items[key];
             }
+        // todo: снять драг анд дроп
     };
 
     Inventory.prototype.getItem = function (position) {

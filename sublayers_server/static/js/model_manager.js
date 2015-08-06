@@ -615,7 +615,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.EnterToLocation', event);
+        console.log('ClientManager.prototype.EnterToLocation', event);
         var location_uid = event.location.uid;
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
@@ -623,12 +623,14 @@ var ClientManager = (function () {
             url: "http://" + location.host + '/api/location',
             data:  { location_id: event.location.uid },
             success: function(data){
+                console.log('ClientManager.prototype.EnterToLocation Answer');
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
                 locationVisitorsManager.update_visitors();
                 windowTemplateManager.closeAllWindows();
                 nucoilManager.update();
+                armorerManager.update();
             }
         });
     };
@@ -679,16 +681,17 @@ var ClientManager = (function () {
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
-    ClientManager.prototype.ExampleInventoryShowMessage = function (event) {
+    ClientManager.prototype.ExamplesShowMessage = function (event) {
         console.log('ClientManager.prototype.ExampleInventoryMessage', event);
         var inv = this._getInventory(event.inventory);
         if (inventoryList.getInventory(inv.owner_id))
             inventoryList.delInventory(inv.owner_id);
         inventoryList.addInventory(inv);
         nucoilManager.update();
+        armorerManager.update(event.armorer_slots);
     };
 
-    ClientManager.prototype.ExampleInventoryHideMessage = function (event) {
+    ClientManager.prototype.ExamplesHideMessage = function (event) {
         //console.log('ClientManager.prototype.ExampleInventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
     };
