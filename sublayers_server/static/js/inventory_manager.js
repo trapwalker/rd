@@ -176,11 +176,13 @@ var Inventory = (function () {
             var target = $(event.target);
             var inv_id = target.data('inv_id');
             var item_pos = target.data('item_pos');
-            if ((item_pos != - 1) && (inv_id != -1)) {
-                console.log("Activate pos=", item_pos, " inv=", inv_id);
-            }
+            if ((item_pos < 0) || (inv_id < 0)) return;
+            var inventory = inventoryList.getInventory(inv_id);
+            if (!inventory) return;
+            var item = inventory.getItem(item_pos);
+            if (!item) return;
+            item.activate();
         })
-
     };
 
     Inventory.prototype.addItem = function (item) {
