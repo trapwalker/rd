@@ -7,11 +7,12 @@ from sublayers_server.model.vectors import Point
 
 
 class Attribute(object):
-    def __init__(self, default=None, doc=None, caption=None, tags=None):
+    def __init__(self, default=None, init=None, doc=None, caption=None, tags=None):
         # todo: add param: null
         self.name = None
         self.cls = None
         self.default = default
+        self.init = init
         self.doc = doc
         self.caption = caption
         if tags is None:
@@ -28,6 +29,13 @@ class Attribute(object):
 
     def __str__(self):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
+
+    def on_init(self, obj):
+        if self.init:
+            value = self.init
+            if callable(value):
+                value = value()
+            obj._set_attr_value(self.name, self.to_raw(value, obj))
 
     def get_raw(self, obj):
         value = obj._get_attr_value(self.name, self.default)
@@ -61,6 +69,27 @@ class Attribute(object):
 
 class TextAttribute(Attribute):
     pass
+
+
+class TagsAttribute(Attribute):
+    # todo: validation
+    def from_str(self, s, obj):
+        if s is None:
+            return set()
+
+        s = s.strip()
+        if s and s[0] == '[' and s[-1] == ']':
+            s = s[1:-1]
+            tags = [tag.strip() for tag in s.split(',')]
+        else:
+            tags = s.split()
+        return set(tags)
+
+    def from_raw(self, raw, obj):
+        return self.from_str(raw, obj) if raw is None or isinstance(raw, basestring) else raw
+
+    # def to_raw(self, value, obj):
+    #     return list(value)
 
 
 class NumericAttribute(Attribute):
