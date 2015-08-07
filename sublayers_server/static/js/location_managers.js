@@ -324,7 +324,10 @@ var ArmorerManager = (function () {
         this.items[dest] = item;
         this.reDrawItem(src);
         this.reDrawItem(dest);
-        this.setActiveSlot(null);
+        if (dest.toString().indexOf('slot') >= 0)
+            this.setActiveSlot(dest);
+        else
+            this.setActiveSlot(null);
     };
 
     ArmorerManager.prototype.setActiveSlot = function(slotName) {
