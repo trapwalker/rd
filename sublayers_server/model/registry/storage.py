@@ -193,7 +193,10 @@ class Collection(AbstractStorage):
         self._raw_storage = shelve.open(os.path.join(self.path, self.filename))  # todo: make persistent
 
     def make_key(self, path):
-        return path if isinstance(path, basestring) else ('/' + '/'.join(path))
+        key = path if isinstance(path, basestring) else ('/' + '/'.join(path))
+        if isinstance(key, unicode):
+            key = key.encode('utf-8')
+        return key
 
     def close(self):
         if hasattr(self._raw_storage, 'close'):
@@ -206,6 +209,7 @@ class Collection(AbstractStorage):
             path = path[1:]
 
         key = self.make_key(path)
+        print '------->', repr(key)
         try:
             return self._deserialize(self._raw_storage[key])
         except KeyError:
