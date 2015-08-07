@@ -93,6 +93,9 @@ var WInventoryItem = (function (_super) {
         itemDiv.off('dblclick');
         itemDiv.off('click');
 
+        // развыделяем текущий итем
+        itemDiv.parent().removeClass('active');
+
         // удаление информационных вёрсток
         $(this.inventoryDivStr).parent().find(".mainCarInfoWindow-body-trunk-body-left").each(function(){
             var dpos = $(this).data('item_pos');

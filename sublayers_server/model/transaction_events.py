@@ -70,7 +70,7 @@ class TransactionGasStation(TransactionEvent):
 
         # todo: Заправить все канстры из tank_list и заменить их на что-то там
         # todo: Не забыть списать топливо за канистры (расчитать его здесь же)
-        messages.ExampleInventoryShowMessage(agent=agent, time=self.time).post()
+        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
 
         messages.GasStationUpdate(agent=agent, time=self.time).post()
 

@@ -1,3 +1,17 @@
+var LocationManager = (function () {
+
+    function LocationManager() {
+        this.in_location = false;
+        this.armorer = new ArmorerManager();
+        this.nucoil = new NucoilManager();
+        this.visitorsManager = new LocationVisitorsManager();
+    }
+
+    return LocationManager;
+})();
+
+
+
 var LocationVisitorsManager = (function () {
 
     function LocationVisitorsManager() {
@@ -64,6 +78,7 @@ var NucoilManager = (function () {
     NucoilManager.prototype.update = function() {
         this.clear();
         var self = this;
+
         // Запросить инвентаря своего агента
         var item;
         var inventory = inventoryList.getInventory(user.ID);
@@ -73,11 +88,7 @@ var NucoilManager = (function () {
         }
 
         var items = inventory.getItemsByFilter(['Tank10', 'Tank20', 'tank10', 'tank20']);
-
-        console.log(items);
-
         var inv_show_div = $('#activeTownDiv').find('.mainMenuNucoilWindow-body-fuel-right').first();
-
         for (var i = 0; i < items.length; i++) {
             item = items[i];
 
@@ -116,7 +127,7 @@ var NucoilManager = (function () {
                     self.tank_summ -= target.data('value_fuel');
                     self.tank_list.splice(self.tank_list.indexOf(pos), 1);
                 }
-                console.log(self.tank_list);
+
                 setupFuelTotal();
                 setupTankFuelValue();
             });
@@ -124,21 +135,179 @@ var NucoilManager = (function () {
     };
 
     NucoilManager.prototype.clear = function() {
-        console.log('NucoilManager.prototype.clear');
+        //console.log('NucoilManager.prototype.clear');
         this.tank_summ = 0;
         this.tank_list = [];
         var jq_town_div = $('#activeTownDiv');
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('click');
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right').empty();
-
     };
 
     return NucoilManager;
 })();
 
 
+var ArmorerManager = (function () {
 
-var nucoilManager = new NucoilManager();
-var locationVisitorsManager = new LocationVisitorsManager();
+    function ArmorerManager() {
+        this.items = {};
+        this.inv_show_div = null;
+        this.armorer_slots = [];
+    }
+
+    ArmorerManager.prototype._addEmptyInventorySlot = function(position) {
+        var itemWrapDiv = $('<div class="npcInventory-itemWrap armorer-itemWrap-' + position +
+                            '" data-pos="' + position + '"></div>');
+        itemWrapDiv.droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                var dragPos = ui.draggable.data('pos');
+                var dropPos = $(event.target).data('pos');
+                locationManager.armorer.changeItem(dragPos, dropPos);
+            }
+        });
+        this.inv_show_div.append(itemWrapDiv);
+    };
+
+    ArmorerManager.prototype.update = function(armorer_slots) {
+        console.log('ArmorerManager.prototype.update');
+        if (armorer_slots) this.armorer_slots = armorer_slots;
+
+        this.clear();
+        var self = this;
+        var item;
+
+        // Проверить если город
+        this.inv_show_div = $('#activeTownDiv').find('.armorer-footer').find('.npcInventory-inventory').first();
+        if (this.inv_show_div.length == 0) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(user.ID);
+        if (! inventory) {
+            console.warn('Ивентарь агента (' + user.ID + ') не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            var item_rec = {
+                example: null,
+                position: null,
+                direction: 'front'
+            };
+            item = inventory.getItem(i);
+            item_rec.position = i;
+            if (item) {
+                // todo: сделать фильтрацию итемов
+                this._addEmptyInventorySlot(i);
+                item_rec.example = item.example;
+                this.items[i] = item_rec;
+            }
+            else {
+                this._addEmptyInventorySlot(i);
+                item_rec.example = null;
+                this.items[i] = item_rec;
+            }
+        }
+        resizeArmorerInventory();
+
+        // Добавить итемы слотов
+        for (var i = 0; i < this.armorer_slots.length; i++) {
+            var item_rec = {
+                example: this.armorer_slots[i].value,
+                position: this.armorer_slots[i].name,
+                direction: 'front'
+            };
+            this.items[item_rec.position] = item_rec;
+
+            var rect = $('#top_' + item_rec.position);
+            console.log(rect);
+            rect.data('pos', item_rec.position);
+
+            rect.draggable({
+                helper: 'clone',
+                opacity: 0.8,
+                revert: true,
+                revertDuration: 0,
+                zIndex: 1,
+                appendTo: '#map',
+                start: function(event, ui) {
+                    console.log('11111111111');
+                }
+            });
+
+//            rect.droppable({
+//                greedy: true,
+//                drop: function(event, ui) {
+//                    console.log('SVG DROPABLE');
+//                    var dragPos = ui.draggable.data('pos');
+//                    var dropPos = $(event.target).data('pos');
+//                    armorerManager.changeItem(dragPos, dropPos);
+//                }
+//            });
+        }
+
+
+
+        // Отрисовать верстку
+        for (var key in this.items)
+            if (this.items.hasOwnProperty(key))
+                this.reDrawItem(key);
+    };
+
+    ArmorerManager.prototype.clear = function() {
+        console.log('ArmorerManager.prototype.clear');
+    };
+
+    ArmorerManager.prototype.reDrawItem = function(position) {
+        //console.log('ArmorerManager.prototype.reDrawItem');
+        if (position.toString().indexOf('slot') >= 0) {
+            // Позиция в слотах
+            console.log(position, $('#top_' + position).data('pos'));
+        }
+        else {
+            // Позиция в инвентаре
+
+            var itemWrapDiv = this.inv_show_div.find('.armorer-itemWrap-' + position).first();
+            //itemWrapDiv.find('.npcInventory-item').draggable("destroy");
+            itemWrapDiv.empty();
+
+            var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
+            var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
+                '<div class="npcInventory-name">Пусто</div>';
+            itemDiv.append(emptyItemDiv);
+            var item = this.items[position];
+            if (item.example) {
+                itemDiv.find('.npcInventory-name').text(item.example.title);
+                itemDiv.find('.npcInventory-picture')
+                    .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+                itemDiv.draggable({
+                    helper: 'clone',
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#map'
+                });
+            }
+            itemWrapDiv.append(itemDiv);
+        }
+    };
+
+    ArmorerManager.prototype.changeItem = function(src, dest) {
+        console.log('ArmorerManager.prototype.changeItem', src, dest);
+        var item = this.items[src];
+        this.items[src] = this.items[dest];
+        this.items[dest] = item;
+        this.reDrawItem(src);
+        this.reDrawItem(dest);
+    };
+
+    return ArmorerManager;
+})();
+
+var locationManager = new LocationManager();
+
 
 

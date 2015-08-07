@@ -32,7 +32,7 @@ class MapLocationHandler(BaseHandler):
 
                 car_svg_link = os.path.join(os.getcwd(), car_ex.armorer_car_svg)
                 sector_svg_link = os.path.join(os.getcwd(), car_ex.armorer_sectors_svg)
-                car_slots = ['slot_bl', 'slot_br', 'slot_cc', 'slot_fc']
+                car_slots = [v[0] for v in car_ex.iter_slots()]
 
                 self.render("town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
                             sector_svg_link=sector_svg_link, car_slots=car_slots, car=car, agent=agent)
