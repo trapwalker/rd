@@ -104,7 +104,10 @@
         width: 119px;
         height: 85px;
         float: left;
+        opacity: 0.6;
     }
+
+    .npcInventory-itemWrap:hover { opacity: 1; }
 
     .npcInventory-item {
         position: relative;
@@ -137,6 +140,11 @@
         width: 62px;
         margin: 35px auto 0px auto;
     }
+
+    .car_sector { opacity: 0.3; }
+    .car_sector_hover { opacity: 1; }
+    .car_sector_active { opacity: 1; }
+
 </style>
 
 <div class="armorerWindow-main">
@@ -183,7 +191,7 @@
     }
     resizeArmorerInventory();
 
-    // Подсветка слотов
+    // Подсветка слотов при наведении указателя мыши
     function setSlotOpacity(slot_name, hover) {
         if (hover) {
             $("#top_" + slot_name).addClass("armorer-slot-hover");
@@ -193,6 +201,17 @@
             $("#top_" + slot_name).removeClass("armorer-slot-hover");
             $("#side_" + slot_name).removeClass("armorer-slot-hover");
         }
+    }
+
+    // Подсветка активных слотов
+    function dropSlotActive() {
+        $('.armorer-slot').removeClass("armorer-slot-active");
+    }
+
+    function setSlotActive(slot_name) {
+        console.log('+')
+        $("#top_" + slot_name).addClass("armorer-slot-active");
+        $("#side_" + slot_name).addClass("armorer-slot-active");
     }
 
     {% for slot in car_slots %}
@@ -209,18 +228,55 @@
     $("#side_{{slot}}").mouseleave(function() {
         setSlotOpacity("{{slot}}", false);
     });
-    {% end %}
 
+    $("#top_{{slot}}").click(function() {
+        locationManager.armorer.setActiveSlot("{{slot}}");
+    });
+    $("#side_{{slot}}").click(function() {
+        locationManager.armorer.setActiveSlot("{{slot}}");
+    });
+
+    {% end %}
     // Подсветка секторов
-    function setSectorOpacity(sector_name, opacity) {
-        $("#sector_" + sector_name).css("opacity", opacity);
+
+    function addClassSVG(obj, cls) {
+        var oldClass = obj.attr('class');
+        if (!oldClass) oldClass = cls;
+        oldClass= oldClass.toString();
+        if (oldClass.indexOf(cls) == -1) oldClass += ' ' + cls;
+        obj.attr('class', oldClass);
     }
+
+    function removeClassSVG(obj, cls) {
+        var oldClass = obj.attr('class');
+        if (!oldClass) return;
+        oldClass = oldClass.toString();
+        oldClass = oldClass.replace(cls, '');
+        obj.attr('class', oldClass);
+    }
+
+    function dropSectorActive() {
+        removeClassSVG($("#sector_front"), 'car_sector_active');
+        removeClassSVG($("#sector_back"), 'car_sector_active');
+        removeClassSVG($("#sector_left"), 'car_sector_active');
+        removeClassSVG($("#sector_right"), 'car_sector_active');
+    }
+
+    function setSectorActive(sectorName) {
+        addClassSVG($("#sector_" + sectorName), 'car_sector_active');
+    }
+
     {% for sector in ['front', 'back', 'left', 'right'] %}
     $("#sector_{{sector}}").mouseenter(function() {
-        setSectorOpacity("{{sector}}", 1);
+        addClassSVG($("#sector_{{sector}}"), 'car_sector_hover');
     });
     $("#sector_{{sector}}").mouseleave(function() {
-        setSectorOpacity("{{sector}}", 0.3);
+        removeClassSVG($("#sector_{{sector}}"), 'car_sector_hover');
     });
+    $("#sector_{{sector}}").click(function() {
+        console.log('{{sector}}')
+        locationManager.armorer.setActiveSector("{{sector}}");
+    });
+
     {% end %}
 </script>

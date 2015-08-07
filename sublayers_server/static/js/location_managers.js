@@ -152,6 +152,7 @@ var ArmorerManager = (function () {
         this.items = {};
         this.inv_show_div = null;
         this.armorer_slots = [];
+        this.activeSlot = null;
     }
 
     ArmorerManager.prototype._addEmptyInventorySlot = function(position) {
@@ -169,7 +170,7 @@ var ArmorerManager = (function () {
     };
 
     ArmorerManager.prototype.update = function(armorer_slots) {
-        console.log('ArmorerManager.prototype.update');
+       // console.log('ArmorerManager.prototype.update');
         if (armorer_slots) this.armorer_slots = armorer_slots;
 
         this.clear();
@@ -240,7 +241,8 @@ var ArmorerManager = (function () {
     };
 
     ArmorerManager.prototype.clear = function() {
-        console.log('ArmorerManager.prototype.clear');
+        //console.log('ArmorerManager.prototype.clear');
+        this.activeSlot = null;
     };
 
     ArmorerManager.prototype.reDrawItem = function(position) {
@@ -257,10 +259,16 @@ var ArmorerManager = (function () {
             // создать вёрстку для отрисовки
             var item = this.items[position];
             if (item.example) {
-                var itemDiv = $('<div class="armorer-car-slot-picture"></div>');
-                itemDiv.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
-                itemDiv.data('pos', position);
-                itemDiv.draggable({
+                var itemDivTop = $('<div class="armorer-car-slot-picture"></div>');
+                var itemDivSide = $('<div class="armorer-car-slot-picture"></div>');
+
+                itemDivTop.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+                itemDivSide.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+
+                itemDivTop.data('pos', position);
+                itemDivSide.data('pos', position);
+
+                itemDivTop.draggable({
                     helper: 'clone',
                     opacity: 0.8,
                     revert: true,
@@ -268,13 +276,21 @@ var ArmorerManager = (function () {
                     zIndex: 1,
                     appendTo: '#activeTownDiv'
                 });
-                top_slot.append(itemDiv);
-                side_slot.append(itemDiv.clone());
+                itemDivSide.draggable({
+                    helper: 'clone',
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+
+                top_slot.append(itemDivTop);
+                side_slot.append(itemDivSide);
             }
         }
         else {
             // Позиция в инвентаре
-
             var itemWrapDiv = this.inv_show_div.find('.armorer-itemWrap-' + position).first();
             //itemWrapDiv.find('.npcInventory-item').draggable("destroy");
             itemWrapDiv.empty();
@@ -308,7 +324,45 @@ var ArmorerManager = (function () {
         this.items[dest] = item;
         this.reDrawItem(src);
         this.reDrawItem(dest);
+        this.setActiveSlot(null);
     };
+
+    ArmorerManager.prototype.setActiveSlot = function(slotName) {
+        //console.log('ArmorerManager.prototype.setActiveSlot');
+
+        // Гасим все лепестки виджета и все слоты
+        dropSectorActive();
+        dropSlotActive();
+
+        // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
+        if (this.activeSlot == slotName) this.activeSlot = null;
+        else this.activeSlot = slotName;
+        if (! this.items.hasOwnProperty(this.activeSlot)) return;
+        var item_rec = this.items[this.activeSlot];
+
+        // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
+        setSlotActive(this.activeSlot);
+        if (item_rec.example)
+            setSectorActive(item_rec.direction);
+    };
+
+    ArmorerManager.prototype.setActiveSector = function(sectorName) {
+        //console.log('ArmorerManager.prototype.setActiveSector');
+
+        // Получаем активный слот и соостветствующий итем
+        if (! this.items.hasOwnProperty(this.activeSlot)) return;
+        var item_rec = this.items[this.activeSlot];
+
+        // Устанавливаем новое направление
+        item_rec.direction = sectorName;
+        this.items[this.activeSlot] = item_rec;
+
+        // Гасим все лепестки виджета и если есть экземпляр то устанавливаем текущее направление
+        dropSectorActive();
+        if (item_rec.example)
+            setSectorActive(item_rec.direction);
+    };
+
 
     return ArmorerManager;
 })();
