@@ -991,7 +991,7 @@
     }
 
     function setupTankFuelValue() {
-        $('.mainMenuNucoilWindow-body-fuel-center-down-cans-amount').text(nucoilManager.tank_summ + ' л.');
+        $('.mainMenuNucoilWindow-body-fuel-center-down-cans-amount').text(locationManager.nucoil.tank_summ + ' л.');
     }
 
     $('.mainMenuNucoilWindow-body-fuel-center-count-amount-change-up').on('mousedown', function(event) {
@@ -1019,7 +1019,7 @@
 
     // Пересчитать "итого"
     function setupFuelTotal() {
-        totalFuelValue = currentFuelValue + nucoilManager.tank_summ;
+        totalFuelValue = currentFuelValue + locationManager.nucoil.tank_summ;
         $('.mainMenuNucoilWindow-body-fuel-down-amount').text(totalFuelValue + ' л.');
     }
 

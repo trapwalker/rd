@@ -1,3 +1,17 @@
+var LocationManager = (function () {
+
+    function LocationManager() {
+        this.in_location = false;
+        this.armorer = new ArmorerManager();
+        this.nucoil = new NucoilManager();
+        this.visitorsManager = new LocationVisitorsManager();
+    }
+
+    return LocationManager;
+})();
+
+
+
 var LocationVisitorsManager = (function () {
 
     function LocationVisitorsManager() {
@@ -149,7 +163,7 @@ var ArmorerManager = (function () {
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
-                armorerManager.changeItem(dragPos, dropPos);
+                locationManager.armorer.changeItem(dragPos, dropPos);
             }
         });
         this.inv_show_div.append(itemWrapDiv);
@@ -293,10 +307,7 @@ var ArmorerManager = (function () {
     return ArmorerManager;
 })();
 
-
-var armorerManager = new ArmorerManager();
-var nucoilManager = new NucoilManager();
-var locationVisitorsManager = new LocationVisitorsManager();
+var locationManager = new LocationManager();
 
 
 
