@@ -184,23 +184,30 @@
     resizeArmorerInventory();
 
     // Подсветка слотов
-    function setSlotOpacity(slot_name, opacity) {
-        $("#top_" + slot_name).css("opacity", opacity);
-        $("#side_" + slot_name).css("opacity", opacity);
+    function setSlotOpacity(slot_name, hover) {
+        if (hover) {
+            $("#top_" + slot_name).addClass("armorer-slot-hover");
+            $("#side_" + slot_name).addClass("armorer-slot-hover");
+        }
+        else {
+            $("#top_" + slot_name).removeClass("armorer-slot-hover");
+            $("#side_" + slot_name).removeClass("armorer-slot-hover");
+        }
     }
+
     {% for slot in car_slots %}
     $("#top_{{slot}}").mouseenter(function() {
-        setSlotOpacity("{{slot}}", 0.8);
+        setSlotOpacity("{{slot}}", true);
     });
     $("#side_{{slot}}").mouseenter(function() {
-        setSlotOpacity("{{slot}}", 0.8);
+        setSlotOpacity("{{slot}}", true);
     });
 
     $("#top_{{slot}}").mouseleave(function() {
-        setSlotOpacity("{{slot}}", 0.5);
+        setSlotOpacity("{{slot}}", false);
     });
     $("#side_{{slot}}").mouseleave(function() {
-        setSlotOpacity("{{slot}}", 0.5);
+        setSlotOpacity("{{slot}}", false);
     });
     {% end %}
 

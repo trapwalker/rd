@@ -11,7 +11,6 @@ var LocationManager = (function () {
 })();
 
 
-
 var LocationVisitorsManager = (function () {
 
     function LocationVisitorsManager() {
@@ -220,35 +219,19 @@ var ArmorerManager = (function () {
                 direction: 'front'
             };
             this.items[item_rec.position] = item_rec;
-
-            var rect = $('#top_' + item_rec.position);
-            console.log(rect);
-            rect.data('pos', item_rec.position);
-
-            rect.draggable({
-                helper: 'clone',
-                opacity: 0.8,
-                revert: true,
-                revertDuration: 0,
-                zIndex: 1,
-                appendTo: '#map',
-                start: function(event, ui) {
-                    console.log('11111111111');
-                }
-            });
-
-//            rect.droppable({
-//                greedy: true,
-//                drop: function(event, ui) {
-//                    console.log('SVG DROPABLE');
-//                    var dragPos = ui.draggable.data('pos');
-//                    var dropPos = $(event.target).data('pos');
-//                    armorerManager.changeItem(dragPos, dropPos);
-//                }
-//            });
+            $('#top_' + item_rec.position).data('pos', item_rec.position);
+            $('#side_' + item_rec.position).data('pos', item_rec.position);
         }
 
-
+        // Повесить дропабле на все слоты
+        $('.armorer-slot').droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                var dragPos = ui.draggable.data('pos');
+                var dropPos = $(event.target).data('pos');
+                locationManager.armorer.changeItem(dragPos, dropPos);
+            }
+        });
 
         // Отрисовать верстку
         for (var key in this.items)
@@ -264,7 +247,30 @@ var ArmorerManager = (function () {
         //console.log('ArmorerManager.prototype.reDrawItem');
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
-            console.log(position, $('#top_' + position).data('pos'));
+            var top_slot = $('#top_' + position);
+            var side_slot = $('#side_' + position);
+
+            // Очистить слоты
+            top_slot.empty();
+            side_slot.empty();
+
+            // создать вёрстку для отрисовки
+            var item = this.items[position];
+            if (item.example) {
+                var itemDiv = $('<div class="armorer-car-slot-picture"></div>');
+                itemDiv.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+                itemDiv.data('pos', position);
+                itemDiv.draggable({
+                    helper: 'clone',
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+                top_slot.append(itemDiv);
+                side_slot.append(itemDiv.clone());
+            }
         }
         else {
             // Позиция в инвентаре
@@ -288,7 +294,7 @@ var ArmorerManager = (function () {
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#map'
+                    appendTo: '#activeTownDiv'
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -307,7 +313,5 @@ var ArmorerManager = (function () {
     return ArmorerManager;
 })();
 
+
 var locationManager = new LocationManager();
-
-
-

@@ -622,7 +622,7 @@ var ClientManager = (function () {
         $.ajax({
             url: "http://" + location.host + '/api/location',
             data:  { location_id: event.location.uid },
-            success: function(data){
+            success: function(data) {
                 console.log('ClientManager.prototype.EnterToLocation Answer');
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
