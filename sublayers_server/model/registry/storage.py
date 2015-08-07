@@ -3,11 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-from tree import Node
+from sublayers_server.model.registry.tree import Node
 
 from collections import deque
-#import shelve
 from uuid import uuid4 as uid_func
+import shelve
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
@@ -109,7 +109,7 @@ class AbstractStorage(object):
         raise WrongStorageError("Can't resolve storage {}".format(storage))
 
     def __getitem__(self, item):
-        if isinstance(item, str):
+        if isinstance(item, basestring):
             proto, storage, path, params = self.parse_uri(item)
         else:
             proto, storage, path = (URI_PROTOCOL, None, list(item))
@@ -142,6 +142,9 @@ class AbstractStorage(object):
     def get_path_tuple(self, node):
         raise Exception('Unimplemented abstract method')
 
+    def save_node(self, node):
+        raise Exception('Unimplemented abstract method')
+
 
 class Dispatcher(AbstractStorage):
     def __init__(self, storage_list=None, **kw):
@@ -168,15 +171,32 @@ class Dispatcher(AbstractStorage):
 
         return storage_obj.get_local(path)
 
+    def save_node(self, node):
+        raise Exception('Method is not supported by this storage type')
+
 
 class Collection(AbstractStorage):
-    def __init__(self, path, **kw):
-        super(Collection, self).__init__(**kw)
+    def __init__(self, path, filename=None, **kw):
+        super(Collection, self).__init__(dispatcher=Node.DISPATCHER, **kw)
         self.path = path
-        self._raw_storage = {}  # shelve.open(path)  # todo: make persistent
+        self.filename = filename or self.name
+
+        if self.filename is None:
+            raise WrongStorageError('Storage name or filename is not specified')
+
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)  # todo: exceptions
+
+        if not os.path.isdir(self.path):
+            raise WrongStorageError('Wrong path to storage: {}'.format(self.path))
+
+        self._raw_storage = shelve.open(os.path.join(self.path, self.filename))  # todo: make persistent
 
     def make_key(self, path):
-        return path if isinstance(path, basestring) else ('/' + '/'.join(path))
+        key = path if isinstance(path, basestring) else ('/' + '/'.join(path))
+        if isinstance(key, unicode):
+            key = key.encode('utf-8')
+        return key
 
     def close(self):
         if hasattr(self._raw_storage, 'close'):
@@ -189,23 +209,39 @@ class Collection(AbstractStorage):
             path = path[1:]
 
         key = self.make_key(path)
+        print '------->', repr(key)
         try:
-            return self._raw_storage[key]
+            return self._deserialize(self._raw_storage[key])
         except KeyError:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
 
+    def _deserialize(self, data):
+        # todo: Перейти на MongoDB
+        return data
+
+    def _serialize(self, node):
+        return node
+
     def put(self, node):
         key = self.make_key(node.path)
-        self._raw_storage[key] = node
+        self._raw_storage[key] = self._serialize(node)
 
     def get_path_tuple(self, node):
         return [node.name]
+
+    def save_node(self, node):
+        self.put(node)
+        self.sync()
+
+    def sync(self):
+        if hasattr(self._raw_storage, 'sync'):
+            self._raw_storage.sync()
 
 
 # noinspection PyProtectedMember
 class Registry(AbstractStorage):
     def __init__(self, path=None, **kw):
-        super(Registry, self).__init__(**kw)
+        super(Registry, self).__init__(dispatcher=Node.DISPATCHER, **kw)
         self.path = path
         self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
 
@@ -298,11 +334,8 @@ class Registry(AbstractStorage):
         path.reverse()
         return path
 
+    def save_node(self, node):
+        raise Exception('Method is not supported by this storage type')  # todo: Use other exception class
 
-class Dumper(yaml.Dumper):
-    def generate_anchor(self, node):
-        log.debug('gen_anchor: node=%r', node)
-        if isinstance(node, Node):
-            return node.name
-        else:
-            return super(Dumper, self).generate_anchor(node)
+
+Node.DISPATCHER = Dispatcher()  # todo: remove singleton (!)

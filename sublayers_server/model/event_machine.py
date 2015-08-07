@@ -13,7 +13,7 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
 from sublayers_server.model.events import LoadWorldEvent
-from sublayers_server.model.registry.storage import Registry, Collection, Dispatcher
+from sublayers_server.model.registry.storage import Registry, Collection
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 
 import os
@@ -24,7 +24,9 @@ from pprint import pprint as pp
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 
+
 MAX_SERVER_SLEEP_TIME = 0.1
+
 
 class Server(object):
 
@@ -44,14 +46,8 @@ class Server(object):
         self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
-        self.reg_dispatcher = Dispatcher()
-        reg_path = os.path.join(options.world_path, 'registry')
-        self.reg = Registry(
-            dispatcher=self.reg_dispatcher,
-            name='registry',
-            path=reg_path,
-        )
-        self.reg_agents = Collection(dispatcher=self.reg_dispatcher, name='agents', path=None)  # todo: set path
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, 'registry'))
+        self.reg_agents = Collection(name='agents', path=os.path.join(options.world_path, 'state'))
 
         self.effects = dict()
         get_effects(server=self)
@@ -89,7 +85,6 @@ class Server(object):
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
-        
     def post_message(self, message):
         """
         @param sublayers_server.model.messages.Message message: message to sent
@@ -228,30 +223,28 @@ class LocalServer(Server):
 
 def main():
     pass
-    '''
-    log.info('==== Start logging ' + '=' * 50)
-
-    from sublayers_server.model.units import Station, Bot
-    from sublayers_server.model.agents import User
-    from sublayers_server.model.vectors import Point
-
-    def inspect(event=None):
-        events.Event(time=srv.get_time() + 1, callback_before=inspect).post()
-        if event:
-            log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
-
-    srv = LocalServer()
-    inspect()
-    user = User(login='user1', server=srv)
-    station = Station(server=srv, position=Point(0, 0))
-    user.subscribe_to__Observer(station)
-
-    bot = Bot(server=srv, position=Point(-600, -10))
-    user.subscribe_to__Observer(bot)
-
-    bot.set_motion(position=Point(800, 10))
-
-    pp(srv.timeline, width=1)
-
-    return locals()
-    '''
+    # log.info('==== Start logging ' + '=' * 50)
+    #
+    # from sublayers_server.model.units import Station, Bot
+    # from sublayers_server.model.agents import User
+    # from sublayers_server.model.vectors import Point
+    #
+    # def inspect(event=None):
+    #     events.Event(time=srv.get_time() + 1, callback_before=inspect).post()
+    #     if event:
+    #         log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
+    #
+    # srv = LocalServer()
+    # inspect()
+    # user = User(login='user1', server=srv)
+    # station = Station(server=srv, position=Point(0, 0))
+    # user.subscribe_to__Observer(station)
+    #
+    # bot = Bot(server=srv, position=Point(-600, -10))
+    # user.subscribe_to__Observer(bot)
+    #
+    # bot.set_motion(position=Point(800, 10))
+    #
+    # pp(srv.timeline, width=1)
+    #
+    # return locals()
