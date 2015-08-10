@@ -79,18 +79,51 @@ class TagsAttribute(Attribute):
             self._obj = obj
             self._cls = cls
 
-        def as_set(self):
+        @property
+        def inherited(self):
             # todo: cache
-            name = self._attr.name
-            obj_values = self._obj.values
             obj_parent = self._obj.parent
-            tagset = getattr(obj_parent, name, set()) if obj_parent else set()
-            v = obj_values.get(name, set())
-            tagset.update(v)
-            return tagset
+            return getattr(obj_parent, self._attr.name, set()) if obj_parent else set()
 
-        #__and__
-        #__contains__
+        @property
+        def local(self):
+            """
+            :return: set
+            """
+            return self._obj.values.get(self._attr.name, set())
+
+        @local.setter
+        def local(self, value):
+            """
+            @param set value: new value
+            """
+            self._obj.values[self._attr.name] = value - self.inherited
+
+        @property
+        def value(self):
+            return self.local + self.inherited
+
+        def add(self, tag):
+            local = self.local
+            inherited = self.inherited
+            if tag not in local and tag not in inherited:
+                self.local |= {tag}
+
+        def clear(self):
+            self.local = set()
+
+        def remove(self, tag):
+            self.local -= {tag}
+
+        def update(self, tags):
+            self.local |= tags
+
+        def __and__(self, other):
+            return self.value & other
+
+        def __contains__(self, tag):
+            return tag in self.value
+            
         #__eq__
         #__iand__?
         #__ior__
@@ -107,11 +140,6 @@ class TagsAttribute(Attribute):
         #__repr__
         #__sub__
         #__xor__
-        #add
-        #clear
-        #remove
-        #update
-        #
 
     def __get__(self, obj, cls):
         return self.TagsHolder(attr=self, obj=obj, cls=cls)
