@@ -252,7 +252,7 @@ var ClientManager = (function () {
             data.owner_id,
             data.max_size
         );
-        for (var i=0; i < data.items.length; i++)
+        for (var i = 0; i < data.items.length; i++)
             inv.addItem(this._getItem(data.items[i]));
         return inv;
     };
@@ -615,18 +615,22 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.EnterToLocation', event);
+        console.log('ClientManager.prototype.EnterToLocation', event);
         var location_uid = event.location.uid;
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
             url: "http://" + location.host + '/api/location',
             data:  { location_id: event.location.uid },
-            success: function(data){
+            success: function(data) {
+                console.log('ClientManager.prototype.EnterToLocation Answer');
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 chat.showChatInTown();
-                locationVisitorsManager.update_visitors();
+                locationManager.visitorsManager.update_visitors();
+                windowTemplateManager.closeAllWindows();
+                locationManager.nucoil.update();
+                locationManager.armorer.update();
             }
         });
     };
@@ -636,7 +640,7 @@ var ClientManager = (function () {
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
-        locationVisitorsManager.clear_visitors();
+        locationManager.visitorsManager.clear_visitors();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -662,9 +666,9 @@ var ClientManager = (function () {
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
         //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
         if (event.action)
-            locationVisitorsManager.add_visitor(event.visitor);
+            locationManager.visitorsManager.add_visitor(event.visitor);
         else
-            locationVisitorsManager.del_visitor(event.visitor);
+            locationManager.visitorsManager.del_visitor(event.visitor);
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
@@ -674,6 +678,21 @@ var ClientManager = (function () {
 
     ClientManager.prototype.InventoryHideMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryHideMessage', event);
+        inventoryList.delInventory(event.inventory_owner_id);
+    };
+
+    ClientManager.prototype.ExamplesShowMessage = function (event) {
+        console.log('ClientManager.prototype.ExampleInventoryMessage', event);
+        var inv = this._getInventory(event.inventory);
+        if (inventoryList.getInventory(inv.owner_id))
+            inventoryList.delInventory(inv.owner_id);
+        inventoryList.addInventory(inv);
+        locationManager.nucoil.update();
+        locationManager.armorer.update(event.armorer_slots);
+    };
+
+    ClientManager.prototype.ExamplesHideMessage = function (event) {
+        //console.log('ClientManager.prototype.ExampleInventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
@@ -702,11 +721,6 @@ var ClientManager = (function () {
             inventory.delItem(event.position);
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
-    };
-
-    ClientManager.prototype.BalanceClsInfo = function (event) {
-        //console.log('ClientManager.prototype.SetBalanceCls', event);
-        item_balance_cls_manager.add_balance_cls(event.balance_cls)
     };
 
     ClientManager.prototype.GasStationUpdate = function (event) {
@@ -1052,12 +1066,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivateItem = function (item) {
-        //console.log('ClientManager.prototype.sendActivateItem', item);
+        // console.log('ClientManager.prototype.sendActivateItem', item);
         var mes = {
             call: "activate_item",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                balance_cls_name: item.balance_cls,
+                target_id: item.inventory.owner_id,
                 owner_id: item.inventory.owner_id,
                 position: item.position
             }
@@ -1071,6 +1085,7 @@ var ClientManager = (function () {
             call: "fuel_station_active",
             rpc_call_id: rpcCallList.getID(),
             params: {
+                tank_list: locationManager.nucoil.tank_list,
                 fuel: fuel
             }
         };

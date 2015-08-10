@@ -8,58 +8,45 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.storage import Registry, Collection, Dispatcher
-from sublayers_server.model.vectors import Point
+from sublayers_server.model.registry import storage
 
 
 if __name__ == '__main__':
+    import random
+    from sublayers_server.model.vectors import Point
     from pprint import pprint as pp
     import yaml
-    storages = Dispatcher()
 
-    reg = Registry(dispatcher=storages, name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
-    c = Collection(dispatcher=storages, name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    reg = storage.Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    # jeep = reg['/mobiles/cars/jeep']
+    #
+    # mj0 = jeep.instantiate(storage=c)
+    # mj0.slot_CC = None
+    # mj0.slot_FC.ammo_per_second = 10
+    #
+    # print 'mj0.__getstate__()->'
+    # pp(mj0.__getstate__())
+    # car_id = mj0.name
+    #
+    # mj0.save()
+    #
+    # print
+    # print 'mj0 dump:'
+    # s = yaml.dump(mj0, default_flow_style=False, allow_unicode=True)
+    # print s
+    #
+    # mj1 = yaml.load(s)
+    # print 'mj1.__getstate__()->'
+    # pp(mj1.__getstate__())
+    #
+    # c.close()
+    # cc = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    # mj3 = cc['/' + car_id]
+    # print 'mj3.__getstate__()->'
+    # pp(mj3.__getstate__())
 
-    jeep = reg['/mobiles/cars/jeep']
-    my_jeep = jeep.instantiate(storage=c)
+    a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    user = reg['/agents/user/' + random.choice(['pirate', 'raider'])].instantiate(storage=a)
 
-    zis5 = reg['/items/slot_item/weapons/cannons/wc_zis5']
-    my_zis5 = zis5.instantiate(storage=c)
-
-    print jeep, jeep.slot_CC
-    print my_jeep, my_jeep.slot_CC
-    my_jeep.slot_BR = my_zis5
-
-    print 'Slots of {}:'.format(my_jeep)
-    for name, value in my_jeep.iter_slots():
-        print name, value, value.parent if value else ''
-
-    print '\n' + '=' * 30
-
-    class C(object):
-        x = 3
-        def __init__(self, y):
-            self.y = y
-            self.x = y * 2
-        def __getinitargs__(self):
-            print 'getinitagrs'
-            return self.y
-
-        # def __getstate__(self):
-        #     print 'getstate'
-        #     return dict(x=5, y=7)
-        #
-        # def __setstate__(self, state):
-        #     print 'setstate(%s), old=%s' % (state, self.__dict__)
-
-    c = C(1)
-    c.z = 11
-
-    s = yaml.dump(c)
-    print s
-
-    cc = yaml.load(s)
-    print cc, cc.x, cc.y,
-
-
-
+    print user.resume()

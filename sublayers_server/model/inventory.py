@@ -32,6 +32,11 @@ class Inventory(object):
             self.visitors.append(agent)
         self.send_inventory(agent=agent, time=time)
 
+    def del_all_visitors(self, time):
+        visitors = self.visitors[:]
+        for visitor in visitors:
+            self.del_visitor(agent=visitor, time=time)
+
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)

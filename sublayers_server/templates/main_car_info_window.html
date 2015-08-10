@@ -817,9 +817,28 @@
     // Обработка нажатия на крестик (закрытие окна)
     $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
         // Тут именно так, потому как мы отписываемся от инвентаря на сервере
-        clientManager.sendHideInventory(user.userCar.ID);
+        if (user.userCar)
+            clientManager.sendHideInventory(user.userCar.ID);
     });
 
     // Запрашиваем инвентарь
     inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
+
+    /*
+    var activateBtn = $('.mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-body-left-activate');
+    activateBtn.data('inv_id', -1);
+    activateBtn.data('item_pos', -1);
+    activateBtn.on('click', function(event) {
+        console.log('activateBtn');
+        var inv_id = $(event.target).data('inv_id');
+        var item_pos = $(event.target).data('item_pos');
+        if ((inv_id < 0) || (item_pos < 0)) return;
+        var inventory = inventoryList.getInventory(inv_id);
+        if (!inventory) return;
+        var item = inventory.getItem(item_pos);
+        if (!item) return;
+        item.activate();
+    })
+    */
+
 </script>

@@ -295,7 +295,8 @@
         height: 235px;
         margin-top: 10px;
         float: left;
-        overflow-y: scroll;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .mainMenuNucoilWindow-body-fuel-right-item {
@@ -305,14 +306,20 @@
         margin-left: 5px;
         margin-top: 5px;
         cursor: pointer;
+        opacity: 0.6;
+    }
+    
+    .mainMenuNucoilWindow-body-fuel-right-item:hover {
+        opacity: 1.0;
     }
 
     .mainMenuNucoilWindow-body-fuel-right-item-name-empty {
         font: 12pt Nouveau_IBM;
         color: #30fc00;
+        pointer-events: none;
     }
 
-    .mainMenuNucoilWindow-body-fuel-right-item-picture-empty {
+    .mainMenuNucoilWindow-body-fuel-right-item-picture-empty-wrap {
         border: solid 1px #00f150;
         margin: 3px;
         width: 70px;
@@ -322,6 +329,15 @@
         font-size: 10pt;
         text-align: center;
         float: left;
+        pointer-events: none;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-right-item-picture-empty {
+        position: relative;
+        height: 33px;
+        width: 62px;
+        margin: 20px auto 0px auto;
+        pointer-events: none;
     }
 
     .mainMenuNucoilWindow-body-fuel-right-line {
@@ -347,9 +363,11 @@
     }
 
     .mainMenuNucoilWindow-body-fuel-down-amount {
-        margin: 10px 0px 0px 150px;
+        margin: 10px 0px 0px 90px;
         color: #30fc00;
         float: left;
+        text-align: right;
+        width: 100px;
     }
 
     .mainMenuNucoilWindow-body-fuel-down-button {
@@ -817,39 +835,12 @@
             </div>
             <div class="mainMenuNucoilWindow-body-fuel-center-down">
                 <div class="mainMenuNucoilWindow-body-fuel-center-down-cans-label">Канистры:</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-down-cans-amount">25 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-down-all-label">Все:</div>
-                <div class="mainMenuNucoilWindow-body-fuel-center-down-all-check">[&radic;]</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-down-cans-amount">0 л.</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-down-all-label" style="display: none">Все:</div>
+                <div class="mainMenuNucoilWindow-body-fuel-center-down-all-check" style="display: none">[&radic;]</div>
             </div>
         </div>
-        <div class="mainMenuNucoilWindow-body-fuel-right">
-            <div class="mainMenuNucoilWindow-body-fuel-right-item">
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-name-empty">[&radic;] 10 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-picture-empty">Картинка</div>
-            </div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-item">
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-name-empty">[ ] 10 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-picture-empty">Картинка</div>
-            </div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-line"></div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-item">
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-name-empty">[ ] 10 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-picture-empty">Картинка</div>
-            </div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-item">
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-name-empty">[&radic;] 10 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-picture-empty">Картинка</div>
-            </div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-line"></div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-item">
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-name-empty">[ ] 10 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-picture-empty">Картинка</div>
-            </div>
-            <div class="mainMenuNucoilWindow-body-fuel-right-item">
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-name-empty">[&radic;] 10 л.</div>
-                <div class="mainMenuNucoilWindow-body-fuel-right-item-picture-empty">Картинка</div>
-            </div>
-        </div>
+        <div class="mainMenuNucoilWindow-body-fuel-right"></div>
         <div class="mainMenuNucoilWindow-body-fuel-down">
             <div class="mainMenuNucoilWindow-body-fuel-down-label">Итого:</div>
             <div class="mainMenuNucoilWindow-body-fuel-down-amount"></div>
@@ -999,6 +990,10 @@
         setupFuelTotal();
     }
 
+    function setupTankFuelValue() {
+        $('.mainMenuNucoilWindow-body-fuel-center-down-cans-amount').text(locationManager.nucoil.tank_summ + ' л.');
+    }
+
     $('.mainMenuNucoilWindow-body-fuel-center-count-amount-change-up').on('mousedown', function(event) {
         currentFuelValue++;
         currentFuelValue = (currentFuelValue >= maxAvailableFuel) ? maxAvailableFuel : currentFuelValue;
@@ -1019,12 +1014,12 @@
 
     // Клик кнопки "заправить"
     $('.mainMenuNucoilWindow-body-fuel-down-button').on('click', function(event){
-        clientManager.sendFuelStationActive(totalFuelValue);
+        clientManager.sendFuelStationActive(currentFuelValue);
     });
 
     // Пересчитать "итого"
     function setupFuelTotal() {
-        totalFuelValue = currentFuelValue;
+        totalFuelValue = currentFuelValue + locationManager.nucoil.tank_summ;
         $('.mainMenuNucoilWindow-body-fuel-down-amount').text(totalFuelValue + ' л.');
     }
 

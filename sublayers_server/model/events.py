@@ -425,12 +425,12 @@ class ItemActionInventoryEvent(Event):
 
 
 class ItemActivationEvent(Event):
-    def __init__(self, agent, owner_id, position, balance_cls_name, **kw):
+    def __init__(self, agent, owner_id, position, target_id, **kw):
         super(ItemActivationEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.owner_id = owner_id
         self.position = position
-        self.balance_cls_name = balance_cls_name
+        self.target_id = target_id
 
     def on_perform(self):
         super(ItemActivationEvent, self).on_perform()
@@ -439,17 +439,8 @@ class ItemActivationEvent(Event):
         obj = self.server.objects.get(self.owner_id)
         inventory = obj.inventory
         item = inventory.get_item(position=self.position)
-        if (item is None) or (item.balance_cls != self.balance_cls_name):  # todo: item.balance_cls.name
+        if item is None:
             return
-
-        # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
-        if self.agent.api.car is not obj:
-            return
-
-        if item.balance_cls == 'Tank10':
-            item.set_inventory(time=self.time, inventory=None)
-            obj.set_fuel(df=10, time=self.time)
-
-        if item.balance_cls == 'Tank20':
-            item.set_inventory(time=self.time, inventory=None)
-            obj.set_fuel(df=20, time=self.time)
+        event_cls = item.example.activate()
+        if event_cls:
+            event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()

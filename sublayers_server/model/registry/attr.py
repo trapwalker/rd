@@ -37,7 +37,7 @@ class Attribute(object):
         return s
 
     def from_raw(self, raw, obj):
-        return raw
+        return self.from_str(raw, obj) if isinstance(raw, basestring) else raw
 
     def to_raw(self, value, obj):
         return value
@@ -59,7 +59,48 @@ class Attribute(object):
         # todo: global attribute registration
 
 
+class TextAttribute(Attribute):
+    pass
+
+
+class NumericAttribute(Attribute):
+    # todo: validation
+    pass
+
+
+class IntAttribute(NumericAttribute):
+    # todo: validation
+    def from_str(self, s, obj):
+        # todo: validation
+        try:
+            v = int(s)
+        except:
+            if s:
+                raise ValueError('Wrong value of {}.{}'.format(obj, self.name))
+            else:
+                v = None
+        return v
+
+
+class FloatAttribute(NumericAttribute):
+    def from_str(self, s, obj):
+        # todo: validation
+        try:
+            v = float(s)
+        except:
+            if s:
+                raise ValueError('Wrong value of {}.{}'.format(obj, self.name))
+            else:
+                v = None
+        return v
+
+
 # todo: reserved attr names checking
+
+
+class InventoryAttribute(Attribute):
+    pass
+
 
 class Parameter(Attribute):
     pass
@@ -70,10 +111,10 @@ class Position(Attribute):
         return None if v is None else v.as_tuple()
 
     def from_raw(self, data, obj):
-        return Point(*data)
+        return None if data is None else Point(*data)
 
 
-class DocAttribute(Attribute):
+class DocAttribute(TextAttribute):
     def __init__(self):
         super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
 
@@ -81,31 +122,38 @@ class DocAttribute(Attribute):
         return obj._get_attr_value(self.name, self.default or self.__doc__)
 
 
-class RegistryLink(Attribute):
+class RegistryLink(TextAttribute):
     def __init__(self, need_to_instantiate=True, **kw):
         super(RegistryLink, self).__init__(**kw)
         self.need_to_instantiate = need_to_instantiate
 
     def from_raw(self, raw, obj):
-        return obj.storage.get(raw) if raw else None
+        if raw is None:
+            return
+
+        return obj.DISPATCHER.get(raw) if isinstance(raw, basestring) else raw
 
     def to_raw(self, value, obj):
-        return None if value is None else value.uri
+        if value is None or isinstance(value, basestring):
+            return value
+
+        return value.uri or value
 
     def __get__(self, obj, cls):
         if obj is None:
             return self
+
         if self.name in obj._cache:
             value = obj._cache[self.name]
         else:
-            link = self.get_raw(obj)
-            value = self.from_raw(link, obj)
+            value = super(RegistryLink, self).__get__(obj, cls)
             obj._cache[self.name] = value
 
         return value
 
     def __set__(self, obj, value):
-        obj._cache[self.name] = value
+        if not isinstance(value, basestring):
+            obj._cache[self.name] = value
         super(RegistryLink, self).__set__(obj, value)
 
 

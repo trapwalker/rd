@@ -16,7 +16,7 @@
    id="svg4136"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="sector.svg">
+   sodipodi:docname="armorer_sectors.svg">
   <defs
      id="defs4138">
     <linearGradient
@@ -237,10 +237,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="109.50258"
+     inkscape:cx="50.981393"
      inkscape:cy="134.79268"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:showpageshadow="false"
@@ -258,7 +258,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -296,8 +296,8 @@
        inkscape:groupmode="layer"
        id="sector_front"
        inkscape:label="sector_front"
-       style="opacity:0.3"
-       transform="translate(0.99997705,-0.68300975)">
+       transform="translate(0.99997705,-0.68300975)"
+       class="car_sector">
       <path
          inkscape:connector-curvature="0"
          id="sector_path_front"
@@ -314,7 +314,7 @@
        inkscape:groupmode="layer"
        id="sector_back"
        inkscape:label="sector_back"
-       style="opacity:0.3">
+       class="car_sector">
       <path
          inkscape:connector-curvature="0"
          id="sector_path_back"
@@ -331,7 +331,7 @@
        inkscape:groupmode="layer"
        id="sector_right"
        inkscape:label="sector_right"
-       style="opacity:0.3">
+       class="car_sector">
       <path
          inkscape:connector-curvature="0"
          id="sector_path_right"
@@ -348,7 +348,7 @@
        inkscape:groupmode="layer"
        id="sector_left"
        inkscape:label="sector_left"
-       style="opacity:0.3">
+       class="car_sector">
       <path
          inkscape:connector-curvature="0"
          id="sector_path_left"

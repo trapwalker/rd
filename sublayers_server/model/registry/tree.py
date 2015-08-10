@@ -3,11 +3,14 @@
 import logging
 log = logging.getLogger(__name__)
 
-from attr import Attribute, DocAttribute, RegistryLink
+from sublayers_server.model.registry.attr import Attribute, DocAttribute, RegistryLink, InventoryAttribute
 
-from collections import OrderedDict
 import yaml
-import yaml.scanner  # todo: extract serialization layer
+
+
+class StorageUnspecified(Exception):
+    # todo: refactor declaration of exception
+    pass
 
 
 class AttrUpdaterMeta(type):
@@ -45,8 +48,10 @@ class Persistent(object):
 
 
 class Node(Persistent):
+
     # todo: override attributes in subclasses
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
+    parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
 
@@ -62,13 +67,15 @@ class Node(Persistent):
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name
-        self.parent = parent  # todo: parent must be an Attribute (?)
         self.owner = owner
-        self.values = values or {}
-        self.values.update(kw)
+        self.values = values and values.copy() or {}
         self.storage = storage
+        self.parent = parent
         if storage:
             storage.put(self)
+
+        for k, v in kw.items():
+            setattr(self, k, v)
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -87,32 +94,58 @@ class Node(Persistent):
                 getter = lambda: attr.__get__(self, cls)
                 yield attr, getter
 
-    def instantiate(self, storage, name=None, **kw):
+    def instantiate(self, storage=None, name=None, **kw):
         # todo: test to abstract sign
         # todo: clear abstract sign
-        name = name or storage.gen_uid().get_hex()
+        if storage:
+            name = name or storage.gen_uid().get_hex()
         inst = self.__class__(name=name, storage=storage, parent=self, **kw)
         log.debug('Maked new instance %s', inst.uri)
 
-        for attr, getter in self.iter_attrs(classes=RegistryLink):
-            if attr.need_to_instantiate:
-                link = attr.get_raw(self)
-                # todo: Отловить и обработать исключения
-                if link:
-                    uri = dict(zip('proto storage path params'.split(), self.storage.parse_uri(link)))
-                    v = getter()
-                    if v and v.can_instantiate:
-                        new_v = v.instantiate(storage=storage, owner=self, **uri['params'])
-                        setattr(inst, attr.name, new_v)
-                        # todo: тест на негомогенных владельцев
+        for attr, getter in self.iter_attrs():
+            if isinstance(attr, RegistryLink):
+                if attr.need_to_instantiate:
+                    link = attr.get_raw(self)
+                    # todo: Отловить и обработать исключения
+                    if link:
+                        value = getter()
+                        uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))
+                        if value and value.can_instantiate:
+                            new_value = value.instantiate(owner=inst, **uri['params'])
+                            setattr(inst, attr.name, new_value)
+                            # todo: тест на негомогенных владельцев
+            # elif isinstance(attr, InventoryAttribute):
+            #     from sublayers_server.model.registry.classes import Inventory  # todo: refactor
+            #     value = getter()
+            #     new_value = value.instantiate() if value else Inventory()
+            #     setattr(inst, attr.name, new_value)
 
         return inst
 
     def __getstate__(self):
-        do_not_store = ('storage', '_subnodes',)
-        log.debug('%s.__getstate__', self)
-        d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
+        #do_not_store = ('storage', '_subnodes', '_cache', 'owner',)
+        #log.debug('%s.__getstate__', self)
+        #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
+        values = self.values
+        d = dict(name=self.name)
+        for attr, getter in self.iter_attrs():
+            if attr.name in values:  # todo: refactor it
+                v = getter()
+                if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
+                    v = v.uri
+                d[attr.name] = v
         return d
+
+    def __setstate__(self, state):
+        self._cache = {}
+        self._subnodes = {}  # todo: проверить при переподчинении нода
+        self.name = None
+        self.owner = None
+        self.values = {}
+        self.storage = None
+
+        for k, v in state.items():
+            setattr(self, k, v)
 
     @property
     def path(self):
@@ -132,6 +165,12 @@ class Node(Persistent):
         self.name = name
         # todo: tags apply
 
+    def save(self, storage=None):
+        storage = storage or self.storage
+        if storage is None:
+            raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
+        storage.save_node(node=self)
+
     def __iter__(self):
         return iter(self._subnodes.values())
 
@@ -140,7 +179,29 @@ class Node(Persistent):
 
     def __repr__(self):
         # todo: make correct representation
-        return '<{self.uri}>'.format(self=self)
+        return '<{self.__class__.__name__}@{details}>'.format(
+            self=self, details=self.uri if self.storage else id(self))
+
+    def dump(self):
+        return yaml.dump(self, default_flow_style=False, allow_unicode=True)
+
+    def resume_dict(self):
+        d = dict(
+            __cls__=self.__class__.__name__,
+            name=self.name,
+        )
+        for attr, getter in self.iter_attrs():
+            v = getter()
+            if isinstance(v, Node):
+                if v.storage and v.storage.name == 'registry':
+                    v = v.uri
+                else:
+                    v = v.resume_dict()
+            d[attr.name] = v
+        return d
+
+    def resume(self):
+        return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
 
     def _get_attr_value(self, name, default):
         if name in self.values:
@@ -158,15 +219,6 @@ class Node(Persistent):
 
     def _has_attr_value(self, name):
         return name in self.values
-
-
-class Dumper(yaml.Dumper):
-    def generate_anchor(self, node):
-        log.debug('gen_anchor: node=%r', node)
-        if isinstance(node, Node):
-            return node.name
-        else:
-            return super(Dumper, self).generate_anchor(node)
 
 
 if __name__ == '__main__':
