@@ -14,14 +14,14 @@ REV1w=`hg identify sublayers_server/world | awk '{print $1}'`
 echo ---- `pwd` [$REV1] [$REV1w]
 
 hg pull
-hg update @BRANCHE
+hg update $BRANCHE
 
 cd sublayers_server/world
 
 echo ---- `pwd`
 
 hg pull
-hg update @BRANCHE
+hg update $BRANCHE
 
 cd ../..
 
