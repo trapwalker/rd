@@ -4,8 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.attr import (
-    Attribute, DocAttribute, RegistryLink, TagsAttribute,
-    InventoryAttribute,)
+    Attribute, DocAttribute, RegistryLink, TagsAttribute, InventoryAttribute,)
 
 import yaml
 
@@ -212,6 +211,7 @@ class Node(Persistent):
         return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
 
     def _get_attr_value(self, name, default):
+        # todo: move method to the Attribute class
         if name in self.values:
             return self.values[name]
         if self.parent:

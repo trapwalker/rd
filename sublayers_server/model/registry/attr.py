@@ -67,29 +67,81 @@ class Attribute(object):
         # todo: global attribute registration
 
 
+class TagsAttribute(Attribute):
+    class TagsHolder(object):
+        def __init__(self, attr, obj, cls):
+            """
+            @param Attribute attr: Attribute descriptor
+            @param sublayers_server.model.registry.tree.Node obj: Node
+            @param type cls: Class of node
+            """
+            self._attr = attr
+            self._obj = obj
+            self._cls = cls
+
+        def as_set(self):
+            # todo: cache
+            name = self._attr.name
+            obj_values = self._obj.values
+            obj_parent = self._obj.parent
+            tagset = getattr(obj_parent, name, set()) if obj_parent else set()
+            v = obj_values.get(name, set())
+            tagset.update(v)
+            return tagset
+
+        #__and__
+        #__contains__
+        #__eq__
+        #__iand__?
+        #__ior__
+        #__ixor__
+        #__isub__
+        #__iter__
+        #__len__
+        #__or__
+        #__ror__
+        #__rsub__
+        #__rxor__
+        #__rand__
+        #__reduce__
+        #__repr__
+        #__sub__
+        #__xor__
+        #add
+        #clear
+        #remove
+        #update
+        #
+
+    def __get__(self, obj, cls):
+        return self.TagsHolder(attr=self, obj=obj, cls=cls)
+
+
+
+
 class TextAttribute(Attribute):
     pass
 
 
-class TagsAttribute(Attribute):
-    # todo: validation
-    def from_str(self, s, obj):
-        if s is None:
-            return set()
-
-        s = s.strip()
-        if s and s[0] == '[' and s[-1] == ']':
-            s = s[1:-1]
-            tags = [tag.strip() for tag in s.split(',')]
-        else:
-            tags = s.split()
-        return set(tags)
-
-    def from_raw(self, raw, obj):
-        return self.from_str(raw, obj) if raw is None or isinstance(raw, basestring) else raw
-
-    # def to_raw(self, value, obj):
-    #     return list(value)
+# class TagsAttribute(Attribute):
+#     # todo: validation
+#     def from_str(self, s, obj):
+#         if s is None:
+#             return set()
+#
+#         s = s.strip()
+#         if s and s[0] == '[' and s[-1] == ']':
+#             s = s[1:-1]
+#             tags = [tag.strip() for tag in s.split(',')]
+#         else:
+#             tags = s.split()
+#         return set(tags)
+#
+#     def from_raw(self, raw, obj):
+#         return self.from_str(raw, obj) if raw is None or isinstance(raw, basestring) else raw
+#
+#     # def to_raw(self, value, obj):
+#     #     return list(value)
 
 
 class NumericAttribute(Attribute):

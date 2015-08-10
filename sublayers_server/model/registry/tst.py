@@ -50,3 +50,5 @@ if __name__ == '__main__':
     user = reg['/agents/user/' + random.choice(['pirate', 'raider'])].instantiate(storage=a)
 
     print user.resume()
+
+    car = user.car
