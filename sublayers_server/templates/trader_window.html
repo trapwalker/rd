@@ -1,11 +1,14 @@
-﻿{% set window_caption = 'NUKE:\Персонаж>' %}
-
 <style xmlns="http://www.w3.org/1999/html">
+    #townTraderPageWrap {
+        position: absolute;
+        top: 155px;
+        left: 625px;
+    }
+
     .mainTraderWindow {
         position: relative;
         width: 650px;
         height: 637px;
-        background-color: rgba(0, 0, 0, 0.75);
         color: #ffffff;
         font: 11pt FreePixel;
         cursor: default;
@@ -202,7 +205,6 @@
 </style>
 
 <div class="mainTraderWindow">
-    {% include drag_close_header.html %}
     <div class="mainTraderWindow-up">
         <div class="mainTraderWindow-up-name">Бухман:</div>
         <div class="mainTraderWindow-up-picture">Йаков Бухман</div>
@@ -214,9 +216,11 @@
         </div>
     </div>
     <div class="mainTraderWindow-down">
-        <div class="mainTraderWindow-down-player-title">Ваш инвентарь:</div>
-        <div class="mainTraderWindow-down-exchange-title">Столик обмена:</div>
-        <div class="mainTraderWindow-down-trader-title">Инвентарь Бухмана:</div>
+        <div class="mainTraderWindow-down-header">
+            <div class="mainTraderWindow-down-player-title">Ваш инвентарь:</div>
+            <div class="mainTraderWindow-down-exchange-title">Столик обмена:</div>
+            <div class="mainTraderWindow-down-trader-title">Инвентарь Бухмана:</div>
+        </div>
         <div class="mainTraderWindow-down-player-body">
             <div class="mainTraderWindow-down-player-body-item">
                 <div class="mainTraderWindow-down-player-body-item-name-empty">
@@ -333,9 +337,11 @@
                 <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
             </div>
         </div>
-        <div class="mainTraderWindow-down-player-score">Ваш счет:<br/>234 140 нк.</div>
-        <div class="mainTraderWindow-down-exchange-lefttotal">Сумма:<br/>2 340 нк.</div>
-        <div class="mainTraderWindow-down-exchange-righttotal">Сумма:<br/>700 нк.</div>
-        <div class="mainTraderWindow-down-trader-score">Счет Бухмана:<br/>232 340 нк.</div>
+        <div class="mainTraderWindow-down-footer">
+            <div class="mainTraderWindow-down-player-score">Ваш счет:<br/>234 140 нк.</div>
+            <div class="mainTraderWindow-down-exchange-lefttotal">Сумма:<br/>2 340 нк.</div>
+            <div class="mainTraderWindow-down-exchange-righttotal">Сумма:<br/>700 нк.</div>
+            <div class="mainTraderWindow-down-trader-score">Счет Бухмана:<br/>232 340 нк.</div>
+        </div>
     </div>
 </div>

@@ -16,6 +16,12 @@
     </div>
     {% end %}
 
+    {% if town.example.trader is not None %}
+    <div id="townTraderPageWrap" class="townPageWrap" style="display: none">
+        {% include trader_window.html %}
+    </div>
+    {% end %}
+
 </div>
 <script>
     // Открытие зданий
@@ -27,6 +33,11 @@
     function openArmorer() {
          $('.townPageWrap').css('display', 'none');
          $('#townArmorerPageWrap').css('display', 'block');
+    }
+
+    function openTrader() {
+         $('.townPageWrap').css('display', 'none');
+         $('#townTraderPageWrap').css('display', 'block');
     }
 
     // Обработчики кнопок-зданий
@@ -64,6 +75,9 @@
             case "img_house2_on":
                 openArmorer();
                 break;
+            case "img_house4_on":
+                openTrader();
+                break;
             default:
                 console.log(event.target.id);
         }
@@ -75,6 +89,9 @@
                 break;
             case "path_h2":
                 openArmorer();
+                break;
+            case "path_h4":
+                openTrader();
                 break;
             default:
                 console.log(event.target.id);

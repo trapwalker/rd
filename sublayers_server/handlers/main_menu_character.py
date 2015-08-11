@@ -13,5 +13,4 @@ class MainMenuCharacterHandler(BaseHandler):
         if agent is None:
             log.warn('Agent not found in database')
             self.send_error(status_code=404)
-            return
-        self.render("main_menu_character_window.html", car_id=agent.api.car.uid)
+            return       

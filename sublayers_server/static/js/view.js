@@ -62,7 +62,7 @@ $(document).ready(function () {
 
     document.getElementById('divMainMenuBtnNucoil').onclick =
         function () {
-            windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
+            //windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
             returnFocusToMap();
         };
 
