@@ -130,6 +130,26 @@ var NucoilManager = (function () {
                 setupFuelTotal();
                 setupTankFuelValue();
             });
+
+            itemDiv.on('mouseenter', function(event) {
+                var target = $(event.target);
+                var pos = target.data('position');
+                var data_item = inventory.getItem(pos);
+
+                // настраиваем информационное окно
+                var inv_parent =  $(inv_show_div).parent();
+                inv_parent.find(".mainMenuNucoilWindow-body-fuel-left-picture-picture").css('background',
+                        'transparent url(' + data_item.example.inv_icon_mid + ') no-repeat 100% 100%');
+                inv_parent.find(".mainMenuNucoilWindow-body-fuel-left-name").text(data_item.example.title);
+                inv_parent.find(".mainMenuNucoilWindow-body-fuel-left-description").text(data_item.example.description);
+            });
+            itemDiv.on('mouseleave', function() {
+                // сбрасываем информационное окно
+                var inv_parent =  $(inv_show_div).parent();
+                inv_parent.find(".mainMenuNucoilWindow-body-fuel-left-picture-picture").css('background', '');
+                inv_parent.find(".mainMenuNucoilWindow-body-fuel-left-name").text('');
+                inv_parent.find(".mainMenuNucoilWindow-body-fuel-left-description").text('');
+            });
         }
     };
 

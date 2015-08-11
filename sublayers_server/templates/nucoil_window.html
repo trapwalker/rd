@@ -83,21 +83,36 @@
 
     .mainMenuNucoilWindow-body-fuel-left-picture {
         border: solid 1px #00f150;
-        margin: 10px;
-        height: 120px;
-        line-height: 120px;
+        margin: 5px;
+        height: 100px;
+    }
+
+    .mainMenuNucoilWindow-body-fuel-left-picture-picture {
+        margin-top: 15px;
+        height: 70px;
+        width: 130px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .mainMenuNucoilWindow-body-fuel-left-name {
         color: #30fc00;
         text-align: center;
-        margin: 10px;
+        margin: 5px;
         font: 12pt Nouveau_IBM;
+        height: 16px;
     }
 
     .mainMenuNucoilWindow-body-fuel-left-description {
+        box-sizing: border-box;
+        margin: auto;
+        width: 150px;
+        padding: 10px 3px 0px 3px;
         color: #1e9604;
         text-align: center;
+        height: 145px;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .mainMenuNucoilWindow-body-fuel-center {
@@ -803,10 +818,11 @@
 
     <div id="mainMenuNucoilWindow-body-fuel_id" class="mainMenuNucoilWindow-body-fuel mainMenuNucoilWindow-page-div">
         <div class="mainMenuNucoilWindow-body-fuel-left">
-            <div class="mainMenuNucoilWindow-body-fuel-left-picture"></div>
-            <div class="mainMenuNucoilWindow-body-fuel-left-name"></div>
-            <div class="mainMenuNucoilWindow-body-fuel-left-description">
+            <div class="mainMenuNucoilWindow-body-fuel-left-picture">
+                <div class="mainMenuNucoilWindow-body-fuel-left-picture-picture"></div>
             </div>
+            <div class="mainMenuNucoilWindow-body-fuel-left-name"></div>
+            <div class="mainMenuNucoilWindow-body-fuel-left-description"></div>
         </div>
         <div class="mainMenuNucoilWindow-body-fuel-center">
             <div class="mainMenuNucoilWindow-body-fuel-center-balance">
