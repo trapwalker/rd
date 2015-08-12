@@ -140,6 +140,8 @@ class Node(Persistent):
                 v = getter()
                 if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
                     v = v.uri
+                elif isinstance(attr, TagsAttribute):
+                    v = str(v)
                 d[attr.name] = v
         return d
 
@@ -199,7 +201,9 @@ class Node(Persistent):
         )
         for attr, getter in self.iter_attrs():
             v = getter()
-            if isinstance(v, Node):
+            if isinstance(attr, TagsAttribute):
+                v = str(v)
+            elif isinstance(v, Node):
                 if v.storage and v.storage.name == 'registry':
                     v = v.uri
                 else:
@@ -209,15 +213,6 @@ class Node(Persistent):
 
     def resume(self):
         return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
-
-    def _get_attr_value(self, name, default):
-        # todo: move method to the Attribute class
-        if name in self.values:
-            return self.values[name]
-        if self.parent:
-            return self.parent._get_attr_value(name, default)
-        else:
-            return default
 
     def _set_attr_value(self, name, value):
         self.values[name] = value

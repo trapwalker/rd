@@ -3,6 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
+
 from sublayers_server.model.vectors import Point
 
 
@@ -31,6 +32,9 @@ class Attribute(object):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
 
     def on_init(self, obj):
+        """
+        :type obj: sublayers_server.model.registry.tree.Node
+        """
         if self.init:
             value = self.init
             if callable(value):
@@ -38,8 +42,18 @@ class Attribute(object):
             obj._set_attr_value(self.name, self.to_raw(value, obj))
 
     def get_raw(self, obj):
-        value = obj._get_attr_value(self.name, self.default)
-        return value
+        """
+        :type obj: sublayers_server.model.registry.tree.Node
+        """
+        name = self.name
+        values = obj.values
+        if name in values:
+            return values[name]
+        parent = obj.parent
+        if parent:
+            return self.get_raw(parent)
+        else:
+            return self.default
 
     def from_str(self, s, obj):
         return s
@@ -68,29 +82,58 @@ class Attribute(object):
 
 
 class TagsAttribute(Attribute):
+    def __init__(self, default=None, **kw):
+        if default is None:
+            default = set()
+        elif isinstance(default, basestring):
+            default = self.from_str(default, None)  # todo: check possible to stay default is raw
+        super(TagsAttribute, self).__init__(default=default, **kw)
+
+    def from_str(self, s, obj):
+        return set(s.split()) if s else set()
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        return self.TagsHolder(attr=self, obj=obj)
+
     class TagsHolder(object):
-        def __init__(self, attr, obj, cls):
+        # todo: Заменить на NamedTuple
+        def __init__(self, attr, obj):
             """
             @param Attribute attr: Attribute descriptor
             @param sublayers_server.model.registry.tree.Node obj: Node
-            @param type cls: Class of node
             """
             self._attr = attr
             self._obj = obj
-            self._cls = cls
+
+        def __reduce__(self):
+            return set, (list(self.local),)
 
         @property
         def inherited(self):
             # todo: cache
             obj_parent = self._obj.parent
-            return getattr(obj_parent, self._attr.name, set()) if obj_parent else set()
+            name = self._attr.name
+            if hasattr(obj_parent, name):
+                return getattr(obj_parent, name)
+            else:
+                return self._attr.default
 
         @property
         def local(self):
             """
             :return: set
             """
-            return self._obj.values.get(self._attr.name, set())
+            attr = self._attr
+            obj = self._obj
+            v = obj.values.get(attr.name)
+            if v is None:
+                v = set()
+            elif isinstance(v, basestring):
+                v = attr.from_str(v, obj)
+
+            return v
 
         @local.setter
         def local(self, value):
@@ -99,9 +142,13 @@ class TagsAttribute(Attribute):
             """
             self._obj.values[self._attr.name] = value - self.inherited
 
+        @local.deleter
+        def local(self):
+            self.local = set()
+
         @property
         def value(self):
-            return self.local + self.inherited
+            return self.local | self.inherited
 
         def add(self, tag):
             local = self.local
@@ -110,41 +157,59 @@ class TagsAttribute(Attribute):
                 self.local |= {tag}
 
         def clear(self):
-            self.local = set()
+            del self.local
 
         def remove(self, tag):
             self.local -= {tag}
 
         def update(self, tags):
-            self.local |= tags
+            if isinstance(tags, basestring):
+                tags = self._attr.from_str(tags, self._obj)
+            self.local |= set(tags)
+
+        def as_str(self, local_only=False):
+            return ' '.join(map(str, self.local if local_only else self.value))
+
+        __str__ = as_str
+
+        def __repr__(self):
+            return repr(self.value)
+
+        def __iter__(self):
+            return iter(self.value)
 
         def __and__(self, other):
             return self.value & other
 
+        def __or__(self, other):
+            return self.value | other
+
+        def __xor__(self, other):
+            return self.value ^ other
+
+        def __sub__(self, other):
+            return self.value - other
+
         def __contains__(self, tag):
             return tag in self.value
-            
-        #__eq__
-        #__iand__?
-        #__ior__
-        #__ixor__
-        #__isub__
-        #__iter__
-        #__len__
-        #__or__
-        #__ror__
-        #__rsub__
-        #__rxor__
-        #__rand__
-        #__reduce__
-        #__repr__
-        #__sub__
-        #__xor__
 
-    def __get__(self, obj, cls):
-        return self.TagsHolder(attr=self, obj=obj, cls=cls)
+        def __eq__(self, other):
+            return self.value == other
 
+        def __repr__(self):
+            return repr(self.value)
 
+        def __len__(self):
+            return len(self.value)
+
+        def __rsub__(self, other):
+            return other - self.value
+
+        __ror__ = __or__
+        __rxor__ = __xor__
+        __rand__ = __and__
+
+        # __iand__ __ior__ __ixor__ __isub__
 
 
 class TextAttribute(Attribute):
@@ -183,9 +248,9 @@ class IntAttribute(NumericAttribute):
         # todo: validation
         try:
             v = int(s)
-        except:
+        except (TypeError, ValueError):
             if s:
-                raise ValueError('Wrong value of {}.{}'.format(obj, self.name))
+                raise ValueError('Wrong value {!r} of {}.{}'.format(s, obj, self.name))
             else:
                 v = None
         return v
@@ -196,9 +261,9 @@ class FloatAttribute(NumericAttribute):
         # todo: validation
         try:
             v = float(s)
-        except:
+        except (TypeError, ValueError):
             if s:
-                raise ValueError('Wrong value of {}.{}'.format(obj, self.name))
+                raise ValueError('Wrong value {!r} of {}.{}'.format(s, obj, self.name))
             else:
                 v = None
         return v
@@ -228,7 +293,7 @@ class DocAttribute(TextAttribute):
         super(DocAttribute, self).__init__(caption=u'Описание', doc=u'Описание узла')
 
     def get_raw(self, obj):
-        return obj._get_attr_value(self.name, self.default or self.__doc__)
+        return super(DocAttribute, self).get_raw(obj) or self.__doc__
 
 
 class RegistryLink(TextAttribute):

@@ -47,8 +47,15 @@ if __name__ == '__main__':
     # pp(mj3.__getstate__())
 
     a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    user = reg['/agents/user/' + random.choice(['pirate', 'raider'])].instantiate(storage=a)
+    proto_agent = reg['/agents/user/' + random.choice(['pirate', 'raider'])]
+    protocar = proto_agent.car
+    user = proto_agent.instantiate(storage=a)
 
-    print user.resume()
+    print user.resume().decode('utf-8')
 
     car = user.car
+    print car.tags
+    car.tags.update('newtag1 newtag2')
+    car.tags.add('newtag3')
+    car.tags.remove('newtag2')
+    print car.tags
