@@ -3,7 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.attr import Attribute, DocAttribute, RegistryLink, InventoryAttribute
+from sublayers_server.model.registry.attr import (
+    Attribute, DocAttribute, RegistryLink, TagsAttribute, InventoryAttribute,)
 
 import yaml
 
@@ -54,6 +55,7 @@ class Node(Persistent):
     parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
+    tags = TagsAttribute(caption=u'Теги')
 
     def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, **kw):
         """
@@ -67,12 +69,17 @@ class Node(Persistent):
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name
-        self.owner = owner
         self.values = values and values.copy() or {}
         self.storage = storage
+
+        self.owner = owner
         self.parent = parent
         if storage:
             storage.put(self)
+
+        # for attr, getter in self.iter_attrs():
+        #     attr.on_init(self)
+        # todo: сделать правильно
 
         for k, v in kw.items():
             setattr(self, k, v)
@@ -133,6 +140,8 @@ class Node(Persistent):
                 v = getter()
                 if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
                     v = v.uri
+                elif isinstance(attr, TagsAttribute):
+                    v = str(v)
                 d[attr.name] = v
         return d
 
@@ -192,7 +201,9 @@ class Node(Persistent):
         )
         for attr, getter in self.iter_attrs():
             v = getter()
-            if isinstance(v, Node):
+            if isinstance(attr, TagsAttribute):
+                v = str(v)
+            elif isinstance(v, Node):
                 if v.storage and v.storage.name == 'registry':
                     v = v.uri
                 else:
@@ -202,14 +213,6 @@ class Node(Persistent):
 
     def resume(self):
         return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
-
-    def _get_attr_value(self, name, default):
-        if name in self.values:
-            return self.values[name]
-        if self.parent:
-            return self.parent._get_attr_value(name, default)
-        else:
-            return default
 
     def _set_attr_value(self, name, value):
         self.values[name] = value
