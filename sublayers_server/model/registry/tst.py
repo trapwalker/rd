@@ -59,3 +59,6 @@ if __name__ == '__main__':
     car.tags.add('newtag3')
     car.tags.remove('newtag2')
     print car.tags
+
+    it = reg[car.inventory[0]]
+    it.as_client_dict()

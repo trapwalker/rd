@@ -39,7 +39,10 @@ class Item(Root):
         # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
         d = {}
         for attr, getter in self.iter_attrs(tags='client'):
-            d[attr.name] = getter()
+            v = getter()
+            if isinstance(v, set):
+                v = list(v)  # todo: Перенести это в расширение сериализатора
+            d[attr.name] = v
         return d
 
     @classmethod
