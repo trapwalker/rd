@@ -55,7 +55,7 @@ class Node(Persistent):
     parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
-    tags = TagsAttribute(caption=u'Теги')
+    tags = TagsAttribute(caption=u'Теги', tags="client")
 
     def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, **kw):
         """

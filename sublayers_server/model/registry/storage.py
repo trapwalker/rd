@@ -164,6 +164,7 @@ class Dispatcher(AbstractStorage):
 
     def get_node(self, proto, storage, path):
         try:
+            log.debug('Try to get storage "{}"'.format(storage))
             storage_obj = self.storage_map[storage]
         except KeyError:
             raise StorageNotFound('Storage {} not found. [{}] avalable'.format(

@@ -680,7 +680,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
-        //console.log('ClientManager.prototype.InventoryShowMessage', event);
+        console.log('ClientManager.prototype.InventoryShowMessage', event);
         inventoryList.addInventory(this._getInventory(event.inventory));
     };
 
