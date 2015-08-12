@@ -132,6 +132,8 @@ class TagsAttribute(Attribute):
                 v = set()
             elif isinstance(v, basestring):
                 v = attr.from_str(v, obj)
+            elif isinstance(v, list):
+                v = set(v)
 
             return v
 
