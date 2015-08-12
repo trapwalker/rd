@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import (
     Attribute, RegistryLink, Slot, Position, Parameter, InventoryAttribute,
-    FloatAttribute, TextAttribute,
+    FloatAttribute, TextAttribute, TagsAttribute,
 )
 from sublayers_server.model.transaction_events import TransactionActivateTank
 
@@ -40,7 +40,7 @@ class Item(Root):
         d = {}
         for attr, getter in self.iter_attrs(tags='client'):
             v = getter()
-            if attr.name =='tags':
+            if isinstance(attr, TagsAttribute):
                 v = list(v)  # todo: Перенести это в расширение сериализатора
             d[attr.name] = v
         return d
