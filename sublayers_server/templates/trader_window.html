@@ -51,6 +51,21 @@
         padding: 5px 0px 0px 0px;
     }
 
+    .mainTraderWindow-down {
+        position: relative;
+        width: 650px;
+        float: left;
+    }
+
+    .mainTraderWindow-down-header {
+        position: relative;
+        height: 21px;
+        width: 100%;
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+        font-size: 11pt;
+    }
+
     .mainTraderWindow-down-player-title {
         height: 19px;
         width: 158px;
@@ -58,9 +73,7 @@
         float: left;
         text-align: center;
         line-height: 19px;
-        color: #30fc00;
-        font-family: Nouveau_IBM;
-        font-size: 11pt;
+        box-sizing: border-box;
     }
 
     .mainTraderWindow-down-exchange-title {
@@ -71,9 +84,7 @@
         margin-left: 6px;
         text-align: center;
         line-height: 19px;
-        color: #30fc00;
-        font-family: Nouveau_IBM;
-        font-size: 11pt;
+        box-sizing: border-box;
     }
 
     .mainTraderWindow-down-trader-title {
@@ -84,9 +95,13 @@
         margin-left: 6px;
         text-align: center;
         line-height: 19px;
-        color: #30fc00;
-        font-family: Nouveau_IBM;
-        font-size: 11pt;
+        box-sizing: border-box;
+    }
+
+    .mainTraderWindow-down-exchange-area {
+        position: relative;
+        height: 321px;
+        width: 100%;
     }
 
     .mainTraderWindow-down-player-body {
@@ -95,6 +110,37 @@
         border: solid 1px #135806;
         float: left;
         overflow-y: scroll;
+        box-sizing: border-box;
+    }
+
+    .mainTraderWindow-down-exchange-leftbody {
+        height: 317px;
+        width: 157px;
+        border: solid 1px #135806;
+        float: left;
+        margin-left: 6px;
+        overflow-y: scroll;
+        box-sizing: border-box;
+    }
+
+    .mainTraderWindow-down-exchange-rightbody {
+        height: 317px;
+        width: 157px;
+        border: solid 1px #135806;
+        float: left;
+        margin-left: 2px;
+        overflow-y: scroll;
+        box-sizing: border-box;
+    }
+
+    .mainTraderWindow-down-trader-body {
+        height: 317px;
+        width: 158px;
+        border: solid 1px #135806;
+        float: left;
+        margin-left: 6px;
+        overflow-y: scroll;
+        box-sizing: border-box;
     }
 
     .mainTraderWindow-down-player-body-item-name-empty {
@@ -118,40 +164,12 @@
         margin-left: 3px;
     }
 
-    .mainTraderWindow-down-player-body-line {
-        border-top: 2px dotted #0a2e03;
-        height: 4px;
-        margin-top: 6px;
-        margin-left: 10px;
-        float: left;
-        width: 130px;
+    .mainTraderWindow-down-footer {
+        height: 40px;
+        width: 100%;
     }
 
-    .mainTraderWindow-down-exchange-leftbody {
-        height: 317px;
-        width: 157px;
-        border: solid 1px #135806;
-        float: left;
-        margin-left: 6px;
-        overflow-y: scroll;
-    }
 
-    .mainTraderWindow-down-exchange-rightbody {
-        height: 317px;
-        width: 157px;
-        border: solid 1px #135806;
-        float: left;
-        overflow-y: scroll;
-    }
-
-    .mainTraderWindow-down-trader-body {
-        height: 317px;
-        width: 158px;
-        border: solid 1px #135806;
-        float: left;
-        margin-left: 6px;
-        overflow-y: scroll;
-    }
 
     .mainTraderWindow-down-player-score {
         height: 35px;
@@ -220,121 +238,11 @@
             <div class="mainTraderWindow-down-exchange-title">Столик обмена:</div>
             <div class="mainTraderWindow-down-trader-title">Инвентарь Бухмана:</div>
         </div>
-        <div class="mainTraderWindow-down-player-body">
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-        </div>
-        <div class="mainTraderWindow-down-exchange-leftbody">
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-        </div>
-        <div class="mainTraderWindow-down-exchange-rightbody">
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-        </div>
-        <div class="mainTraderWindow-down-trader-body">
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
-            <div class="mainTraderWindow-down-player-body-line"></div>
-            <div class="mainTraderWindow-down-player-body-item">
-                <div class="mainTraderWindow-down-player-body-item-name-empty">
-                    Пусто
-                </div>
-                <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-            </div>
+        <div class="mainTraderWindow-down-exchange-area">
+            <div class="mainTraderWindow-down-player-body"></div>
+            <div class="mainTraderWindow-down-exchange-leftbody"></div>
+            <div class="mainTraderWindow-down-exchange-rightbody"></div>
+            <div class="mainTraderWindow-down-trader-body"></div>
         </div>
         <div class="mainTraderWindow-down-footer">
             <div class="mainTraderWindow-down-player-score">Ваш счет:<br/>234 140 нк.</div>

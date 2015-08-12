@@ -3,6 +3,7 @@ var LocationManager = (function () {
     function LocationManager() {
         this.in_location = false;
         this.armorer = new ArmorerManager();
+        this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
         this.visitorsManager = new LocationVisitorsManager();
     }
@@ -388,6 +389,34 @@ var ArmorerManager = (function () {
 
 
     return ArmorerManager;
+})();
+
+
+
+var TraderManager = (function () {
+
+    function TraderManager() {
+    }
+    
+
+    TraderManager.prototype.update = function() {
+//        <div class="mainTraderWindow-down-player-body-item">
+//            <div class="mainTraderWindow-down-player-body-item-name-empty">
+//            Пусто
+//            </div>
+//            <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
+//        </div>
+
+        // вывести свой инвентарь
+
+        // вывести инвентарь торговца
+    };
+
+    TraderManager.prototype.clear = function() {
+
+    };
+
+    return TraderManager;
 })();
 
 
