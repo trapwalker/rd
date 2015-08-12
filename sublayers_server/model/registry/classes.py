@@ -40,7 +40,7 @@ class Item(Root):
         d = {}
         for attr, getter in self.iter_attrs(tags='client'):
             v = getter()
-            if isinstance(v, set):
+            if attr.name =='tags':
                 v = list(v)  # todo: Перенести это в расширение сериализатора
             d[attr.name] = v
         return d
