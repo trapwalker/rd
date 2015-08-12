@@ -15,12 +15,13 @@ from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEven
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
-from sublayers_server.model.events import Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, \
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent
+from sublayers_server.model.events import (
+    Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent,)
 from sublayers_server.model.transaction_events import TransactionGasStation
 from sublayers_server.model.units import Unit, Bot
-from sublayers_server.model.chat_room import ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, \
-    ChatRoomPrivateCloseEvent
+from sublayers_server.model.chat_room import (
+    ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent,)
 
 from sublayers_server.model.inventory import ItemState
 
