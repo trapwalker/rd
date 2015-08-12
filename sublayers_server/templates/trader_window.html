@@ -25,30 +25,30 @@
 
     .mainTraderWindow-up-name {
         height: 23px;
-        width: 650px;
         line-height: 23px;
         text-align: center;
-        float: left;
     }
 
     .mainTraderWindow-up-picture {
-        height: 166px;
+        position: relative;
         width: 121px;
-        background: transparent url('/static/img/trader/pers_buchman.png') 50% 50% no-repeat;
         float: left;
-        line-height: 348px;
-        text-align: center;
-        margin-left: 50px;
+        margin-right: 10px;
+    }
+
+    .mainTraderWindow-wrap-up {
+        margin: 0 auto 0px auto;
+        width: 526px;
+        height: 193px;
     }
 
     .mainTraderWindow-up-text {
-        height: 162px;
+        height: 100%;
         width: 395px;
-        margin: 6px 0px 0px 23px;
         overflow-y: scroll;
-        float: left;
+        overflow-x: hidden;
         border-top: solid 1px #135806;
-        padding-top: 9px;
+        padding: 5px 0px 0px 0px;
     }
 
     .mainTraderWindow-down-player-title {
@@ -206,13 +206,12 @@
 
 <div class="mainTraderWindow">
     <div class="mainTraderWindow-up">
-        <div class="mainTraderWindow-up-name">Бухман:</div>
-        <div class="mainTraderWindow-up-picture">Йаков Бухман</div>
-        <div class="mainTraderWindow-up-text">
-            Таки ты сподобился задвинуть мне предложение века! Мы ведь серьезная корпорация и херни потерпеть не можем.
-            Давай, гой, завязывай уже с обменом канистр на канистры. Ибо социальное пространство ядерного Щита в Нижнем
-            Гульденберговске ограничено границами клуба "Людвиг-Рак" и ее обитателями (слюдой в породе, урюками и
-            прочими не систематическими элементами, подлежащими утилизации через Священный Огонь печей Пе...
+        <div class="mainTraderWindow-wrap-up">
+            <div class="mainTraderWindow-up-picture">
+                <img class="trader-foto" src="{{ town.example.trader.photo }}" alt="Оружейник" />
+                <div class="mainTraderWindow-up-name">{{ town.example.trader.title }}</div>
+            </div>
+            <div class="mainTraderWindow-up-text">{{ town.example.trader.text }}</div>
         </div>
     </div>
     <div class="mainTraderWindow-down">

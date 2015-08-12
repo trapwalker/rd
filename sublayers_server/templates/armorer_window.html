@@ -20,21 +20,39 @@
         width: 692px;
         height: 205px;
         padding-bottom: 6px;
+        font: 11pt Nouveau_IBM;
+        color: #29F200;
+    }
+
+    .armorer-wrap-header {
+        position: relative;
+        height: 175px;
+        width: 570px;
+        margin: 0px 0px 0px 13px;
+        padding-top: 5px;
     }
 
     .armorer-info {
         position: relative;
-        width: 170px;
-        top: 12px;
-        left: 15px;
+        float: left;
+        margin-right: 5px;
     }
 
     .armorer-name {
         position: relative;
-        top: 8px;
+        margin-top: 8px;
         text-align: center;
-        color: #29F200;
         font: 13pt Nouveau_IBM;
+    }
+
+    .armorer-text {
+        height: 100%;
+        width: 395px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        border-top: solid 1px #135806;
+        box-sizing: border-box;
+        padding: 5px 0px 0px 0px;
     }
 
     .armorer-center {
@@ -149,9 +167,12 @@
 
 <div class="armorerWindow-main">
     <div class="armorer-header">
-        <div class="armorer-info">
-            <img class="armorer-foto" src="{{ town.example.armorer.photo }}" alt="Оружейник" />
-            <div class="armorer-name"> {{ town.example.armorer.title }} </div>
+        <div class="armorer-wrap-header">
+            <div class="armorer-info">
+                <img class="armorer-foto" src="{{ town.example.armorer.photo }}" alt="Оружейник" />
+                <div class="armorer-name"> {{ town.example.armorer.title }} </div>
+            </div>
+            <div class="armorer-text">{{ town.example.armorer.text }}</div>
         </div>
     </div>
     <div class="armorer-center">

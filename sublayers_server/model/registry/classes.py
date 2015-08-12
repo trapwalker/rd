@@ -201,8 +201,9 @@ class Town(MapLocation):
 
 
 class Institution(Root):
-    title = TextAttribute(caption=u"Имя", doc=u"Радиус входа в город")
+    title = TextAttribute(caption=u"Имя")
     photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
+    text = TextAttribute(caption=u"Текст приветствия")
 
 
 class Armorer(Institution):
