@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.messages import EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, \
-    ExamplesHideMessage, ExamplesShowMessage
+    ExamplesShowMessage, TraderInventoryShowMessage, InventoryHideMessage
 from sublayers_server.model.events import ActivateLocationChats
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
@@ -74,7 +74,7 @@ class MapLocation(Observer):
         agent.api.update_agent_api(time=time + 0.1)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=False, time=time).post()
-        ExamplesHideMessage(agent=agent, time=time).post()
+        InventoryHideMessage(agent=agent, time=time, inventory_id=agent.uid).post()
 
     def add_to_chat(self, chat, time):
         super(MapLocation, self).add_to_chat(chat=chat, time=time)
@@ -92,6 +92,16 @@ class Town(MapLocation):
     def __init__(self, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(**kw)
         self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся name)
+
+    def on_enter(self, agent, time):
+        super(Town, self).on_enter(agent=agent, time=time)
+        if self.example.trader:
+            TraderInventoryShowMessage(agent=agent, time=time, town_id=self.uid).post()
+
+    def on_exit(self, agent, time):
+        super(Town, self).on_exit(agent=agent, time=time)
+        if self.example.trader:
+            InventoryHideMessage(agent=agent, time=time, inventory_id=str(self.uid) + '_trader').post()
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)

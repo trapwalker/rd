@@ -40,7 +40,7 @@ class Inventory(object):
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
-        InventoryHideMessage(time=time, agent=agent, inventory=self).post()
+        InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
 
     def add_item(self, item, time, position=None):
         if position is None:

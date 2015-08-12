@@ -521,14 +521,14 @@ class InventoryShowMessage(Message):
 
 
 class InventoryHideMessage(Message):
-    def __init__(self, inventory, **kw):
+    def __init__(self, inventory_id, **kw):
         super(InventoryHideMessage, self).__init__(**kw)
-        self.inventory = inventory
+        self.inventory_id = inventory_id
 
     def as_dict(self):
         d = super(InventoryHideMessage, self).as_dict()
         d.update(
-            inventory_owner_id=self.inventory.owner.uid
+            inventory_owner_id=self.inventory_id
             )
         return d
 
@@ -652,10 +652,75 @@ class ExamplesShowMessage(Message):
         return d
 
 
-class ExamplesHideMessage(Message):
+class TraderInventoryShowMessage(Message):
+    def __init__(self, town_id, **kw):
+        super(TraderInventoryShowMessage, self).__init__(**kw)
+        self.town_id = town_id
+
     def as_dict(self):
-        d = super(ExamplesHideMessage, self).as_dict()
+        d = super(TraderInventoryShowMessage, self).as_dict()
+
+        example10 = self.agent.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
+        example20 = self.agent.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
+
+        empty_tank10 = dict(
+            cls='ItemState',
+            balance_cls='tank10',
+            example=example10.as_client_dict(),
+            max_val=1,
+            t0=self.time,
+            val0=1,
+            dvs=0,
+        )
+
+        empty_tank20 = dict(
+            cls='ItemState',
+            balance_cls='tank20',
+            example=example20.as_client_dict(),
+            max_val=1,
+            t0=self.time,
+            val0=1,
+            dvs=0,
+        )
+
         d.update(
-            inventory_owner_id=self.agent.uid
+            inventory=dict(
+                max_size=10,
+                items=[
+                    {
+                        'item': empty_tank10,
+                        'position': 1
+                    },
+                    {
+                        'item': empty_tank20,
+                        'position': 2
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 3
+                    },
+                    {
+                        'item': empty_tank20,
+                        'position': 4
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 5
+                    },
+                    {
+                        'item': empty_tank20,
+                        'position': 6
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 7
+                    },
+                    {
+                        'item': empty_tank20,
+                        'position': 8
+                    }
+                ],
+                owner_id=str(self.town_id) + '_trader'
             )
+        )
         return d

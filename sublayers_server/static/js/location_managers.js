@@ -2,6 +2,10 @@ var LocationManager = (function () {
 
     function LocationManager() {
         this.in_location = false;
+
+        this.location_uid = null;
+        this.trader_uid = null;
+
         this.armorer = new ArmorerManager();
         this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
@@ -191,7 +195,7 @@ var ArmorerManager = (function () {
     };
 
     ArmorerManager.prototype.update = function(armorer_slots) {
-       // console.log('ArmorerManager.prototype.update');
+        //console.log('ArmorerManager.prototype.update');
         if (armorer_slots) this.armorer_slots = armorer_slots;
 
         this.clear();
@@ -263,6 +267,7 @@ var ArmorerManager = (function () {
 
     ArmorerManager.prototype.clear = function() {
         //console.log('ArmorerManager.prototype.clear');
+        // todo: написать тут чтото
         this.activeSlot = null;
     };
 
@@ -392,28 +397,196 @@ var ArmorerManager = (function () {
 })();
 
 
-
 var TraderManager = (function () {
 
     function TraderManager() {
+        this.playerInvCls = "player-inventory-droppable-item";
+        this.playerTableCls = "player-table-droppable-item";
+        this.traderInvCls = "trader-inventory-droppable-item";
+        this.traderTableCls = "trader-table-droppable-item";
+
+        this.playerInv = [];
+        this.playerTable = [];
+        this.playerInvDiv = null;
+        this.playerTableDiv = null;
+
+        this.traderInv = [];
+        this.traderTable = [];
+        this.traderInvDiv = null;
+        this.traderTableDiv = null;
     }
-    
 
-    TraderManager.prototype.update = function() {
-//        <div class="mainTraderWindow-down-player-body-item">
-//            <div class="mainTraderWindow-down-player-body-item-name-empty">
-//            Пусто
-//            </div>
-//            <div class="mainTraderWindow-down-player-body-item-picture-empty"></div>
-//        </div>
+    TraderManager.prototype.changeItem = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
+        destDiv.empty();
+        srcDiv.empty();
 
-        // вывести свой инвентарь
+        destList.push(srcList[pos]);
+        srcList.splice(pos, 1);
 
-        // вывести инвентарь торговца
+        this._reDrawItemList(destDiv, destList, destCls);
+        this._reDrawItemList(srcDiv, srcList, srcCls);
+
+    };
+
+    TraderManager.prototype.updatePlayerInv = function() {
+        //console.log('TraderManager.prototype.updatePlayerInv');
+        this._clearPlayerInv();
+        var self = this;
+        var item;
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(user.ID);
+        if (! inventory) {
+            console.warn('Ивентарь агента (' + user.ID + ') не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            item = inventory.getItem(i);
+            if (item)
+                this.playerInv.push(item.example);
+        }
+
+        // Установить дивы инвентарей
+        this.playerInvDiv = $('#activeTownDiv').find('.mainTraderWindow-down-player-body').first();
+        this.playerTableDiv = $('#activeTownDiv').find('.mainTraderWindow-down-exchange-leftbody').first();
+
+        // Повесить дропаблы
+        this.playerInvDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.playerTableCls) ;
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
+                                self.playerInvDiv , self.playerTableCls, self.playerInvCls);//
+            }
+        });
+
+        this.playerTableDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.playerInvCls);
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
+                                self.playerTableDiv, self.playerInvCls, self.playerTableCls);
+            }
+        });
+
+        // Отрисовать верстку
+        this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
+    };
+
+    TraderManager.prototype.updateTraderInv = function() {
+        //console.log('TraderManager.prototype.updatePlayerInv');
+        this._clearTraderInv();
+        var self = this;
+        var item;
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(locationManager.trader_uid);
+        if (! inventory) {
+            console.warn('Ивентарь торговца не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            item = inventory.getItem(i);
+            if (item)
+                this.traderInv.push(item.example);
+        }
+
+        // Установить дивы инвентарей
+        this.traderInvDiv = $('#activeTownDiv').find('.mainTraderWindow-down-trader-body').first();
+        this.traderTableDiv = $('#activeTownDiv').find('.mainTraderWindow-down-exchange-rightbody').first();
+
+        // Повесить дропаблы
+        this.traderInvDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.traderTableCls) ;
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                    self.traderInvDiv , self.traderTableCls, self.traderInvCls);//
+            }
+        });
+
+        this.traderTableDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.traderInvCls);
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                    self.traderTableDiv, self.traderInvCls, self.traderTableCls);
+            }
+        });
+
+        // Отрисовать верстку
+        this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
+    };
+
+    TraderManager.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
+        for(var i = 0; i < itemList.length; i++) {
+            var example = itemList[i];
+            var itemDiv = $('<div class="mainTraderWindow-down-player-body-item ' + dropCls  + '" data-pos="' + i + '"></div>');
+            var emptyItemDiv =
+                    '<div class="mainTraderWindow-down-player-body-item-name">' + example.title + '</div>' +
+                    '<div class="mainTraderWindow-down-player-body-item-picture-wrap">' +
+                        '<div class="mainTraderWindow-down-player-body-item-picture"></div>' +
+                    '</div>';
+
+            itemDiv.append(emptyItemDiv);
+
+            itemDiv.find('.mainTraderWindow-down-player-body-item-picture')
+                .css('background', 'transparent url(' + example.inv_icon_small + ') no-repeat 100% 100%');
+
+            itemDiv.draggable({
+                helper: 'clone',
+                opacity: 0.8,
+                revert: true,
+                revertDuration: 0,
+                zIndex: 1,
+                appendTo: '#activeTownDiv'
+            });
+
+            parentDiv.append(itemDiv);
+        }
+    };
+
+    TraderManager.prototype._clearPlayerInv = function() {
+        this.playerInv = [];
+        this.playerTable = [];
+        this.playerInvDiv = null;
+        this.playerTableDiv = null;
+    };
+
+    TraderManager.prototype._clearTraderInv = function() {
+        this.traderInv = [];
+        this.traderTable = [];
+        this.traderInvDiv = null;
+        this.traderTableDiv = null;
     };
 
     TraderManager.prototype.clear = function() {
-
+        this._clearPlayerInv();
+        this._clearTraderInv();
     };
 
     return TraderManager;

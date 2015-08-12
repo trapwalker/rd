@@ -616,7 +616,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.EnterToLocation = function (event) {
         console.log('ClientManager.prototype.EnterToLocation', event);
-        var location_uid = event.location.uid;
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
@@ -626,21 +625,30 @@ var ClientManager = (function () {
                 console.log('ClientManager.prototype.EnterToLocation Answer');
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
+                locationManager.location_uid = event.location.uid;
+                windowTemplateManager.closeAllWindows();
+                locationManager.in_location = true;
                 chat.showChatInTown();
                 locationManager.visitorsManager.update_visitors();
-                windowTemplateManager.closeAllWindows();
                 locationManager.nucoil.update();
                 locationManager.armorer.update();
+                locationManager.trader.updatePlayerInv();
+                locationManager.trader.updateTraderInv();
             }
         });
     };
 
     ClientManager.prototype.ExitFromLocation = function (event) {
         //console.log('ClientManager.prototype.ExitFromTown', event);
+        locationManager.in_location = false;
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
+        locationManager.location_uid = null;
         locationManager.visitorsManager.clear_visitors();
+        locationManager.nucoil.clear();
+        locationManager.armorer.clear();
+        locationManager.trader.clear();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -689,11 +697,17 @@ var ClientManager = (function () {
         inventoryList.addInventory(inv);
         locationManager.nucoil.update();
         locationManager.armorer.update(event.armorer_slots);
+        locationManager.trader.updatePlayerInv();
     };
 
-    ClientManager.prototype.ExamplesHideMessage = function (event) {
-        //console.log('ClientManager.prototype.ExampleInventoryHideMessage', event);
-        inventoryList.delInventory(event.inventory_owner_id);
+    ClientManager.prototype.TraderInventoryShowMessage = function (event) {
+        console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
+        var inv = this._getInventory(event.inventory);
+        locationManager.trader_uid = inv.owner_id;
+        if (inventoryList.getInventory(inv.owner_id))
+            inventoryList.delInventory(inv.owner_id);
+        inventoryList.addInventory(inv);
+        locationManager.trader.updateTraderInv();
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
