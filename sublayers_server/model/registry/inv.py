@@ -7,7 +7,7 @@ from sublayers_server.model.registry.attr import Attribute
 
 
 class Inventory(list):
-    def __init__(self, attr, obj):
+    def __init__(self, attr, obj, items=None):
         """
         @param Attribute attr: Attribute descriptor
         @param sublayers_server.model.registry.tree.Node obj: Node
@@ -15,12 +15,11 @@ class Inventory(list):
         super(Inventory, self).__init__()
         self._attr = attr
         self._obj = obj
+        if items:
+            self.extend(items)
 
     def instantiate(self):
         pass
-
-    def __reduce__(self):
-        return set, (list(self.local),)
 
     @property
     def inherited(self):
@@ -29,34 +28,6 @@ class Inventory(list):
         name = self._attr.name
         if hasattr(obj_parent, name):
             return getattr(obj_parent, name)
-        else:
-            return self._attr.default
-
-    @property
-    def local(self):
-        """
-        :return: list
-        """
-        attr = self._attr
-        obj = self._obj
-        v = obj.values.get(attr.name)
-        if v is None:
-            v = []
-
-        return v
-
-    @local.setter
-    def local(self, value):
-        """
-        @param set value: new value
-        """
-        self._obj.values[self._attr.name] = value
-
-    @local.deleter
-    def local(self):
-        self.local = []
-
-    value = local
 
     # def __add__
     # def __contains__
@@ -96,4 +67,10 @@ class InventoryAttribute(Attribute):
         """
         :type obj: sublayers_server.model.registry.tree.Node
         """
-        return obj.values.setdefault(self.name, Inventory(self, obj))
+        value = obj.values.setdefault(self.name, Inventory(self, obj))
+        if not isinstance(value, Inventory):
+            # todo: need to remove this temporary code
+            value = Inventory(self, obj, items=value)
+            obj.values[self.name] = value
+
+        return value
