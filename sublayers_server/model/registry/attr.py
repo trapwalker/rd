@@ -81,10 +81,6 @@ class Attribute(object):
         # todo: global attribute registration
 
 
-class InventoryAttribute(Attribute):
-    pass
-
-
 class TagsAttribute(Attribute):
     def __init__(self, default=None, **kw):
         if default is None:

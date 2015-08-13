@@ -15,11 +15,6 @@ from math import pi
 import random
 
 
-class Inventory(list):
-    def instantiate(self):
-        pass
-
-
 class Item(Root):
     icon = Attribute(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
