@@ -29,29 +29,14 @@ class Inventory(list):
         if hasattr(obj_parent, name):
             return getattr(obj_parent, name)
 
-    # def __add__
     # def __contains__
-    # def __delitem__
-    # def __delslice__
-    # def __format__
-    # def __getitem__
-    # def __getslice__
-    # def __hash__
     # # def __iadd__
     # # def __imul__
-    # def __iter__
-    # def __len__
     # def __repr__
-    # def __setitem__
-    # def __setslice__
     # def __str__
-    # #def __subclasshook__
-    # def append
     # def count
     # def extend
     # def index
-    # def insert
-    # def pop
     # def remove
     # #def sort
 
