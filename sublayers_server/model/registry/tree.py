@@ -30,25 +30,22 @@ class AttrUpdaterMeta(type):
         pass
 
 
-class PersistentMeta(AttrUpdaterMeta):
+class NodeMeta(AttrUpdaterMeta):
 
     classes = {}
 
     def __init__(cls, name, bases, attrs):
-        super(PersistentMeta, cls).__init__(name, bases, attrs)
+        super(NodeMeta, cls).__init__(name, bases, attrs)
         cls.classes[name] = cls
 
     def update_attr(self, name, value):
-        super(PersistentMeta, self).update_attr(name, value)
+        super(NodeMeta, self).update_attr(name, value)
         if isinstance(value, Attribute):
             value.attach(name=name, cls=self)
 
 
-class Persistent(object):
-    __metaclass__ = PersistentMeta
-
-
-class Node(Persistent):
+class Node(object):
+    __metaclass__ = NodeMeta
 
     # todo: override attributes in subclasses
     abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
@@ -93,6 +90,7 @@ class Node(Persistent):
         cls = self.__class__
         for k in dir(cls):
             attr = getattr(cls, k)
+            """@type: Attribute"""
             if (
                 isinstance(attr, Attribute)
                 and (not tags or attr.tags & tags)
