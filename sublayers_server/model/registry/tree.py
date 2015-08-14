@@ -3,8 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.attr import (
-    Attribute, DocAttribute, RegistryLink, TagsAttribute,)
+from sublayers_server.model.registry.attr import Attribute, DocAttribute, RegistryLink, TagsAttribute
+from sublayers_server.model.registry.uri import URI
 
 import yaml
 
@@ -113,12 +113,14 @@ class Node(Persistent):
             if isinstance(attr, RegistryLink):
                 if attr.need_to_instantiate:
                     link = attr.get_raw(self)
+                    assert not isinstance(link, URI)
+                    if link:
+                        link = URI(link)
                     # todo: Отловить и обработать исключения
                     if link:
                         value = getter()
-                        uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))  # todo: (!!!)
                         if value and value.can_instantiate:
-                            new_value = value.instantiate(owner=inst, **uri['params'])
+                            new_value = value.instantiate(owner=inst, **dict(link.params))
                             setattr(inst, attr.name, new_value)
                             # todo: тест на негомогенных владельцев
             # elif isinstance(attr, InventoryAttribute):
@@ -202,6 +204,8 @@ class Node(Persistent):
                     v = str(v.uri)  # todo: (!!)
                 else:
                     v = v.resume_dict()
+            elif isinstance(v, URI):
+                v = str(v)
             d[attr.name] = v
         return d
 

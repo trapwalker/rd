@@ -51,6 +51,7 @@ if __name__ == '__main__':
     protocar = proto_agent.car
     user = proto_agent.instantiate(storage=a)
 
+    pp(user.resume_dict())
     print user.resume().decode('utf-8')
 
     car = user.car

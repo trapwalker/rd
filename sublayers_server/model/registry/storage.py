@@ -86,8 +86,13 @@ class AbstractStorage(object):
         raise WrongStorageError("Can't resolve storage {}".format(uri.storage))
 
     def __getitem__(self, item):
-        uri = URI(item) if isinstance(item, basestring) else URI(scheme=URI_PROTOCOL, path=list(item))
-        return self.get_node(uri)
+        if isinstance(item, basestring):
+            item = URI(item)  # todo: optimize избавиться от неоднозначности строка/uri
+
+        if not isinstance(item, URI):
+            item = URI(scheme=URI_PROTOCOL, path=list(item))
+
+        return self.get_node(item)
 
     def get(self, index, default=None):
         try:
