@@ -210,7 +210,8 @@ class Node(Persistent):
         return d
 
     def resume(self):
-        return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
+        d = self.resume_dict()
+        return yaml.dump(d, default_flow_style=False, allow_unicode=True)
 
     def _set_attr_value(self, name, value):
         self.values[name] = value

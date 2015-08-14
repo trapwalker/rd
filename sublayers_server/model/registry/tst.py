@@ -52,14 +52,9 @@ if __name__ == '__main__':
     user = proto_agent.instantiate(storage=a)
 
     pp(user.resume_dict())
-    print user.resume().decode('utf-8')
+    #print user.resume().decode('utf-8')
 
     car = user.car
-    print car.tags
-    car.tags.update('newtag1 newtag2')
-    car.tags.add('newtag3')
-    car.tags.remove('newtag2')
-    print car.tags
-
-    it = reg[car.inventory[0]]
-    it.as_client_dict()
+    print car.resume().decode('utf-8')
+    #it = reg[car.inventory[0]]
+    #it.as_client_dict()
