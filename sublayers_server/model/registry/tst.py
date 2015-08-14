@@ -19,9 +19,9 @@ if __name__ == '__main__':
 
     reg = storage.Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
     # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    # jeep = reg['/mobiles/cars/jeep']
+    # sedan = reg['/mobiles/cars/sedan']
     #
-    # mj0 = jeep.instantiate(storage=c)
+    # mj0 = sedan.instantiate(storage=c)
     # mj0.slot_CC = None
     # mj0.slot_FC.ammo_per_second = 10
     #

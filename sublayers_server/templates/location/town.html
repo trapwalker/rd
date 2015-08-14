@@ -160,7 +160,11 @@
     {% end %}
 
     $("#btn_4_select").mouseup(function(event) {
-        clientManager.sendExitFromLocation({{ town.uid }})
+        {% if agent.example.car %}
+        clientManager.sendExitFromLocation({{ town.uid }});
+        {% else %}
+        alert('Вы не можете выйти из города без машинки');
+        {% end %}
     });
 
     $("#btn_3_select").mouseup(function(event) {

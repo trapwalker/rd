@@ -16,7 +16,7 @@
 
     .hangarWindow-car-slot {
         position: relative;
-        width: 100%;
+        width: 50%;
         height: 100px;
         background-color: white;
         margin: 0 auto 10px auto;
@@ -24,14 +24,20 @@
 </style>
 
 <div class="hangarWindow-main">
-
-    {% for car_pr in town.example.hangar.car_list %}
-        <div class="hangarWindow-car-slot">
-            {{ car_pr }}
+    {% for car_number in range(0, len(town.example.hangar.car_list)) %}
+        <div class="hangarWindow-car-slot" data-car_number="{{ car_number }}">
+            {% set car_proto = agent.server.reg[town.example.hangar.car_list[car_number]] %}
+            {{ car_proto.max_hp }}
+            {{ car_proto.v_forward }}
+            {{ car_proto.title }}
+            {{ car_proto.price }}
         </div>
     {% end %}
-
 </div>
 
 <script>
+    $('.hangarWindow-car-slot').click(function(){
+        clientManager.sendHangarCarChoice($(this).data('car_number'));
+    })
+
 </script>

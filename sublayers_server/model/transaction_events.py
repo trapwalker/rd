@@ -2,7 +2,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
 import sublayers_server.model.messages as messages
@@ -75,4 +75,26 @@ class TransactionGasStation(TransactionEvent):
         messages.GasStationUpdate(agent=agent, time=self.time).post()
 
 
+class TransactionHangarChoice(TransactionEvent):
+    def __init__(self, agent, car_number, **kw):
+        super(TransactionHangarChoice, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.car_number = car_number
 
+    def on_perform(self):
+        super(TransactionHangarChoice, self).on_perform()
+
+        if not (self.agent.current_location and self.agent.current_location.example.hangar):
+            return
+
+        if len(self.agent.current_location.example.hangar.car_list) <= self.car_number:
+            return
+
+        car_proto = self.server.reg[self.agent.current_location.example.hangar.car_list[self.car_number]]
+
+        if self.agent.example.balance >= car_proto.price:
+            car_example = car_proto.instantiate(storage=self.server.reg_agents)
+            car_example.position = self.agent.current_location.example.position
+            self.agent.example.car = car_example
+            self.agent.example.balance -= car_proto.price
+            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()

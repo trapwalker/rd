@@ -84,7 +84,7 @@ class InitCar(Message):
     def as_dict(self):
         d = super(InitCar, self).as_dict()
         d.update(
-            car=self.agent.car,
+            car=self.agent.car.as_dict(time=self.time),
         )
         return d
 

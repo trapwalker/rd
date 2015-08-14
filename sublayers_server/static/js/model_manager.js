@@ -626,6 +626,10 @@ var ClientManager = (function () {
             data:  { location_id: event.location.uid },
             success: function(data) {
                 console.log('ClientManager.prototype.EnterToLocation Answer');
+
+                if (locationManager.in_location)
+                    clientManager.ExitFromLocation();
+
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 locationManager.location_uid = event.location.uid;
@@ -641,7 +645,7 @@ var ClientManager = (function () {
         });
     };
 
-    ClientManager.prototype.ExitFromLocation = function (event) {
+    ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         locationManager.in_location = false;
         chat.showChatInMap();
@@ -1104,6 +1108,19 @@ var ClientManager = (function () {
             params: {
                 tank_list: locationManager.nucoil.tank_list,
                 fuel: fuel
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHangarCarChoice = function (car_number) {
+        console.log(car_number);
+        var mes = {
+            call: "choice_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_number: car_number
             }
         };
         rpcCallList.add(mes);

@@ -163,6 +163,11 @@ class Mobile(Root):
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
 
+    price = Attribute(default=0, caption=u"Цена")
+
+    # Косметика
+    title = Attribute(caption=u"Название автомобиля")
+
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))
 
