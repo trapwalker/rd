@@ -8,31 +8,30 @@ from sublayers_server.model.registry import tree
 
 
 class Inventory(list):
-    def __init__(self, attr, obj, items=None):
+    def __init__(self, items=None):
         """
         @param Attribute attr: Attribute descriptor
         @param sublayers_server.model.registry.tree.Node obj: Node
         """
         super(Inventory, self).__init__()
-        self._attr = attr
-        self._obj = obj
         if items:
             self.extend(items)
+
+    def __getinitargs__(self):
+        return list(self)
 
     def prepare(self, value):
         if isinstance(value, tree.Node):
             return value
         #elif isinstance(value, basestring) and :  # todo: (!!!)
 
-
     def instantiate(self):
         pass
 
-    @property
-    def inherited(self):
+    def inherited(self, attr, obj):
         # todo: cache
-        obj_parent = self._obj.parent
-        name = self._attr.name
+        obj_parent = obj.parent
+        name = attr.name
         if hasattr(obj_parent, name):
             return getattr(obj_parent, name)
 
@@ -62,10 +61,10 @@ class InventoryAttribute(Attribute):
         """
         :type obj: sublayers_server.model.registry.tree.Node
         """
-        value = obj.values.setdefault(self.name, Inventory(self, obj))
+        value = obj.values.setdefault(self.name, Inventory())
         if not isinstance(value, Inventory):
             # todo: need to remove this temporary code
-            value = Inventory(self, obj, items=value)
+            value = Inventory(items=value)
             obj.values[self.name] = value
 
         return value
