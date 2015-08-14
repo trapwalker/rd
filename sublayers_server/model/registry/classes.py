@@ -204,6 +204,7 @@ class GasStation(MapLocation):
 class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
     trader = RegistryLink(caption=u'Торговец')
+    hangar = RegistryLink(caption=u'Ангар')
 
 
 class Institution(Root):
@@ -217,6 +218,10 @@ class Armorer(Institution):
 
 
 class Trader(Institution):
+    pass
+
+
+class Hangar(Institution):
     pass
 
 

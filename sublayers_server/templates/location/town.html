@@ -36,6 +36,11 @@
     </div>
     {% end %}
 
+    {% if town.example.hangar is not None %}
+    <div id="townHangarPageWrap" class="townPageWrap" style="display: none">
+        {% include hangar_window.html %}
+    </div>
+    {% end %}
 </div>
 <script>
     // Открытие зданий
@@ -52,6 +57,11 @@
     function openTrader() {
          $('.townPageWrap').css('display', 'none');
          $('#townTraderPageWrap').css('display', 'block');
+    }
+
+    function openHangar() {
+         $('.townPageWrap').css('display', 'none');
+         $('#townHangarPageWrap').css('display', 'block');
     }
 
     // Обработчики кнопок-зданий
@@ -86,11 +96,14 @@
             case "img_house5_on":
                 openNucoil();
                 break;
-            case "img_house2_on":
+            case "img_house7_on":
                 openArmorer();
                 break;
             case "img_house4_on":
                 openTrader();
+                break;
+            case "img_house2_on":
+                openHangar();
                 break;
             default:
                 console.log(event.target.id);
@@ -101,11 +114,14 @@
             case "path_h5":
                 openNucoil();
                 break;
-            case "path_h2":
+            case "path_h7":
                 openArmorer();
                 break;
             case "path_h4":
                 openTrader();
+                break;
+            case "path_h2":
+                openHangar();
                 break;
             default:
                 console.log(event.target.id);
