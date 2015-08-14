@@ -216,27 +216,6 @@ class TextAttribute(Attribute):
     pass
 
 
-# class TagsAttribute(Attribute):
-#     # todo: validation
-#     def from_str(self, s, obj):
-#         if s is None:
-#             return set()
-#
-#         s = s.strip()
-#         if s and s[0] == '[' and s[-1] == ']':
-#             s = s[1:-1]
-#             tags = [tag.strip() for tag in s.split(',')]
-#         else:
-#             tags = s.split()
-#         return set(tags)
-#
-#     def from_raw(self, raw, obj):
-#         return self.from_str(raw, obj) if raw is None or isinstance(raw, basestring) else raw
-#
-#     # def to_raw(self, value, obj):
-#     #     return list(value)
-
-
 class NumericAttribute(Attribute):
     # todo: validation
     pass
