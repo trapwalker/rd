@@ -222,7 +222,7 @@ class Trader(Institution):
 
 
 class Hangar(Institution):
-    pass
+    car_list = Attribute(caption=u"Список продаваемых машин")
 
 
 if __name__ == '__main__':

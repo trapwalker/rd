@@ -10,10 +10,27 @@
         width: 734px;
         height: 661px;
         cursor: default;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .hangarWindow-car-slot {
+        position: relative;
+        width: 100%;
+        height: 100px;
+        background-color: white;
+        margin: 0 auto 10px auto;
     }
 </style>
 
 <div class="hangarWindow-main">
+
+    {% for car_pr in town.example.hangar.car_list %}
+        <div class="hangarWindow-car-slot">
+            {{ car_pr }}
+        </div>
+    {% end %}
+
 </div>
 
 <script>
