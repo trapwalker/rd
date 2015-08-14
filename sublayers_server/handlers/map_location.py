@@ -25,19 +25,18 @@ class MapLocationHandler(BaseHandler):
             if isinstance(location, Town):
                 car_ex = agent.example.car
 
-                # todo: забрать id из реестра
-                car = {
-                    "uid": 0
-                }
+                car_svg_link = None
+                sector_svg_link = None
+                car_slots = []
+                if car_ex:
+                    car_svg_link = os.path.join(os.getcwd(), car_ex.armorer_car_svg)
+                    sector_svg_link = os.path.join(os.getcwd(), car_ex.armorer_sectors_svg)
+                    car_slots = [v[0] for v in car_ex.iter_slots()]
 
-                car_svg_link = os.path.join(os.getcwd(), car_ex.armorer_car_svg)
-                sector_svg_link = os.path.join(os.getcwd(), car_ex.armorer_sectors_svg)
-                car_slots = [v[0] for v in car_ex.iter_slots()]
-
-                self.render("town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
-                            sector_svg_link=sector_svg_link, car_slots=car_slots, car=car, agent=agent)
+                self.render("location/town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
+                            sector_svg_link=sector_svg_link, car_slots=car_slots, agent=agent)
             elif isinstance(location, GasStation):
-                self.render("gas_station.html", station=location, svg_link=svg_link, agent=agent)
+                self.render("location/gas_station.html", station=location, svg_link=svg_link, agent=agent)
             else:
                 log.warn('Unknown type location: %s', location)
         else:

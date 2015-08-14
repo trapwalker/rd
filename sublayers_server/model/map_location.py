@@ -31,10 +31,14 @@ class RadioPoint(Observer):
 
 
 class MapLocation(Observer):
+    locations = []
+
     def __init__(self, **kw):
         super(MapLocation, self).__init__(**kw)
         self.visitors = []
         self.radio_points = []
+        # log.debug('Map_location example %s', self.example.uri)
+        self.locations.append(self)
 
     def can_come(self, agent):
         if agent.api.car:
@@ -47,26 +51,33 @@ class MapLocation(Observer):
             chat.room.include(agent=agent, time=event.time)
 
     def on_enter(self, agent, time):
-        agent.api.car.delete(time=time)  # удалить машинку агента
+        # Удалить машинку агента
+        if agent.car:
+            agent.car.delete(time=time)
+
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=True, time=time).post()
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
-        agent.current_location = self
+        agent.set_current_location_life(location=self)
         self.visitors.append(agent)
-        # отправить инвентарь из экземпляра на клиент
+
+        # Отправить инвентарь из экземпляра на клиент
         ExamplesShowMessage(agent=agent, time=time).post()
 
     def on_re_enter(self, agent, time):
-        EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
-        for visitor in self.visitors:
-            if not visitor is agent:
-                ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
+        if agent in self.visitors:
+            EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
+            for visitor in self.visitors:
+                if not visitor is agent:
+                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
+        else:
+            self.on_enter(agent=agent, time=time)
 
     def on_exit(self, agent, time):
         self.visitors.remove(agent)
-        agent.current_location = None
+        agent.set_current_location_life(location=None)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
@@ -84,6 +95,13 @@ class MapLocation(Observer):
         super(MapLocation, self).del_from_chat(chat=chat, time=time)
         # info: не нужно делать ездящие города, иначе могут быть проблемы
         self.radio_points.remove(chat)
+
+    @classmethod
+    def get_location_by_uri(cls, uri):
+        for location in cls.locations:
+            log.debug('location.example.uri = %s', location.example.uri)
+            if location.example.uri == uri:
+                return location
 
 
 class Town(MapLocation):

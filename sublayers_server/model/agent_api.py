@@ -168,8 +168,8 @@ class AgentAPI(API):
                 ctx[attr_name] = attr
         return ctx
 
-    def send_init_package(self, time):
-        messages.Init(agent=self.agent, time=time).post()
+    def send_init_car_map(self, time):
+        messages.InitCar(agent=self.agent, time=time).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
         # эффекты
@@ -212,17 +212,7 @@ class AgentAPI(API):
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time):
-        if self.agent.current_location is not None:
-            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
-            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
-            return
-
-        if self.agent.cars:
-            self.car = self.agent.cars[0]
-        else:
-            self.make_car(time=time)
-        assert self.car.hp(time=time) > 0, 'Car HP <= 0'
-
+        messages.InitAgent(agent=self.agent, time=time).post()
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,
@@ -230,7 +220,19 @@ class AgentAPI(API):
             log=log,
         ))
 
-        self.send_init_package(time=time)
+        if self.agent.current_location is not None:
+            log.debug('Need reenter to location')
+            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
+            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
+            return
+
+        if self.agent.example.car and not self.agent.car:
+            self.make_car(time=time)
+        if self.agent.car:
+            assert not self.car.limbo and self.car.hp(time=time) > 0, 'Car HP <= 0 or limbo'
+            self.car = self.agent.car
+            self.send_init_car_map(time=time)
+            return
 
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
@@ -382,12 +384,12 @@ class AgentAPI(API):
 
     @public_method
     def enter_to_location(self, location_id):
-        #log.info('agent %s want enter to town is %s', self.agent, town_id)
+        #log.info('agent %s want enter to location is %s', self.agent, town_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def exit_from_location(self, location_id):
-        #log.info('agent %s want exit from town is %s', self.agent, town_id)
+        #log.info('agent %s want exit from location is %s', self.agent, town_id)
         ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method

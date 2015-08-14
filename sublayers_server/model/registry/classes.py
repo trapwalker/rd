@@ -103,6 +103,9 @@ class Agent(Root):
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента")  # todo: обсудить
 
+    last_town = RegistryLink(caption=u"Последний посещенный город")
+    current_location = RegistryLink(caption=u"Текущая локация")
+
     # todo: current car
     # todo: car list
     # todo: current location link

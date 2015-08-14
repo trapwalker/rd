@@ -67,14 +67,24 @@ class InitTime(Message):
     pass
 
 
-class Init(Message):
+class InitAgent(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
     def as_dict(self):
-        d = super(Init, self).as_dict()
+        d = super(InitAgent, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(time=self.time),
-            cars=[car.as_dict(time=self.time) for car in self.agent.cars],
+            agent=self.agent.as_dict(time=self.time)
+        )
+        return d
+
+
+class InitCar(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def as_dict(self):
+        d = super(InitCar, self).as_dict()
+        d.update(
+            car=self.agent.car,
         )
         return d
 

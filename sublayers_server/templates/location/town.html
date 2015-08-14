@@ -7,18 +7,32 @@
             </div>
         </div>
     </div>
+
     <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
-        {% include nucoil_window.html %}
+        {% if agent.example.car is not None %}
+            {% include nucoil_window.html %}
+        {% else %}
+            {% include npc_no_car.html %}
+        {% end %}
     </div>
+
     {% if town.example.armorer is not None %}
     <div id="townArmorerPageWrap" class="townPageWrap" style="display: none">
-        {% include armorer_window.html %}
+        {% if agent.example.car is not None %}
+            {% include armorer_window.html %}
+        {% else %}
+            {% include npc_no_car.html %}
+        {% end %}
     </div>
     {% end %}
 
     {% if town.example.trader is not None %}
     <div id="townTraderPageWrap" class="townPageWrap" style="display: none">
-        {% include trader_window.html %}
+        {% if agent.example.car is not None %}
+            {% include trader_window.html %}
+        {% else %}
+            {% include npc_no_car.html %}
+        {% end %}
     </div>
     {% end %}
 

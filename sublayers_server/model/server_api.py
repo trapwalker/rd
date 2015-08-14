@@ -29,9 +29,9 @@ class ServerAPI(API):
             if agent_exemplar is None:
                 agent_exemplar = self.server.reg['/agents/user'].instantiate(storage=self.server.reg_agents,
                                                                              name=login, login=login)
-                car_example = agent_exemplar.get_random_car_type().instantiate(storage=self.server.reg_agents)
-                car_example.position = agent_exemplar.position
-                agent_exemplar.car = car_example
+                # car_example = agent_exemplar.get_random_car_type().instantiate(storage=self.server.reg_agents)
+                # car_example.position = agent_exemplar.position
+                # agent_exemplar.car = car_example
 
             log.debug('Use agent exemplar: %s', agent_exemplar)
 

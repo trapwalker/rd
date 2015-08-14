@@ -10,7 +10,7 @@ from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
 from counterset import CounterSet
 from sublayers_server.model.stat_log import StatLogger
-from bson import ObjectId
+from map_location import MapLocation
 
 
 # todo: make agent offline status possible
@@ -27,7 +27,7 @@ class Agent(Object):
         self._connection = connection
         # todo: normalize and check login
         self.server.agents[login] = self
-        self.cars = []  # specific
+        self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
         self.party = None
@@ -45,9 +45,24 @@ class Agent(Object):
 
         # текущий город, если агент не в городе то None
         self.current_location = None
+        self.set_current_location_example(reg_link=example.current_location.uri)
 
-    def create_reg_car(self):
-        pass
+    def set_current_location_life(self, location):
+        self.current_location = location
+        if location is None:
+            self.example.current_location = None
+        else:
+            # log.debug('reg_link = %s', location.example.uri)
+            self.example.current_location = location.example.uri
+            
+    def set_current_location_example(self, reg_link):
+        self.example.current_location = reg_link
+        if reg_link is None:
+            self.current_location = None
+        else:
+            # log.debug('reg_link = %s', reg_link)
+            self.current_location = MapLocation.get_location_by_uri(uri=reg_link)
+            assert self.current_location
 
     @property
     def is_online(self):
@@ -134,8 +149,8 @@ class Agent(Object):
             self.slave_objects.remove(obj)
 
     def append_car(self, car, time):  # specific
-        if car not in self.cars:
-            self.cars.append(car)
+        if not self.car:
+            self.car = car
             car.owner = self
             self.add_observer(observer=car, time=time)
             if self.party:
@@ -143,14 +158,14 @@ class Agent(Object):
                 self.party.add_observer_to_party(observer=car, time=time)
 
     def drop_car(self, car, time, drop_owner=True):
-        if car in self.cars:
+        if car is self.car:
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь убран с карты
                 self.party.drop_observer_from_party(observer=car, time=time)
             self.drop_observer(observer=car, time=time)
             if drop_owner:
                 car.owner = None
-            self.cars.remove(car)
+            self.car = None
 
     def on_message(self, connection, message):
         pass
@@ -163,7 +178,7 @@ class Agent(Object):
         #log.debug('ON_BEFORE INCLUDE !!!!!!')
         if not self.is_online:
             return
-        car = self.cars[0]
+        car = self.car
         self._auto_fire_enable = car.is_auto_fire_enable()
         car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
@@ -175,7 +190,7 @@ class Agent(Object):
         #log.debug('ON_AFTER INCLUDE !!!!!!')
         if not self.is_online:
             return
-        self.cars[0].fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
+        self.car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
@@ -184,7 +199,7 @@ class Agent(Object):
         # party - откуда исключабт, agent - кого исключают
         if not self.is_online:
             return
-        car = self.cars[0]
+        car = self.car
         self._auto_fire_enable = car.is_auto_fire_enable()
         car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
@@ -195,7 +210,7 @@ class Agent(Object):
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
             return
-        self.cars[0].fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
+        self.car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
