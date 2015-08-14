@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.attr import Attribute
+from sublayers_server.model.registry import tree
 
 
 class Inventory(list):
@@ -18,6 +19,12 @@ class Inventory(list):
         if items:
             self.extend(items)
 
+    def prepare(self, value):
+        if isinstance(value, tree.Node):
+            return value
+        #elif isinstance(value, basestring) and :  # todo: (!!!)
+
+
     def instantiate(self):
         pass
 
@@ -28,6 +35,9 @@ class Inventory(list):
         name = self._attr.name
         if hasattr(obj_parent, name):
             return getattr(obj_parent, name)
+
+    def __setitem__(self, key, value):
+        pass
 
     # def __contains__
     # # def __iadd__

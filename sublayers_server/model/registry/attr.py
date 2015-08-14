@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.vectors import Point
+from sublayers_server.model.registry.uri import URI
 
 
 class Attribute(object):
@@ -198,9 +199,6 @@ class TagsAttribute(Attribute):
         def __eq__(self, other):
             return self.value == other
 
-        def __repr__(self):
-            return repr(self.value)
-
         def __len__(self):
             return len(self.value)
 
@@ -303,7 +301,10 @@ class RegistryLink(TextAttribute):
         if raw is None:
             return
 
-        return obj.DISPATCHER.get(raw) if isinstance(raw, basestring) else raw
+        if isinstance(raw, basestring):
+            return obj.DISPATCHER.get(URI(raw))
+
+        return raw  # todo: (!!) Убрать неоднозначность
 
     def to_raw(self, value, obj):
         if value is None or isinstance(value, basestring):
@@ -324,7 +325,10 @@ class RegistryLink(TextAttribute):
         return value
 
     def __set__(self, obj, value):
-        if not isinstance(value, basestring):
+        if isinstance(value, basestring):
+            value = URI(value)
+
+        if not isinstance(value, URI):
             obj._cache[self.name] = value
         super(RegistryLink, self).__set__(obj, value)
 

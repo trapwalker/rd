@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.attr import (
-    Attribute, DocAttribute, RegistryLink, TagsAttribute, InventoryAttribute,)
+    Attribute, DocAttribute, RegistryLink, TagsAttribute,)
 
 import yaml
 
@@ -116,7 +116,7 @@ class Node(Persistent):
                     # todo: Отловить и обработать исключения
                     if link:
                         value = getter()
-                        uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))
+                        uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))  # todo: (!!!)
                         if value and value.can_instantiate:
                             new_value = value.instantiate(owner=inst, **uri['params'])
                             setattr(inst, attr.name, new_value)
@@ -139,7 +139,7 @@ class Node(Persistent):
             if attr.name in values:  # todo: refactor it
                 v = getter()
                 if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
-                    v = v.uri
+                    v = v.uri  # todo: (!!!)
                 elif isinstance(attr, TagsAttribute):
                     v = str(v)
                 d[attr.name] = v
@@ -155,12 +155,6 @@ class Node(Persistent):
 
         for k, v in state.items():
             setattr(self, k, v)
-
-    @property
-    def path(self):
-        if self.storage is None:
-            return
-        return self.storage.get_path(self)
 
     @property
     def uri(self):
@@ -205,7 +199,7 @@ class Node(Persistent):
                 v = str(v)
             elif isinstance(v, Node):
                 if v.storage and v.storage.name == 'registry':
-                    v = v.uri
+                    v = str(v.uri)  # todo: (!!)
                 else:
                     v = v.resume_dict()
             d[attr.name] = v
