@@ -32,6 +32,9 @@ class Attribute(object):
     def __str__(self):
         return '{self.__class__.__name__}(name={self.name}, cls={self.cls})'.format(self=self)
 
+    def prepare(self, obj):
+        pass
+
     def on_init(self, obj):
         """
         :type obj: sublayers_server.model.registry.tree.Node

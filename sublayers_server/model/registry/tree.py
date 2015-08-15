@@ -81,6 +81,10 @@ class Node(object):
         for k, v in kw.items():
             setattr(self, k, v)
 
+    def prepare(self):
+        for attr in self.iter_attrs():
+            attr.prepare(obj=self)
+
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
             tags = set(tags.split())
