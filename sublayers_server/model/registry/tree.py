@@ -70,7 +70,7 @@ class Node(object):
         super(Node, self).__init__()
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
-        self.name = name
+        self.name = name or storage and storage.gen_uid().get_hex()
         self.values = values and values.copy() or {}
         self.storage = storage
 
@@ -112,8 +112,6 @@ class Node(object):
     def instantiate(self, storage=None, name=None, **kw):
         # todo: test to abstract sign
         # todo: clear abstract sign
-        if storage:
-            name = name or storage.gen_uid().get_hex()
         inst = self.__class__(name=name, storage=storage, parent=self, **kw)
         log.debug('Maked new instance %s', inst.uri)
 
