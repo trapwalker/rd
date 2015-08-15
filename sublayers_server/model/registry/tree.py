@@ -43,6 +43,11 @@ class NodeMeta(AttrUpdaterMeta):
         if isinstance(value, Attribute):
             value.attach(name=name, cls=self)
 
+    def __call__(cls, *av, **kw):
+        node = super(NodeMeta, cls).__call__(*av, **kw)
+        node.prepare()
+        return node
+
 
 class Node(object):
     __metaclass__ = NodeMeta
@@ -82,7 +87,8 @@ class Node(object):
             setattr(self, k, v)
 
     def prepare(self):
-        for attr in self.iter_attrs():
+        for attr, getter in self.iter_attrs():
+            assert isinstance(attr, Attribute)
             attr.prepare(obj=self)
 
     def iter_attrs(self, tags=None, classes=None):
