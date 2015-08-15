@@ -6,16 +6,21 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.attr import Attribute
 from sublayers_server.model.registry import tree
 
+from itertools import chain
+
 
 class Inventory(list):
-    def __init__(self, items=None):
+    def __init__(self, abstract, items=None):
         """
         @param Attribute attr: Attribute descriptor
         @param sublayers_server.model.registry.tree.Node obj: Node
         """
+        # todo: Внимание, абстрактыне инвентари (принадлежащие прототипам в реестре) менять нельзя
+        # todo: проксировать унаследованные части инвентаря так, чтобы прототипы можно было менять
         super(Inventory, self).__init__()
+        self.abstract = abstract
         if items:
-            self.extend(items)
+            super(Inventory, self).extend(items)
 
     def __getinitargs__(self):
         return list(self)
@@ -28,26 +33,35 @@ class Inventory(list):
     def instantiate(self):
         pass
 
-    def inherited(self, attr, obj):
-        # todo: cache
-        obj_parent = obj.parent
-        name = attr.name
-        if hasattr(obj_parent, name):
-            return getattr(obj_parent, name)
-
     def __setitem__(self, key, value):
-        pass
+        assert not self.abstract
+        super(Inventory, self).__setitem__(key, value)
 
-    # def __contains__
-    # # def __iadd__
-    # # def __imul__
-    # def __repr__
-    # def __str__
-    # def count
-    # def extend
-    # def index
-    # def remove
-    # #def sort
+    def extend(self, items):
+        assert not self.abstract
+        super(Inventory, self).extend(items)
+
+    def remove(self, item):
+        # todo: remove item by parent uri?
+        assert not self.abstract
+        super(Inventory, self).remove(item)
+
+    def sort(self, *av, **kw):
+        assert not self.abstract
+        super(Inventory, self).sort(*av, **kw)
+
+    def __iadd__(self, other):
+        assert not self.abstract
+        super(Inventory, self).__iadd__(other)
+
+    def __imul__(self, other):
+        assert not self.abstract
+        super(Inventory, self).__imul__(other)
+
+    #def __contains__  # todo: extended filtering
+    #def __repr__
+    #def __str__  # todo: Сделать краткое текстовое представление инвентаря для отладки и логов (алиасы прототипов)
+    #def count    # todo: подсчет предметов по классам, тегам, префиксам путей в реестре
 
 
 class InventoryAttribute(Attribute):
@@ -57,14 +71,16 @@ class InventoryAttribute(Attribute):
 
     # def __set__(self, obj, value):  # todo: do not replace inventory list, but replace goods
 
+    def prepare(self, obj):
+        name = self.name
+        values = obj.values
+        old_value = values.get(name)
+        assert not isinstance(old_value, Inventory)
+        inherited = getattr(obj.parent, name, [])
+        values[name] = Inventory(abstract=obj.abstract, items=chain(old_value or [], inherited))
+
     def get_raw(self, obj):
         """
         :type obj: sublayers_server.model.registry.tree.Node
         """
-        value = obj.values.setdefault(self.name, Inventory())
-        if not isinstance(value, Inventory):
-            # todo: need to remove this temporary code
-            value = Inventory(items=value)
-            obj.values[self.name] = value
-
-        return value
+        return obj.values.get(self.name)
