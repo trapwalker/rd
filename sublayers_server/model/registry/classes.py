@@ -6,18 +6,14 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import (
-    Attribute, RegistryLink, Slot, Position, Parameter, InventoryAttribute,
+    Attribute, RegistryLink, Slot, Position, Parameter,
     FloatAttribute, TextAttribute, TagsAttribute,
 )
+from sublayers_server.model.registry.inv import InventoryAttribute
 from sublayers_server.model.transaction_events import TransactionActivateTank
 
 from math import pi
 import random
-
-
-class Inventory(list):
-    def instantiate(self):
-        pass
 
 
 class Item(Root):
@@ -159,6 +155,7 @@ class Mobile(Root):
     slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
+    # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))

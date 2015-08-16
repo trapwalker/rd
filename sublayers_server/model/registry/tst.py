@@ -50,15 +50,10 @@ if __name__ == '__main__':
     proto_agent = reg['/agents/user/' + random.choice(['pirate', 'raider'])]
     protocar = proto_agent.car
     user = proto_agent.instantiate(storage=a)
-
-    print user.resume().decode('utf-8')
-
+    pp(user.resume_dict())
+    #print user.resume().decode('utf-8')
     car = user.car
-    print car.tags
-    car.tags.update('newtag1 newtag2')
-    car.tags.add('newtag3')
-    car.tags.remove('newtag2')
-    print car.tags
+    print car.resume().decode('utf-8')
+    #it = reg[car.inventory[0]]
+    #it.as_client_dict()
 
-    it = reg[car.inventory[0]]
-    it.as_client_dict()
