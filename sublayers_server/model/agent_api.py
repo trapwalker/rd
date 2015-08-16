@@ -18,7 +18,7 @@ from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent,)
-from sublayers_server.model.transaction_events import TransactionGasStation
+from sublayers_server.model.transaction_events import TransactionGasStation, TransactionHangarChoice
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent,)
@@ -168,8 +168,8 @@ class AgentAPI(API):
                 ctx[attr_name] = attr
         return ctx
 
-    def send_init_package(self, time):
-        messages.Init(agent=self.agent, time=time).post()
+    def send_init_car_map(self, time):
+        messages.InitCar(agent=self.agent, time=time).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
         # эффекты
@@ -212,25 +212,32 @@ class AgentAPI(API):
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time):
-        if self.agent.current_location is not None:
-            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
-            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
-            return
-
-        if self.agent.cars:
-            self.car = self.agent.cars[0]
-        else:
-            self.make_car(time=time)
-        assert self.car.hp(time=time) > 0, 'Car HP <= 0'
-
+        messages.InitAgent(agent=self.agent, time=time).post()
+        log.debug('111')
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,
             P=Point,
             log=log,
         ))
+        log.debug('222')
+        if self.agent.current_location is not None:
+            log.debug('Need reenter to location')
+            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
+            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
+            return
+        log.debug('333')
+        if self.agent.example.car and not self.agent.car:
+            self.make_car(time=time)
+        log.debug('444')
 
-        self.send_init_package(time=time)
+        if self.agent.car:
+            assert not self.car.limbo and self.car.hp(time=time) > 0, 'Car HP <= 0 or limbo'
+            self.car = self.agent.car
+            log.debug('api car = %s', self.car.example)
+
+            self.send_init_car_map(time=time)
+            return
 
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
@@ -382,12 +389,12 @@ class AgentAPI(API):
 
     @public_method
     def enter_to_location(self, location_id):
-        #log.info('agent %s want enter to town is %s', self.agent, town_id)
+        #log.info('agent %s want enter to location is %s', self.agent, town_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def exit_from_location(self, location_id):
-        #log.info('agent %s want exit from town is %s', self.agent, town_id)
+        #log.info('agent %s want exit from location is %s', self.agent, town_id)
         ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
@@ -422,3 +429,8 @@ class AgentAPI(API):
     def fuel_station_active(self, fuel, tank_list):
         log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
         TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel, tank_list=tank_list).post()
+
+    @public_method
+    def choice_car_in_hangar(self, car_number):
+        log.info('agent %s want choice car, with number=%s', self.agent, car_number)
+        TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()

@@ -277,7 +277,8 @@ class Position(Attribute):
             else:
                 raise AttributeError('Wrong value to load Position attribute: {!r}'.format(value))
 
-        return value
+            if value:
+                obj.values[self.name] = value  # todo: optimize
 
 
 class DocAttribute(TextAttribute):

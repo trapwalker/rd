@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ class Item(Root):
     # todo: обсудить диапазон
     amount = FloatAttribute(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
     stack_size = FloatAttribute(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
+    position = Attribute(caption=u'Позиция в инвентаре')
     base_price = FloatAttribute(caption=u'Базовая цена за 1')
 
     description = TextAttribute(caption=u'Расширенное описание предмета', tags='client')
@@ -99,6 +100,9 @@ class Agent(Root):
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента")  # todo: обсудить
 
+    last_town = RegistryLink(caption=u"Последний посещенный город")
+    current_location = RegistryLink(caption=u"Текущая локация")
+
     # todo: current car
     # todo: car list
     # todo: current location link
@@ -157,6 +161,11 @@ class Mobile(Root):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
+    price = Attribute(default=0, caption=u"Цена")
+
+    # Косметика
+    title = Attribute(caption=u"Название автомобиля")
+
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))
 
@@ -198,6 +207,7 @@ class GasStation(MapLocation):
 class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
     trader = RegistryLink(caption=u'Торговец')
+    hangar = RegistryLink(caption=u'Ангар')
 
 
 class Institution(Root):
@@ -212,6 +222,10 @@ class Armorer(Institution):
 
 class Trader(Institution):
     pass
+
+
+class Hangar(Institution):
+    car_list = Attribute(caption=u"Список продаваемых машин")
 
 
 if __name__ == '__main__':

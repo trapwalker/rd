@@ -310,10 +310,7 @@ class ReEnterToLocation(Event):
 
     def on_perform(self):
         super(ReEnterToLocation, self).on_perform()
-        if self.agent in self.location.visitors:
-            self.location.on_re_enter(agent=self.agent, time=self.time)
-        else:
-            log.warning('agent %s try to enter the location %s, but access denied', self.agent, self.location)
+        self.location.on_re_enter(agent=self.agent, time=self.time)
 
 
 class ExitFromMapLocation(Event):
@@ -369,7 +366,7 @@ class ShowInventoryEvent(Event):
         super(ShowInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
         assert (obj is not None) and (obj.inventory is not None)
-        if obj in self.agent.cars:
+        if obj is self.agent.car:
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 

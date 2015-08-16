@@ -259,21 +259,8 @@ var ClientManager = (function () {
 
     // Входящие сообщения
 
-    ClientManager.prototype.Init = function (event) {
-        //console.log('ClientManager.prototype.Init', event);
-        var servtime = event.time;
-        var v_forward = event.cars[0].v_forward;
-        var v_backward = event.cars[0].v_backward;
-        var radius_visible = event.cars[0].r;
-        var uid = event.cars[0].uid;
-        var role = event.cars[0].role;
-        var state = this._getState(event.cars[0].state);
-        var hp_state = this._getHPState(event.cars[0].hp_state);
-        var fuel_state = this._getFuelState(event.cars[0].fuel_state);
-        var fireSectors = this._getSectors(event.cars[0].fire_sectors);
-
-        clock.setDt((new Date().getTime() - servtime) / 1000.);
-
+    ClientManager.prototype.InitAgent = function(event){
+        console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
@@ -283,6 +270,22 @@ var ClientManager = (function () {
                 chat.page_party.buttons.create.text('Отряд');
             }
         }
+    };
+
+    ClientManager.prototype.InitCar = function (event) {
+        console.log('ClientManager.prototype.InitCar', event);
+        var servtime = event.time;
+        var v_forward = event.car.v_forward;
+        var v_backward = event.car.v_backward;
+        var radius_visible = event.car.r;
+        var uid = event.car.uid;
+        var role = event.car.role;
+        var state = this._getState(event.car.state);
+        var hp_state = this._getHPState(event.car.hp_state);
+        var fuel_state = this._getFuelState(event.car.fuel_state);
+        var fireSectors = this._getSectors(event.car.fire_sectors);
+
+        clock.setDt((new Date().getTime() - servtime) / 1000.);
 
         if (!user.userCar) {
             // создать машинку
@@ -623,6 +626,10 @@ var ClientManager = (function () {
             data:  { location_id: event.location.uid },
             success: function(data) {
                 console.log('ClientManager.prototype.EnterToLocation Answer');
+
+                if (locationManager.in_location)
+                    clientManager.ExitFromLocation();
+
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
                 locationManager.location_uid = event.location.uid;
@@ -638,7 +645,7 @@ var ClientManager = (function () {
         });
     };
 
-    ClientManager.prototype.ExitFromLocation = function (event) {
+    ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         locationManager.in_location = false;
         chat.showChatInMap();
@@ -1101,6 +1108,19 @@ var ClientManager = (function () {
             params: {
                 tank_list: locationManager.nucoil.tank_list,
                 fuel: fuel
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHangarCarChoice = function (car_number) {
+        console.log(car_number);
+        var mes = {
+            call: "choice_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_number: car_number
             }
         };
         rpcCallList.add(mes);

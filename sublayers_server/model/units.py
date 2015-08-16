@@ -70,11 +70,9 @@ class Unit(Observer):
         return self.hp_state.hp(t=time)
 
     def load_inventory(self, time):
-        for item_uri in self.example.inventory:
-            log.debug(item_uri)
-            item_example = self.server.reg[item_uri]
-            ItemState(server=self.server, time=time, example=item_example)\
-                .set_inventory(time=time, inventory=self.inventory)
+        for item_example in self.example.inventory:
+            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
+                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
         # ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
         # ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
@@ -96,6 +94,13 @@ class Unit(Observer):
         #                                                                              inventory=self.inventory)
         # ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
         #                                                                              inventory=self.inventory)
+
+    def save_inventory(self, time):
+        self.example.inventory = []
+        for item_rec in self.inventory.get_all_items():
+            item_rec['item'].example.position = item_rec['position']
+            item_rec['item'].example.amount = item_rec['item'].val(t=time)
+            self.example.inventory.append(item_rec['item'].example)
 
     @property
     def max_hp(self):
@@ -227,8 +232,9 @@ class Unit(Observer):
         # обновляем статистику по живым юнитам
         self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
 
-        # очистка всех визиторов из инвентаря машинки
+        # сохранение инвентаря и очистка всех визиторов из инвентаря машинки
         self.inventory.del_all_visitors(time=event.time)
+        self.save_inventory(time=event.time)
 
         super(Unit, self).on_before_delete(event=event)
 

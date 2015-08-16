@@ -83,6 +83,13 @@ class Node(object):
         if storage:
             storage.put(self)
 
+    def node_hash(self):
+        if self.uri:
+            return str(self.uri)
+        elif self.parent:
+            return self.parent.node_hash()
+        raise Exception('try to get node hash in wrong node')  # todo: exception specify
+
     def prepare(self):
         for attr, getter in self.iter_attrs():
             assert isinstance(attr, Attribute)

@@ -19,9 +19,9 @@ if __name__ == '__main__':
 
     reg = storage.Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
     # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    # jeep = reg['/mobiles/cars/jeep']
+    # sedan = reg['/mobiles/cars/sedan']
     #
-    # mj0 = jeep.instantiate(storage=c)
+    # mj0 = sedan.instantiate(storage=c)
     # mj0.slot_CC = None
     # mj0.slot_FC.ammo_per_second = 10
     #
@@ -47,13 +47,15 @@ if __name__ == '__main__':
     # pp(mj3.__getstate__())
 
     a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    proto_agent = reg['/agents/user/' + random.choice(['pirate', 'raider'])]
-    protocar = proto_agent.car
+    proto_agent = reg['/agents/user']
+    protocar = reg['/mobiles/cars/sedan']
     user = proto_agent.instantiate(storage=a)
     pp(user.resume_dict())
     #print user.resume().decode('utf-8')
-    car = user.car
+    car = protocar.instantiate()
+    user.car = car
     print car.resume().decode('utf-8')
     #it = reg[car.inventory[0]]
     #it.as_client_dict()
+    rt = reg['/poi/radio_towers/radio_tower1']
 
