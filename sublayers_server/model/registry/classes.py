@@ -21,6 +21,7 @@ class Item(Root):
     # todo: обсудить диапазон
     amount = FloatAttribute(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
     stack_size = FloatAttribute(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
+    position = Attribute(caption=u'Позиция в инвентаре')
     base_price = FloatAttribute(caption=u'Базовая цена за 1')
 
     description = TextAttribute(caption=u'Расширенное описание предмета', tags='client')

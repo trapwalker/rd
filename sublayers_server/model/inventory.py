@@ -42,6 +42,9 @@ class Inventory(object):
             self.visitors.remove(agent)
         InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
 
+    def get_all_items(self):
+        return [dict({'item': item, 'position': self.get_position(item=item)}) for item in self._items.values()]
+
     def add_item(self, item, time, position=None):
         if position is None:
             position = self.get_free_position()

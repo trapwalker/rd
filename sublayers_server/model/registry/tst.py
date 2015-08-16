@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import sys
 import logging
 log = logging.getLogger(__name__)
@@ -47,13 +47,15 @@ if __name__ == '__main__':
     # pp(mj3.__getstate__())
 
     a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    proto_agent = reg['/agents/user/' + random.choice(['pirate', 'raider'])]
-    protocar = proto_agent.car
+    proto_agent = reg['/agents/user']
+    protocar = reg['/mobiles/cars/sedan']
     user = proto_agent.instantiate(storage=a)
     pp(user.resume_dict())
     #print user.resume().decode('utf-8')
-    car = user.car
+    car = protocar.instantiate()
+    user.car = car
     print car.resume().decode('utf-8')
     #it = reg[car.inventory[0]]
     #it.as_client_dict()
+    rt = reg['/poi/radio_towers/radio_tower1']
 

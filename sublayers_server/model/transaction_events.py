@@ -93,7 +93,7 @@ class TransactionHangarChoice(TransactionEvent):
         car_proto = self.server.reg[self.agent.current_location.example.hangar.car_list[self.car_number]]
 
         if self.agent.example.balance >= car_proto.price:
-            car_example = car_proto.instantiate(storage=self.server.reg_agents)
+            car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             self.agent.example.car = car_example
             self.agent.example.balance -= car_proto.price
