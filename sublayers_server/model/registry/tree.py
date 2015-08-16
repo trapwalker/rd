@@ -68,6 +68,7 @@ class Node(object):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self._prepared_attrs = set()  # todo: optimize
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name or storage and storage.gen_uid().get_hex()
@@ -89,7 +90,8 @@ class Node(object):
     def prepare(self):
         for attr, getter in self.iter_attrs():
             assert isinstance(attr, Attribute)
-            attr.prepare(obj=self)
+            if attr.name not in self._prepared_attrs:
+                attr.prepare(obj=self)
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -110,31 +112,9 @@ class Node(object):
                 yield attr, getter
 
     def instantiate(self, storage=None, name=None, **kw):
-        # todo: test to abstract sign
-        # todo: clear abstract sign
-        inst = self.__class__(name=name, storage=storage, parent=self, **kw)
+        assert self.abstract
+        inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
         log.debug('Maked new instance %s', inst.uri)
-
-        for attr, getter in self.iter_attrs():
-            if isinstance(attr, RegistryLink):
-                if attr.need_to_instantiate:
-                    link = attr.get_raw(self)
-                    assert not isinstance(link, URI)
-                    if link:
-                        link = URI(link)
-                    # todo: Отловить и обработать исключения
-                    if link:
-                        value = getter()
-                        if value and value.can_instantiate:
-                            new_value = value.instantiate(owner=inst, **dict(link.params))
-                            setattr(inst, attr.name, new_value)
-                            # todo: тест на негомогенных владельцев
-            # elif isinstance(attr, InventoryAttribute):
-            #     from sublayers_server.model.registry.classes import Inventory  # todo: refactor
-            #     value = getter()
-            #     new_value = value.instantiate() if value else Inventory()
-            #     setattr(inst, attr.name, new_value)
-
         return inst
 
     def __getstate__(self):

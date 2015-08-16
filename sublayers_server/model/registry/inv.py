@@ -5,58 +5,81 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.attr import Attribute
 from sublayers_server.model.registry import tree
+from sublayers_server.model.registry.uri import URI
 
 from itertools import chain
 
 
-class Inventory(list):
-    def __init__(self, abstract, items=None):
+class BaseInventory(list):
+    def __init__(self, items=None):
         """
-        @param Attribute attr: Attribute descriptor
-        @param sublayers_server.model.registry.tree.Node obj: Node
         """
-        # todo: Внимание, абстрактыне инвентари (принадлежащие прототипам в реестре) менять нельзя
         # todo: проксировать унаследованные части инвентаря так, чтобы прототипы можно было менять
-        super(Inventory, self).__init__()
-        self.abstract = abstract
-        if items:
-            super(Inventory, self).extend(items)
+        super(BaseInventory, self).__init__(items or [])
+
+    def prepare(self, value):
+        if isinstance(value, basestring):
+            return URI(value)
+        else:
+            return value
 
     def __getinitargs__(self):
         return list(self)
 
-    def prepare(self, value):
-        if isinstance(value, tree.Node):
-            return value
-        #elif isinstance(value, basestring) and :  # todo: (!!!)
 
-    def instantiate(self):
-        pass
+class ProtoInventory(BaseInventory):
+    pass
+
+
+class Inventory(BaseInventory):
+    def __init__(self, items=None):
+        """
+        """
+        # todo: проксировать унаследованные части инвентаря так, чтобы прототипы можно было менять
+        super(BaseInventory, self).__init__()
+        self.extend(items or [])
+
+    def prepare(self, item):
+        item = super(Inventory, self).prepare(item)
+        uri = None
+        if item is None:
+            return
+        elif isinstance(item, URI):
+            uri = item
+            value = tree.Node.DISPATCHER.get(uri)  # todo: exceptions
+        else:
+            value = item
+
+        if value.abstract and value.can_instantiate:
+            uri_params = dict(uri.params or []) if uri else {}
+            value = value.instantiate(**uri_params)
+
+        return value
+
 
     def __setitem__(self, key, value):
-        assert not self.abstract
-        super(Inventory, self).__setitem__(key, value)
+        super(Inventory, self).__setitem__(key, self.prepare(value))
+
+    def append(self, item):
+        super(Inventory, self).append(self.prepare(item))
 
     def extend(self, items):
-        assert not self.abstract
-        super(Inventory, self).extend(items)
+        for item in items:
+            self.append(item)
 
     def remove(self, item):
         # todo: remove item by parent uri?
-        assert not self.abstract
         super(Inventory, self).remove(item)
 
     def sort(self, *av, **kw):
-        assert not self.abstract
         super(Inventory, self).sort(*av, **kw)
 
-    def __iadd__(self, other):
-        assert not self.abstract
-        super(Inventory, self).__iadd__(other)
+    def __iadd__(self, others):
+        for item in others:
+            self.append(item)
 
     def __imul__(self, other):
-        assert not self.abstract
-        super(Inventory, self).__imul__(other)
+        raise Exception('Unsupported method')
 
     #def __contains__  # todo: extended filtering
     #def __repr__
@@ -72,15 +95,15 @@ class InventoryAttribute(Attribute):
     # def __set__(self, obj, value):  # todo: do not replace inventory list, but replace goods
 
     def prepare(self, obj):
+        super(InventoryAttribute, self).prepare(obj)
         name = self.name
         values = obj.values
-        old_value = values.get(name)
-        assert not isinstance(old_value, Inventory)
-        inherited = getattr(obj.parent, name, [])
-        values[name] = Inventory(abstract=obj.abstract, items=chain(old_value or [], inherited))
 
-    def get_raw(self, obj):
-        """
-        :type obj: sublayers_server.model.registry.tree.Node
-        """
-        return obj.values.get(self.name)
+        old_value = values.get(name)
+        inherited = getattr(obj.parent, name, [])
+
+        if obj.abstract:
+            values[name] = ProtoInventory(items=chain(old_value or [], inherited))
+        else:
+            if not isinstance(old_value, Inventory):
+                values[name] = Inventory(items=chain(old_value or [], inherited))

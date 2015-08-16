@@ -155,6 +155,7 @@ class Mobile(Root):
     slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
+    # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))
