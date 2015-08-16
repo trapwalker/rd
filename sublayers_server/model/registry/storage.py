@@ -219,9 +219,7 @@ class Registry(AbstractStorage):
         self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
 
     def get_local(self, path):
-        if path and path[0] == '':
-            path = path[1:]
-
+        path = list(path)
         node = self.root
         while path:
             name = path.pop(0)
@@ -279,7 +277,8 @@ class Registry(AbstractStorage):
         if cls is None:
             raise NodeClassError('Node class unspecified on path: {}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
-        return cls(name=name, parent=parent, owner=owner, storage=self, values=attrs)
+        abstract = attrs.pop('abstract', True)
+        return cls(name=name, parent=parent, owner=owner, storage=self, abstract=abstract, values=attrs)
 
     def load(self, path):
         root = None

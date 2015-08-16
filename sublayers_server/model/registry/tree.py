@@ -53,13 +53,13 @@ class Node(object):
     __metaclass__ = NodeMeta
 
     # todo: override attributes in subclasses
-    abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
-    parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
+    #abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
+    #parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
     tags = TagsAttribute(caption=u'Теги', tags="client")
 
-    def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, **kw):
+    def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, abstract=False, **kw):
         """
         @param str name: Name of node
         @param Node parent: Parent of node
@@ -72,20 +72,16 @@ class Node(object):
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name or storage and storage.gen_uid().get_hex()
-        self.values = values and values.copy() or {}
-        self.storage = storage
-
         self.owner = owner
         self.parent = parent
+        self.abstract = abstract
+
+        self.values = values and values.copy() or {}
+        self.values.update(kw)
+        self.storage = storage
+
         if storage:
             storage.put(self)
-
-        # for attr, getter in self.iter_attrs():
-        #     attr.on_init(self)
-        # todo: сделать правильно
-
-        for k, v in kw.items():
-            setattr(self, k, v)
 
     def prepare(self):
         for attr, getter in self.iter_attrs():
@@ -198,9 +194,6 @@ class Node(object):
     def resume(self):
         d = self.resume_dict()
         return yaml.dump(d, default_flow_style=False, allow_unicode=True)
-
-    def _set_attr_value(self, name, value):
-        self.values[name] = value
 
     def _del_attr_value(self, name):
         del(self.values[name])

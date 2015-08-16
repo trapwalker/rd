@@ -14,12 +14,11 @@ class AttributeError(Exception):
 
 
 class Attribute(object):
-    def __init__(self, default=None, init=None, doc=None, caption=None, tags=None):
+    def __init__(self, default=None, doc=None, caption=None, tags=None):
         # todo: add param: null
         self.name = None
         self.cls = None
         self.default = default
-        self.init = init
         self.doc = doc
         self.caption = caption
         if tags is None:
@@ -40,24 +39,11 @@ class Attribute(object):
     def prepare(self, obj):
         obj._prepared_attrs.add(self.name)
 
-    def on_init(self, obj):
-        """
-        :type obj: sublayers_server.model.registry.tree.Node
-        """
-        if self.init:
-            value = self.init
-            if callable(value):
-                value = value()
-            obj.values[self.name] = self.to_raw(value, obj)
-
     def from_str(self, s, obj):
         return s
 
     def from_raw(self, raw, obj):
         return self.from_str(raw, obj) if isinstance(raw, basestring) else raw
-
-    def to_raw(self, value, obj):
-        return value
 
     def __get__(self, obj, cls):
         if obj is None:
@@ -77,7 +63,7 @@ class Attribute(object):
             return self.default
 
     def __set__(self, obj, value):
-        obj.values[self.name] = self.to_raw(value, obj)
+        obj.values[self.name] = value
 
     def __delete__(self, obj):
         obj._del_attr_value(self.name)
@@ -323,7 +309,7 @@ class RegistryLink(TextAttribute):
             obj.values[self.name] = raw
         # todo: Валидировать нестроковое значение в абстрактном объекте
 
-        if obj.abstract:
+        if obj.abstract or obj.storage and obj.storage.name == 'registry':
             return
 
         from sublayers_server.model.registry.tree import Node  # todo: optimize
@@ -339,15 +325,9 @@ class RegistryLink(TextAttribute):
                 obj=obj, attr=self, raw=raw))
 
         if self.need_to_instantiate and linked_node.can_instantiate and linked_node.abstract:
-            obj.values[self.name] = self.to_raw(linked_node.instantiate(owner=obj, **uri_params), obj)
+            value = linked_node.instantiate(owner=obj, **uri_params)
+            obj.values[self.name] = None if value is None else (value.uri or value)
         # todo: закешировать неинстанцируемый нод
-
-    def to_raw(self, value, obj):
-        assert not isinstance(value, basestring)
-        if value is None:
-            return value
-
-        return value.uri or value
 
     def __get__(self, obj, cls):
         if obj is None:
@@ -358,12 +338,18 @@ class RegistryLink(TextAttribute):
 
         if self.name in obj._cache:
             value = obj._cache[self.name]
-        else:
+        elif self.name in obj.values:
             value = obj.values.get(self.name)
             assert not isinstance(value, basestring)
-            if isinstance(value, URI):
-                value = obj.DISPATCHER.get(value)
-                obj._cache[self.name] = value
+        elif hasattr(obj.parent, self.name):
+            value = getattr(obj.parent, self.name)
+        else:
+            value = self.default
+            assert not isinstance(value, basestring)
+
+        if isinstance(value, URI):  # todo: Проверить схему URI, возможно ресурс доставать не из реестра
+            value = obj.DISPATCHER.get(value)
+            obj._cache[self.name] = value
 
         return value
 

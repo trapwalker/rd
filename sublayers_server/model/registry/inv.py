@@ -102,7 +102,7 @@ class InventoryAttribute(Attribute):
         old_value = values.get(name)
         inherited = getattr(obj.parent, name, [])
 
-        if obj.abstract:
+        if obj.abstract or obj.storage and obj.storage.name == 'registry':
             values[name] = ProtoInventory(items=chain(old_value or [], inherited))
         else:
             if not isinstance(old_value, Inventory):

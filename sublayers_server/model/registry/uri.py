@@ -15,7 +15,7 @@ class URIFormatError(Exception):
 
 def splitparams(params_str):
     params = params_str.split('&') if params_str else []
-    return [splitvalue(s) for s in params]
+    return tuple([splitvalue(s) for s in params])
 
 
 class URI(tuple):
@@ -48,7 +48,7 @@ class URI(tuple):
         scheme = d.get('scheme')
         storage = d.get('storage')
         path = d.get('path', '')
-        path = path.split('/')  # todo: add tailslash
+        path = tuple(path.split('/'))  # todo: add tailslash
         assert path[0] == ''
         path = path[1:]
         params = d.get('params', '') or ''
