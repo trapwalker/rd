@@ -48,9 +48,10 @@ class Unit(Observer):
         self.fire_sectors = []
         """@type: list[sublayers_server.model.sectors.FireSector]"""
 
-        # костыль для инвенторя
+        # загрузка инвенторя
+        # todo: забрать из реестра размер инвентаря
         self.inventory = Inventory(max_size=10, owner=self, time=time)
-        self.set_def_items(time=time)
+        self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
 
@@ -68,33 +69,33 @@ class Unit(Observer):
     def hp(self, time):
         return self.hp_state.hp(t=time)
 
-    def set_def_items(self, time):
-        # for item_uri in self.example.inventory:
-        #     log.debug(item_uri)
-        #     item_example = self.server.reg[item_uri]
-        #     ItemState(server=self.server, time=time, example=item_example)\
-        #         .set_inventory(time=time, inventory=self.inventory)
+    def load_inventory(self, time):
+        for item_uri in self.example.inventory:
+            log.debug(item_uri)
+            item_example = self.server.reg[item_uri]
+            ItemState(server=self.server, time=time, example=item_example)\
+                .set_inventory(time=time, inventory=self.inventory)
 
-        ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
-        ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
-        f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
-        f_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
-        e_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
-        e_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
-
-        self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
-        self.ammo1.set_inventory(time=time, inventory=self.inventory)
-        self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
-        self.ammo2.set_inventory(time=time, inventory=self.inventory)
-
-        ItemState(server=self.server, time=time, example=f_tank10_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        ItemState(server=self.server, time=time, example=f_tank20_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        ItemState(server=self.server, time=time, example=e_tank10_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
+        # ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
+        # ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
+        # f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
+        # f_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
+        # e_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
+        # e_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
+        #
+        # self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
+        # self.ammo1.set_inventory(time=time, inventory=self.inventory)
+        # self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
+        # self.ammo2.set_inventory(time=time, inventory=self.inventory)
+        #
+        # ItemState(server=self.server, time=time, example=f_tank10_cls).set_inventory(time=time,
+        #                                                                              inventory=self.inventory)
+        # ItemState(server=self.server, time=time, example=f_tank20_cls).set_inventory(time=time,
+        #                                                                              inventory=self.inventory)
+        # ItemState(server=self.server, time=time, example=e_tank10_cls).set_inventory(time=time,
+        #                                                                              inventory=self.inventory)
+        # ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
+        #                                                                              inventory=self.inventory)
 
     @property
     def max_hp(self):
