@@ -48,6 +48,27 @@ class TransactionActivateTank(TransactionActivateItem):
             .set_inventory(time=self.time, inventory=inventory, position=position)
 
 
+class TransactionActivateAmmoBullets(TransactionActivateItem):
+    # Активация патронов - пройти по всем орудиям и зарядиться в подходящие
+    def on_perform(self):
+        super(TransactionActivateAmmoBullets, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.target)
+        inventory = self.inventory
+        item = self.item
+
+        # проверка входных параметров
+        if not isinstance(obj, Mobile):
+            log.warning('Item is None or Tank is not Fuel')
+            return
+
+        # проходим по всем оружиям и если патроны подходят, то заряжаем
+        for weapon in obj.weapon_list():
+            if item.example.parent in weapon.items_cls_list:
+                weapon.set_item(item=item, time=self.time)
+
+
 class TransactionGasStation(TransactionEvent):
     def __init__(self, agent, fuel, tank_list, **kw):
         super(TransactionGasStation, self).__init__(server=agent.server, **kw)

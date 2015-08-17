@@ -12,7 +12,7 @@ from sublayers_server.model.registry.attr import (
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.tag import TagsAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink, Slot
-from sublayers_server.model.transaction_events import TransactionActivateTank
+from sublayers_server.model.transaction_events import TransactionActivateTank, TransactionActivateAmmoBullets
 
 from math import pi
 import random
@@ -59,6 +59,12 @@ class TankFull(Tank):
     @classmethod
     def activate(cls):
         return TransactionActivateTank
+
+
+class AmmoBullets(Item):
+    @classmethod
+    def activate(cls):
+        return TransactionActivateAmmoBullets
 
 
 class TankEmpty(Tank):

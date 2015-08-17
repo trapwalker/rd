@@ -74,27 +74,6 @@ class Unit(Observer):
             ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
                 .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
-        # ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
-        # ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
-        # f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
-        # f_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
-        # e_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
-        # e_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
-        #
-        # self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
-        # self.ammo1.set_inventory(time=time, inventory=self.inventory)
-        # self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
-        # self.ammo2.set_inventory(time=time, inventory=self.inventory)
-        #
-        # ItemState(server=self.server, time=time, example=f_tank10_cls).set_inventory(time=time,
-        #                                                                              inventory=self.inventory)
-        # ItemState(server=self.server, time=time, example=f_tank20_cls).set_inventory(time=time,
-        #                                                                              inventory=self.inventory)
-        # ItemState(server=self.server, time=time, example=e_tank10_cls).set_inventory(time=time,
-        #                                                                              inventory=self.inventory)
-        # ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
-        #                                                                              inventory=self.inventory)
-
     def save_inventory(self, time):
         self.example.inventory = []
         for item_rec in self.inventory.get_all_items():
@@ -114,13 +93,12 @@ class Unit(Observer):
         for w_ex in self.example.iter_weapons():
             sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
             if w_ex.is_auto:
-                weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo],
-                                    dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)
-                # weapon.set_item(item=self.ammo2, time=time)
+                WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo], dv=w_ex.ammo_per_shot,
+                           ddvs=w_ex.ammo_per_second, example=w_ex)
             else:
-                weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
-                                         dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
-                # weapon.set_item(item=self.ammo1, time=time)
+                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
+                                dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge,
+                                example=w_ex)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -281,6 +259,11 @@ class Unit(Observer):
         super(Unit, self).save(time=time)
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
+
+    def weapon_list(self):
+        for sector in self.fire_sectors:
+            for w in sector.weapon_list:
+                yield w
 
 
 class Mobile(Unit):

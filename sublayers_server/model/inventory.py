@@ -101,7 +101,7 @@ class Inventory(object):
     def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():
             item = self._items[position]
-            if (item.example in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
+            if (item.example.parent in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
                 return item
         return None
 
@@ -293,7 +293,7 @@ class ItemState(object):
 
     def add_another_item(self, item, time):
         assert not self.limbo and not item.limbo
-        if self.example != item.example:
+        if self.example.parent != item.example.parent:
             if self.inventory is item.inventory:
                 self.change_position(position=self.inventory.get_position(item=item), time=time)
             return
@@ -391,7 +391,7 @@ class Consumer(object):
         if self.item is not None:
             self.item.unlinking(consumer=self)
         # пытаемся зарядить итем
-        if (item is not None) and (item.example in self.items_cls_list):
+        if (item is not None) and (item.example.parent in self.items_cls_list):
             item.linking(consumer=self)
         # если нужно, пытаемся восстановить использование
         if started:
@@ -406,7 +406,7 @@ class Consumer(object):
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
-            balance_cls_list = [item.example]
+            balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
         if self.is_started:
             self.on_stop(item=item, time=time)
