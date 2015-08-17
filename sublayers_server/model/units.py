@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
 from sublayers_server.model.fuel_state import FuelState
-from sublayers_server.model.base import Observer
+from sublayers_server.model.base import Observer, VisibleObject
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.hp_task import HPTask
@@ -14,12 +14,23 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
-    SearchZones, Die, FireAutoTestEvent
+    SearchZones, FireAutoTestEvent
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
 
 from math import radians
+
+
+class POIStash(VisibleObject):
+    def __init__(self, time, **kw):
+        super(POIStash, self).__init__(time=time, **kw)
+        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+
+    def load_inventory(self, time):
+        for item_example in self.example.inventory:
+            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
+                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
 
 class Unit(Observer):
@@ -50,7 +61,7 @@ class Unit(Observer):
 
         # загрузка инвенторя
         # todo: забрать из реестра размер инвентаря
-        self.inventory = Inventory(max_size=10, owner=self, time=time)
+        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
         self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
@@ -187,6 +198,19 @@ class Unit(Observer):
             self.owner.example.balance += self.example.price
             # todo: возможно это нужно перенести
             self.owner.example.car = None
+
+        # создать труп с инвентарём
+        if not self.inventory.is_empty():
+            # создать экземпляр данного сундука
+            ex_stash = self.server.reg['/poi/stash'].instantiate(position=self.position(event.time),
+                                                                 inventory_size=self.example.inventory_size)
+            # заполнить инвентарь сундука
+            for item_rec in self.inventory.get_all_items():
+                item_rec['item'].example.position = item_rec['position']
+                item_rec['item'].example.amount = item_rec['item'].val(t=event.time)
+                self.example.inventory.append(item_rec['item'].example)
+
+            POIStash(server=self.server, time=event.time, example=ex_stash)
 
 
     def as_dict(self, time):

@@ -167,6 +167,7 @@ class Mobile(Root):
     slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
+    inventory_size = Attribute(caption=u"размер инвентаря")
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
@@ -197,6 +198,10 @@ class POI(Root):
     position = Position(caption=u"Координаты")
     p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
 
+
+class PoiStash(POI):
+    inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')
+    inventory_size = Attribute(caption=u"размер инвентаря")
 
 class RadioTower(POI):
     p_observing_range = Parameter(default=1000, caption=u"Радиус покрытия")

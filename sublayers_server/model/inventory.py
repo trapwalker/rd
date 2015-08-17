@@ -116,6 +116,8 @@ class Inventory(object):
     def send_inventory(self, agent, time):
         InventoryShowMessage(agent=agent, time=time, inventory=self).post()
 
+    def is_empty(self):
+        return len(self._items.values()) == 0
 
 class ItemTask(TaskSingleton):
     def __init__(self, dv=None, ddvs=None, consumer=None, action=None, **kw):

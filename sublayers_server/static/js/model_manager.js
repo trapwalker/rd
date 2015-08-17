@@ -225,6 +225,8 @@ var ClientManager = (function () {
                 obj_marker.updateLabel(event.object.town_name);
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
+            if (obj.cls == 'POIStash')
+                obj_marker.updateLabel('loot');
 
         }
     };
@@ -417,6 +419,7 @@ var ClientManager = (function () {
                 //console.log('Radio Towers are hidden');
                 //break;
             case 'Town':
+            case 'POIStash':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;

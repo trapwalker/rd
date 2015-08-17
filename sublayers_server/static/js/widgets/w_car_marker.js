@@ -104,6 +104,10 @@ var WCarMarker = (function (_super) {
             icon_id = 7;
         }
 
+        if(car.cls == 'POIStash') {
+            icon_id = 3;
+        }
+
         if(car.cls == 'Town') {
             marker.setIcon(iconsLeaflet.getIcon('icon_city'));
             return;
