@@ -63,8 +63,9 @@ class MapLocation(Observer):
         agent.set_current_location_life(location=self)
         self.visitors.append(agent)
 
-        # Отправить инвентарь из экземпляра на клиент
-        ExamplesShowMessage(agent=agent, time=time).post()
+        # Отправить инвентарь из экземпляра на клиент, при условии, что есть машинка
+        if agent.example.car:
+            ExamplesShowMessage(agent=agent, time=time).post()
 
     def on_re_enter(self, agent, time):
         if agent in self.visitors:

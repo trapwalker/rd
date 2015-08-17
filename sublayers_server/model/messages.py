@@ -599,68 +599,34 @@ class ExamplesShowMessage(Message):
     def as_dict(self):
         d = super(ExamplesShowMessage, self).as_dict()
 
-        example10 = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
-        example20 = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
-
-        empty_tank10 = dict(
-            cls='ItemState',
-            balance_cls='tank10',
-            example=example10.as_client_dict(),
-            max_val=1,
-            t0=self.time,
-            val0=1,
-            dvs=0,
-        )
-
-        empty_tank20 = dict(
-            cls='ItemState',
-            balance_cls='tank20',
-            example=example20.as_client_dict(),
-            max_val=1,
-            t0=self.time,
-            val0=1,
-            dvs=0,
-        )
-
-        d.update(
-            # slots=[{v[0]:v[1].as_client_dict()} for v in self.agent.example.car.iter_slots()], # довести до ума
-            armorer_slots=[
-                {
-                    'name': 'slot_FC',
-                    'value': example10.as_client_dict()
-                },
-                {
-                    'name': 'slot_CC',
-                    'value': None
-                },
-                {
-                    'name': 'slot_BR',
-                    'value': None
-                },
-                {
-                    'name': 'slot_BL',
-                    'value': None
-                },
-            ],
-            inventory=dict(
-                max_size=10,
-                items=[
-                    {
-                        'item': empty_tank10,
-                        'position': 1
-                    },
-                    {
-                        'item': empty_tank20,
-                        'position': 2
-                    },
-                    {
-                        'item': empty_tank10,
-                        'position': 4
-                    }
-                ],
-                owner_id=self.agent.uid
+        if self.agent.example.car:
+            d.update(
+                armorer_slots=[{'name': v[0],
+                                'value': None if v[1] is None else v[1].as_client_dict()}
+                               for v in self.agent.example.car.iter_slots()]
             )
-        )
+
+            d.update(
+                inventory=dict(
+                    max_size=10,
+                    items=[
+                        {
+                            'position': ex.position,
+                            'item': dict(
+                                        cls='ItemState',
+                                        balance_cls=ex.parent.node_hash(),
+                                        example=ex.as_client_dict(),
+                                        max_val=ex.stack_size,
+                                        t0=self.time,
+                                        val0=ex.amount,
+                                        dvs=0,
+                                    )
+
+                        }
+                        for ex in self.agent.example.car.inventory],
+                    owner_id=self.agent.uid
+                )
+            )
         return d
 
 

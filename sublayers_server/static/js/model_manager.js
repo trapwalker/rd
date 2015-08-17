@@ -705,14 +705,16 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ExamplesShowMessage = function (event) {
-        console.log('ClientManager.prototype.ExampleInventoryMessage', event);
-        var inv = this._getInventory(event.inventory);
-        if (inventoryList.getInventory(inv.owner_id))
-            inventoryList.delInventory(inv.owner_id);
-        inventoryList.addInventory(inv);
-        locationManager.nucoil.update();
-        locationManager.armorer.update(event.armorer_slots);
-        locationManager.trader.updatePlayerInv();
+        console.log('ClientManager.prototype.ExamplesShowMessage', event);
+        if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
+            var inv = this._getInventory(event.inventory);
+            if (inventoryList.getInventory(inv.owner_id))
+                inventoryList.delInventory(inv.owner_id);
+            inventoryList.addInventory(inv);
+            locationManager.nucoil.update();
+            locationManager.armorer.update(event.armorer_slots);
+            locationManager.trader.updatePlayerInv();
+        }
     };
 
     ClientManager.prototype.TraderInventoryShowMessage = function (event) {
