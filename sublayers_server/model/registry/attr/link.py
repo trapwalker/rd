@@ -21,8 +21,8 @@ class RegistryLink(TextAttribute):
         else:
             raw = self.default
 
-        if raw is None:
-            return
+        if raw is None or raw is False:
+            return raw
         elif isinstance(raw, basestring):
             raw = URI(raw)
             obj.values[self.name] = raw
@@ -67,7 +67,10 @@ class RegistryLink(TextAttribute):
             assert not isinstance(value, basestring)
 
         if isinstance(value, URI):  # todo: Проверить схему URI, возможно ресурс доставать не из реестра
-            value = obj.DISPATCHER.get(value)
+            uri = value
+            value = obj.DISPATCHER.get(uri)
+            if value is None:
+                log.warning('Node {} is not found'.format(uri))
             obj._cache[self.name] = value
 
         return value
@@ -83,5 +86,5 @@ class RegistryLink(TextAttribute):
 
 class Slot(RegistryLink):
     LOCK_URI = "reg://registry/items/slot_item/slot_lock"
-    def __init__(self, default=LOCK_URI, **kw):
+    def __init__(self, default=False, **kw):
         super(Slot, self).__init__(default=default, **kw)
