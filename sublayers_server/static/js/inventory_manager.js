@@ -53,10 +53,6 @@ var InventoryItem = (function (_super) {
             this.widget.visibleViewForInvDiv(inventoryDiv, true);
     };
 
-    InventoryItem.prototype.in_filter = function (filter) {
-        return filter.indexOf(this.balance_cls) >= 0;
-    };
-
     InventoryItem.prototype.getCurrentVal = function (time) {
         return this._item_state.val(time);
     };
@@ -101,6 +97,29 @@ var InventoryItem = (function (_super) {
             default:
                 console.warn('Неизвестный типа активации итема !');
         }
+    };
+
+    // Работа с тегами
+
+    // Есть ли данный тег у итема
+    InventoryItem.prototype.hasTag = function (tag) {
+        return this.example.tags.indexOf(tag) >= 0;
+    };
+
+    // Есть ли хоть один тег из списка у итема
+    InventoryItem.prototype.hasOwnTag = function (tagList) {
+        for (var i = 0; i < tagList.length; i++)
+            if (this.hasTag(tagList[i]))
+                return true;
+        return false;
+    };
+
+    // Есть ли все теги из списка у итема
+    InventoryItem.prototype.hasAllTags = function (tagList) {
+        for (var i = 0; i < tagList.length; i++)
+            if (!this.hasTag(tagList[i]))
+                return false;
+        return true;
     };
 
     return InventoryItem;
@@ -219,12 +238,18 @@ var Inventory = (function () {
                 this.items[pos].visibleItemForInvDiv(inventoryDiv, filter);
     };
 
-    Inventory.prototype.getItemsByFilter = function (filter) {
+    Inventory.prototype.getItemsByTags = function (tagList, allTag) {
         var res_list = [];
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
-                if (this.items[pos].in_filter(filter))
-                    res_list.push(this.items[pos]);
+                if (allTag) {
+                    if (this.items[pos].hasAllTags(tagList))
+                        res_list.push(this.items[pos]);
+                }
+                else {
+                    if (this.items[pos].hasOwnTag(tagList))
+                        res_list.push(this.items[pos]);
+                }
         return res_list;
     };
 

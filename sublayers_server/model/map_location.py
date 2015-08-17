@@ -69,6 +69,10 @@ class MapLocation(Observer):
 
     def on_re_enter(self, agent, time):
         if agent in self.visitors:
+            # Отправить инвентарь из экземпляра на клиент, при условии, что есть машинка
+            if agent.example.car:
+                ExamplesShowMessage(agent=agent, time=time).post()
+
             EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
             for visitor in self.visitors:
                 if not visitor is agent:

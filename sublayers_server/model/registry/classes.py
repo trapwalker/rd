@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -203,6 +203,7 @@ class PoiStash(POI):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')
     inventory_size = Attribute(caption=u"размер инвентаря")
 
+
 class RadioTower(POI):
     p_observing_range = Parameter(default=1000, caption=u"Радиус покрытия")
 
@@ -221,12 +222,17 @@ class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
     trader = RegistryLink(caption=u'Торговец')
     hangar = RegistryLink(caption=u'Ангар')
+    nucoil = RegistryLink(caption=u'Заправка')
 
 
 class Institution(Root):
     title = TextAttribute(caption=u"Имя")
     photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
     text = TextAttribute(caption=u"Текст приветствия")
+
+
+class Nucoil(Institution):
+    pass
 
 
 class Armorer(Institution):

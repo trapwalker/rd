@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
+
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
+from sublayers_server.model.map_location import GasStation, Town
 import sublayers_server.model.messages as messages
 
 
@@ -43,8 +45,8 @@ class TransactionActivateTank(TransactionActivateItem):
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
 
-        e_tank_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank' + str(item.example.value_fuel)]
-        ItemState(server=self.server, time=self.time, example=e_tank_cls)\
+        tank_proto = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank' + str(item.example.value_fuel)]
+        ItemState(server=self.server, time=self.time, example=tank_proto.instantiate()) \
             .set_inventory(time=self.time, inventory=inventory, position=position)
 
 
@@ -78,22 +80,45 @@ class TransactionGasStation(TransactionEvent):
 
     def on_perform(self):
         super(TransactionGasStation, self).on_perform()
-        fuel = self.fuel
+
         agent = self.agent
-        agent.example.balance -= fuel
-        cur_fuel = agent.example.car.fuel + fuel
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
+            return
+
+        # Проверяем находится ли агент в локации с заправкой
+        if not ((isinstance(agent.current_location, Town) and agent.current_location.example.nucoil) or
+                isinstance(agent.current_location, GasStation)):
+            return
+
+        # Сначала пытаемся наполнить бак
+        dec_val = min(agent.example.balance, self.fuel)
+        agent.example.balance -= dec_val
+        cur_fuel = agent.example.car.fuel + dec_val
         max_fuel = agent.example.car.max_fuel
         if cur_fuel <= max_fuel:
             agent.example.car.fuel = cur_fuel
         else:
             agent.example.car.fuel = max_fuel
 
+        # Далее заправляем столько канистр, сколько сможем
+        old_inventory = agent.example.car.inventory
+        agent.example.car.inventory = []
+        for item in old_inventory:
+            if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
+                dec_val = item.value_fuel
+                if dec_val < agent.example.balance:
+                    agent.example.balance -= dec_val
+                    new_tank = self.server.reg['/items/usable/fuel/tanks/tank_full/tank' + str(dec_val)].instantiate()
+                    new_tank.position = item.position
+                    agent.example.car.inventory.append(new_tank)
+                else:
+                    agent.example.car.inventory.append(item)
+            else:
+                agent.example.car.inventory.append(item)
 
-        # todo: Заправить все канстры из tank_list и заменить их на что-то там
-        # todo: Не забыть списать топливо за канистры (расчитать его здесь же)
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
-
-        messages.GasStationUpdate(agent=agent, time=self.time).post()
+        #messages.GasStationUpdate(agent=agent, time=self.time).post()
 
 
 class TransactionHangarChoice(TransactionEvent):
