@@ -295,7 +295,8 @@ var ClientManager = (function () {
                 v_backward,
                 state,
                 hp_state,
-                fuel_state
+                fuel_state,
+                radius_visible
             );
             for (var i = 0; i < fireSectors.length; i++)
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
@@ -316,7 +317,7 @@ var ClientManager = (function () {
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            new WViewRadius(mcar, radius_visible); // виджет радиуса видимости
+            new WViewRadius(mcar); // виджет радиуса видимости
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
@@ -484,8 +485,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ChangeAltitude = function(event){
         // console.log('ClientManager.prototype.ChangeAltitude ', event);
-        if (event.obj_id == user.userCar.ID)
+        if (event.obj_id == user.userCar.ID){
             user.userCar.altitude = event.altitude;
+
+        }
         else
             console.error('Error! Пришла высота на неизветную машинку!')
     };

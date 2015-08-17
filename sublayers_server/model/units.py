@@ -261,9 +261,7 @@ class Unit(Observer):
         return self.owner
 
     def on_change_altitude(self, new_altitude, time):
-        pass
-        #if isinstance(self, Bot):
-        #     log.debug('on_alt_change: %s, %s', new_altitude, self.altitude)
+        # log.debug('on_change_altitude = %s', new_altitude)
         if new_altitude != self.altitude:
             old_altitude = self.altitude
             self.altitude = new_altitude
@@ -275,6 +273,7 @@ class Unit(Observer):
                     agent=self.owner,
                     altitude=new_altitude,
                     obj_id=self.id,
+                    p_observing_range=self.params.get('p_observing_range').current,
                     time=time
                 ).post()
 

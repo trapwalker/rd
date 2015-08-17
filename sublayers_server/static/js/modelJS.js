@@ -163,12 +163,13 @@ var MapCar = (function (_super) {
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
-    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState) {
+    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState, radius_visible) {
         _super.call(this, aID, aState, aHPState, aFuelState);
         this.v_forward = aVForward;
         this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
         this.altitude = 0.0;
+        this.radius_visible = radius_visible;
     }
 
     UserCar.prototype._manage_tm = function () {

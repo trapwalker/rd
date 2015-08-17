@@ -411,15 +411,17 @@ class PartyErrorMessage(Message):
 
 
 class ChangeAltitude(Message):
-    def __init__(self, altitude, obj_id, **kw):
+    def __init__(self, altitude, obj_id, p_observing_range, **kw):
         super(ChangeAltitude, self).__init__(**kw)
         self.altitude = altitude
         self.obj_id = obj_id
+        self.p_observing_range = p_observing_range
 
     def as_dict(self):
         d = super(ChangeAltitude, self).as_dict()
         d.update(altitude=self.altitude,
                  obj_id=self.obj_id,
+                 p_observing_range=self.p_observing_range
                  )
         return d
 
