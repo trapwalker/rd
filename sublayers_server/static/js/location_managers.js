@@ -91,7 +91,7 @@ var NucoilManager = (function () {
             return
         }
 
-        var items = inventory.getItemsByFilter(['Tank10', 'Tank20', 'tank10', 'tank20']);
+        var items = inventory.getItemsByTags(['empty_fuel_tank']);
         var inv_show_div = $('#activeTownDiv').find('.mainMenuNucoilWindow-body-fuel-right').first();
         for (var i = 0; i < items.length; i++) {
             item = items[i];
@@ -135,7 +135,6 @@ var NucoilManager = (function () {
                 setupFuelTotal();
                 setupTankFuelValue();
             });
-
             itemDiv.on('mouseenter', function(event) {
                 var target = $(event.target);
                 var pos = target.data('position');
@@ -164,6 +163,8 @@ var NucoilManager = (function () {
         this.tank_list = [];
         var jq_town_div = $('#activeTownDiv');
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('click');
+        jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('mouseenter');
+        jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('mouseleave');
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right').empty();
     };
 

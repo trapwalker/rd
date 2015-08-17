@@ -7,6 +7,7 @@ from sublayers_server.model.messages import InventoryShowMessage, InventoryItemM
 
 EPS = 1e-5
 
+
 class ETimeIsNotInState(Exception):
     pass
 
@@ -123,6 +124,7 @@ class Inventory(object):
 
     def is_empty(self):
         return len(self._items.values()) == 0
+
 
 class ItemTask(TaskSingleton):
     def __init__(self, dv=None, ddvs=None, consumer=None, action=None, **kw):

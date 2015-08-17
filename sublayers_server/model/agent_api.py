@@ -247,7 +247,6 @@ class AgentAPI(API):
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
-
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
@@ -439,7 +438,7 @@ class AgentAPI(API):
 
     @public_method
     def fuel_station_active(self, fuel, tank_list):
-        log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
+        #log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
         TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel, tank_list=tank_list).post()
 
     @public_method

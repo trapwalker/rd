@@ -212,7 +212,6 @@ class Unit(Observer):
 
             POIStash(server=self.server, time=event.time, example=ex_stash)
 
-
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
         owner = self.owner
