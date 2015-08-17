@@ -487,7 +487,7 @@ var ClientManager = (function () {
         // console.log('ClientManager.prototype.ChangeAltitude ', event);
         if (event.obj_id == user.userCar.ID){
             user.userCar.altitude = event.altitude;
-
+            user.userCar.radius_visible = event.p_observing_range;
         }
         else
             console.error('Error! Пришла высота на неизветную машинку!')
