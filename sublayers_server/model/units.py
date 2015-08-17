@@ -182,6 +182,13 @@ class Unit(Observer):
         # todo: удалить себя и на этом месте создать обломки
         self.delete(time=event.time)
 
+        # вернуть агенту стоимость машинки
+        if self.owner:
+            self.owner.example.balance += self.example.price
+            # todo: возможно это нужно перенести
+            self.owner.example.car = None
+
+
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
         owner = self.owner

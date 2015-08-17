@@ -233,12 +233,20 @@ class AgentAPI(API):
         if self.agent.example.car and not self.agent.car:
             self.make_car(time=time)
 
-
         if self.agent.car:
             assert not self.car.limbo and self.car.hp(time=time) > 0, 'Car HP <= 0 or limbo'
             self.car = self.agent.car
             self.send_init_car_map(time=time)
             return
+
+        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинкию вернуть его в город
+        self.agent.set_current_location_example(reg_link=self.agent.example.last_town.uri)
+        if self.agent.current_location is not None:
+            log.debug('Need reenter to location')
+            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
+            ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
+            return
+
 
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
@@ -350,6 +358,9 @@ class AgentAPI(API):
         elif command == '/invite':
             for name in args:
                 self.send_invite(username=name)
+        elif command == '/die':
+            if self.agent.car:
+                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=1000)
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
