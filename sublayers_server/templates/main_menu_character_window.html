@@ -18,7 +18,11 @@
         margin-top: 5px;
     }
 
-    .mainWelcomeWindow-name {
+    .mainWelcomeWindow-logo-picture {
+        margin: 5px 0px 0px 25px;
+    }
+
+    .mainWelcomeWindow-logo-name {
         height: 23px;
         line-height: 23px;
         text-align: center;
@@ -36,9 +40,10 @@
 <div class="mainWelcomeWindow">
     {% include drag_close_header.html %}
     <div class="mainWelcomeWindow-logo">
-        <img class="logo-picture" src="/static/img/trader/pers_buchman.png" alt="Нукойл"/>
+        <img class="mainWelcomeWindow-logo-picture" src="/static/img/modal_window_image/mes_win_info_icon.png"
+             alt="Нукойл"/>
 
-        <div class="mainWelcomeWindow-name">Нукойл</div>
+        <div class="mainWelcomeWindow-logo-name">Нукойл</div>
     </div>
     <div class="mainWelcomeWindow-text">
         Уважаемый клиент! Корпорация Нукойл рада сообщить, что Вы получили лицензию на использование Nuke Commander -
