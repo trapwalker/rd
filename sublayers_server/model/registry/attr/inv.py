@@ -9,7 +9,7 @@ from sublayers_server.model.registry import tree
 from sublayers_server.model.registry.uri import URI
 
 from itertools import chain
-
+from collections import Counter
 
 
 class BaseInventory(list):
@@ -41,6 +41,19 @@ class Inventory(BaseInventory):
         super(BaseInventory, self).__init__()
         self.extend(items or [])
 
+    def placing(self):
+        u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
+        positions = Counter((item.position for item in self if item.position is not None))
+        i = 0
+        for item in self:
+            while positions[i]:
+                i += 1
+            if item.position is None or positions[item.position] > 1:
+                if item.position is not None:
+                    positions[item.position] -= 1
+                item.position = i
+                i += 1
+
     def prepare(self, item):
         item = super(Inventory, self).prepare(item)
         uri = None
@@ -57,7 +70,6 @@ class Inventory(BaseInventory):
             value = value.instantiate(**uri_params)
 
         return value
-
 
     def __setitem__(self, key, value):
         super(Inventory, self).__setitem__(key, self.prepare(value))
@@ -108,4 +120,6 @@ class InventoryAttribute(Attribute):
             values[name] = ProtoInventory(items=chain(old_value or [], inherited))
         else:
             if not isinstance(old_value, Inventory):
-                values[name] = Inventory(items=chain(old_value or [], inherited))
+                inventory = Inventory(items=chain(old_value or [], inherited))
+                inventory.placing()
+                values[name] = inventory

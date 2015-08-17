@@ -59,3 +59,4 @@ if __name__ == '__main__':
     #it.as_client_dict()
     rt = reg['/poi/radio_towers/radio_tower1']
 
+    print [item.position for item in car.inventory]
