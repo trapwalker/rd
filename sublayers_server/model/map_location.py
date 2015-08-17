@@ -99,7 +99,6 @@ class MapLocation(Observer):
     @classmethod
     def get_location_by_uri(cls, uri):
         for location in cls.locations:
-            log.debug('location.example.uri = %s', location.example.uri)
             if location.example.uri == uri:
                 return location
 
@@ -125,6 +124,12 @@ class Town(MapLocation):
         d = super(Town, self).as_dict(time=time)
         d.update(town_name=self.town_name)
         return d
+
+    @classmethod
+    def get_towns(cls):
+        for location in cls.locations:
+            if isinstance(location, Town):
+                yield location
 
 
 class GasStation(MapLocation):

@@ -273,7 +273,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InitCar = function (event) {
-        console.log('ClientManager.prototype.InitCar', event);
+        //console.log('ClientManager.prototype.InitCar', event);
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
@@ -412,8 +412,10 @@ var ClientManager = (function () {
             case 'Mobile':
                 this._contactBot(event);
                 break;
+            case 'RadioPoint':  // todo: раскоментировать, когда радиоточки будут установлены или сделать через куки-настройки
+                //console.log('Radio Towers are hidden');
+                //break;
             case 'Town':
-            case 'RadioPoint':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;
@@ -444,6 +446,9 @@ var ClientManager = (function () {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
+
+            // Город нельзя перестать видеть
+            if (car.cls == 'Town') return;
 
             // Удалить привязку к владельцу
             if (car.owner) car.owner.unbindCar(car);

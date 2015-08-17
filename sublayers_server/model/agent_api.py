@@ -22,6 +22,7 @@ from sublayers_server.model.transaction_events import TransactionGasStation, Tra
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent,)
+from sublayers_server.model.map_location import Town
 
 from sublayers_server.model.inventory import ItemState
 
@@ -185,6 +186,8 @@ class AgentAPI(API):
                 if not (vo in vo_list)and (vo != self.car):
                     vo_list.append(vo)
 
+        # добавляем к списку видимых объектов все города на карте
+        vo_list += list(Town.get_towns())
 
         # отправляем все видимые объекты, будто мы сами их видим, и сейчас не важно кто их видит
         for vo in vo_list:
@@ -213,29 +216,27 @@ class AgentAPI(API):
 
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
-        log.debug('111')
+
         # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
         self.shell = Shell(self.cmd_line_context(), dict(
             pi=pi,
             P=Point,
             log=log,
         ))
-        log.debug('222')
+
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
-        log.debug('333')
+
         if self.agent.example.car and not self.agent.car:
             self.make_car(time=time)
-        log.debug('444')
+
 
         if self.agent.car:
             assert not self.car.limbo and self.car.hp(time=time) > 0, 'Car HP <= 0 or limbo'
             self.car = self.agent.car
-            log.debug('api car = %s', self.car.example)
-
             self.send_init_car_map(time=time)
             return
 
