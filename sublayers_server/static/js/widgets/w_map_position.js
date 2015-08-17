@@ -14,6 +14,9 @@ var WMapPosition = (function (_super) {
     WMapPosition.prototype.change = function(t){
         //console.log('WMapPosition.prototype.change');
         if (mapManager.inZoomChange) return;
+        // если разрешено движение карты, то ничего не делать
+        if (map.dragging._enabled) return;
+
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());

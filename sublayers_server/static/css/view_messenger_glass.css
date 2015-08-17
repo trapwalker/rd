@@ -274,6 +274,11 @@
     overflow-y: auto;
     overflow-x: hidden;
     display: block;
+    /*для возможности копипаста. Если будет мешать где-то, то вынести в отдельный класс и присвоить в системном чате*/
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .VMG-message-message {
