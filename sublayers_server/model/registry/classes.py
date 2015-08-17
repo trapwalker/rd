@@ -7,9 +7,10 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import (
     Attribute, RegistryLink, Slot, Position, Parameter,
-    FloatAttribute, TextAttribute, TagsAttribute,
+    FloatAttribute, TextAttribute,
 )
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
+from sublayers_server.model.registry.attr.tag import TagsAttribute
 from sublayers_server.model.transaction_events import TransactionActivateTank
 
 from math import pi
@@ -25,9 +26,9 @@ class Item(Root):
     base_price = FloatAttribute(caption=u'Базовая цена за 1')
 
     description = TextAttribute(caption=u'Расширенное описание предмета', tags='client')
-    inv_icon_big = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
-    inv_icon_mid = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
-    inv_icon_small = Attribute(caption=u'Ссылка на картинку предмета для отображения в блоках инвентарей', tags='client')
+    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
+    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
+    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
     title = TextAttribute(caption=u'Название предмета для отображения в инвентаре', tags='client')
     activate_type = Attribute(default='none', caption=u'Способ активации: none, self ...', tags='client')
