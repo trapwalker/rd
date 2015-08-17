@@ -6,11 +6,12 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import (
-    Attribute, RegistryLink, Slot, Position, Parameter,
+    Attribute, Position, Parameter,
     FloatAttribute, TextAttribute,
 )
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.tag import TagsAttribute
+from sublayers_server.model.registry.attr.link import RegistryLink, Slot
 from sublayers_server.model.transaction_events import TransactionActivateTank
 
 from math import pi
