@@ -441,3 +441,30 @@ class ItemActivationEvent(Event):
         event_cls = item.example.activate()
         if event_cls:
             event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
+
+
+class LootPickEvent(Event):
+    def __init__(self, agent, poi_stash_id, **kw):
+        super(LootPickEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.poi_stash_id = poi_stash_id
+
+    def on_perform(self):
+        super(LootPickEvent, self).on_perform()
+        agent = self.agent
+        # получить сундук
+        stash = self.server.objects.get(self.poi_stash_id)
+        # получить машинку агента
+        car = agent.car
+        if stash is None or car is None:
+            return
+
+        if abs(stash.position(self.time) - car.position(self.time)) > 50:
+            return
+
+        # проходим по инвентарю сундука и перекидываем вещи в инвентарь машины
+        for item in stash.inventory.get_items():
+            item.set_inventory(time=self.time, inventory=car.inventory)
+        # если инвентарь сундука пустой, то удалить сундук
+        if stash.inventory.is_empty():
+            stash.delete(self.time)

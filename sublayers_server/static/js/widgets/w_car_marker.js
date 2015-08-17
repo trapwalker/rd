@@ -35,6 +35,10 @@ var WCarMarker = (function (_super) {
                 marker.on('click', onClickLocationMarker);
                 marker.obj_id = car.ID;
                 break;
+            case 'POIStash':
+                marker.obj_id = car.ID;
+                marker.on('click', onClickPOIStashMarker);
+                break;
             default:
                 marker.on('click', onClickUserCarMarker);
         }
@@ -187,4 +191,9 @@ function onClickUserCarMarker() {
     if(! this._old_icon_id) this._old_icon_id = 0;
     this._old_icon_id++;
     this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
+}
+
+function onClickPOIStashMarker() {
+    console.log('клик на сундук! ', this.obj_id);
+    clientManager.sendLootStash(this.obj_id)
 }

@@ -45,9 +45,14 @@ class Inventory(object):
     def get_all_items(self):
         return [dict({'item': item, 'position': self.get_position(item=item)}) for item in self._items.values()]
 
+    def get_items(self):
+        return self._items.values()
+
     def add_item(self, item, time, position=None):
         if position is None:
+            # todo: сначала поискать такой же стак, чтобы оно влезло в один стак
             position = self.get_free_position()
+            # log.debug('dobavlyaem item %s', item)
         if position is None:
             return False
         assert (position < self.max_size) and (position >= 0)
@@ -160,7 +165,7 @@ class ItemTask(TaskSingleton):
 
 
 class ItemState(object):
-    __str_template__ = 'Item: <limbo={self.limbo}> class={self.balance_cls} value0={self.val0}'
+    __str_template__ = 'Item: <limbo={self.limbo}> class={self.example.parent.uri} value0={self.val0}'
 
     def __init__(self, server, time, example, count=1):
         assert count > 0
@@ -254,6 +259,7 @@ class ItemState(object):
     # Интерфейс работы с итемом со стороны окна клиента
     def set_inventory(self, time, inventory, position=None):
         assert not self.limbo
+        # log.debug('IteemState.set_inventory for %s ', self)
         old_inventory = self.inventory
         if inventory is old_inventory:
             return self.change_position(position=position, time=time)

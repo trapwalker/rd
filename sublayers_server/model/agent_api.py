@@ -17,7 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent,)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
 from sublayers_server.model.transaction_events import TransactionGasStation, TransactionHangarChoice
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
@@ -446,3 +446,8 @@ class AgentAPI(API):
     def choice_car_in_hangar(self, car_number):
         log.info('agent %s want choice car, with number=%s', self.agent, car_number)
         TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
+
+    @public_method
+    def loot_stash(self, poi_stash_id):
+        log.info('agent %s want loot stash =%s', self.agent, poi_stash_id)
+        LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_stash_id).post()

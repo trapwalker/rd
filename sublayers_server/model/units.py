@@ -26,6 +26,7 @@ class POIStash(VisibleObject):
     def __init__(self, time, **kw):
         super(POIStash, self).__init__(time=time, **kw)
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        self.load_inventory(time=time)
 
     def load_inventory(self, time):
         for item_example in self.example.inventory:
@@ -206,9 +207,8 @@ class Unit(Observer):
                                                                  inventory_size=self.example.inventory_size)
             # заполнить инвентарь сундука
             for item_rec in self.inventory.get_all_items():
-                item_rec['item'].example.position = item_rec['position']
                 item_rec['item'].example.amount = item_rec['item'].val(t=event.time)
-                self.example.inventory.append(item_rec['item'].example)
+                ex_stash.inventory.append(item_rec['item'].example)
 
             POIStash(server=self.server, time=event.time, example=ex_stash)
 
