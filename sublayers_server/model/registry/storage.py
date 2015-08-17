@@ -182,7 +182,6 @@ class Collection(AbstractStorage):
 
     def get_local(self, path):
         key = self.make_key(path)
-        print '------->', repr(key)
         try:
             return self._deserialize(self._raw_storage[key])
         except KeyError:

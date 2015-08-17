@@ -3,7 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.attr import Attribute, DocAttribute, RegistryLink, TagsAttribute
+from sublayers_server.model.registry.attr import Attribute, DocAttribute
+from sublayers_server.model.registry.attr.tag import TagsAttribute
+from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.uri import URI
 
 import yaml
