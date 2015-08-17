@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+print 'attr/base -- start'
 import logging
 log = logging.getLogger(__name__)
 
@@ -367,3 +367,5 @@ class Slot(RegistryLink):
     LOCK_URI = "reg://registry/items/slot_item/slot_lock"
     def __init__(self, default=LOCK_URI, **kw):
         super(Slot, self).__init__(default=default, **kw)
+
+print 'attr/base -- end'

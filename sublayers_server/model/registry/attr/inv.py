@@ -1,13 +1,18 @@
 ﻿# -*- coding: utf-8 -*-
+print 'attr/inv -- start'
 
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.attr import Attribute
+#from sublayers_server.model.registry.attr import Attribute
+from base import Attribute
+print 'attr/inv -- after imp base'
 from sublayers_server.model.registry import tree
+print 'attr/inv -- after imp tree'
 from sublayers_server.model.registry.uri import URI
 
 from itertools import chain
+
 
 
 class BaseInventory(list):
@@ -107,3 +112,6 @@ class InventoryAttribute(Attribute):
         else:
             if not isinstance(old_value, Inventory):
                 values[name] = Inventory(items=chain(old_value or [], inherited))
+
+
+print 'attr/inv -- after imp end'

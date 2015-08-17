@@ -9,7 +9,7 @@ from sublayers_server.model.registry.attr import (
     Attribute, RegistryLink, Slot, Position, Parameter,
     FloatAttribute, TextAttribute, TagsAttribute,
 )
-from sublayers_server.model.registry.inv import InventoryAttribute
+from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.transaction_events import TransactionActivateTank
 
 from math import pi
