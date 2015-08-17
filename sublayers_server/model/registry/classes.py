@@ -155,16 +155,25 @@ class Mobile(Root):
     max_control_speed = FloatAttribute(default=20, caption=u"Максимальная скорость машинки без бафов")
 
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот')
+    slot_FL_f = TextAttribute(default='FL', caption=u'Флаги переднего левого слота [FBLR]', tags='client')
     slot_CL = Slot(caption=u'LeftSlot', doc=u'Центральный левый слот')
+    slot_CL_f = TextAttribute(default='FBL', caption=u'Флаги центрального левого слота [FBLR]', tags='client')
     slot_BL = Slot(caption=u'BackwardLeftSlot', doc=u'Задний левый слот')
+    slot_BL_f = TextAttribute(default='BL', caption=u'Флаги залнего левого слота [FBLR]', tags='client')
 
     slot_FC = Slot(caption=u'ForwardSlot', doc=u'Передний средний слот')
+    slot_FC_f = TextAttribute(default='FLR', caption=u'Флаги переднего среднего слота [FBLR]', tags='client')
     slot_CC = Slot(caption=u'CentralSlot', doc=u'Центральный средний слот')
+    slot_CC_f = TextAttribute(default='FBLR', caption=u'Флаги центрального среднего слота [FBLR]', tags='client')
     slot_BC = Slot(caption=u'BackwardSlot', doc=u'Задний средний слот')
+    slot_BC_f = TextAttribute(default='BLR', caption=u'Флаги заднего среднего слота [FBLR]', tags='client')
 
     slot_FR = Slot(caption=u'ForwardRightSlot', doc=u'Передний правый слот')
+    slot_FR_f = TextAttribute(default='FR', caption=u'Флаги переднего правого слота [FBLR]', tags='client')
     slot_CR = Slot(caption=u'RightSlot', doc=u'Центральный правый слот')
+    slot_CR_f = TextAttribute(default='FBR', caption=u'Флаги центрального правого слота [FBLR]', tags='client')
     slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
+    slot_BR_f = TextAttribute(default='BR', caption=u'Флаги заднего правого слота [FBLR]', tags='client')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     inventory_size = Attribute(caption=u"размер инвентаря")
