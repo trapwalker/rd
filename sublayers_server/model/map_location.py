@@ -75,6 +75,8 @@ class MapLocation(Observer):
             if agent.example.car:
                 ExamplesShowMessage(agent=agent, time=time).post()
 
+            self.send_inventory_info(agent=agent, time=time)
+
             EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
             for visitor in self.visitors:
                 if not visitor is agent:
@@ -109,6 +111,9 @@ class MapLocation(Observer):
             if location.example.uri == uri:
                 return location
 
+    def send_inventory_info(self, agent, time):
+        pass
+
 
 class Town(MapLocation):
     __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
@@ -116,11 +121,6 @@ class Town(MapLocation):
     def __init__(self, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(**kw)
         self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся name)
-
-    def on_enter(self, agent, time):
-        super(Town, self).on_enter(agent=agent, time=time)
-        if self.example.trader:
-            TraderInventoryShowMessage(agent=agent, time=time, town_id=self.uid).post()
 
     def on_exit(self, agent, time):
         super(Town, self).on_exit(agent=agent, time=time)
@@ -137,6 +137,11 @@ class Town(MapLocation):
         for location in cls.locations:
             if isinstance(location, Town):
                 yield location
+
+    def send_inventory_info(self, agent, time):
+        super(Town, self).send_inventory_info(agent=agent, time=time)
+        if self.example.trader:
+            TraderInventoryShowMessage(agent=agent, time=time, town_id=self.uid).post()
 
 
 class GasStation(MapLocation):
