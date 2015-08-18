@@ -92,14 +92,15 @@ class TransactionGasStation(TransactionEvent):
             return
 
         # Сначала пытаемся наполнить бак
-        dec_val = min(agent.example.balance, self.fuel)
-        agent.example.balance -= dec_val
-        cur_fuel = agent.example.car.fuel + dec_val
-        max_fuel = agent.example.car.max_fuel
-        if cur_fuel <= max_fuel:
-            agent.example.car.fuel = cur_fuel
-        else:
-            agent.example.car.fuel = max_fuel
+        if self.fuel:
+            dec_val = min(agent.example.balance, self.fuel)
+            agent.example.balance -= dec_val
+            cur_fuel = agent.example.car.fuel + dec_val
+            max_fuel = agent.example.car.max_fuel
+            if cur_fuel <= max_fuel:
+                agent.example.car.fuel = cur_fuel
+            else:
+                agent.example.car.fuel = max_fuel
 
         # Далее заправляем столько канистр, сколько сможем
         old_inventory = agent.example.car.inventory
@@ -117,8 +118,8 @@ class TransactionGasStation(TransactionEvent):
             else:
                 agent.example.car.inventory.append(item)
 
+        messages.GasStationUpdate(agent=agent, time=self.time).post()
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
-        #messages.GasStationUpdate(agent=agent, time=self.time).post()
 
 
 class TransactionHangarChoice(TransactionEvent):

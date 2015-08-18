@@ -262,7 +262,7 @@ var ClientManager = (function () {
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
-        console.log('ClientManager.prototype.InitAgent', event);
+        //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
@@ -629,14 +629,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        console.log('ClientManager.prototype.EnterToLocation', event);
+        //console.log('ClientManager.prototype.EnterToLocation', event);
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
             url: "http://" + location.host + '/api/location',
             data:  { location_id: event.location.uid },
             success: function(data) {
-                console.log('ClientManager.prototype.EnterToLocation Answer');
+                //console.log('ClientManager.prototype.EnterToLocation Answer');
 
                 if (locationManager.in_location)
                     clientManager.ExitFromLocation();
@@ -708,7 +708,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ExamplesShowMessage = function (event) {
-        console.log('ClientManager.prototype.ExamplesShowMessage', event);
+        //console.log('ClientManager.prototype.ExamplesShowMessage', event);
         if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
             var inv = this._getInventory(event.inventory);
             if (inventoryList.getInventory(inv.owner_id))
@@ -721,7 +721,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInventoryShowMessage = function (event) {
-        console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
+        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
         var inv = this._getInventory(event.inventory);
         locationManager.trader_uid = inv.owner_id;
         if (inventoryList.getInventory(inv.owner_id))
@@ -1115,6 +1115,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendFuelStationActive = function (fuel) {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
         var mes = {
             call: "fuel_station_active",
             rpc_call_id: rpcCallList.getID(),
