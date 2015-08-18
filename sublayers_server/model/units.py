@@ -240,9 +240,8 @@ class Unit(Observer):
         # обновляем статистику по живым юнитам
         self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
 
-        # сохранение инвентаря и очистка всех визиторов из инвентаря машинки
+        # очистка всех визиторов из инвентаря машинки
         self.inventory.del_all_visitors(time=event.time)
-        self.save_inventory(time=event.time)
 
         super(Unit, self).on_before_delete(event=event)
 
@@ -289,6 +288,7 @@ class Unit(Observer):
         super(Unit, self).save(time=time)
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
+        self.save_inventory(time)
 
     def weapon_list(self):
         for sector in self.fire_sectors:

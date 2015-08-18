@@ -51,9 +51,11 @@ class MapLocation(Observer):
             chat.room.include(agent=agent, time=event.time)
 
     def on_enter(self, agent, time):
-        # Удалить машинку агента
+        # Раздеплоить машинку агента
         if agent.car:
-            agent.car.delete(time=time)
+            agent.car.displace(time=time)
+
+        self.send_inventory_info(agent=agent, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
