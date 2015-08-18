@@ -1129,7 +1129,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendHangarCarChoice = function (car_number) {
-        console.log(car_number);
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
         var mes = {
             call: "choice_car_in_hangar",
             rpc_call_id: rpcCallList.getID(),
