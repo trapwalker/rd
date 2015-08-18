@@ -240,9 +240,8 @@ class Unit(Observer):
         # обновляем статистику по живым юнитам
         self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
 
-        # сохранение инвентаря и очистка всех визиторов из инвентаря машинки
+        # очистка всех визиторов из инвентаря машинки
         self.inventory.del_all_visitors(time=event.time)
-        self.save_inventory(time=event.time)
 
         super(Unit, self).on_before_delete(event=event)
 
@@ -289,6 +288,7 @@ class Unit(Observer):
         super(Unit, self).save(time=time)
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
+        self.save_inventory(time)
 
     def weapon_list(self):
         for sector in self.fire_sectors:
@@ -307,7 +307,7 @@ class Mobile(Unit):
 
         assert self.example.max_control_speed <= self.example.v_forward
         Parameter(original=self.example.max_control_speed / self.example.v_forward,
-                  min_value=0.0, max_value=1.0, owner=self, name='p_cc')
+                  min_value=0.05, max_value=1.0, owner=self, name='p_cc')
         Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
 
     def init_state_params(self):
@@ -345,6 +345,9 @@ class Mobile(Unit):
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
     def set_fuel(self, time, df=None):
+        if df:  # значит хотим залить (пока нет дамага, снимающего литры)
+            self.server.effects.get('EffectEmptyFuel').done(owner=self, time=time)  # снять эффект
+            # log.debug('====== ----- ====== EffectEmptyFuel is done ====== ----- ======')
         FuelTask(owner=self, df=df).start(time=time)
 
     def on_before_delete(self, event):
@@ -355,12 +358,8 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        pass
-        '''
-        self.p_cc.current = 0.0
-        self.set_motion()
-        Die(time=event.time + 20.0, obj=self).post()
-        '''
+        self.server.effects.get('EffectEmptyFuel').start(owner=self, time=event.time)
+        # log.debug('====== ----- ====== EffectEmptyFuel is started ====== ----- ======')
 
     def v(self, time):
         return self.state.v(t=time)

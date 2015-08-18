@@ -97,8 +97,6 @@ class PointObject(Object):
     def on_after_delete(self, event):
         self.server.geo_objects.remove(self)
         super(PointObject, self).on_after_delete(event=event)
-        if self.example is not None:  # todo: в example добавить флаг необходимости сохранения
-            self.save(time=event.time)
 
     def save(self, time):
         self.example.position = self.position(time)
@@ -110,6 +108,11 @@ class PointObject(Object):
 
     def position(self, time):
         return self._position
+
+    def displace(self, time):  # раздеплоивание объекта с карты
+        if self.example is not None: # todo: в example добавить флаг необходимости сохранения
+            self.save(time)
+        self.delete(time)
 
 
 class VisibleObject(PointObject):

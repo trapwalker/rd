@@ -43,7 +43,7 @@ class FuelState(object):
             self.t0 = t
 
     def fuel(self, t):
-        return min(self.fuel0 - self.dfs * (t - self.t0), self.max_fuel)
+        return max(0, min(self.fuel0 - self.dfs * (t - self.t0), self.max_fuel))
 
     @assert_time_in_fuelstate
     def update(self, t=None, dt=0.0, df=None, dfs=None):

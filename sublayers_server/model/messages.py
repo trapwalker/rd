@@ -605,6 +605,11 @@ class ExamplesShowMessage(Message):
                 for k, v in self.agent.example.car.iter_slots()
             ]
 
+            d['armorer_slots_flags'] = [
+                dict(name=attr.name, value=getter and getter())
+                for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
+            ]
+
             d['inventory'] = dict(
                 max_size=10,
                 items=[
