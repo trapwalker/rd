@@ -44,6 +44,10 @@ class EffectsDict:
         dict(name='EffectMineCC', param_name='p_cc', m_name='m_cc_mine', r_name='r_cc_mine',
              upd_method='set_motion', sign=-1.0),
 
+        # empty fuel effect
+        dict(name='EffectEmptyFuel', param_name='p_cc', m_name='m_cc_fuel_empty', r_name='r_cc_fuel_empty',
+             upd_method='set_motion', sign=-1.0),
+
     ]
 
 
@@ -68,6 +72,8 @@ class BALANCE(BalanceSettingsABS):
         dict(name='r_fuel_rate_road', original=0.0, max_value=1.0),
 
         dict(name='r_cc_mine', original=0.0, max_value=1.0),
+
+        dict(name='r_cc_fuel_empty', original=0.0, max_value=1.0),
     ]
 
     default_modifiers = [
@@ -87,6 +93,8 @@ class BALANCE(BalanceSettingsABS):
         dict(name='m_r_cc_slope_on_road', original=1.0),
 
         dict(name='m_cc_mine', original=0.5),
+
+        dict(name='m_cc_fuel_empty', original=0.9),
     ]
 
     interval_refresh = 1.0
