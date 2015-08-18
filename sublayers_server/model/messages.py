@@ -600,33 +600,31 @@ class ExamplesShowMessage(Message):
         d = super(ExamplesShowMessage, self).as_dict()
 
         if self.agent.example.car:
-            d.update(
-                armorer_slots=[{'name': v[0],
-                                'value': None if v[1] is None else v[1].as_client_dict()}
-                               for v in self.agent.example.car.iter_slots()]
+            d['armorer_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots()
+            ]
+
+            d['inventory'] = dict(
+                max_size=10,
+                items=[
+                    dict(
+                        position=ex.position,
+                        item=dict(
+                            cls='ItemState',
+                            balance_cls=ex.parent.node_hash(),
+                            example=ex.as_client_dict(),
+                            max_val=ex.stack_size,
+                            t0=self.time,
+                            val0=ex.amount,
+                            dvs=0,
+                        )
+                    )
+                    for ex in self.agent.example.car.inventory
+                ],
+                owner_id=self.agent.uid
             )
 
-            d.update(
-                inventory=dict(
-                    max_size=10,
-                    items=[
-                        {
-                            'position': ex.position,
-                            'item': dict(
-                                        cls='ItemState',
-                                        balance_cls=ex.parent.node_hash(),
-                                        example=ex.as_client_dict(),
-                                        max_val=ex.stack_size,
-                                        t0=self.time,
-                                        val0=ex.amount,
-                                        dvs=0,
-                                    )
-
-                        }
-                        for ex in self.agent.example.car.inventory],
-                    owner_id=self.agent.uid
-                )
-            )
         return d
 
 
