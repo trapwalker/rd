@@ -715,7 +715,7 @@ var ClientManager = (function () {
                 inventoryList.delInventory(inv.owner_id);
             inventoryList.addInventory(inv);
             locationManager.nucoil.update();
-            locationManager.armorer.update(event.armorer_slots);
+            locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
             locationManager.trader.updatePlayerInv();
         }
     };

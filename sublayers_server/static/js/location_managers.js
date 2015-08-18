@@ -178,6 +178,7 @@ var ArmorerManager = (function () {
         this.items = {};
         this.inv_show_div = null;
         this.armorer_slots = [];
+        this.armorer_slots_flags = {};
         this.activeSlot = null;
     }
 
@@ -195,9 +196,19 @@ var ArmorerManager = (function () {
         this.inv_show_div.append(itemWrapDiv);
     };
 
-    ArmorerManager.prototype.update = function(armorer_slots) {
+    ArmorerManager.prototype._update_armorer_slots_flags = function(armorer_slots_flags) {
+        this.armorer_slots_flags = {};
+        for (var i = 0; i < armorer_slots_flags.length; i++) {
+            var sl_flag = armorer_slots_flags[i];
+            this.armorer_slots_flags[sl_flag.name.slice(0, -2)] = sl_flag.value;
+        }
+        //console.log(this.armorer_slots_flags);
+    };
+
+    ArmorerManager.prototype.update = function(armorer_slots, armorer_slots_flags) {
         //console.log('ArmorerManager.prototype.update');
         if (armorer_slots) this.armorer_slots = armorer_slots;
+        if (armorer_slots_flags) this._update_armorer_slots_flags(armorer_slots_flags);
 
         this.clear();
         var self = this;
@@ -225,10 +236,11 @@ var ArmorerManager = (function () {
             item = inventory.getItem(i);
             item_rec.position = i;
             if (item) {
-                // todo: сделать фильтрацию итемов
-                this._addEmptyInventorySlot(i);
-                item_rec.example = item.example;
-                this.items[i] = item_rec;
+                if (item.hasTag('armorer')) {  // фильтрация итема
+                    this._addEmptyInventorySlot(i);
+                    item_rec.example = item.example;
+                    this.items[i] = item_rec;
+                }
             }
             else {
                 this._addEmptyInventorySlot(i);
