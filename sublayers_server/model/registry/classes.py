@@ -190,7 +190,7 @@ class Mobile(Root):
     def iter_slots(self):
         for attr, getter in self.iter_attrs(classes=Slot):
             v = getter()
-            if not isinstance(v, SlotLock):
+            if not isinstance(v, SlotLock) and not v is False:  # todo: SlotLock
                 yield attr.name, v
 
 
