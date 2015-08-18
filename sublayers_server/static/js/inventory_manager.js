@@ -44,7 +44,7 @@ var InventoryItem = (function (_super) {
 
     InventoryItem.prototype.visibleItemForInvDiv = function(inventoryDiv, filter) {
         if (filter) {
-            if (this.example.tags.indexOf(filter) >= 0)
+            if (this.hasTag(filter))
                 this.widget.visibleViewForInvDiv(inventoryDiv, true);
             else
                 this.widget.visibleViewForInvDiv(inventoryDiv, false);
