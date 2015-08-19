@@ -379,6 +379,7 @@ var ArmorerManager = (function () {
         // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
         if (this.activeSlot == slotName) this.activeSlot = null;
         else this.activeSlot = slotName;
+        this.setEnableSector();
         if (! this.items.hasOwnProperty(this.activeSlot)) return;
         var item_rec = this.items[this.activeSlot];
 
@@ -386,6 +387,20 @@ var ArmorerManager = (function () {
         setSlotActive(this.activeSlot);
         if (item_rec.example)
             setSectorActive(item_rec.direction);
+    };
+
+    ArmorerManager.prototype.setEnableSector = function() {
+        //console.log('ArmorerManager.prototype.setEnableSector');
+        addClassSVG($("#sector_F"), 'car_sector_disable');
+        addClassSVG($("#sector_B"), 'car_sector_disable');
+        addClassSVG($("#sector_L"), 'car_sector_disable');
+        addClassSVG($("#sector_R"), 'car_sector_disable');
+        if (this.activeSlot)
+            for(var i = 0; i < this.armorer_slots_flags[this.activeSlot].length; i++){
+                var ch = this.armorer_slots_flags[this.activeSlot][i];
+                console.log(ch);
+                removeClassSVG($("#sector_" + ch), 'car_sector_disable');
+            }
     };
 
     ArmorerManager.prototype.setActiveSector = function(sectorName) {
