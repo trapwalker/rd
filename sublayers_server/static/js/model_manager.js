@@ -1141,6 +1141,24 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendArmorerApply = function () {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "armorer_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                armorer_slots: locationManager.armorer.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendArmorerCancel = function () {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
+    };
+
     ClientManager.prototype.sendLootStash = function (poi_stash_id) {
         console.log('ClientManager.prototype.sendLootStash', poi_stash_id);
         var mes = {

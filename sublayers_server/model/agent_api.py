@@ -18,10 +18,11 @@ from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
-from sublayers_server.model.transaction_events import TransactionGasStation, TransactionHangarChoice
+from sublayers_server.model.transaction_events import (
+    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
-    ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent,)
+    ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town
 
 from sublayers_server.model.inventory import ItemState
@@ -77,8 +78,8 @@ class SendInviteEvent(Event):
 
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
-        #todo: проблемы с русским языком
-        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # todo: проблемы с русским языком
+        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         user = self.agent.server.agents.get(self.username)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
@@ -108,8 +109,8 @@ class SendKickEvent(Event):
 
     def on_perform(self):
         super(SendKickEvent, self).on_perform()
-        #todo: проблемы с русским языком
-        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # todo: проблемы с русским языком
+        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
@@ -130,8 +131,8 @@ class SendSetCategoryEvent(Event):
 
     def on_perform(self):
         super(SendSetCategoryEvent, self).on_perform()
-        #todo: проблемы с русским языком
-        #log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # todo: проблемы с русским языком
+        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
@@ -174,8 +175,8 @@ class AgentAPI(API):
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
         # эффекты
-        #for effect in self.car.effects:
-        #    effect.send_message()
+        # for effect in self.car.effects:
+        # effect.send_message()
 
         # сначала формируем список всех видимых объектов
         vo_list = []  # список отправленных машинок, чтобы не отправлять дважды от разных обсёрверов
@@ -183,7 +184,7 @@ class AgentAPI(API):
             if not (obs in vo_list) and (obs != self.car):
                 vo_list.append(obs)
             for vo in obs.visible_objects:
-                if not (vo in vo_list)and (vo != self.car):
+                if not (vo in vo_list) and (vo != self.car):
                     vo_list.append(vo)
 
         # добавляем к списку видимых объектов все города на карте
@@ -289,7 +290,7 @@ class AgentAPI(API):
 
     @public_method
     def fire_auto_enable(self, enable):
-        #log.debug('Car - %s, set auto fire - %s', self.car, enable)
+        # log.debug('Car - %s, set auto fire - %s', self.car, enable)
         if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())
@@ -303,19 +304,19 @@ class AgentAPI(API):
     def send_rocket(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        #RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+            # RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_slow_mine(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        #SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+            # SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_stationary_turret(self):
         if self.car.limbo or not self.car.is_alive:
             return
-        #StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+            # StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_scout_droid(self, x, y):
@@ -323,7 +324,7 @@ class AgentAPI(API):
             return
         assert x and y
         p = Point(x, y)
-        #ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
+        # ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
@@ -364,8 +365,8 @@ class AgentAPI(API):
             for name in args:
                 self.send_kick(username=name)
         # todo: отправку метрик необходимо сделать через евент (потому что мессаджи должны проходить через евент!)
-        #elif command == '/metric':
-        #    metric_name = args[0] if args else None
+        # elif command == '/metric':
+        # metric_name = args[0] if args else None
         #    if metric_name:
         #        if hasattr(self.car.stat_log, metric_name):
         #            if metric_name == 'frag':
@@ -389,33 +390,33 @@ class AgentAPI(API):
 
     @public_method
     def create_private_chat(self, recipient):
-        #log.info('agent %s try create private room with %s', self.agent, recipient)
+        # log.info('agent %s try create private room with %s', self.agent, recipient)
         ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient,
                                    time=self.agent.server.get_time()).post()
 
     @public_method
     def close_private_chat(self, name):
-        #log.info('agent %s try close private chat %s', self.agent, name)
+        # log.info('agent %s try close private chat %s', self.agent, name)
         ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_location(self, location_id):
-        #log.info('agent %s want enter to location is %s', self.agent, town_id)
+        # log.info('agent %s want enter to location is %s', self.agent, town_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def exit_from_location(self, location_id):
-        #log.info('agent %s want exit from location is %s', self.agent, town_id)
+        # log.info('agent %s want exit from location is %s', self.agent, town_id)
         ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):
-        #log.info('agent %s want show inventory from %s', self.agent, owner_id)
+        # log.info('agent %s want show inventory from %s', self.agent, owner_id)
         ShowInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def hide_inventory(self, owner_id):
-        #log.info('agent %s want hide inventory from %s', self.agent, owner_id)
+        # log.info('agent %s want hide inventory from %s', self.agent, owner_id)
         HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
@@ -428,7 +429,7 @@ class AgentAPI(API):
         pass
         # log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
         # messages.BalanceClsInfo(agent=self.agent, time=self.agent.server.get_time(),
-        #                         balance_cls_name=balance_cls_name).post()
+        # balance_cls_name=balance_cls_name).post()
 
     @public_method
     def activate_item(self, owner_id, position, target_id):
@@ -438,8 +439,9 @@ class AgentAPI(API):
 
     @public_method
     def fuel_station_active(self, fuel, tank_list):
-        #log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
-        TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel, tank_list=tank_list).post()
+        # log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
+        TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel,
+                              tank_list=tank_list).post()
 
     @public_method
     def choice_car_in_hangar(self, car_number):
@@ -450,3 +452,9 @@ class AgentAPI(API):
     def loot_stash(self, poi_stash_id):
         log.info('agent %s want loot stash =%s', self.agent, poi_stash_id)
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_stash_id).post()
+
+    @public_method
+    def armorer_apply(self, armorer_slots):
+        # log.info('armorer apply = %s', armorer_slots)
+        TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots).post()
+
