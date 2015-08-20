@@ -16,7 +16,7 @@ class TagsAttribute(Attribute):
 
     def from_str(self, s, obj):
         return set(s.split()) if s else set()
-
+        
     def __get__(self, obj, cls):
         if obj is None:
             return self
