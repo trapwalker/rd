@@ -17,7 +17,7 @@ class RegistryLink(TextAttribute):
         if self.name in obj.values:
             raw = obj.values.get(self.name)
         elif obj.parent and hasattr(obj.parent, self.name):
-            raw = getattr(obj.parent, self.name)
+            raw = self.get_ex(obj.parent, obj.parent.__class__)  # todo check it (class)
         else:
             raw = self.default
 
@@ -52,26 +52,28 @@ class RegistryLink(TextAttribute):
         if obj is None:
             return self
 
-        if self.name not in obj._prepared_attrs:
-            self.prepare(obj)
-
-        if self.name in obj._cache:
-            value = obj._cache[self.name]
-        elif self.name in obj.values:
-            value = obj.values.get(self.name)
-            assert not isinstance(value, basestring)
-        elif hasattr(obj.parent, self.name):
-            value = getattr(obj.parent, self.name)
-        else:
-            value = self.default
-            assert not isinstance(value, basestring)
+        value = self.get_ex(obj, cls)
 
         if isinstance(value, URI):  # todo: Проверить схему URI, возможно ресурс доставать не из реестра
             uri = value
             value = obj.DISPATCHER.get(uri)
             if value is None:
                 log.warning('Node {} is not found'.format(uri))
-            obj._cache[self.name] = value
+
+        return value
+
+    def get_ex(self, obj, cls):
+        if self.name not in obj._prepared_attrs:
+            self.prepare(obj)
+
+        if self.name in obj.values:
+            value = obj.values.get(self.name)
+            assert not isinstance(value, basestring)
+        elif hasattr(obj.parent, self.name):
+            value = self.get_ex(obj.parent, obj.parent.__class__)  # todo: check it
+        else:
+            value = self.default
+            assert not isinstance(value, basestring)
 
         return value
 
@@ -79,8 +81,6 @@ class RegistryLink(TextAttribute):
         if isinstance(value, basestring):
             value = URI(value)
 
-        if not isinstance(value, URI):
-            obj._cache[self.name] = value
         super(RegistryLink, self).__set__(obj, value)
 
 
