@@ -42,6 +42,7 @@ class Item(Root):
             if isinstance(attr, TagsAttribute):
                 v = list(v)  # todo: Перенести это в расширение сериализатора
             d[attr.name] = v
+        d['node_hash'] = self.node_hash()
         return d
 
     @classmethod
@@ -83,7 +84,7 @@ class Weapon(SlotItem):
     ammo = RegistryLink(caption=u'Боеприпас', need_to_instantiate=False)  # todo: store set of ammo types
     ammo_start_speed = FloatAttribute(default=500, caption=u'Начальная скорость снаряда (м/с)')
     effective_range = FloatAttribute(default=1000, caption=u'Прицельная дальность (м)')
-    direction = FloatAttribute(default=0, caption=u'Направление (град)')  # todo: Убрать default
+    direction = TextAttribute(caption=u'Направление (FBRL)', tags='client')
     ammo_per_shot = FloatAttribute(default=0, caption=u'Расход патронов за выстрел (< 0)')
     ammo_per_second = FloatAttribute(default=0, caption=u'Расход патронов в секунду')
     radius = FloatAttribute(caption=u'Прицельная дальность (м)')

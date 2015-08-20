@@ -205,6 +205,22 @@ var ArmorerManager = (function () {
         //console.log(this.armorer_slots_flags);
     };
 
+    ArmorerManager.prototype.exportSlotState1 = function() {
+        var result = [];
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
+                result.push(this.items[slot_name]);
+        return result;
+    };
+
+    ArmorerManager.prototype.exportSlotState = function() {
+        var result = {};
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
+                result[slot_name] = this.items[slot_name];
+        return result;
+    };
+
     ArmorerManager.prototype.update = function(armorer_slots, armorer_slots_flags) {
         //console.log('ArmorerManager.prototype.update');
         if (armorer_slots) this.armorer_slots = armorer_slots;
@@ -231,7 +247,7 @@ var ArmorerManager = (function () {
             var item_rec = {
                 example: null,
                 position: null,
-                direction: 'front'
+                direction: ''
             };
             item = inventory.getItem(i);
             item_rec.position = i;
@@ -252,10 +268,13 @@ var ArmorerManager = (function () {
 
         // Добавить итемы слотов
         for (var i = 0; i < this.armorer_slots.length; i++) {
+            var direction = '';
+            if (this.armorer_slots[i].value)
+                direction = this.armorer_slots[i].value.direction;
             var item_rec = {
                 example: this.armorer_slots[i].value,
                 position: this.armorer_slots[i].name,
-                direction: 'front'
+                direction: direction
             };
             this.items[item_rec.position] = item_rec;
             $('#top_' + item_rec.position).data('pos', item_rec.position);
@@ -357,10 +376,15 @@ var ArmorerManager = (function () {
     };
 
     ArmorerManager.prototype.changeItem = function(src, dest) {
-        console.log('ArmorerManager.prototype.changeItem', src, dest);
+        //console.log('ArmorerManager.prototype.changeItem', src, dest);
         var item = this.items[src];
         this.items[src] = this.items[dest];
         this.items[dest] = item;
+
+        // Предусатновка направления итема
+        if (dest.toString().indexOf('slot') >= 0)
+            item.direction = this.armorer_slots_flags[dest][0];
+
         this.reDrawItem(src);
         this.reDrawItem(dest);
         if (dest.toString().indexOf('slot') >= 0)
@@ -379,6 +403,7 @@ var ArmorerManager = (function () {
         // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
         if (this.activeSlot == slotName) this.activeSlot = null;
         else this.activeSlot = slotName;
+        this.setEnableSector();
         if (! this.items.hasOwnProperty(this.activeSlot)) return;
         var item_rec = this.items[this.activeSlot];
 
@@ -386,6 +411,19 @@ var ArmorerManager = (function () {
         setSlotActive(this.activeSlot);
         if (item_rec.example)
             setSectorActive(item_rec.direction);
+    };
+
+    ArmorerManager.prototype.setEnableSector = function() {
+        //console.log('ArmorerManager.prototype.setEnableSector');
+        addClassSVG($("#sector_F"), 'car_sector_disable');
+        addClassSVG($("#sector_B"), 'car_sector_disable');
+        addClassSVG($("#sector_L"), 'car_sector_disable');
+        addClassSVG($("#sector_R"), 'car_sector_disable');
+        if (this.activeSlot)
+            for(var i = 0; i < this.armorer_slots_flags[this.activeSlot].length; i++){
+                var ch = this.armorer_slots_flags[this.activeSlot][i];
+                removeClassSVG($("#sector_" + ch), 'car_sector_disable');
+            }
     };
 
     ArmorerManager.prototype.setActiveSector = function(sectorName) {

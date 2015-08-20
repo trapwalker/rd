@@ -162,6 +162,7 @@
     .car_sector { opacity: 0.3; }
     .car_sector_hover { opacity: 1; }
     .car_sector_active { opacity: 1; }
+    .car_sector_disable { display: none; }
 
 </style>
 
@@ -230,7 +231,6 @@
     }
 
     function setSlotActive(slot_name) {
-        console.log('+')
         $("#top_" + slot_name).addClass("armorer-slot-active");
         $("#side_" + slot_name).addClass("armorer-slot-active");
     }
@@ -277,17 +277,19 @@
     }
 
     function dropSectorActive() {
-        removeClassSVG($("#sector_front"), 'car_sector_active');
-        removeClassSVG($("#sector_back"), 'car_sector_active');
-        removeClassSVG($("#sector_left"), 'car_sector_active');
-        removeClassSVG($("#sector_right"), 'car_sector_active');
+        removeClassSVG($("#sector_F"), 'car_sector_active');
+        removeClassSVG($("#sector_B"), 'car_sector_active');
+        removeClassSVG($("#sector_L"), 'car_sector_active');
+        removeClassSVG($("#sector_R"), 'car_sector_active');
     }
 
     function setSectorActive(sectorName) {
         addClassSVG($("#sector_" + sectorName), 'car_sector_active');
     }
 
-    {% for sector in ['front', 'back', 'left', 'right'] %}
+    {% for sector in ['F', 'B', 'L', 'R'] %}
+    addClassSVG($("#sector_{{sector}}"), 'car_sector_disable');
+
     $("#sector_{{sector}}").mouseenter(function() {
         addClassSVG($("#sector_{{sector}}"), 'car_sector_hover');
     });
@@ -295,7 +297,6 @@
         removeClassSVG($("#sector_{{sector}}"), 'car_sector_hover');
     });
     $("#sector_{{sector}}").click(function() {
-        console.log('{{sector}}')
         locationManager.armorer.setActiveSector("{{sector}}");
     });
     {% end %}
