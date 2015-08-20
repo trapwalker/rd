@@ -120,7 +120,7 @@ class URI(tuple):
 
     def match(self, node):
         original = node
-        while node and not node.storage and not node.storage.name == 'registry':
+        while node and (node.storage is None or node.storage.name != 'registry'):
             node = node.parent
         log.debug('{} test to {}'.format(node, self))
 
@@ -131,13 +131,21 @@ class URI(tuple):
         if self[:2] != uri[:2]:
             return False
 
-        p = self.path
-        if uri.path[:len(p)] != p:
+        p = tuple(self.path)
+        if tuple(uri.path[:len(p)]) != p:
             return False
 
         for k, v in self.params or []:
-            if not hasattr(original, k) or str(getattr(original, k)) != v:
+            if not hasattr(original, k):
                 return False
+
+            if k == 'tags':
+                v = set(v.split()) if v else set()  # todo: использовать штатный конвертер из строки
+                if not v.issubset(set(getattr(original, k))):
+                    return False
+            else:
+                if str(getattr(original, k)) != v:
+                    return False
 
         return True
 

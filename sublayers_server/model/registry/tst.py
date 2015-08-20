@@ -64,4 +64,4 @@ if __name__ == '__main__':
 
     print [item.position for item in car.inventory]
     ua = URI('reg://registry/agents')
-    pass
+    print ua.match(user.parent)
