@@ -118,11 +118,47 @@ class URI(tuple):
         """Exclude the OrderedDict from pickling"""
         pass
 
+    def match(self, node):
+        original = node
+        while node and not node.storage and not node.storage.name == 'registry':
+            node = node.parent
+        log.debug('{} test to {}'.format(node, self))
+
+        if node is None:
+            return
+
+        uri = node.uri
+        if self[:2] != uri[:2]:
+            return False
+
+        p = self.path
+        if uri.path[:len(p)] != p:
+            return False
+
+        for k, v in self.params or []:
+            if not hasattr(original, k) or str(getattr(original, k)) != v:
+                return False
+
+        return True
+
     scheme = property(itemgetter(0), doc='Scheme of URI')
     storage = property(itemgetter(1), doc='Storage of the resource')
     path = property(itemgetter(2), doc='Path to the resource in storage')
     params = property(itemgetter(3), doc='Params of the link')
     anchor = property(itemgetter(4), doc='Anchor of the link')
+
+
+class Selector(URI):
+    @property
+    def tags(self):
+        splitter = ',' if ',' in self.anchor else None
+        return set(self.anchor.split(splitter))
+
+    def match(self, node):
+        if not super(Selector, self).match(node):
+            return False
+
+        return self.tags.issubset(node.tags)
 
 
 if __name__ == '__main__':
@@ -137,3 +173,5 @@ if __name__ == '__main__':
 
     print repr(URI(scheme='myscheme', path=['1', '2', '3']))
     # todo: unit tests
+
+
