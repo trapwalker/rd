@@ -79,6 +79,8 @@ class Node(object):
         self.abstract = abstract
 
         self.values = values and values.copy() or {}
+        for p in kw.keys():
+            assert hasattr(self, p)  # todo: replace to warning
         self.values.update(kw)
         self.storage = storage
 

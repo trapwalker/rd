@@ -1,17 +1,20 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import sys
 import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+    sys.path.append('../../..')
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry import storage
+from sublayers_server.model.registry.uri import URI
 
 
 if __name__ == '__main__':
+    sys.path.append('../../..')
     import random
     from sublayers_server.model.vectors import Point
     from pprint import pprint as pp
@@ -60,3 +63,5 @@ if __name__ == '__main__':
     rt = reg['/poi/radio_towers/radio_tower1']
 
     print [item.position for item in car.inventory]
+    ua = URI('reg://registry/agents')
+    pass
