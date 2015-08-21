@@ -17,6 +17,7 @@ from sublayers_server.model.transaction_events import TransactionActivateTank, T
 
 from math import pi
 import random
+from itertools import chain
 
 
 class Item(Root):
@@ -240,11 +241,12 @@ class Armorer(Institution):
 
 
 class Trader(Institution):
+    inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceAttribute(caption=u"Прайс")
 
     def as_client_dict(self, items=()):
         d = super(Trader, self).as_client_dict()
-        d['price'] = self.price.get_pricelist(items)
+        d['price'] = self.price.get_pricelist(chain(items, self.inventory))
         return d
 
 
