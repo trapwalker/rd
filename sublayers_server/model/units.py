@@ -172,6 +172,11 @@ class Unit(Observer):
         self.check_auto_fire_interval = BALANCE.interval_refresh
         self.check_zone_interval = BALANCE.interval_refresh
         SearchZones(obj=self, time=event.time).post()
+        # зарядить все орудия
+        for weapon in self.weapon_list():
+            item = self.inventory.get_item_by_cls(balance_cls_list=[weapon.example.ammo], time=event.time)
+            if item:
+                weapon.set_item(item=item, time=event.time)
 
     def on_zone_check(self, event):
         # зонирование
