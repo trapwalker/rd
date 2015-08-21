@@ -65,3 +65,6 @@ if __name__ == '__main__':
     print [item.position for item in car.inventory]
     ua = URI('reg://registry/agents')
     print ua.match(user.parent)
+
+    tr = reg['/institutions/trader/buhman']
+    pp(tr.as_client_dict(items=car.inventory))
