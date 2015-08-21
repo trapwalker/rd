@@ -87,12 +87,30 @@ class Node(object):
         if storage:
             storage.put(self)
 
+    @property
+    def id(self):
+        # todo: Решить проблему изменения идентификатора при помещении в хранилище
+        return self.uri and str(self.uri) or '{}#{}'.format(self.__class__.__name__, id(self))
+
     def node_hash(self):
         if self.uri:
             return str(self.uri)
         elif self.parent:
             return self.parent.node_hash()
         raise Exception('try to get node hash in wrong node')  # todo: exception specify
+
+    def as_client_dict(self):
+        # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
+        d = dict(
+            id=self.id,
+            node_hash=self.node_hash(),
+        )
+        for attr, getter in self.iter_attrs(tags='client'):
+            v = getter()
+            if isinstance(attr, TagsAttribute):
+                v = list(v)  # todo: Перенести это в расширение сериализатора
+            d[attr.name] = v
+        return d
 
     def prepare(self):
         for attr, getter in self.iter_attrs():
