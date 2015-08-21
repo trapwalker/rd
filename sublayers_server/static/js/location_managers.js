@@ -1,6 +1,7 @@
 var LocationManager = (function () {
 
     function LocationManager() {
+        this.currentNPC = null;
         this.in_location = false;
 
         this.location_uid = null;
@@ -168,6 +169,10 @@ var NucoilManager = (function () {
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right').empty();
     };
 
+    NucoilManager.prototype.apply = function() {
+        //console.log('NucoilManager.prototype.apply');
+    };
+
     return NucoilManager;
 })();
 
@@ -223,10 +228,11 @@ var ArmorerManager = (function () {
 
     ArmorerManager.prototype.update = function(armorer_slots, armorer_slots_flags) {
         //console.log('ArmorerManager.prototype.update');
+        this.clear();
+
         if (armorer_slots) this.armorer_slots = armorer_slots;
         if (armorer_slots_flags) this._update_armorer_slots_flags(armorer_slots_flags);
 
-        this.clear();
         var self = this;
         var item;
 
@@ -301,6 +307,12 @@ var ArmorerManager = (function () {
         //console.log('ArmorerManager.prototype.clear');
         // todo: написать тут чтото
         this.activeSlot = null;
+        this.items = {};
+    };
+
+    ArmorerManager.prototype.apply = function() {
+        //console.log('ArmorerManager.prototype.apply');
+        clientManager.sendArmorerApply();
     };
 
     ArmorerManager.prototype.reDrawItem = function(position) {
@@ -378,6 +390,8 @@ var ArmorerManager = (function () {
 
     ArmorerManager.prototype.changeItem = function(src, dest) {
         //console.log('ArmorerManager.prototype.changeItem', src, dest);
+        if (src == dest) return;
+
         var item = this.items[src];
         this.items[src] = this.items[dest];
         this.items[dest] = item;
@@ -641,6 +655,10 @@ var TraderManager = (function () {
     TraderManager.prototype.clear = function() {
         this._clearPlayerInv();
         this._clearTraderInv();
+    };
+
+    TraderManager.prototype.apply = function() {
+        //console.log('TraderManager.prototype.apply');
     };
 
     return TraderManager;

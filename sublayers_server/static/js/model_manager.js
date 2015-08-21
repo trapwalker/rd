@@ -660,6 +660,7 @@ var ClientManager = (function () {
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         locationManager.in_location = false;
+        locationManager.currentNpc = null;
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');

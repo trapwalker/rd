@@ -129,6 +129,7 @@
 
     .npcInventory-item {
         position: relative;
+        cursor: pointer;
         width: 119px;
         height: 85px;
         float: left;
@@ -159,7 +160,10 @@
         margin: 35px auto 0px auto;
     }
 
-    .car_sector { opacity: 0.3; }
+    .car_sector {
+        opacity: 0.3;
+        cursor: pointer;
+    }
     .car_sector_hover { opacity: 1; }
     .car_sector_active { opacity: 1; }
     .car_sector_disable { display: none; }
@@ -172,24 +176,28 @@
 
     .armorer_top_F, .armorer_top_B {
         position: absolute;
+        pointer-events: none;
         top: -8px;
         left: -57px;
     }
 
     .armorer_top_L, .armorer_top_R  {
         position: absolute;
+        pointer-events: none;
         top: -57px;
         left: -8px;
     }
 
     .armorer_side_F, .armorer_side_B {
         position: absolute;
+        pointer-events: none;
         top: -15px;
         left: -57px;
     }
 
     .armorer_side_L, .armorer_side_R  {
         position: absolute;
+        pointer-events: none;
         top: -15px;
         left: -8px;
     }

@@ -45,23 +45,41 @@
 <script>
     // Открытие зданий
     function openNucoil() {
-         $('.townPageWrap').css('display', 'none');
-         $('#townNucoilPageWrap').css('display', 'block');
+        $('.townPageWrap').css('display', 'none');
+        $('#townNucoilPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.nucoil;
+        $("#btn_7").css("display", "none");
     }
 
     function openArmorer() {
-         $('.townPageWrap').css('display', 'none');
-         $('#townArmorerPageWrap').css('display', 'block');
+        $('.townPageWrap').css('display', 'none');
+        $('#townArmorerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.armorer;
+        $("#btn_7").css("display", "none");
+        $("#btn_8").css("display", "block");
     }
 
     function openTrader() {
-         $('.townPageWrap').css('display', 'none');
-         $('#townTraderPageWrap').css('display', 'block');
+        $('.townPageWrap').css('display', 'none');
+        $('#townTraderPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.trader;
+        $("#btn_7").css("display", "none");
+        $("#btn_8").css("display", "block");
     }
 
     function openHangar() {
-         $('.townPageWrap').css('display', 'none');
-         $('#townHangarPageWrap').css('display', 'block');
+        $('.townPageWrap').css('display', 'none');
+        $('#townHangarPageWrap').css('display', 'block');
+        $("#btn_7").css("display", "none");
+        $("#btn_8").css("display", "block");
+    }
+
+    function openTown() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townChatPageWrap').css('display', 'block');
+        locationManager.currentNPC = null;
+        $("#btn_8").css("display", "none");
+        $("#btn_7").css("display", "block");
     }
 
     // Обработчики кнопок-зданий
@@ -130,7 +148,7 @@
     {% end %}
 
     // Кнопки меню
-    {% for i in xrange(8) %}
+    {% for i in xrange(9) %}
     $("#btn_{{i}}").mouseenter(function() {
         $("#btn_{{i}}_over").css("display", "block");
         $("#btn_{{i}}").css("display", "none");
@@ -152,7 +170,6 @@
         $("#btn_{{i}}").css("display", "block");
     });
     $("#btn_{{i}}_select").mouseup(function(event) {
-        console.log(event.target.id);
         $("#btn_{{i}}_select").css("display", "none");
         $("#btn_{{i}}_over").css("display", "block");
         $("#btn_{{i}}").css("display", "none");
@@ -168,8 +185,12 @@
     });
 
     $("#btn_3_select").mouseup(function(event) {
-        $('.townPageWrap').css('display', 'none');
-        $('#townChatPageWrap').css('display', 'block');
+        openTown();
+    });
+
+    $("#btn_8_select").mouseup(function(event) {
+        if (locationManager.currentNPC)
+            locationManager.currentNPC.apply();
     });
 
     $("#btn_2_select").mouseup(function(event) {
