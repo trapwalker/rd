@@ -1,17 +1,20 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import sys
 import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+    sys.path.append('../../..')
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry import storage
+from sublayers_server.model.registry.uri import URI
 
 
 if __name__ == '__main__':
+    sys.path.append('../../..')
     import random
     from sublayers_server.model.vectors import Point
     from pprint import pprint as pp
@@ -19,9 +22,9 @@ if __name__ == '__main__':
 
     reg = storage.Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
     # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    # jeep = reg['/mobiles/cars/jeep']
+    # sedan = reg['/mobiles/cars/sedan']
     #
-    # mj0 = jeep.instantiate(storage=c)
+    # mj0 = sedan.instantiate(storage=c)
     # mj0.slot_CC = None
     # mj0.slot_FC.ammo_per_second = 10
     #
@@ -47,6 +50,21 @@ if __name__ == '__main__':
     # pp(mj3.__getstate__())
 
     a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    user = reg['/agents/user/' + random.choice(['pirate', 'raider'])].instantiate(storage=a)
+    proto_agent = reg['/agents/user']
+    protocar = reg['/mobiles/cars/sedan']
+    user = proto_agent.instantiate(storage=a)
+    pp(user.resume_dict())
+    #print user.resume().decode('utf-8')
+    car = protocar.instantiate()
+    user.car = car
+    print car.resume().decode('utf-8')
+    #it = reg[car.inventory[0]]
+    #it.as_client_dict()
+    rt = reg['/poi/radio_towers/radio_tower1']
 
-    print user.resume()
+    print [item.position for item in car.inventory]
+    ua = URI('reg://registry/agents')
+    print ua.match(user.parent)
+
+    tr = reg['/institutions/trader/buhman']
+    pp(tr.as_client_dict(items=car.inventory))

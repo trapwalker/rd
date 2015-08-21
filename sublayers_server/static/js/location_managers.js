@@ -1,8 +1,14 @@
 var LocationManager = (function () {
 
     function LocationManager() {
+        this.currentNPC = null;
         this.in_location = false;
+
+        this.location_uid = null;
+        this.trader_uid = null;
+
         this.armorer = new ArmorerManager();
+        this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
         this.visitorsManager = new LocationVisitorsManager();
     }
@@ -86,7 +92,7 @@ var NucoilManager = (function () {
             return
         }
 
-        var items = inventory.getItemsByFilter(['Tank10', 'Tank20', 'tank10', 'tank20']);
+        var items = inventory.getItemsByTags(['empty_fuel_tank']);
         var inv_show_div = $('#activeTownDiv').find('.mainMenuNucoilWindow-body-fuel-right').first();
         for (var i = 0; i < items.length; i++) {
             item = items[i];
@@ -130,7 +136,6 @@ var NucoilManager = (function () {
                 setupFuelTotal();
                 setupTankFuelValue();
             });
-
             itemDiv.on('mouseenter', function(event) {
                 var target = $(event.target);
                 var pos = target.data('position');
@@ -159,7 +164,17 @@ var NucoilManager = (function () {
         this.tank_list = [];
         var jq_town_div = $('#activeTownDiv');
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('click');
+        jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('mouseenter');
+        jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right-item').off('mouseleave');
         jq_town_div.find('.mainMenuNucoilWindow-body-fuel-right').empty();
+    };
+
+    NucoilManager.prototype.apply = function() {
+        //console.log('NucoilManager.prototype.apply');
+    };
+
+    NucoilManager.prototype.cancel = function() {
+        //console.log('NucoilManager.prototype.cancel');
     };
 
     return NucoilManager;
@@ -172,6 +187,7 @@ var ArmorerManager = (function () {
         this.items = {};
         this.inv_show_div = null;
         this.armorer_slots = [];
+        this.armorer_slots_flags = {};
         this.activeSlot = null;
     }
 
@@ -189,11 +205,38 @@ var ArmorerManager = (function () {
         this.inv_show_div.append(itemWrapDiv);
     };
 
-    ArmorerManager.prototype.update = function(armorer_slots) {
-       // console.log('ArmorerManager.prototype.update');
-        if (armorer_slots) this.armorer_slots = armorer_slots;
+    ArmorerManager.prototype._update_armorer_slots_flags = function(armorer_slots_flags) {
+        this.armorer_slots_flags = {};
+        for (var i = 0; i < armorer_slots_flags.length; i++) {
+            var sl_flag = armorer_slots_flags[i];
+            this.armorer_slots_flags[sl_flag.name.slice(0, -2)] = sl_flag.value;
+        }
+        //console.log(this.armorer_slots_flags);
+    };
 
+    ArmorerManager.prototype.exportSlotState1 = function() {
+        var result = [];
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
+                result.push(this.items[slot_name]);
+        return result;
+    };
+
+    ArmorerManager.prototype.exportSlotState = function() {
+        var result = {};
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
+                result[slot_name] = this.items[slot_name];
+        return result;
+    };
+
+    ArmorerManager.prototype.update = function(armorer_slots, armorer_slots_flags) {
+        //console.log('ArmorerManager.prototype.update');
         this.clear();
+
+        if (armorer_slots) this.armorer_slots = armorer_slots;
+        if (armorer_slots_flags) this._update_armorer_slots_flags(armorer_slots_flags);
+
         var self = this;
         var item;
 
@@ -214,15 +257,16 @@ var ArmorerManager = (function () {
             var item_rec = {
                 example: null,
                 position: null,
-                direction: 'front'
+                direction: ''
             };
             item = inventory.getItem(i);
             item_rec.position = i;
             if (item) {
-                // todo: сделать фильтрацию итемов
-                this._addEmptyInventorySlot(i);
-                item_rec.example = item.example;
-                this.items[i] = item_rec;
+                if (item.hasTag('armorer')) {  // фильтрация итема
+                    this._addEmptyInventorySlot(i);
+                    item_rec.example = item.example;
+                    this.items[i] = item_rec;
+                }
             }
             else {
                 this._addEmptyInventorySlot(i);
@@ -234,10 +278,13 @@ var ArmorerManager = (function () {
 
         // Добавить итемы слотов
         for (var i = 0; i < this.armorer_slots.length; i++) {
+            var direction = '';
+            if (this.armorer_slots[i].value)
+                direction = this.armorer_slots[i].value.direction;
             var item_rec = {
                 example: this.armorer_slots[i].value,
                 position: this.armorer_slots[i].name,
-                direction: 'front'
+                direction: direction
             };
             this.items[item_rec.position] = item_rec;
             $('#top_' + item_rec.position).data('pos', item_rec.position);
@@ -262,7 +309,22 @@ var ArmorerManager = (function () {
 
     ArmorerManager.prototype.clear = function() {
         //console.log('ArmorerManager.prototype.clear');
-        this.activeSlot = null;
+        // todo: написать тут чтото
+        this.setActiveSlot(null);
+        this.items = {};
+
+        if (this.inv_show_div)
+            this.inv_show_div.empty();
+    };
+
+    ArmorerManager.prototype.apply = function() {
+        //console.log('ArmorerManager.prototype.apply');
+        clientManager.sendArmorerApply();
+    };
+
+    ArmorerManager.prototype.cancel = function() {
+        //console.log('ArmorerManager.prototype.cancel');
+        clientManager.sendArmorerCancel();
     };
 
     ArmorerManager.prototype.reDrawItem = function(position) {
@@ -279,11 +341,12 @@ var ArmorerManager = (function () {
             // создать вёрстку для отрисовки
             var item = this.items[position];
             if (item.example) {
-                var itemDivTop = $('<div class="armorer-car-slot-picture"></div>');
-                var itemDivSide = $('<div class="armorer-car-slot-picture"></div>');
+                var itemImgTop = item.example['armorer_top_' + item.direction];
+                var itemImgSide = item.example['armorer_side_' + item.direction];
 
-                itemDivTop.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
-                itemDivSide.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+
+                var itemDivTop = $('<div class="armorer-car-slot-picture"><img src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
+                var itemDivSide = $('<div class="armorer-car-slot-picture"><img src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');
 
                 itemDivTop.data('pos', position);
                 itemDivSide.data('pos', position);
@@ -312,7 +375,6 @@ var ArmorerManager = (function () {
         else {
             // Позиция в инвентаре
             var itemWrapDiv = this.inv_show_div.find('.armorer-itemWrap-' + position).first();
-            //itemWrapDiv.find('.npcInventory-item').draggable("destroy");
             itemWrapDiv.empty();
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
@@ -326,6 +388,10 @@ var ArmorerManager = (function () {
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
                     helper: 'clone',
+                    cursorAt: {
+                        left: 60,
+                        top: 42
+                    },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -338,10 +404,19 @@ var ArmorerManager = (function () {
     };
 
     ArmorerManager.prototype.changeItem = function(src, dest) {
-        console.log('ArmorerManager.prototype.changeItem', src, dest);
+        //console.log('ArmorerManager.prototype.changeItem', src, dest);
+        if (src == dest) return;
+
         var item = this.items[src];
         this.items[src] = this.items[dest];
         this.items[dest] = item;
+
+        // Предусатновка направления итема
+        if (dest.toString().indexOf('slot') >= 0)
+            this.items[dest].direction = this.armorer_slots_flags[dest][0];
+        if (src.toString().indexOf('slot') >= 0)
+            this.items[src].direction = this.armorer_slots_flags[src][0];
+
         this.reDrawItem(src);
         this.reDrawItem(dest);
         if (dest.toString().indexOf('slot') >= 0)
@@ -352,6 +427,7 @@ var ArmorerManager = (function () {
 
     ArmorerManager.prototype.setActiveSlot = function(slotName) {
         //console.log('ArmorerManager.prototype.setActiveSlot');
+        if (! window.hasOwnProperty('dropSectorActive') || ! window.hasOwnProperty('dropSlotActive')) return;
 
         // Гасим все лепестки виджета и все слоты
         dropSectorActive();
@@ -360,6 +436,7 @@ var ArmorerManager = (function () {
         // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
         if (this.activeSlot == slotName) this.activeSlot = null;
         else this.activeSlot = slotName;
+        this.setEnableSector();
         if (! this.items.hasOwnProperty(this.activeSlot)) return;
         var item_rec = this.items[this.activeSlot];
 
@@ -367,6 +444,19 @@ var ArmorerManager = (function () {
         setSlotActive(this.activeSlot);
         if (item_rec.example)
             setSectorActive(item_rec.direction);
+    };
+
+    ArmorerManager.prototype.setEnableSector = function() {
+        //console.log('ArmorerManager.prototype.setEnableSector');
+        addClassSVG($("#sector_F"), 'car_sector_disable');
+        addClassSVG($("#sector_B"), 'car_sector_disable');
+        addClassSVG($("#sector_L"), 'car_sector_disable');
+        addClassSVG($("#sector_R"), 'car_sector_disable');
+        if (this.activeSlot)
+            for(var i = 0; i < this.armorer_slots_flags[this.activeSlot].length; i++){
+                var ch = this.armorer_slots_flags[this.activeSlot][i];
+                removeClassSVG($("#sector_" + ch), 'car_sector_disable');
+            }
     };
 
     ArmorerManager.prototype.setActiveSector = function(sectorName) {
@@ -382,12 +472,218 @@ var ArmorerManager = (function () {
 
         // Гасим все лепестки виджета и если есть экземпляр то устанавливаем текущее направление
         dropSectorActive();
-        if (item_rec.example)
+        if (item_rec.example) {
             setSectorActive(item_rec.direction);
+            this.reDrawItem(this.activeSlot);
+        }
     };
 
 
     return ArmorerManager;
+})();
+
+
+var TraderManager = (function () {
+
+    function TraderManager() {
+        this.playerInvCls = "player-inventory-droppable-item";
+        this.playerTableCls = "player-table-droppable-item";
+        this.traderInvCls = "trader-inventory-droppable-item";
+        this.traderTableCls = "trader-table-droppable-item";
+
+        this.playerInv = [];
+        this.playerTable = [];
+        this.playerInvDiv = null;
+        this.playerTableDiv = null;
+
+        this.traderInv = [];
+        this.traderTable = [];
+        this.traderInvDiv = null;
+        this.traderTableDiv = null;
+    }
+
+    TraderManager.prototype.changeItem = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
+        destDiv.empty();
+        srcDiv.empty();
+
+        destList.push(srcList[pos]);
+        srcList.splice(pos, 1);
+
+        this._reDrawItemList(destDiv, destList, destCls);
+        this._reDrawItemList(srcDiv, srcList, srcCls);
+
+    };
+
+    TraderManager.prototype.updatePlayerInv = function() {
+        //console.log('TraderManager.prototype.updatePlayerInv');
+        this._clearPlayerInv();
+        var self = this;
+        var item;
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(user.ID);
+        if (! inventory) {
+            console.warn('Ивентарь агента (' + user.ID + ') не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            item = inventory.getItem(i);
+            if (item)
+                this.playerInv.push(item.example);
+        }
+
+        // Установить дивы инвентарей
+        this.playerInvDiv = $('#activeTownDiv').find('.mainTraderWindow-down-player-body').first();
+        this.playerTableDiv = $('#activeTownDiv').find('.mainTraderWindow-down-exchange-leftbody').first();
+
+        // Повесить дропаблы
+        this.playerInvDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.playerTableCls) ;
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
+                                self.playerInvDiv , self.playerTableCls, self.playerInvCls);//
+            }
+        });
+
+        this.playerTableDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.playerInvCls);
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
+                                self.playerTableDiv, self.playerInvCls, self.playerTableCls);
+            }
+        });
+
+        // Отрисовать верстку
+        this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
+    };
+
+    TraderManager.prototype.updateTraderInv = function() {
+        //console.log('TraderManager.prototype.updatePlayerInv');
+        this._clearTraderInv();
+        var self = this;
+        var item;
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(locationManager.trader_uid);
+        if (! inventory) {
+            console.warn('Ивентарь торговца не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            item = inventory.getItem(i);
+            if (item)
+                this.traderInv.push(item.example);
+        }
+
+        // Установить дивы инвентарей
+        this.traderInvDiv = $('#activeTownDiv').find('.mainTraderWindow-down-trader-body').first();
+        this.traderTableDiv = $('#activeTownDiv').find('.mainTraderWindow-down-exchange-rightbody').first();
+
+        // Повесить дропаблы
+        this.traderInvDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.traderTableCls) ;
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                    self.traderInvDiv , self.traderTableCls, self.traderInvCls);//
+            }
+        });
+
+        this.traderTableDiv.droppable({
+            greedy: true,
+            accept: function(target) {
+                return target.hasClass(self.traderInvCls);
+            },
+            drop: function(event, ui) {
+                var item_pos = ui.draggable.data('pos');
+                self.changeItem(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                    self.traderTableDiv, self.traderInvCls, self.traderTableCls);
+            }
+        });
+
+        // Отрисовать верстку
+        this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
+    };
+
+    TraderManager.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
+        for(var i = 0; i < itemList.length; i++) {
+            var example = itemList[i];
+            var itemDiv = $('<div class="mainTraderWindow-down-player-body-item ' + dropCls  + '" data-pos="' + i + '"></div>');
+            var emptyItemDiv =
+                    '<div class="mainTraderWindow-down-player-body-item-name">' + example.title + '</div>' +
+                    '<div class="mainTraderWindow-down-player-body-item-picture-wrap">' +
+                        '<div class="mainTraderWindow-down-player-body-item-picture"></div>' +
+                    '</div>';
+
+            itemDiv.append(emptyItemDiv);
+
+            itemDiv.find('.mainTraderWindow-down-player-body-item-picture')
+                .css('background', 'transparent url(' + example.inv_icon_small + ') no-repeat 100% 100%');
+
+            itemDiv.draggable({
+                helper: 'clone',
+                opacity: 0.8,
+                revert: true,
+                revertDuration: 0,
+                zIndex: 1,
+                appendTo: '#activeTownDiv'
+            });
+
+            parentDiv.append(itemDiv);
+        }
+    };
+
+    TraderManager.prototype._clearPlayerInv = function() {
+        this.playerInv = [];
+        this.playerTable = [];
+        this.playerInvDiv = null;
+        this.playerTableDiv = null;
+    };
+
+    TraderManager.prototype._clearTraderInv = function() {
+        this.traderInv = [];
+        this.traderTable = [];
+        this.traderInvDiv = null;
+        this.traderTableDiv = null;
+    };
+
+    TraderManager.prototype.clear = function() {
+        this._clearPlayerInv();
+        this._clearTraderInv();
+    };
+
+    TraderManager.prototype.apply = function() {
+        //console.log('TraderManager.prototype.apply');
+    };
+
+    TraderManager.prototype.cancel = function() {
+        //console.log('TraderManager.prototype.cancel');
+    };
+
+    return TraderManager;
 })();
 
 

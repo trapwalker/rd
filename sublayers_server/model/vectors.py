@@ -15,6 +15,9 @@ class Point(complex):
     x = complex.real
     y = complex.imag
 
+    def __getinitargs__(self):
+        return self.x, self.y
+
     def as_tuple(self):
         # todo: refactor it
         return self.x, self.y

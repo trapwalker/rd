@@ -70,7 +70,7 @@ class ScoutDroid(Slave):
     def set_default_tags(self):
         self.tags.add(tags.UnZoneTag)
 
-    def set_def_items(self, time):
+    def load_inventory(self, time):
         pass
         # self.item_ammo1 = ItemState(server=self.server, time=time, balance_cls='Ammo1', count=5)
         # self.item_ammo1.set_inventory(time=time, inventory=self.inventory)

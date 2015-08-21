@@ -163,12 +163,13 @@ var MapCar = (function (_super) {
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
-    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState) {
+    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState, radius_visible) {
         _super.call(this, aID, aState, aHPState, aFuelState);
         this.v_forward = aVForward;
         this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
         this.altitude = 0.0;
+        this.radius_visible = radius_visible;
     }
 
     UserCar.prototype._manage_tm = function () {
@@ -257,8 +258,8 @@ var FireSideMng = (function () {
         var res = [];
         if (filterSides == "" || filterSides == null)
             filterSides = ["front", "back", "right", "left"];
-        if (isDischarge == undefined) isDischarge = False;
-        if (isAuto == undefined) isAuto = False;
+        if (isDischarge == undefined) isDischarge = false;
+        if (isAuto == undefined) isAuto = false;
         for (var i = 0; i < filterSides.length; i++)
             res = res.concat(this.sides[filterSides[i]].getSectorsByType(isDischarge, isAuto));
         return res;
@@ -361,8 +362,8 @@ var FireSide = (function () {
 
     FireSide.prototype.getSectorsByType = function (isDischarge, isAuto) {
         // Установкой флагов можно регулировать результат (если оба True, то вернутся все сектора)
-        if (isDischarge == undefined) isDischarge = False;
-        if (isAuto == undefined) isAuto = False;
+        if (isDischarge == undefined) isDischarge = false;
+        if (isAuto == undefined) isAuto = false;
         var res = [];
         for (var i = 0; i < this.sectors.length; i++) {
             var s_disc = this.sectors[i].isDischarge;

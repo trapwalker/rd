@@ -310,10 +310,7 @@ class ReEnterToLocation(Event):
 
     def on_perform(self):
         super(ReEnterToLocation, self).on_perform()
-        if self.agent in self.location.visitors:
-            self.location.on_re_enter(agent=self.agent, time=self.time)
-        else:
-            log.warning('agent %s try to enter the location %s, but access denied', self.agent, self.location)
+        self.location.on_re_enter(agent=self.agent, time=self.time)
 
 
 class ExitFromMapLocation(Event):
@@ -369,7 +366,7 @@ class ShowInventoryEvent(Event):
         super(ShowInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
         assert (obj is not None) and (obj.inventory is not None)
-        if obj in self.agent.cars:
+        if obj is self.agent.car:
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
@@ -444,3 +441,30 @@ class ItemActivationEvent(Event):
         event_cls = item.example.activate()
         if event_cls:
             event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
+
+
+class LootPickEvent(Event):
+    def __init__(self, agent, poi_stash_id, **kw):
+        super(LootPickEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.poi_stash_id = poi_stash_id
+
+    def on_perform(self):
+        super(LootPickEvent, self).on_perform()
+        agent = self.agent
+        # получить сундук
+        stash = self.server.objects.get(self.poi_stash_id)
+        # получить машинку агента
+        car = agent.car
+        if stash is None or car is None:
+            return
+
+        if abs(stash.position(self.time) - car.position(self.time)) > 50:
+            return
+
+        # проходим по инвентарю сундука и перекидываем вещи в инвентарь машины
+        for item in stash.inventory.get_items():
+            item.set_inventory(time=self.time, inventory=car.inventory)
+        # если инвентарь сундука пустой, то удалить сундук
+        if stash.inventory.is_empty():
+            stash.delete(self.time)

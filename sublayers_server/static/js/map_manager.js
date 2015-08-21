@@ -24,6 +24,11 @@ function onMouseDblClick(mouseEventObject) {
     //console.log(map.project(mouseEventObject.latlng, myMap.getMaxZoom()))
 }
 
+function onMouseRightClick(mouseEventObject) {
+    chat.addMessageToSys(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    console.log(map.project(mouseEventObject.latlng, myMap.getMaxZoom()))
+}
+
 function onMouseMoveMap(mouseEventObject) {
     /*
      var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
@@ -147,6 +152,12 @@ function onKeyDownMap(event) {
             clientManager.sendFireAutoEnable('left', false);
             */
             break;
+        case 77:  // M
+            if (map.dragging._enabled)
+                map.dragging.disable();
+            else
+                map.dragging.enable();
+            break;
         case 90:  // Z
             //console.log('Was pressed: Z');
             break;
@@ -164,6 +175,8 @@ function onKeyDownMap(event) {
         case 52:  // 4
             //console.log('Was pressed: 4');
             break;
+
+        //LM=77 N O=79 P=80   Q=81
     }
 }
 
@@ -252,7 +265,7 @@ var MapManager = (function(_super){
         map.on('click', onMouseUpMap);
         //map.on('mousedown', onMouseDownMap);
         //map.on('mouseup', onMouseUpMap);
-        map.on('contextmenu', onMouseDblClick);
+        map.on('contextmenu', onMouseRightClick);
         map.on('mousemove', onMouseMoveMap);
         map.on('mouseout', onMouseOutMap);
         map.on('zoomstart', this.onZoomStart);

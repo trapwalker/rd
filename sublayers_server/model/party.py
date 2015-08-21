@@ -136,9 +136,8 @@ class PartyMember(object):
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
         PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party, time=time).post()
         # Рассылка всем агентам, которые видят машинки добавляемого агента
-        for car in agent.cars:
-            for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent, time=time).post()
+        for sbscr_agent in agent.car.subscribed_agents:
+            AgentPartyChangeMessage(agent=sbscr_agent, subj=agent, time=time).post()
 
     def out_from_party(self, time):
         # Исключение мембера из пати
@@ -146,9 +145,9 @@ class PartyMember(object):
         # Отправка специального сообщения исключённому (вышедшему) агенту
         PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party, time=time).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
-        for car in self.agent.cars:
-            for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
+
+        for sbscr_agent in self.agent.car.subscribed_agents:
+            AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
 
     def kick_from_party(self, time):
         # Исключение мембера из пати
@@ -156,9 +155,8 @@ class PartyMember(object):
         # Отправка специального сообщения исключённому (вышедшему) агенту
         PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party, time=time).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
-        for car in self.agent.cars:
-            for sbscr_agent in car.subscribed_agents:
-                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
+        for sbscr_agent in self.agent.car.subscribed_agents:
+            AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
 
     def set_category(self, category):
         self.category = category

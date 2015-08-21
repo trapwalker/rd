@@ -225,6 +225,8 @@ var ClientManager = (function () {
                 obj_marker.updateLabel(event.object.town_name);
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
+            if (obj.cls == 'POIStash')
+                obj_marker.updateLabel('loot');
 
         }
     };
@@ -259,21 +261,8 @@ var ClientManager = (function () {
 
     // Входящие сообщения
 
-    ClientManager.prototype.Init = function (event) {
-        //console.log('ClientManager.prototype.Init', event);
-        var servtime = event.time;
-        var v_forward = event.cars[0].v_forward;
-        var v_backward = event.cars[0].v_backward;
-        var radius_visible = event.cars[0].r;
-        var uid = event.cars[0].uid;
-        var role = event.cars[0].role;
-        var state = this._getState(event.cars[0].state);
-        var hp_state = this._getHPState(event.cars[0].hp_state);
-        var fuel_state = this._getFuelState(event.cars[0].fuel_state);
-        var fireSectors = this._getSectors(event.cars[0].fire_sectors);
-
-        clock.setDt((new Date().getTime() - servtime) / 1000.);
-
+    ClientManager.prototype.InitAgent = function(event){
+        //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
@@ -283,6 +272,22 @@ var ClientManager = (function () {
                 chat.page_party.buttons.create.text('Отряд');
             }
         }
+    };
+
+    ClientManager.prototype.InitCar = function (event) {
+        //console.log('ClientManager.prototype.InitCar', event);
+        var servtime = event.time;
+        var v_forward = event.car.v_forward;
+        var v_backward = event.car.v_backward;
+        var radius_visible = event.car.r;
+        var uid = event.car.uid;
+        var role = event.car.role;
+        var state = this._getState(event.car.state);
+        var hp_state = this._getHPState(event.car.hp_state);
+        var fuel_state = this._getFuelState(event.car.fuel_state);
+        var fireSectors = this._getSectors(event.car.fire_sectors);
+
+        clock.setDt((new Date().getTime() - servtime) / 1000.);
 
         if (!user.userCar) {
             // создать машинку
@@ -292,7 +297,8 @@ var ClientManager = (function () {
                 v_backward,
                 state,
                 hp_state,
-                fuel_state
+                fuel_state,
+                radius_visible
             );
             for (var i = 0; i < fireSectors.length; i++)
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
@@ -313,15 +319,16 @@ var ClientManager = (function () {
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            new WViewRadius(mcar, radius_visible); // виджет радиуса видимости
+            new WViewRadius(mcar); // виджет радиуса видимости
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
-
-            //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
-            mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
-            mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
-            //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
+            if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {  // если есть хоть один сектор
+                //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
+                mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
+                mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
+                //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
+            }
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
@@ -409,8 +416,11 @@ var ClientManager = (function () {
             case 'Mobile':
                 this._contactBot(event);
                 break;
+            case 'RadioPoint':  // todo: раскоментировать, когда радиоточки будут установлены или сделать через куки-настройки
+                //console.log('Radio Towers are hidden');
+                //break;
             case 'Town':
-            case 'RadioPoint':
+            case 'POIStash':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;
@@ -441,6 +451,9 @@ var ClientManager = (function () {
                 console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
                 return;
             }
+
+            // Город нельзя перестать видеть
+            if (car.cls == 'Town') return;
 
             // Удалить привязку к владельцу
             if (car.owner) car.owner.unbindCar(car);
@@ -476,8 +489,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ChangeAltitude = function(event){
         // console.log('ClientManager.prototype.ChangeAltitude ', event);
-        if (event.obj_id == user.userCar.ID)
+        if (event.obj_id == user.userCar.ID){
             user.userCar.altitude = event.altitude;
+            user.userCar.radius_visible = event.p_observing_range;
+        }
         else
             console.error('Error! Пришла высота на неизветную машинку!')
     };
@@ -615,32 +630,45 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        console.log('ClientManager.prototype.EnterToLocation', event);
-        var location_uid = event.location.uid;
+        //console.log('ClientManager.prototype.EnterToLocation', event);
         // POST запрос на получение города и вывод его на экран.
         // К этому моменту машинка уже удаляется или вот-вот удалится
         $.ajax({
             url: "http://" + location.host + '/api/location',
             data:  { location_id: event.location.uid },
             success: function(data) {
-                console.log('ClientManager.prototype.EnterToLocation Answer');
+                //console.log('ClientManager.prototype.EnterToLocation Answer');
+
+                if (locationManager.in_location)
+                    clientManager.ExitFromLocation();
+
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
+                locationManager.location_uid = event.location.uid;
+                windowTemplateManager.closeAllWindows();
+                locationManager.in_location = true;
                 chat.showChatInTown();
                 locationManager.visitorsManager.update_visitors();
-                windowTemplateManager.closeAllWindows();
                 locationManager.nucoil.update();
                 locationManager.armorer.update();
+                locationManager.trader.updatePlayerInv();
+                locationManager.trader.updateTraderInv();
             }
         });
     };
 
-    ClientManager.prototype.ExitFromLocation = function (event) {
+    ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
+        locationManager.in_location = false;
+        locationManager.currentNpc = null;
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
+        locationManager.location_uid = null;
         locationManager.visitorsManager.clear_visitors();
+        locationManager.nucoil.clear();
+        locationManager.armorer.clear();
+        locationManager.trader.clear();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -682,18 +710,26 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ExamplesShowMessage = function (event) {
-        console.log('ClientManager.prototype.ExampleInventoryMessage', event);
+        //console.log('ClientManager.prototype.ExamplesShowMessage', event);
+        if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
+            var inv = this._getInventory(event.inventory);
+            if (inventoryList.getInventory(inv.owner_id))
+                inventoryList.delInventory(inv.owner_id);
+            inventoryList.addInventory(inv);
+            locationManager.nucoil.update();
+            locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
+            locationManager.trader.updatePlayerInv();
+        }
+    };
+
+    ClientManager.prototype.TraderInventoryShowMessage = function (event) {
+        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
         var inv = this._getInventory(event.inventory);
+        locationManager.trader_uid = inv.owner_id;
         if (inventoryList.getInventory(inv.owner_id))
             inventoryList.delInventory(inv.owner_id);
         inventoryList.addInventory(inv);
-        locationManager.nucoil.update();
-        locationManager.armorer.update(event.armorer_slots);
-    };
-
-    ClientManager.prototype.ExamplesHideMessage = function (event) {
-        //console.log('ClientManager.prototype.ExampleInventoryHideMessage', event);
-        inventoryList.delInventory(event.inventory_owner_id);
+        locationManager.trader.updateTraderInv();
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
@@ -1081,6 +1117,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendFuelStationActive = function (fuel) {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
         var mes = {
             call: "fuel_station_active",
             rpc_call_id: rpcCallList.getID(),
@@ -1088,6 +1125,59 @@ var ClientManager = (function () {
                 tank_list: locationManager.nucoil.tank_list,
                 fuel: fuel
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHangarCarChoice = function (car_number) {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "choice_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_number: car_number
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendLootStash = function (poi_stash_id) {
+        console.log('ClientManager.prototype.sendLootStash', poi_stash_id);
+        var mes = {
+            call: "loot_stash",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                poi_stash_id: poi_stash_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Сообщения локаций
+
+    // Оружейник
+    ClientManager.prototype.sendArmorerApply = function () {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "armorer_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                armorer_slots: locationManager.armorer.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendArmorerCancel = function () {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
+        var mes = {
+            call: "armorer_cancel",
+            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

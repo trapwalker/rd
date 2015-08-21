@@ -3,7 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.attr import Attribute, DocAttribute, RegistryLink, InventoryAttribute
+from sublayers_server.model.registry.attr import Attribute, DocAttribute
+from sublayers_server.model.registry.attr.tag import TagsAttribute
+from sublayers_server.model.registry.attr.link import RegistryLink
+from sublayers_server.model.registry.uri import URI
 
 import yaml
 
@@ -29,33 +32,36 @@ class AttrUpdaterMeta(type):
         pass
 
 
-class PersistentMeta(AttrUpdaterMeta):
+class NodeMeta(AttrUpdaterMeta):
 
     classes = {}
 
     def __init__(cls, name, bases, attrs):
-        super(PersistentMeta, cls).__init__(name, bases, attrs)
+        super(NodeMeta, cls).__init__(name, bases, attrs)
         cls.classes[name] = cls
 
     def update_attr(self, name, value):
-        super(PersistentMeta, self).update_attr(name, value)
+        super(NodeMeta, self).update_attr(name, value)
         if isinstance(value, Attribute):
             value.attach(name=name, cls=self)
 
+    def __call__(cls, *av, **kw):
+        node = super(NodeMeta, cls).__call__(*av, **kw)
+        node.prepare()
+        return node
 
-class Persistent(object):
-    __metaclass__ = PersistentMeta
 
-
-class Node(Persistent):
+class Node(object):
+    __metaclass__ = NodeMeta
 
     # todo: override attributes in subclasses
-    abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
-    parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
+    #abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
+    #parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
+    tags = TagsAttribute(caption=u'Теги', tags="client")
 
-    def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, **kw):
+    def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, abstract=False, **kw):
         """
         @param str name: Name of node
         @param Node parent: Parent of node
@@ -64,18 +70,53 @@ class Node(Persistent):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self._prepared_attrs = set()  # todo: optimize
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
-        self.name = name
+        self.name = name or storage and storage.gen_uid().get_hex()
         self.owner = owner
-        self.values = values and values.copy() or {}
-        self.storage = storage
         self.parent = parent
+        self.abstract = abstract
+
+        self.values = values and values.copy() or {}
+        for p in kw.keys():
+            assert hasattr(self, p)  # todo: replace to warning
+        self.values.update(kw)
+        self.storage = storage
+
         if storage:
             storage.put(self)
 
-        for k, v in kw.items():
-            setattr(self, k, v)
+    @property
+    def id(self):
+        # todo: Решить проблему изменения идентификатора при помещении в хранилище
+        return self.uri and str(self.uri) or '{}#{}'.format(self.__class__.__name__, id(self))
+
+    def node_hash(self):
+        if self.uri:
+            return str(self.uri)
+        elif self.parent:
+            return self.parent.node_hash()
+        raise Exception('try to get node hash in wrong node')  # todo: exception specify
+
+    def as_client_dict(self):
+        # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
+        d = dict(
+            id=self.id,
+            node_hash=self.node_hash(),
+        )
+        for attr, getter in self.iter_attrs(tags='client'):
+            v = getter()
+            if isinstance(attr, TagsAttribute):
+                v = list(v)  # todo: Перенести это в расширение сериализатора
+            d[attr.name] = v
+        return d
+
+    def prepare(self):
+        for attr, getter in self.iter_attrs():
+            assert isinstance(attr, Attribute)
+            if attr.name not in self._prepared_attrs:
+                attr.prepare(obj=self)
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -86,6 +127,7 @@ class Node(Persistent):
         cls = self.__class__
         for k in dir(cls):
             attr = getattr(cls, k)
+            """@type: Attribute"""
             if (
                 isinstance(attr, Attribute)
                 and (not tags or attr.tags & tags)
@@ -95,31 +137,9 @@ class Node(Persistent):
                 yield attr, getter
 
     def instantiate(self, storage=None, name=None, **kw):
-        # todo: test to abstract sign
-        # todo: clear abstract sign
-        if storage:
-            name = name or storage.gen_uid().get_hex()
-        inst = self.__class__(name=name, storage=storage, parent=self, **kw)
+        assert self.abstract
+        inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
         log.debug('Maked new instance %s', inst.uri)
-
-        for attr, getter in self.iter_attrs():
-            if isinstance(attr, RegistryLink):
-                if attr.need_to_instantiate:
-                    link = attr.get_raw(self)
-                    # todo: Отловить и обработать исключения
-                    if link:
-                        value = getter()
-                        uri = dict(zip('proto storage path params'.split(), self.DISPATCHER.parse_uri(link)))
-                        if value and value.can_instantiate:
-                            new_value = value.instantiate(owner=inst, **uri['params'])
-                            setattr(inst, attr.name, new_value)
-                            # todo: тест на негомогенных владельцев
-            # elif isinstance(attr, InventoryAttribute):
-            #     from sublayers_server.model.registry.classes import Inventory  # todo: refactor
-            #     value = getter()
-            #     new_value = value.instantiate() if value else Inventory()
-            #     setattr(inst, attr.name, new_value)
-
         return inst
 
     def __getstate__(self):
@@ -132,7 +152,9 @@ class Node(Persistent):
             if attr.name in values:  # todo: refactor it
                 v = getter()
                 if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
-                    v = v.uri
+                    v = v.uri  # todo: (!!!)
+                elif isinstance(attr, TagsAttribute):
+                    v = str(v)
                 d[attr.name] = v
         return d
 
@@ -146,12 +168,6 @@ class Node(Persistent):
 
         for k, v in state.items():
             setattr(self, k, v)
-
-    @property
-    def path(self):
-        if self.storage is None:
-            return
-        return self.storage.get_path(self)
 
     @property
     def uri(self):
@@ -192,27 +208,21 @@ class Node(Persistent):
         )
         for attr, getter in self.iter_attrs():
             v = getter()
-            if isinstance(v, Node):
+            if isinstance(attr, TagsAttribute):
+                v = str(v)
+            elif isinstance(v, Node):
                 if v.storage and v.storage.name == 'registry':
-                    v = v.uri
+                    v = str(v.uri)  # todo: (!!)
                 else:
                     v = v.resume_dict()
+            elif isinstance(v, URI):
+                v = str(v)
             d[attr.name] = v
         return d
 
     def resume(self):
-        return yaml.dump(self.resume_dict(), default_flow_style=False, allow_unicode=True)
-
-    def _get_attr_value(self, name, default):
-        if name in self.values:
-            return self.values[name]
-        if self.parent:
-            return self.parent._get_attr_value(name, default)
-        else:
-            return default
-
-    def _set_attr_value(self, name, value):
-        self.values[name] = value
+        d = self.resume_dict()
+        return yaml.dump(d, default_flow_style=False, allow_unicode=True)
 
     def _del_attr_value(self, name):
         del(self.values[name])

@@ -11,7 +11,7 @@ var WViewRadius = (function (_super) {
     function WViewRadius(car, radius) {
         _super.call(this, [car, mapManager]);
         this.car = car;
-        this.r = radius;
+        this.r = car.radius_visible;
         this.lastZoom = 1;
 
         this.marker = L.circleMarker([0, 0], {
@@ -40,8 +40,12 @@ var WViewRadius = (function (_super) {
         // если был изменён зум, то изменить радиус
         if(map.getZoom() != this.lastZoom) {
             this.lastZoom = map.getZoom();
-            var r = this._calcRadius();
-            this.marker.setRadius(r);
+            this.marker.setRadius(this._calcRadius());
+        }
+        // если радиус обзора машинки изменился, то изменить круг
+        if(Math.abs(this.r - this.car.radius_visible) > 1.0) {
+            this.r = this.car.radius_visible;
+            this.marker.setRadius(this._calcRadius());
         }
     };
 

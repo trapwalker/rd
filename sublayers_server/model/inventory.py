@@ -7,6 +7,7 @@ from sublayers_server.model.messages import InventoryShowMessage, InventoryItemM
 
 EPS = 1e-5
 
+
 class ETimeIsNotInState(Exception):
     pass
 
@@ -40,11 +41,19 @@ class Inventory(object):
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
-        InventoryHideMessage(time=time, agent=agent, inventory=self).post()
+        InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
+
+    def get_all_items(self):
+        return [dict({'item': item, 'position': self.get_position(item=item)}) for item in self._items.values()]
+
+    def get_items(self):
+        return self._items.values()
 
     def add_item(self, item, time, position=None):
         if position is None:
+            # todo: сначала поискать такой же стак, чтобы оно влезло в один стак
             position = self.get_free_position()
+            # log.debug('dobavlyaem item %s', item)
         if position is None:
             return False
         assert (position < self.max_size) and (position >= 0)
@@ -98,7 +107,7 @@ class Inventory(object):
     def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():
             item = self._items[position]
-            if (item.example in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
+            if (item.example.parent in balance_cls_list) and (item.limbo is False) and (item.val(t=time) > min_value):
                 return item
         return None
 
@@ -112,6 +121,9 @@ class Inventory(object):
 
     def send_inventory(self, agent, time):
         InventoryShowMessage(agent=agent, time=time, inventory=self).post()
+
+    def is_empty(self):
+        return len(self._items.values()) == 0
 
 
 class ItemTask(TaskSingleton):
@@ -155,7 +167,7 @@ class ItemTask(TaskSingleton):
 
 
 class ItemState(object):
-    __str_template__ = 'Item: <limbo={self.limbo}> class={self.balance_cls} value0={self.val0}'
+    __str_template__ = 'Item: <limbo={self.limbo}> class={self.example.parent.uri} value0={self.val0}'
 
     def __init__(self, server, time, example, count=1):
         assert count > 0
@@ -249,6 +261,7 @@ class ItemState(object):
     # Интерфейс работы с итемом со стороны окна клиента
     def set_inventory(self, time, inventory, position=None):
         assert not self.limbo
+        # log.debug('IteemState.set_inventory for %s ', self)
         old_inventory = self.inventory
         if inventory is old_inventory:
             return self.change_position(position=position, time=time)
@@ -290,7 +303,7 @@ class ItemState(object):
 
     def add_another_item(self, item, time):
         assert not self.limbo and not item.limbo
-        if self.example != item.example:
+        if self.example.parent != item.example.parent:
             if self.inventory is item.inventory:
                 self.change_position(position=self.inventory.get_position(item=item), time=time)
             return
@@ -388,7 +401,7 @@ class Consumer(object):
         if self.item is not None:
             self.item.unlinking(consumer=self)
         # пытаемся зарядить итем
-        if (item is not None) and (item.example in self.items_cls_list):
+        if (item is not None) and (item.example.parent in self.items_cls_list):
             item.linking(consumer=self)
         # если нужно, пытаемся восстановить использование
         if started:
@@ -403,7 +416,7 @@ class Consumer(object):
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
-            balance_cls_list = [item.example]
+            balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
         if self.is_started:
             self.on_stop(item=item, time=time)

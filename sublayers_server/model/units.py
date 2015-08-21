@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
 from sublayers_server.model.fuel_state import FuelState
-from sublayers_server.model.base import Observer
+from sublayers_server.model.base import Observer, VisibleObject
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.hp_task import HPTask
@@ -14,12 +14,24 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
-    SearchZones, Die, FireAutoTestEvent
+    SearchZones, FireAutoTestEvent
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
 
 from math import radians
+
+
+class POIStash(VisibleObject):
+    def __init__(self, time, **kw):
+        super(POIStash, self).__init__(time=time, **kw)
+        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        self.load_inventory(time=time)
+
+    def load_inventory(self, time):
+        for item_example in self.example.inventory:
+            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
+                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
 
 class Unit(Observer):
@@ -48,9 +60,10 @@ class Unit(Observer):
         self.fire_sectors = []
         """@type: list[sublayers_server.model.sectors.FireSector]"""
 
-        # костыль для инвенторя
-        self.inventory = Inventory(max_size=10, owner=self, time=time)
-        self.set_def_items(time=time)
+        # загрузка инвенторя
+        # todo: забрать из реестра размер инвентаря
+        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
 
@@ -68,32 +81,17 @@ class Unit(Observer):
     def hp(self, time):
         return self.hp_state.hp(t=time)
 
-    def set_def_items(self, time):
-        ammo1_cls = self.server.reg['/items/usable/ammo/bullets/a127x99']
-        ammo2_cls = self.server.reg['/items/usable/ammo/bullets/a762']
-        f_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
-        f_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
-        e_tank10_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
-        e_tank20_cls = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
+    def load_inventory(self, time):
+        for item_example in self.example.inventory:
+            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
+                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
-        self.ammo1 = ItemState(server=self.server, time=time, example=ammo1_cls, count=10)
-        self.ammo1.set_inventory(time=time, inventory=self.inventory)
-        self.ammo2 = ItemState(server=self.server, time=time, example=ammo2_cls, count=10)
-        self.ammo2.set_inventory(time=time, inventory=self.inventory)
-
-        ItemState(server=self.server, time=time, example=f_tank10_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        ItemState(server=self.server, time=time, example=f_tank20_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        ItemState(server=self.server, time=time, example=e_tank10_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        ItemState(server=self.server, time=time, example=e_tank20_cls).set_inventory(time=time,
-                                                                                     inventory=self.inventory)
-        #
-        # ItemState(server=self.server, time=time, balance_cls='Tank20', max_count=1).set_inventory(time=time,
-        #                                                                                           inventory=self.inventory)
-        # self.item_ammo2 = ItemState(server=self.server, time=time, balance_cls='Ammo2', count=20)
-        # self.item_ammo2.set_inventory(time=time, inventory=self.inventory)
+    def save_inventory(self, time):
+        self.example.inventory = []
+        for item_rec in self.inventory.get_all_items():
+            item_rec['item'].example.position = item_rec['position']
+            item_rec['item'].example.amount = item_rec['item'].val(t=time)
+            self.example.inventory.append(item_rec['item'].example)
 
     @property
     def max_hp(self):
@@ -104,16 +102,28 @@ class Unit(Observer):
             .start(time=time)
 
     def setup_weapons(self, time):
+        def direction_by_symbol(symbol):
+            if symbol == 'F':
+                return 0.0
+            if symbol == 'B':
+                return radians(180.0)
+            if symbol == 'L':
+                return radians(-90.0)
+            if symbol == 'R':
+                return radians(90.0)
+            return 0.0
+
         for w_ex in self.example.iter_weapons():
-            sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width), fi=radians(w_ex.direction))
+
+            sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width),
+                                fi=direction_by_symbol(w_ex.direction))
             if w_ex.is_auto:
-                weapon = WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo],
-                                    dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second)
-                weapon.set_item(item=self.ammo2, time=time)
+                WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo], dv=w_ex.ammo_per_shot,
+                           ddvs=w_ex.ammo_per_second, example=w_ex)
             else:
-                weapon = WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
-                                         dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge)
-                weapon.set_item(item=self.ammo1, time=time)
+                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
+                                dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge,
+                                example=w_ex)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -162,6 +172,11 @@ class Unit(Observer):
         self.check_auto_fire_interval = BALANCE.interval_refresh
         self.check_zone_interval = BALANCE.interval_refresh
         SearchZones(obj=self, time=event.time).post()
+        # зарядить все орудия
+        for weapon in self.weapon_list():
+            item = self.inventory.get_item_by_cls(balance_cls_list=[weapon.example.ammo], time=event.time)
+            if item:
+                weapon.set_item(item=item, time=event.time)
 
     def on_zone_check(self, event):
         # зонирование
@@ -196,6 +211,24 @@ class Unit(Observer):
             messages.Die(agent=self.owner, time=event.time).post()
         # todo: удалить себя и на этом месте создать обломки
         self.delete(time=event.time)
+
+        # вернуть агенту стоимость машинки
+        if self.owner:
+            self.owner.example.balance += self.example.price
+            # todo: возможно это нужно перенести
+            self.owner.example.car = None
+
+        # создать труп с инвентарём
+        if not self.inventory.is_empty():
+            # создать экземпляр данного сундука
+            ex_stash = self.server.reg['/poi/stash'].instantiate(position=self.position(event.time),
+                                                                 inventory_size=self.example.inventory_size)
+            # заполнить инвентарь сундука
+            for item_rec in self.inventory.get_all_items():
+                item_rec['item'].example.amount = item_rec['item'].val(t=event.time)
+                ex_stash.inventory.append(item_rec['item'].example)
+
+            POIStash(server=self.server, time=event.time, example=ex_stash)
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
@@ -253,9 +286,7 @@ class Unit(Observer):
         return self.owner
 
     def on_change_altitude(self, new_altitude, time):
-        pass
-        #if isinstance(self, Bot):
-        #     log.debug('on_alt_change: %s, %s', new_altitude, self.altitude)
+        # log.debug('on_change_altitude = %s', new_altitude)
         if new_altitude != self.altitude:
             old_altitude = self.altitude
             self.altitude = new_altitude
@@ -267,6 +298,7 @@ class Unit(Observer):
                     agent=self.owner,
                     altitude=new_altitude,
                     obj_id=self.id,
+                    p_observing_range=self.params.get('p_observing_range').current,
                     time=time
                 ).post()
 
@@ -274,6 +306,12 @@ class Unit(Observer):
         super(Unit, self).save(time=time)
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
+        self.save_inventory(time)
+
+    def weapon_list(self):
+        for sector in self.fire_sectors:
+            for w in sector.weapon_list:
+                yield w
 
 
 class Mobile(Unit):
@@ -287,7 +325,7 @@ class Mobile(Unit):
 
         assert self.example.max_control_speed <= self.example.v_forward
         Parameter(original=self.example.max_control_speed / self.example.v_forward,
-                  min_value=0.0, max_value=1.0, owner=self, name='p_cc')
+                  min_value=0.05, max_value=1.0, owner=self, name='p_cc')
         Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
 
     def init_state_params(self):
@@ -325,6 +363,9 @@ class Mobile(Unit):
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
     def set_fuel(self, time, df=None):
+        if df:  # значит хотим залить (пока нет дамага, снимающего литры)
+            self.server.effects.get('EffectEmptyFuel').done(owner=self, time=time)  # снять эффект
+            # log.debug('====== ----- ====== EffectEmptyFuel is done ====== ----- ======')
         FuelTask(owner=self, df=df).start(time=time)
 
     def on_before_delete(self, event):
@@ -335,12 +376,8 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        pass
-        '''
-        self.p_cc.current = 0.0
-        self.set_motion()
-        Die(time=event.time + 20.0, obj=self).post()
-        '''
+        self.server.effects.get('EffectEmptyFuel').start(owner=self, time=event.time)
+        # log.debug('====== ----- ====== EffectEmptyFuel is started ====== ----- ======')
 
     def v(self, time):
         return self.state.v(t=time)

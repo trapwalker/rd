@@ -1,0 +1,61 @@
+﻿{% set window_caption = 'NUKE:\Приветствие>' %}
+
+<style xmlns="http://www.w3.org/1999/html">
+    .mainWelcomeWindow {
+        position: relative;
+        height: 452px;
+        width: 526px;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #30fc00;
+        font-family: Nouveau_IBM;
+    }
+
+    .mainWelcomeWindow-logo {
+        position: relative;
+        width: 121px;
+        float: left;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+
+    .mainWelcomeWindow-logo-picture {
+        margin: 5px 0px 0px 25px;
+    }
+
+    .mainWelcomeWindow-logo-name {
+        height: 23px;
+        line-height: 23px;
+        text-align: center;
+    }
+
+    .mainWelcomeWindow-text {
+        height: 420px;
+        width: 395px;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        padding: 5px 0px 0px 0px;
+    }
+</style>
+
+<div class="mainWelcomeWindow">
+    {% include drag_close_header.html %}
+    <div class="mainWelcomeWindow-logo">
+        <img class="mainWelcomeWindow-logo-picture" src="/static/img/modal_window_image/mes_win_info_icon.png"
+             alt="Нукойл"/>
+
+        <div class="mainWelcomeWindow-logo-name">Нукойл</div>
+    </div>
+    <div class="mainWelcomeWindow-text">
+        Уважаемый клиент! Корпорация Нукойл рада сообщить, что Вы получили лицензию на использование Nuke Commander -
+        персональной автономной системы навигации и активной обороны транспортного средства. Пожалуйста, запомните ваш
+        логин и пароль для входа в систему, от этого может зависеть Ваша жизнь!</br></br>
+        Отныне Вы имеете право беспрепятственного проезда в зоны, охраняемые системами безопасности Корпорации Нукойл,
+        личный счет-аккаунт в едином топливном хранилище Нукойл и 10000 нукойнов на балансе. Кроме этого, в пакет услуг
+        входит премиум-страхование вашего транспортного средства на период в 365 суток.</br></br>
+        По условиям премиум-страховки мы выплатим полную рыночную стоимость транспортного средства в случае его
+        уничтожения.</br></br>
+        По вопросам установки оборудования Nuke Commander на Ваше транспортное средство обратитесь к сертифицированному
+        автодилеру.</br></br>
+        Спасибо за то, что выбрали нашу компанию. Корпорация Нукойл - Мы Есть Будущее.
+    </div>
+</div>

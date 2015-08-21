@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.tree import Node
+from sublayers_server.model.registry.uri import URI
 
 from collections import deque
 from uuid import uuid4 as uid_func
@@ -11,7 +12,6 @@ import shelve
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
-import re
 
 
 URI_PROTOCOL = 'reg'
@@ -63,57 +63,36 @@ class AbstractStorage(object):
 
     uri_protocol = URI_PROTOCOL
 
-    _RE_URI = re.compile(r'''
-        ^
-        (?:(?P<proto>\w+)://)?
-        (?P<storage>[^/]+)?
-        (?P<path>(?:/\w+)*)
-        (?P<tail_slash>/)?
-        (?P<params>(?:\?[^#]*))?
-        $
-    ''', re.X)
-
-    @classmethod
-    def parse_uri(cls, uri):
-        """Parse uri like 'protocol://path/to/the/some/object'
-        and return tuple like: ('protocol', ['path', 'to', 'the', 'some', 'object'])
-        """
-        m = cls._RE_URI.match(uri)
-        if m is None:
-            raise RegistryLinkFormatError('Wrong link format: "{}"'.format(uri))
-
-        d = m.groupdict()
-        proto = d.get('proto')
-        storage = d.get('storage')
-        path = d.get('path', '')
-        path = path.split('/')
-        params = d.get('params', '') or ''
-        params = params.lstrip('?')
-        params = params.split('&') if params else []
-        params = dict([s.split('=') for s in params])  # todo: errors
-        return proto, storage, path, params
-
     @staticmethod
     def gen_uid():
         return uid_func()
 
-    def get_node(self, proto, storage, path):
-        if storage is None or storage == self.name:
+    def get_node(self, uri):
+        """
+        @param URI|str uri: Link to the node
+        """
+        if isinstance(uri, basestring):
+            log.warning('AbstractStorage.get_node used by raw string URI')
+            uri = URI(uri)
+
+        if uri.storage is None or uri.storage == self.name:
             # todo: test protocol
-            return self.get_local(path)
+            return self.get_local(uri.path)
 
         dispatcher = self.dispatcher
         if dispatcher:
-            return dispatcher.get_node(proto=proto, storage=storage, path=path)
+            return dispatcher.get_node(proto=uri.scheme, storage=uri.storage, path=uri.path)
 
-        raise WrongStorageError("Can't resolve storage {}".format(storage))
+        raise WrongStorageError("Can't resolve storage {}".format(uri.storage))
 
     def __getitem__(self, item):
         if isinstance(item, basestring):
-            proto, storage, path, params = self.parse_uri(item)
-        else:
-            proto, storage, path = (URI_PROTOCOL, None, list(item))
-        return self.get_node(proto, storage, path)
+            item = URI(item)  # todo: optimize избавиться от неоднозначности строка/uri
+
+        if not isinstance(item, URI):
+            item = URI(scheme=URI_PROTOCOL, path=list(item))
+
+        return self.get_node(item)
 
     def get(self, index, default=None):
         try:
@@ -121,11 +100,8 @@ class AbstractStorage(object):
         except ObjectNotFound:
             return default
 
-    def get_path(self, node):
-        return '/' + '/'.join(self.get_path_tuple(node))
-
     def get_uri(self, node):
-        return '{}://{}{}'.format(self.uri_protocol, self.name or '', self.get_path(node))
+        return URI(scheme=self.uri_protocol, storage=self.name, path=self.get_path_tuple(node))
 
     def close(self):
         dispatcher = self.dispatcher
@@ -162,14 +138,15 @@ class Dispatcher(AbstractStorage):
         name = storage if isinstance(storage, basestring) else storage.name
         del(self.storage_map[name])
 
-    def get_node(self, proto, storage, path):
+    def get_node(self, uri):
         try:
-            storage_obj = self.storage_map[storage]
+            log.debug('Try to get storage "{}"'.format(uri.storage))
+            storage_obj = self.storage_map[uri.storage]
         except KeyError:
             raise StorageNotFound('Storage {} not found. [{}] avalable'.format(
-                storage, ', '.join(self.storage_map.keys())))
+                uri.storage, ', '.join(self.storage_map.keys())))
 
-        return storage_obj.get_local(path)
+        return storage_obj.get_local(uri.path)
 
     def save_node(self, node):
         raise Exception('Method is not supported by this storage type')
@@ -204,12 +181,7 @@ class Collection(AbstractStorage):
         super(Collection, self).close()
 
     def get_local(self, path):
-        # todo: refactoring
-        if path and path[0] == '':
-            path = path[1:]
-
         key = self.make_key(path)
-        print '------->', repr(key)
         try:
             return self._deserialize(self._raw_storage[key])
         except KeyError:
@@ -223,7 +195,7 @@ class Collection(AbstractStorage):
         return node
 
     def put(self, node):
-        key = self.make_key(node.path)
+        key = self.make_key(node.uri.path)
         self._raw_storage[key] = self._serialize(node)
 
     def get_path_tuple(self, node):
@@ -246,9 +218,7 @@ class Registry(AbstractStorage):
         self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
 
     def get_local(self, path):
-        if path and path[0] == '':
-            path = path[1:]
-
+        path = list(path)
         node = self.root
         while path:
             name = path.pop(0)
@@ -306,7 +276,8 @@ class Registry(AbstractStorage):
         if cls is None:
             raise NodeClassError('Node class unspecified on path: {}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
-        return cls(name=name, parent=parent, owner=owner, storage=self, values=attrs)
+        abstract = attrs.pop('abstract', True)
+        return cls(name=name, parent=parent, owner=owner, storage=self, abstract=abstract, values=attrs)
 
     def load(self, path):
         root = None

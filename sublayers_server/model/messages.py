@@ -67,14 +67,24 @@ class InitTime(Message):
     pass
 
 
-class Init(Message):
+class InitAgent(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
     def as_dict(self):
-        d = super(Init, self).as_dict()
+        d = super(InitAgent, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(time=self.time),
-            cars=[car.as_dict(time=self.time) for car in self.agent.cars],
+            agent=self.agent.as_dict(time=self.time)
+        )
+        return d
+
+
+class InitCar(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def as_dict(self):
+        d = super(InitCar, self).as_dict()
+        d.update(
+            car=self.agent.car.as_dict(time=self.time),
         )
         return d
 
@@ -401,15 +411,17 @@ class PartyErrorMessage(Message):
 
 
 class ChangeAltitude(Message):
-    def __init__(self, altitude, obj_id, **kw):
+    def __init__(self, altitude, obj_id, p_observing_range, **kw):
         super(ChangeAltitude, self).__init__(**kw)
         self.altitude = altitude
         self.obj_id = obj_id
+        self.p_observing_range = p_observing_range
 
     def as_dict(self):
         d = super(ChangeAltitude, self).as_dict()
         d.update(altitude=self.altitude,
                  obj_id=self.obj_id,
+                 p_observing_range=self.p_observing_range
                  )
         return d
 
@@ -521,14 +533,14 @@ class InventoryShowMessage(Message):
 
 
 class InventoryHideMessage(Message):
-    def __init__(self, inventory, **kw):
+    def __init__(self, inventory_id, **kw):
         super(InventoryHideMessage, self).__init__(**kw)
-        self.inventory = inventory
+        self.inventory_id = inventory_id
 
     def as_dict(self):
         d = super(InventoryHideMessage, self).as_dict()
         d.update(
-            inventory_owner_id=self.inventory.owner.uid
+            inventory_owner_id=self.inventory_id
             )
         return d
 
@@ -587,8 +599,50 @@ class ExamplesShowMessage(Message):
     def as_dict(self):
         d = super(ExamplesShowMessage, self).as_dict()
 
-        example10 = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank10']
-        example20 = self.agent.server.reg['/items/usable/fuel/tanks/tank_empty/tank20']
+        if self.agent.example.car:
+            d['armorer_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots()
+            ]
+
+            d['armorer_slots_flags'] = [
+                dict(name=attr.name, value=getter and getter())
+                for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
+            ]
+
+            d['inventory'] = dict(
+                max_size=10,
+                items=[
+                    dict(
+                        position=ex.position,
+                        item=dict(
+                            cls='ItemState',
+                            balance_cls=ex.parent.node_hash(),
+                            example=ex.as_client_dict(),
+                            max_val=ex.stack_size,
+                            t0=self.time,
+                            val0=ex.amount,
+                            dvs=0,
+                        )
+                    )
+                    for ex in self.agent.example.car.inventory
+                ],
+                owner_id=self.agent.uid
+            )
+
+        return d
+
+
+class TraderInventoryShowMessage(Message):
+    def __init__(self, town_id, **kw):
+        super(TraderInventoryShowMessage, self).__init__(**kw)
+        self.town_id = town_id
+
+    def as_dict(self):
+        d = super(TraderInventoryShowMessage, self).as_dict()
+
+        example10 = self.agent.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
+        example20 = self.agent.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
 
         empty_tank10 = dict(
             cls='ItemState',
@@ -611,25 +665,6 @@ class ExamplesShowMessage(Message):
         )
 
         d.update(
-            # slots=[{v[0]:v[1].as_client_dict()} for v in self.agent.example.car.iter_slots()], # довести до ума
-            armorer_slots=[
-                {
-                    'name': 'slot_FC',
-                    'value': example10.as_client_dict()
-                },
-                {
-                    'name': 'slot_CC',
-                    'value': None
-                },
-                {
-                    'name': 'slot_BR',
-                    'value': None
-                },
-                {
-                    'name': 'slot_BL',
-                    'value': None
-                },
-            ],
             inventory=dict(
                 max_size=10,
                 items=[
@@ -643,19 +678,30 @@ class ExamplesShowMessage(Message):
                     },
                     {
                         'item': empty_tank10,
+                        'position': 3
+                    },
+                    {
+                        'item': empty_tank20,
                         'position': 4
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 5
+                    },
+                    {
+                        'item': empty_tank20,
+                        'position': 6
+                    },
+                    {
+                        'item': empty_tank10,
+                        'position': 7
+                    },
+                    {
+                        'item': empty_tank20,
+                        'position': 8
                     }
                 ],
-                owner_id=self.agent.uid
+                owner_id=str(self.town_id) + '_trader'
             )
         )
-        return d
-
-
-class ExamplesHideMessage(Message):
-    def as_dict(self):
-        d = super(ExamplesHideMessage, self).as_dict()
-        d.update(
-            inventory_owner_id=self.agent.uid
-            )
         return d

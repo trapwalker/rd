@@ -11,10 +11,11 @@ from sublayers_server.model.events import FireDischargeEffectEvent
 
 
 class Weapon(Consumer):
-    def __init__(self, owner, sector, **kw):
+    def __init__(self, owner, sector, example, **kw):
         super(Weapon, self).__init__(**kw)
         self.owner = owner
         self.sector = sector
+        self.example = example
         sector.add_weapon(self)
 
     @property
