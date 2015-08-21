@@ -82,13 +82,20 @@ class SlotLock(SlotItem):
 
 class Weapon(SlotItem):
     ammo = RegistryLink(caption=u'Боеприпас', need_to_instantiate=False)  # todo: store set of ammo types
-    ammo_start_speed = FloatAttribute(default=500, caption=u'Начальная скорость снаряда (м/с)')
-    effective_range = FloatAttribute(default=1000, caption=u'Прицельная дальность (м)')
     direction = TextAttribute(caption=u'Направление (FBRL)', tags='client')
     ammo_per_shot = FloatAttribute(default=0, caption=u'Расход патронов за выстрел (< 0)')
     ammo_per_second = FloatAttribute(default=0, caption=u'Расход патронов в секунду')
-    radius = FloatAttribute(caption=u'Прицельная дальность (м)')
+    radius = FloatAttribute(caption=u'Дальность стрельбы (м)')
     width = FloatAttribute(caption=u'Ширина сектора стрельбы (град)')
+
+    armorer_side_f = Attribute(caption=u'Изображение у оружейника (вид сбоку, вперед)')
+    armorer_side_b = Attribute(caption=u'Изображение у оружейника (вид сбоку, назад)')
+    armorer_side_r = Attribute(caption=u'Изображение у оружейника (вид сбоку, право)')
+    armorer_side_l = Attribute(caption=u'Изображение у оружейника (вид сбоку, лево)')
+    armorer_top_f = Attribute(caption=u'Изображение у оружейника (вид сверху, вперед)')
+    armorer_top_b = Attribute(caption=u'Изображение у оружейника (вид сверху, назад)')
+    armorer_top_r = Attribute(caption=u'Изображение у оружейника (вид сверху, право)')
+    armorer_top_l = Attribute(caption=u'Изображение у оружейника (вид сверху, лево)')
 
 
 class Cannon(Weapon):
