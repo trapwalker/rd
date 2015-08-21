@@ -414,7 +414,9 @@ var ArmorerManager = (function () {
 
         // Предусатновка направления итема
         if (dest.toString().indexOf('slot') >= 0)
-            item.direction = this.armorer_slots_flags[dest][0];
+            this.items[dest].direction = this.armorer_slots_flags[dest][0];
+        if (src.toString().indexOf('slot') >= 0)
+            this.items[src].direction = this.armorer_slots_flags[src][0];
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
