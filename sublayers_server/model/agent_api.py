@@ -455,6 +455,8 @@ class AgentAPI(API):
 
     @public_method
     def armorer_apply(self, armorer_slots):
-        # log.info('armorer apply = %s', armorer_slots)
         TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots).post()
 
+    @public_method
+    def armorer_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()

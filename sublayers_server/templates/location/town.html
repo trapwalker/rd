@@ -43,44 +43,72 @@
     {% end %}
 </div>
 <script>
+    function setBtnDisplay(btnIndex, state) {
+         $("#btn_" + btnIndex).css("display", state);
+         if (state == 'none') {
+            $("#btn_" + btnIndex + "_over").css("display", state);
+            $("#btn_" + btnIndex + "_select").css("display", state);
+         }
+    };
+
     // Открытие зданий
     function openNucoil() {
         $('.townPageWrap').css('display', 'none');
         $('#townNucoilPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.nucoil;
-        $("#btn_7").css("display", "none");
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
     }
 
     function openArmorer() {
         $('.townPageWrap').css('display', 'none');
         $('#townArmorerPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.armorer;
-        $("#btn_7").css("display", "none");
-        $("#btn_8").css("display", "block");
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
     }
 
     function openTrader() {
         $('.townPageWrap').css('display', 'none');
         $('#townTraderPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.trader;
-        $("#btn_7").css("display", "none");
-        $("#btn_8").css("display", "block");
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
     }
 
     function openHangar() {
         $('.townPageWrap').css('display', 'none');
         $('#townHangarPageWrap').css('display', 'block');
-        $("#btn_7").css("display", "none");
-        $("#btn_8").css("display", "block");
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
     }
 
     function openTown() {
         $('.townPageWrap').css('display', 'none');
+        $('#layer1').css('display', 'block');
+        $('#layer2').css('display', 'block');
+        locationManager.currentNPC = null;
+        setBtnDisplay(8, "none");
+        setBtnDisplay(9, "none");
+        setBtnDisplay(6, "block");
+        setBtnDisplay(7, "block");
+    };
+
+    function openChat() {
+        $('.townPageWrap').css('display', 'none');
         $('#townChatPageWrap').css('display', 'block');
         locationManager.currentNPC = null;
-        $("#btn_8").css("display", "none");
-        $("#btn_7").css("display", "block");
-    }
+        setBtnDisplay(8, "none");
+        setBtnDisplay(9, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(7, "none");
+    };
 
     // Обработчики кнопок-зданий
     {% for i in xrange(10) %}
@@ -148,7 +176,7 @@
     {% end %}
 
     // Кнопки меню
-    {% for i in xrange(9) %}
+    {% for i in xrange(10) %}
     $("#btn_{{i}}").mouseenter(function() {
         $("#btn_{{i}}_over").css("display", "block");
         $("#btn_{{i}}").css("display", "none");
@@ -185,7 +213,7 @@
     });
 
     $("#btn_3_select").mouseup(function(event) {
-        openTown();
+        openChat();
     });
 
     $("#btn_8_select").mouseup(function(event) {
@@ -193,9 +221,12 @@
             locationManager.currentNPC.apply();
     });
 
+    $("#btn_9_select").mouseup(function(event) {
+        if (locationManager.currentNPC)
+            locationManager.currentNPC.cancel();
+    });
+
     $("#btn_2_select").mouseup(function(event) {
-        $('.townPageWrap').css('display', 'none');
-        $('#layer1').css('display', 'block');
-        $('#layer2').css('display', 'block');
+        openTown();
     });
 </script>

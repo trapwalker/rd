@@ -208,8 +208,10 @@ class TransactionArmorerApply(TransactionEvent):
                     ex_car.values[slot_name] = search_item
 
         # Закидываем буффер в инвентарь
+        position = 0
         agent.example.car.inventory = []
         for item in armorer_buffer:
-            item.position = None
+            item.position = position
             agent.example.car.inventory.append(item)
+            position += 1
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()

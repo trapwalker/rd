@@ -173,6 +173,10 @@ var NucoilManager = (function () {
         //console.log('NucoilManager.prototype.apply');
     };
 
+    NucoilManager.prototype.cancel = function() {
+        //console.log('NucoilManager.prototype.cancel');
+    };
+
     return NucoilManager;
 })();
 
@@ -306,13 +310,21 @@ var ArmorerManager = (function () {
     ArmorerManager.prototype.clear = function() {
         //console.log('ArmorerManager.prototype.clear');
         // todo: написать тут чтото
-        this.activeSlot = null;
+        this.setActiveSlot(null);
         this.items = {};
+
+        if (this.inv_show_div)
+            this.inv_show_div.empty();
     };
 
     ArmorerManager.prototype.apply = function() {
         //console.log('ArmorerManager.prototype.apply');
         clientManager.sendArmorerApply();
+    };
+
+    ArmorerManager.prototype.cancel = function() {
+        //console.log('ArmorerManager.prototype.cancel');
+        clientManager.sendArmorerCancel();
     };
 
     ArmorerManager.prototype.reDrawItem = function(position) {
@@ -377,6 +389,10 @@ var ArmorerManager = (function () {
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
                     helper: 'clone',
+                    cursorAt: {
+                        left: 60,
+                        top: 42
+                    },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -410,6 +426,7 @@ var ArmorerManager = (function () {
 
     ArmorerManager.prototype.setActiveSlot = function(slotName) {
         //console.log('ArmorerManager.prototype.setActiveSlot');
+        if (! window.hasOwnProperty('dropSectorActive') || ! window.hasOwnProperty('dropSlotActive')) return;
 
         // Гасим все лепестки виджета и все слоты
         dropSectorActive();
@@ -659,6 +676,10 @@ var TraderManager = (function () {
 
     TraderManager.prototype.apply = function() {
         //console.log('TraderManager.prototype.apply');
+    };
+
+    TraderManager.prototype.cancel = function() {
+        //console.log('TraderManager.prototype.cancel');
     };
 
     return TraderManager;
