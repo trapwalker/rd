@@ -317,11 +317,12 @@ var ArmorerManager = (function () {
             // создать вёрстку для отрисовки
             var item = this.items[position];
             if (item.example) {
-                var itemDivTop = $('<div class="armorer-car-slot-picture"></div>');
-                var itemDivSide = $('<div class="armorer-car-slot-picture"></div>');
+                var itemImgTop = item.example['armorer_top_' + item.direction];
+                var itemImgSide = item.example['armorer_side_' + item.direction];
 
-                itemDivTop.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
-                itemDivSide.css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+
+                var itemDivTop = $('<div class="armorer-car-slot-picture"><img src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
+                var itemDivSide = $('<div class="armorer-car-slot-picture"><img src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');
 
                 itemDivTop.data('pos', position);
                 itemDivSide.data('pos', position);
@@ -439,8 +440,10 @@ var ArmorerManager = (function () {
 
         // Гасим все лепестки виджета и если есть экземпляр то устанавливаем текущее направление
         dropSectorActive();
-        if (item_rec.example)
+        if (item_rec.example) {
             setSectorActive(item_rec.direction);
+            this.reDrawItem(this.activeSlot);
+        }
     };
 
 

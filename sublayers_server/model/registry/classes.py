@@ -88,14 +88,14 @@ class Weapon(SlotItem):
     radius = FloatAttribute(caption=u'Дальность стрельбы (м)')
     width = FloatAttribute(caption=u'Ширина сектора стрельбы (град)')
 
-    armorer_side_f = Attribute(caption=u'Изображение у оружейника (вид сбоку, вперед)')
-    armorer_side_b = Attribute(caption=u'Изображение у оружейника (вид сбоку, назад)')
-    armorer_side_r = Attribute(caption=u'Изображение у оружейника (вид сбоку, право)')
-    armorer_side_l = Attribute(caption=u'Изображение у оружейника (вид сбоку, лево)')
-    armorer_top_f = Attribute(caption=u'Изображение у оружейника (вид сверху, вперед)')
-    armorer_top_b = Attribute(caption=u'Изображение у оружейника (вид сверху, назад)')
-    armorer_top_r = Attribute(caption=u'Изображение у оружейника (вид сверху, право)')
-    armorer_top_l = Attribute(caption=u'Изображение у оружейника (вид сверху, лево)')
+    armorer_side_F = Attribute(caption=u'Изображение у оружейника (вид сбоку, вперед)', tags='client')
+    armorer_side_B = Attribute(caption=u'Изображение у оружейника (вид сбоку, назад)', tags='client')
+    armorer_side_R = Attribute(caption=u'Изображение у оружейника (вид сбоку, право)', tags='client')
+    armorer_side_L = Attribute(caption=u'Изображение у оружейника (вид сбоку, лево)', tags='client')
+    armorer_top_F = Attribute(caption=u'Изображение у оружейника (вид сверху, вперед)', tags='client')
+    armorer_top_B = Attribute(caption=u'Изображение у оружейника (вид сверху, назад)', tags='client')
+    armorer_top_R = Attribute(caption=u'Изображение у оружейника (вид сверху, право)', tags='client')
+    armorer_top_L = Attribute(caption=u'Изображение у оружейника (вид сверху, лево)', tags='client')
 
 
 class Cannon(Weapon):
