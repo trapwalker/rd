@@ -258,8 +258,8 @@ var FireSideMng = (function () {
         var res = [];
         if (filterSides == "" || filterSides == null)
             filterSides = ["front", "back", "right", "left"];
-        if (isDischarge == undefined) isDischarge = False;
-        if (isAuto == undefined) isAuto = False;
+        if (isDischarge == undefined) isDischarge = false;
+        if (isAuto == undefined) isAuto = false;
         for (var i = 0; i < filterSides.length; i++)
             res = res.concat(this.sides[filterSides[i]].getSectorsByType(isDischarge, isAuto));
         return res;
@@ -362,8 +362,8 @@ var FireSide = (function () {
 
     FireSide.prototype.getSectorsByType = function (isDischarge, isAuto) {
         // Установкой флагов можно регулировать результат (если оба True, то вернутся все сектора)
-        if (isDischarge == undefined) isDischarge = False;
-        if (isAuto == undefined) isAuto = False;
+        if (isDischarge == undefined) isDischarge = false;
+        if (isAuto == undefined) isAuto = false;
         var res = [];
         for (var i = 0; i < this.sectors.length; i++) {
             var s_disc = this.sectors[i].isDischarge;
