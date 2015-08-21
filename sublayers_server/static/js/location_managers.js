@@ -375,7 +375,6 @@ var ArmorerManager = (function () {
         else {
             // Позиция в инвентаре
             var itemWrapDiv = this.inv_show_div.find('.armorer-itemWrap-' + position).first();
-            //itemWrapDiv.find('.npcInventory-item').draggable("destroy");
             itemWrapDiv.empty();
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
