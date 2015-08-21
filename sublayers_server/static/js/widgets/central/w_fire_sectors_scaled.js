@@ -257,6 +257,7 @@ var WFireSectorsScaled = (function (_super) {
         var side_elem = null;
         var side_obj = null;
         var sides = this.car.fireSidesMng.sides;
+
         var max_disch_radius = sides.front.sideDischargeRadius;
         var max_disch_width = sides.front.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0) {
@@ -287,7 +288,7 @@ var WFireSectorsScaled = (function (_super) {
         max_disch_radius = sides.left.sideDischargeRadius;
         max_disch_width = sides.left.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0) {
-            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.);
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.);
             side_obj = {
                 g: side_elem,
                 radius: max_disch_radius,
@@ -300,7 +301,7 @@ var WFireSectorsScaled = (function (_super) {
         max_disch_radius = sides.right.sideDischargeRadius;
         max_disch_width = sides.right.sideDischargeWidth;
         if (max_disch_radius > second_radius && max_disch_width > 0) {
-            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, -Math.PI / 2.);
+            side_elem = this._drawOneSide(second_radius, max_disch_radius, max_disch_width, Math.PI / 2.);
             side_obj = {
                 g: side_elem,
                 radius: max_disch_radius,
