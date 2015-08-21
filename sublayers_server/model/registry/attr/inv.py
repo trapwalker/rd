@@ -20,6 +20,7 @@ class BaseInventory(list):
         super(BaseInventory, self).__init__(items or [])
 
     def prepare(self, value):
+        # todo: прототип инвентаря после подготовки должен состоянть из URI, а не из строк
         if isinstance(value, basestring):
             return URI(value)
         else:

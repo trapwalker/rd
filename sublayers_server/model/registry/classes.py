@@ -12,10 +12,12 @@ from sublayers_server.model.registry.attr import (
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.tag import TagsAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink, Slot
+from sublayers_server.model.registry.attr.price import PriceAttribute
 from sublayers_server.model.transaction_events import TransactionActivateTank, TransactionActivateAmmoBullets
 
 from math import pi
 import random
+from itertools import chain
 
 
 class Item(Root):
@@ -33,17 +35,6 @@ class Item(Root):
     # todo: move title attr to the root
     title = TextAttribute(caption=u'Название предмета для отображения в инвентаре', tags='client')
     activate_type = Attribute(default='none', caption=u'Способ активации: none, self ...', tags='client')
-
-    def as_client_dict(self):
-        # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
-        d = {}
-        for attr, getter in self.iter_attrs(tags='client'):
-            v = getter()
-            if isinstance(attr, TagsAttribute):
-                v = list(v)  # todo: Перенести это в расширение сериализатора
-            d[attr.name] = v
-        d['node_hash'] = self.node_hash()
-        return d
 
     @classmethod
     def activate(cls):
@@ -257,7 +248,13 @@ class Armorer(Institution):
 
 
 class Trader(Institution):
-    pass
+    inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
+    price = PriceAttribute(caption=u"Прайс")
+
+    def as_client_dict(self, items=()):
+        d = super(Trader, self).as_client_dict()
+        d['price'] = self.price.get_pricelist(chain(items, self.inventory))
+        return d
 
 
 class Hangar(Institution):
