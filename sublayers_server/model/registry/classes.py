@@ -142,16 +142,16 @@ class Mobile(Root):
     # атрибуты Mobile
     r_min = FloatAttribute(default=10, caption=u"Минимальный радиус разворота")
     ac_max = FloatAttribute(default=14, caption=u"Максимальная перегрузка при развороте")
-    v_forward = FloatAttribute(default=28, caption=u"Абсолютная максимальная скорость движения вперед")
+    max_control_speed = FloatAttribute(default=28, caption=u"Абсолютная максимальная скорость движения")
+    v_forward = FloatAttribute(default=20, caption=u"Максимальная скорость движения вперед")
     v_backward = FloatAttribute(default=-10, caption=u"Максимальная скорость движения назад")
     a_forward = FloatAttribute(default=5, caption=u"Ускорение разгона вперед")
     a_backward = FloatAttribute(default=-3, caption=u"Ускорение разгона назад")
     a_braking = FloatAttribute(default=-6, caption=u"Ускорение торможения")
+
     max_fuel = FloatAttribute(default=100, caption=u"Максимальное количество топлива")
     fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива")
-    p_cc = FloatAttribute(default=1, caption=u"Броня")
     p_fuel_rate = FloatAttribute(default=0.5, caption=u"Расход топлива (л/с)")
-    max_control_speed = FloatAttribute(default=20, caption=u"Максимальная скорость машинки без бафов")
 
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот')
     slot_FL_f = TextAttribute(default='FL', caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')

@@ -323,8 +323,8 @@ class Mobile(Unit):
         self.fuel_state = FuelState(t=time, max_fuel=self.example.max_fuel, fuel=self.example.fuel)
         self.cur_motion_task = None
 
-        assert self.example.max_control_speed <= self.example.v_forward
-        Parameter(original=self.example.max_control_speed / self.example.v_forward,
+        assert self.example.v_forward <= self.example.max_control_speed
+        Parameter(original=self.example.v_forward / self.example.max_control_speed,
                   min_value=0.05, max_value=1.0, owner=self, name='p_cc')
         Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
 
