@@ -175,7 +175,7 @@ class Mobile(Root):
     slot_BR_f = TextAttribute(default='BR', caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
-    inventory_size = Attribute(caption=u"размер инвентаря")
+    inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
@@ -248,6 +248,7 @@ class Armorer(Institution):
 
 
 class Trader(Institution):
+    inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceAttribute(caption=u"Прайс")
 

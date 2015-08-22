@@ -723,7 +723,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInventoryShowMessage = function (event) {
-        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
+        console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
         var inv = this._getInventory(event.inventory);
         locationManager.trader_uid = inv.owner_id;
         if (inventoryList.getInventory(inv.owner_id))
@@ -1159,6 +1159,7 @@ var ClientManager = (function () {
     // Сообщения локаций
 
     // Оружейник
+
     ClientManager.prototype.sendArmorerApply = function () {
         //console.log('ClientManager.prototype.sendFuelStationActive');
         // todo: оптимизировать отправку
@@ -1182,6 +1183,7 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
 
     return ClientManager;
 })();

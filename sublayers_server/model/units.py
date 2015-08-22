@@ -61,7 +61,6 @@ class Unit(Observer):
         """@type: list[sublayers_server.model.sectors.FireSector]"""
 
         # загрузка инвенторя
-        # todo: забрать из реестра размер инвентаря
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
         self.load_inventory(time=time)
 
