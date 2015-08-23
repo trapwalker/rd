@@ -711,6 +711,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ExamplesShowMessage = function (event) {
         //console.log('ClientManager.prototype.ExamplesShowMessage', event);
+        // Обновление баланса пользователя
+        user.balance = event.agent_balance;
         if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
             var inv = this._getInventory(event.inventory);
             if (inventoryList.getInventory(inv.owner_id))
@@ -719,6 +721,7 @@ var ClientManager = (function () {
             locationManager.nucoil.update();
             locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
             locationManager.trader.updatePlayerInv();
+            locationManager.trader.updateTraderInv();
         }
     };
 
@@ -763,6 +766,12 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.GasStationUpdate', event);
         initGasStation(event.balance, event.fuel);
     };
+
+    ClientManager.prototype.SetupTraderReplica = function (event) {
+        //console.log('ClientManager.prototype.sendTraderCancel');
+        locationManager.trader.setupTraderReplica(event.replica)
+    };
+
 
     // Исходящие сообщения
 
@@ -1159,8 +1168,9 @@ var ClientManager = (function () {
     // Сообщения локаций
 
     // Оружейник
+
     ClientManager.prototype.sendArmorerApply = function () {
-        //console.log('ClientManager.prototype.sendFuelStationActive');
+        //console.log('ClientManager.prototype.sendArmorerApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "armorer_apply",
@@ -1174,9 +1184,35 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendArmorerCancel = function () {
-        //console.log('ClientManager.prototype.sendFuelStationActive');
+        //console.log('ClientManager.prototype.sendArmorerCancel');
         var mes = {
             call: "armorer_cancel",
+            rpc_call_id: rpcCallList.getID()
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Торговец
+
+    ClientManager.prototype.sendTraderApply = function () {
+        //console.log('ClientManager.prototype.sendTraderApply');
+        var mes = {
+            call: "trader_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                player_table: locationManager.trader.getPlayerTable(),
+                trader_table: locationManager.trader.getTraderTable()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTraderCancel = function () {
+        //console.log('ClientManager.prototype.sendTraderCancel');
+        var mes = {
+            call: "trader_cancel",
             rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);

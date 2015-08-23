@@ -599,6 +599,8 @@ class ExamplesShowMessage(Message):
     def as_dict(self):
         d = super(ExamplesShowMessage, self).as_dict()
 
+        d['agent_balance'] = self.agent.example.balance
+
         if self.agent.example.car:
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
@@ -611,7 +613,7 @@ class ExamplesShowMessage(Message):
             ]
 
             d['inventory'] = dict(
-                max_size=10,
+                max_size=self.agent.example.car.inventory_size,
                 items=[
                     dict(
                         position=ex.position,
@@ -637,71 +639,57 @@ class TraderInventoryShowMessage(Message):
     def __init__(self, town_id, **kw):
         super(TraderInventoryShowMessage, self).__init__(**kw)
         self.town_id = town_id
+        self.position = 0
+
+    def _get_position(self):
+        self.position += 1
+        return self.position - 1
 
     def as_dict(self):
         d = super(TraderInventoryShowMessage, self).as_dict()
 
-        example10 = self.agent.server.reg['/items/usable/fuel/tanks/tank_full/tank10']
-        example20 = self.agent.server.reg['/items/usable/fuel/tanks/tank_full/tank20']
+        # Получаем сервер и экземпляр торговца
+        server = self.agent.server
+        trader = server.objects[self.town_id].example.trader
 
-        empty_tank10 = dict(
-            cls='ItemState',
-            balance_cls='tank10',
-            example=example10.as_client_dict(),
-            max_val=1,
-            t0=self.time,
-            val0=1,
-            dvs=0,
-        )
-
-        empty_tank20 = dict(
-            cls='ItemState',
-            balance_cls='tank20',
-            example=example20.as_client_dict(),
-            max_val=1,
-            t0=self.time,
-            val0=1,
-            dvs=0,
-        )
-
-        d.update(
-            inventory=dict(
-                max_size=10,
+        # Отправка инвентаря торговца
+        d['inventory'] = dict(
+                max_size=trader.inventory_size,
                 items=[
-                    {
-                        'item': empty_tank10,
-                        'position': 1
-                    },
-                    {
-                        'item': empty_tank20,
-                        'position': 2
-                    },
-                    {
-                        'item': empty_tank10,
-                        'position': 3
-                    },
-                    {
-                        'item': empty_tank20,
-                        'position': 4
-                    },
-                    {
-                        'item': empty_tank10,
-                        'position': 5
-                    },
-                    {
-                        'item': empty_tank20,
-                        'position': 6
-                    },
-                    {
-                        'item': empty_tank10,
-                        'position': 7
-                    },
-                    {
-                        'item': empty_tank20,
-                        'position': 8
-                    }
+                    dict(
+                        position=self._get_position(),
+                        item=dict(
+                            cls='ItemState',
+                            balance_cls=server.reg[ex].parent.node_hash(),
+                            example=server.reg[ex].as_client_dict(),
+                            max_val=server.reg[ex].stack_size,
+                            t0=self.time,
+                            val0=server.reg[ex].stack_size,
+                            dvs=0,
+                        )
+                    )
+                    for ex in trader.inventory
                 ],
                 owner_id=str(self.town_id) + '_trader'
             )
+
+        # Отправка цен
+        car_inventory = ()
+        if self.agent.example.car:
+            car_inventory = self.agent.example.car.inventory
+        d['price'] = trader.as_client_dict(items=car_inventory)
+
+        return d
+
+
+class SetupTraderReplica(Message):
+    def __init__(self, replica, **kw):
+        super(SetupTraderReplica, self).__init__(**kw)
+        self.replica = replica
+
+    def as_dict(self):
+        d = super(SetupTraderReplica, self).as_dict()
+        d.update(
+            replica=self.replica
         )
         return d

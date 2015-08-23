@@ -57,6 +57,10 @@ var InventoryItem = (function (_super) {
         return this._item_state.val(time);
     };
 
+    InventoryItem.prototype.getMaxVal = function () {
+        return this._item_state.max_val;
+    };
+
     InventoryItem.prototype._manage_tm = function () {
         // вызывается только из апдейтов
         var changed = this._item_state.is_changed();
