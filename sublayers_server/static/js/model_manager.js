@@ -767,6 +767,12 @@ var ClientManager = (function () {
         initGasStation(event.balance, event.fuel);
     };
 
+    ClientManager.prototype.SetupTraderReplica = function (event) {
+        //console.log('ClientManager.prototype.sendTraderCancel');
+        locationManager.trader.setupTraderReplica(event.replica)
+    };
+
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1212,7 +1218,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     return ClientManager;
 })();

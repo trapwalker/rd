@@ -767,6 +767,11 @@ var TraderManager = (function () {
         return res;
     };
 
+    TraderManager.prototype.setupTraderReplica = function(replica) {
+//        console.log('TraderManager.prototype.setupTraderReplica');
+        $('.mainTraderWindow-up-text').text(replica);
+    };
+
     return TraderManager;
 })();
 
