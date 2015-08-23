@@ -62,21 +62,6 @@ class RegistryLink(TextAttribute):
 
         return value
 
-    def get_ex(self, obj, cls):
-        if self.name not in obj._prepared_attrs:
-            self.prepare(obj)
-
-        if self.name in obj.values:
-            value = obj.values.get(self.name)
-            assert not isinstance(value, basestring)
-        elif hasattr(obj.parent, self.name):
-            value = self.get_ex(obj.parent, obj.parent.__class__)  # todo: check it
-        else:
-            value = self.default
-            assert not isinstance(value, basestring)
-
-        return value
-
     def __set__(self, obj, value):
         if isinstance(value, basestring):
             value = URI(value)
@@ -86,5 +71,6 @@ class RegistryLink(TextAttribute):
 
 class Slot(RegistryLink):
     LOCK_URI = "reg://registry/items/slot_item/slot_lock"
+
     def __init__(self, default=False, **kw):
         super(Slot, self).__init__(default=default, **kw)

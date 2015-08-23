@@ -74,10 +74,9 @@ class Price(list):
     def get_pricelist(self, items):
         price = {}
         for item in items:
-            if isinstance(item, basestring):
-                from sublayers_server.model.registry.tree import Node
-                item = URI(item)
-                item = Node.DISPATCHER[item]
+            assert not isinstance(item, basestring)
+            if isinstance(item, URI):
+                item = item.resolve()  # todo: (!!!!)
 
             option = self.get_item_price(item)
             if option:

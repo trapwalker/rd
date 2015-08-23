@@ -68,3 +68,4 @@ if __name__ == '__main__':
 
     tr = reg['/institutions/trader/buhman']
     pp(tr.as_client_dict(items=car.inventory))
+    pp(protocar.inventory)
