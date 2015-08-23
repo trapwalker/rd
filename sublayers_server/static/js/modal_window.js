@@ -201,7 +201,7 @@ var ModalWindow = (function () {
             $('#deathPageButtonResp').on('click', {modal: self}, function(event){
                 // сначала обработать все необходимые данные
                 //sendServConsole('change_car()');
-                //location.reload();
+                location.reload();
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalDeathHide();
             });
