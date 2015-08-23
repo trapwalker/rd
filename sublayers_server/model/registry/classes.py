@@ -26,7 +26,7 @@ class Item(Root):
     amount = FloatAttribute(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
     stack_size = FloatAttribute(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
     position = Attribute(caption=u'Позиция в инвентаре')
-    base_price = FloatAttribute(caption=u'Базовая цена за 1')
+    base_price = FloatAttribute(default=0, caption=u'Базовая цена за 1', tags='client')
 
     description = TextAttribute(caption=u'Расширенное описание предмета', tags='client')
     inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
@@ -73,13 +73,20 @@ class SlotLock(SlotItem):
 
 class Weapon(SlotItem):
     ammo = RegistryLink(caption=u'Боеприпас', need_to_instantiate=False)  # todo: store set of ammo types
-    ammo_start_speed = FloatAttribute(default=500, caption=u'Начальная скорость снаряда (м/с)')
-    effective_range = FloatAttribute(default=1000, caption=u'Прицельная дальность (м)')
     direction = TextAttribute(caption=u'Направление (FBRL)', tags='client')
     ammo_per_shot = FloatAttribute(default=0, caption=u'Расход патронов за выстрел (< 0)')
     ammo_per_second = FloatAttribute(default=0, caption=u'Расход патронов в секунду')
-    radius = FloatAttribute(caption=u'Прицельная дальность (м)')
+    radius = FloatAttribute(caption=u'Дальность стрельбы (м)')
     width = FloatAttribute(caption=u'Ширина сектора стрельбы (град)')
+
+    armorer_side_F = Attribute(caption=u'Изображение у оружейника (вид сбоку, вперед)', tags='client')
+    armorer_side_B = Attribute(caption=u'Изображение у оружейника (вид сбоку, назад)', tags='client')
+    armorer_side_R = Attribute(caption=u'Изображение у оружейника (вид сбоку, право)', tags='client')
+    armorer_side_L = Attribute(caption=u'Изображение у оружейника (вид сбоку, лево)', tags='client')
+    armorer_top_F = Attribute(caption=u'Изображение у оружейника (вид сверху, вперед)', tags='client')
+    armorer_top_B = Attribute(caption=u'Изображение у оружейника (вид сверху, назад)', tags='client')
+    armorer_top_R = Attribute(caption=u'Изображение у оружейника (вид сверху, право)', tags='client')
+    armorer_top_L = Attribute(caption=u'Изображение у оружейника (вид сверху, лево)', tags='client')
 
 
 class Cannon(Weapon):
@@ -135,16 +142,16 @@ class Mobile(Root):
     # атрибуты Mobile
     r_min = FloatAttribute(default=10, caption=u"Минимальный радиус разворота")
     ac_max = FloatAttribute(default=14, caption=u"Максимальная перегрузка при развороте")
-    v_forward = FloatAttribute(default=28, caption=u"Абсолютная максимальная скорость движения вперед")
+    max_control_speed = FloatAttribute(default=28, caption=u"Абсолютная максимальная скорость движения")
+    v_forward = FloatAttribute(default=20, caption=u"Максимальная скорость движения вперед")
     v_backward = FloatAttribute(default=-10, caption=u"Максимальная скорость движения назад")
     a_forward = FloatAttribute(default=5, caption=u"Ускорение разгона вперед")
     a_backward = FloatAttribute(default=-3, caption=u"Ускорение разгона назад")
     a_braking = FloatAttribute(default=-6, caption=u"Ускорение торможения")
+
     max_fuel = FloatAttribute(default=100, caption=u"Максимальное количество топлива")
     fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива")
-    p_cc = FloatAttribute(default=1, caption=u"Броня")
     p_fuel_rate = FloatAttribute(default=0.5, caption=u"Расход топлива (л/с)")
-    max_control_speed = FloatAttribute(default=20, caption=u"Максимальная скорость машинки без бафов")
 
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот')
     slot_FL_f = TextAttribute(default='FL', caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
@@ -168,7 +175,7 @@ class Mobile(Root):
     slot_BR_f = TextAttribute(default='BR', caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
-    inventory_size = Attribute(caption=u"размер инвентаря")
+    inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
@@ -241,6 +248,7 @@ class Armorer(Institution):
 
 
 class Trader(Institution):
+    inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceAttribute(caption=u"Прайс")
 
