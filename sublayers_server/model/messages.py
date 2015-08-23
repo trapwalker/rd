@@ -660,7 +660,7 @@ class TraderInventoryShowMessage(Message):
                         position=self._get_position(),
                         item=dict(
                             cls='ItemState',
-                            balance_cls=server.reg[ex].parent.node_hash(),
+                            balance_cls=None,
                             example=server.reg[ex].as_client_dict(),
                             max_val=server.reg[ex].stack_size,
                             t0=self.time,
