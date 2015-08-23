@@ -599,6 +599,8 @@ class ExamplesShowMessage(Message):
     def as_dict(self):
         d = super(ExamplesShowMessage, self).as_dict()
 
+        d['agent_balance'] = self.agent.example.balance
+
         if self.agent.example.car:
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
@@ -662,7 +664,7 @@ class TraderInventoryShowMessage(Message):
                             example=server.reg[ex].as_client_dict(),
                             max_val=server.reg[ex].stack_size,
                             t0=self.time,
-                            val0=server.reg[ex].amount,
+                            val0=server.reg[ex].stack_size,
                             dvs=0,
                         )
                     )

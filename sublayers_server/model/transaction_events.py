@@ -162,7 +162,6 @@ class TransactionArmorerApply(TransactionEvent):
         if not agent.example.car:
             return
 
-
         # Проверяем находится ли агент в локации с оружейником
         if not (isinstance(agent.current_location, Town) and agent.current_location.example.armorer):
             return
@@ -214,4 +213,85 @@ class TransactionArmorerApply(TransactionEvent):
             item.position = position
             agent.example.car.inventory.append(item)
             position += 1
+        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+
+
+class TransactionTraderApply(TransactionEvent):
+    def __init__(self, agent, player_table, trader_table, **kw):
+        super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.player_table = player_table
+        self.trader_table = trader_table
+        self.position = 0
+
+    def _get_position(self):
+        self.position += 1
+        return self.position - 1
+
+    def on_perform(self):
+        super(TransactionTraderApply, self).on_perform()
+        reg = self.server.reg
+        agent = self.agent
+
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
+            return
+        ex_car = agent.example.car
+
+        # Проверяем находится ли агент в локации с торговцем
+        if not (isinstance(agent.current_location, Town) and agent.current_location.example.trader):
+            return
+        trader = agent.current_location.example.trader
+
+        # Заполняем буфер итемов игрока
+        buffer_player = []
+        for item in ex_car.inventory:
+            buffer_player.append(item.id)
+
+        # Обход столика игрока: формирование цены и проверка наличия
+        price_player = 0
+        for item_id in self.player_table:
+            if item_id in buffer_player:
+                # todo: считать цену тут
+                buffer_player.remove(item_id)
+            else:
+                return
+
+        # todo: сделать нормальное ценообразование
+        for item in ex_car.inventory:
+            if item.id in self.player_table:
+                price_player += round(item.base_price * (item.amount / item.stack_size))
+
+        # Формирование цены итемов для продажи торговцем (обход столика торговца)
+        price_trader = 0
+        for item_id in self.trader_table:
+            if item_id in trader.inventory:
+                price_trader += reg[item_id].base_price
+            else:
+                return
+
+        # Проверка по цене
+        if (agent.example.balance + price_player) < price_trader:
+            return
+
+        # Проверка по слотам инвентаря
+        if (ex_car.inventory_size - len(ex_car.inventory) + len(self.player_table)) < len(self.trader_table):
+            return
+
+        # Зачисление денег на счёт
+        agent.example.balance += price_player - price_trader
+
+        new_inventory = []
+        # Списание итемов из инвентаря
+        for item in ex_car.inventory:
+            if item.id not in self.player_table:
+                item.position = self._get_position()
+                new_inventory.append(item)
+
+        # Добавление купленных итемов в инвентарь
+        for item_id in self.trader_table:
+            item = reg[item_id].instantiate(position=self._get_position(), amount=reg[item_id].stack_size)                       
+            new_inventory.append(item)
+        ex_car.inventory = new_inventory
+
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()

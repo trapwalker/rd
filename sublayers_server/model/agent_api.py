@@ -19,7 +19,7 @@ from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply)
+    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionTraderApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -459,4 +459,13 @@ class AgentAPI(API):
 
     @public_method
     def armorer_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def trader_apply(self, player_table, trader_table):
+        TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
+                               trader_table=trader_table).post()
+
+    @public_method
+    def trader_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
