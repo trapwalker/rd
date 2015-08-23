@@ -157,7 +157,7 @@ class URI(tuple):
 
     def resolve(self):
         from sublayers_server.model.registry.tree import Node
-        return Node.DISPATCHER[item]  # todo: (!!!!) fix it
+        return Node.DISPATCHER[self]  # todo: (!!!!) fix it
 
 
 class Selector(URI):
