@@ -680,3 +680,16 @@ class TraderInventoryShowMessage(Message):
         d['price'] = trader.as_client_dict(items=car_inventory)
 
         return d
+
+
+class SetupTraderReplica(Message):
+    def __init__(self, replica, **kw):
+        super(SetupTraderReplica, self).__init__(**kw)
+        self.replica = replica
+
+    def as_dict(self):
+        d = super(SetupTraderReplica, self).as_dict()
+        d.update(
+            replica=self.replica
+        )
+        return d

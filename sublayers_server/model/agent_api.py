@@ -469,3 +469,5 @@ class AgentAPI(API):
     @public_method
     def trader_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        messages.SetupTraderReplica(agent=self.agent, time=self.agent.server.get_time(),
+                                    replica=u'Ну как хочешь...').post()

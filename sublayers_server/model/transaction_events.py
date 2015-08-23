@@ -255,6 +255,7 @@ class TransactionTraderApply(TransactionEvent):
                 # todo: считать цену тут
                 buffer_player.remove(item_id)
             else:
+                messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
         # todo: сделать нормальное ценообразование
@@ -268,14 +269,17 @@ class TransactionTraderApply(TransactionEvent):
             if item_id in trader.inventory:
                 price_trader += reg[item_id].base_price
             else:
+                messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
         # Проверка по цене
         if (agent.example.balance + price_player) < price_trader:
+            messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'Куда хватаешь? У тебя нет столько денег').post()
             return
 
         # Проверка по слотам инвентаря
         if (ex_car.inventory_size - len(ex_car.inventory) + len(self.player_table)) < len(self.trader_table):
+            messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
             return
 
         # Зачисление денег на счёт
@@ -290,8 +294,9 @@ class TransactionTraderApply(TransactionEvent):
 
         # Добавление купленных итемов в инвентарь
         for item_id in self.trader_table:
-            item = reg[item_id].instantiate(position=self._get_position(), amount=reg[item_id].stack_size)                       
+            item = reg[item_id].instantiate(position=self._get_position(), amount=reg[item_id].stack_size)
             new_inventory.append(item)
         ex_car.inventory = new_inventory
 
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+        messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
