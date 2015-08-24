@@ -4,6 +4,8 @@
  * Отсылает исходящие сообщения в поток сообщений
  * */
 
+
+
 var ClientManager = (function () {
     function ClientManager() {
         // подписаться на входящие сообщения типа ws_message
