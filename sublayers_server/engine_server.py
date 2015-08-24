@@ -62,8 +62,9 @@ class Application(tornado.web.Application):
 
         try:
             self.db_connection = Connection()
+            # todo: Если предполагается возможность работы без монги, то нужно ее реализовывать, иначе это просто лишнее
         except:
-            log.warn('MongoDB not found')
+            log.warning('MongoDB not found')
 
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db

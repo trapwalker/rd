@@ -15,7 +15,7 @@ class MapLocationHandler(BaseHandler):
     def get(self):
         agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
-            log.warn('Agent not found in database')
+            log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
         location_id = self.get_argument('location_id')
