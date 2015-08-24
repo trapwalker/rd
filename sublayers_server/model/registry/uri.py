@@ -155,6 +155,10 @@ class URI(tuple):
     params = property(itemgetter(3), doc='Params of the link')
     anchor = property(itemgetter(4), doc='Anchor of the link')
 
+    def resolve(self):
+        from sublayers_server.model.registry.tree import Node
+        return Node.DISPATCHER[self]  # todo: (!!!!) fix it
+
 
 class Selector(URI):
     @property

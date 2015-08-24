@@ -15,6 +15,7 @@ from sublayers_server.model.registry.uri import URI
 
 if __name__ == '__main__':
     sys.path.append('../../..')
+    from itertools import chain
     import random
     from sublayers_server.model.vectors import Point
     from pprint import pprint as pp

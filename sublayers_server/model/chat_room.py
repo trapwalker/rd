@@ -159,7 +159,7 @@ class ChatRoom(object):
 
     def on_include(self, agent, time):
         if agent in self.members:
-            log.warn('Agent %s is already in chat-room %s', agent, self)
+            log.warning('Agent %s is already in chat-room %s', agent, self)
             return
         self.members.append(agent)
         agent.chats.append(self)
@@ -174,7 +174,7 @@ class ChatRoom(object):
 
     def on_exclude(self, agent, time):
         if agent not in self.members:
-            log.warn('Agent %s not in chat-room %s', agent, self)
+            log.warning('Agent %s not in chat-room %s', agent, self)
             return
         self.members.remove(agent)
         agent.chats.remove(self)

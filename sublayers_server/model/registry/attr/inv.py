@@ -17,7 +17,8 @@ class BaseInventory(list):
         """
         """
         # todo: проксировать унаследованные части инвентаря так, чтобы прототипы можно было менять
-        super(BaseInventory, self).__init__(items or [])
+        super(BaseInventory, self).__init__()
+        self.extend(items or [])
 
     def prepare(self, value):
         # todo: прототип инвентаря после подготовки должен состоянть из URI, а не из строк
@@ -29,18 +30,41 @@ class BaseInventory(list):
     def __getinitargs__(self):
         return list(self)
 
+    def __setitem__(self, key, value):
+        super(BaseInventory, self).__setitem__(key, self.prepare(value))
+
+    def append(self, item):
+        super(BaseInventory, self).append(self.prepare(item))
+
+    def extend(self, items):
+        for item in items:
+            self.append(item)
+
+    def remove(self, item):
+        # todo: remove item by parent uri?
+        super(BaseInventory, self).remove(item)
+
+    def sort(self, *av, **kw):
+        super(BaseInventory, self).sort(*av, **kw)
+
+    def __iadd__(self, others):
+        for item in others:
+            self.append(item)
+
+    def __imul__(self, other):
+        raise Exception('Unsupported method')
+
+    #def __contains__  # todo: extended filtering
+    #def __repr__
+    #def __str__  # todo: Сделать краткое текстовое представление инвентаря для отладки и логов (алиасы прототипов)
+    #def count    # todo: подсчет предметов по классам, тегам, префиксам путей в реестре
+
 
 class ProtoInventory(BaseInventory):
     pass
 
 
 class Inventory(BaseInventory):
-    def __init__(self, items=None):
-        """
-        """
-        # todo: проксировать унаследованные части инвентаря так, чтобы прототипы можно было менять
-        super(BaseInventory, self).__init__()
-        self.extend(items or [])
 
     def placing(self):
         u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
@@ -72,35 +96,6 @@ class Inventory(BaseInventory):
 
         return value
 
-    def __setitem__(self, key, value):
-        super(Inventory, self).__setitem__(key, self.prepare(value))
-
-    def append(self, item):
-        super(Inventory, self).append(self.prepare(item))
-
-    def extend(self, items):
-        for item in items:
-            self.append(item)
-
-    def remove(self, item):
-        # todo: remove item by parent uri?
-        super(Inventory, self).remove(item)
-
-    def sort(self, *av, **kw):
-        super(Inventory, self).sort(*av, **kw)
-
-    def __iadd__(self, others):
-        for item in others:
-            self.append(item)
-
-    def __imul__(self, other):
-        raise Exception('Unsupported method')
-
-    #def __contains__  # todo: extended filtering
-    #def __repr__
-    #def __str__  # todo: Сделать краткое текстовое представление инвентаря для отладки и логов (алиасы прототипов)
-    #def count    # todo: подсчет предметов по классам, тегам, префиксам путей в реестре
-
 
 class InventoryAttribute(Attribute):
     def __init__(self, default=None, **kw):
@@ -115,7 +110,7 @@ class InventoryAttribute(Attribute):
         values = obj.values
 
         old_value = values.get(name)
-        inherited = getattr(obj.parent, name, [])
+        inherited = self.get_ex(obj.parent, obj.parent.__class__) if hasattr(obj.parent, self.name) else []  # todo: fixit
 
         if obj.abstract or obj.storage and obj.storage.name == 'registry':
             values[name] = ProtoInventory(items=chain(old_value or [], inherited))

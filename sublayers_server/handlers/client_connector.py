@@ -31,7 +31,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         srv = self.application.srv
         agent = srv.api.get_agent(self.user_id, make=True, do_disconnect=True)  # todo: Change to make=False
         if agent is None:
-            log.warn('Agent not found in database')
+            log.warning('Agent not found in database')
             return
         log.info('Agent %r socket Init', self)
         self.agent = agent
@@ -50,7 +50,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
             log.info('Agent socket %r Closed', self)
             self.agent.on_disconnect(self)
         else:
-            log.warn('Socket Closed. Socket %r has not agent', self)
+            log.warning('Socket Closed. Socket %r has not agent', self)
         self.application.clients.remove(self)
 
 

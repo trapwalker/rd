@@ -44,22 +44,24 @@ class Attribute(object):
     def from_raw(self, raw, obj):
         return self.from_str(raw, obj) if isinstance(raw, basestring) else raw
 
+    def get_ex(self, obj, cls):
+        if self.name not in obj._prepared_attrs:
+            self.prepare(obj)
+
+        if self.name in obj.values:
+            value = obj.values.get(self.name)
+        elif hasattr(obj.parent, self.name):
+            value = self.get_ex(obj.parent, obj.parent.__class__)  # todo: check it
+        else:
+            value = self.default
+
+        return value
+
     def __get__(self, obj, cls):
         if obj is None:
             return self
 
-        if self.name not in obj._prepared_attrs:
-            self.prepare(obj)
-
-        name = self.name
-        values = obj.values
-        if name in values:
-            return values[name]
-        parent = obj.parent
-        if parent and hasattr(parent, name):
-            return getattr(parent, name)
-        else:
-            return self.default
+        return self.get_ex(obj, cls)
 
     def __set__(self, obj, value):
         obj.values[self.name] = value
