@@ -670,6 +670,39 @@ var TraderManager = (function () {
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
     };
 
+    TraderManager.prototype.updatePrice = function(price_list) {
+        // Данный метод просто добавит в текущие списки итемов правильные цены этого торговца.
+        var new_inventory = [];
+        // проходим по списку итемов пользователя и ставим правильные цены продажи
+        for (var i = 0 ; i < this.playerInv.length; i++) {
+            var item = this.playerInv[i];
+            if (price_list.hasOwnProperty(item.id)) {  // если данный предмет покупается торговцем
+                item.base_price = (item.base_price * price_list[item.id][0] / 100).toFixed(0);
+                new_inventory.push(item);
+            } else {  // если предмета нет в этом списке, значит торговец его не покупает
+                console.warn('Данный предмет не покупается этим торговцем:', item)
+            }
+        }
+
+        this.playerInv = new_inventory;
+        new_inventory = [];
+        // проходим по списку итемов торговца и ставим правильные цены продажи
+        for (var i = 0 ; i < this.traderInv.length; i++) {
+            var item = this.traderInv[i];
+            if (price_list.hasOwnProperty(item.id)) {  // если данный предмет продаётся торговцем
+                item.base_price = (item.base_price * price_list[item.id][1] / 100).toFixed(0);
+                new_inventory.push(item);
+            } else {  // если предмета нет в этом списке, значит торговец его не продаёт
+                console.warn('Данный предмет не продаётмя этим торговцем:', item)
+            }
+        }
+
+        this.traderInv = new_inventory;
+
+        this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
+        this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
+    };
+
     TraderManager.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
         for(var i = 0; i < itemList.length; i++) {
             var example = itemList[i];

@@ -139,7 +139,7 @@ class Node(object):
     def instantiate(self, storage=None, name=None, **kw):
         assert self.abstract
         inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
-        log.debug('Maked new instance %s', inst.uri)
+        # log.debug('Maked new instance %s', inst.uri)
         return inst
 
     def __getstate__(self):
