@@ -54,6 +54,14 @@ class BaseInventory(list):
     def __imul__(self, other):
         raise Exception('Unsupported method')
 
+    def get_by_id(self, id):
+        # todo: optimize: Возможно следует инвентарь сделать словарём с id в качестве ключа, а не списком.
+        for item in self:
+            if isinstance(item, URI):  # todo: Сделать эвойной механизм получения итемов и линков из инвентаря
+                item = item.resolve()  # todo: обработать ошибку ненахождения
+            if item.id == id:
+                return item
+
     #def __contains__  # todo: extended filtering
     #def __repr__
     #def __str__  # todo: Сделать краткое текстовое представление инвентаря для отладки и логов (алиасы прототипов)
@@ -68,6 +76,7 @@ class Inventory(BaseInventory):
 
     def placing(self):
         u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
+        changes = []
         positions = Counter((item.position for item in self if item.position is not None))
         i = 0
         for item in self:
@@ -77,7 +86,9 @@ class Inventory(BaseInventory):
                 if item.position is not None:
                     positions[item.position] -= 1
                 item.position = i
+                changes.append(item)
                 i += 1
+        return changes
 
     def prepare(self, item):
         item = super(Inventory, self).prepare(item)
@@ -86,7 +97,7 @@ class Inventory(BaseInventory):
             return
         elif isinstance(item, URI):
             uri = item
-            value = tree.Node.DISPATCHER.get(uri)  # todo: exceptions
+            value = tree.Node.DISPATCHER.get(uri)  # todo: exceptions, rplace method to resolve
         else:
             value = item
 
