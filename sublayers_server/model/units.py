@@ -19,6 +19,8 @@ from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
 
+from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
+
 from math import radians
 
 
@@ -86,7 +88,7 @@ class Unit(Observer):
                 .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
     def save_inventory(self, time):
-        self.example.inventory = []
+        self.example.inventory = RegistryInventory()
         for item_rec in self.inventory.get_all_items():
             item_rec['item'].example.position = item_rec['position']
             item_rec['item'].example.amount = item_rec['item'].val(t=time)

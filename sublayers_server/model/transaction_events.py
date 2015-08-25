@@ -7,6 +7,7 @@ from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import GasStation, Town
+from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
 import sublayers_server.model.messages as messages
 
 
@@ -104,7 +105,7 @@ class TransactionGasStation(TransactionEvent):
 
         # Далее заправляем столько канистр, сколько сможем
         old_inventory = agent.example.car.inventory
-        agent.example.car.inventory = []
+        agent.example.car.inventory = RegistryInventory()
         for item in old_inventory:
             if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
                 dec_val = item.value_fuel
@@ -207,7 +208,7 @@ class TransactionArmorerApply(TransactionEvent):
 
         # Закидываем буффер в инвентарь
         position = 0
-        agent.example.car.inventory = []
+        agent.example.car.inventory = RegistryInventory()
         for item in armorer_buffer:
             item.position = position
             agent.example.car.inventory.append(item)
@@ -281,7 +282,7 @@ class TransactionTraderApply(TransactionEvent):
         # Зачисление денег на счёт
         agent.example.balance += price_player - price_trader
 
-        new_inventory = []
+        new_inventory = RegistryInventory()
         # Списание итемов из инвентаря
         for item in ex_car.inventory:
             if item.id not in self.player_table:
