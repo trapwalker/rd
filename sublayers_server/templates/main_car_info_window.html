@@ -707,9 +707,9 @@
     <div class="mainCarInfoWindow-menu">
         <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body_id">&nbspХарактеристики&nbsp
         </div>
-        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp
-        </div>
-        <div class="mainCarInfoWindow-menu-button" data-page_id="">&nbspТюнинг&nbsp</div>
+{#        <div class="mainCarInfoWindow-menu-button" data-page_id="mainCarInfoWindow-body-trunk_id">&nbspБагажник&nbsp#}
+{#        </div>#}
+{#        <div class="mainCarInfoWindow-menu-button" data-page_id="">&nbspТюнинг&nbsp</div>#}
     </div>
 
     <div id="mainCarInfoWindow-body_id" class="mainCarInfoWindow-body mainCarInfoWindow-page-div">
@@ -823,7 +823,7 @@
     });
 
     // Запрашиваем инвентарь
-    inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
+{#    inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())#}
 
     /*
     var activateBtn = $('.mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-body-left-activate');

@@ -34,6 +34,7 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
 from sublayers_server.handlers.main_menu_character import MainMenuCharacterHandler
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
+from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
@@ -100,6 +101,7 @@ class Application(tornado.web.Application):
             (r"/api/main_menu_character", MainMenuCharacterHandler),
             (r"/api/main_car_info", MainCarInfoHandler),
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
+            (r"/api/inventory", MainInventoryHandler),
             (r"/api/party", PartyHandler),
         ]
         app_settings = dict(
