@@ -758,28 +758,7 @@
         </div>
     </div>
 
-    <div id="mainCarInfoWindow-body-trunk_id" class="mainCarInfoWindow-body-trunk mainCarInfoWindow-page-div">
-        <div class="mainCarInfoWindow-body-trunk-filter">
-            <div class="mainCarInfoWindow-body-trunk-filter-all activateFilter" data-filter="">
-                <span class="inventoryFilterChecker">[x]</span> Всё</div>
-            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="cargo">
-                <span class="inventoryFilterChecker">[ ]</span> Груз</div>
-            <div class="mainCarInfoWindow-body-trunk-filter-all" data-filter="ammo">
-                <span class="inventoryFilterChecker">[ ]</span> Боеприпасы</div>
-        </div>
-        <div class="mainCarInfoWindow-body-trunk-body">
-            <div class="mainCarInfoWindow-body-trunk-body-left">
-                <div class="mainCarInfoWindow-body-trunk-body-left-picture">
-                    <div class="mainCarInfoWindow-body-trunk-body-left-picture-picture"></div>
-                </div>
-                <div class="mainCarInfoWindow-body-trunk-body-left-name"></div>
-                <div class="mainCarInfoWindow-body-trunk-body-left-description"></div>
-                <div class="mainCarInfoWindow-body-trunk-body-left-activate">Активировать!</div>
-            </div>
-            <div class="mainCarInfoWindow-body-trunk-body-right inventory-{{ car_id }}">
-            </div>
-        </div>
-    </div>
+
 </div>
 
 <script>
@@ -799,47 +778,9 @@
     // открывании окна правильно отрабатывала подсветка
     $(".mainCarInfoWindow-menu-button").first().click();
 
-    $('#mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-filter-all').click(function(event){
-        var inv_id_this_window = $('#mainCarInfoWindow-body-trunk_id');
-        // отключить во всех фильтрах "выбранный"
-        inv_id_this_window.find('.inventoryFilterChecker').text('[ ]');
-        inv_id_this_window.find('.mainCarInfoWindow-body-trunk-filter-all').removeClass('activateFilter');
-        // у себя включить, что фильтр выбран
-        $(this).find('.inventoryFilterChecker').text('[x]');
-        $(this).addClass('activateFilter');
-        // вызов фильтрации
-        inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
-    });
-
-    // Заполнение информационных полей
-    // Поле "Слотов багажника"
-    $('.mainCarInfoWindow-main').find('.mainCarInfoWindow-body-right-list-model-trunkvol-value').text('{{ car.inventory.max_size }}')
-
     // Обработка нажатия на крестик (закрытие окна)
     $('.mainCarInfoWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
-        // Тут именно так, потому как мы отписываемся от инвентаря на сервере
-        if (user.userCar)
-            clientManager.sendHideInventory(user.userCar.ID);
+
     });
-
-    // Запрашиваем инвентарь
-{#    inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())#}
-
-    /*
-    var activateBtn = $('.mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-body-left-activate');
-    activateBtn.data('inv_id', -1);
-    activateBtn.data('item_pos', -1);
-    activateBtn.on('click', function(event) {
-        console.log('activateBtn');
-        var inv_id = $(event.target).data('inv_id');
-        var item_pos = $(event.target).data('item_pos');
-        if ((inv_id < 0) || (item_pos < 0)) return;
-        var inventory = inventoryList.getInventory(inv_id);
-        if (!inventory) return;
-        var item = inventory.getItem(item_pos);
-        if (!item) return;
-        item.activate();
-    })
-    */
 
 </script>
