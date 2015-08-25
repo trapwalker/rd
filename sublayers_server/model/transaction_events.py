@@ -7,8 +7,8 @@ from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import GasStation, Town
+from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
 import sublayers_server.model.messages as messages
-import unicodedata
 
 
 class TransactionEvent(Event):
@@ -105,7 +105,7 @@ class TransactionGasStation(TransactionEvent):
 
         # Далее заправляем столько канистр, сколько сможем
         old_inventory = agent.example.car.inventory
-        agent.example.car.inventory = []
+        agent.example.car.inventory = RegistryInventory()
         for item in old_inventory:
             if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
                 dec_val = item.value_fuel
@@ -208,7 +208,7 @@ class TransactionArmorerApply(TransactionEvent):
 
         # Закидываем буффер в инвентарь
         position = 0
-        agent.example.car.inventory = []
+        agent.example.car.inventory = RegistryInventory()
         for item in armorer_buffer:
             item.position = position
             agent.example.car.inventory.append(item)
@@ -242,6 +242,7 @@ class TransactionTraderApply(TransactionEvent):
         if not (isinstance(agent.current_location, Town) and agent.current_location.example.trader):
             return
         trader = agent.current_location.example.trader
+        trader_price = trader.get_prices(items=ex_car.inventory)
 
         # Заполняем буфер итемов игрока
         buffer_player = []
@@ -252,22 +253,18 @@ class TransactionTraderApply(TransactionEvent):
         price_player = 0
         for item_id in self.player_table:
             if item_id in buffer_player:
-                # todo: считать цену тут
+                item = ex_car.inventory.get_item_by_id(item_id_str=item_id)
+                price_player += round(item.base_price * trader_price[item_id][0] * 0.01 * (item.amount / item.stack_size))
                 buffer_player.remove(item_id)
             else:
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
-        # todo: сделать нормальное ценообразование
-        for item in ex_car.inventory:
-            if item.id in self.player_table:
-                price_player += round(item.base_price * (item.amount / item.stack_size))
-
         # Формирование цены итемов для продажи торговцем (обход столика торговца)
         price_trader = 0
         for item_id in self.trader_table:
-            if item_id in trader.inventory:
-                price_trader += reg[item_id].base_price
+            if trader.inventory.get_item_by_uri(item_id):
+                price_trader += reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size)
             else:
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
@@ -285,7 +282,7 @@ class TransactionTraderApply(TransactionEvent):
         # Зачисление денег на счёт
         agent.example.balance += price_player - price_trader
 
-        new_inventory = []
+        new_inventory = RegistryInventory()
         # Списание итемов из инвентаря
         for item in ex_car.inventory:
             if item.id not in self.player_table:
