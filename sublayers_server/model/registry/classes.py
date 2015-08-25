@@ -257,6 +257,9 @@ class Trader(Institution):
         d['price'] = self.price.get_pricelist(chain(items, self.inventory))
         return d
 
+    def get_prices(self, items=()):
+        return self.price.get_pricelist(chain(items, self.inventory))
+
 
 class Hangar(Institution):
     car_list = Attribute(caption=u"Список продаваемых машин")

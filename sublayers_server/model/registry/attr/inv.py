@@ -61,7 +61,11 @@ class BaseInventory(list):
 
 
 class ProtoInventory(BaseInventory):
-    pass
+    def get_item_by_uri(self, item_uri_str):
+        for item in self:
+            if str(item) == item_uri_str:
+                return item
+        return None
 
 
 class Inventory(BaseInventory):
@@ -96,6 +100,11 @@ class Inventory(BaseInventory):
 
         return value
 
+    def get_item_by_id(self, item_id_str):
+        for item in self:
+            if item.id == item_id_str:
+                return item
+        return None
 
 class InventoryAttribute(Attribute):
     def __init__(self, default=None, **kw):
