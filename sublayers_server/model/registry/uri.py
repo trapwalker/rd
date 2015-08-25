@@ -122,7 +122,7 @@ class URI(tuple):
         original = node
         while node and (node.storage is None or node.storage.name != 'registry'):
             node = node.parent
-        log.debug('{} test to {}'.format(node, self))
+        # log.debug('{} test to {}'.format(node, self))
 
         if node is None:
             return

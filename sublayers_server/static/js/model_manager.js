@@ -728,13 +728,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInventoryShowMessage = function (event) {
-        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
+        console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
         var inv = this._getInventory(event.inventory);
         locationManager.trader_uid = inv.owner_id;
         if (inventoryList.getInventory(inv.owner_id))
             inventoryList.delInventory(inv.owner_id);
         inventoryList.addInventory(inv);
         locationManager.trader.updateTraderInv();
+        locationManager.trader.updatePrice(event.price.price)
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
