@@ -16,21 +16,22 @@
         }
 
         .welcome-window {
-	position: relative;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 7px;
-	margin: auto;
-	margin-bottom: 20px;
-	height: 452px;
-	width: 904px;
-	background-color: rgba(0, 0, 0, 0.75);
-	color: #30fc00;
-	font-family: Nouveau_IBM;
-	font-size: 12pt;
-	border: solid 2px #125306;
-	overflow: auto;
+            position: relative;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 7px;
+            margin: auto;
+            margin-bottom: 20px;
+            height: 452px;
+            width: 904px;
+            background-color: rgba(0, 0, 0, 0.75);
+            color: #30fc00;
+            font-family: Nouveau_IBM;
+            font-size: 12pt;
+            border: solid 2px #125306;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .welcome-window-logo {
@@ -52,12 +53,96 @@
         }
 
         .welcome-window-text {
-            height: 420px;
-            width: 969px;
-            overflow-y: hidden;
-            overflow-x: hidden;
+            width: 100%;
             padding: 5px 0px 0px 0px;
         }
+
+        .welcome-window-text p {
+            padding: 10px;
+        }
+
+        /* Настройка скроллбара !!! */
+        /* Общие характеристикики скролбара*/
+        ::-webkit-scrollbar {
+            width: 9px;
+            height: 9px;
+        }
+
+        /* Вид кнопок для скролбара*/
+        ::-webkit-scrollbar-button {
+            height: 10px;
+        }
+
+        /* Верхняя кнопка */
+        ::-webkit-scrollbar-button:vertical:decrement {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_up.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:vertical:decrement:hover {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_up_over.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:vertical:decrement:active {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_up_pressed.png') 50% 50% no-repeat;
+        }
+
+        /* Нижняя кнопка */
+        ::-webkit-scrollbar-button:vertical:increment {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_down.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:vertical:increment:hover {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_down_over.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:vertical:increment:active {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_down_pressed.png') 50% 50% no-repeat;
+        }
+
+        /* Левая кнопка */
+        ::-webkit-scrollbar-button:horizontal:decrement {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_left.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:horizontal:decrement:hover {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_left_over.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:horizontal:decrement:active {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_left_pressed.png') 50% 50% no-repeat;
+        }
+
+        /* Правая кнопка */
+        ::-webkit-scrollbar-button:horizontal:increment {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_right.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:horizontal:increment:hover {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_right_over.png') 50% 50% no-repeat;
+        }
+
+        ::-webkit-scrollbar-button:horizontal:increment:active {
+            background: transparent url('/static/img/windows/temp_scroll/scroll_btn_right_pressed.png') 50% 50% no-repeat;
+        }
+
+        /* Вид каретки скролбара */
+        ::-webkit-scrollbar-thumb {
+            background-color: transparent;
+            background-image: linear-gradient(45deg, #30fc00 25%, transparent 25%, transparent 74%, #30fc00 75%, #30fc00),
+            linear-gradient(45deg, #30fc00 25%, transparent 25%, transparent 74%, #30fc00 75%, #30fc00);
+            background-size: 2px 2px;
+            background-position: 0 0, 1px 1px;
+        }
+
+        /* Фон, где передвигается каретка */
+        ::-webkit-scrollbar-track {
+            background-color: transparent;
+            background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
+            linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+            background-size: 2px 2px;
+            background-position: 0 0, 1px 1px;
+        }
+
     </style>
 
     <script src="static/js/third_party/jquery.min.js"></script>
