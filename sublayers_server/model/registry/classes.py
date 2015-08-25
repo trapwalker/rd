@@ -13,7 +13,8 @@ from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.tag import TagsAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink, Slot
 from sublayers_server.model.registry.attr.price import PriceAttribute
-from sublayers_server.model.transaction_events import TransactionActivateTank, TransactionActivateAmmoBullets
+from sublayers_server.model.transaction_events import TransactionActivateTank, TransactionActivateAmmoBullets, \
+    TransactionActivateMine
 
 from math import pi
 import random
@@ -263,6 +264,20 @@ class Trader(Institution):
 
 class Hangar(Institution):
     car_list = Attribute(caption=u"Список продаваемых машин")
+
+
+class MapWeaponItem(Item):
+    generate_obj = RegistryLink(caption=u'Ссылка на объект генерации', need_to_instantiate=False)
+
+
+class MapWeaponMineItem(MapWeaponItem):
+    @classmethod
+    def activate(cls):
+        return TransactionActivateMine
+
+
+class MapWeaponEffectMine(Mobile):
+    effects = Attribute(default='', caption=u'Названия эффектов накладываемых миной через пробел')
 
 
 if __name__ == '__main__':

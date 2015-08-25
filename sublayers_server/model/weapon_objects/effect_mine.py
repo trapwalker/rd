@@ -10,48 +10,29 @@ import sublayers_server.model.tags as tags
 
 
 class SlowMineStartEvent(Event):
-    def __init__(self, starter, **kw):
+    def __init__(self, starter, example_mine, **kw):
         super(SlowMineStartEvent, self).__init__(server=starter.server, **kw)
         self.starter = starter
+        self.example_mine = example_mine
 
     def on_perform(self):
         super(SlowMineStartEvent, self).on_perform()
         effects = self.server.effects
-        SlowMine(time=self.time, starter=self.starter, effects=[effects.get('EffectMineCC')])
+        # todo: забирать названия эффектов из экзампла  self.example_mine.effects
+        SlowMine(time=self.time, starter=self.starter, example=self.example_mine, effects=[effects.get('EffectMineCC')])
 
 
 class SlowMine(UnitWeapon):
-    def __init__(
-        self, time, starter, effects,
-        observing_range=BALANCE.SlowMine.observing_range,
-        max_hp=BALANCE.SlowMine.max_hp,
-        a_forward=BALANCE.SlowMine.a_forward,
-        a_braking=BALANCE.SlowMine.a_braking,
-        v_forward=BALANCE.SlowMine.v_forward,
-        ac_max=BALANCE.SlowMine.ac_max,
-        max_control_speed=BALANCE.SlowMine.max_control_speed,
-        **kw
-    ):
+    def __init__(self, time, starter, effects, **kw):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
         super(SlowMine, self).__init__(time=time,
                                        starter=starter,
                                        position=starter.position(time=time),
-                                       direction=starter.direction(time=time),
-                                       r_min=10,
-                                       observing_range=observing_range,
-                                       max_hp=max_hp,
-                                       a_forward=a_forward,
-                                       a_braking=a_braking,
-                                       a_backward=0.0,
-                                       v_forward=v_forward,
-                                       v_backward=0.0,
-                                       ac_max=ac_max,
-                                       max_control_speed=max_control_speed,
                                        server=starter.server,
                                        **kw)
         self.targets = []
-        self.effects = effects[:]
+        self.effects = effects[:]  # todo: забирать названия эффектов из экзампла
 
     def on_init(self, event):
         super(SlowMine, self).on_init(event)
@@ -77,7 +58,7 @@ class SlowMine(UnitWeapon):
         super(SlowMine, self).on_before_delete(event=event)
 
     def on_contact_in(self, time, obj, **kw):
-        super(SlowMine, self).on_contact_in(time=time, obj=obj, **kw)
+        super(SlowMine, self).on_contact_in(time=time, obj=obj)
         if not self.is_target(target=obj):
             return
         # if tags.FlyingUnit in obj.tags:
