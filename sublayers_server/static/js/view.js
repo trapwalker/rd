@@ -77,6 +77,21 @@ function returnFocusToMap() {
 }
 
 
+function ifBrowser () {
+    var ua = navigator.userAgent;
+    return function () {
+        if (ua.search(/MSIE/) > -1) return "ie";
+        if (ua.search(/Firefox/) > -1) return "firefox";
+        if (ua.search(/Opera/) > -1) return "opera";
+        if (ua.search(/Chrome/) > -1) return "chrome";
+        if (ua.search(/Safari/) > -1) return "safari";
+        if (ua.search(/Konqueror/) > -1) return "konqueror";
+        if (ua.search(/Iceweasel/) > -1) return "iceweasel";
+        if (ua.search(/SeaMonkey/) > -1) return "seamonkey";
+    }();
+}
+
+
 // Установка текста в верху страницы - вывод своего ника и своей пати
 function setTitleOnPage() {
     var party_str = user.party ? (' [' + user.party.name + '] ') : "/";

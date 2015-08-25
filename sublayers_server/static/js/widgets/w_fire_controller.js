@@ -28,6 +28,8 @@ var WFireController = (function (_super) {
             y: this.diameter / 2
         };
 
+        this.radar_circle_enable = ifBrowser() == 'chrome';
+
         var mainParent = $('#fireControlArea');
         mainParent.addClass('fire-control-parent');
         mainParent.append('<div id="fireControlAreaRumble"></div>');
@@ -94,16 +96,19 @@ var WFireController = (function (_super) {
         this._initSides();
 
         // Создание радарного круга
-        this._radarCircleLastTime = 0;
-        this._radarCircleRelRadius = 0;                                                            // относительный радиус (от 0 .. 1)
-        this._radarCircleAbsRadius = this.radiusIn + this._difOutIn * this._radarCircleRelRadius;  // абсолютный радиус (px)
-        this.SVGRadarCirle = document.createElementNS(this.NS, 'circle');
-        this.SVGRadarCirle.setAttribute('class', 'fire-control-radar-circle sublayers-unclickable');
-        this.SVGRadarCirle.setAttribute('r', this._radarCircleAbsRadius);
-        this.SVGRadarCirle.setAttribute('cx', this.center.x);
-        this.SVGRadarCirle.setAttribute('cy', this.center.y);
-        this.SVGRadarCirle.setAttribute('fill', 'url(#fcRadarCircleGradient)');
-        this.SVG.appendChild(this.SVGRadarCirle);
+
+        if (this.radar_circle_enable) {
+            this._radarCircleLastTime = 0;
+            this._radarCircleRelRadius = 0;                                                            // относительный радиус (от 0 .. 1)
+            this._radarCircleAbsRadius = this.radiusIn + this._difOutIn * this._radarCircleRelRadius;  // абсолютный радиус (px)
+            this.SVGRadarCirle = document.createElementNS(this.NS, 'circle');
+            this.SVGRadarCirle.setAttribute('class', 'fire-control-radar-circle sublayers-unclickable');
+            this.SVGRadarCirle.setAttribute('r', this._radarCircleAbsRadius);
+            this.SVGRadarCirle.setAttribute('cx', this.center.x);
+            this.SVGRadarCirle.setAttribute('cy', this.center.y);
+            this.SVGRadarCirle.setAttribute('fill', 'url(#fcRadarCircleGradient)');
+            this.SVG.appendChild(this.SVGRadarCirle);
+        }
         this.change();
 
         // todo: сделать это правильно
@@ -319,6 +324,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype._updateRadarCircle = function(time) {
         //console.log('WFireController.prototype._updateRadarCircle');
+        if (! this.radar_circle_enable) return;
         var difTime = time - this._radarCircleLastTime;
         var newRelRadius = this._radarCircleRelRadius + (difTime / ConstFireControllerRadarCircleSpeed) * 1.0
         var newAbsRadius = this.radiusIn + this._difOutIn * newRelRadius;
