@@ -159,6 +159,15 @@ class URI(tuple):
         from sublayers_server.model.registry.tree import Node
         return Node.DISPATCHER[self]  # todo: (!!!!) fix it
 
+    def instantiate(self, storage=None, name=None, **kw):
+        # todo: declare exceptions
+        params = self.params
+        params = params.copy() if params else {}
+        params.update(kw)
+        proto = self.resolve()
+        assert proto.abstract
+        return proto.instantiate(storage=storage, name=name, **params)
+
 
 class Selector(URI):
     @property
