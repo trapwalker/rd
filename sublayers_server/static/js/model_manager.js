@@ -655,6 +655,8 @@ var ClientManager = (function () {
                 locationManager.armorer.update();
                 locationManager.trader.updatePlayerInv();
                 locationManager.trader.updateTraderInv();
+                locationManager.trader.updatePrice();
+                locationManager.hangar.update();
             }
         });
     };
@@ -724,11 +726,12 @@ var ClientManager = (function () {
             locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
+            locationManager.hangar.update();
         }
     };
 
     ClientManager.prototype.TraderInventoryShowMessage = function (event) {
-        console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
+        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
         var inv = this._getInventory(event.inventory);
         locationManager.trader_uid = inv.owner_id;
         if (inventoryList.getInventory(inv.owner_id))
@@ -1142,19 +1145,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendHangarCarChoice = function (car_number) {
-        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
-        var mes = {
-            call: "choice_car_in_hangar",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                car_number: car_number
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
     ClientManager.prototype.sendLootStash = function (poi_stash_id) {
         console.log('ClientManager.prototype.sendLootStash', poi_stash_id);
         var mes = {
@@ -1221,6 +1211,22 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    // Ангар
+
+    ClientManager.prototype.sendHangarCarChoice = function () {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "choice_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_number: locationManager.hangar.current_car
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     return ClientManager;
 })();

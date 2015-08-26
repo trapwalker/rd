@@ -83,10 +83,9 @@
     function openHangar() {
         $('.townPageWrap').css('display', 'none');
         $('#townHangarPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.hangar;
         setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
-        setBtnDisplay(9, "block");
     }
 
     function openTown() {
