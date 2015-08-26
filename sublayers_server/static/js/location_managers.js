@@ -10,6 +10,7 @@ var LocationManager = (function () {
         this.armorer = new ArmorerManager();
         this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
+        this.hangar = new HangarManager();
         this.visitorsManager = new LocationVisitorsManager();
     }
 
@@ -821,6 +822,43 @@ var TraderManager = (function () {
     };
 
     return TraderManager;
+})();
+
+
+var HangarManager = (function () {
+
+    function HangarManager() {
+        this.current_car = null;
+    }
+
+    HangarManager.prototype.update = function() {
+        this.clear();
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Отрисовать собственный счет
+        $('#hangar-footer-balance').text(user.balance);
+    };
+
+    HangarManager.prototype.clear = function() {
+        //console.log('HangarManager.prototype.clear');
+    };
+
+    HangarManager.prototype.apply = function() {
+        //console.log('HangarManager.prototype.apply');
+        if (this.current_car != null)
+            clientManager.sendHangarCarChoice();
+    };
+
+    HangarManager.prototype.cancel = function() {
+        //console.log('HangarManager.prototype.cancel');
+    };
+
+    return HangarManager;
 })();
 
 
