@@ -14,30 +14,197 @@
         overflow-y: auto;
     }
 
-    .hangarWindow-car-slot {
+    .hangar-header {
         position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 692px;
+        height: 205px;
+        padding-bottom: 6px;
+        font: 11pt Nouveau_IBM;
+        color: #29F200;
+    }
+
+    .hangar-wrap-header {
+        position: relative;
+        height: 175px;
+        width: 570px;
+        margin: 0px 0px 0px 13px;
+        padding-top: 5px;
+    }
+
+    .hangar-info {
+        position: relative;
+        float: left;
+        margin-right: 5px;
+    }
+
+    .hangar-name {
+        position: relative;
+        margin-top: 8px;
+        text-align: center;
+        font: 13pt Nouveau_IBM;
+    }
+
+    .hangar-text {
+        height: 100%;
+        width: 395px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        border-top: solid 1px #135806;
+        box-sizing: border-box;
+        padding: 5px 0px 0px 0px;
+    }
+
+    .hangar-center {
+        position: relative;
+        box-sizing: border-box;
+        margin-right: auto;
+        margin-left: auto;
+        width: 734px;
+        height: 290px;
+        padding-bottom: 5px;
+    }
+
+    .hangar-center-info-car-wrap {
+        position: relative;
+        height: 100%;
+        display: none;
+    }
+
+    .hangar-car-list {
+        position: relative;
+        margin-right: auto;
+        margin-left: auto;
+        width: 606px;
+        height: 126px;
+    }
+
+    .hangar-car-list-label {
+        box-sizing: border-box;
+        padding-left: 70px;
+        height: 21px;
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+    }
+
+    .hangar-car-list-wrap {
+        width: 100%;
+        height: 105px;
+        overflow-x: scroll;
+    }
+
+    .hangar-car-list-itemWrap {
+        box-sizing: border-box;
+        margin-right: 15px;
+        width: 140px;
+        height: 85px;
+        float: left;
+        opacity: 0.6;
+    }
+
+    .hangar-car-list-itemWrap:hover { opacity: 1; }
+
+    .hangar-car-list-itemWrap-active { opacity: 1; }
+
+    .hangar-car-list-item {
+        position: relative;
+        cursor: pointer;
+        width: 100%;
+        height: 85px;
+        float: left;
+    }
+
+    .hangar-car-list-name {
+        position: absolute;
+        padding: 2px 2px 2px 2px;
+        font: 10pt Nouveau_IBM;
+        color: #135806;
+    }
+
+    .hangar-car-list-pictureWrap {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    .hangar-footer {
+        position: relative;
+        margin: auto;
+        height: 40px;
+        width: 75%;
+        font: 15pt Nouveau_IBM;
+        color: #28F100;
+        text-align: center;
+    }
+
+    .hangar-footer-text-block {
+        position: relative;
+        float: left;
         width: 50%;
-        height: 100px;
-        background-color: white;
-        margin: 0 auto 10px auto;
+        padding: 10px 0 0 0;
     }
 </style>
 
 <div class="hangarWindow-main">
-    {% for car_number in range(0, len(town.example.hangar.car_list)) %}
-        <div class="hangarWindow-car-slot" data-car_number="{{ car_number }}">
-            {% set car_proto = agent.server.reg[town.example.hangar.car_list[car_number]] %}
-            {{ car_proto.max_hp }}
-            {{ car_proto.v_forward }}
-            {{ car_proto.title }}
-            {{ car_proto.price }}
+     <div class="hangar-header">
+        <div class="hangar-wrap-header">
+            <div class="hangar-info">
+                <img class="hangar-foto" src="{{ town.example.hangar.photo }}" alt="Оружейник" />
+                <div class="hangar-name"> {{ town.example.hangar.title }} </div>
+            </div>
+            <div class="hangar-text">{{ town.example.hangar.text }}</div>
         </div>
-    {% end %}
+    </div>
+
+    <div class="hangar-center">
+        {% for car_number in range(0, len(town.example.hangar.car_list)) %}
+            {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}
+            <div id="hangar-center-info-car-{{ car_number }}" class="hangar-center-info-car-wrap">
+                {% include car_info_block.html %}
+            </div>
+        {% end %}
+    </div>
+
+    <div class="hangar-car-list">
+        <div class="hangar-car-list-label">Предложение:</div>
+        <div class="hangar-car-list-wrap">
+            <div class="hangar-car-list-list">
+                {% for car_number in range(0, len(town.example.hangar.car_list)) %}
+                    {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}
+                    <div class="hangar-car-list-itemWrap" data-car_number="{{ car_number }}" data-car_price="{{ car.price }}">
+                        <div class="hangar-car-list-item" >
+                            <div class="hangar-car-list-pictureWrap" style="background: url({{ car.inv_icon_mid }}) no-repeat center"></div>
+                            <div class="hangar-car-list-name">{{ car.title }}</div>
+                        </div>
+                    </div>
+                {% end %}
+            </div>
+        </div>
+    </div>
+    <div class="hangar-footer">
+        <div class="hangar-footer-text-block">Ваш счет: <span id="hangar-footer-balance">0</span> нк.</div>
+        <div class="hangar-footer-text-block">Цена: <span id="hangar-footer-price">0</span> нк.</div>
+    </div>
 </div>
 
 <script>
-    $('.hangarWindow-car-slot').click(function(){
-        clientManager.sendHangarCarChoice($(this).data('car_number'));
+    $('.hangar-car-list-itemWrap').click(function(){
+        // Сбросить предыдущее выделение и выджелить выбранный итем
+        $('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
+        $(this).addClass('hangar-car-list-itemWrap-active');
+
+        // Установить цену
+        $('#hangar-footer-price').text($(this).data('car_price'));
+
+        // Скрыть информационные окна всех машинок, показать выбранную
+        $('.hangar-center-info-car-wrap').css('display', 'none');
+        $('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
+
+        // Установить выбранную машинку в менеджер
+        locationManager.hangar.current_car = $(this).data('car_number');
     })
 
+    $('.hangar-car-list-itemWrap').first().click();
 </script>

@@ -197,6 +197,11 @@ class Mobile(Root):
 class Car(Mobile):
     armorer_car_svg = Attribute(caption=u"Представление машинки у оружейника")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
+    hangar_car = Attribute(caption=u"Представление машинки в ангаре")
+
+    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей')
+    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей')
+    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей')
 
 
 class Drone(Mobile):

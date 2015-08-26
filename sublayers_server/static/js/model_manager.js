@@ -656,6 +656,7 @@ var ClientManager = (function () {
                 locationManager.trader.updatePlayerInv();
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
+                locationManager.hangar.update();
             }
         });
     };
@@ -725,6 +726,7 @@ var ClientManager = (function () {
             locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
+            locationManager.hangar.update();
         }
     };
 
@@ -1143,19 +1145,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendHangarCarChoice = function (car_number) {
-        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
-        var mes = {
-            call: "choice_car_in_hangar",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                car_number: car_number
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
     ClientManager.prototype.sendLootStash = function (poi_stash_id) {
         console.log('ClientManager.prototype.sendLootStash', poi_stash_id);
         var mes = {
@@ -1222,6 +1211,22 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    // Ангар
+
+    ClientManager.prototype.sendHangarCarChoice = function () {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "choice_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_number: locationManager.hangar.current_car
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     return ClientManager;
 })();
