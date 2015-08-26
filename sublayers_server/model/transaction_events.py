@@ -8,6 +8,8 @@ from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import GasStation, Town
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
+from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
+
 import sublayers_server.model.messages as messages
 
 
@@ -49,6 +51,29 @@ class TransactionActivateTank(TransactionActivateItem):
         tank_proto = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank' + str(item.example.value_fuel)]
         ItemState(server=self.server, time=self.time, example=tank_proto.instantiate()) \
             .set_inventory(time=self.time, inventory=inventory, position=position)
+
+
+class TransactionActivateMine(TransactionActivateItem):
+    def on_perform(self):
+        super(TransactionActivateMine, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.target)
+        inventory = self.inventory
+        item = self.item
+
+        # проверка входных параметров
+        if not isinstance(obj, Mobile):
+            log.warning('Target obj is not Mobile')
+            return
+
+        # Убрать мину из инвентаря
+        #  todo: да, нельзя юзать внутренний метод! Но значит его нужно сделать открытым!
+        item._div_item(count=1, time=self.time)
+
+        # Поставить мину на карту
+        SlowMineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
+
 
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):
