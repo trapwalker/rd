@@ -18,54 +18,74 @@
 
     .car-info-block-info {
         position: relative;
-        background-color: white;
         float: left;
         height: 100%;
         width: 304px;
+    }
+
+    .car-info-block-body-right {
+        position: relative;
+        width: 304px;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .car-info-block-body-right-menu {
+        width: 297px;
+        height: 40px;
+        font: 12pt Nouveau_IBM;
+    }
+
+    .car-info-block-body-right-list-model {
+        position: absolute;
+        width: 297px;
+        height: 314px;
+        border: solid 1px #00f150;
+        padding-top: 17px;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
     }
 </style>
 
 <div class="car-info-block-main">
     <div class="car-info-block-picture" style="background: url({{ car.hangar_car }}) no-repeat center"></div>
-    <div class="car-info-block-info">
-         <!--<div class="mainCarInfoWindow-body-right">-->
-            <!--<div class="mainCarInfoWindow-body-right-menu">-->
-                <!--<div class="mainCarInfoWindow-body-right-menu-button-model">Модель</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-menu-button-tth">ТТХ</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-menu-button-weapons">Вооружение</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-menu-button-history">История</div>-->
+    <!--<div class="car-info-block-info">-->
+
+
+
+         <!--<div class="car-info-block-body-right">-->
+            <!--<div class="car-info-block-body-right-menu">-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-menu-button-model">Модель</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-menu-button-tth">ТТХ</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-menu-button-weapons">Вооружение</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-menu-button-history">История</div>&ndash;&gt;-->
             <!--</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model">-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-model">&nbspМодель:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-model-value">Газель</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-class">&nbspКласс:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-class-value">Средний</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspСлотов кузова:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-bodyvol-value">4</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspСлотов багажника:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-trunkvol-value">8</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-bonuses">Бонусы местности:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-bonuses">Пенальти местности:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-forest">&nbspЛес:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-forest-value">Максимальная скорость</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-hill">&nbspХолмы:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-hill-value">-</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-water">&nbspВода:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-water-value">Невозможно</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-mountain">&nbspГоры:</div>-->
-                <!--<div class="mainCarInfoWindow-body-right-list-model-mountain-value">Невозможно</div>-->
-            <!--</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-tth">-->
-                <!--ТТХ-->
-            <!--</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-weapons">-->
-                <!--Вооружение-->
-            <!--</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-history">-->
-                <!--История-->
+            <!--<div class="car-info-block-body-right-list-model">-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-model">&nbspМодель:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-model-value">Газель</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-class">&nbspКласс:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-class-value">Средний</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-bodyvol">&nbspСлотов кузова:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-bodyvol-value">4</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-trunkvol">&nbspСлотов багажника:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-trunkvol-value">8</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-bonuses">Бонусы местности:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-bonuses">Пенальти местности:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-forest">&nbspЛес:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-forest-value">Максимальная скорость</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-hill">&nbspХолмы:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-hill-value">-</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-water">&nbspВода:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-water-value">Невозможно</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-mountain">&nbspГоры:</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div class="mainCarInfoWindow-body-right-list-model-mountain-value">Невозможно</div>&ndash;&gt;-->
             <!--</div>-->
         <!--</div>-->
-    </div>
+
+
+
+    <!--</div>-->
 </div>
