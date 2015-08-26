@@ -58,6 +58,12 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
+    document.getElementById('divMainMenuBtnInventory').onclick =
+        function () {
+            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
+            returnFocusToMap();
+        };
+
     document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
     document.getElementById('divMainMenuBtnNucoil').onclick =
