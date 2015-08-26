@@ -500,6 +500,8 @@ var TraderManager = (function () {
         this.traderTable = [];
         this.traderInvDiv = null;
         this.traderTableDiv = null;
+
+        this.price_list = {};
     }
 
     TraderManager.prototype.calcPriceTables = function() {
@@ -507,9 +509,9 @@ var TraderManager = (function () {
         var price_player = 0;
         var price_trader = 0;
         for (i = 0; i < this.playerTable.length; i++)
-            price_player += Math.round((this.playerTable[i].count / this.playerTable[i].max_count) * this.playerTable[i].base_price);
+            price_player += Math.round((this.playerTable[i].count / this.playerTable[i].max_count) * this._getPrice(this.playerTable[i], 0));
         for (i = 0; i < this.traderTable.length; i++)
-            price_trader += Math.round((this.traderTable[i].count / this.traderTable[i].max_count) * this.traderTable[i].base_price);
+            price_trader += Math.round((this.traderTable[i].count / this.traderTable[i].max_count) * this._getPrice(this.traderTable[i], 1));
 
         if (price_player > price_trader) {
             price_trader = (price_player - price_trader).toFixed(0);
@@ -611,7 +613,7 @@ var TraderManager = (function () {
     };
 
     TraderManager.prototype.updateTraderInv = function() {
-        //console.log('TraderManager.prototype.updatePlayerInv');
+        //console.log('TraderManager.prototype.updateTraderInv');
         this._clearTraderInv();
         var self = this;
         var item;
@@ -670,33 +672,46 @@ var TraderManager = (function () {
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
     };
 
+    // state: 0 - продажа торговцу, 1 - покупка у торговца
+    TraderManager.prototype._getPrice = function (item, state) {
+        var price_modify = this.price_list.hasOwnProperty(item.id) ? this.price_list[item.id][state] : 100;
+        return Math.round(item.base_price * price_modify / 100.0);
+    };
+
     TraderManager.prototype.updatePrice = function(price_list) {
+        //console.log('TraderManager.prototype.updatePrice', price_list);
+        if (price_list)
+            this.price_list = price_list;
+        else
+            price_list = this.price_list;
+
+        if (! price_list) { console.warn('Отсутствует список цен торговца.'); return }
+        // Проверить если город
+        if (!locationManager.in_location) {console.warn('Вёрстка города не найдена'); return }
+
         // Данный метод просто добавит в текущие списки итемов правильные цены этого торговца.
         var new_inventory = [];
         // проходим по списку итемов пользователя и ставим правильные цены продажи
         for (var i = 0 ; i < this.playerInv.length; i++) {
             var item = this.playerInv[i];
             if (price_list.hasOwnProperty(item.id)) {  // если данный предмет покупается торговцем
-                item.base_price = (item.base_price * price_list[item.id][0] / 100).toFixed(0);
                 new_inventory.push(item);
             } else {  // если предмета нет в этом списке, значит торговец его не покупает
                 console.warn('Данный предмет не покупается этим торговцем:', item)
             }
         }
-
         this.playerInv = new_inventory;
+
         new_inventory = [];
         // проходим по списку итемов торговца и ставим правильные цены продажи
         for (var i = 0 ; i < this.traderInv.length; i++) {
             var item = this.traderInv[i];
             if (price_list.hasOwnProperty(item.id)) {  // если данный предмет продаётся торговцем
-                item.base_price = (item.base_price * price_list[item.id][1] / 100).toFixed(0);
                 new_inventory.push(item);
             } else {  // если предмета нет в этом списке, значит торговец его не продаёт
                 console.warn('Данный предмет не продаётмя этим торговцем:', item)
             }
         }
-
         this.traderInv = new_inventory;
 
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
