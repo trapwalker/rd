@@ -289,7 +289,7 @@ class TransactionTraderApply(TransactionEvent):
         price_trader = 0
         for item_id in self.trader_table:
             if trader.inventory.get_item_by_uri(item_id):
-                price_trader += reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size)
+                price_trader += round(reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size))
             else:
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return

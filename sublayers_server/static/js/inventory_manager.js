@@ -267,7 +267,7 @@ var InventoryList = (function () {
     }
 
     InventoryList.prototype.addInventory = function (inventory) {
-        //console.log('InventoryList.prototype.addInventory');
+        //console.log('InventoryList.prototype.addInventory', inventory.owner_id);
         if (this.inventories[inventory.owner_id] != null) return;
         this.inventories[inventory.owner_id] = inventory;
     };
