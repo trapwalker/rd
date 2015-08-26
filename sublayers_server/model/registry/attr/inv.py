@@ -54,7 +54,7 @@ class BaseInventory(list):
     def __imul__(self, other):
         raise Exception('Unsupported method')
 
-    def get_by_id(self, id):
+    def get_item_by_id(self, id):
         # todo: optimize: Возможно следует инвентарь сделать словарём с id в качестве ключа, а не списком.
         for item in self:
             if isinstance(item, URI):  # todo: Сделать эвойной механизм получения итемов и линков из инвентаря
@@ -111,11 +111,6 @@ class Inventory(BaseInventory):
 
         return value
 
-    def get_item_by_id(self, item_id_str):
-        for item in self:
-            if item.id == item_id_str:
-                return item
-        return None
 
 class InventoryAttribute(Attribute):
     def __init__(self, default=None, **kw):

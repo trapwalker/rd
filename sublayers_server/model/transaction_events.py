@@ -232,42 +232,43 @@ class TransactionTraderApply(TransactionEvent):
         super(TransactionTraderApply, self).on_perform()
         reg = self.server.reg
         agent = self.agent
+        ex_car = agent.example.car
 
         # Проверяем есть ли у агента машинка
-        if not agent.example.car:
-            return
-        ex_car = agent.example.car
+        if ex_car is None:
+            return  # todo: Как такое может случиться? Может быть здесь должен быть assert?
 
         # Проверяем находится ли агент в локации с торговцем
         if not (isinstance(agent.current_location, Town) and agent.current_location.example.trader):
-            return
+            return  # todo: а как может быть иначе? Может быть здесь должно быть исключение?
+
         trader = agent.current_location.example.trader
         trader_price = trader.get_prices(items=ex_car.inventory)
 
         # Заполняем буфер итемов игрока
-        buffer_player = []
-        for item in ex_car.inventory:
-            buffer_player.append(item.id)
+        buffer_player = [item.id for item in ex_car.inventory]
 
         # Обход столика игрока: формирование цены и проверка наличия
         price_player = 0
         for item_id in self.player_table:
-            if item_id in buffer_player:
-                item = ex_car.inventory.get_item_by_id(item_id_str=item_id)
-                price_player += round(item.base_price * trader_price[item_id][0] * 0.01 * (item.amount / item.stack_size))
-                buffer_player.remove(item_id)
-            else:
+            if item_id not in buffer_player:
+                # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
+
+            item = ex_car.inventory.get_item_by_id(item_id)
+            price_player += round(item.base_price * trader_price[item_id][0] * 0.01 * (item.amount / item.stack_size))
+            buffer_player.remove(item_id)
 
         # Формирование цены итемов для продажи торговцем (обход столика торговца)
         price_trader = 0
         for item_id in self.trader_table:
-            if trader.inventory.get_item_by_uri(item_id):
-                price_trader += reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size)
-            else:
+            if trader.inventory.get_item_by_uri(item_id) is None:
+                # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
+
+            price_trader += reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size)
 
         # Проверка по цене
         if (agent.example.balance + price_player) < price_trader:
