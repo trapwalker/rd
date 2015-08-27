@@ -9,10 +9,11 @@ from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChang
     PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage)
 from sublayers_server.model.chat_room import PartyChatRoom
 
+
 def inc_name_number(name):
     clear_name = name.rstrip('0123456789')
-    num = int(name[len(clear_name):] or '0') + 1
-    return '{}{}'.format(clear_name, num)
+    num = int(name[len(clear_name):] or u'0') + 1
+    return u'{}{}'.format(clear_name, num)
 
 
 class PartyIncludeEvent(Event):
@@ -194,7 +195,7 @@ class Party(object):
 
     def __init__(self, time, owner, name=None, description=''):
         if (name is None) or (name == ''):
-            name = self.classname
+            name = unicode(self.classname)
         while name in self.parties:
             name = inc_name_number(name)
         self.parties[name] = self
@@ -385,7 +386,7 @@ class Party(object):
         return len(self.members)
 
     def __str__(self):
-        return '<Party {self.name}/{n}>'.format(self=self, n=len(self))
+        return '<Party {self.name!r}/{n}>'.format(self=self, n=len(self))
 
     id = property(id)
 
