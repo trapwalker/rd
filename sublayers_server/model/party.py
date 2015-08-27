@@ -132,7 +132,7 @@ class PartyMember(object):
         self.party = party
         self.description = None
         self.role = None
-        self.set_category(category)
+        self._category = category
         # Включение в мемберы пати нового мембера
         party.members.append(self)
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
@@ -160,11 +160,17 @@ class PartyMember(object):
         for sbscr_agent in self.agent.car.subscribed_agents:
             AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
 
-    def set_category(self, category):
-        self.category = category
+    @property
+    def category(self):
+        return self._category
+
+    @category.setter
+    def category(self, new_category):
+        self.category = new_category
         # todo: сообщение о присвоении роли
 
     def set_description(self, new_description):
+        # todo: Сделать свойством
         self.description = new_description
         # todo: рассылка сообщений мемберам пати
 
@@ -173,7 +179,7 @@ class PartyMember(object):
             agent_name=self.agent.login,
             agent_uid=self.agent.uid,
             description=self.description,
-            category=self.category
+            category=self.category,
         )
 
     # определяет, может ли данный мембер кидать инвайты
