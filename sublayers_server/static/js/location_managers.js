@@ -715,11 +715,15 @@ var TraderManager = (function () {
         }
         this.traderInv = new_inventory;
 
+        // todo: так сделано в changeItem методах. Возможно стоит внести в _reDrawItemList
+        if (this.traderInvDiv) this.traderInvDiv.empty();
+        if (this.playerInvDiv) this.playerInvDiv.empty();
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
         this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
     };
 
     TraderManager.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
+        // todo: по идее, перед перерисовкой итемов, нужно проверить чтобы parentDiv != null и очистить его .empty()
         for(var i = 0; i < itemList.length; i++) {
             var example = itemList[i];
             var itemDiv = $('<div class="mainTraderWindow-down-player-body-item ' + dropCls  + '" data-pos="' + i + '"></div>');

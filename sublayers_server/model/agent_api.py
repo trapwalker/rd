@@ -23,7 +23,7 @@ from sublayers_server.model.transaction_events import (
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
-from sublayers_server.model.map_location import Town
+from sublayers_server.model.map_location import Town, GasStation
 
 from sublayers_server.model.inventory import ItemState
 
@@ -189,6 +189,7 @@ class AgentAPI(API):
 
         # добавляем к списку видимых объектов все города на карте
         vo_list += list(Town.get_towns())
+        vo_list += list(GasStation.get_stations())
 
         # отправляем все видимые объекты, будто мы сами их видим, и сейчас не важно кто их видит
         for vo in vo_list:

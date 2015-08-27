@@ -145,4 +145,8 @@ class Town(MapLocation):
 
 
 class GasStation(MapLocation):
-    pass
+    @classmethod
+    def get_stations(cls):
+        for location in cls.locations:
+            if isinstance(location, GasStation):
+                yield location
