@@ -40,7 +40,7 @@ class TilePicker(object):
     #@lru_cache(maxsize=DEFAULT_CACHE_SIZE)
     def get_tile(self, tid):
         fn = self.tile_path(tid)
-        log.debug('Try to load tile %s from %s', tid.xyz(), fn)
+        log.debug('Try to load tile %s from %s (%s)', tid.xyz(), fn, os.getcwd())
         try:
             img = Image.open(fn)
             return tid, img.load()
