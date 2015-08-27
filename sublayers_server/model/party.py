@@ -412,12 +412,14 @@ class Party(object):
     def on_kick(self, kicker, kicked, time):
         kicker_member = self.get_member_by_agent(kicker)
         kicked_member = self.get_member_by_agent(kicked)
-        if (kicker.party is not self) or (kicked.party is not self) or (kicker_member is None) or (kicked_member is None):
+        if kicker.party is not self or kicked.party is not self or kicker_member is None or kicked_member is None:
+            # todo: Похоже здесь должно быть исключение. Уточнить.
             log.warning('%s trying to kick agent (%s) from party %s', kicker, kicked, self)
             return
         if not kicker_member.can_kick_member(kicked_member):
+            # todo: Похоже здесь должно быть исключение. Уточнить.
             log.warning('%s dont have rights to kick (%s) from party %s', kicker, kicked, self)
-            PartyErrorMessage(agent=kicker, comment='Dont have rights for kick').post()
+            PartyErrorMessage(agent=kicker, comment='Dont have rights for kick', time=time).post()
             return
 
         # before exclude for members
