@@ -123,7 +123,7 @@ class Agent(Object):
         d.update(
             login=self.login,
             party=self.party.as_dict() if self.party else None,
-            balance=self.example.balance, 
+            balance=self.example.balance,
         )
         return d
 
