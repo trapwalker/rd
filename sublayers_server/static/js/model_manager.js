@@ -454,8 +454,8 @@ var ClientManager = (function () {
                 return;
             }
 
-            // Город нельзя перестать видеть
-            if (car.cls == 'Town') return;
+            // Города и заправки нельзя перестать видеть
+            if ((car.cls == 'Town') || (car.cls == 'GasStation')) return;
 
             // Удалить привязку к владельцу
             if (car.owner) car.owner.unbindCar(car);
