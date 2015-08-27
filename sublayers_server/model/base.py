@@ -227,3 +227,6 @@ class Observer(VisibleObject):
     def on_die(self, event):
         pass
 
+    def upd_observing_range(self, time):
+        pass
+
