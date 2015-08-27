@@ -4,8 +4,6 @@
  * Отсылает исходящие сообщения в поток сообщений
  * */
 
-
-
 var ClientManager = (function () {
     function ClientManager() {
         // подписаться на входящие сообщения типа ws_message
@@ -269,6 +267,7 @@ var ClientManager = (function () {
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
+            user.balance = event.agent.balance;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 chat.page_party.buttons.create.text('Отряд');
@@ -785,7 +784,6 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendTraderCancel');
         locationManager.trader.setupTraderReplica(event.replica)
     };
-
 
     // Исходящие сообщения
 
