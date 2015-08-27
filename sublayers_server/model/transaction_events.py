@@ -53,6 +53,27 @@ class TransactionActivateTank(TransactionActivateItem):
             .set_inventory(time=self.time, inventory=inventory, position=position)
 
 
+class TransactionActivateRebuildSet(TransactionActivateItem):
+    def on_perform(self):
+        super(TransactionActivateRebuildSet, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.target)
+        inventory = self.inventory
+        item = self.item
+
+        # проверка входных параметров
+        if not isinstance(obj, Mobile):
+            log.warning('Obj is not Mobile')
+            return
+
+        # Убрать один ремкомплект из инвентаря
+        item._div_item(count=1, time=self.time)
+
+        # залили в бак топливо
+        obj.set_hp(dhp=-item.example.build_points, time=self.time)
+
+
 class TransactionActivateMine(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateMine, self).on_perform()
@@ -73,7 +94,6 @@ class TransactionActivateMine(TransactionActivateItem):
 
         # Поставить мину на карту
         SlowMineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
-
 
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):

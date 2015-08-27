@@ -14,7 +14,7 @@ from sublayers_server.model.registry.attr.tag import TagsAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink, Slot
 from sublayers_server.model.registry.attr.price import PriceAttribute
 from sublayers_server.model.transaction_events import TransactionActivateTank, TransactionActivateAmmoBullets, \
-    TransactionActivateMine
+    TransactionActivateMine, TransactionActivateRebuildSet
 
 from math import pi
 import random
@@ -47,11 +47,17 @@ class Tank(Item):
 
 
 class TankFull(Tank):
-    pass
-
     @classmethod
     def activate(cls):
         return TransactionActivateTank
+
+
+class BuildSet(Item):
+    build_points = FloatAttribute(caption=u'Объем восстановления здоровья в единицах')
+
+    @classmethod
+    def activate(cls):
+        return TransactionActivateRebuildSet
 
 
 class AmmoBullets(Item):
