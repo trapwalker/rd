@@ -5,8 +5,9 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
-from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
-    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage)
+from sublayers_server.model.messages import (
+    PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
+    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,)
 from sublayers_server.model.chat_room import PartyChatRoom
 
 
@@ -123,9 +124,9 @@ class PartyMember(object):
     #       'Normal' - обычный участник
 
     def __init__(self, agent, party, time, category=2):
-        u'''
+        u"""
             category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
-        '''
+        """
         assert (agent is not None) and (party is not None)
         self.agent = agent
         self.party = party
