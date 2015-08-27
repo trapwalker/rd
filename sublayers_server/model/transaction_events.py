@@ -313,6 +313,7 @@ class TransactionTraderApply(TransactionEvent):
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
+            item = trader.inventory.get_item_by_id(item_id)
             price_trader += reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size)
 
         # Проверка по цене
