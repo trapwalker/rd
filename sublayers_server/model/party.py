@@ -374,18 +374,19 @@ class Party(object):
         sender = event.sender
         recipient = event.recipient
         if not sender in self:
-            PartyErrorMessage(agent=sender, comment='Sender not in party').post()
+            PartyErrorMessage(agent=sender, comment='Sender not in party', time=event.time).post()
+            # todoL (!) Определить является ли эти ситуации штатными. Проверить правильно ли передал время.
             return
         if recipient in self:
-            PartyErrorMessage(agent=sender, comment='Recipient in party').post()
+            PartyErrorMessage(agent=sender, comment='Recipient in party', time=event.time).post()
             return
         member_sender = self.get_member_by_agent(sender)
         if member_sender.role == 'Normal':
-            PartyErrorMessage(agent=sender, comment='Sender do not have rights').post()
+            PartyErrorMessage(agent=sender, comment='Sender do not have rights', time=event.time).post()
             return
         for inv in self.invites:
             if (inv.sender == sender) and (inv.recipient == recipient):
-                PartyErrorMessage(agent=sender, comment='Invite already exists').post()
+                PartyErrorMessage(agent=sender, comment='Invite already exists', time=event.time).post()
                 return
         Invite(sender=sender, recipient=recipient, party=self, time=event.time)
 
