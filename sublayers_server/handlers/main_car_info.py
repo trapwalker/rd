@@ -12,4 +12,4 @@ class MainCarInfoHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        self.render("main_car_info_window.html", car_id=agent.api.car.uid, car=agent.api.car)
+        self.render("main_car_info_window.html", car=agent.example.car)

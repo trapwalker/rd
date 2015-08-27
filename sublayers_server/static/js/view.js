@@ -46,11 +46,11 @@ $(document).ready(function () {
     document.getElementById('map').focus();
 
     // Повесить на кнопки меню возврат фокуса на карту
-    document.getElementById('divMainMenuBtnCharacter').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('character', '/main_menu_character', null);
-            returnFocusToMap();
-        };
+//    document.getElementById('divMainMenuBtnCharacter').onclick =
+//        function () {
+//            windowTemplateManager.openUniqueWindow('character', '/main_menu_character', null);
+//            returnFocusToMap();
+//        };
 
     document.getElementById('divMainMenuBtnCar').onclick =
         function () {
@@ -64,17 +64,19 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
-    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
+//    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
-    document.getElementById('divMainMenuBtnNucoil').onclick =
-        function () {
-            //windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
-            returnFocusToMap();
-        };
+//    document.getElementById('divMainMenuBtnNucoil').onclick =
+//        function () {
+//            //windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
+//            returnFocusToMap();
+//        };
 
-    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
-    document.getElementById('divMainMenuBtnMain').onclick = returnFocusToMap;
-    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
+//    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
+    document.getElementById('divMainMenuBtnMain').onclick = function () {
+        location = '/';
+    };
+//    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 });
 
 
