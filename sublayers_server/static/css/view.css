@@ -191,6 +191,10 @@ input:focus {
     height: 100%;
     display: none;
     background-color: #0078A8;
+    margin-left: -960px;
+    margin-top: -540px;
+    left: 50%;
+    top: 50%;
 }
 
 .my-effect-icon {

@@ -299,9 +299,9 @@ class Unit(Observer):
                     agent=self.owner,
                     altitude=new_altitude,
                     obj_id=self.id,
-                    p_observing_range=self.params.get('p_observing_range').current,
                     time=time
                 ).post()
+                self.upd_observing_range(time)
 
     def save(self, time):
         super(Unit, self).save(time=time)
@@ -411,6 +411,10 @@ class Bot(Mobile):
         super(Bot, self).del_from_chat(chat=chat, time=time)
         if self.owner:
             chat.room.exclude(agent=self.owner, time=time)
+
+    def upd_observing_range(self, time):
+        super(Bot, self).upd_observing_range(time)
+        messages.UpdateObservingRange(agent=self.main_agent, obj=self, time=time).post()
 
 
 class ExtraMobile(Mobile):

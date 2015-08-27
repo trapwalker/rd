@@ -188,7 +188,9 @@ class Mobile(Root):
     price = Attribute(default=0, caption=u"Цена")
 
     # Косметика
-    title = Attribute(caption=u"Название автомобиля")
+    title = Attribute(default="", caption=u"Модель автомобиля")
+    class_car = Attribute(default="", caption=u"Класс автомобиля")
+    name_car = Attribute(default="", caption=u"Название автомобиля")
 
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))
@@ -198,6 +200,14 @@ class Mobile(Root):
             v = getter()
             if not isinstance(v, SlotLock) and not v is False:  # todo: SlotLock
                 yield attr.name, v
+
+    def get_count_slots(self):
+        result = 0
+        for attr, getter in self.iter_attrs(classes=Slot):
+            v = getter()
+            if not isinstance(v, SlotLock) and not v is False:
+                result += 1
+        return result
 
 
 class Car(Mobile):

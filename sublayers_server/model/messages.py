@@ -159,6 +159,23 @@ class Update(Message):
         return d
 
 
+class UpdateObservingRange(Message):
+    def __init__(self, obj, **kw):
+        """
+        @param sublayers_server.model.base.VisibleObject obj: Sender of message
+        """
+        super(UpdateObservingRange, self).__init__(**kw)
+        self.obj = obj
+
+    def as_dict(self):
+        d = super(UpdateObservingRange, self).as_dict()
+        d.update(
+            p_observing_range=self.obj.params.get('p_observing_range').current,
+            obj_id=self.obj.uid,
+        )
+        return d
+
+
 class Contact(Subjective):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}; obj={self.obj}>'
 
@@ -411,17 +428,15 @@ class PartyErrorMessage(Message):
 
 
 class ChangeAltitude(Message):
-    def __init__(self, altitude, obj_id, p_observing_range, **kw):
+    def __init__(self, altitude, obj_id, **kw):
         super(ChangeAltitude, self).__init__(**kw)
         self.altitude = altitude
         self.obj_id = obj_id
-        self.p_observing_range = p_observing_range
 
     def as_dict(self):
         d = super(ChangeAltitude, self).as_dict()
         d.update(altitude=self.altitude,
                  obj_id=self.obj_id,
-                 p_observing_range=self.p_observing_range
                  )
         return d
 

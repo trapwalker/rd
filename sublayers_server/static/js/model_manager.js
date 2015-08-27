@@ -4,8 +4,6 @@
  * Отсылает исходящие сообщения в поток сообщений
  * */
 
-
-
 var ClientManager = (function () {
     function ClientManager() {
         // подписаться на входящие сообщения типа ws_message
@@ -269,6 +267,7 @@ var ClientManager = (function () {
         if (event.agent.cls == "User") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
+            user.balance = event.agent.balance;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 chat.page_party.buttons.create.text('Отряд');
@@ -493,10 +492,18 @@ var ClientManager = (function () {
         // console.log('ClientManager.prototype.ChangeAltitude ', event);
         if (event.obj_id == user.userCar.ID){
             user.userCar.altitude = event.altitude;
-            user.userCar.radius_visible = event.p_observing_range;
         }
         else
             console.error('Error! Пришла высота на неизветную машинку!')
+    };
+
+    ClientManager.prototype.UpdateObservingRange = function(event){
+//         console.log('ClientManager.prototype.UpdateObservingRange ', event);
+        if (event.obj_id == user.userCar.ID){
+            user.userCar.radius_visible = event.p_observing_range;
+        }
+        else
+            console.error('Error! Пришло изменение радиуса обзора на неизветную машинку!')
     };
 
     ClientManager.prototype.FireDischarge = function (event) {
@@ -777,7 +784,6 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendTraderCancel');
         locationManager.trader.setupTraderReplica(event.replica)
     };
-
 
     // Исходящие сообщения
 

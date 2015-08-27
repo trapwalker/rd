@@ -836,6 +836,7 @@ var HangarManager = (function () {
     }
 
     HangarManager.prototype.update = function() {
+        //console.log('HangarManager.prototype.update');
         this.clear();
 
         // Проверить если город
