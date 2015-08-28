@@ -1,10 +1,15 @@
+.anti-click-class{
+    pointer-events: auto;
+}
+
+
 #divForHpAndFuelRadials {
     position: absolute;
     bottom: 0px;
     right: 138px;
     width: 150px;
     height: 150px;
-    pointer-events: none;
+    /*pointer-events: none;*/
 }
 
 #divForRadAndWindRadials {
@@ -13,7 +18,7 @@
     right: 268px;
     width: 150px;
     height: 150px;
-    pointer-events: none;
+    /*pointer-events: none;*/
 }
 
 #divForAltmetrRadial {
@@ -22,7 +27,16 @@
     right: 365px;
     width: 150px;
     height: 150px;
-    pointer-events: none;
+    /*pointer-events: none;*/
+}
+
+#divForCruiseNotClick {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 160px;
+    height: 440px;
+    /*pointer-events: none;*/
 }
 
 .w-hp-radial-parent {
