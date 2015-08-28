@@ -235,7 +235,7 @@ class PoiStash(POI):
 
 
 class RadioTower(POI):
-    p_observing_range = Parameter(default=1000, caption=u"Радиус покрытия")
+    p_observing_range = Parameter(caption=u"Радиус покрытия")
 
 
 class MapLocation(POI):

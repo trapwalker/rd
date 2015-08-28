@@ -63,7 +63,7 @@ def init_zones_on_server(server, time):
         server.effects.get('EffectWoodObsRange'),
     ])
 
-    read_zone_func(zone_name='Slope', file_name='tiles_map_slope_14_black_80', server=server, effects=[
+    read_zone_func(zone_name='Slope', file_name='ts_slope_black_80', server=server, effects=[
         server.effects.get('EffectSlopeCC'),
     ])
 
