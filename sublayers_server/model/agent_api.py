@@ -212,6 +212,10 @@ class AgentAPI(API):
         # переотправить чаты, в которых есть агент
         ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
 
+        # отправить зоны
+        for zone in self.agent.car.zones:
+            messages.ZoneMessage(agent=self.agent, subj=self.agent.car, name=zone.name, is_start=True, time=time).post()
+
     def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
