@@ -5,8 +5,9 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
-from sublayers_server.model.messages import (PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
-    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage)
+from sublayers_server.model.messages import (
+    PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
+    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,)
 from sublayers_server.model.chat_room import PartyChatRoom
 
 
@@ -123,15 +124,15 @@ class PartyMember(object):
     #       'Normal' - обычный участник
 
     def __init__(self, agent, party, time, category=2):
-        u'''
+        u"""
             category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
-        '''
+        """
         assert (agent is not None) and (party is not None)
         self.agent = agent
         self.party = party
         self.description = None
         self.role = None
-        self.set_category(category)
+        self._category = category
         # Включение в мемберы пати нового мембера
         party.members.append(self)
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
@@ -159,11 +160,17 @@ class PartyMember(object):
         for sbscr_agent in self.agent.car.subscribed_agents:
             AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
 
-    def set_category(self, category):
-        self.category = category
+    @property
+    def category(self):
+        return self._category
+
+    @category.setter
+    def category(self, new_category):
+        self.category = new_category
         # todo: сообщение о присвоении роли
 
     def set_description(self, new_description):
+        # todo: Сделать свойством
         self.description = new_description
         # todo: рассылка сообщений мемберам пати
 
@@ -172,7 +179,7 @@ class PartyMember(object):
             agent_name=self.agent.login,
             agent_uid=self.agent.uid,
             description=self.description,
-            category=self.category
+            category=self.category,
         )
 
     # определяет, может ли данный мембер кидать инвайты
@@ -367,18 +374,19 @@ class Party(object):
         sender = event.sender
         recipient = event.recipient
         if not sender in self:
-            PartyErrorMessage(agent=sender, comment='Sender not in party').post()
+            PartyErrorMessage(agent=sender, comment='Sender not in party', time=event.time).post()
+            # todoL (!) Определить является ли эти ситуации штатными. Проверить правильно ли передал время.
             return
         if recipient in self:
-            PartyErrorMessage(agent=sender, comment='Recipient in party').post()
+            PartyErrorMessage(agent=sender, comment='Recipient in party', time=event.time).post()
             return
         member_sender = self.get_member_by_agent(sender)
         if member_sender.role == 'Normal':
-            PartyErrorMessage(agent=sender, comment='Sender do not have rights').post()
+            PartyErrorMessage(agent=sender, comment='Sender do not have rights', time=event.time).post()
             return
         for inv in self.invites:
             if (inv.sender == sender) and (inv.recipient == recipient):
-                PartyErrorMessage(agent=sender, comment='Invite already exists').post()
+                PartyErrorMessage(agent=sender, comment='Invite already exists', time=event.time).post()
                 return
         Invite(sender=sender, recipient=recipient, party=self, time=event.time)
 
@@ -404,12 +412,14 @@ class Party(object):
     def on_kick(self, kicker, kicked, time):
         kicker_member = self.get_member_by_agent(kicker)
         kicked_member = self.get_member_by_agent(kicked)
-        if (kicker.party is not self) or (kicked.party is not self) or (kicker_member is None) or (kicked_member is None):
+        if kicker.party is not self or kicked.party is not self or kicker_member is None or kicked_member is None:
+            # todo: Похоже здесь должно быть исключение. Уточнить.
             log.warning('%s trying to kick agent (%s) from party %s', kicker, kicked, self)
             return
         if not kicker_member.can_kick_member(kicked_member):
+            # todo: Похоже здесь должно быть исключение. Уточнить.
             log.warning('%s dont have rights to kick (%s) from party %s', kicker, kicked, self)
-            PartyErrorMessage(agent=kicker, comment='Dont have rights for kick').post()
+            PartyErrorMessage(agent=kicker, comment='Dont have rights for kick', time=time).post()
             return
 
         # before exclude for members

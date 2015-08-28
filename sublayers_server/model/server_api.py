@@ -11,7 +11,7 @@ from sublayers_server.model.api_tools import API, public_method
 class ServerAPI(API):
     def __init__(self, server):
         """
-        @type server: sublayers_server.model.event_machine.Server
+        @type server: sublayers_server.model.event_machine.LocalServer
         """
         self.server = server
 

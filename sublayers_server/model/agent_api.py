@@ -145,7 +145,7 @@ class SendSetCategoryEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
             return
-        party.get_member_by_agent(agent=user).set_category(category=self.category)
+        party.get_member_by_agent(agent=user).category = self.category
 
 
 class AgentAPI(API):
