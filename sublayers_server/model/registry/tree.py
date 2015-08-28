@@ -70,13 +70,13 @@ class Node(object):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self.abstract = abstract
         self._prepared_attrs = set()  # todo: optimize
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name or storage and storage.gen_uid().get_hex()
         self.owner = owner
         self.parent = parent
-        self.abstract = abstract
 
         self.values = values and values.copy() or {}
         for p in kw.keys():

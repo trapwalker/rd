@@ -47,6 +47,11 @@ class Agent(Object):
         self.current_location = None
         self.set_current_location_example(reg_link=example.current_location.uri)
 
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['_connection']
+        return d
+
     def set_current_location_life(self, location):
         self.current_location = location
         if location is None:

@@ -123,7 +123,7 @@ class TimeFormatter(object):
 time_log_format = TimeFormatter('{:%H:%M:%S.%f}')
 
 
-class TimelineQueue(PriorityQueue):
+class TimelineQueue(object, PriorityQueue):
     #__slots__ = ['EMPTY'] # todo: future python versions optimization
 
     @total_ordering
@@ -135,6 +135,12 @@ class TimelineQueue(PriorityQueue):
 
         def __gt__(self, other):
             return True
+
+    def __getnewargs__(self):
+        return (list(self),)
+
+    def __getstate__(self):
+        return
 
     def remove(self, item, heapify=heapq.heapify, heappop=heapq.heappop):
         """Remove item from queue.

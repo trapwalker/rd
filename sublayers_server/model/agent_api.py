@@ -13,7 +13,6 @@ from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
-from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
@@ -219,13 +218,6 @@ class AgentAPI(API):
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
 
-        # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
-        self.shell = Shell(self.cmd_line_context(), dict(
-            pi=pi,
-            P=Point,
-            log=log,
-        ))
-
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
@@ -386,6 +378,8 @@ class AgentAPI(API):
             car = self.car
             #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+        elif command == '/save':
+            self.agent.server.save()
         else:
             log.warning('Unknown console command "%s"', cmd)
 
