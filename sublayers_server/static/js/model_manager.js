@@ -419,7 +419,7 @@ var ClientManager = (function () {
                 break;
             case 'RadioPoint':  // todo: раскоментировать, когда радиоточки будут установлены или сделать через куки-настройки
                 //console.log('Radio Towers are hidden');
-                //break;
+                break;
             case 'Town':
             case 'POIStash':
             case 'GasStation':
@@ -549,7 +549,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ZoneMessage = function (event) {
-        //console.log('ClientManager.prototype.ZoneMessage', event);
+//        console.log('ClientManager.prototype.ZoneMessage', event);
         wCruiseControl.setZoneState(event.in_zone, event.is_start);
     };
 

@@ -29,7 +29,7 @@ class TileContactSearchEvent(Event):
 
 
 class VisibilityManager(object):
-    def __init__(self, server, z=16, max_z=26, interval=BALANCE.interval_refresh):
+    def __init__(self, server, z=12, max_z=26, interval=BALANCE.interval_refresh):
         self.server = server
         self.tiles = dict()
         self.z = z
@@ -42,6 +42,7 @@ class VisibilityManager(object):
     def _add_obj_to_tile(self, tile_id, obj, time):
         tid = tile_id.parent_by_lvl(self.z)
         if not (tid in self.tiles.keys()):
+            # log.debug('==============================  New tile search added!')
             self.tiles.update({tid: (tid.get_around_tiles(), [obj])})
             TileContactSearchEvent(vis_mng=self, tile_id=tid, time=time).post()
         else:
