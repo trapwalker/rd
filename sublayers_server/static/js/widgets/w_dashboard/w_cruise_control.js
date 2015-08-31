@@ -390,7 +390,7 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype.setZoneState = function(zoneName, zoneState) {
-        //console.log('WCruiseControl.prototype.setZoneState');
+//        console.log('WCruiseControl.prototype.setZoneState');
         if (zoneState) {
             this.zones[zoneName].jqselector.css({display: "block"});
             this.zones[zoneName].active = true;
