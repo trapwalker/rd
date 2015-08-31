@@ -9,6 +9,7 @@ from sublayers_server.model.registry import tree
 from sublayers_server.model.registry.uri import URI
 
 from itertools import chain
+from collections import namedtuple
 
 
 class PriceOption(object):
@@ -26,6 +27,9 @@ class PriceOption(object):
             self=self,
             doctail=', {!r}'.format(self.doc) if self.doc else '',
         )
+
+
+PriceBid = namedtuple('PriceBid', 'buy sale')
 
 
 class Price(list):
@@ -80,7 +84,7 @@ class Price(list):
 
             option = self.get_item_price(item)
             if option:
-                price[item.id] = option.buy, option.sale
+                price[item.id] = PriceBid(option.buy, option.sale)
         return price
 
 

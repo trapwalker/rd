@@ -302,27 +302,37 @@ class TransactionTraderApply(TransactionEvent):
                 return
 
             item = ex_car.inventory.get_item_by_id(item_id)
-            price_player += round(item.base_price * trader_price[item_id][0] * 0.01 * (item.amount / item.stack_size))
+            price_player += 0.01 * item.base_price * trader_price[item_id].buy  # * item.amount / item.stack_size
+            # todo: Учитывать количество
             buffer_player.remove(item_id)
 
+        price_player = round(price_player)
+
         # Формирование цены итемов для продажи торговцем (обход столика торговца)
+        bought_items = []
         price_trader = 0
         for item_id in self.trader_table:
-            if trader.inventory.get_item_by_uri(item_id) is None:
+            item = trader.inventory.get_item_by_id(item_id)
+            if item is None:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
-            item = trader.inventory.get_item_by_id(item_id)
-            price_trader += reg[item_id].base_price * trader_price[item_id][1] * 0.01 * (item.amount / item.stack_size)
+            price_trader += 0.01 * item.base_price * trader_price[item_id].sale  # * item.amount / item.stack_size
+            # todo: Учитывать количество
+            bought_items.append(item)
+
+        price_trader = round(price_trader)
 
         # Проверка по цене
         if (agent.example.balance + price_player) < price_trader:
+            # todo: вариативные реплики
             messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'Куда хватаешь? У тебя нет столько денег').post()
             return
 
         # Проверка по слотам инвентаря
         if (ex_car.inventory_size - len(ex_car.inventory) + len(self.player_table)) < len(self.trader_table):
+            # todo: вариативные реплики
             messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
             return
 
@@ -337,10 +347,11 @@ class TransactionTraderApply(TransactionEvent):
                 new_inventory.append(item)
 
         # Добавление купленных итемов в инвентарь
-        for item_id in self.trader_table:
-            item = reg[item_id].instantiate(position=self._get_position(), amount=reg[item_id].stack_size)
-            new_inventory.append(item)
+        for item in bought_items:
+            # todo: Брать количество правильно
+            new_inventory.append(item.instantiate(position=self._get_position(), amount=item.stack_size))
         ex_car.inventory = new_inventory
 
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+        # todo: вариативные реплики
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
