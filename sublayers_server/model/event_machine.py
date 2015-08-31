@@ -91,7 +91,6 @@ class Server(object):
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
-
         # info: создание тестового трупа
         ex_stash = self.reg['/poi/stash/stash1'].instantiate()
         POIStash(server=self, time=event.time, example=ex_stash)
@@ -237,13 +236,17 @@ class LocalServer(Server):
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
 
-    def save(self):
+    def dump(self):
         import yaml
         with open('srv_dump.yaml', 'w') as f:
             yaml.dump(self, stream=f)
 
         with open('srv_dump.yaml', 'r') as f:
             srv2 = yaml.load(stream=f)
+
+    def save(self):
+        for agent in self.agents:
+            agent.save()
 
 
 def main():
