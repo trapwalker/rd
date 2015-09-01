@@ -50,6 +50,10 @@ except ImportError:
     from pymongo import MongoClient as Connection
 
 
+class DBError(Exception):
+    pass
+
+
 class Application(tornado.web.Application):
     def __init__(self):
         try:
@@ -64,8 +68,9 @@ class Application(tornado.web.Application):
         try:
             self.db_connection = Connection()
             # todo: Если предполагается возможность работы без монги, то нужно ее реализовывать, иначе это просто лишнее
-        except:
-            log.warning('MongoDB not found')
+        except Exception as e:
+            log.error('MongoDB is not found: %r', e)
+            raise DBError('Database connection error: {!r}'.format(e))
 
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db
