@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.image_to_tileset import MongoDBToTilesets
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.messages import ZoneMessage
@@ -30,11 +29,10 @@ def init_zones_on_server(server, time):
                     ts=Tileset(open(file_path)),
                 )
         if zone:
-            log.info('Successful read zone from file: %s   zone_name is %s', file_name, zone_name)
-            return zone
+            log.info('Successful read zone %s from file: %s', zone_name, file_name)
         else:
-            log.info('Failed read zone from file: %s   zone_name is %s', file_name, zone_name)
-            return None
+            log.warning('Failed read zone %s from file: %s', zone_name, file_name)
+        return zone
 
     def on_result(result):
         # создание эвента для добавления зоны в сервер
@@ -46,32 +44,63 @@ def init_zones_on_server(server, time):
         log.warning('Read Zone: on_error(%s)', error)
 
     def load_all_ts():
-        InsertNewServerZone(server=server, time=time, zone=read_ts_from_file(zone_name='Road', file_name='ts_road', server=server, effects=[
-            server.effects.get('EffectRoadRCCWood'),
-            server.effects.get('EffectRoadRCCWater'),
-            server.effects.get('EffectRoadRCCDirt'),
-            server.effects.get('EffectRoadRCCSlope'),
-        ])).post()
+        InsertNewServerZone(
+            server=server,
+            time=time,
+            zone=read_ts_from_file(
+                zone_name='Road',
+                file_name='ts_road',
+                server=server,
+                effects=[
+                    server.effects.get('EffectRoadRCCWood'),
+                    server.effects.get('EffectRoadRCCWater'),
+                    server.effects.get('EffectRoadRCCDirt'),
+                    server.effects.get('EffectRoadRCCSlope'),
+                ],
+            ),
+        ).post()
 
-        InsertNewServerZone(server=server, time=time, zone=read_ts_from_file(zone_name='Wood', file_name='ts_wood', server=server, effects=[
-            server.effects.get('EffectWoodCC'),
-            server.effects.get('EffectWoodVisibility'),
-            server.effects.get('EffectWoodObsRange'),
-        ])).post()
+        InsertNewServerZone(
+            server=server,
+            time=time,
+            zone=read_ts_from_file(
+                zone_name='Wood',
+                file_name='ts_wood',
+                server=server,
+                effects=[
+                    server.effects.get('EffectWoodCC'),
+                    server.effects.get('EffectWoodVisibility'),
+                    server.effects.get('EffectWoodObsRange'),
+                ],
+            ),
+        ).post()
 
-        InsertNewServerZone(server=server, time=time, zone=read_ts_from_file(zone_name='Water', file_name='ts_water', server=server,
-                          effects=[server.effects.get('EffectWaterCC')])).post()
+        InsertNewServerZone(
+            server=server,
+            time=time,
+            zone=read_ts_from_file(
+                server=server,
+                zone_name='Water',
+                file_name='ts_water',
+                effects=[server.effects.get('EffectWaterCC')],
+            ),
+        ).post()
 
-        InsertNewServerZone(server=server, time=time, zone=read_ts_from_file(zone_name='Slope', file_name='ts_slope_black_80', server=server, effects=[
-            server.effects.get('EffectSlopeCC'),
-        ])).post()
-
+        InsertNewServerZone(
+            server=server,
+            time=time,
+            zone=read_ts_from_file(
+                server=server,
+                zone_name='Slope',
+                file_name='ts_slope_black_80',
+                effects=[server.effects.get('EffectSlopeCC')],
+            ),
+        ).post()
 
     # загрузка особенной зоны - бездорожье
     server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))
 
-    read_zone_func = async_deco(load_all_ts, result_callback=on_result, error_callback=on_error)
-    read_zone_func()
+    async_deco(load_all_ts, result_callback=on_result, error_callback=on_error)()
 
     InsertNewServerZone(
         server=server,

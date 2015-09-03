@@ -86,7 +86,6 @@ class Server(object):
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
-
         # info: создание тестового трупа
         ex_stash = self.reg['/poi/stash/stash1'].instantiate()
         POIStash(server=self, time=event.time, example=ex_stash)
