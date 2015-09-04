@@ -242,7 +242,7 @@ class MotionState(BaseMotionState):
         if cc is not None:
             if abs(cc) < EPS:
                 cc = 0.0
-            assert -1 <= cc <= 1
+            assert -1 <= cc <= 1, 'cc={}'.format(cc)
             assert (cc == 0.0) or ((cc > 0.0) and (self.v0 >= 0.0)) or ((cc < 0.0) and (self.v0 <= 0.0)), \
                 'cc={}  v0={}'.format(cc, self.v0)
             self.cc = cc

@@ -54,24 +54,24 @@ class MotionTask(TaskSingleton):
         st = copy(owner.state)
         st.update(t=time)
 
-        log.debug('============================== start last_time= %s', st.t_max)
+        # log.debug('============================== start last_time= %s', st.t_max)
         # Шаг 0: Прекратить ускорение/замедление
         if st.t_max is not None:
             cur_cc = st.v0 / st.get_max_v_by_cc(cc=self.cc)
             st.update(t=time, cc=cur_cc)
             MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
-        log.debug('============================== 0 last_time= %s', st.t_max)
+        # log.debug('============================== 0 last_time= %s', st.t_max)
 
         # Шаг 1: Синхронизация знаков сс и текущей скорости
         if (self.cc * st.v(time)) < 0:
-            log.debug('============================== 1')
+            # log.debug('============================== 1')
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
             time = st.update(t=time, cc=0.0, turn=0.0)
             assert time is not None
 
         # Шаг 2: Если скорость 0 то необходимо разогнаться
         if abs(st.v(t=time)) < EPS:
-            log.debug('============================== 2')
+            # log.debug('============================== 2')
             min_cc = min(abs(self.cc), abs(owner.params.get('p_cc').original * 0.1)) * (1 if self.cc >= 0.0 else -1)
             MotionTaskEvent(time=time, task=self, cc=min_cc, turn=0.0).post()
             time = st.update(t=time, cc=min_cc, turn=0.0)
@@ -79,31 +79,27 @@ class MotionTask(TaskSingleton):
 
         # Шаг 3: Замедлиться при необходимости
         if (abs(st.v(t=time)) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
-            log.debug('============================== 3')
+            # log.debug('============================== 3')
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
             assert time is not None
 
         # Шаг 4: Расчет поворота
         st.update(t=time)
-        #turn_fi = st._get_turn_fi(target_point)
-        #if abs(turn_fi) > EPS:  # если мы не направлены в сторону
         if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
-            log.debug('============================== 4')
+            #log.debug('============================== 4')
             dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
             # Если target_point слишком близко, то проехать некоторое расстояние вперед
-            if not (dist > EPS):
-                log.debug('============================== 41')
+            if dist <= 0.0:
+                #log.debug('============================== 41')
                 v_dir = Point.polar(r=1, fi=st.fi0)
-                v_t = (target_point - st.p0)
-                min_dist = (st.p0 + v_dir * (v_dir * v_t)).distance(target_point)
-                log.debug('============================== min_dist=%s', min_dist)
-                min_r = max(min_dist / 2.0, st.r_min)
-                target_v = sqrt((min_r - st.r_min) * st.ac_max)
+                min_dist = (st.p0 + v_dir.scale(Point.scalar_mul(v_dir, (target_point - st.p0)))).distance(target_point)
+                target_v = sqrt((max(min_dist / 2.0, st.r_min) - st.r_min) * st.ac_max)
                 if target_v < EPS:
-                    log.debug('============================== 411')
-                    target_v = 5.0  # todo: вычеслить
+                    #log.debug('============================== 411')
+                    target_v = min(5.0, st.get_max_v_by_cc(self.cc) * self.cc)
                 target_cc = target_v / st.get_max_v_by_cc(self.cc)
+
                 MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
                 time = st.update(t=time, cc=target_cc, turn=0.0)
 
@@ -111,19 +107,13 @@ class MotionTask(TaskSingleton):
                 st.update(t=time)
                 dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
                 if not (dist > EPS):
-                    log.debug('============================== 42')
-                    dist = 2 * st.r(st.t0)  # расстояние которое надо проехать
+                    #log.debug('============================== 42')
+                    dist = 4.1 * st.r(st.t0)  # расстояние которое надо проехать
                     MotionTaskEvent(time=time, task=self, turn=0.0).post()
                     st.update(t=time, turn=0.0)
                     time += abs(dist / st.v0)
-                # Вроде работало, но не красиво
-                # log.debug('============================== 5')
-                # dist = 4 * st.r(st.t0)  # расстояние которое надо проехать
-                # MotionTaskEvent(time=time, task=self, turn=0.0).post()
-                # st.update(t=time, turn=0.0)
-                # time += abs(dist / st.v0)
             # Непосредственно поворот
-            log.debug('============================== 43')
+            #log.debug('============================== 43')
             st.update(t=time)
             turn_fi = st._get_turn_fi(target_point)
             turn = st._get_turn_sign(target_point)
@@ -134,7 +124,7 @@ class MotionTask(TaskSingleton):
             time += abs(turn_fi * st.r(st.t0) / st.v0)
 
         # Шаг 5: Доехать до цели
-        log.debug('============================== 6')
+        # log.debug('============================== 6')
         st.update(t=time)
         dist = st.p0.distance(target_point)
         a_time, m_time, b_time = st._calc_time_segment(s=dist, cc=self.cc)
@@ -153,7 +143,7 @@ class MotionTask(TaskSingleton):
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
         time = st.update(t=time, cc=0.0, turn=0.0)
         assert time is None
-        log.debug('============================== end')
+        #log.debug('============================== end')
 
     def _update_state(self, event):
         owner = self.owner
