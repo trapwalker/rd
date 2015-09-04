@@ -17,7 +17,7 @@ from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionTraderApply)
 from sublayers_server.model.units import Unit, Bot
@@ -146,6 +146,35 @@ class SendSetCategoryEvent(Event):
                                        time=self.time).post()
             return
         party.get_member_by_agent(agent=user).category = self.category
+
+
+class LootPickEvent(Event):
+    def __init__(self, agent, poi_stash_id, **kw):
+        super(LootPickEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.poi_stash_id = poi_stash_id
+
+    def on_perform(self):
+        super(LootPickEvent, self).on_perform()
+        agent = self.agent
+        # получить сундук
+        stash = self.server.objects.get(self.poi_stash_id)
+        log.debug(stash)
+        # получить машинку агента
+        car = agent.car
+        log.debug('========================= 1')
+        if stash is None or car is None:
+            return
+
+        if abs(stash.position(self.time) - car.position(self.time)) > 50:
+            return
+        log.debug('========================= 2 %s', stash.inventory.get_items())
+        # проходим по инвентарю сундука и перекидываем вещи в инвентарь машины
+        for item in stash.inventory.get_items():
+            log.debug(item.set_inventory(time=self.time, inventory=car.inventory))
+        # если инвентарь сундука пустой, то удалить сундук
+        if stash.inventory.is_empty():
+            stash.delete(self.time)
 
 
 class AgentAPI(API):
