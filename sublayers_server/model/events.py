@@ -407,6 +407,7 @@ class ItemActionInventoryEvent(Event):
         end_inventory = None
         end_item = None
         if self.end_owner_id is not None:
+            # Получить end_item (итем-таргет), на который дропнули start_item
             end_obj = self.server.objects.get(self.end_owner_id, None)
             if end_obj is not None:
                 end_inventory = end_obj.inventory
@@ -417,9 +418,43 @@ class ItemActionInventoryEvent(Event):
             return
 
         if end_item is not None:
+            # todo: Здесь произойдёт попытка натаскивания итемов друг на друга в разных инвентарях - оттестировать это
             end_item.add_another_item(item=start_item, time=self.time)
         else:
-            start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
+            # Если нет второ итема
+            if end_inventory is not None:
+                # Положить итем в конечный инвентарь
+                start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
+            else:
+                # Выкидываем лут на карту
+                start_obj.drop_item_to_map(item=start_item, time=self.time)
+
+
+class LootPickEvent(Event):
+    # todo: в результате должна разрешить просматривать инвентарь сундука
+    def __init__(self, agent, poi_stash_id, **kw):
+        super(LootPickEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.poi_stash_id = poi_stash_id
+
+    def on_perform(self):
+        super(LootPickEvent, self).on_perform()
+        agent = self.agent
+        # получить сундук
+        stash = self.server.objects.get(self.poi_stash_id)
+        log.debug(stash)
+        # получить машинку агента
+        car = agent.car
+        if stash is None or car is None:
+            return
+        if abs(stash.position(self.time) - car.position(self.time)) > 50:
+            return
+        # проходим по инвентарю сундука и перекидываем вещи в инвентарь машины
+        for item in stash.inventory.get_items():
+            item.set_inventory(time=self.time, inventory=car.inventory)
+        # если инвентарь сундука пустой, то удалить сундук
+        if stash.inventory.is_empty():
+            stash.delete(self.time)
 
 
 class ItemActivationEvent(Event):
@@ -444,28 +479,3 @@ class ItemActivationEvent(Event):
             event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
 
 
-class LootPickEvent(Event):
-    def __init__(self, agent, poi_stash_id, **kw):
-        super(LootPickEvent, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-        self.poi_stash_id = poi_stash_id
-
-    def on_perform(self):
-        super(LootPickEvent, self).on_perform()
-        agent = self.agent
-        # получить сундук
-        stash = self.server.objects.get(self.poi_stash_id)
-        # получить машинку агента
-        car = agent.car
-        if stash is None or car is None:
-            return
-
-        if abs(stash.position(self.time) - car.position(self.time)) > 50:
-            return
-
-        # проходим по инвентарю сундука и перекидываем вещи в инвентарь машины
-        for item in stash.inventory.get_items():
-            item.set_inventory(time=self.time, inventory=car.inventory)
-        # если инвентарь сундука пустой, то удалить сундук
-        if stash.inventory.is_empty():
-            stash.delete(self.time)

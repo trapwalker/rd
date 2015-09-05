@@ -25,10 +25,21 @@ from math import radians
 
 
 class POIStash(VisibleObject):
-    def __init__(self, time, **kw):
-        super(POIStash, self).__init__(time=time, **kw)
+    def __init__(self, server, time, life_time=None, example=None, inventory_size=None, position=None, **kw):
+        assert (example is not None) or ((inventory_size is not None) and (position is not None))
+        if example is None:
+            example = server.reg['/poi/stash'].instantiate(position=position, inventory_size=inventory_size)
+        super(POIStash, self).__init__(server=server, time=time, example=example, **kw)
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
         self.load_inventory(time=time)
+        if life_time:
+            self.delete(time=time + life_time)
+
+    def drop_item_to_map(self, item, time):
+        stash = POIStash(server=self.server, time=time, inventory_size=self.example.inventory_size,
+                         position=self.position(time), life_time=60.0)
+        # заполнить инвентарь сундука
+        item.set_inventory(time=time, inventory=stash.inventory)
 
     def load_inventory(self, time):
         for item_example in self.example.inventory:
@@ -221,15 +232,17 @@ class Unit(Observer):
 
         # создать труп с инвентарём
         if not self.inventory.is_empty():
-            # создать экземпляр данного сундука
-            ex_stash = self.server.reg['/poi/stash'].instantiate(position=self.position(event.time),
-                                                                 inventory_size=self.example.inventory_size)
+            stash = POIStash(server=self.server, time=event.time, inventory_size=self.example.inventory_size,
+                             position=self.position(event.time), life_time=60.0)
             # заполнить инвентарь сундука
-            for item_rec in self.inventory.get_all_items():
-                item_rec['item'].example.amount = item_rec['item'].val(t=event.time)
-                ex_stash.inventory.append(item_rec['item'].example)
+            for item in self.inventory.get_items():
+                item.set_inventory(time=event.time, inventory=stash.inventory)
 
-            POIStash(server=self.server, time=event.time, example=ex_stash)
+    def drop_item_to_map(self, item, time):
+        stash = POIStash(server=self.server, time=time, inventory_size=self.example.inventory_size,
+                         position=self.position(time), life_time=60.0)
+        # заполнить инвентарь сундука
+        item.set_inventory(time=time, inventory=stash.inventory)
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
