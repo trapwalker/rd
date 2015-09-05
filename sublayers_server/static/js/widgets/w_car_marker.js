@@ -40,7 +40,8 @@ var WCarMarker = (function (_super) {
                 marker.on('click', onClickPOILootMarker);
                 break;
             case 'POIContainer':
-                console.log('Вешаем клик на контаинер');
+                marker.obj_id = car.ID;
+                marker.on('click', onClickPOIContainerMarker);
                 break;
             default:
                 marker.on('click', onClickUserCarMarker);
@@ -201,6 +202,13 @@ function onClickUserCarMarker() {
 }
 
 function onClickPOILootMarker() {
-    console.log('клик на лут! ', this.obj_id);
+    //console.log('клик на лут! ', this.obj_id);
     clientManager.sendGetLoot(this.obj_id)
+}
+
+
+function onClickPOIContainerMarker() {
+    //console.log('клик на onClickPOIContainerMarker! ', this.obj_id);
+    windowTemplateManager.openUniqueWindow('container', '/container', {container_id: this.obj_id});
+    returnFocusToMap();
 }

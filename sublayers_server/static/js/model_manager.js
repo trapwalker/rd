@@ -1166,7 +1166,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendGetLoot = function (poi_id) {
-        console.log('ClientManager.prototype.sendLootStash', poi_id);
+        //console.log('ClientManager.prototype.sendLootStash', poi_id);
         var mes = {
             call: "get_loot",
             rpc_call_id: rpcCallList.getID(),
