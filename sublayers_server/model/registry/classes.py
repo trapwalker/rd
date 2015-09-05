@@ -232,6 +232,7 @@ class POI(Root):
 class PoiStash(POI):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')
     inventory_size = Attribute(caption=u"размер инвентаря")
+    p_observing_range = Parameter(default=50, caption=u"Радиус, в котором можно смотреть внутрь сундуков или подбирать лут")
 
 
 class RadioTower(POI):

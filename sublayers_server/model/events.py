@@ -396,7 +396,7 @@ class ItemActionInventoryEvent(Event):
     def on_perform(self):
         super(ItemActionInventoryEvent, self).on_perform()
 
-        # пытаемся получить инвентари и итемы
+        # Пытаемся получить инвентари и итемы
         start_obj = self.server.objects.get(self.start_owner_id)
         start_inventory = start_obj.inventory
         start_item = start_inventory.get_item(position=self.start_pos)
@@ -431,7 +431,6 @@ class ItemActionInventoryEvent(Event):
 
 
 class LootPickEvent(Event):
-    # todo: в результате должна разрешить просматривать инвентарь сундука
     def __init__(self, agent, poi_stash_id, **kw):
         super(LootPickEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
@@ -442,9 +441,9 @@ class LootPickEvent(Event):
         agent = self.agent
         # получить сундук
         stash = self.server.objects.get(self.poi_stash_id)
-        log.debug(stash)
         # получить машинку агента
         car = agent.car
+        # todo: проверить, является ли stash сундуком
         if stash is None or car is None:
             return
         if abs(stash.position(self.time) - car.position(self.time)) > 50:

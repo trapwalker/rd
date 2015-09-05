@@ -180,7 +180,6 @@ class VisibleObject(PointObject):
 
 
 class Observer(VisibleObject):
-
     def __init__(self, **kw):
         super(Observer, self).__init__(**kw)
         Parameter(original=self.example.p_observing_range, name='p_observing_range', owner=self)

@@ -10,7 +10,6 @@ from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
-from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.console import Shell
@@ -454,9 +453,9 @@ class AgentAPI(API):
         TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
 
     @public_method
-    def loot_stash(self, poi_stash_id):
-        log.info('agent %s want loot stash =%s', self.agent, poi_stash_id)
-        LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_stash_id).post()
+    def get_loot(self, poi_id):
+        log.info('agent %s want loot =%s', self.agent, poi_id)
+        LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
     @public_method
     def armorer_apply(self, armorer_slots):
