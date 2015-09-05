@@ -243,7 +243,6 @@ class Unit(Observer):
                          position=self.position(time), life_time=60.0)
         # заполнить инвентарь сундука
         item.set_inventory(time=time, inventory=stash.inventory)
-        log.debug(stash)
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
