@@ -251,8 +251,9 @@ class Unit(Observer):
                 item.set_inventory(time=event.time, inventory=stash.inventory)
 
     def drop_item_to_map(self, item, time):
-        stash = POILoot(server=self.server, time=time, inventory_size=self.example.inventory_size,
-                        position=Point.random_gauss(self.position(time), 10), life_time=60.0)
+        #todo: исправить POIContainer на POILoot
+        stash = POIContainer(server=self.server, time=time, inventory_size=self.example.inventory_size,
+                        position=Point.random_gauss(self.position(time), 10))
         # заполнить инвентарь сундука
         item.set_inventory(time=time, inventory=stash.inventory)
 
