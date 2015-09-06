@@ -1,0 +1,86 @@
+{% set window_caption = 'NUKE:\Контейнер>' %}
+
+<style>
+    .containerInventoryWindow-main {
+        position: relative;
+        width: 660px;
+        height: 448px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #27ED0A;
+        font: 12pt FreePixel;
+        cursor: default;
+    }
+
+    .containerInventoryWindow-window-wrap{
+        width: 654px;
+        height: 416px;
+        border: 1px solid green;
+        box-sizing: border-box;
+        margin: 3px;
+    }
+
+    .containerInventoryWindow-inventory-wrap {
+        position: relative;
+        float: left;
+        box-sizing: border-box;
+        width: 320px;
+        height: 410px;
+        border: 1px solid green;
+    }
+
+    .containerInventoryWindow-inventory-wrap-left {
+        margin: 2px 0 2px 3px;
+    }
+
+    .containerInventoryWindow-inventory-wrap-right {
+        margin: 2px 0 2px 6px;
+    }
+
+    .containerInventoryWindow-inventory-header {
+        position: relative;
+        width: 100%;
+        height: 30px;
+        text-align: center;
+        border-bottom: 1px solid green;
+        box-sizing: border-box;
+        line-height: 1.6;
+        font-weight: bold;
+        font-size: 13pt;
+    }
+
+    .containerInventoryWindow-inventory-body {
+        position: relative;
+        width: calc(100% - 9px);
+        margin: 0 auto 0 auto;
+        height: 374px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-top: 2px;
+        padding-left: 5px;
+    }
+
+
+</style>
+
+<div class="containerInventoryWindow-main">
+    {% include drag_close_header.html %}
+    <div class="containerInventoryWindow-window-wrap">
+        <div id="containerInventoryWindow-id-car-{{ car_id }}" class="containerInventoryWindow-inventory-wrap containerInventoryWindow-inventory-wrap-left">
+            <div class="containerInventoryWindow-inventory-header">Ваш инвентарь:</div>
+            <div class="containerInventoryWindow-inventory-body inventory-{{ car_id }}"></div>
+        </div>
+        <div id="containerInventoryWindow-id-container-{{ container_id }}" class="containerInventoryWindow-inventory-wrap containerInventoryWindow-inventory-wrap-right">
+            <div class="containerInventoryWindow-inventory-header">Контейнер:</div>
+            <div class="containerInventoryWindow-inventory-body inventory-{{ container_id }}"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Запрашиваем инвентарь
+    inventoryList.showInventory({{ car_id }}, $('#containerInventoryWindow-id-car-{{ car_id }}')
+            .find('.inventory-{{ car_id }}').first());
+    inventoryList.showInventory({{ container_id }}, $('#containerInventoryWindow-id-container-{{ container_id }}')
+            .find('.inventory-{{ container_id }}').first());
+</script>
