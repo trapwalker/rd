@@ -112,10 +112,11 @@ class SendKickEvent(Event):
         # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
+            # todo: assert', warning'и -- ок. Зачем сообщения клиенту?
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
         user = self.agent.server.agents.get(self.username)
-        if (user is None) or (not (user in party)):
+        if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
             return
         party.kick(kicker=self.agent, kicked=user, time=self.time)
@@ -134,13 +135,14 @@ class SendSetCategoryEvent(Event):
         # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
+            # todo: Зачем все эти сообщения клиенту?!
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
-        if not (party.owner is self.agent):
+        if party.owner is not self.agent:
             messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
             return
         user = self.agent.server.agents.get(self.username)
-        if (user is None) or (not (user in party)):
+        if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
             return
