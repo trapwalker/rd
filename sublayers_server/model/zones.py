@@ -17,14 +17,13 @@ import os
 
 def init_zones_on_server(server, time):
 
-    def read_ts_from_file(zone_name, file_name, server, effects, zone_cls=ZoneTileset):
+    def read_ts_from_file(zone_name, file_name, effects, zone_cls=ZoneTileset):
         file_path = os.path.join(options.world_path, 'tilesets', file_name)
         zone = None
         if os.path.exists(file_path):
             if os.path.isfile(file_path):
                 zone = zone_cls(
                     name=zone_name,
-                    server=server,
                     effects=effects,
                     ts=Tileset(open(file_path)),
                 )
@@ -50,7 +49,6 @@ def init_zones_on_server(server, time):
             zone=read_ts_from_file(
                 zone_name='Road',
                 file_name='ts_road',
-                server=server,
                 effects=[
                     server.effects.get('EffectRoadRCCWood'),
                     server.effects.get('EffectRoadRCCWater'),
@@ -66,7 +64,6 @@ def init_zones_on_server(server, time):
             zone=read_ts_from_file(
                 zone_name='Wood',
                 file_name='ts_wood',
-                server=server,
                 effects=[
                     server.effects.get('EffectWoodCC'),
                     server.effects.get('EffectWoodVisibility'),
@@ -79,7 +76,6 @@ def init_zones_on_server(server, time):
             server=server,
             time=time,
             zone=read_ts_from_file(
-                server=server,
                 zone_name='Water',
                 file_name='ts_water',
                 effects=[server.effects.get('EffectWaterCC')],
@@ -90,7 +86,6 @@ def init_zones_on_server(server, time):
             server=server,
             time=time,
             zone=read_ts_from_file(
-                server=server,
                 zone_name='Slope',
                 file_name='ts_slope_black_80',
                 effects=[server.effects.get('EffectSlopeCC')],
@@ -98,7 +93,7 @@ def init_zones_on_server(server, time):
         ).post()
 
     # загрузка особенной зоны - бездорожье
-    server.zones.append(ZoneDirt(name='Dirt', server=server, effects=[server.effects.get('EffectDirtCC')]))
+    server.zones.append(ZoneDirt(name='Dirt', effects=[server.effects.get('EffectDirtCC')]))
 
     async_deco(load_all_ts, result_callback=on_result, error_callback=on_error)()
 
@@ -107,7 +102,6 @@ def init_zones_on_server(server, time):
         time=time,
         zone=AltitudeZonePicker(
             name='Altitude',
-            server=server,
             effects=[],
             tiles_path=os.path.join(options.world_path, 'altitude'),
             pixel_depth=14 + 8,
@@ -116,9 +110,8 @@ def init_zones_on_server(server, time):
 
 
 class Zone(object):
-    def __init__(self, server, name, effects):
+    def __init__(self, name, effects):
         super(Zone, self).__init__()
-        self.server = server
         self.name = name
         self.effects = effects[:]
 
