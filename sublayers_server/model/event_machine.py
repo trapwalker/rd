@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
-from sublayers_server.model.zones import init_zones_on_server
+from sublayers_server.model.registry.classes.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
