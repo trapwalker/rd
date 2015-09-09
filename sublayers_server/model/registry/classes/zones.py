@@ -52,6 +52,9 @@ class Zone(Root):
             effect.done(owner=obj, time=time)
         self.send_message(obj=obj, active=False, time=time)
 
+    def get_value(self, obj, time):
+        return
+
     def test_in_zone(self, obj, time):
         pass
 
@@ -91,11 +94,15 @@ class ZoneTileset(FileZone):
             log.info('Successful read zone %s from file: %s', self.name, file_path)
             return True
 
+    def get_value(self, obj, time):
+        position = obj.position(time=time)
+        return self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8))
+
     def test_in_zone(self, obj, time):
         if tags.UnZoneTag in obj.tags:
             return
-        position = obj.position(time=time)
-        if self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)):
+        value = self.get_value(obj, time)
+        if value:
             if self not in obj.zones:
                 self._obj_in_zone(obj=obj, time=time)
         else:
@@ -109,14 +116,17 @@ class AltitudeZoneTileset(ZoneTileset):
             return
         if tags.UnAltitudeTag in obj.tags:
             return
-        position = obj.position(time=time)
-        obj.on_change_altitude(
-            new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)), time=time)
+
+        value = self.get_value(obj, time)
+        obj.on_change_altitude(new_altitude=value, time=time)
 
 
-class AltitudeZonePicker(FileZone):
+class RasterZone(FileZone):
     pixel_depth = IntAttribute(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
     extension = TextAttribute(default='.jpg', caption=u'Расширение тайлов')
+
+
+class AltitudeZonePicker(RasterZone):
 
     def __init__(self, **kw):
         super(AltitudeZonePicker, self).__init__(**kw)
