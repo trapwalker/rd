@@ -353,8 +353,7 @@ class InsertNewServerZone(Event):
 
     def on_perform(self):
         super(InsertNewServerZone, self).on_perform()
-        if self.zone is not None:
-            self.server.zones.append(self.zone)
+        self.server.zones.append(self.zone)
 
 
 class ShowInventoryEvent(Event):
