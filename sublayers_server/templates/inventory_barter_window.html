@@ -1,0 +1,110 @@
+{% set window_caption = 'NUKE:\Контейнер>' %}
+
+<style>
+    .barterInventoryWindow-main {
+        position: relative;
+        width: 660px;
+        height: 448px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #27ED0A;
+        font: 12pt FreePixel;
+        cursor: default;
+    }
+
+    .barterInventoryWindow-window-wrap {
+        width: 654px;
+        height: 416px;
+        border: 1px solid green;
+        box-sizing: border-box;
+        margin: 3px;
+    }
+
+    .barterInventoryWindow-window-wrap-wrap {
+        position: relative;
+        width: 50%;
+        height: 100%;
+        float: left;
+    }
+
+    .barterInventoryWindow-inventory-wrap {
+        position: relative;
+        box-sizing: border-box;
+        width: 320px;
+        height: 340px;
+        border: 1px solid green;
+    }
+
+    .barterInventoryWindow-inventory-wrap-left {
+        margin: 2px 0 2px 3px;
+    }
+
+    .barterInventoryWindow-inventory-wrap-right {
+        margin: 2px 0 2px 6px;
+    }
+
+    .barterInventoryWindow-inventory-header {
+        position: relative;
+        width: 100%;
+        height: 30px;
+        text-align: center;
+        border-bottom: 1px solid green;
+        box-sizing: border-box;
+        line-height: 1.6;
+        font-weight: bold;
+        font-size: 13pt;
+    }
+
+    .barterInventoryWindow-inventory-body {
+        position: relative;
+        width: calc(100% - 9px);
+        margin: 0 auto 0 auto;
+        height: 304px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-top: 2px;
+        padding-left: 5px;
+    }
+
+    .barterInventoryWindow-table-inventory-body {
+        position: relative;
+        float: left;
+        width: 152px;
+        height: 304px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-top: 2px;
+    }
+
+    .barterInventoryWindow-table-inventory-body-left {
+        margin-right: 8px;
+        margin-left: 3px;
+    }
+</style>
+
+<div class="barterInventoryWindow-main">
+    {% include drag_close_header.html %}
+    <div class="barterInventoryWindow-window-wrap">
+        <div class="barterInventoryWindow-window-wrap-wrap">
+            <div id="barterInventoryWindow-id-car-{{ car_id }}" class="barterInventoryWindow-inventory-wrap barterInventoryWindow-inventory-wrap-left">
+                <div class="barterInventoryWindow-inventory-header">Ваш инвентарь:</div>
+                <div class="barterInventoryWindow-inventory-body inventory-{{ car_id }}"></div>
+            </div>
+        </div>
+
+        <div class="barterInventoryWindow-window-wrap-wrap">
+            <div class="barterInventoryWindow-inventory-wrap barterInventoryWindow-inventory-wrap-left">
+                <div class="barterInventoryWindow-inventory-header">Столик обмена:</div>
+                <div id="barterInventoryWindow-id-my-table" class="barterInventoryWindow-table-inventory-body barterInventoryWindow-table-inventory-body-left inventory-{{ car_id }}"></div>
+                <div id="barterInventoryWindow-id-another-table" class="barterInventoryWindow-table-inventory-body inventory-{{ car_id }}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Запрашиваем инвентарь
+    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-car-{{ car_id }}')
+            .find('.inventory-{{ car_id }}').first());
+    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-my-table'));
+    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-another-table'));
+</script>
