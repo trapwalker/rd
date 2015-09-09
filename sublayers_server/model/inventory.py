@@ -288,24 +288,15 @@ class ItemState(object):
         if inventory is old_inventory:
             return self.change_position(position=position, time=time)
         if (inventory is None) or inventory.add_item(item=self, position=position, time=time):
-            # запретить потребление итема пока он не в инвентаре
-            self.limbo = inventory is None
-
-            # это отработает когда мы выкинем из инвентаря используемые патроны
-            if self.limbo:
-                tasks = self.tasks[:]
-                for task in tasks:
-                    task.done()
+            if old_inventory is not None:
+                old_inventory.del_item(item=self, time=time)
 
             # отправить всем потребителям месагу о том, что итем кончился
             consumers = self.consumers[:]
             for consumer in consumers:
                 consumer.on_empty_item(item=self, time=time, action=None)
 
-            if old_inventory is not None:
-                old_inventory.del_item(item=self, time=time)
             self.inventory = inventory
-
             return True
         else:
             return False
@@ -328,7 +319,16 @@ class ItemState(object):
         if self.example.parent != item.example.parent:
             if self.inventory is item.inventory:
                 self.change_position(position=self.inventory.get_position(item=item), time=time)
+            else:
+                item1_inventory = self.inventory
+                item1_position = item1_inventory.get_position(item=self)
+                item2_inventory = item.inventory
+                item2_position = item2_inventory.get_position(item=item)
+                self.set_inventory(time=time, inventory=None)
+                item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
+                self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
             return
+
         self_val = self.val(t=time)
         item_val = item.val(t=time)
         d_value = 0.0
@@ -358,12 +358,17 @@ class ItemState(object):
             consumer.item = None
 
     def change(self, consumer, dv, ddvs, action, time):
-        if consumer in self.consumers and not self.limbo:
-            ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
+        if consumer in self.consumers:
+            if self.limbo:
+                assert action == 'on_stop'
+                consumer.on_stop(item=self, time=time)
+            else:
+                ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
 
 
 class Consumer(object):
-    def __init__(self, items_cls_list, dv=None, ddvs=None, swap=False):
+    def __init__(self, server, items_cls_list, dv=None, ddvs=None, swap=False):
+        self.server = server
         self.items_cls_list = items_cls_list
         self.item = None
         self.dv = dv
@@ -397,6 +402,8 @@ class Consumer(object):
     def start(self, time):
         if self.item is not None:
             self.item.change(consumer=self, dv=None, ddvs=self.ddvs, action='on_start', time=time)
+            return True
+        return False
 
     def stop(self, time):
         if self.item is not None:
@@ -419,28 +426,28 @@ class Consumer(object):
         if started:
             self.stop(time=time)
             self.is_started = False  # перестать стрелять, если что старт потом установит стрельбу
+
         # разряжаем итем
         if self.item is not None:
             self.item.unlinking(consumer=self)
+
         # пытаемся зарядить итем
         if (item is not None) and (item.example.parent in self.items_cls_list):
             item.linking(consumer=self)
-        # если нужно, пытаемся восстановить использование
-        if started:
-            self.start(time=time + 0.01)
-        # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
-        if action == 'on_use':  # так устроено, страдаем все
-            self.use(time=time)
+
+            # если нужно, пытаемся восстановить использование
+            if started:
+                self.start(time=time + 0.01)
+
+            # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
+            if action == 'on_use':  # так устроено, страдаем все
+                self.use(time=time)
 
     def on_empty_item(self, item, time, action):
-        old_is_started = self.is_started
         balance_cls_list = []
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
             balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
-        if self.is_started:
-            self.on_stop(item=item, time=time)
-        self.is_started = old_is_started
-        self.set_item(item=new_item, time=time, action=action)
+        self.set_item(time=time, item=new_item, action=action)

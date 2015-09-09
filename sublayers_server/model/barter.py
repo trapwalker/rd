@@ -149,15 +149,12 @@ class Barter(object):
 
     def on_success(self, time):
         pass
-
         # todo: отправить сообщения о закрытии окон
 
     def on_cancel(self, time):
         if self.state == 'unactive':
             return
-
         # todo: отправить сообщения о закрытии окон
-
 
     def as_dict(self):
         pass
