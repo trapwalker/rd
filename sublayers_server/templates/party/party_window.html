@@ -7,52 +7,6 @@
 {% set my_member_in_party = None if party is None else party.get_member_by_agent(agent) %}
 
 <style>
-    .partyWindow-main {
-        position: relative;
-        height: 100%;
-        width: 500px;
-        background-color: rgba(0, 0, 0, 0.75);
-    }
-
-    .partyWindow-header {
-        position: relative;
-        height: 30px;
-        width: 100%;
-    }
-
-    .partyWindow-comment {
-        position: relative;
-        float: left;
-        height: 200px;
-        width: 50%;
-    }
-
-    .partyWindow-rules {
-        position: relative;
-        float: left;
-        height: 200px;
-        width: 50%;
-        background-color: transparent;
-    }
-
-    .partyWindow-membersArea {
-        position: relative;
-        border: 1px solid rgba(0, 255, 85, 0.5);
-        height: 200px;
-        width: 490px;
-        margin: 5px;
-        box-sizing: border-box;
-        padding: 3px;
-        overflow-y: auto;
-    }
-
-    .partyWindowMainWindowText-span{
-        position: relative;
-        left: 10px;
-        color: #2afd0a;
-        font: 8pt MICRADI;
-        letter-spacing: 1px;
-    }
 
 </style>
 
