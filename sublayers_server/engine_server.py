@@ -34,7 +34,7 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
 from sublayers_server.handlers.main_menu_character import MainMenuCharacterHandler
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
-from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, ContainerInventoryHandler, \
+from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.party_handler import PartyHandler
@@ -110,7 +110,7 @@ class Application(tornado.web.Application):
             (r"/api/inventory", MainInventoryHandler),
             (r"/api/party", PartyHandler),
             (r"/api/container", ContainerInventoryHandler),
-            (r"/api/barter", ContainerInventoryHandler),
+            (r"/api/barter", BarterInventoryHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,

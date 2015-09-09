@@ -47,6 +47,15 @@ class Agent(Object):
         self.current_location = None
         self.set_current_location_example(reg_link=example.current_location.uri)
 
+        # Бартер между игроками
+        self.barters = []  # бартеры в которых агент - участник
+
+    def get_barter_by_id(self, barter_id):
+        for barter in self.barters:
+            if barter.id == barter_id:
+                return barter
+        return None
+
     def set_current_location_life(self, location):
         self.current_location = location
         if location is None:

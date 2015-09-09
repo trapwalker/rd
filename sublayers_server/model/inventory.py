@@ -27,10 +27,21 @@ class Inventory(object):
         self._items = dict()
         self.owner = owner
         self.visitors = []
+        self.managers = []
+        self.on_change_list = []  # функции вызываемые на измениние в инвентаре
 
-    def add_visitor(self, agent, time):
+    def on_change(self, time):
+        for func in self.on_change_list:
+            func(inventory=self, time=time)
+
+    def can_change(self, agent):
+        return agent in self.managers
+
+    def add_visitor(self, agent, time, is_manager=True):
         if agent not in self.visitors:
             self.visitors.append(agent)
+            if is_manager:
+                self.add_manager(agent=agent)
         self.send_inventory(agent=agent, time=time)
 
     def del_all_visitors(self, time):
@@ -41,7 +52,16 @@ class Inventory(object):
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
+            self.del_manager(agent=agent)
         InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
+
+    def add_manager(self, agent):
+        if (agent in self.visitors) and (agent not in self.managers):
+            self.managers.append(agent)
+
+    def del_manager(self, agent):
+        if agent in self.managers:
+            self.managers.remove(agent)
 
     def get_all_items(self):
         return [dict({'item': item, 'position': self.get_position(item=item)}) for item in self._items.values()]
@@ -62,6 +82,7 @@ class Inventory(object):
         self._items.update({position: item})
         for agent in self.visitors:
             InventoryAddItemMessage(agent=agent, time=time, item=item, inventory=self, position=position).post()
+        self.on_change(time=time)
         return True
 
     def del_item(self, time, position=None, item=None):
@@ -73,7 +94,8 @@ class Inventory(object):
         deleted_item = self._items.pop(position)
         for agent in self.visitors:
             InventoryDelItemMessage(agent=agent, time=time, item=deleted_item, inventory=self,
-                                     position=position).post()
+                                    position=position).post()
+        self.on_change(time=time)
 
     def change_position(self, item, new_position, time):
         log.info('change_position')
