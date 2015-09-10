@@ -30,6 +30,97 @@ class Inventory(object):
         self.managers = []
         self.on_change_list = []  # функции вызываемые на измениние в инвентаре
 
+    def add_inventory(self, inventory, time):
+
+        def init_inv_list(inv, time):
+            res = []
+            for i in range(0, inv.max_size):
+                d = dict()
+                d['item'] = inv._items.get(i, None)
+                d['max_val'] = 0 if d['item'] is None else d['item'].max_val
+                d['val0'] = 0 if d['item'] is None else d['item'].val(time)
+                d['val'] = d['val0']
+                res.append(d)
+            return res
+
+        def set_empty_rec(item_rec):
+            if item_rec['val'] <= 0:
+                item_rec['item'] = None
+                item_rec['max_val'] = 0
+                item_rec['val0'] = 0
+                item_rec['val'] = 0
+
+        def add_item_rec(item_rec1, item_rec2):  # досыпать в rec2 из rec1
+            # Можем ли мы досыпать сюда
+            if (item_rec2['item'] is None) or (item_rec2['val'] >= item_rec2['max_val']) or \
+               (item_rec1['item'].example.parent != item_rec2['item'].example.parent):
+                return
+            dv = min(item_rec2['max_val'] - item_rec2['val'], item_rec1['val'])
+            item_rec1['val'] -= dv
+            item_rec2['val'] += dv
+
+        inv1 = init_inv_list(inv=self, time=time)
+        inv2 = init_inv_list(inv=inventory, time=time)
+
+        # Проверить, нужно ли уплотнить свой инвентарь
+        if len(self.get_items()) + len(inventory.get_items()) >= self.max_size:
+            # Уплотнить свой инвентарь
+            for i in range(0, len(inv1)):
+                rec1 = inv1[i]
+                # Можем ли отсыпать из rec1 (если он полный или пустой, то пропустить)
+                if (rec1['item'] is None) or (rec1['val'] >= rec1['max_val']):
+                    continue
+                for j in range(0, i):
+                    add_item_rec(rec1, inv1[j])
+
+            # Сделать "пустыми" слотами те итемы, которые после уплотнения равны нулю
+            for rec in inv1:
+                set_empty_rec(rec)
+
+
+        # Докинуть полученный инвентарь в свободные слоты (сколько есть слотов, столько и докинуть)
+        for i in range(0, len(inv2)):
+            rec1 = inv2[i]
+            if rec1['item'] is None:
+                continue
+
+            # Попытка досыпать в непустые слоты
+            for j in range(0, len(inv1)):
+                add_item_rec(rec1, inv1[j])
+
+            # Если чтото осталось то положить в свободный слот
+            set_empty_rec(rec1)
+            if rec1['item'] is not None:
+                for j in range(0, len(inv1)):
+                    rec2 = inv1[j]
+                    if rec2['item'] is not None:
+                        continue
+                    inv1[j] = rec1
+                    inv2[i] = rec2
+
+        # Генерируем таски для итемов
+        for i in range(0, len(inv1)):
+            old_item = self.get_item(i)
+            item_rec = inv1[i]
+            if old_item is not item_rec['item']:  # если итемы не совпадают
+                if old_item is not None:
+                    old_item.set_inventory(time=time, inventory=None)
+                if item_rec['item'] is not None:
+                    item_rec['item'].set_inventory(time=time, inventory=self, position=i)
+            if (item_rec['item'] is not None) and (item_rec['val0'] != item_rec['val']):
+                item_rec['item'].change(consumer=None, dv=item_rec['val'] - item_rec['val0'], ddvs=0, action=None,
+                                        time=time)
+
+        for i in range(0, len(inv2)):
+            old_item = inventory.get_item(i)
+            item_rec = inv2[i]
+            if old_item is not item_rec['item']:  # если итемы не совпадают
+                if old_item is not None:
+                    old_item.set_inventory(time=time, inventory=None)
+            if (item_rec['item'] is not None) and (item_rec['val0'] != item_rec['val']):
+                item_rec['item'].change(consumer=None, dv=item_rec['val'] - item_rec['val0'], ddvs=0, action=None,
+                                        time=time)                      
+
     def on_change(self, time):
         for func in self.on_change_list:
             func(inventory=self, time=time)
@@ -358,10 +449,11 @@ class ItemState(object):
             consumer.item = None
 
     def change(self, consumer, dv, ddvs, action, time):
-        if consumer in self.consumers:
+        if (consumer is None) or (consumer in self.consumers):
             if self.limbo:
                 assert action == 'on_stop'
-                consumer.on_stop(item=self, time=time)
+                if consumer:
+                    consumer.on_stop(item=self, time=time)
             else:
                 ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
 

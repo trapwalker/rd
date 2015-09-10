@@ -799,6 +799,16 @@ var ClientManager = (function () {
     //    });
     //};
 
+    /*  БАРТЕР  */
+    ClientManager.prototype.InviteBarterMessage = function (event) {
+        console.log('ClientManager.prototype.InviteBarterMessage', event);
+    };
+
+    ClientManager.prototype.ActivateBarterMessage = function (event) {
+        console.log('ClientManager.prototype.ActivateBarterMessage', event);
+        windowTemplateManager.openUniqueWindow('barter', '/barter', {barter_id: event.barter_id});
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1247,6 +1257,32 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Бартер
+    ClientManager.prototype.sendInitBarter = function (recipient_login) {
+        console.log('ClientManager.prototype.sendInitBarter', recipient_login);
+        var mes = {
+            call: "init_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient_login: recipient_login
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivateBarter = function (barter_id) {
+        console.log('ClientManager.prototype.sendActivateBarter', barter_id);
+        var mes = {
+            call: "activate_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

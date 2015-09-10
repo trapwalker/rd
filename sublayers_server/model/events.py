@@ -367,7 +367,6 @@ class ShowInventoryEvent(Event):
         super(ShowInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
         assert (obj is not None) and (obj.inventory is not None)
-        # todo: проверить, чтобы obj был Car или POIContainer (пока неизвестно как!)
         if obj is self.agent.car or obj.is_available(agent=self.agent):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
@@ -414,8 +413,9 @@ class ItemActionInventoryEvent(Event):
                 end_inventory = end_obj.inventory
                 end_item = end_inventory.get_item(position=self.end_pos)
 
-        # todo: продумать систему доступов агентов к различным инвентарям (мб в инвентарях решать этот вопрос?)
         # todo: сделать проверку на POIContainer, иначе будут ошибки
+        if (self.agent not in start_inventory.managers):
+            return
         if not ((start_obj is self.agent.api.car) or start_obj.is_available(self.agent)):
             return
         if not ((end_obj is None) or (end_obj is self.agent.api.car) or end_obj.is_available(self.agent)):

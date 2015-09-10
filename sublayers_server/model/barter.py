@@ -3,7 +3,8 @@ import logging
 log = logging.getLogger(__name__)
 from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Event
-# from sublayers_server.model.messages import Message
+from sublayers_server.model.messages import Message
+from sublayers_server.model.base import Object
 
 
 class InitBarterEvent(Event):
@@ -16,7 +17,7 @@ class InitBarterEvent(Event):
         super(InitBarterEvent, self).on_perform()
         recipient = self.server.agents.get(self.recipient_login, None)
         if recipient:
-            Barter(initiator=self.initiator, recipient=self.recipient, time=self.time)
+            Barter(initiator=self.initiator, recipient=recipient, time=self.time)
 
 
 class ActivateBarterEvent(Event):
@@ -81,6 +82,45 @@ class SuccessBarterEvent(Event):
         self.barter.on_success(time=self.time)
 
 
+class InviteBarterMessage(Message):
+    def __init__(self, barter, **kw):
+        super(InviteBarterMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(InviteBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+            initiator=self.barter.initiator.login,
+        )
+        return d
+
+
+class ActivateBarterMessage(Message):
+    def __init__(self, barter, **kw):
+        super(ActivateBarterMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(ActivateBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+            initiator=self.barter.initiator.login,
+            recipient=self.barter.recipient.login,
+        )
+        return d
+
+
+class BarterTable(Object):
+    def __init__(self, barter, time, max_size, **kw):
+        super(BarterTable, self).__init__(time=time, **kw)
+        self.inventory = Inventory(owner=self, max_size=max_size, time=time)
+        self.barter = barter
+
+    def is_available(self, agent):
+        return (agent is self.barter.initiator) or (agent is self.barter.recipient)
+
+
 class Barter(object):
     id = property(id)
 
@@ -96,9 +136,13 @@ class Barter(object):
         self.recipient_car = recipient.car
         self.initiatorTable = None
         self.recipientTable = None
+        self.initiatorTableObj = None
+        self.recipientTableObj = None
         self.success_event = None
         self.success_delay = 5.0
-        # todo: отправить приглашение
+
+        # Отправить приглашение
+        InviteBarterMessage(agent=recipient, time=time, barter=self).post()
 
     def _change_table(self, inventory, time):
         if (inventory is self.initiatorTable) or (inventory is self.recipientTable):
@@ -109,16 +153,24 @@ class Barter(object):
             return
         self.state = 'active'
 
-        self.initiatorTable = Inventory(self.initiator_car, self.initiator_car.example.inventory_size, time)
+        self.initiatorTableObj = BarterTable(server=self.initiator.server, time=time, barter=self,
+                                             max_size=self.initiator_car.example.inventory_size)
+        self.initiatorTable = self.initiatorTableObj.inventory
         self.initiatorTable.add_visitor(agent=self.initiator, time=time, is_manager=True)
         self.initiatorTable.add_visitor(agent=self.recipient, time=time, is_manager=False)
         self.initiatorTable.on_change_list.append(self._change_table)
 
-        self.recipientTable = Inventory(self.recipient_car, self.recipient_car.example.inventory_size, time)
+        self.recipientTableObj = BarterTable(server=self.recipient.server, time=time, barter=self,
+                                             max_size=self.recipient_car.example.inventory_size)
+        self.recipientTable = self.recipientTableObj.inventory
         self.recipientTable.add_visitor(agent=self.recipient, time=time, is_manager=True)
         self.recipientTable.add_visitor(agent=self.initiator, time=time, is_manager=False)
         self.recipientTable.on_change_list.append(self._change_table)
-        # todo: отправить сообщение об открытии окна
+
+        # Отправить сообщения об открытии окна
+        ActivateBarterMessage(agent=self.initiator, barter=self, time=time).post()
+        ActivateBarterMessage(agent=self.recipient, barter=self, time=time).post()
+
         # todo: остановить обе машинки
 
     def on_lock(self, agent, time):
@@ -148,12 +200,15 @@ class Barter(object):
             # todo: отправить сообщение
 
     def on_success(self, time):
-        pass
+        self.initiator.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
+        self.recipient.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
         # todo: отправить сообщения о закрытии окон
 
     def on_cancel(self, time):
         if self.state == 'unactive':
             return
+        self.initiator.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
+        self.recipient.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
         # todo: отправить сообщения о закрытии окон
 
     def as_dict(self):

@@ -53,7 +53,6 @@ class WeaponAuto(Weapon):
         return d
 
     def start(self, time):
-        log.debug('============== weapon start !!!!!!!!!!! ')
         if super(WeaponAuto, self).start(time=time):
             self.call_start = True
 
@@ -91,7 +90,6 @@ class WeaponAuto(Weapon):
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
 
     def on_start(self, item, time):
-        log.debug('============== weapon on _ start !!!!!!!!!!! ')
         super(WeaponAuto, self).on_start(item=item, time=time)
         self.call_start = False  # сделать False, так как уже on_start произошёл и отсеивать другие страрты не нужно
         for car in self.sector.target_list:
@@ -108,11 +106,9 @@ class WeaponAuto(Weapon):
         self.call_stop = False
 
     def set_enable(self, time, enable):
-        log.debug('1111111111111111 weapon enable %s    [%s]', enable, len(self.sector.target_list))
         if self.is_enable == enable:
             return
         self.is_enable = enable
-        log.debug(self.call_start)
         if not enable and self.is_started and not self.call_stop:
             self.stop(time=time)
 

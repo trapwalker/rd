@@ -40,8 +40,21 @@ class BarterInventoryHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        barter_id = self.get_argument("barter_id")
+        barter_id = long(self.get_argument("barter_id"))
         barter = agent.get_barter_by_id(barter_id)
-        self.render("inventory_barter_window.html", car_id=agent.api.car.uid)
+        if (barter is None) or ((agent is not barter.initiator) and (agent is not barter.recipient)):
+            log.warning('Agent has not access')
+            self.send_error(status_code=404)
+            return
+        my_table_id = None
+        other_table_id = None
+        if agent is barter.initiator:
+            my_table_id = barter.initiatorTableObj.uid
+            other_table_id = barter.recipientTableObj.uid
+        else:
+            my_table_id = barter.recipientTableObj.uid
+            other_table_id = barter.initiatorTableObj.uid
+        self.render("inventory_barter_window.html", car_id=agent.api.car.uid, barter=barter,
+                    my_table_id=my_table_id, other_table_id=other_table_id)
 
 

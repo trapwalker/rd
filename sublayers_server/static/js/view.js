@@ -54,7 +54,7 @@ $(document).ready(function () {
 
     document.getElementById('divMainMenuBtnCar').onclick =
         function () {
-            windowTemplateManager.openUniqueWindow('car_info', '/barter', null);
+            windowTemplateManager.openUniqueWindow('car_info', '/main_car_info', null);
             returnFocusToMap();
         };
 

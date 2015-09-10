@@ -1,4 +1,4 @@
-{% set window_caption = 'NUKE:\Контейнер>' %}
+{% set window_caption = 'NUKE:\Бартер>' %}
 
 <style>
     .barterInventoryWindow-main {
@@ -85,7 +85,7 @@
     {% include drag_close_header.html %}
     <div class="barterInventoryWindow-window-wrap">
         <div class="barterInventoryWindow-window-wrap-wrap">
-            <div id="barterInventoryWindow-id-car-{{ car_id }}" class="barterInventoryWindow-inventory-wrap barterInventoryWindow-inventory-wrap-left">
+            <div id="barterInventoryWindow-id-car-{{ barter.id }}" class="barterInventoryWindow-inventory-wrap barterInventoryWindow-inventory-wrap-left">
                 <div class="barterInventoryWindow-inventory-header">Ваш инвентарь:</div>
                 <div class="barterInventoryWindow-inventory-body inventory-{{ car_id }}"></div>
             </div>
@@ -94,8 +94,8 @@
         <div class="barterInventoryWindow-window-wrap-wrap">
             <div class="barterInventoryWindow-inventory-wrap barterInventoryWindow-inventory-wrap-left">
                 <div class="barterInventoryWindow-inventory-header">Столик обмена:</div>
-                <div id="barterInventoryWindow-id-my-table" class="barterInventoryWindow-table-inventory-body barterInventoryWindow-table-inventory-body-left inventory-{{ car_id }}"></div>
-                <div id="barterInventoryWindow-id-another-table" class="barterInventoryWindow-table-inventory-body inventory-{{ car_id }}"></div>
+                <div id="barterInventoryWindow-id-my-table-{{ barter.id }}" class="barterInventoryWindow-table-inventory-body barterInventoryWindow-table-inventory-body-left inventory-{{ my_table_id }}"></div>
+                <div id="barterInventoryWindow-id-another-table-{{ barter.id }}" class="barterInventoryWindow-table-inventory-body inventory-{{ other_table_id }}"></div>
             </div>
         </div>
     </div>
@@ -103,8 +103,8 @@
 
 <script>
     // Запрашиваем инвентарь
-    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-car-{{ car_id }}')
+    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-car-{{ barter.id }}')
             .find('.inventory-{{ car_id }}').first());
-    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-my-table'));
-    inventoryList.showInventory({{ car_id }}, $('#barterInventoryWindow-id-another-table'));
+    inventoryList.showInventory({{ my_table_id }}, $('#barterInventoryWindow-id-my-table-{{ barter.id }}'));
+    inventoryList.showInventory({{ other_table_id }}, $('#barterInventoryWindow-id-another-table-{{ barter.id }}'));
 </script>
