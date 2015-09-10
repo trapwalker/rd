@@ -11,7 +11,6 @@ from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.messages import ZoneMessage
 from sublayers_server.model.events import InsertNewServerZone
-from sublayers_server.model.async_tools import async_deco
 from sublayers_server.model import tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
 
@@ -157,24 +156,3 @@ class AltitudeZone(RasterZone):
         value = self.get_value(obj, time)
         if value is not None:
             obj.on_change_altitude(new_altitude=value, time=time)
-
-
-def init_zones_on_server(server, time):
-
-    def on_error(error):
-        """async call error handler"""
-        log.warning('Read Zone: on_error(%s)', error)
-
-    def load_all_ts():
-        zones = [zone for zone in server.reg['/zones']]
-        zones.sort(key=lambda zone: zone.order_key)
-        for zone in zones:
-            if not zone.is_active:
-                log.info('Try to activate zone %s', zone)
-                zone.activate(server=server, time=time)
-                if zone.is_active:
-                    log.info('Zone %s activated successfully', zone)
-                else:
-                    log.warning('Zone %s is not activated')
-
-    async_deco(load_all_ts, error_callback=on_error)()

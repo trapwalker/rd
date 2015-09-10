@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
-from sublayers_server.model.registry.classes.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
@@ -14,6 +13,7 @@ from sublayers_server.model import errors
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
 from sublayers_server.model.events import LoadWorldEvent
 from sublayers_server.model.registry.storage import Registry, Collection
+from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 
 import os
@@ -64,11 +64,27 @@ class Server(object):
     def load_world(self):
         LoadWorldEvent(server=self, time=self.get_time()).post()
 
+    @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
+    def init_zones(self, time):
+        zones = [zone for zone in self.reg['/zones']]
+        zones.sort(key=lambda zone: zone.order_key)
+        for zone in zones:
+            try:
+                if not zone.is_active:
+                    log.info('Try to activate zone %s', zone)
+                    zone.activate(server=self, time=time)
+                if zone.is_active:
+                    log.info('Zone %s activated successfully', zone)
+                else:
+                    log.warning('Zone %s is not activated')
+            except Exception as e:
+                log.error('Loading zone %r error: %s', zone, e)
+
     def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
-        init_zones_on_server(server=self, time=event.time)
+        self.init_zones(time=event.time)
 
         # загрузка радиоточек
         towers_root = self.reg['/poi/radio_towers']

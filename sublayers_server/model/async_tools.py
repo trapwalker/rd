@@ -53,6 +53,22 @@ class AsyncCallThread(Thread):
             del self.target, self.args, self.kwargs
 
 
+def async_deco2(result_callback=None, error_callback=None, exceptions=()):
+    def deco(func):
+        def closure(*args, **kwargs):
+            thread = AsyncCallThread(
+                target=func,
+                result_callback=result_callback, error_callback=error_callback, exceptions=exceptions,
+                args=args, kwargs=kwargs)
+            thread.start()
+            return thread
+
+        update_wrapper(closure, func)
+        return closure
+
+    return deco
+
+
 def async_deco(func, result_callback=None, error_callback=None, exceptions=()):
     def closure(*args, **kwargs):
         #log.debug('before thread create')
