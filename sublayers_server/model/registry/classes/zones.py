@@ -5,11 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, Position, Parameter, FloatAttribute, TextAttribute
-from sublayers_server.model.registry.attr.link import Slot
-from sublayers_server.model.registry.attr.inv import InventoryAttribute
-from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
-from sublayers_server.model.registry.classes.item import SlotLock  # tpodo: перенести к описанию слота
+from sublayers_server.model.registry.attr import Attribute, IntAttribute, TextAttribute
 
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
@@ -18,16 +14,28 @@ from sublayers_server.model.events import InsertNewServerZone
 from sublayers_server.model.async_tools import async_deco
 from sublayers_server.model import tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
-from tornado.options import options
 
+from tornado.options import options
+from collections import Iterable
 import os
 
 
 class Zone(Root):
-    def __init__(self, name, effects):
-        super(Zone, self).__init__()
-        self.name = name
-        self.effects = effects[:]
+
+    effect_names = Attribute(caption=u'Эффекты', doc=u'Список эффектов, действующих в зоне')  # todo: list attribute
+    order_key = TextAttribute(caption=u'Порядковый ключ', doc=u'Алфавитный ключ, определяющий порядок загрузки зон')
+
+    def __init__(self, **kw):
+        super(Zone, self).__init__(**kw)
+        self.effects = []
+        self.is_active = False
+
+    def activate(self, server, time):
+        assert not self.abstract  # нельзя активировать абстрактные зоны
+        for effect_name in self.effect_names or ():
+            self.effects.append(server.effects.get(effect_name))
+        InsertNewServerZone(server=server, time=time, zone=self).post()
+        self.is_active = True
 
     def send_message(self, obj, active, time):
         if obj.owner:
@@ -45,8 +53,22 @@ class Zone(Root):
             effect.done(owner=obj, time=time)
         self.send_message(obj=obj, active=False, time=time)
 
+    def get_value(self, obj, time):
+        return
+
     def test_in_zone(self, obj, time):
-        pass
+        if tags.UnZoneTag in obj.tags:
+            return
+        value = self.get_value(obj, time)
+        if value is None:
+            return
+
+        if value:
+            if self not in obj.zones:
+                self._obj_in_zone(obj=obj, time=time)
+        else:
+            if self in obj.zones:
+                self._obj_out_zone(obj=obj, time=time)
 
 
 class ZoneDirt(Zone):
@@ -57,143 +79,102 @@ class ZoneDirt(Zone):
             self._obj_in_zone(obj=obj, time=time)
 
 
-class ZoneTileset(Zone):
-    def __init__(self, ts, **kw):
-        super(ZoneTileset, self).__init__(**kw)
-        self.ts = ts
-        # todo: вынести в сервер или куда-то !!!!
-        self.max_map_zoom = 18
+class FileZone(Zone):
+    path = TextAttribute(caption=u'Путь', doc=u'Файловый путь к файлу/каталогу с описанием зоны')
+    max_map_zoom = IntAttribute(default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
 
-    def test_in_zone(self, obj, time):
-        if tags.UnZoneTag in obj.tags:
+
+class TilesetZone(FileZone):
+
+    def __init__(self, **kw):
+        super(TilesetZone, self).__init__(**kw)
+        self.ts = None
+
+    def activate(self, server, time):
+        if self._load_from_file():
+            super(TilesetZone, self).activate(server, time)
+
+    def _load_from_file(self):
+        file_path = os.path.join(options.world_path, self.path)
+        try:
+            with open(file_path) as f:
+                self.ts = Tileset(f)
+        except Exception as e:
+            log.warning("Can not load zone %s from %r: %s", self.name, file_path, e)
             return
-        position = obj.position(time=time)
-        if self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)):
-            if self not in obj.zones:
-                self._obj_in_zone(obj=obj, time=time)
         else:
-            if self in obj.zones:
-                self._obj_out_zone(obj=obj, time=time)
+            log.info('Successful read zone %s from file: %s', self.name, file_path)
+            return True
+
+    def get_value(self, obj, time):
+        position = obj.position(time=time)
+        return self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8))
 
 
-class AltitudeZoneTileset(ZoneTileset):
+class RasterZone(FileZone):
+    pixel_depth = IntAttribute(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
+    extension = TextAttribute(default='.jpg', caption=u'Расширение тайлов')
+    channel = IntAttribute(default=None, caption=u'Канал',
+                           doc=u'Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)')
+
+    def __init__(self, **kw):
+        super(RasterZone, self).__init__(**kw)
+        self._picker = TilePicker(
+            path=os.path.join(options.world_path, self.path),
+            pixel_depth=self.pixel_depth,
+            extension=self.extension,
+        )
+
+    def activate(self, server, time):
+        assert self.pixel_depth  # Должна быть задана глубина пикселя
+        super(RasterZone, self).activate(server, time)
+
+    def get_value(self, obj, time):
+        position = obj.position(time=time)
+        mz = self.max_map_zoom + 8  # todo: speed optimization (attribute getter)
+        x, y, z = Tileid(long(position.x), long(position.y), mz).parent(mz - self._picker.pixel_depth).xyz()
+        value = self._picker[x, y]
+        if value is None:
+            return
+
+        channel = self.channel
+        if channel is None:
+            return value
+        if isinstance(value, Iterable):
+            return value[channel]
+        else:
+            assert channel == 0
+            return value
+
+
+class AltitudeZone(RasterZone):
     def test_in_zone(self, obj, time):
         if tags.UnZoneTag in obj.tags:
             return
         if tags.UnAltitudeTag in obj.tags:
             return
-        position = obj.position(time=time)
-        obj.on_change_altitude(
-            new_altitude=self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8)), time=time)
 
-
-class AltitudeZonePicker(Zone):
-    def __init__(self, tiles_path, pixel_depth, extension='.jpg', **kw):
-        super(AltitudeZonePicker, self).__init__(**kw)
-        self._picker = TilePicker(path=tiles_path, pixel_depth=pixel_depth, extension=extension)
-        self.max_map_zoom = 18  # todo: вынести в конфигурацию
-
-    def test_in_zone(self, obj, time):
-        if tags.UnZoneTag in obj.tags or tags.UnAltitudeTag in obj.tags:
-            return
-
-        position = obj.position(time=time)
-        x, y, z = Tileid(
-            long(position.x),
-            long(position.y),
-            self.max_map_zoom + 8
-        ).parent(self.max_map_zoom + 8 - self._picker.pixel_depth).xyz()
-
-        alt = self._picker[x, y]
-
-        if alt is not None:
-            obj.on_change_altitude(alt[0], time=time)
+        value = self.get_value(obj, time)
+        if value is not None:
+            obj.on_change_altitude(new_altitude=value, time=time)
 
 
 def init_zones_on_server(server, time):
-
-    def read_ts_from_file(zone_name, file_name, effects, zone_cls=ZoneTileset):
-        file_path = os.path.join(options.world_path, 'tilesets', file_name)
-        zone = None
-        if os.path.exists(file_path):
-            if os.path.isfile(file_path):
-                zone = zone_cls(
-                    name=zone_name,
-                    effects=effects,
-                    ts=Tileset(open(file_path)),
-                )
-        if zone:
-            log.info('Successful read zone %s from file: %s', zone_name, file_name)
-        else:
-            log.warning('Failed read zone %s from file: %s', zone_name, file_name)
-        return zone
 
     def on_error(error):
         """async call error handler"""
         log.warning('Read Zone: on_error(%s)', error)
 
     def load_all_ts():
-        InsertNewServerZone(
-            server=server,
-            time=time,
-            zone=read_ts_from_file(
-                zone_name='Road',
-                file_name='ts_road',
-                effects=[
-                    server.effects.get('EffectRoadRCCWood'),
-                    server.effects.get('EffectRoadRCCWater'),
-                    server.effects.get('EffectRoadRCCDirt'),
-                    server.effects.get('EffectRoadRCCSlope'),
-                ],
-            ),
-        ).post()
-
-        InsertNewServerZone(
-            server=server,
-            time=time,
-            zone=read_ts_from_file(
-                zone_name='Wood',
-                file_name='ts_wood',
-                effects=[
-                    server.effects.get('EffectWoodCC'),
-                    server.effects.get('EffectWoodVisibility'),
-                    server.effects.get('EffectWoodObsRange'),
-                ],
-            ),
-        ).post()
-
-        InsertNewServerZone(
-            server=server,
-            time=time,
-            zone=read_ts_from_file(
-                zone_name='Water',
-                file_name='ts_water',
-                effects=[server.effects.get('EffectWaterCC')],
-            ),
-        ).post()
-
-        InsertNewServerZone(
-            server=server,
-            time=time,
-            zone=read_ts_from_file(
-                zone_name='Slope',
-                file_name='ts_slope_black_80',
-                effects=[server.effects.get('EffectSlopeCC')],
-            ),
-        ).post()
-
-    # загрузка особенной зоны - бездорожье
-    server.zones.append(ZoneDirt(name='Dirt', effects=[server.effects.get('EffectDirtCC')]))
+        zones = [zone for zone in server.reg['/zones']]
+        zones.sort(key=lambda zone: zone.order_key)
+        for zone in zones:
+            if not zone.is_active:
+                log.info('Try to activate zone %s', zone)
+                zone.activate(server=server, time=time)
+                if zone.is_active:
+                    log.info('Zone %s activated successfully', zone)
+                else:
+                    log.warning('Zone %s is not activated')
 
     async_deco(load_all_ts, error_callback=on_error)()
-
-    InsertNewServerZone(
-        server=server,
-        time=time,
-        zone=AltitudeZonePicker(
-            name='Altitude',
-            effects=[],
-            tiles_path=os.path.join(options.world_path, 'altitude'),
-            pixel_depth=14 + 8,
-        )
-    ).post()
