@@ -5,14 +5,13 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
-from sublayers_server.model.zones import init_zones_on_server
+from sublayers_server.model.registry.classes.zones import init_zones_on_server
 from sublayers_server.model.effects import get_effects
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
-from sublayers_server.model.units import POIStash
 from sublayers_server.model.events import LoadWorldEvent
 from sublayers_server.model.registry.storage import Registry, Collection
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
@@ -85,11 +84,6 @@ class Server(object):
         gs_root = self.reg['/poi/locations/gas_stations']
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
-
-
-        # info: создание тестового трупа
-        ex_stash = self.reg['/poi/stash/stash1'].instantiate()
-        POIStash(server=self, time=event.time, example=ex_stash)
 
     def post_message(self, message):
         """

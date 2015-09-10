@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskPerformEvent, TaskSingleton
 from sublayers_server.model.state import EPS
 from copy import copy
+from sublayers_server.model.vectors import Point
+from math import sqrt
 
 
 class MotionTaskEvent(TaskPerformEvent):
@@ -52,52 +54,88 @@ class MotionTask(TaskSingleton):
         st = copy(owner.state)
         st.update(t=time)
 
+        # log.debug('============================== start last_time= %s', st.t_max)
+        # Шаг 0: Прекратить ускорение/замедление
+        if st.t_max is not None:
+            cur_cc = st.v0 / st.get_max_v_by_cc(cc=self.cc)
+            st.update(t=time, cc=cur_cc)
+            MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
+        # log.debug('============================== 0 last_time= %s', st.t_max)
+
         # Шаг 1: Синхронизация знаков сс и текущей скорости
         if (self.cc * st.v(time)) < 0:
+            # log.debug('============================== 1')
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
             time = st.update(t=time, cc=0.0, turn=0.0)
             assert time is not None
 
-        # Шаг 2: Установить желаемое сс
-        if abs(abs(self.cc) * st.get_max_v_by_cc(self.cc) - st.v(t=time)) > EPS:
+        # Шаг 2: Если скорость 0 то необходимо разогнаться
+        if abs(st.v(t=time)) < EPS:
+            # log.debug('============================== 2')
+            min_cc = min(abs(self.cc), abs(owner.params.get('p_cc').original * 0.1)) * (1 if self.cc >= 0.0 else -1)
+            MotionTaskEvent(time=time, task=self, cc=min_cc, turn=0.0).post()
+            time = st.update(t=time, cc=min_cc, turn=0.0)
+            assert time is not None
+
+        # Шаг 3: Замедлиться при необходимости
+        if (abs(st.v(t=time)) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
+            # log.debug('============================== 3')
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
             assert time is not None
 
-        # Шаг 3: Повернуться к цели
+        # Шаг 4: Расчет поворота
         st.update(t=time)
-        dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
-        if not (dist > EPS):  # если target_point слишком близко, то проехать некоторое расстояние вперед
-            dist = 2.1 * st.r(st.t0)  # расстояние которое надо проехать
-            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
-            st.update(t=time, cc=self.cc, turn=0.0)
-            time += abs(dist / st.v0)
+        if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
+            #log.debug('============================== 4')
+            dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+            # Если target_point слишком близко, то проехать некоторое расстояние вперед
+            if dist <= 0.0:
+                #log.debug('============================== 41')
+                v_dir = Point.polar(r=1, fi=st.fi0)
+                min_dist = (st.p0 + v_dir.scale(Point.scalar_mul(v_dir, (target_point - st.p0)))).distance(target_point)
+                target_v = sqrt((max(min_dist / 2.0, st.r_min) - st.r_min) * st.ac_max)
+                if target_v < EPS:
+                    #log.debug('============================== 411')
+                    target_v = min(5.0, st.get_max_v_by_cc(self.cc) * self.cc)
+                target_cc = target_v / st.get_max_v_by_cc(self.cc)
 
-        # Непосредственно поворот
-        st.update(t=time)
-        dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
-        if dist > EPS:  # если после последних апдейтов дистанция так же позволяет поворачивать
-            turn_fi = st._get_turn_fi(target_point)
-            if abs(turn_fi) > EPS:  # если мы не направлены в сторону цели, то повернуться к ней с постоянной скоростью
-                turn = st._get_turn_sign(target_point)
-                if st.v0 > 0:
-                    turn = -turn
-                MotionTaskEvent(time=time, task=self, cc=self.cc, turn=turn).post()
-                st.update(t=time, cc=self.cc, turn=turn)
-                time += abs(turn_fi * st.r(st.t0) / st.v0)
+                MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
+                time = st.update(t=time, cc=target_cc, turn=0.0)
 
-            # Шаг 4: Подъехать к цели
+                # Если мы близко, то проехать 2 радиуса
+                st.update(t=time)
+                dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+                if not (dist > EPS):
+                    #log.debug('============================== 42')
+                    dist = 4.1 * st.r(st.t0)  # расстояние которое надо проехать
+                    MotionTaskEvent(time=time, task=self, turn=0.0).post()
+                    st.update(t=time, turn=0.0)
+                    time += abs(dist / st.v0)
+            # Непосредственно поворот
+            #log.debug('============================== 43')
             st.update(t=time)
-            dist = st.p0.distance(target_point)
-            br_time = abs(st.v0 / st.a_braking)
-            br_dist = abs(st.v0 * br_time + 0.5 * (br_time ** 2) * (st.a_braking if st.v0 >= 0 else -st.a_braking))
+            turn_fi = st._get_turn_fi(target_point)
+            turn = st._get_turn_sign(target_point)
+            if st.v0 > 0:
+                turn = -turn
+            MotionTaskEvent(time=time, task=self, turn=turn).post()
+            st.update(t=time, turn=turn)
+            time += abs(turn_fi * st.r(st.t0) / st.v0)
 
-            if dist > br_dist:  # проехать некоторое расстояние вперед
-                dist -= br_dist
-                MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
-                st.update(t=time, cc=self.cc, turn=0.0)
-                time += abs(dist / st.v0)
-
+        # Шаг 5: Доехать до цели
+        # log.debug('============================== 6')
+        st.update(t=time)
+        dist = st.p0.distance(target_point)
+        a_time, m_time, b_time = st._calc_time_segment(s=dist, cc=self.cc)
+        if a_time > 0.0:
+            MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
+            upd_time = st.update(t=time, cc=self.cc, turn=0.0)
+            time = min(upd_time, time + a_time)
+        if m_time > 0.0:
+            MotionTaskEvent(time=time, task=self, turn=0.0).post()
+            st.update(t=time, turn=0.0)
+            time += m_time
         # Замедление
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
         time = st.update(t=time, cc=0.0, turn=0.0)
@@ -105,6 +143,7 @@ class MotionTask(TaskSingleton):
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
         time = st.update(t=time, cc=0.0, turn=0.0)
         assert time is None
+        #log.debug('============================== end')
 
     def _update_state(self, event):
         owner = self.owner
