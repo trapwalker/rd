@@ -119,7 +119,7 @@ class Inventory(object):
                     old_item.set_inventory(time=time, inventory=None)
             if (item_rec['item'] is not None) and (item_rec['val0'] != item_rec['val']):
                 item_rec['item'].change(consumer=None, dv=item_rec['val'] - item_rec['val0'], ddvs=0, action=None,
-                                        time=time)                      
+                                        time=time)
 
     def on_change(self, time):
         for func in self.on_change_list:
@@ -128,11 +128,9 @@ class Inventory(object):
     def can_change(self, agent):
         return agent in self.managers
 
-    def add_visitor(self, agent, time, is_manager=True):
+    def add_visitor(self, agent, time):
         if agent not in self.visitors:
             self.visitors.append(agent)
-            if is_manager:
-                self.add_manager(agent=agent)
         self.send_inventory(agent=agent, time=time)
 
     def del_all_visitors(self, time):
@@ -143,11 +141,10 @@ class Inventory(object):
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
-            self.del_manager(agent=agent)
         InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
 
     def add_manager(self, agent):
-        if (agent in self.visitors) and (agent not in self.managers):
+        if agent not in self.managers:
             self.managers.append(agent)
 
     def del_manager(self, agent):

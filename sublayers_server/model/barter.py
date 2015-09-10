@@ -156,15 +156,13 @@ class Barter(object):
         self.initiatorTableObj = BarterTable(server=self.initiator.server, time=time, barter=self,
                                              max_size=self.initiator_car.example.inventory_size)
         self.initiatorTable = self.initiatorTableObj.inventory
-        self.initiatorTable.add_visitor(agent=self.initiator, time=time, is_manager=True)
-        self.initiatorTable.add_visitor(agent=self.recipient, time=time, is_manager=False)
+        self.initiatorTable.add_manager(agent=self.initiator)
         self.initiatorTable.on_change_list.append(self._change_table)
 
         self.recipientTableObj = BarterTable(server=self.recipient.server, time=time, barter=self,
                                              max_size=self.recipient_car.example.inventory_size)
         self.recipientTable = self.recipientTableObj.inventory
-        self.recipientTable.add_visitor(agent=self.recipient, time=time, is_manager=True)
-        self.recipientTable.add_visitor(agent=self.initiator, time=time, is_manager=False)
+        self.recipientTable.add_manager(agent=self.recipient)
         self.recipientTable.on_change_list.append(self._change_table)
 
         # Отправить сообщения об открытии окна

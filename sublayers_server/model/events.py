@@ -413,16 +413,12 @@ class ItemActionInventoryEvent(Event):
                 end_inventory = end_obj.inventory
                 end_item = end_inventory.get_item(position=self.end_pos)
 
-        # todo: сделать проверку на POIContainer, иначе будут ошибки
-        if (self.agent not in start_inventory.managers):
+        if self.agent not in start_inventory.managers:
             return
-        if not ((start_obj is self.agent.api.car) or start_obj.is_available(self.agent)):
-            return
-        if not ((end_obj is None) or (end_obj is self.agent.api.car) or end_obj.is_available(self.agent)):
+        if (end_inventory is not None) and (self.agent not in end_inventory.managers):
             return
 
         if end_item is not None:
-            # todo: Здесь произойдёт попытка натаскивания итемов друг на друга в разных инвентарях - оттестировать это
             end_item.add_another_item(item=start_item, time=self.time)
         else:
             # Если нет второ итема

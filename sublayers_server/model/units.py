@@ -40,10 +40,16 @@ class POILoot(Observer):
     def is_available(self, agent):
         return agent.car in self.visible_objects
 
+    def on_contact_in(self, time, obj):
+        super(POILoot, self).on_contact_in(time=time, obj=obj)
+        if isinstance(obj, Bot) and obj.owner:
+            self.inventory.add_manager(agent=obj.owner)
+
     def on_contact_out(self, time, obj):
         super(POILoot, self).on_contact_out(time=time, obj=obj)
         if isinstance(obj, Bot) and obj.owner:
             self.inventory.del_visitor(agent=obj.owner, time=time)
+            self.inventory.del_manager(agent=obj.owner)
 
     def load_inventory(self, time):
         for item_example in self.example.inventory:
@@ -87,6 +93,8 @@ class Unit(Observer):
 
         # загрузка инвенторя
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        if owner:
+            self.inventory.add_manager(agent=owner)
         self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
