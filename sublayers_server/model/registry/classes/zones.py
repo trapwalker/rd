@@ -14,8 +14,9 @@ from sublayers_server.model.events import InsertNewServerZone
 from sublayers_server.model.async_tools import async_deco
 from sublayers_server.model import tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
-from tornado.options import options
 
+from tornado.options import options
+from collections import Iterable
 import os
 
 
@@ -56,7 +57,18 @@ class Zone(Root):
         return
 
     def test_in_zone(self, obj, time):
-        pass
+        if tags.UnZoneTag in obj.tags:
+            return
+        value = self.get_value(obj, time)
+        if value is None:
+            return
+
+        if value:
+            if self not in obj.zones:
+                self._obj_in_zone(obj=obj, time=time)
+        else:
+            if self in obj.zones:
+                self._obj_out_zone(obj=obj, time=time)
 
 
 class ZoneDirt(Zone):
@@ -72,15 +84,15 @@ class FileZone(Zone):
     max_map_zoom = IntAttribute(default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
 
 
-class ZoneTileset(FileZone):
+class TilesetZone(FileZone):
 
     def __init__(self, **kw):
-        super(ZoneTileset, self).__init__(**kw)
+        super(TilesetZone, self).__init__(**kw)
         self.ts = None
 
     def activate(self, server, time):
         if self._load_from_file():
-            super(ZoneTileset, self).activate(server, time)
+            super(TilesetZone, self).activate(server, time)
 
     def _load_from_file(self):
         file_path = os.path.join(options.world_path, self.path)
@@ -98,38 +110,15 @@ class ZoneTileset(FileZone):
         position = obj.position(time=time)
         return self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8))
 
-    def test_in_zone(self, obj, time):
-        if tags.UnZoneTag in obj.tags:
-            return
-        value = self.get_value(obj, time)
-        if value:
-            if self not in obj.zones:
-                self._obj_in_zone(obj=obj, time=time)
-        else:
-            if self in obj.zones:
-                self._obj_out_zone(obj=obj, time=time)
-
-
-class AltitudeZoneTileset(ZoneTileset):
-    def test_in_zone(self, obj, time):
-        if tags.UnZoneTag in obj.tags:
-            return
-        if tags.UnAltitudeTag in obj.tags:
-            return
-
-        value = self.get_value(obj, time)
-        obj.on_change_altitude(new_altitude=value, time=time)
-
 
 class RasterZone(FileZone):
     pixel_depth = IntAttribute(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
     extension = TextAttribute(default='.jpg', caption=u'Расширение тайлов')
-
-
-class AltitudeZonePicker(RasterZone):
+    channel = IntAttribute(default=None, caption=u'Канал',
+                           doc=u'Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)')
 
     def __init__(self, **kw):
-        super(AltitudeZonePicker, self).__init__(**kw)
+        super(RasterZone, self).__init__(**kw)
         self._picker = TilePicker(
             path=os.path.join(options.world_path, self.path),
             pixel_depth=self.pixel_depth,
@@ -138,19 +127,36 @@ class AltitudeZonePicker(RasterZone):
 
     def activate(self, server, time):
         assert self.pixel_depth  # Должна быть задана глубина пикселя
-        super(AltitudeZonePicker, self).activate(server, time)
+        super(RasterZone, self).activate(server, time)
 
-    def test_in_zone(self, obj, time):
-        if tags.UnZoneTag in obj.tags or tags.UnAltitudeTag in obj.tags:
-            return
-
+    def get_value(self, obj, time):
         position = obj.position(time=time)
         mz = self.max_map_zoom + 8  # todo: speed optimization (attribute getter)
         x, y, z = Tileid(long(position.x), long(position.y), mz).parent(mz - self._picker.pixel_depth).xyz()
-        alt = self._picker[x, y]
+        value = self._picker[x, y]
+        if value is None:
+            return
 
-        if alt is not None:
-            obj.on_change_altitude(alt[0], time=time)
+        channel = self.channel
+        if channel is None:
+            return value
+        if isinstance(value, Iterable):
+            return value[channel]
+        else:
+            assert channel == 0
+            return value
+
+
+class AltitudeZone(RasterZone):
+    def test_in_zone(self, obj, time):
+        if tags.UnZoneTag in obj.tags:
+            return
+        if tags.UnAltitudeTag in obj.tags:
+            return
+
+        value = self.get_value(obj, time)
+        if value is not None:
+            obj.on_change_altitude(new_altitude=value, time=time)
 
 
 def init_zones_on_server(server, time):
