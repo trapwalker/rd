@@ -23,7 +23,7 @@ from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town, GasStation
-from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent
+from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent
 
 from sublayers_server.model.inventory import ItemState
 
@@ -489,3 +489,13 @@ class AgentAPI(API):
     def activate_barter(self, barter_id):
         log.debug('Agent %s accept barter_id %s ', self.agent, barter_id)
         ActivateBarterEvent(barter_id=barter_id, recipient=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def lock_barter(self, barter_id):
+        log.debug('Agent %s lock barter_id %s ', self.agent, barter_id)
+        LockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def unlock_barter(self, barter_id):
+        log.debug('Agent %s unlock barter_id %s ', self.agent, barter_id)
+        UnLockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()

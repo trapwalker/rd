@@ -799,7 +799,8 @@ var ClientManager = (function () {
     //    });
     //};
 
-    /*  БАРТЕР  */
+    // Бартер
+
     ClientManager.prototype.InviteBarterMessage = function (event) {
         console.log('ClientManager.prototype.InviteBarterMessage', event);
     };
@@ -807,6 +808,16 @@ var ClientManager = (function () {
     ClientManager.prototype.ActivateBarterMessage = function (event) {
         console.log('ClientManager.prototype.ActivateBarterMessage', event);
         windowTemplateManager.openUniqueWindow('barter', '/barter', {barter_id: event.barter_id});
+    };
+
+    ClientManager.prototype.LockBarterMessage = function (event) {
+        console.log('ClientManager.prototype.LockBarterMessage', event);
+        barterManager.LockBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.UnlockBarterMessage = function (event) {
+        console.log('ClientManager.prototype.UnlockBarterMessage', event);
+        barterManager.UnlockBarter(event.barter_id);
     };
 
     // Исходящие сообщения
@@ -1258,6 +1269,7 @@ var ClientManager = (function () {
     };
 
     // Бартер
+
     ClientManager.prototype.sendInitBarter = function (recipient_login) {
         console.log('ClientManager.prototype.sendInitBarter', recipient_login);
         var mes = {
@@ -1275,6 +1287,32 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.sendActivateBarter', barter_id);
         var mes = {
             call: "activate_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendLockBarter = function (barter_id) {
+        console.log('ClientManager.prototype.sendLockBarter', barter_id);
+        var mes = {
+            call: "lock_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendUnlockBarter = function (barter_id) {
+        console.log('ClientManager.prototype.sendUnlockBarter', barter_id);
+        var mes = {
+            call: "unlock_barter",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 barter_id: barter_id

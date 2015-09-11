@@ -111,6 +111,32 @@ class ActivateBarterMessage(Message):
         return d
 
 
+class LockBarterMessage(Message):
+    def __init__(self, barter, **kw):
+        super(LockBarterMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(LockBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+        )
+        return d
+
+
+class UnlockBarterMessage(Message):
+    def __init__(self, barter, **kw):
+        super(UnlockBarterMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(UnlockBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+        )
+        return d
+
+
 class BarterTable(Object):
     def __init__(self, barter, time, max_size, **kw):
         super(BarterTable, self).__init__(time=time, **kw)
@@ -175,11 +201,13 @@ class Barter(object):
         if agent is self.initiator:
             self.initiator_lock = True
             self.initiatorTable.del_manager(agent=self.initiator)
+            LockBarterMessage(agent=self.initiator, barter=self, time=time).post()
         if agent is self.recipient:
             self.recipient_lock = True
             self.recipientTable.del_manager(agent=self.recipient)
+            LockBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
-        # Создание евента на завершение транзакции и отсылка сообщений об этом агентам
+        # Создание ивента на завершение транзакции и отсылка сообщений об этом агентам
         if self.recipient_lock and self.initiator_lock:
             self.state = 'lock'
             self.success_event = SuccessBarterEvent(barter=self, time=time + self.success_delay)
@@ -192,10 +220,12 @@ class Barter(object):
         self.initiatorTable.add_manager(agent=self.initiator)
         self.state = 'active'
 
+        UnlockBarterMessage(agent=self.initiator, barter=self, time=time).post()
+        UnlockBarterMessage(agent=self.recipient, barter=self, time=time).post()
+
         if self.success_event:
             self.success_event.cancel()
             self.success_event = None
-            # todo: отправить сообщение
 
     def on_success(self, time):
         self.initiator.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
