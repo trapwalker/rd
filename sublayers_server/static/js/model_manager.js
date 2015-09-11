@@ -830,6 +830,11 @@ var ClientManager = (function () {
         barterManager.UnlockBarter(event.barter_id);
     };
 
+    ClientManager.prototype.StartBarterTimerMessage = function (event) {
+        //console.log('ClientManager.prototype.StartBarterTimerMessage', event);
+        barterManager.StartBarterTimer(event.barter_id, event.success_delay);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1281,7 +1286,7 @@ var ClientManager = (function () {
     // Бартер
 
     ClientManager.prototype.sendInitBarter = function (recipient_login) {
-        console.log('ClientManager.prototype.sendInitBarter', recipient_login);
+        //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
         var mes = {
             call: "init_barter",
             rpc_call_id: rpcCallList.getID(),
@@ -1294,7 +1299,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivateBarter = function (barter_id) {
-        console.log('ClientManager.prototype.sendActivateBarter', barter_id);
+        //console.log('ClientManager.prototype.sendActivateBarter', barter_id);
         var mes = {
             call: "activate_barter",
             rpc_call_id: rpcCallList.getID(),
@@ -1307,7 +1312,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendCancelBarter = function (barter_id) {
-        console.log('ClientManager.prototype.sendCancelBarter', barter_id);
+        //console.log('ClientManager.prototype.sendCancelBarter', barter_id);
         var mes = {
             call: "cancel_barter",
             rpc_call_id: rpcCallList.getID(),
@@ -1320,7 +1325,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendLockBarter = function (barter_id) {
-        console.log('ClientManager.prototype.sendLockBarter', barter_id);
+        //console.log('ClientManager.prototype.sendLockBarter', barter_id);
         var mes = {
             call: "lock_barter",
             rpc_call_id: rpcCallList.getID(),
@@ -1333,7 +1338,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendUnlockBarter = function (barter_id) {
-        console.log('ClientManager.prototype.sendUnlockBarter', barter_id);
+        //console.log('ClientManager.prototype.sendUnlockBarter', barter_id);
         var mes = {
             call: "unlock_barter",
             rpc_call_id: rpcCallList.getID(),

@@ -144,6 +144,20 @@ class UnlockBarterMessage(Message):
         return d
 
 
+class StartBarterTimerMessage(Message):
+    def __init__(self, barter, **kw):
+        super(StartBarterTimerMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(StartBarterTimerMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+            success_delay=self.barter.success_delay,
+        )
+        return d
+
+
 class SuccessBarterMessage(Message):
     def __init__(self, barter, **kw):
         super(SuccessBarterMessage, self).__init__(**kw)
@@ -243,6 +257,8 @@ class Barter(object):
         # Создание ивента на завершение транзакции и отсылка сообщений об этом агентам
         if self.recipient_lock and self.initiator_lock:
             self.state = 'lock'
+            StartBarterTimerMessage(agent=self.initiator, barter=self, time=time).post()
+            StartBarterTimerMessage(agent=self.recipient, barter=self, time=time).post()
             self.success_event = SuccessBarterEvent(barter=self, time=time + self.success_delay)
             self.success_event.post()
 
@@ -264,15 +280,23 @@ class Barter(object):
         self.initiator.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
         self.recipient.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
 
+        self.recipient.barters.remove(self)
+        self.initiator.barters.remove(self)
+
         # Отправить сообщения о закрытии окон
         SuccessBarterMessage(agent=self.initiator, barter=self, time=time).post()
         SuccessBarterMessage(agent=self.recipient, barter=self, time=time).post()
+
+
 
     def on_cancel(self, time):
         if self.state == 'unactive':
             return
         self.initiator.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
         self.recipient.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
+
+        self.recipient.barters.remove(self)
+        self.initiator.barters.remove(self)
 
         # Отправить сообщения о закрытии окон
         CancelBarterMessage(agent=self.initiator, barter=self, time=time).post()
