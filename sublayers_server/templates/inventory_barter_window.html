@@ -220,12 +220,18 @@
     inventoryList.showInventory({{ my_table_id }}, $('#barterInventoryWindow-id-my-table-{{ barter.id }}'));
     inventoryList.showInventory({{ other_table_id }}, $('#barterInventoryWindow-id-another-table-{{ barter.id }}'));
 
-    // Устанавливаем обработчики кнопок
+    // "Подтвердить сделку"
     $('#barterInventoryWindow-apply-button-{{ barter.id }}').click(function(event) {
         clientManager.sendLockBarter({{ barter.id }});
     });
 
+    // "Отмена"
     $('#barterInventoryWindow-cancel-button-{{ barter.id }}').click(function(event) {
         clientManager.sendUnlockBarter({{ barter.id }});
+    });
+
+    // Закрытие окна
+    $('#barterInventoryWindow-{{ barter.id }}').find('.windowDragCloseHeader-close').first().click(function(event) {
+        clientManager.sendCancelBarter({{ barter.id }});
     });
 </script>

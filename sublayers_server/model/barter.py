@@ -16,6 +16,13 @@ class InitBarterEvent(Event):
     def on_perform(self):
         super(InitBarterEvent, self).on_perform()
         recipient = self.server.agents.get(self.recipient_login, None)
+
+        # Проверить нет ли уже приглашения от оппонента и если есть то принять его
+        for barter in self.initiator.barters:
+            if barter.initiator is recipient:
+                barter.on_activate(recipient=self.initiator, time=self.time)
+                return
+
         if recipient:
             Barter(initiator=self.initiator, recipient=recipient, time=self.time)
 
@@ -137,6 +144,32 @@ class UnlockBarterMessage(Message):
         return d
 
 
+class SuccessBarterMessage(Message):
+    def __init__(self, barter, **kw):
+        super(SuccessBarterMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(SuccessBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+        )
+        return d
+
+
+class CancelBarterMessage(Message):
+    def __init__(self, barter, **kw):
+        super(CancelBarterMessage, self).__init__(**kw)
+        self.barter = barter
+
+    def as_dict(self):
+        d = super(CancelBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+        )
+        return d
+
+
 class BarterTable(Object):
     def __init__(self, barter, time, max_size, **kw):
         super(BarterTable, self).__init__(time=time, **kw)
@@ -230,14 +263,20 @@ class Barter(object):
     def on_success(self, time):
         self.initiator.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
         self.recipient.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
-        # todo: отправить сообщения о закрытии окон
+
+        # Отправить сообщения о закрытии окон
+        SuccessBarterMessage(agent=self.initiator, barter=self, time=time).post()
+        SuccessBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
     def on_cancel(self, time):
         if self.state == 'unactive':
             return
         self.initiator.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
         self.recipient.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
-        # todo: отправить сообщения о закрытии окон
+
+        # Отправить сообщения о закрытии окон
+        CancelBarterMessage(agent=self.initiator, barter=self, time=time).post()
+        CancelBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
     def as_dict(self):
         pass

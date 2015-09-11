@@ -67,7 +67,6 @@ var Window = (function () {
             this.modalDiv.remove();
         else
             this.mainDiv.remove();
-
     };
 
     // Загрузка произвольного HTML

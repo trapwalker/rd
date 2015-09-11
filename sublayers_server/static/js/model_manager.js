@@ -806,17 +806,27 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ActivateBarterMessage = function (event) {
-        console.log('ClientManager.prototype.ActivateBarterMessage', event);
-        windowTemplateManager.openUniqueWindow('barter', '/barter', {barter_id: event.barter_id});
+        //console.log('ClientManager.prototype.ActivateBarterMessage', event);
+        barterManager.ActivateBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.CancelBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.CancelBarterMessage', event);
+        barterManager.CancelBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.SuccessBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.SuccessBarterMessage', event);
+        barterManager.SuccessBarter(event.barter_id);
     };
 
     ClientManager.prototype.LockBarterMessage = function (event) {
-        console.log('ClientManager.prototype.LockBarterMessage', event);
+        //console.log('ClientManager.prototype.LockBarterMessage', event);
         barterManager.LockBarter(event.barter_id);
     };
 
     ClientManager.prototype.UnlockBarterMessage = function (event) {
-        console.log('ClientManager.prototype.UnlockBarterMessage', event);
+        //console.log('ClientManager.prototype.UnlockBarterMessage', event);
         barterManager.UnlockBarter(event.barter_id);
     };
 
@@ -1287,6 +1297,19 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.sendActivateBarter', barter_id);
         var mes = {
             call: "activate_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCancelBarter = function (barter_id) {
+        console.log('ClientManager.prototype.sendCancelBarter', barter_id);
+        var mes = {
+            call: "cancel_barter",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 barter_id: barter_id
