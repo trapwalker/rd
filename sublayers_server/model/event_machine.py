@@ -73,6 +73,7 @@ class Server(object):
                 if not zone.is_active:
                     log.info('Try to activate zone %s', zone)
                     zone.activate(server=self, time=time)
+                    # todo: Генерировать исключения при неудачной активации зон
                 if zone.is_active:
                     log.info('Zone %s activated successfully', zone)
                 else:
