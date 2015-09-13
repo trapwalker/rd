@@ -189,34 +189,34 @@ class LocalServer(Server):
 
         log.info('---- Event loop stop ' + '-' * 50 + '\n')
 
-    def debug_console_start(self):
-        log.info('Try to start IPython shell kernel')
-        try:
-            from IPython.kernel.zmq.kernelapp import IPKernelApp
-            from IPython import embed_kernel
-            app = IPKernelApp.instance()
-        except:
-            log.exception('Ipython kernel import error')
-        else:
-            def ipython_start():
-                try:
-                    app.init_signal = lambda *args, **kw: None
-                    app.initialize()
-                    app.start()
-
-                    embed_kernel(local_ns=dict(
-                        srv=self,
-                        # todo: embeded shell tools (agents, cars, etc...)
-                    ))
-                except:
-                    log.exception('Ipython kernel start error')
-
-            Thread(target=ipython_start).start()
+    # def debug_console_start(self):
+    #     log.info('Try to start IPython shell kernel')
+    #     try:
+    #         from IPython.kernel.zmq.kernelapp import IPKernelApp
+    #         from IPython import embed_kernel
+    #         app = IPKernelApp.instance()
+    #     except:
+    #         log.exception('Ipython kernel import error')
+    #     else:
+    #         def ipython_start():
+    #             try:
+    #                 app.init_signal = lambda *args, **kw: None
+    #                 app.initialize()
+    #                 app.start()
+    #
+    #                 embed_kernel(local_ns=dict(
+    #                     srv=self,
+    #                     # todo: embeded shell tools (agents, cars, etc...)
+    #                 ))
+    #             except:
+    #                 log.exception('Ipython kernel start error')
+    #
+    #         Thread(target=ipython_start).start()
 
     def start(self):
         if self.thread:
             raise EServerAlreadyStarted()
-        #self.debug_console_start()
+        # self.debug_console_start()
         self.start_time = self.get_time()
         self.thread = Thread(target=self.event_loop)
         self.thread.start()
@@ -228,8 +228,8 @@ class LocalServer(Server):
         self.thread.join(timeout)
         self.thread = None
         self.is_terminated = False
-        #if self.app:
-        #    self.app.stop()  # todo: checkit
+        # if self.app:
+        #     self.app.stop()  # todo: checkit
 
     # todo: pause
 
