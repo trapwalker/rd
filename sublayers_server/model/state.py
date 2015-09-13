@@ -142,6 +142,11 @@ class MotionState(BaseMotionState):
         self.u_cc = 0.0
         self.update()
 
+    def _need_turn(self, target_point):
+        v_dir = Point.polar(r=1, fi=self.fi0)
+        v_t = (target_point - self.p0)
+        return abs(v_dir.angle_with(v_t)) > EPS
+
     def _get_turn_sign(self, target_point):
         assert target_point is not None
         pt = target_point - self.p0
@@ -178,6 +183,54 @@ class MotionState(BaseMotionState):
             res = 2 * pi - res
         return normalize_angle(res)
 
+    def _calc_time_segment(self, s, cc):
+        """
+        Возвращает  (t1, t2, t3)
+        t1 - время отведённое на разгон
+        t2 - время отведённое на равномерное движение
+        t3 - время отведённое на торможение
+        """
+        vcc = 0
+        aa = 0
+        if cc > 0:
+            vcc = cc * self.v_forward
+            aa = self.a_forward
+        else:
+            vcc = cc * self.v_backward
+            aa = abs(self.a_backward)
+        v0 = abs(self.v0)
+        bb = self.a_braking
+
+        # рассчитать тормозной путь от текущей скорости
+        t4 = - v0 / bb
+        s4 = v0 * t4 + bb * (t4 ** 2) / 2
+        if s4 >= s: # если не успеваем, то сразу торможение
+            return 0.0, 0.0, t4
+
+        # путь и время разгона
+        t1 = (vcc - v0) / aa
+        if abs(t1) < EPS:
+            t1 = 0.0
+        s1 = v0 * t1 + aa * (t1 ** 2) / 2.0
+
+        # путь и время торможения
+        t3 = - vcc / bb
+        s3 = vcc * t3 + bb * (t3 ** 2) / 2.0
+
+        if s3 + s1 > s:  # нет равномерного движения
+            t3 = sqrt((2 * aa * s + v0 ** 2) / (bb ** 2 - aa * bb))
+            t1 = (-bb * t3 - v0) / aa
+            if abs(t1) < EPS:
+                t1 = 0.0
+            return t1, 0.0, t3
+
+        if s3 + s1 <= s:  # есть отрезок равномерного движения
+            s2 = s - s3 - s1
+            t2 = s2 / vcc
+            if abs(t2) < EPS:
+                t2 = 0.0
+            return t1, t2, t3
+
     def get_max_v_by_cc(self, cc):
         return self.v_forward if cc >= 0.0 else self.v_backward
 
@@ -189,7 +242,7 @@ class MotionState(BaseMotionState):
         if cc is not None:
             if abs(cc) < EPS:
                 cc = 0.0
-            assert -1 <= cc <= 1
+            assert -1 <= cc <= 1, 'cc={}'.format(cc)
             assert (cc == 0.0) or ((cc > 0.0) and (self.v0 >= 0.0)) or ((cc < 0.0) and (self.v0 <= 0.0)), \
                 'cc={}  v0={}'.format(cc, self.v0)
             self.cc = cc

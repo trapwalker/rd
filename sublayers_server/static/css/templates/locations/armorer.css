@@ -1,0 +1,213 @@
+#townArmorerPageWrap {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
+.armorerWindow-main {
+    position: relative;
+    width: 734px;
+    height: 661px;
+    cursor: default;
+}
+
+.armorer-header {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 692px;
+    height: 205px;
+    padding-bottom: 6px;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+}
+
+.armorer-wrap-header {
+    position: relative;
+    height: 175px;
+    width: 570px;
+    margin: 0px 0px 0px 13px;
+    padding-top: 5px;
+}
+
+.armorer-info {
+    position: relative;
+    float: left;
+    margin-right: 5px;
+}
+
+.armorer-name {
+    position: relative;
+    margin-top: 8px;
+    text-align: center;
+    font: 13pt Nouveau_IBM;
+}
+
+.armorer-text {
+    height: 100%;
+    width: 395px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-top: solid 1px #135806;
+    box-sizing: border-box;
+    padding: 5px 0px 0px 0px;
+}
+
+.armorer-center {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 734px;
+    height: 330px;
+    padding-bottom: 5px;
+}
+
+.armorer-car {
+    width: 492px;
+    height: 100%;
+    float: left;
+}
+
+.armorerSectors {
+    width: 242px;
+    height: 100%;
+    float: left;
+}
+
+.armorerSectors-slotName {
+    box-sizing: border-box;
+    padding-top: 15px;
+    height: 50px;
+    text-align: center;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+}
+
+.armorerSectors-svg {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.armorer-footer {
+    position: relative;
+    margin-right: auto;
+    margin-left: auto;
+    width: 606px;
+    height: 126px;
+}
+
+.npcInventory-label {
+    box-sizing: border-box;
+    padding-left: 70px;
+    height: 21px;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+}
+
+.npcInventory-wrap {
+    width: 100%;
+    height: 105px;
+    overflow-x: scroll;
+}
+
+.npcInventory-itemWrap {
+    box-sizing: border-box;
+    margin-right: 10px;
+    width: 119px;
+    height: 85px;
+    float: left;
+    opacity: 0.6;
+}
+
+.npcInventory-itemWrap:hover {
+    opacity: 1;
+}
+
+.npcInventory-item {
+    position: relative;
+    cursor: pointer;
+    width: 119px;
+    height: 85px;
+    float: left;
+}
+
+.npcInventory-name {
+    position: absolute;
+    padding: 2px 2px 2px 2px;
+    font: 10pt Nouveau_IBM;
+    color: #135806;
+}
+
+.npcInventory-pictureWrap {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+    linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.npcInventory-picture {
+    position: relative;
+    height: 33px;
+    width: 62px;
+    margin: 35px auto 0px auto;
+}
+
+.car_sector {
+    opacity: 0.3;
+    cursor: pointer;
+}
+
+.car_sector_hover {
+    opacity: 1;
+}
+
+.car_sector_active {
+    opacity: 1;
+}
+
+.car_sector_disable {
+    display: none;
+}
+
+.armorer-car-slot-picture {
+    position: absolute;
+    height: 35px;
+    width: 35px;
+}
+
+.armorer_top_F, .armorer_top_B {
+    position: absolute;
+    pointer-events: none;
+    top: -32px;
+    left: -82px;
+}
+
+.armorer_top_L, .armorer_top_R {
+    position: absolute;
+    pointer-events: none;
+    top: -82px;
+    left: -32px;
+}
+
+.armorer_side_F, .armorer_side_B {
+    position: absolute;
+    pointer-events: none;
+    top: -65px;
+    left: -82px;
+}
+
+.armorer_side_L, .armorer_side_R {
+    position: absolute;
+    pointer-events: none;
+    top: -65px;
+    left: -32px;
+}

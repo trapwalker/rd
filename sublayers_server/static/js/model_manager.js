@@ -421,7 +421,8 @@ var ClientManager = (function () {
                 //console.log('Radio Towers are hidden');
                 break;
             case 'Town':
-            case 'POIStash':
+            case 'POILoot':
+            case 'POIContainer':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;
@@ -784,6 +785,19 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendTraderCancel');
         locationManager.trader.setupTraderReplica(event.replica)
     };
+
+    //ClientManager.prototype.GetStashWindow = function (event) {
+    //    console.log('ClientManager.prototype.GetStashWindow', event);
+    //    // POST запрос на получение города и вывод его на экран.
+    //    $.ajax({
+    //        url: "http://" + location.host + '/api/stash',
+    //        data:  { stash_id: event.stash_id },
+    //        success: function(data) {
+    //            console.log('ClientManager.prototype.GetStashWindow Answer');
+    //            //
+    //        }
+    //    });
+    //};
 
     // Исходящие сообщения
 
@@ -1151,13 +1165,13 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendLootStash = function (poi_stash_id) {
-        console.log('ClientManager.prototype.sendLootStash', poi_stash_id);
+    ClientManager.prototype.sendGetLoot = function (poi_id) {
+        //console.log('ClientManager.prototype.sendLootStash', poi_id);
         var mes = {
-            call: "loot_stash",
+            call: "get_loot",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                poi_stash_id: poi_stash_id
+                poi_id: poi_id
             }
         };
         rpcCallList.add(mes);
