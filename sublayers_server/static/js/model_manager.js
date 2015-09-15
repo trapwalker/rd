@@ -799,6 +799,49 @@ var ClientManager = (function () {
     //    });
     //};
 
+    // Бартер
+
+    ClientManager.prototype.InviteBarterMessage = function (event) {
+        console.log('ClientManager.prototype.InviteBarterMessage', event);
+    };
+
+    ClientManager.prototype.ActivateBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.ActivateBarterMessage', event);
+        barterManager.ActivateBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.CancelBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.CancelBarterMessage', event);
+        barterManager.CancelBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.SuccessBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.SuccessBarterMessage', event);
+        barterManager.SuccessBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.LockBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.LockBarterMessage', event);
+        barterManager.LockBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.UnlockBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.UnlockBarterMessage', event);
+        barterManager.UnlockBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.ChangeMoneyBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.ChangeMoneyBarterMessage', event);
+        barterManager.ChangeMoneyBarter(event.barter_id, event.my_money, event.other_money);
+    };
+
+
+
+    ClientManager.prototype.StartBarterTimerMessage = function (event) {
+        //console.log('ClientManager.prototype.StartBarterTimerMessage', event);
+        barterManager.StartBarterTimer(event.barter_id, event.success_delay);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1247,6 +1290,86 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Бартер
+
+    ClientManager.prototype.sendInitBarter = function (recipient_login) {
+        //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
+        var mes = {
+            call: "init_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient_login: recipient_login
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivateBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendActivateBarter', barter_id);
+        var mes = {
+            call: "activate_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCancelBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendCancelBarter', barter_id);
+        var mes = {
+            call: "cancel_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendLockBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendLockBarter', barter_id);
+        var mes = {
+            call: "lock_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendUnlockBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendUnlockBarter', barter_id);
+        var mes = {
+            call: "unlock_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTableMoney = function (barter_id, money) {
+        //console.log('ClientManager.prototype.sendTableMoney', barter_id, money);
+        var mes = {
+            call: "table_money_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id,
+                money: money
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

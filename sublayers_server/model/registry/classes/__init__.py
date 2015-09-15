@@ -5,3 +5,4 @@ import item
 import mobiles
 import poi
 import weapons
+import zones
