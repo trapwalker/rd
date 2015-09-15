@@ -66,17 +66,11 @@ class Inventory(object):
             item_rec1['val'] -= dv
             item_rec2['val'] += dv
 
-        log.debug('start add inventory -----------------------')
-
         inv1 = init_inv_list(inv=self, time=time)
         inv2 = init_inv_list(inv=inventory, time=time)
 
-        local_show_inventory(inv1)
-        local_show_inventory(inv2)
-
         # Проверить, нужно ли уплотнить свой инвентарь
         if len(self.get_items()) + len(inventory.get_items()) >= self.max_size:
-            log.debug('---------------- Uplotnenie inventory ------------------')
             # Уплотнить свой инвентарь
             for i in range(0, len(inv1)):
                 rec1 = inv1[i]
@@ -89,12 +83,8 @@ class Inventory(object):
             # Сделать "пустыми" слотами те итемы, которые после уплотнения равны нулю
             for rec in inv1:
                 set_empty_rec(rec)
-        log.debug('==== posle uplotneniya   ----')
-        local_show_inventory(inv1)
-        local_show_inventory(inv2)
 
         # Докинуть полученный инвентарь в свободные слоты (сколько есть слотов, столько и докинуть)
-        log.debug('==== Dokidivanie -------')
         for i in range(0, len(inv2)):
             rec1 = inv2[i]
             if rec1['item'] is None:
@@ -114,10 +104,6 @@ class Inventory(object):
                     inv1[j] = rec1
                     inv2[i] = rec2
                     break
-
-        log.debug('==== Inventori posle dokidivaniya -------')
-        local_show_inventory(inv1)
-        local_show_inventory(inv2)
 
         # Генерируем таски для итемов
         for i in range(0, len(inv1)):
@@ -207,7 +193,6 @@ class Inventory(object):
         self.on_change(time=time)
 
     def change_position(self, item, new_position, time):
-        log.info('change_position')
         old_position = self.get_position(item=item)
         if new_position == old_position:
             return False
@@ -215,8 +200,8 @@ class Inventory(object):
         self.del_item(position=old_position, time=time)
         if item2 is not None:
             self.del_item(position=new_position, time=time)
-            self.add_item(item=item2, position=old_position, time=time + 0.1)
-        self.add_item(item=item, position=new_position, time=time + 0.1)
+            self.add_item(item=item2, position=old_position, time=time)
+        self.add_item(item=item, position=new_position, time=time)
         return True
 
     def get_position(self, item):
@@ -503,7 +488,7 @@ class Consumer(object):
         self.swap = swap
          # если нужно, пытаемся восстановить использование с новыми параметрами
         if started:
-            self.start(time=time + 0.01)
+            self.start(time=time)
 
     def use(self, time):
         if self.item is not None:
@@ -547,7 +532,7 @@ class Consumer(object):
 
             # если нужно, пытаемся восстановить использование
             if started:
-                self.start(time=time + 0.01)
+                self.start(time=time)
 
             # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
             if action == 'on_use':  # так устроено, страдаем все
