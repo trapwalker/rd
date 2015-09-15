@@ -120,6 +120,20 @@ class DoneBarterEvent(Event):
         self.barter.recipient_table_obj.delete(time=self.time)
 
 
+class SetMoneyBarterEvent(Event):
+    def __init__(self, barter_id, money, agent, **kw):
+        super(SetMoneyBarterEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.barter_id = barter_id
+        self.money = money
+
+    def on_perform(self):
+        super(SetMoneyBarterEvent, self).on_perform()
+        barter = self.agent.get_barter_by_id(barter_id=self.barter_id)
+        if barter is not None:
+            barter.on_set_money(agent=self.agent, money=self.money, time=self.time)
+
+
 class InviteBarterMessage(Message):
     def __init__(self, barter, **kw):
         super(InviteBarterMessage, self).__init__(**kw)
@@ -171,6 +185,23 @@ class UnlockBarterMessage(Message):
         d = super(UnlockBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
+        )
+        return d
+
+
+class ChangeMoneyBarterMessage(Message):
+    def __init__(self, barter, my_money, other_money, **kw):
+        super(ChangeMoneyBarterMessage, self).__init__(**kw)
+        self.barter = barter
+        self.my_money = my_money
+        self.other_money = other_money
+
+    def as_dict(self):
+        d = super(ChangeMoneyBarterMessage, self).as_dict()
+        d.update(
+            barter_id=self.barter.id,
+            my_money = self.my_money,
+            other_money = self.other_money,
         )
         return d
 
@@ -242,6 +273,8 @@ class Barter(object):
         self.recipient_table = None
         self.initiator_table_obj = None
         self.recipient_table_obj = None
+        self.initiator_money = 0
+        self.recipient_money = 0
         self.success_event = None
         self.success_delay = 5.0
 
@@ -307,9 +340,28 @@ class Barter(object):
             self.success_event.cancel()
             self.success_event = None
 
+    def on_set_money(self, agent, money, time):
+        self.on_unlock(time=time)
+        if agent.example.balance < money:
+            money = agent.example.balance
+        if money < 0.0:
+            money = 0                
+        if agent is self.initiator:
+            self.initiator_money = money
+        else:
+            self.recipient_money = money
+        ChangeMoneyBarterMessage(agent=self.initiator, barter=self, my_money=self.initiator_money,
+                                 other_money=self.recipient_money, time=time).post()
+        ChangeMoneyBarterMessage(agent=self.recipient, barter=self, my_money=self.recipient_money,
+                                 other_money=self.initiator_money, time=time).post()
+
     def on_success(self, time):
         self.initiator.car.inventory.add_inventory(inventory=self.recipient_table, time=time)
         self.recipient.car.inventory.add_inventory(inventory=self.initiator_table, time=time)
+
+        # Обмен деньгами
+        self.initiator.example.balance += self.recipient_money - self.initiator_money
+        self.recipient.example.balance += self.initiator_money - self.recipient_money
 
         self.recipient.barters.remove(self)
         self.initiator.barters.remove(self)

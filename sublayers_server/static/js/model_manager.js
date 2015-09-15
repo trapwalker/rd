@@ -830,6 +830,13 @@ var ClientManager = (function () {
         barterManager.UnlockBarter(event.barter_id);
     };
 
+    ClientManager.prototype.ChangeMoneyBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.ChangeMoneyBarterMessage', event);
+        barterManager.ChangeMoneyBarter(event.barter_id, event.my_money, event.other_money);
+    };
+
+
+
     ClientManager.prototype.StartBarterTimerMessage = function (event) {
         //console.log('ClientManager.prototype.StartBarterTimerMessage', event);
         barterManager.StartBarterTimer(event.barter_id, event.success_delay);
@@ -1344,6 +1351,20 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTableMoney = function (barter_id, money) {
+        //console.log('ClientManager.prototype.sendTableMoney', barter_id, money);
+        var mes = {
+            call: "table_money_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id,
+                money: money
             }
         };
         rpcCallList.add(mes);

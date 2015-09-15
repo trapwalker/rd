@@ -48,6 +48,17 @@ var BarterManager = (function () {
         $('#barterInventoryWindow-' + barter_id).find('.barterInventoryWindow-lock-div').css('display', 'none');
     };
 
+    BarterManager.prototype.ChangeMoneyBarter = function (barter_id, my_money, other_money) {
+        //console.log('BarterManager.prototype.ChangeMoneyBarter', barter_id, my_money, other_money);
+
+        // Удаляем таймер если он есть
+        this._clearBarterTimer(barter_id);
+
+        // Вывести в эдиты
+        $('#barterInventoryWindow-table-my-money-edit-' + barter_id).val(my_money);
+        $('#barterInventoryWindow-table-other-money-edit-' + barter_id).val(other_money);
+    };
+
     BarterManager.prototype.StartBarterTimer = function (barter_id, success_delay) {
         //console.log('BarterManager.prototype.StartBarterTimer', barter_id, success_delay);
         $('#barterInventoryWindow-cancel-button-' + barter_id).text('Отмена(' + success_delay + ')');

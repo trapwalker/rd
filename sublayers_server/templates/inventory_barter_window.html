@@ -1,179 +1,5 @@
 {% set window_caption = 'NUKE:\Бартер>' %}
 
-<style>
-    .barterInventoryWindow-main {
-        position: relative;
-        width: 660px;
-        height: 448px;
-        background-color: rgba(0, 0, 0, 0.9);
-        color: #27ED0A;
-        font: 12pt FreePixel;
-        cursor: default;
-    }
-
-    .barterInventoryWindow-window-wrap {
-        width: 654px;
-        height: 416px;
-        border: 1px solid #054E05;
-        box-sizing: border-box;
-        margin: 3px;
-    }
-
-    .barterInventoryWindow-window-wrap-wrap {
-        position: relative;
-        width: 50%;
-        height: 100%;
-        float: left;
-    }
-
-    .barterInventoryWindow-inventory-wrap {
-        position: relative;
-        box-sizing: border-box;
-        width: 320px;
-        height: 340px;
-        border: 1px solid #054E05;
-    }
-
-    .barterInventoryWindow-inventory-wrap-left {
-        margin: 2px 0 5px 3px;
-    }
-
-    .barterInventoryWindow-inventory-wrap-right {
-        margin: 2px 0 5px 6px;
-    }
-
-    .barterInventoryWindow-inventory-header {
-        position: relative;
-        width: 100%;
-        height: 30px;
-        text-align: center;
-        border-bottom: 1px solid #054E05;
-        box-sizing: border-box;
-        line-height: 1.6;
-        font-weight: bold;
-        font-size: 13pt;
-    }
-
-    .barterInventoryWindow-inventory-body {
-        position: relative;
-        width: calc(100% - 9px);
-        margin: 0 auto 0 auto;
-        height: 304px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin-top: 2px;
-        padding-left: 5px;
-    }
-
-    .barterInventoryWindow-table-inventory-body {
-        position: relative;
-        float: left;
-        width: 152px;
-        height: 304px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        margin-top: 2px;
-    }
-
-    .barterInventoryWindow-table-inventory-body-left {
-        margin-right: 8px;
-        margin-left: 3px;
-    }
-
-    .barterInventoryWindow-my-money-wrap {
-        width: 100%;
-        text-align: center;
-    }
-
-    .barterInventoryWindow-button {
-        box-sizing: border-box;
-        color: #30fc00;
-        background-color: #0d3707;
-        border: solid 1px #054E05;
-        cursor: pointer;
-        text-align: center;
-        opacity: 0.6;
-    }
-
-    .barterInventoryWindow-button:hover {
-        opacity: 1;
-    }
-
-    .barterInventoryWindow-apply-button {
-        position: relative;
-        height: 30px;
-        width: 190px;
-        margin: 8px auto 0px auto;
-        line-height: 1.6;
-        font-weight: bold;
-        font-size: 13pt;
-    }
-
-    .barterInventoryWindow-cancel-button {
-        display: None;
-        position: relative;
-        height: 30px;
-        width: 135px;
-        margin: 8px auto 0px auto;
-        line-height: 1.6;
-        font-weight: bold;
-        font-size: 13pt;
-    }
-
-    .barterInventoryWindow-table-money-block {
-        position: relative;
-        width: 50%;
-        float: left;
-        height: 65px;
-    }
-
-    .barterInventoryWindow-table-money-block-header {
-        width: 100%;
-        text-align: center;
-    }
-
-    .barterInventoryWindow-table-money-config {
-        width: 150px;
-        margin: 10px auto 0px auto;
-    }
-
-    .barterInventoryWindow-table-money-block-change-button {
-        position: relative;
-        float: left;
-        height: 25px;
-        width: 25px;
-        line-height: 0.85;
-        font-size: 20pt;
-    }
-
-    .barterInventoryWindow-table-money-block-count-edit {
-        position: relative;
-        float: left;
-        height: 25px;
-        border: 1px solid #054E05;
-        box-sizing: border-box;
-    }
-
-    .barterInventoryWindow-table-money-block-count-edit-my {
-        width: 100px;
-    }
-
-    .barterInventoryWindow-table-money-block-count-edit-other {
-        width: 100%;
-    }
-
-    .barterInventoryWindow-lock-div {
-        display: none;
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        top: 0px;
-        left: 0px;
-        background-color: black;
-        opacity: 0.5;
-    }
-</style>
-
 <div id="barterInventoryWindow-{{ barter.id }}" class="barterInventoryWindow-main">
     {% include drag_close_header.html %}
     <div class="barterInventoryWindow-window-wrap">
@@ -183,7 +9,7 @@
                 <div class="barterInventoryWindow-inventory-body inventory-{{ car_id }}"></div>
                 <div class="barterInventoryWindow-lock-div"></div>
             </div>
-            <div class="barterInventoryWindow-my-money-wrap">Ваш счет: <span class="barterInventoryWindow-my-money">0</span>нк.</div>
+            <div class="barterInventoryWindow-my-money-wrap">Ваш счет: <span class="barterInventoryWindow-my-money">{{ agent.example.balance }}</span>нк.</div>
             <div id="barterInventoryWindow-apply-button-{{ barter.id }}" class="barterInventoryWindow-apply-button barterInventoryWindow-button">Подтвердить сделку</div>
             <div id="barterInventoryWindow-cancel-button-{{ barter.id }}" class="barterInventoryWindow-cancel-button barterInventoryWindow-button">Отмена</div>
         </div>
@@ -198,15 +24,23 @@
             <div class="barterInventoryWindow-table-money-block">
                 <div class="barterInventoryWindow-table-money-block-header">Сумма к переводу:</div>
                 <div class="barterInventoryWindow-table-money-config">
-                    <div class="barterInventoryWindow-table-money-block-change-button barterInventoryWindow-button">-</div>
-                    <div class="barterInventoryWindow-table-money-block-count-edit barterInventoryWindow-table-money-block-count-edit-my"></div>
-                    <div class="barterInventoryWindow-table-money-block-change-button barterInventoryWindow-button">+</div>
+                    <div id="barterInventoryWindow-table-my-money-dec-{{ barter.id }}"
+                         class="barterInventoryWindow-table-money-block-change-button barterInventoryWindow-button">-</div>
+                    <div class="barterInventoryWindow-table-money-block-count-edit barterInventoryWindow-table-money-block-count-edit-my">
+                        <input id="barterInventoryWindow-table-my-money-edit-{{ barter.id }}" type="text" value="0">
+                    </div>
+                    <div id="barterInventoryWindow-table-my-money-inc-{{ barter.id }}"
+                         class="barterInventoryWindow-table-money-block-change-button barterInventoryWindow-button">+</div>
+                    <div class="barterInventoryWindow-lock-div"></div>
                 </div>
             </div>
             <div class="barterInventoryWindow-table-money-block">
                 <div class="barterInventoryWindow-table-money-block-header">Сумма партнера:</div>
                 <div class="barterInventoryWindow-table-money-config">
-                    <div class="barterInventoryWindow-table-money-block-count-edit barterInventoryWindow-table-money-block-count-edit-other"></div>
+                    <div class="barterInventoryWindow-table-money-block-count-edit barterInventoryWindow-table-money-block-count-edit-other">
+                        <input id="barterInventoryWindow-table-other-money-edit-{{ barter.id }}" type="text" value="0" disabled="True">
+                    </div>
+                    <div class="barterInventoryWindow-lock-div"></div>
                 </div>
             </div>
         </div>
@@ -233,5 +67,23 @@
     // Закрытие окна
     $('#barterInventoryWindow-{{ barter.id }}').find('.windowDragCloseHeader-close').first().click(function(event) {
         clientManager.sendCancelBarter({{ barter.id }});
+    });
+
+    $('#barterInventoryWindow-table-my-money-edit-{{ barter.id }}').change(function(event) {
+        var new_value = parseInt($(this).val());
+        if (!new_value)
+            new_value = 0;
+        clientManager.sendTableMoney({{ barter.id }}, new_value);
+    })
+
+    // Кнопки "+" и "-"
+    $('#barterInventoryWindow-table-my-money-dec-{{ barter.id }}').click(function(event) {
+        var new_value = parseInt($('#barterInventoryWindow-table-my-money-edit-{{ barter.id }}').val());
+        clientManager.sendTableMoney({{ barter.id }}, new_value - 1);
+    });
+
+    $('#barterInventoryWindow-table-my-money-inc-{{ barter.id }}').click(function(event) {
+        var new_value = parseInt($('#barterInventoryWindow-table-my-money-edit-{{ barter.id }}').val());
+        clientManager.sendTableMoney({{ barter.id }}, new_value + 1);
     });
 </script>

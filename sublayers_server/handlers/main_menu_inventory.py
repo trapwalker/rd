@@ -54,7 +54,7 @@ class BarterInventoryHandler(BaseHandler):
         else:
             my_table_id = barter.recipient_table_obj.uid
             other_table_id = barter.initiator_table_obj.uid
-        self.render("inventory_barter_window.html", car_id=agent.api.car.uid, barter=barter,
+        self.render("inventory_barter_window.html", agent=agent, car_id=agent.api.car.uid, barter=barter,
                     my_table_id=my_table_id, other_table_id=other_table_id)
 
 

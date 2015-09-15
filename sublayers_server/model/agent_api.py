@@ -24,10 +24,11 @@ from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
-    CancelBarterEvent
+    CancelBarterEvent, SetMoneyBarterEvent
 
 from sublayers_server.model.inventory import ItemState
 
+#todo: Проверить допустимость значений входных параметров
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
@@ -507,3 +508,9 @@ class AgentAPI(API):
     def cancel_barter(self, barter_id):
         #log.debug('Agent %s cancel barter_id %s ', self.agent, barter_id)
         CancelBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def table_money_barter(self, barter_id, money):
+        #log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
+        SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
+                            time=self.agent.server.get_time()).post()
