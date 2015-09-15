@@ -18,51 +18,12 @@ from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEven
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer, POILoot
 
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
-from  sublayers_server.model.vectors import Point
+from sublayers_server.model.vectors import Point
 
 from math import radians
-
-
-class POILoot(Observer):
-    def __init__(self, server, time, life_time=None, example=None, inventory_size=None, position=None, **kw):
-        # todo: p_observing_range - внести в классы ворлда
-        assert (example is not None) or ((inventory_size is not None) and (position is not None))
-        if example is None:
-            example = server.reg['/poi/stash'].instantiate(position=position, inventory_size=inventory_size)
-        super(POILoot, self).__init__(server=server, time=time, example=example, **kw)
-        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
-        self.load_inventory(time=time)
-        if life_time:
-            self.delete(time=time + life_time)
-
-    def is_available(self, agent):
-        return agent.car in self.visible_objects
-
-    def on_contact_in(self, time, obj):
-        super(POILoot, self).on_contact_in(time=time, obj=obj)
-        if isinstance(obj, Bot) and obj.owner:
-            self.inventory.add_manager(agent=obj.owner)
-
-    def on_contact_out(self, time, obj):
-        super(POILoot, self).on_contact_out(time=time, obj=obj)
-        if isinstance(obj, Bot) and obj.owner:
-            self.inventory.del_visitor(agent=obj.owner, time=time)
-            self.inventory.del_manager(agent=obj.owner)
-
-    def load_inventory(self, time):
-        for item_example in self.example.inventory:
-            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
-                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
-
-
-class POIContainer(POILoot):
-    def drop_item_to_map(self, item, time):
-        stash = POILoot(server=self.server, time=time, inventory_size=self.example.inventory_size,
-                         position=self.position(time), life_time=60.0)
-        # заполнить инвентарь сундука
-        item.set_inventory(time=time, inventory=stash.inventory)
 
 
 class Unit(Observer):
@@ -252,18 +213,15 @@ class Unit(Observer):
 
         # создать труп с инвентарём
         if not self.inventory.is_empty():
-            stash = POIContainer(server=self.server, time=event.time, inventory_size=self.example.inventory_size,
-                                 position=self.position(event.time), life_time=60.0)
-            # заполнить инвентарь сундука
-            for item in self.inventory.get_items():
-                item.set_inventory(time=event.time, inventory=stash.inventory)
+            CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
+                               inventory_size=self.example.inventory_size, position=self.position(event.time),
+                               life_time=60.0, items=self.inventory.get_items()).post()
 
     def drop_item_to_map(self, item, time):
-        #todo: исправить POIContainer на POILoot
-        stash = POIContainer(server=self.server, time=time, inventory_size=self.example.inventory_size,
-                        position=Point.random_gauss(self.position(time), 10))
-        # заполнить инвентарь сундука
-        item.set_inventory(time=time, inventory=stash.inventory)
+        CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,
+                           inventory_size=self.example.inventory_size,
+                           position=Point.random_gauss(self.position(time), 10),
+                           life_time=60.0, items=[item]).post()
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)

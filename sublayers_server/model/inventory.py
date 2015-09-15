@@ -32,6 +32,12 @@ class Inventory(object):
 
     def add_inventory(self, inventory, time):
 
+        def local_show_inventory(inv_list):
+            log.debug('======================================')
+            for rec in inv_list:
+                log.debug('item_cls=%s   val=%s    val0=%s', None if not rec['item'] else rec['item'].example.parent,
+                          rec['val'], rec['val0'])
+
         def init_inv_list(inv, time):
             res = []
             for i in range(0, inv.max_size):
@@ -55,15 +61,22 @@ class Inventory(object):
             if (item_rec2['item'] is None) or (item_rec2['val'] >= item_rec2['max_val']) or \
                (item_rec1['item'].example.parent != item_rec2['item'].example.parent):
                 return
+            log.debug('------------------ dosipaem')
             dv = min(item_rec2['max_val'] - item_rec2['val'], item_rec1['val'])
             item_rec1['val'] -= dv
             item_rec2['val'] += dv
 
+        log.debug('start add inventory -----------------------')
+
         inv1 = init_inv_list(inv=self, time=time)
         inv2 = init_inv_list(inv=inventory, time=time)
 
+        local_show_inventory(inv1)
+        local_show_inventory(inv2)
+
         # Проверить, нужно ли уплотнить свой инвентарь
         if len(self.get_items()) + len(inventory.get_items()) >= self.max_size:
+            log.debug('---------------- Uplotnenie inventory ------------------')
             # Уплотнить свой инвентарь
             for i in range(0, len(inv1)):
                 rec1 = inv1[i]
@@ -76,9 +89,12 @@ class Inventory(object):
             # Сделать "пустыми" слотами те итемы, которые после уплотнения равны нулю
             for rec in inv1:
                 set_empty_rec(rec)
-
+        log.debug('==== posle uplotneniya   ----')
+        local_show_inventory(inv1)
+        local_show_inventory(inv2)
 
         # Докинуть полученный инвентарь в свободные слоты (сколько есть слотов, столько и докинуть)
+        log.debug('==== Dokidivanie -------')
         for i in range(0, len(inv2)):
             rec1 = inv2[i]
             if rec1['item'] is None:
@@ -97,6 +113,11 @@ class Inventory(object):
                         continue
                     inv1[j] = rec1
                     inv2[i] = rec2
+                    break
+
+        log.debug('==== Inventori posle dokidivaniya -------')
+        local_show_inventory(inv1)
+        local_show_inventory(inv2)
 
         # Генерируем таски для итемов
         for i in range(0, len(inv1)):

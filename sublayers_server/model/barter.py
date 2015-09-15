@@ -5,6 +5,7 @@ from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import Message
 from sublayers_server.model.base import Object
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer
 
 
 class InitBarterEvent(Event):
@@ -87,6 +88,36 @@ class SuccessBarterEvent(Event):
     def on_perform(self):
         super(SuccessBarterEvent, self).on_perform()
         self.barter.on_success(time=self.time)
+
+
+class DoneBarterEvent(Event):
+    def __init__(self, barter, success, **kw):
+        super(DoneBarterEvent, self).__init__(server=barter.initiator.server, **kw)
+        self.barter = barter
+        self.success = success
+
+    def on_perform(self):
+        super(DoneBarterEvent, self).on_perform()
+        pos_initiator = self.barter.initiator.car.position(self.time)
+        pos_recipient = self.barter.recipient.car.position(self.time)
+        if not self.success:
+            temp_pos = pos_initiator
+            pos_initiator = pos_recipient
+            pos_recipient = temp_pos
+
+        # Создание контейнеров с невлезшими итемами
+        if not self.barter.initiator_table.is_empty():
+            CreatePOILootEvent(server=self.server, time=self.time, poi_cls=POIContainer, example=None,
+                               inventory_size=self.barter.initiator_table.max_size, position=pos_initiator,
+                               life_time=60.0, items=self.barter.initiator_table.get_items()).post()
+        if not self.barter.recipient_table.is_empty():
+            CreatePOILootEvent(server=self.server, time=self.time, poi_cls=POIContainer, example=None,
+                               inventory_size=self.barter.recipient_table.max_size, position=pos_recipient,
+                               life_time=60.0, items=self.barter.recipient_table.get_items()).post()
+
+        # Удаление объектов-owner'ов для столов
+        self.barter.initiator_table_obj.delete(time=self.time)
+        self.barter.recipient_table_obj.delete(time=self.time)
 
 
 class InviteBarterMessage(Message):
@@ -207,10 +238,10 @@ class Barter(object):
         initiator.barters.append(self)
         self.initiator_car = initiator.car
         self.recipient_car = recipient.car
-        self.initiatorTable = None
-        self.recipientTable = None
-        self.initiatorTableObj = None
-        self.recipientTableObj = None
+        self.initiator_table = None
+        self.recipient_table = None
+        self.initiator_table_obj = None
+        self.recipient_table_obj = None
         self.success_event = None
         self.success_delay = 5.0
 
@@ -218,7 +249,7 @@ class Barter(object):
         InviteBarterMessage(agent=recipient, time=time, barter=self).post()
 
     def _change_table(self, inventory, time):
-        if (inventory is self.initiatorTable) or (inventory is self.recipientTable):
+        if (inventory is self.initiator_table) or (inventory is self.recipient_table):
             self.on_unlock(time=time)
 
     def on_activate(self, recipient, time):
@@ -226,17 +257,17 @@ class Barter(object):
             return
         self.state = 'active'
 
-        self.initiatorTableObj = BarterTable(server=self.initiator.server, time=time, barter=self,
+        self.initiator_table_obj = BarterTable(server=self.initiator.server, time=time, barter=self,
                                              max_size=self.initiator_car.example.inventory_size)
-        self.initiatorTable = self.initiatorTableObj.inventory
-        self.initiatorTable.add_manager(agent=self.initiator)
-        self.initiatorTable.on_change_list.append(self._change_table)
+        self.initiator_table = self.initiator_table_obj.inventory
+        self.initiator_table.add_manager(agent=self.initiator)
+        self.initiator_table.on_change_list.append(self._change_table)
 
-        self.recipientTableObj = BarterTable(server=self.recipient.server, time=time, barter=self,
+        self.recipient_table_obj = BarterTable(server=self.recipient.server, time=time, barter=self,
                                              max_size=self.recipient_car.example.inventory_size)
-        self.recipientTable = self.recipientTableObj.inventory
-        self.recipientTable.add_manager(agent=self.recipient)
-        self.recipientTable.on_change_list.append(self._change_table)
+        self.recipient_table = self.recipient_table_obj.inventory
+        self.recipient_table.add_manager(agent=self.recipient)
+        self.recipient_table.on_change_list.append(self._change_table)
 
         # Отправить сообщения об открытии окна
         ActivateBarterMessage(agent=self.initiator, barter=self, time=time).post()
@@ -247,11 +278,11 @@ class Barter(object):
     def on_lock(self, agent, time):
         if agent is self.initiator:
             self.initiator_lock = True
-            self.initiatorTable.del_manager(agent=self.initiator)
+            self.initiator_table.del_manager(agent=self.initiator)
             LockBarterMessage(agent=self.initiator, barter=self, time=time).post()
         if agent is self.recipient:
             self.recipient_lock = True
-            self.recipientTable.del_manager(agent=self.recipient)
+            self.recipient_table.del_manager(agent=self.recipient)
             LockBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
         # Создание ивента на завершение транзакции и отсылка сообщений об этом агентам
@@ -265,8 +296,8 @@ class Barter(object):
     def on_unlock(self, time):
         self.initiator_lock = False
         self.recipient_lock = False
-        self.recipientTable.add_manager(agent=self.recipient)
-        self.initiatorTable.add_manager(agent=self.initiator)
+        self.recipient_table.add_manager(agent=self.recipient)
+        self.initiator_table.add_manager(agent=self.initiator)
         self.state = 'active'
 
         UnlockBarterMessage(agent=self.initiator, barter=self, time=time).post()
@@ -277,8 +308,8 @@ class Barter(object):
             self.success_event = None
 
     def on_success(self, time):
-        self.initiator.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
-        self.recipient.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
+        self.initiator.car.inventory.add_inventory(inventory=self.recipient_table, time=time)
+        self.recipient.car.inventory.add_inventory(inventory=self.initiator_table, time=time)
 
         self.recipient.barters.remove(self)
         self.initiator.barters.remove(self)
@@ -287,13 +318,14 @@ class Barter(object):
         SuccessBarterMessage(agent=self.initiator, barter=self, time=time).post()
         SuccessBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
-
+        # Удалить бартер
+        DoneBarterEvent(server=self.initiator.server, time=time + 0.2, barter=self, success=True).post()
 
     def on_cancel(self, time):
         if self.state == 'unactive':
             return
-        self.initiator.car.inventory.add_inventory(inventory=self.initiatorTable, time=time)
-        self.recipient.car.inventory.add_inventory(inventory=self.recipientTable, time=time)
+        self.initiator.car.inventory.add_inventory(inventory=self.initiator_table, time=time)
+        self.recipient.car.inventory.add_inventory(inventory=self.recipient_table, time=time)
 
         self.recipient.barters.remove(self)
         self.initiator.barters.remove(self)
@@ -301,6 +333,9 @@ class Barter(object):
         # Отправить сообщения о закрытии окон
         CancelBarterMessage(agent=self.initiator, barter=self, time=time).post()
         CancelBarterMessage(agent=self.recipient, barter=self, time=time).post()
+
+        # Удалить бартер
+        DoneBarterEvent(server=self.initiator.server, time=time + 0.2, barter=self, success=False).post()
 
     def as_dict(self):
         pass
