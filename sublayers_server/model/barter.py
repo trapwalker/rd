@@ -100,7 +100,7 @@ class DoneBarterEvent(Event):
         super(DoneBarterEvent, self).on_perform()
         pos_initiator = self.barter.initiator.car.position(self.time)
         pos_recipient = self.barter.recipient.car.position(self.time)
-        if not self.success:
+        if self.success:
             temp_pos = pos_initiator
             pos_initiator = pos_recipient
             pos_recipient = temp_pos
@@ -319,7 +319,7 @@ class Barter(object):
         SuccessBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
         # Удалить бартер
-        DoneBarterEvent(server=self.initiator.server, time=time + 0.2, barter=self, success=True).post()
+        DoneBarterEvent(time=time + 0.2, barter=self, success=True).post()
 
     def on_cancel(self, time):
         if self.state == 'unactive':
@@ -335,7 +335,7 @@ class Barter(object):
         CancelBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
         # Удалить бартер
-        DoneBarterEvent(server=self.initiator.server, time=time + 0.2, barter=self, success=False).post()
+        DoneBarterEvent(time=time + 0.2, barter=self, success=False).post()
 
     def as_dict(self):
         pass
