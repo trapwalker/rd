@@ -27,6 +27,113 @@ class Inventory(object):
         self._items = dict()
         self.owner = owner
         self.visitors = []
+        self.managers = []
+        self.on_change_list = []  # функции вызываемые на измениние в инвентаре
+
+    def add_inventory(self, inventory, time):
+
+        def local_show_inventory(inv_list):
+            log.debug('======================================')
+            for rec in inv_list:
+                log.debug('item_cls=%s   val=%s    val0=%s', None if not rec['item'] else rec['item'].example.parent,
+                          rec['val'], rec['val0'])
+
+        def init_inv_list(inv, time):
+            res = []
+            for i in range(0, inv.max_size):
+                d = dict()
+                d['item'] = inv._items.get(i, None)
+                d['max_val'] = 0 if d['item'] is None else d['item'].max_val
+                d['val0'] = 0 if d['item'] is None else d['item'].val(time)
+                d['val'] = d['val0']
+                res.append(d)
+            return res
+
+        def set_empty_rec(item_rec):
+            if item_rec['val'] <= 0:
+                item_rec['item'] = None
+                item_rec['max_val'] = 0
+                item_rec['val0'] = 0
+                item_rec['val'] = 0
+
+        def add_item_rec(item_rec1, item_rec2):  # досыпать в rec2 из rec1
+            # Можем ли мы досыпать сюда
+            if (item_rec2['item'] is None) or (item_rec2['val'] >= item_rec2['max_val']) or \
+               (item_rec1['item'].example.parent != item_rec2['item'].example.parent):
+                return
+            log.debug('------------------ dosipaem')
+            dv = min(item_rec2['max_val'] - item_rec2['val'], item_rec1['val'])
+            item_rec1['val'] -= dv
+            item_rec2['val'] += dv
+
+        inv1 = init_inv_list(inv=self, time=time)
+        inv2 = init_inv_list(inv=inventory, time=time)
+
+        # Проверить, нужно ли уплотнить свой инвентарь
+        if len(self.get_items()) + len(inventory.get_items()) >= self.max_size:
+            # Уплотнить свой инвентарь
+            for i in range(0, len(inv1)):
+                rec1 = inv1[i]
+                # Можем ли отсыпать из rec1 (если он полный или пустой, то пропустить)
+                if (rec1['item'] is None) or (rec1['val'] >= rec1['max_val']):
+                    continue
+                for j in range(0, i):
+                    add_item_rec(rec1, inv1[j])
+
+            # Сделать "пустыми" слотами те итемы, которые после уплотнения равны нулю
+            for rec in inv1:
+                set_empty_rec(rec)
+
+        # Докинуть полученный инвентарь в свободные слоты (сколько есть слотов, столько и докинуть)
+        for i in range(0, len(inv2)):
+            rec1 = inv2[i]
+            if rec1['item'] is None:
+                continue
+
+            # Попытка досыпать в непустые слоты
+            for j in range(0, len(inv1)):
+                add_item_rec(rec1, inv1[j])
+
+            # Если чтото осталось то положить в свободный слот
+            set_empty_rec(rec1)
+            if rec1['item'] is not None:
+                for j in range(0, len(inv1)):
+                    rec2 = inv1[j]
+                    if rec2['item'] is not None:
+                        continue
+                    inv1[j] = rec1
+                    inv2[i] = rec2
+                    break
+
+        # Генерируем таски для итемов
+        for i in range(0, len(inv1)):
+            old_item = self.get_item(i)
+            item_rec = inv1[i]
+            if old_item is not item_rec['item']:  # если итемы не совпадают
+                if old_item is not None:
+                    old_item.set_inventory(time=time, inventory=None)
+                if item_rec['item'] is not None:
+                    item_rec['item'].set_inventory(time=time, inventory=self, position=i)
+            if (item_rec['item'] is not None) and (item_rec['val0'] != item_rec['val']):
+                item_rec['item'].change(consumer=None, dv=item_rec['val'] - item_rec['val0'], ddvs=0, action=None,
+                                        time=time)
+
+        for i in range(0, len(inv2)):
+            old_item = inventory.get_item(i)
+            item_rec = inv2[i]
+            if old_item is not item_rec['item']:  # если итемы не совпадают
+                if old_item is not None:
+                    old_item.set_inventory(time=time, inventory=None)
+            if (item_rec['item'] is not None) and (item_rec['val0'] != item_rec['val']):
+                item_rec['item'].change(consumer=None, dv=item_rec['val'] - item_rec['val0'], ddvs=0, action=None,
+                                        time=time)
+
+    def on_change(self, time):
+        for func in self.on_change_list:
+            func(inventory=self, time=time)
+
+    def can_change(self, agent):
+        return agent in self.managers
 
     def add_visitor(self, agent, time):
         if agent not in self.visitors:
@@ -42,6 +149,14 @@ class Inventory(object):
         if agent in self.visitors:
             self.visitors.remove(agent)
         InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
+
+    def add_manager(self, agent):
+        if agent not in self.managers:
+            self.managers.append(agent)
+
+    def del_manager(self, agent):
+        if agent in self.managers:
+            self.managers.remove(agent)
 
     def get_all_items(self):
         return [dict({'item': item, 'position': self.get_position(item=item)}) for item in self._items.values()]
@@ -62,6 +177,7 @@ class Inventory(object):
         self._items.update({position: item})
         for agent in self.visitors:
             InventoryAddItemMessage(agent=agent, time=time, item=item, inventory=self, position=position).post()
+        self.on_change(time=time)
         return True
 
     def del_item(self, time, position=None, item=None):
@@ -73,10 +189,10 @@ class Inventory(object):
         deleted_item = self._items.pop(position)
         for agent in self.visitors:
             InventoryDelItemMessage(agent=agent, time=time, item=deleted_item, inventory=self,
-                                     position=position).post()
+                                    position=position).post()
+        self.on_change(time=time)
 
     def change_position(self, item, new_position, time):
-        log.info('change_position')
         old_position = self.get_position(item=item)
         if new_position == old_position:
             return False
@@ -84,8 +200,8 @@ class Inventory(object):
         self.del_item(position=old_position, time=time)
         if item2 is not None:
             self.del_item(position=new_position, time=time)
-            self.add_item(item=item2, position=old_position, time=time + 0.1)
-        self.add_item(item=item, position=new_position, time=time + 0.1)
+            self.add_item(item=item2, position=old_position, time=time)
+        self.add_item(item=item, position=new_position, time=time)
         return True
 
     def get_position(self, item):
@@ -266,24 +382,15 @@ class ItemState(object):
         if inventory is old_inventory:
             return self.change_position(position=position, time=time)
         if (inventory is None) or inventory.add_item(item=self, position=position, time=time):
-            # запретить потребление итема пока он не в инвентаре
-            self.limbo = inventory is None
-
-            # это отработает когда мы выкинем из инвентаря используемые патроны
-            if self.limbo:
-                tasks = self.tasks[:]
-                for task in tasks:
-                    task.done()
+            if old_inventory is not None:
+                old_inventory.del_item(item=self, time=time)
 
             # отправить всем потребителям месагу о том, что итем кончился
             consumers = self.consumers[:]
             for consumer in consumers:
                 consumer.on_empty_item(item=self, time=time, action=None)
 
-            if old_inventory is not None:
-                old_inventory.del_item(item=self, time=time)
             self.inventory = inventory
-
             return True
         else:
             return False
@@ -306,7 +413,16 @@ class ItemState(object):
         if self.example.parent != item.example.parent:
             if self.inventory is item.inventory:
                 self.change_position(position=self.inventory.get_position(item=item), time=time)
+            else:
+                item1_inventory = self.inventory
+                item1_position = item1_inventory.get_position(item=self)
+                item2_inventory = item.inventory
+                item2_position = item2_inventory.get_position(item=item)
+                self.set_inventory(time=time, inventory=None)
+                item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
+                self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
             return
+
         self_val = self.val(t=time)
         item_val = item.val(t=time)
         d_value = 0.0
@@ -336,12 +452,18 @@ class ItemState(object):
             consumer.item = None
 
     def change(self, consumer, dv, ddvs, action, time):
-        if consumer in self.consumers and not self.limbo:
-            ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
+        if (consumer is None) or (consumer in self.consumers):
+            if self.limbo:
+                assert action == 'on_stop'
+                if consumer:
+                    consumer.on_stop(item=self, time=time)
+            else:
+                ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
 
 
 class Consumer(object):
-    def __init__(self, items_cls_list, dv=None, ddvs=None, swap=False):
+    def __init__(self, server, items_cls_list, dv=None, ddvs=None, swap=False):
+        self.server = server
         self.items_cls_list = items_cls_list
         self.item = None
         self.dv = dv
@@ -366,7 +488,7 @@ class Consumer(object):
         self.swap = swap
          # если нужно, пытаемся восстановить использование с новыми параметрами
         if started:
-            self.start(time=time + 0.01)
+            self.start(time=time)
 
     def use(self, time):
         if self.item is not None:
@@ -375,6 +497,8 @@ class Consumer(object):
     def start(self, time):
         if self.item is not None:
             self.item.change(consumer=self, dv=None, ddvs=self.ddvs, action='on_start', time=time)
+            return True
+        return False
 
     def stop(self, time):
         if self.item is not None:
@@ -397,28 +521,28 @@ class Consumer(object):
         if started:
             self.stop(time=time)
             self.is_started = False  # перестать стрелять, если что старт потом установит стрельбу
+
         # разряжаем итем
         if self.item is not None:
             self.item.unlinking(consumer=self)
+
         # пытаемся зарядить итем
         if (item is not None) and (item.example.parent in self.items_cls_list):
             item.linking(consumer=self)
-        # если нужно, пытаемся восстановить использование
-        if started:
-            self.start(time=time + 0.01)
-        # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
-        if action == 'on_use':  # так устроено, страдаем все
-            self.use(time=time)
+
+            # если нужно, пытаемся восстановить использование
+            if started:
+                self.start(time=time)
+
+            # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
+            if action == 'on_use':  # так устроено, страдаем все
+                self.use(time=time)
 
     def on_empty_item(self, item, time, action):
-        old_is_started = self.is_started
         balance_cls_list = []
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
             balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
-        if self.is_started:
-            self.on_stop(item=item, time=time)
-        self.is_started = old_is_started
-        self.set_item(item=new_item, time=time, action=action)
+        self.set_item(time=time, item=new_item, action=action)

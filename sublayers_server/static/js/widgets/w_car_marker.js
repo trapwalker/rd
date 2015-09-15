@@ -196,16 +196,18 @@ function onClickLocationMarker() {
 
 function onClickUserCarMarker() {
     //console.log('Смена иконки -', this._old_icon_id);
-    if(! this._old_icon_id) this._old_icon_id = 0;
-    this._old_icon_id++;
-    this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
+//    if(! this._old_icon_id) this._old_icon_id = 0;
+//    this._old_icon_id++;
+//    this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
+    var car = visualManager.getModelObject(this.carID);
+    if ((car != user.userCar) && (car.owner))
+        clientManager.sendInitBarter(car.owner.login)
 }
 
 function onClickPOILootMarker() {
     //console.log('клик на лут! ', this.obj_id);
     clientManager.sendGetLoot(this.obj_id)
 }
-
 
 function onClickPOIContainerMarker() {
     //console.log('клик на onClickPOIContainerMarker! ', this.obj_id);

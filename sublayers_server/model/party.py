@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
