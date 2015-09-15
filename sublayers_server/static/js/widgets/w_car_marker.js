@@ -35,9 +35,13 @@ var WCarMarker = (function (_super) {
                 marker.on('click', onClickLocationMarker);
                 marker.obj_id = car.ID;
                 break;
-            case 'POIStash':
+            case 'POILoot':
                 marker.obj_id = car.ID;
-                marker.on('click', onClickPOIStashMarker);
+                marker.on('click', onClickPOILootMarker);
+                break;
+            case 'POIContainer':
+                marker.obj_id = car.ID;
+                marker.on('click', onClickPOIContainerMarker);
                 break;
             default:
                 marker.on('click', onClickUserCarMarker);
@@ -108,7 +112,11 @@ var WCarMarker = (function (_super) {
             icon_id = 7;
         }
 
-        if(car.cls == 'POIStash') {
+        if(car.cls == 'POILoot') {
+            icon_id = 3;
+        }
+
+        if(car.cls == 'POIContainer') {
             icon_id = 3;
         }
 
@@ -188,12 +196,21 @@ function onClickLocationMarker() {
 
 function onClickUserCarMarker() {
     //console.log('Смена иконки -', this._old_icon_id);
-    if(! this._old_icon_id) this._old_icon_id = 0;
-    this._old_icon_id++;
-    this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
+//    if(! this._old_icon_id) this._old_icon_id = 0;
+//    this._old_icon_id++;
+//    this.setIcon(iconsLeaflet.getIconByID(this._old_icon_id));
+    var car = visualManager.getModelObject(this.carID);
+    if ((car != user.userCar) && (car.owner))
+        clientManager.sendInitBarter(car.owner.login)
 }
 
-function onClickPOIStashMarker() {
-    console.log('клик на сундук! ', this.obj_id);
-    clientManager.sendLootStash(this.obj_id)
+function onClickPOILootMarker() {
+    //console.log('клик на лут! ', this.obj_id);
+    clientManager.sendGetLoot(this.obj_id)
+}
+
+function onClickPOIContainerMarker() {
+    //console.log('клик на onClickPOIContainerMarker! ', this.obj_id);
+    windowTemplateManager.openUniqueWindow('container', '/container', {container_id: this.obj_id});
+    returnFocusToMap();
 }

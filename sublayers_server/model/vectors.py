@@ -58,6 +58,13 @@ class Point(complex):
             sigma = Point(sigma, sigma)
         return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
 
+    @classmethod
+    def scalar_mul(cls, p1, p2):
+        return p1.real * p2.real + p1.imag * p2.imag
+
+    def scale(self, v):
+        return Point(self.real * v, self.imag * v)
+
     def rotate(self, fi):
         """
         @param fi: float

@@ -1,0 +1,802 @@
+#townNucoilPageWrap {
+    position: absolute;
+    top: 250px;
+    left: 625px;
+}
+
+.mainMenuNucoilWindow-main {
+    position: relative;
+    width: 660px;
+    height: 422px;
+    font: 12pt FreePixel;
+    cursor: default;
+}
+
+.mainMenuNucoilWindow-menu {
+    position: relative;
+    width: 100%;
+    height: 30px;
+}
+
+.mainMenuNucoilWindow-menu-button {
+    position: relative;
+    float: left;
+    margin-top: 7px;
+    margin-left: 30px;
+    text-align: center;
+    color: #135806;
+    cursor: pointer;
+    font: 12pt Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-menu-button:hover {
+    background-color: #061108;
+    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+    color: #30fc00;
+}
+
+.mainMenuNucoilWindow-menu-button.btnpressed {
+    background-color: #061108;
+    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+    color: #30fc00;
+}
+
+/*
+    .mainCarInfoWindow-menu-button:hover:before {
+        position: absolute;
+        margin-left: -7px;
+        color: #30fc00;
+        content: "►";
+    }
+
+    .mainCarInfoWindow-menu-button:hover:after {
+        position: absolute;
+        color: #30fc00;
+        content: "◄";
+    }
+*/
+
+.mainMenuNucoilWindow-body-fuel {
+    position: relative;
+    float: left;
+    width: 652px;
+    height: 361px;
+    overflow-y: hidden;
+    border: solid 1px #00f150;
+    margin: 0px 3px 3px 3px;
+}
+
+.mainMenuNucoilWindow-body-fuel-left {
+    border-right: solid 1px #00f150;
+    width: 166px;
+    height: 340px;
+    margin-top: 10px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-left-picture {
+    border: solid 1px #00f150;
+    margin: 5px;
+    height: 100px;
+}
+
+.mainMenuNucoilWindow-body-fuel-left-picture-picture {
+    margin-top: 15px;
+    height: 70px;
+    width: 130px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mainMenuNucoilWindow-body-fuel-left-name {
+    color: #30fc00;
+    text-align: center;
+    margin: 5px;
+    font: 12pt Nouveau_IBM;
+    height: 16px;
+}
+
+.mainMenuNucoilWindow-body-fuel-left-description {
+    box-sizing: border-box;
+    margin: auto;
+    width: 150px;
+    padding: 10px 3px 0px 3px;
+    color: #1e9604;
+    text-align: center;
+    height: 145px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.mainMenuNucoilWindow-body-fuel-center {
+    border-right: solid 1px #00f150;
+    width: 283px;
+    height: 235px;
+    margin-top: 10px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-balance {
+    border-bottom: solid 1px #00f150;
+    margin: 0px 10px 0px 20px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-balance-label {
+    color: #30fc00;
+    margin: 5px;
+    font: 12pt Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-balance-amount {
+    color: #30fc00;
+    margin: 5px auto 5px auto;
+    width: 100px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 12pt;
+    border: solid 1px #00f150;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank {
+    margin: 0px 10px 0px 20px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-label {
+    color: #1b8704;
+    margin: 5px;
+    font: 12pt Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-progressbar-background {
+    position: absolute;
+    height: 100%;
+    width: 75%;
+    background-image: url("/static/img/progressbar_division.png");
+    background-repeat: repeat-x;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-progressbar-label {
+    position: relative;
+    color: #30fc00;
+    margin: 0px auto 0px auto;
+    line-height: 26px;
+    font-size: 12pt;
+    text-align: center;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-progressbar {
+    position: relative;
+    margin: 4px auto 0px auto;
+    height: 26px;
+    width: 241px;
+    border: solid 1px #00f150;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-empty {
+    color: #30fc00;
+    text-align: center;
+    float: left;
+    margin-left: 1px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-half {
+    color: #30fc00;
+    text-align: center;
+    float: left;
+    margin-left: 104px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-tank-full {
+    color: #30fc00;
+    text-align: center;
+    margin-left: 237px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count {
+    margin: 0px 10px 0px 20px;
+    height: 54px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-label {
+    color: #1b8704;
+    margin: 5px 0px 0px 5px;
+    font: 12pt Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-amount {
+    color: #30fc00;
+    margin: 5px 0px 5px 5px;
+    width: 50px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 12pt;
+    border: solid 1px #00f150;
+    float: left;
+    cursor: text;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-amount-change {
+    margin: 0px 0px 0px 5px;
+    color: #30fc00;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-amount-change-up {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-amount-change-up:hover {
+    opacity: 1;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-amount-change-down {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-amount-change-down:hover {
+    opacity: 1;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-text {
+    margin: 10px 0px 0px 15px;
+    color: #1e9604;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-button {
+    color: #30fc00;
+    text-align: center;
+    border: solid 1px #125306;
+    background-color: #0d3707;
+    margin: 10px 0px 0px 20px;
+    cursor: pointer;
+    font: 12pt Nouveau_IBM;
+    float: left;
+    width: 120px;
+    opacity: 0.6;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-count-button:hover {
+    opacity: 1;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-down {
+    margin: 0px 10px 0px 20px;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-down-cans-label {
+    color: #1b8704;
+    margin: 5px 0px 0px 5px;
+    font: 12pt Nouveau_IBM;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-down-cans-amount {
+    color: #30fc00;
+    margin: 5px 0px 0px 15px;
+    font: 12pt Nouveau_IBM;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-down-all-label {
+    color: #1b8704;
+    margin: 5px 0px 0px 35px;
+    font: 12pt Nouveau_IBM;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-center-down-all-check {
+    color: #30fc00;
+    margin: 5px 0px 0px 15px;
+    font: 12pt Nouveau_IBM;
+    float: left;
+    cursor: pointer;
+}
+
+.mainMenuNucoilWindow-body-fuel-right {
+    width: 180px;
+    height: 235px;
+    margin-top: 10px;
+    float: left;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.mainMenuNucoilWindow-body-fuel-right-item {
+    width: 80px;
+    height: 95px;
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.mainMenuNucoilWindow-body-fuel-right-item:hover {
+    opacity: 1.0;
+}
+
+.mainMenuNucoilWindow-body-fuel-right-item-name-empty {
+    font: 12pt Nouveau_IBM;
+    color: #30fc00;
+    pointer-events: none;
+}
+
+.mainMenuNucoilWindow-body-fuel-right-item-picture-empty-wrap {
+    border: solid 1px #00f150;
+    margin: 3px;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    color: #0f4206;
+    font-size: 10pt;
+    text-align: center;
+    float: left;
+    pointer-events: none;
+}
+
+.mainMenuNucoilWindow-body-fuel-right-item-picture-empty {
+    position: relative;
+    height: 33px;
+    width: 62px;
+    margin: 20px auto 0px auto;
+    pointer-events: none;
+}
+
+.mainMenuNucoilWindow-body-fuel-right-line {
+    border-top: 2px dotted #0a2e03;
+    height: 3px;
+    float: left;
+    width: 160px;
+    margin-left: 5px;
+}
+
+.mainMenuNucoilWindow-body-fuel-down {
+    border-top: solid 1px #00f150;
+    width: 443px;
+    height: 37px;
+    margin: 10px 20px 0px 20px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-down-label {
+    margin: 10px 0px 0px 5px;
+    color: #1e9604;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-down-amount {
+    margin: 10px 0px 0px 90px;
+    color: #30fc00;
+    float: left;
+    text-align: right;
+    width: 100px;
+}
+
+.mainMenuNucoilWindow-body-fuel-down-button {
+    color: #30fc00;
+    text-align: center;
+    border: solid 1px #125306;
+    background-color: #0d3707;
+    margin: 10px 0px 0px 30px;
+    cursor: pointer;
+    font: 12pt Nouveau_IBM;
+    float: left;
+    width: 168px;
+    opacity: 0.6;
+}
+
+.mainMenuNucoilWindow-body-fuel-down-button:hover {
+    opacity: 1;
+}
+
+.mainMenuNucoilWindow-body-fuel-subscription {
+    border: solid 1px #00f150;
+    width: 443px;
+    height: 57px;
+    margin: 0px 20px 0px 20px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-subscription-left-picture {
+    border: solid 1px #00f150;
+    margin: 3px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    color: #0f4206;
+    font-size: 8pt;
+    text-align: center;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-fuel-subscription-text {
+    width: 327px;
+    margin-top: 5px;
+    font-size: 10pt;
+    text-align: center;
+    float: left;
+    color: #30fc00;
+}
+
+.mainMenuNucoilWindow-body-fuel-subscription-right-picture {
+    border: solid 1px #00f150;
+    margin: 3px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    color: #0f4206;
+    font-size: 8pt;
+    text-align: center;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-insurance {
+    position: relative;
+    float: left;
+    width: 652px;
+    height: 361px;
+    overflow-y: hidden;
+    border: solid 1px #00f150;
+    margin: 0px 3px 3px 3px;
+}
+
+.mainMenuNucoilWindow-body-insurance-left {
+    border-right: solid 1px #00f150;
+    width: 166px;
+    height: 340px;
+    margin-top: 10px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-insurance-left-name {
+    color: #30fc00;
+    text-align: center;
+    margin: 10px;
+    font: 12pt Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-insurance-left-description {
+    color: #30fc00;
+    font-size: 10pt;
+    overflow-y: scroll;
+    height: 265px;
+    margin: 0px 5px 0px 5px;
+}
+
+.mainMenuNucoilWindow-body-insurance-left-activate {
+    color: #30fc00;
+    text-align: center;
+    border: solid 1px #125306;
+    background-color: #0d3707;
+    margin: 10px;
+    cursor: pointer;
+    font: 12pt Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-insurance-up {
+    width: 463px;
+    height: 69px;
+    margin: 10px 10px 0px 10px;
+    float: left;
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+    border-bottom: solid 1px #00f150;
+}
+
+.mainMenuNucoilWindow-body-insurance-center {
+    width: 443px;
+    height: 203px;
+    margin: 10px 20px 0px 20px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-title {
+    width: 443px;
+    float: left;
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard {
+    width: 132px;
+    height: 157px;
+    margin: 10px 0px 0px 1px;
+    float: left;
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+    border: 1px solid #1c8804;
+    text-align: center;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard:hover {
+    border: 1px solid #00f150;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard-title {
+    margin-top: 5px;
+    color: #1c8804;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard-picture {
+    border: 1px solid #00f150;
+    width: 75px;
+    height: 65px;
+    line-height: 65px;
+    font-family: FreePixel;
+    margin-left: 27px;
+    color: #0f4206;
+    margin-top: 3px;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard-evacuation {
+    color: #1c8804;
+    text-align: left;
+    margin-left: 7px;
+    margin-top: 3px;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard-point {
+    color: #1c8804;
+    text-align: left;
+    margin-left: 7px;
+    margin-top: 3px;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard-payment {
+    color: #1c8804;
+    text-align: left;
+    margin-left: 7px;
+    margin-top: 3px;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-standard-cost {
+    margin-top: 3px;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-premium {
+    width: 132px;
+    height: 157px;
+    margin: 10px 0px 0px 20px;
+    float: left;
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+    border: 1px solid #00f150;
+    text-align: center;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-premium:hover {
+    border: 1px solid #00f150;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-premium-title {
+    margin-top: 5px;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-vip {
+    width: 132px;
+    height: 157px;
+    margin: 10px 0px 0px 20px;
+    float: left;
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+    border: 1px solid #1c8804;
+    text-align: center;
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-vip:hover {
+    border: 1px solid #00f150;
+}
+
+.mainMenuNucoilWindow-body-insurance-center-vip-title {
+    margin-top: 5px;
+    color: #1c8804;
+}
+
+.mainMenuNucoilWindow-body-insurance-subscription {
+    border: solid 1px #00f150;
+    width: 443px;
+    height: 57px;
+    margin: 0px 20px 0px 20px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-insurance-subscription-left-picture {
+    border: solid 1px #00f150;
+    margin: 3px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    color: #0f4206;
+    font-size: 8pt;
+    text-align: center;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-insurance-subscription-text {
+    width: 327px;
+    margin-top: 5px;
+    font-size: 10pt;
+    text-align: center;
+    float: left;
+    color: #30fc00;
+}
+
+.mainMenuNucoilWindow-body-insurance-subscription-right-picture {
+    border: solid 1px #00f150;
+    margin: 3px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    color: #0f4206;
+    font-size: 8pt;
+    text-align: center;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-appeals-left {
+    border-right: solid 1px #00f150;
+    width: 166px;
+    height: 340px;
+    margin-top: 10px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-appeals-left-theme-closed {
+    float: left;
+    margin-left: 5px;
+    color: #1c8804;
+    cursor: pointer;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+}
+
+.mainMenuNucoilWindow-body-appeals-left-theme-opened {
+    float: left;
+    margin-left: 5px;
+    color: #30fc00;
+    cursor: pointer;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+}
+
+.mainMenuNucoilWindow-body-appeals-left-title-opened {
+    float: left;
+    margin-left: 15px;
+    color: #30fc00;
+    cursor: pointer;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+}
+
+.mainMenuNucoilWindow-body-appeals-left-title-opened {
+    float: left;
+    margin-left: 15px;
+    color: #30fc00;
+    cursor: pointer;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+}
+
+.mainMenuNucoilWindow-body-appeals-left-reply {
+    float: left;
+    margin-left: 25px;
+    color: #1c8804;
+    cursor: pointer;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 135px;
+    text-overflow: ellipsis;
+    word-wrap: normal;
+}
+
+.mainMenuNucoilWindow-body-appeals-up {
+    width: 463px;
+    height: 85px;
+    margin: 10px 10px 0px 10px;
+    float: left;
+    color: #1c8804;
+    font-family: Nouveau_IBM;
+}
+
+.mainMenuNucoilWindow-body-appeals-center {
+    width: 465px;
+    height: 188px;
+    margin: 0px 10px 10px 10px;
+    float: left;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-message {
+    border: solid 1px #00f150;
+    width: 465px;
+    height: 145px;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-message-title {
+    color: #30fc00;
+    border-bottom: solid 1px #00f150;
+    font-family: Nouveau_IBM;
+    margin: 0px 10px 0px 10px;
+    height: 23px;
+    line-height: 23px;
+    cursor: text;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-message-text {
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+    margin: 10px 10px 0px 10px;
+    cursor: text;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-theme-technical {
+    float: left;
+    cursor: pointer;
+    color: #30fc00;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+    margin-top: 5px;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-theme-complaints {
+    float: left;
+    margin-left: 9px;
+    margin-top: 5px;
+    cursor: pointer;
+    color: #1c8804;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-theme-questions {
+    float: left;
+    margin-left: 9px;
+    margin-top: 5px;
+    cursor: pointer;
+    color: #1c8804;
+    font-family: Nouveau_IBM;
+    font-size: 11pt;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-buttons-back {
+    color: #30fc00;
+    text-align: center;
+    border: solid 1px #125306;
+    background-color: #0d3707;
+    margin-top: 5px;
+    cursor: pointer;
+    font: 12pt Nouveau_IBM;
+    float: left;
+    width: 122px;
+}
+
+.mainMenuNucoilWindow-body-appeals-center-buttons-send {
+    color: #30fc00;
+    text-align: center;
+    border: solid 1px #125306;
+    background-color: #0d3707;
+    margin: 5px 0px 0px 217px;
+    cursor: pointer;
+    font: 12pt Nouveau_IBM;
+    float: left;
+    width: 122px;
+}

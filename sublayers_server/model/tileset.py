@@ -404,16 +404,14 @@ class Tileset(object):
                 max = 2 ** z
                 return 0 <= x < max and 0 <= y < max
 
-            '''
-            # Вариант реализации фильтра по дистанции
-            def dist_filter(ox, oy, nx, ny, nz):
-                if dist == 0:
-                    return True
-                _nx = (nx + ox) * (2 ** (z - nz))
-                _ny = (ny + oy) * (2 ** (z - nz))
-                val = (_nx - x) ** 2 + (_ny - y) ** 2
-                return val < dist
-            '''
+            # # Вариант реализации фильтра по дистанции
+            # def dist_filter(ox, oy, nx, ny, nz):
+            #     if dist == 0:
+            #         return True
+            #     _nx = (nx + ox) * (2 ** (z - nz))
+            #     _ny = (ny + oy) * (2 ** (z - nz))
+            #     val = (_nx - x) ** 2 + (_ny - y) ** 2
+            #     return val < dist
 
             def get_intersect_point(func1, func2):
                 ox1, oy1, is_corr, tile1 = func1()
@@ -510,9 +508,6 @@ class Tileset(object):
         return recursion_func(Tileid(tile1[0], tile1[1], tile1[2]), ox1, oy1)
 
 
-
-
-
 #------------------------------------------------------------------------------
 def bitreader(f, bitcount):
     mask = 2 ** bitcount - 1
@@ -525,22 +520,24 @@ def bitreader(f, bitcount):
             byte >>= bitcount
         byte = f.read(1)
 
+
 def map_tree(tree, func, nodeClasses=(list, tuple)):
     u'''Заменяет элементы в дереве tree на результаты фнкции func над ними.'''
     if isinstance(tree, nodeClasses):
         tree = Q(*[map_tree(i, func, nodeClasses) for i in tree])
     return func(tree)
-    
-"""def remap_tree(tree, d):
-    u'''Заменяет элементы в дереве tree по словарю d.'''
-    if isinstance(tree, Q):
-        return [remap_tree(i, d) for i in r]
-    else:
-        if tree in d:
-            return d[tree]
-        else:
-            return tree
-"""
+
+
+# def remap_tree(tree, d):
+#     u'''Заменяет элементы в дереве tree по словарю d.'''
+#     if isinstance(tree, Q):
+#         return [remap_tree(i, d) for i in r]
+#     else:
+#         if tree in d:
+#             return d[tree]
+#         else:
+#             return tree
+#
 
 def count_in_tree(tree, value, nodeClasses=(list, tuple)):
     u'''Рекурсивный подсчет количества элементов value в дереве на списках

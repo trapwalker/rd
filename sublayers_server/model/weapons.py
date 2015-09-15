@@ -9,10 +9,9 @@ from sublayers_server.model.inventory import Consumer
 from sublayers_server.model.events import FireDischargeEffectEvent
 
 
-
 class Weapon(Consumer):
     def __init__(self, owner, sector, example, **kw):
-        super(Weapon, self).__init__(**kw)
+        super(Weapon, self).__init__(server=owner.server, **kw)
         self.owner = owner
         self.sector = sector
         self.example = example
@@ -54,8 +53,8 @@ class WeaponAuto(Weapon):
         return d
 
     def start(self, time):
-        super(WeaponAuto, self).start(time=time)
-        self.call_start = True
+        if super(WeaponAuto, self).start(time=time):
+            self.call_start = True
 
     def stop(self, time):
         super(WeaponAuto, self).stop(time=time)
@@ -101,18 +100,15 @@ class WeaponAuto(Weapon):
         targets = self.targets[:]
         for car in targets:
             self._stop_fire_to_car(car=car, time=time)
+        assert self.call_stop
         if not self.call_stop:
             self.start(time=time + 0.01)
         self.call_stop = False
 
     def set_enable(self, time, enable):
-        # log.debug('1111111111111111 weapon enable %s', enable)
         if self.is_enable == enable:
             return
         self.is_enable = enable
-        if enable and (len(self.sector.target_list) > 0):
-            assert not self.is_started
-            self.start(time=time)
         if not enable and self.is_started and not self.call_stop:
             self.stop(time=time)
 
@@ -157,7 +153,6 @@ class WeaponDischarge(Weapon):
                 t_rch=self.t_rch,
                 time=time
             ).post()
-
 
     def can_fire(self, time):
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)

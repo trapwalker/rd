@@ -52,6 +52,15 @@ class Agent(Object):
         del d['_connection']
         return d
 
+        # Бартер между игроками
+        self.barters = []  # бартеры в которых агент - участник
+
+    def get_barter_by_id(self, barter_id):
+        for barter in self.barters:
+            if barter.id == barter_id:
+                return barter
+        return None
+
     def set_current_location_life(self, location):
         self.current_location = location
         if location is None:

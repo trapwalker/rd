@@ -170,27 +170,27 @@ var WCruiseControl = (function (_super) {
         this.zoneIconAreaDiv.append(this.zoneSlopeIconDiv);
 
         this.zones = {
-            Dirt: {
+            dirt: {
                 jqselector: this.zoneDirtIconDiv,
                 zoneName: "dirt",
                 active: false
             },
-            Wood: {
+            wood: {
                 jqselector: this.zoneWoodIconDiv,
                 zoneName: "wood",
                 active: false
             },
-            Water: {
+            water: {
                 jqselector: this.zoneWaterIconDiv,
                 zoneName: "water",
                 active: false
             },
-            Road: {
+            road: {
                 jqselector: this.zoneRoadIconDiv,
                 zoneName: "road",
                 active: false
             },
-            Slope: {
+            slope: {
                 jqselector: this.zoneSlopeIconDiv,
                 zoneName: "slope",
                 active: false
@@ -390,7 +390,7 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype.setZoneState = function(zoneName, zoneState) {
-//        console.log('WCruiseControl.prototype.setZoneState');
+        console.log('WCruiseControl.prototype.setZoneState');
         if (zoneState) {
             this.zones[zoneName].jqselector.css({display: "block"});
             this.zones[zoneName].active = true;

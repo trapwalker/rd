@@ -18,22 +18,12 @@ from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEven
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer, POILoot
 
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
+from sublayers_server.model.vectors import Point
 
 from math import radians
-
-
-class POIStash(VisibleObject):
-    def __init__(self, time, **kw):
-        super(POIStash, self).__init__(time=time, **kw)
-        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
-        self.load_inventory(time=time)
-
-    def load_inventory(self, time):
-        for item_example in self.example.inventory:
-            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
-                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
 
 class Unit(Observer):
@@ -64,6 +54,8 @@ class Unit(Observer):
 
         # загрузка инвенторя
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        if owner:
+            self.inventory.add_manager(agent=owner)
         self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
@@ -221,15 +213,15 @@ class Unit(Observer):
 
         # создать труп с инвентарём
         if not self.inventory.is_empty():
-            # создать экземпляр данного сундука
-            ex_stash = self.server.reg['/poi/stash'].instantiate(position=self.position(event.time),
-                                                                 inventory_size=self.example.inventory_size)
-            # заполнить инвентарь сундука
-            for item_rec in self.inventory.get_all_items():
-                item_rec['item'].example.amount = item_rec['item'].val(t=event.time)
-                ex_stash.inventory.append(item_rec['item'].example)
+            CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
+                               inventory_size=self.example.inventory_size, position=self.position(event.time),
+                               life_time=60.0, items=self.inventory.get_items()).post()
 
-            POIStash(server=self.server, time=event.time, example=ex_stash)
+    def drop_item_to_map(self, item, time):
+        CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,
+                           inventory_size=self.example.inventory_size,
+                           position=Point.random_gauss(self.position(time), 10),
+                           life_time=60.0, items=[item]).post()
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
