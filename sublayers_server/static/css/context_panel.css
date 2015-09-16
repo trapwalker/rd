@@ -1,0 +1,14 @@
+#contextPanelDiv {
+    position: absolute;
+    width: 200px;
+    height: 300px;
+    background-color: red;
+    right: 4px;
+    top: 25px;
+    pointer-events: none;
+}
+
+
+
+
+
