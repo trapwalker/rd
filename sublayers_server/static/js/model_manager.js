@@ -188,6 +188,7 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             new WCarMarker(car);                 // виджет маркера
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
     };
 
@@ -219,6 +220,7 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             obj_marker = new WCarMarker(obj); // виджет маркера
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
 
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
             if (obj.cls == 'Town')
@@ -330,6 +332,10 @@ var ClientManager = (function () {
                 mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
             }
+
+
+            // Инициализация контекстной панели
+            contextPanel = new ContextPanel();
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
