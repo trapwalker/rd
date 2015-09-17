@@ -201,7 +201,11 @@ var ClientManager = (function () {
 
             // Проверка: нет ли уже такого объекта.
             var obj = this._getMObj(uid);
-            if (obj) return;
+            if (obj) {
+                // todo: оптимизировать это: либо удалять объекты при раздеплое машинки, либо вынести этот if вниз
+                if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
+                return;
+            };
 
             // Создание объекта
             var direction = null;
