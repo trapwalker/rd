@@ -227,8 +227,10 @@ var ClientManager = (function () {
             if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
 
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
-            if (obj.cls == 'Town')
+            if (obj.cls == 'Town') {
                 obj_marker.updateLabel(event.object.town_name);
+                obj.town_name = event.object.town_name;
+            }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
             if (obj.cls == 'POIStash')

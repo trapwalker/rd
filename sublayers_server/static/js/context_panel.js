@@ -108,6 +108,12 @@ var EnterToLocationObserver = (function(_super){
     function EnterToLocationObserver() {
 //        console.log('Создание EnterToLocationObserver ======> ', user.userCar);
         _super.call(this, user.userCar, ['GasStation', 'Town'], 100.0);
+
+        // Вешаем клик на див с икнонкой
+        this.obs_btn = $('#cpEnterToLocationIcon');
+        this.obs_btn.click(function() {
+            if (contextPanel) contextPanel.location_observer.open_window();
+        })
     }
 
     EnterToLocationObserver.prototype.on_add_obj = function(mobj) {
@@ -115,6 +121,9 @@ var EnterToLocationObserver = (function(_super){
         console.log('Добавлен статический объект: ', mobj);
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
+        if (this.observing_list.length > 0) {
+            this.obs_btn.addClass('cp_button_icon_active');
+        }
     };
 
     EnterToLocationObserver.prototype.on_del_obj = function(mobj) {
@@ -122,6 +131,36 @@ var EnterToLocationObserver = (function(_super){
         console.log('Удалён статический объект: ', mobj);
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
+        if (this.observing_list.length <= 0) {
+            this.obs_btn.removeClass('cp_button_icon_active');
+        }
+    };
+
+    EnterToLocationObserver.prototype.open_window = function() {
+        // Если город один, то просто в него войти
+        //if (this.observing_list.length == 1) {
+        //    clientManager.sendEnterToLocation(this.observing_list[0].ID);
+        //    return;
+        //}
+        // Если городов и заправок много, то вызывать окно через сервер и на callback добавить список городов
+        if (this.observing_list.length >= 1) {
+            windowTemplateManager.openUniqueWindow('locations_for_enter', '/context_panel/locations', null, function(content_div) {
+                if (contextPanel) contextPanel.location_observer.on_open_window(content_div);
+            });
+        }
+    };
+
+    EnterToLocationObserver.prototype.on_open_window = function(content_div) {
+        console.log('EnterToLocationObserver.prototype.on_open_window', content_div);
+        var content_div = content_div.find('.context_panel_locatios_content').first();
+        if (! content_div) return;
+
+        for (var i = 0; i < this.observing_list.length; i++) {
+            var mobj = this.observing_list[i];
+            var m_name = mobj.hasOwnProperty('town_name') ? mobj.town_name : mobj.cls;
+            var m_div = '<div class="context_panel_location_info">' + m_name +'</div>';
+            content_div.append(m_div);
+        }
     };
 
     return EnterToLocationObserver;
@@ -140,6 +179,9 @@ var InviteBarterObserver = (function(_super){
         console.log('Добавлен Bot объект: ', mobj);
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
+        if (this.observing_list.length > 0) {
+            this.obs_btn.addClass('cp_button_icon_active');
+        }
     };
 
     InviteBarterObserver.prototype.on_del_obj = function(mobj) {
@@ -147,6 +189,9 @@ var InviteBarterObserver = (function(_super){
         console.log('Удалён Bot объект: ', mobj);
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
+        if (this.observing_list.length <= 0) {
+            this.obs_btn.removeClass('cp_button_icon_active');
+        }
     };
 
     return InviteBarterObserver;
