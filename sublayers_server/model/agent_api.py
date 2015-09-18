@@ -25,6 +25,7 @@ from sublayers_server.model.chat_room import (
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
     CancelBarterEvent, SetMoneyBarterEvent
+from sublayers_server.model.barter import InviteBarterMessage
 
 from sublayers_server.model.inventory import ItemState
 
@@ -219,6 +220,11 @@ class AgentAPI(API):
         # отправить зоны
         for zone in self.agent.car.zones:
             messages.ZoneMessage(agent=self.agent, subj=self.agent.car, name=zone.name, is_start=True, time=time).post()
+
+        # отправить активные бартеры на клиент
+        for barter in self.agent.barters:
+            if barter.recipient is self.agent and barter.state == 'unactive':
+                InviteBarterMessage(agent=self.agent, time=time, barter=barter).post()
 
     def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
@@ -485,7 +491,7 @@ class AgentAPI(API):
 
     @public_method
     def init_barter(self, recipient_login):
-        #log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
+        # log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
         InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
                         time=self.agent.server.get_time()).post()
 
