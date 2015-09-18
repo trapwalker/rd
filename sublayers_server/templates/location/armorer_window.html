@@ -1,13 +1,9 @@
+{% set npc_photo = town.example.armorer.photo %}
+{% set npc_title = town.example.armorer.title %}
+{% set npc_text = town.example.armorer.text %}
+
 <div class="armorerWindow-main">
-    <div class="armorer-header">
-        <div class="armorer-wrap-header">
-            <div class="armorer-info">
-                <img class="armorer-foto" src="{{ town.example.armorer.photo }}" alt="Оружейник" />
-                <div class="armorer-name"> {{ town.example.armorer.title }} </div>
-            </div>
-            <div class="armorer-text">{{ town.example.armorer.text }}</div>
-        </div>
-    </div>
+    {% include npc_header.html %}
     <div class="armorer-center">
         <div class="armorer-car">
             {% raw open(car_svg_link).read() %}
