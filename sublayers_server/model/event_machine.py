@@ -257,8 +257,7 @@ class LocalServer(Server):
             srv2 = yaml.load(stream=f)
 
     def save(self):
-        for agent in self.agents:
-            agent.save()
+        pass
 
 
 def main():
