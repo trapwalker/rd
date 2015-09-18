@@ -70,7 +70,7 @@ class StandardLoginHandler(BaseHandler):
         if (email is None) or (password is None) or (username is None):
             self.redirect("/login?msg=Ошибка%20авторизации")
             return
-        username = username[0:20]                    
+        username = username[0:20]  # todo: Странная обрезка длины. Выяснить, устранить.
         user_id = self._db_request(email=email, name=username)
         if user_id is None:
             user_db_uid = str(self.application.auth_db.profiles.insert({
@@ -78,7 +78,7 @@ class StandardLoginHandler(BaseHandler):
                 'auth': {
                     'standard': {
                         'email': email,
-                        'password': hashlib.md5(password).hexdigest()
+                        'password': hashlib.md5(password.encode('utf-8')).hexdigest()
                     }
                 }
             }))
