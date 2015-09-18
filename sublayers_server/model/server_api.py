@@ -30,7 +30,7 @@ class ServerAPI(API):
                 agent_exemplar = self.server.reg['/agents/user'].instantiate(storage=self.server.reg_agents,
                                                                              name=login, login=login)
 
-            log.debug('Use agent exemplar: %s', agent_exemplar)
+            log.debug('Use agent exemplar: %r', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
             agent = User(server=self.server, login=agent_exemplar.login, time=self.server.get_time(),

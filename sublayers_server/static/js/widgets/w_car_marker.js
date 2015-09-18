@@ -24,8 +24,6 @@ var WCarMarker = (function (_super) {
         // todo: сделать доступ к иконнке через car.cls
         this.updateIcon();
 
-        this.updateLabel();
-
         marker.on('mouseover', onMouseOverForLabels);
         marker.on('mouseout', onMouseOutForLabels);
         marker.addTo(map);
@@ -46,6 +44,8 @@ var WCarMarker = (function (_super) {
             default:
                 marker.on('click', onClickUserCarMarker);
         }
+
+        this.updateLabel();
 
         marker.on('contextmenu', function () {
             var car = visualManager.getModelObject(this.carID);
@@ -150,7 +150,13 @@ var WCarMarker = (function (_super) {
                     //console.log(owner.party);
                     party_str = '[' + owner.party.name + ']';
                 }
-                label_str = label_str1 + owner.login + party_str + label_str2;
+
+                // info: кнопочка информация добавлена здесь
+                var info_btn_span = '<span onclick="' +
+                    'getCarInfoFrom('+this.marker.carID+'); stopEvent(event);' +
+                    '" style="pointer-events: auto">(i)</span>';
+
+                label_str = label_str1 + owner.login + party_str + info_btn_span + label_str2;
             }
             else { // значит объект не имеет владельца, нужно использовать main_agent_login
                 if (this.car.cls == 'Rocket' || this.car.cls == 'SlowMine')
@@ -178,6 +184,11 @@ var WCarMarker = (function (_super) {
 })(VisualObject);
 
 // todo: внести следующие функции в класс WCarMarker
+
+function getCarInfoFrom(car_id) {
+    alert('Вы запросили информацию о ' + car_id);
+
+}
 
 function onMouseOverForLabels() {
     //if(this._labelNoHide) return false;

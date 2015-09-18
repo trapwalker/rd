@@ -60,7 +60,7 @@ class SetPartyEvent(Event):
 
     def on_perform(self):
         super(SetPartyEvent, self).on_perform()
-        log.info('%s try to set or create party %s', self.agent.login, self.name)
+        log.info('%r try to set or create party %s', self.agent.login, self.name)
         if self.name is None:
             if self.agent.party:
                 self.agent.party.exclude(self.agent, time=self.time)
@@ -81,7 +81,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # log.info('%r invite %s to party %r', self.agent.login, username, self.agent.party)
         user = self.agent.server.agents.get(self.username)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
@@ -112,7 +112,7 @@ class SendKickEvent(Event):
     def on_perform(self):
         super(SendKickEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # log.info('%r invite %s to party %r', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             # todo: assert', warning'и -- ок. Зачем сообщения клиенту?
@@ -135,7 +135,7 @@ class SendSetCategoryEvent(Event):
     def on_perform(self):
         super(SendSetCategoryEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # log.info('%r invite %r to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             # todo: Зачем все эти сообщения клиенту?!
@@ -352,7 +352,7 @@ class AgentAPI(API):
 
     @public_method
     def console_cmd(self, cmd):
-        log.debug('Agent %s cmd: %r', self.agent.login, cmd)
+        log.debug('Agent %r cmd: %r', self.agent.login, cmd)
         cmd = cmd.strip()
         assert cmd, 'console command is empty or False: {!r}'.format(cmd)
         words = cmd.split()
@@ -454,12 +454,12 @@ class AgentAPI(API):
 
     @public_method
     def choice_car_in_hangar(self, car_number):
-        log.info('agent %s want choice car, with number=%s', self.agent, car_number)
+        log.info('agent %r want choice car, with number=%r', self.agent, car_number)
         TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
 
     @public_method
     def get_loot(self, poi_id):
-        log.info('agent %s want loot =%s', self.agent, poi_id)
+        log.info('agent %r want loot =%r', self.agent, poi_id)
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
     @public_method
