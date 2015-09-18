@@ -15,32 +15,10 @@
             </div>
         </div>
     </div>
-    <div class="armorer-footer">
-        <div class="npcInventory-label">Инвентарь:</div>
-        <div class="npcInventory-wrap">
-            <div class="npcInventory-inventory"></div>
-        </div>
-    </div>
+    {% include npc_inventory.html %}
 </div>
 
 <script>
-    /*
-    Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
-    данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
-    горизонтальный слайдер будер расти вниз)
-    */
-    function resizeArmorerInventory() {
-        var inventory = $(".npcInventory-inventory:first");
-        var width = 0;
-        if (inventory) {
-            $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
-               width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-            });
-            $(inventory).width(width);
-        }
-    }
-    resizeArmorerInventory();
-
     // Подсветка слотов при наведении указателя мыши
     function setSlotOpacity(slot_name, hover) {
         if (hover) {

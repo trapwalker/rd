@@ -1,0 +1,23 @@
+#townMechanicPageWrap {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
+.mechanicWindow-main {
+    position: relative;
+    width: 734px;
+    height: 661px;
+    cursor: default;
+}
+
+.mechanic-center {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 734px;
+    height: 330px;
+    padding-bottom: 5px;
+    background-color: white
+}

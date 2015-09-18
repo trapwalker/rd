@@ -11,6 +11,7 @@ var LocationManager = (function () {
         this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
         this.hangar = new HangarManager();
+        this.mechanic = new MechanicManager();
         this.visitorsManager = new LocationVisitorsManager();
     }
 
@@ -212,7 +213,6 @@ var ArmorerManager = (function () {
             var sl_flag = armorer_slots_flags[i];
             this.armorer_slots_flags[sl_flag.name.slice(0, -2)] = sl_flag.value;
         }
-        //console.log(this.armorer_slots_flags);
     };
 
     ArmorerManager.prototype.exportSlotState1 = function() {
@@ -242,7 +242,7 @@ var ArmorerManager = (function () {
         var item;
 
         // Проверить если город
-        this.inv_show_div = $('#activeTownDiv').find('.armorer-footer').find('.npcInventory-inventory').first();
+        this.inv_show_div = $('#activeTownDiv').find('.npcInventory-block').find('.npcInventory-inventory').first();
         if (this.inv_show_div.length == 0) {
             console.warn('Вёрстка города не найдена');
             return
@@ -275,7 +275,7 @@ var ArmorerManager = (function () {
                 this.items[i] = item_rec;
             }
         }
-        resizeArmorerInventory();
+        resizeInventory(this.inv_show_div);
 
         // Добавить итемы слотов
         for (var i = 0; i < this.armorer_slots.length; i++) {
@@ -479,8 +479,31 @@ var ArmorerManager = (function () {
         }
     };
 
-
     return ArmorerManager;
+})();
+
+
+var MechanicManager = (function () {
+
+    function MechanicManager() {
+    }
+
+    MechanicManager.prototype.update = function() {
+    };
+
+    MechanicManager.prototype.clear = function() {
+        //console.log('MechanicManager.prototype.clear');
+    };
+
+    MechanicManager.prototype.apply = function() {
+        //console.log('MechanicManager.prototype.apply');
+    };
+
+    MechanicManager.prototype.cancel = function() {
+        //console.log('MechanicManager.prototype.cancel');
+    };
+
+    return MechanicManager;
 })();
 
 

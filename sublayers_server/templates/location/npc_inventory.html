@@ -1,0 +1,25 @@
+<div class="npcInventory-block">
+    <div class="npcInventory-label">Инвентарь:</div>
+    <div class="npcInventory-wrap">
+        <div class="npcInventory-inventory"></div>
+    </div>
+</div>
+
+<script>
+    /*
+    Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
+    данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
+    горизонтальный слайдер будер расти вниз)
+    */
+    function resizeInventory(inventory) {
+        //var inventory = $(".npcInventory-inventory:first");
+        var width = 0;
+        if (inventory) {
+            $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
+               width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+            });
+            $(inventory).width(width);
+        }
+    }
+</script>
+
