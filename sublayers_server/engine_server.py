@@ -146,6 +146,9 @@ class Application(tornado.web.Application):
         if self.srv.is_active:
             self.srv.stop()
 
+    def __getstate__(self):
+        pass
+
 
 def main():
     settings.load('server.conf')
