@@ -47,6 +47,15 @@ class Agent(Object):
         self.current_location = None
         self.set_current_location_example(reg_link=example.current_location.uri)
 
+        # Бартер между игроками
+        self.barters = []  # бартеры в которых агент - участник
+
+    def get_barter_by_id(self, barter_id):
+        for barter in self.barters:
+            if barter.id == barter_id:
+                return barter
+        return None
+
     def save(self, time):
         super(Agent, self).save(time)
         self.example.login = self.login
@@ -59,15 +68,6 @@ class Agent(Object):
         d = self.__dict__.copy()
         del d['_connection']
         return d
-
-        # Бартер между игроками
-        self.barters = []  # бартеры в которых агент - участник
-
-    def get_barter_by_id(self, barter_id):
-        for barter in self.barters:
-            if barter.id == barter_id:
-                return barter
-        return None
 
     def set_current_location_life(self, location):
         self.current_location = location
