@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="author" content="Road Dogs Team"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title>ANTiRadio | Road Dogs</title>
+
+    <style>
+        @font-face {
+            font-family: FreePixel;
+            src: url('../../static/fonts/FreePixel.ttf');
+        }
+    </style>
+    <link href="../../static/css/radio.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="../../static/js/third_party/jquery.min.js"></script>
+    <script type="text/javascript" src="../../static/js/third_party/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../static/js/radio.js"></script>
+</head>
+
+<body>
+<div class="example">
+    <div class="player">
+        <div class="title"></div>
+        <div class="artist"></div>
+        <div class="cover"></div>
+        <div class="controls">
+            <div class="play"></div>
+            <div class="pause"></div>
+            <div class="rew"></div>
+            <div class="fwd"></div>
+        </div>
+        <div class="volume"></div>
+    </div>
+    <ul class="playlist">
+        <li audiourl="http://sublayers.net:8080/cold.war.oldies" cover="../../static/img/radio/cold.war.oldies.jpg"
+            artist="cold.war.oldies">
+            01. Cold War Oldies
+        </li>
+        <li audiourl="http://sublayers.net:8080/dark.ambient.industrial"
+            cover="../../static/img/radio/dark.ambient.industrial.jpg"
+            artist="dark.ambient.industrial">02. Dark Ambient Industrial
+        </li>
+        <li audiourl="http://sublayers.net:8080/synth.new.80s" cover="../../static/img/radio/synth.new.80s.jpg"
+            artist="synth.new.80s">
+            03. Synth New 80s
+        </li>
+    </ul>
+</div>
+</body>
+</html>
