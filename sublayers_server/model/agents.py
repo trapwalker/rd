@@ -47,6 +47,19 @@ class Agent(Object):
         self.current_location = None
         self.set_current_location_example(reg_link=example.current_location.uri)
 
+    def save(self, time):
+        super(Agent, self).save(time)
+        self.example.login = self.login
+        self.example.car = self.car
+        self.example.current_location = self.current_location
+        # todo: save chats, party...
+        self.example.save()
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['_connection']
+        return d
+
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
 

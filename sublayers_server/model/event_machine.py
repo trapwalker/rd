@@ -57,6 +57,11 @@ class Server(object):
         self.stat_log = StatLogger(owner=self)
         self.visibility_mng = VisibilityManager(server=self)
 
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['reg_agents']
+        return d
+
     @staticmethod
     def get_time():
         return get_time()
@@ -154,6 +159,12 @@ class LocalServer(Server):
         self.is_terminated = False
         self.app = app
 
+    def __getstate__(self):
+        d = super(LocalServer, self).__getstate__()
+        del d['app']
+        del d['thread']
+        return d
+
     def event_loop(self):
         log.info('---- Event loop start')
         timeout = MAX_SERVER_SLEEP_TIME
@@ -236,6 +247,17 @@ class LocalServer(Server):
     @property
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
+
+    def dump(self):
+        import yaml
+        with open('srv_dump.yaml', 'w') as f:
+            yaml.dump(self, stream=f)
+
+        with open('srv_dump.yaml', 'r') as f:
+            srv2 = yaml.load(stream=f)
+
+    def save(self):
+        pass
 
 
 def main():
