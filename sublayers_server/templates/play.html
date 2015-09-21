@@ -48,6 +48,7 @@
     <link rel="stylesheet" href="{{ static_url('css/controls/cruise_control.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/controls/zoom_slider.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/context_panel.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_header.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_inventory.css') }}"/>
@@ -113,6 +114,7 @@
     <script src="{{ static_url('js/widgets/w_dashboard/w_altmetr_radial.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_dashboard/w_cruise_control.js') }}"></script>
     <script src="{{ static_url('js/widgets/central/w_fire_sectors_scaled.js') }}"></script>
+    <script src="{{ static_url('js/context_panel.js') }}"></script>
 
     <script src="{{ static_url('js/effects/rocket_bang.js') }}"></script>
     <script src="{{ static_url('js/effects/e_fire_discharge.js') }}"></script>
@@ -163,6 +165,12 @@
         </div>
     </div>
     <div id="zoomSetDivForZoomSlider"></div>
+    <div id="contextPanelDiv">
+        <div id="cpEnterToLocationIcon" class="cp_button_icon"></div>
+        <div id="cpEnterToContainer" class="cp_button_icon"></div>
+        <div id="cpBarterSendInvite" class="cp_button_icon"></div>
+        <div id="cpBarterInfoInvite" class="cp_button_icon"></div>
+    </div>
     <div id="chatAreaGlass"></div>
     <div id="fireControlArea"></div>
     <div id="modalDiv">

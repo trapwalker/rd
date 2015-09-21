@@ -1,0 +1,45 @@
+{% set window_caption = 'Barters' %}
+
+
+<style>
+
+    .context_panel_barter_info_content {
+        width: 100%;
+        height: 300px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .context_panel_barter_info_user_info {
+        position: relative;
+        width: 450px;
+        height: 50px;
+        margin: 3px auto 7px auto;
+        border: 1px solid #27cc02;
+        color: #2afd0a;
+        text-align: center;
+        font: 10pt MICRADI;
+        line-height: 3.5;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+</style>
+
+<div class="partyCreateWindow-main">
+    {% include ../drag_close_header.html %}
+    <div class="context_panel_barter_info_content">
+        {% for barter in agent.barters %}
+            {% if barter.state == 'unactive' and barter.recipient is agent %}
+                <div class="context_panel_barter_info_user_info"
+                     onClick="contextPanel.activate_barter_manager.activate_barter('{{ barter.id }}');
+                             windowTemplateManager.closeUniqueWindow('cp_barter_info')">
+                    {{ barter.initiator.login }}  < > {{ barter.recipient.login }}
+                </div>
+            {% end %}
+        {% end %}
+    </div>
+</div>
+
+<script>
+</script>
