@@ -18,7 +18,7 @@ from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionTraderApply)
+    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply, TransactionTraderApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -468,6 +468,8 @@ class AgentAPI(API):
         log.info('agent %r want loot =%r', self.agent, poi_id)
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
+    # Оружейник
+
     @public_method
     def armorer_apply(self, armorer_slots):
         TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots).post()
@@ -475,6 +477,18 @@ class AgentAPI(API):
     @public_method
     def armorer_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Механик
+
+    @public_method
+    def mechanic_apply(self, mechanic_slots):
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=mechanic_slots).post()
+
+    @public_method
+    def mechanic_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Торговец
 
     @public_method
     def trader_apply(self, player_table, trader_table):

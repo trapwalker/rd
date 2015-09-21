@@ -215,14 +215,6 @@ var ArmorerManager = (function () {
         }
     };
 
-    ArmorerManager.prototype.exportSlotState1 = function() {
-        var result = [];
-        for (var slot_name in this.items)
-            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
-                result.push(this.items[slot_name]);
-        return result;
-    };
-
     ArmorerManager.prototype.exportSlotState = function() {
         var result = {};
         for (var slot_name in this.items)
@@ -242,7 +234,7 @@ var ArmorerManager = (function () {
         var item;
 
         // Проверить если город
-        this.inv_show_div = $('#activeTownDiv').find('.npcInventory-block').find('.npcInventory-inventory').first();
+        this.inv_show_div = $('#activeTownDiv').find('.armorerWindow-main').find('.npcInventory-inventory').first();
         if (this.inv_show_div.length == 0) {
             console.warn('Вёрстка города не найдена');
             return
@@ -486,21 +478,211 @@ var ArmorerManager = (function () {
 var MechanicManager = (function () {
 
     function MechanicManager() {
+        this.items = {};
+        this.mechanic_slots = [];
+        this.inv_show_div = null;
+        this.activeSlot = null;
     }
 
-    MechanicManager.prototype.update = function() {
+    MechanicManager.prototype._addEmptyInventorySlot = function(position) {
+        var itemWrapDiv = $('<div class="npcInventory-itemWrap mechanic-itemWrap-' + position +
+            '" data-pos="' + position + '"></div>');
+        itemWrapDiv.droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                var dragPos = ui.draggable.data('pos');
+                var dropPos = $(event.target).data('pos');
+                locationManager.mechanic.changeItem(dragPos, dropPos);
+            }
+        });
+        this.inv_show_div.append(itemWrapDiv);
+    };
+
+    MechanicManager.prototype.exportSlotState = function() {
+        var result = {};
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
+                result[slot_name] = this.items[slot_name];
+        return result;
+    };
+
+    MechanicManager.prototype.update = function(mechanic_slots) {
+        //console.log('MechanicManager.prototype.update');
+        this.clear();
+
+        if (mechanic_slots) this.mechanic_slots = mechanic_slots;
+
+        var item;
+
+        // Проверить если город
+        this.inv_show_div = $('#activeTownDiv').find('.mechanicWindow-main').find('.npcInventory-inventory').first();
+        if (this.inv_show_div.length == 0) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(user.ID);
+        if (! inventory) {
+            console.warn('Ивентарь агента (' + user.ID + ') не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            var item_rec = {
+                example: null,
+                position: i
+            };
+            item = inventory.getItem(i);
+            if (item) {
+                if (item.hasTag('mechanic')) {  // фильтрация итема
+                    this._addEmptyInventorySlot(i);
+                    item_rec.example = item.example;
+                    this.items[i] = item_rec;
+                }
+            }
+            else {
+                this._addEmptyInventorySlot(i);
+                this.items[i] = item_rec;
+            }
+        }
+        resizeInventory(this.inv_show_div);
+
+        // Добавить итемы слотов
+        for (var i = 0; i < this.mechanic_slots.length; i++) {
+            var item_rec = {
+                example: this.mechanic_slots[i].value,
+                position: this.mechanic_slots[i].name
+            };
+            this.items[item_rec.position] = item_rec;
+            $('#mechanic_' + item_rec.position).data('pos', item_rec.position);
+        }
+
+        // Повесить дропабле на все слоты
+        $('.mechanic-slot').droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                var dragPos = ui.draggable.data('pos');
+                var dropPos = $(event.target).data('pos');
+                locationManager.mechanic.changeItem(dragPos, dropPos);
+            }
+        });
+
+        // Отрисовать верстку
+        for (var key in this.items)
+            if (this.items.hasOwnProperty(key))
+                this.reDrawItem(key);
     };
 
     MechanicManager.prototype.clear = function() {
         //console.log('MechanicManager.prototype.clear');
+        // todo: написать тут чтото
+        //this.setActiveSlot(null);
+        this.items = {};
+        if (this.inv_show_div)
+            this.inv_show_div.empty();
+    };
+
+    MechanicManager.prototype.reDrawItem = function(position) {
+        //console.log('MechanicManager.prototype.reDrawItem');
+        if (position.toString().indexOf('slot') >= 0) {
+            // Позиция в слотах
+            var slot = $('#mechanic_' + position);
+
+            // Очистить слоты
+            slot.empty();
+
+            // создать вёрстку для отрисовки
+            var item = this.items[position];
+            if (item.example) {
+                var itemImg = item.example['mechanic_img'];
+                var itemDiv = $('<div class="mechanic-car-slot-picture"><img src="' + itemImg + '"></div>');
+                itemDiv.data('pos', position);
+                itemDiv.draggable({
+                    helper: 'clone',
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+                slot.append(itemDiv);
+            }
+        }
+        else {
+            // Позиция в инвентаре
+            var itemWrapDiv = this.inv_show_div.find('.mechanic-itemWrap-' + position).first();
+            itemWrapDiv.empty();
+
+            var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
+            var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
+                '<div class="npcInventory-name">Пусто</div>';
+            itemDiv.append(emptyItemDiv);
+            var item = this.items[position];
+            if (item.example) {
+                itemDiv.find('.npcInventory-name').text(item.example.title);
+                itemDiv.find('.npcInventory-picture')
+                    .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+                itemDiv.draggable({
+                    helper: 'clone',
+                    cursorAt: {
+                        left: 60,
+                        top: 42
+                    },
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+            }
+            itemWrapDiv.append(itemDiv);
+        }
+    };
+
+    MechanicManager.prototype.changeItem = function(src, dest) {
+        //console.log('MechanicManager.prototype.changeItem', src, dest);
+        if (src == dest) return;
+
+        // todo: проверка соответствия тегов системы и итема
+
+        var item = this.items[src];
+        this.items[src] = this.items[dest];
+        this.items[dest] = item;
+
+        this.reDrawItem(src);
+        this.reDrawItem(dest);
+        if (dest.toString().indexOf('slot') >= 0)
+            this.setActiveSlot(dest);
+        else
+            this.setActiveSlot(null);
+    };
+
+    MechanicManager.prototype.setActiveSlot = function(slotName) {
+        //console.log('MechanicManager.prototype.setActiveSlot');
+        if (! window.hasOwnProperty('dropMechanicSlotActive')) return;
+
+        // Гасим все слоты
+        dropMechanicSlotActive();
+
+        // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
+        if (this.activeSlot == slotName) this.activeSlot = null;
+        else this.activeSlot = slotName;
+
+        if (! this.items.hasOwnProperty(this.activeSlot)) return;
+        var item_rec = this.items[this.activeSlot];
+
+        // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
+        setMechanicSlotActive(this.activeSlot);
     };
 
     MechanicManager.prototype.apply = function() {
         //console.log('MechanicManager.prototype.apply');
+        clientManager.sendMechanicApply();
     };
 
     MechanicManager.prototype.cancel = function() {
         //console.log('MechanicManager.prototype.cancel');
+        clientManager.sendMechanicCancel();
     };
 
     return MechanicManager;

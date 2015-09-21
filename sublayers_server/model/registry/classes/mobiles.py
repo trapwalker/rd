@@ -44,29 +44,33 @@ class Mobile(Root):
     fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива")
     p_fuel_rate = FloatAttribute(default=0.5, caption=u"Расход топлива (л/с)")
 
-    slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот')
+    slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags='armorer')
     slot_FL_f = TextAttribute(default='FL', caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
-    slot_CL = Slot(caption=u'LeftSlot', doc=u'Центральный левый слот')
+    slot_CL = Slot(caption=u'LeftSlot', doc=u'Центральный левый слот', tags='armorer')
     slot_CL_f = TextAttribute(default='FBL', caption=u'Флаги центрального левого слота [FBLR]', tags='client slot_limit')
-    slot_BL = Slot(caption=u'BackwardLeftSlot', doc=u'Задний левый слот')
+    slot_BL = Slot(caption=u'BackwardLeftSlot', doc=u'Задний левый слот', tags='armorer')
     slot_BL_f = TextAttribute(default='BL', caption=u'Флаги залнего левого слота [FBLR]', tags='client slot_limit')
 
-    slot_FC = Slot(caption=u'ForwardSlot', doc=u'Передний средний слот')
+    slot_FC = Slot(caption=u'ForwardSlot', doc=u'Передний средний слот', tags='armorer')
     slot_FC_f = TextAttribute(default='FLR', caption=u'Флаги переднего среднего слота [FBLR]', tags='client slot_limit')
-    slot_CC = Slot(caption=u'CentralSlot', doc=u'Центральный средний слот')
+    slot_CC = Slot(caption=u'CentralSlot', doc=u'Центральный средний слот', tags='armorer')
     slot_CC_f = TextAttribute(default='FBLR', caption=u'Флаги центрального среднего слота [FBLR]', tags='client slot_limit')
-    slot_BC = Slot(caption=u'BackwardSlot', doc=u'Задний средний слот')
+    slot_BC = Slot(caption=u'BackwardSlot', doc=u'Задний средний слот', tags='armorer')
     slot_BC_f = TextAttribute(default='BLR', caption=u'Флаги заднего среднего слота [FBLR]', tags='client slot_limit')
 
-    slot_FR = Slot(caption=u'ForwardRightSlot', doc=u'Передний правый слот')
+    slot_FR = Slot(caption=u'ForwardRightSlot', doc=u'Передний правый слот', tags='armorer')
     slot_FR_f = TextAttribute(default='FR', caption=u'Флаги переднего правого слота [FBLR]', tags='client slot_limit')
-    slot_CR = Slot(caption=u'RightSlot', doc=u'Центральный правый слот')
+    slot_CR = Slot(caption=u'RightSlot', doc=u'Центральный правый слот', tags='armorer')
     slot_CR_f = TextAttribute(default='FBR', caption=u'Флаги центрального правого слота [FBLR]', tags='client slot_limit')
-    slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот')
+    slot_BR = Slot(caption=u'BackwardRightSlot', doc=u'Задний правый слот', tags='armorer')
     slot_BR_f = TextAttribute(default='BR', caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
 
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
+
+    slot_m1 = Slot(caption=u'M1', doc=u'Слот механика 1', tags='mechanic')
+    slot_m2 = Slot(caption=u'M1', doc=u'Слот механика 2', tags='mechanic')
+
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
@@ -77,17 +81,17 @@ class Mobile(Root):
     name_car = Attribute(default="", caption=u"Название автомобиля")
 
     def iter_weapons(self):
-        return (v for attr, v in self.iter_slots() if isinstance(v, Weapon))
+        return (v for attr, v in self.iter_slots(tags='armorer') if isinstance(v, Weapon))
 
-    def iter_slots(self):
-        for attr, getter in self.iter_attrs(classes=Slot):
+    def iter_slots(self, tags=None):
+        for attr, getter in self.iter_attrs(tags=tags, classes=Slot):
             v = getter()
             if not isinstance(v, SlotLock) and v is not False:  # todo: SlotLock
                 yield attr.name, v
 
-    def get_count_slots(self):
+    def get_count_slots(self, tags=None):
         result = 0
-        for attr, getter in self.iter_attrs(classes=Slot):
+        for attr, getter in self.iter_attrs(tags=tags, classes=Slot):
             v = getter()
             if not isinstance(v, SlotLock) and v is not False:
                 result += 1

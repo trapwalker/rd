@@ -41,7 +41,7 @@
         $("#side_" + slot_name).addClass("armorer-slot-active");
     }
 
-    {% for slot in car_slots %}
+    {% for slot in armorer_slots %}
     $("#top_{{slot}}").mouseenter(function() {
         setSlotOpacity("{{slot}}", true);
     });

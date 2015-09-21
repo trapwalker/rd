@@ -78,3 +78,20 @@ class MapWeaponMineItem(MapWeaponItem):
     @classmethod
     def activate(cls):
         return TransactionActivateMine
+
+
+class MechanicItem(SlotItem):
+    p_visibility = FloatAttribute(default=0, caption=u"Коэффициент заметности")
+    p_observing_range = FloatAttribute(default=0, caption=u"Радиус обзора")
+    max_hp = FloatAttribute(default=0, caption=u"Максимальное значение HP")
+    r_min = FloatAttribute(default=0, caption=u"Минимальный радиус разворота")
+    ac_max = FloatAttribute(default=0, caption=u"Максимальная перегрузка при развороте")
+    max_control_speed = FloatAttribute(default=0, caption=u"Абсолютная максимальная скорость движения")
+    v_forward = FloatAttribute(default=0, caption=u"Максимальная скорость движения вперед")
+    v_backward = FloatAttribute(default=0, caption=u"Максимальная скорость движения назад")
+    a_forward = FloatAttribute(default=0, caption=u"Ускорение разгона вперед")
+    a_backward = FloatAttribute(default=0, caption=u"Ускорение разгона назад")
+    a_braking = FloatAttribute(default=0, caption=u"Ускорение торможения")
+    max_fuel = FloatAttribute(default=0, caption=u"Максимальное количество топлива")
+    p_fuel_rate = FloatAttribute(default=0, caption=u"Расход топлива (л/с)")
+
