@@ -18,8 +18,11 @@ class InitBarterEvent(Event):
         super(InitBarterEvent, self).on_perform()
         recipient = self.server.agents.get(self.recipient_login, None)
 
-        # Проверить нет ли уже приглашения от оппонента и если есть то принять его
         for barter in self.initiator.barters:
+            # Проверить нет ли уже приглашения для этого пользователя и если есть то новое не создавать
+            if barter.recipient is recipient:
+                return
+            # Проверить нет ли уже приглашения от оппонента и если есть то принять его
             if barter.initiator is recipient:
                 barter.on_activate(recipient=self.initiator, time=self.time)
                 return
