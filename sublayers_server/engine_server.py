@@ -42,6 +42,8 @@ from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
 from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
+from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
+    ContextPanelLocationsHandler
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 from sublayers_server.model.event_machine import LocalServer
 
@@ -111,6 +113,10 @@ class Application(tornado.web.Application):
             (r"/api/party", PartyHandler),
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
+
+            (r"/api/context_panel/locations", ContextPanelLocationsHandler),
+            (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
+            (r"/api/context_panel/barter_info", ContextPanelBarterInfoHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,

@@ -15,7 +15,7 @@ from map_location import MapLocation
 
 # todo: make agent offline status possible
 class Agent(Object):
-    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
 
     def __init__(self, login, time, example, connection=None, party=None, **kw):
         super(Agent, self).__init__(time=time, **kw)

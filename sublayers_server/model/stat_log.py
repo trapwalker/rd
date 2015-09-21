@@ -21,7 +21,7 @@ class StatLogger(object):
     s_events_lag_mid = metrics.MovingAverageMetric(name='s_events_lag_cur', doc=u"Среднее отставание евентов")
 
     def __init__(self, owner):
-        #self.owner = owner  # todo: Убрал эту ссылку за предположительной ненадобностью
+        self.owner = owner
         self.m_dict = dict()
 
     def get_metric(self, metric):
