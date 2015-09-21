@@ -9,7 +9,7 @@ var WindowTemplateManager = (function () {
                 this.closeUniqueWindow(key);
     };
 
-    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data) {
+    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, call_back) {
         var self = this;
         if (this.unique[win_name] != null) this.closeUniqueWindow(win_name);
         // todo: возможно стоит передавать уникальное имя в сам объект-окно, чтобы когда окно закрывается само, оно закрывалось через этот менеджер
@@ -31,6 +31,8 @@ var WindowTemplateManager = (function () {
                 temp_window.setupCloseElement(close_elem);
 
                 self.unique[win_name] = temp_window;
+
+                if (call_back) call_back(temp_window.mainDiv);
             }
         });
     };

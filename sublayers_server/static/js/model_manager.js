@@ -188,6 +188,7 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             new WCarMarker(car);                 // виджет маркера
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
     };
 
@@ -200,7 +201,11 @@ var ClientManager = (function () {
 
             // Проверка: нет ли уже такого объекта.
             var obj = this._getMObj(uid);
-            if (obj) return;
+            if (obj) {
+                // todo: оптимизировать это: либо удалять объекты при раздеплое машинки, либо вынести этот if вниз
+                if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
+                return;
+            };
 
             // Создание объекта
             var direction = null;
@@ -219,10 +224,13 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             obj_marker = new WCarMarker(obj); // виджет маркера
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
 
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
-            if (obj.cls == 'Town')
+            if (obj.cls == 'Town') {
                 obj_marker.updateLabel(event.object.town_name);
+                obj.town_name = event.object.town_name;
+            }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
             if (obj.cls == 'POIStash')
@@ -330,6 +338,10 @@ var ClientManager = (function () {
                 mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
             }
+
+
+            // Инициализация контекстной панели
+            contextPanel = new ContextPanel();
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
@@ -802,7 +814,10 @@ var ClientManager = (function () {
     // Бартер
 
     ClientManager.prototype.InviteBarterMessage = function (event) {
-        console.log('ClientManager.prototype.InviteBarterMessage', event);
+        //console.log('ClientManager.prototype.InviteBarterMessage', event);
+        if (contextPanel) {
+            contextPanel.activate_barter_manager.add_barter(event.barter_id);
+        }
     };
 
     ClientManager.prototype.ActivateBarterMessage = function (event) {
@@ -1298,7 +1313,7 @@ var ClientManager = (function () {
             call: "init_barter",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                recipient_login: recipient_login
+                recipient_login: recipient_login.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1311,7 +1326,7 @@ var ClientManager = (function () {
             call: "activate_barter",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                barter_id: barter_id
+                barter_id: parseInt(barter_id)
             }
         };
         rpcCallList.add(mes);
