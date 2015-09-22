@@ -45,7 +45,7 @@ class Agent(Object):
 
         # текущий город, если агент не в городе то None
         self.current_location = None
-        self.set_current_location_example(reg_link=example.current_location.uri)
+        self.set_current_location_example(reg_link=example.current_location.uri if example.current_location else None)  # todo: refactoring
 
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
@@ -57,9 +57,9 @@ class Agent(Object):
         return None
 
     def save(self, time):
-        super(Agent, self).save(time)
         self.example.login = self.login
-        self.example.car = self.car
+        self.car.save(time)
+        self.example.car = self.car.example
         self.example.current_location = self.current_location
         # todo: save chats, party...
         self.example.save()
@@ -78,6 +78,7 @@ class Agent(Object):
             self.example.current_location = location.example.uri
             
     def set_current_location_example(self, reg_link):
+        # todo: refactoring
         self.example.current_location = reg_link
         if reg_link is None:
             self.current_location = None

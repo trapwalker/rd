@@ -99,7 +99,6 @@ class PointObject(Object):
         super(PointObject, self).on_after_delete(event=event)
 
     def save(self, time):
-        super(PointObject, self).save(time)
         self.example.position = self.position(time)
 
     def as_dict(self, time):

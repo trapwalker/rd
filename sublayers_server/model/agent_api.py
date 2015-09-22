@@ -248,7 +248,8 @@ class AgentAPI(API):
             return
 
         # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинкию вернуть его в город
-        self.agent.set_current_location_example(reg_link=self.agent.example.last_town.uri)
+        last_town = self.agent.example.last_town
+        self.agent.set_current_location_example(reg_link=last_town.uri if last_town else None)
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()

@@ -43,7 +43,7 @@ class Server(object):
         self.agents = {}  # Agents dictionary
         # todo: Typehinting
         self.start_time = None
-        self.api = ServerAPI(self)
+        self.api = ServerAPI(self)  # todo: fix type hinting
         # todo: blocking of init of servers with same uid
 
         self.reg = Registry(name='registry', path=os.path.join(options.world_path, 'registry'))
@@ -257,7 +257,10 @@ class LocalServer(Server):
             srv2 = yaml.load(stream=f)
 
     def save(self):
-        pass
+        log.debug('=' * 10 + ' Server SAVE start ' + '=' * 10)
+        for agent in self.agents.values():
+            agent.save(self.get_time())
+        log.debug('=' * 10 + ' Server SAVE end   ' + '=' * 10)
 
 
 def main():

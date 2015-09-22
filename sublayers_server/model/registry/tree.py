@@ -147,7 +147,7 @@ class Node(object):
         #log.debug('%s.__getstate__', self)
         #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         values = self.values
-        d = dict(name=self.name)
+        d = dict(name=self.name, abstract=self.abstract, parent=self.parent)
         for attr, getter in self.iter_attrs():
             if attr.name in values:  # todo: refactor it
                 v = getter()
@@ -161,6 +161,7 @@ class Node(object):
     def __setstate__(self, state):
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
+        self._prepared_attrs = set()
         self.name = None
         self.owner = None
         self.values = {}
