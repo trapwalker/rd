@@ -58,8 +58,11 @@ class Agent(Object):
 
     def save(self, time):
         self.example.login = self.login
-        self.car.save(time)
-        self.example.car = self.car.example
+        if self.car:
+            self.car.save(time)
+            self.example.car = self.car.example
+        else:
+            self.example.car = None
         self.example.current_location = self.current_location
         # todo: save chats, party...
         self.example.save()
