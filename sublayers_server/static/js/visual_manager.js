@@ -137,7 +137,7 @@ var VisualManager = (function () {
     // Проходит по всем визуальным объектам и при необходимости перерисовывает их (автоматически вызывается из timeManager)
     VisualManager.prototype.perform = function (time) {
         for (var i = 0; i < this._visual_list.length; i++) {
-            e = this._visual_list[i];
+            var e = this._visual_list[i];
             if (e.changed) {
                 e.obj.change(time);
                 e.changed = false;

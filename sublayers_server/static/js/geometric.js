@@ -110,6 +110,13 @@ function distancePoints(aPoint1, aPoint2) {
     return subVector(aPoint1, aPoint2).abs();
 }
 
+// Квадрат расстояния между двумя точками
+function distancePoints2(aPoint1, aPoint2) {
+    var x = aPoint1.x - aPoint2.x;
+    var y = aPoint1.y - aPoint2.y;
+    return x * x + y * y;
+}
+
 // Получение вектора по полярным координатам
 function polarPoint(modul, direction){
     return rotateVector(new Point(modul, 0), direction);

@@ -12,7 +12,6 @@ from sublayers_server.model.api_tools import API, public_method
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
-from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
@@ -25,6 +24,7 @@ from sublayers_server.model.chat_room import (
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
     CancelBarterEvent, SetMoneyBarterEvent
+from sublayers_server.model.barter import InviteBarterMessage
 
 from sublayers_server.model.inventory import ItemState
 
@@ -220,19 +220,17 @@ class AgentAPI(API):
         for zone in self.agent.car.zones:
             messages.ZoneMessage(agent=self.agent, subj=self.agent.car, name=zone.name, is_start=True, time=time).post()
 
+        # отправить активные бартеры на клиент
+        for barter in self.agent.barters:
+            if barter.recipient is self.agent and barter.state == 'unactive':
+                InviteBarterMessage(agent=self.agent, time=time, barter=barter).post()
+
     def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
-
-        # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
-        self.shell = Shell(self.cmd_line_context(), dict(
-            pi=pi,
-            P=Point,
-            log=log,
-        ))
 
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
@@ -394,6 +392,8 @@ class AgentAPI(API):
             car = self.car
             #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+        elif command == '/save':
+            self.agent.server.save()
         else:
             log.warning('Unknown console command "%s"', cmd)
 
@@ -485,7 +485,7 @@ class AgentAPI(API):
 
     @public_method
     def init_barter(self, recipient_login):
-        #log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
+        # log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
         InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
                         time=self.agent.server.get_time()).post()
 
