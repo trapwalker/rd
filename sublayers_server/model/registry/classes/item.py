@@ -95,3 +95,7 @@ class MechanicItem(SlotItem):
     max_fuel = FloatAttribute(default=0, caption=u"Максимальное количество топлива")
     p_fuel_rate = FloatAttribute(default=0, caption=u"Расход топлива (л/с)")
 
+
+class TunerItem(SlotItem):
+    pass
+

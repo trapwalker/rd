@@ -674,6 +674,7 @@ var ClientManager = (function () {
                 locationManager.nucoil.update();
                 locationManager.armorer.update();
                 locationManager.mechanic.update();
+                locationManager.tuner.update();
                 locationManager.trader.updatePlayerInv();
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
@@ -694,6 +695,7 @@ var ClientManager = (function () {
         locationManager.nucoil.clear();
         locationManager.armorer.clear();
         locationManager.mechanic.clear();
+        locationManager.tuner.clear();
         locationManager.trader.clear();
     };
 
@@ -747,6 +749,7 @@ var ClientManager = (function () {
             locationManager.nucoil.update();
             locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
             locationManager.mechanic.update(event.mechanic_slots);
+            locationManager.tuner.update(event.tuner_slots);
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
             locationManager.hangar.update();

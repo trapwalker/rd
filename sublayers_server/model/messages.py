@@ -627,6 +627,11 @@ class ExamplesShowMessage(Message):
                 for k, v in self.agent.example.car.iter_slots(tags='mechanic')
             ]
 
+            d['tuner_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots(tags='tuner')
+            ]
+
             d['armorer_slots_flags'] = [
                 dict(name=attr.name, value=getter and getter())
                 for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')

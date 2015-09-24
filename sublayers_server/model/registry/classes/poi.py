@@ -40,6 +40,7 @@ class GasStation(MapLocation):
 class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
     mechanic = RegistryLink(caption=u'Механик')
+    tuner = RegistryLink(caption=u'Тюнер')
     trader = RegistryLink(caption=u'Торговец')
     hangar = RegistryLink(caption=u'Ангар')
     nucoil = RegistryLink(caption=u'Заправка')
@@ -60,6 +61,10 @@ class Armorer(Institution):
 
 
 class Mechanic(Institution):
+    pass
+
+
+class Tuner(Institution):
     pass
 
 

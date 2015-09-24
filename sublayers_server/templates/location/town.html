@@ -36,6 +36,16 @@
     </div>
     {% end %}
 
+    {% if town.example.tuner is not None %}
+    <div id="townTunerPageWrap" class="townPageWrap" style="display: none">
+        {% if agent.example.car is not None %}
+            {% include tuner_window.html %}
+        {% else %}
+            {% include npc_no_car.html %}
+        {% end %}
+    </div>
+    {% end %}
+
     {% if town.example.trader is not None %}
     <div id="townTraderPageWrap" class="townPageWrap" style="display: none">
         {% if agent.example.car is not None %}
@@ -90,6 +100,15 @@
         setBtnDisplay(9, "block");
     }
 
+    function openTuner() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTunerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.tuner;
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
 
     function openTrader() {
         $('.townPageWrap').css('display', 'none');

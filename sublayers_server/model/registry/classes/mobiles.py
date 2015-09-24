@@ -71,6 +71,10 @@ class Mobile(Root):
     slot_m1 = Slot(caption=u'M1', doc=u'Слот механика 1', tags='mechanic')
     slot_m2 = Slot(caption=u'M1', doc=u'Слот механика 2', tags='mechanic')
 
+
+    slot_t1 = Slot(caption=u't1', doc=u'Слот тюнера 1', tags='tuner')
+    slot_t2 = Slot(caption=u't1', doc=u'Слот тюнера 2', tags='tuner')
+
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
@@ -100,6 +104,7 @@ class Mobile(Root):
 
 class Car(Mobile):
     armorer_car_svg = Attribute(caption=u"Представление машинки у оружейника")
+    tuner_car_svg = Attribute(caption=u"Представление машинки у тюнера")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
     hangar_car = Attribute(caption=u"Представление машинки в ангаре")
 

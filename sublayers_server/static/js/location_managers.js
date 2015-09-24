@@ -12,6 +12,7 @@ var LocationManager = (function () {
         this.nucoil = new NucoilManager();
         this.hangar = new HangarManager();
         this.mechanic = new MechanicManager();
+        this.tuner = new TunerManager();
         this.visitorsManager = new LocationVisitorsManager();
     }
 
@@ -686,6 +687,240 @@ var MechanicManager = (function () {
     };
 
     return MechanicManager;
+})();
+
+
+var TunerManager = (function () {
+
+    function TunerManager() {
+        this.items = {};
+        this.inv_show_div = null;
+        this.tuner_slots = [];
+        this.activeSlot = null;
+    }
+
+    TunerManager.prototype._addEmptyInventorySlot = function(position) {
+        var itemWrapDiv = $('<div class="npcInventory-itemWrap tuner-itemWrap-' + position +
+                            '" data-pos="' + position + '"></div>');
+        itemWrapDiv.droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                var dragPos = ui.draggable.data('pos');
+                var dropPos = $(event.target).data('pos');
+                locationManager.armorer.changeItem(dragPos, dropPos);
+            }
+        });
+        this.inv_show_div.append(itemWrapDiv);
+    };
+
+    TunerManager.prototype.exportSlotState = function() {
+        var result = {};
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0))
+                result[slot_name] = this.items[slot_name];
+        return result;
+    };
+
+    TunerManager.prototype.update = function(tuner_slots) {
+        //console.log('TunerManager.prototype.update');
+        this.clear();
+
+        if (tuner_slots) this.tuner_slots = tuner_slots;
+
+        var item;
+
+        // Проверить если город
+        this.inv_show_div = $('#activeTownDiv').find('.tunerWindow-main').find('.npcInventory-inventory').first();
+        if (this.inv_show_div.length == 0) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+
+        // Добавить итемы инвентаря своего агента
+        var inventory = inventoryList.getInventory(user.ID);
+        if (! inventory) {
+            console.warn('Ивентарь агента (' + user.ID + ') не найден');
+            return
+        }
+        for (var i = 0; i < inventory.max_size; i++) {
+            var item_rec = {
+                example: null,
+                position: null
+            };
+            item = inventory.getItem(i);
+            item_rec.position = i;
+            if (item) {
+                if (item.hasTag('tuner')) {  // фильтрация итема
+                    this._addEmptyInventorySlot(i);
+                    item_rec.example = item.example;
+                    this.items[i] = item_rec;
+                }
+            }
+            else {
+                this._addEmptyInventorySlot(i);
+                item_rec.example = null;
+                this.items[i] = item_rec;
+            }
+        }
+        resizeInventory(this.inv_show_div);
+
+        // Добавить итемы слотов
+        for (var i = 0; i < this.tuner_slots.length; i++) {
+            var item_rec = {
+                example: this.armorer_slots[i].value,
+                position: this.armorer_slots[i].name
+            };
+            this.items[item_rec.position] = item_rec;
+            $('#tuner_top_' + item_rec.position).data('pos', item_rec.position);
+            $('#tuner_side_' + item_rec.position).data('pos', item_rec.position);
+        }
+
+        // Повесить дропабле на все слоты
+        $('.tuner-slot').droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                var dragPos = ui.draggable.data('pos');
+                var dropPos = $(event.target).data('pos');
+                locationManager.armorer.changeItem(dragPos, dropPos);
+            }
+        });
+
+        // Отрисовать верстку
+        for (var key in this.items)
+            if (this.items.hasOwnProperty(key))
+                this.reDrawItem(key);
+    };
+
+    TunerManager.prototype.clear = function() {
+        //console.log('TunerManager.prototype.clear');
+        // todo: написать тут чтото
+        this.setActiveSlot(null);
+        this.items = {};
+
+        if (this.inv_show_div)
+            this.inv_show_div.empty();
+    };
+
+    TunerManager.prototype.apply = function() {
+        //console.log('ArmorerManager.prototype.apply');
+        clientManager.sendArmorerApply();
+    };
+
+    TunerManager.prototype.cancel = function() {
+        //console.log('TunerManager.prototype.cancel');
+        clientManager.sendTunerCancel();
+    };
+
+    TunerManager.prototype.reDrawItem = function(position) {
+        //console.log('TunerManager.prototype.reDrawItem');
+        if (position.toString().indexOf('slot') >= 0) {
+            // Позиция в слотах
+            var top_slot = $('#tuner_top_' + position);
+            var side_slot = $('#tuner_side_' + position);
+
+            // Очистить слоты
+            top_slot.empty();
+            side_slot.empty();
+
+            // создать вёрстку для отрисовки
+            var item = this.items[position];
+            if (item.example) {
+                var itemImgTop = item.example['tuner_top'];
+                var itemImgSide = item.example['tuner_side'];
+
+
+                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgTop + '" class="tuner_top"></div>');
+                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgSide + '" class="tuner_side"></div>');
+
+                itemDivTop.data('pos', position);
+                itemDivSide.data('pos', position);
+
+                itemDivTop.draggable({
+                    helper: 'clone',
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+                itemDivSide.draggable({
+                    helper: 'clone',
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+
+                top_slot.append(itemDivTop);
+                side_slot.append(itemDivSide);
+            }
+        }
+        else {
+            // Позиция в инвентаре
+            var itemWrapDiv = this.inv_show_div.find('.tuner-itemWrap-' + position).first();
+            itemWrapDiv.empty();
+
+            var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
+            var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
+                '<div class="npcInventory-name">Пусто</div>';
+            itemDiv.append(emptyItemDiv);
+            var item = this.items[position];
+            if (item.example) {
+                itemDiv.find('.npcInventory-name').text(item.example.title);
+                itemDiv.find('.npcInventory-picture')
+                    .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+                itemDiv.draggable({
+                    helper: 'clone',
+                    cursorAt: {
+                        left: 60,
+                        top: 42
+                    },
+                    opacity: 0.8,
+                    revert: true,
+                    revertDuration: 0,
+                    zIndex: 1,
+                    appendTo: '#activeTownDiv'
+                });
+            }
+            itemWrapDiv.append(itemDiv);
+        }
+    };
+
+    TunerManager.prototype.changeItem = function(src, dest) {
+        //console.log('TunerManager.prototype.changeItem', src, dest);
+        if (src == dest) return;
+
+        var item = this.items[src];
+        this.items[src] = this.items[dest];
+        this.items[dest] = item;
+
+        this.reDrawItem(src);
+        this.reDrawItem(dest);
+        if (dest.toString().indexOf('slot') >= 0)
+            this.setActiveSlot(dest);
+        else
+            this.setActiveSlot(null);
+    };
+
+    TunerManager.prototype.setActiveSlot = function(slotName) {
+        //console.log('TunerManager.prototype.setActiveSlot');
+        if (! window.hasOwnProperty('dropTunerSlotActive')) return;
+
+        // Гасим все слоты
+        dropTunerSlotActive();
+
+        // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
+        if (this.activeSlot == slotName) this.activeSlot = null;
+        else this.activeSlot = slotName;
+        if (! this.items.hasOwnProperty(this.activeSlot)) return;
+        var item_rec = this.items[this.activeSlot];
+
+        // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
+        setTunerSlotActive(this.activeSlot);
+    };
+
+    return TunerManager;
 })();
 
 
