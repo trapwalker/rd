@@ -71,6 +71,8 @@ class SetPartyEvent(Event):
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
 
+        # todo: save parties
+
 
 class SendInviteEvent(Event):
     def __init__(self, agent, username, **kw):

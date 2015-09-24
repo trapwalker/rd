@@ -259,7 +259,7 @@ class LocalServer(Server):
     def save(self):
         log.debug('=' * 10 + ' Server SAVE start ' + '=' * 10)
         for agent in self.agents.values():
-            agent.save(self.get_time())
+            agent.save(self.get_time())  # todo: get right time
         log.debug('=' * 10 + ' Server SAVE end   ' + '=' * 10)
 
 
