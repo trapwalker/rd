@@ -183,7 +183,9 @@ class Collection(AbstractStorage):
     def get_local(self, path):
         key = self.make_key(path)
         try:
-            return self._deserialize(self._raw_storage[key])
+            node = self._deserialize(self._raw_storage[key])
+            node.storage = self
+            return node
         except KeyError:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
 

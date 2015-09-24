@@ -97,7 +97,7 @@ class Node(object):
             return str(self.uri)
         elif self.parent:
             return self.parent.node_hash()
-        raise Exception('try to get node hash in wrong node')  # todo: exception specify
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
 
     def as_client_dict(self):
         # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
@@ -147,7 +147,11 @@ class Node(object):
         #log.debug('%s.__getstate__', self)
         #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         values = self.values
-        d = dict(name=self.name, abstract=self.abstract, parent=self.parent)
+        d = dict(
+            name=self.name,
+            abstract=self.abstract,
+            parent=self.parent.uri if self.parent.storage else self.parent,
+        )
         for attr, getter in self.iter_attrs():
             if attr.name in values:  # todo: refactor it
                 v = getter()
@@ -166,6 +170,10 @@ class Node(object):
         self.owner = None
         self.values = {}
         self.storage = None
+        parent = state.pop('parent')
+        if isinstance(parent, URI):
+            parent = parent.resolve()
+        self.parent = parent
 
         for k, v in state.items():
             setattr(self, k, v)
