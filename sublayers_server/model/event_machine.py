@@ -256,6 +256,11 @@ class LocalServer(Server):
         with open('srv_dump.yaml', 'r') as f:
             srv2 = yaml.load(stream=f)
 
+    def reset_user(self, user=None):
+        if user is None:
+            pass
+
+
     def save(self):
         log.debug('=' * 10 + ' Server SAVE start ' + '=' * 10)
         for agent in self.agents.values():

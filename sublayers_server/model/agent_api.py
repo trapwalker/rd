@@ -400,6 +400,17 @@ class AgentAPI(API):
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
         elif command == '/save':
             self.agent.server.save()
+        elif command == '/reset':
+            if args:
+                all_agents = self.agent.server.agents
+                agents = all_agents if '*' in args else filter(None, (all_agents.get(username) for username in args))
+                for agent_to_reset in agents:
+                    agent_to_reset.example.reset()
+                    self.send_kick(username=agent_to_reset.login)
+            else:
+                self.agent.example.reset()
+                self.send_kick(username=self.agent.login)
+
         else:
             log.warning('Unknown console command "%s"', cmd)
 

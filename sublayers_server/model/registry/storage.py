@@ -200,6 +200,10 @@ class Collection(AbstractStorage):
         key = self.make_key(node.uri.path)
         self._raw_storage[key] = self._serialize(node)
 
+    def reset(self, node):
+        key = self.make_key(node.uri.path)
+        del self._raw_storage[key]
+
     def get_path_tuple(self, node):
         return [node.name]
 
