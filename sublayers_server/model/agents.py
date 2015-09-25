@@ -18,6 +18,9 @@ class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
 
     def __init__(self, login, time, example, connection=None, party=None, **kw):
+        """
+        @type example: sublayers_server.model.registry.tree.Node
+        """
         super(Agent, self).__init__(time=time, **kw)
         self.example = example
         self.observers = CounterSet()
