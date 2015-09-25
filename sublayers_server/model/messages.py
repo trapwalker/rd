@@ -628,8 +628,8 @@ class ExamplesShowMessage(Message):
             ]
 
             d['tuner_slots'] = [
-                dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots(tags='tuner')
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in self.agent.example.car.iter_slots2(tags='tuner')
             ]
 
             d['armorer_slots_flags'] = [

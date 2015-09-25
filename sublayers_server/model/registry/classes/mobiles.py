@@ -71,9 +71,9 @@ class Mobile(Root):
     slot_m1 = Slot(caption=u'M1', doc=u'Слот механика 1', tags='mechanic')
     slot_m2 = Slot(caption=u'M1', doc=u'Слот механика 2', tags='mechanic')
 
-
-    slot_t1 = Slot(caption=u't1', doc=u'Слот тюнера 1', tags='tuner')
-    slot_t2 = Slot(caption=u't1', doc=u'Слот тюнера 2', tags='tuner')
+    slot_t1 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner spoiler')
+    slot_t2 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner b_bumper')
+    slot_t3 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_bumper')
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
@@ -92,6 +92,12 @@ class Mobile(Root):
             v = getter()
             if not isinstance(v, SlotLock) and v is not False:  # todo: SlotLock
                 yield attr.name, v
+
+    def iter_slots2(self, tags=None):
+        for attr, getter in self.iter_attrs(tags=tags, classes=Slot):
+            v = getter()
+            if not isinstance(v, SlotLock) and v is not False:  # todo: SlotLock
+                yield attr.name, v, attr
 
     def get_count_slots(self, tags=None):
         result = 0

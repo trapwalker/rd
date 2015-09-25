@@ -19,7 +19,6 @@
     width: 734px;
     height: 330px;
     padding-bottom: 5px;
-    background-color: white
 }
 
 
@@ -27,4 +26,13 @@
     width: 492px;
     height: 100%;
     float: left;
+}
+
+
+
+.tunerRightSide {
+    width: 242px;
+    height: 100%;
+    float: left;
+    background-color: #f5f5f5;
 }

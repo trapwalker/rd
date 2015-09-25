@@ -707,7 +707,7 @@ var TunerManager = (function () {
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
-                locationManager.armorer.changeItem(dragPos, dropPos);
+                locationManager.tuner.changeItem(dragPos, dropPos);
             }
         });
         this.inv_show_div.append(itemWrapDiv);
@@ -767,8 +767,8 @@ var TunerManager = (function () {
         // Добавить итемы слотов
         for (var i = 0; i < this.tuner_slots.length; i++) {
             var item_rec = {
-                example: this.armorer_slots[i].value,
-                position: this.armorer_slots[i].name
+                example: this.tuner_slots[i].value,
+                position: this.tuner_slots[i].name
             };
             this.items[item_rec.position] = item_rec;
             $('#tuner_top_' + item_rec.position).data('pos', item_rec.position);
@@ -781,7 +781,7 @@ var TunerManager = (function () {
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
-                locationManager.armorer.changeItem(dragPos, dropPos);
+                locationManager.tuner.changeItem(dragPos, dropPos);
             }
         });
 
@@ -803,7 +803,7 @@ var TunerManager = (function () {
 
     TunerManager.prototype.apply = function() {
         //console.log('ArmorerManager.prototype.apply');
-        clientManager.sendArmorerApply();
+        clientManager.sendTunerApply();
     };
 
     TunerManager.prototype.cancel = function() {
@@ -887,11 +887,34 @@ var TunerManager = (function () {
         }
     };
 
+    TunerManager.prototype._compare_tags = function(item, slot) {
+        // итем должен обладать всеми тегами слота, чтобы быть туда установленным
+        for (var i = 0; i < slot.tags.length; i++)
+            if (item.example.tags.indexOf(slot.tags[i]) < 0)
+                return false;
+        return true;
+
+    };
+
     TunerManager.prototype.changeItem = function(src, dest) {
         //console.log('TunerManager.prototype.changeItem', src, dest);
         if (src == dest) return;
 
         var item = this.items[src];
+        var slot = null;
+        for (var i = 0; i < this.tuner_slots.length; i++)
+            if (this.tuner_slots[i].name == dest)
+                slot = this.tuner_slots[i];
+
+        if (! item) return;
+        if (slot) {
+            // проверка по тегам, можем ли мы это сделать
+            if (!this._compare_tags(item, slot)) {
+                //console.log('Проверка по тегам не пройдена!');
+                return;
+            }
+        }
+
         this.items[src] = this.items[dest];
         this.items[dest] = item;
 

@@ -1296,6 +1296,33 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+
+    // Тюнер
+
+    ClientManager.prototype.sendTunerApply = function () {
+        //console.log('ClientManager.prototype.sendTunerApply');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "tuner_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                tuner_slots: locationManager.tuner.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTunerCancel = function () {
+        //console.log('ClientManager.prototype.sendTunerCancel');
+        var mes = {
+            call: "tuner_cancel",
+            rpc_call_id: rpcCallList.getID()
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Торговец
 
     ClientManager.prototype.sendTraderApply = function () {

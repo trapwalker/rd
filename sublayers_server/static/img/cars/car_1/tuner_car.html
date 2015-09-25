@@ -1,11 +1,11 @@
 <style>
-    .armorer-car-main {
+    .tuner-car-main {
         position: relative;
         width: 492px;
         height: 325px;
     }
 
-    .armorer-car-main-top {
+    .tuner-car-main-top {
         position: relative;
         opacity: 0.4;
         background: transparent url(static/img/cars/car_1/car_top.png) no-repeat 100% 100%;
@@ -15,7 +15,7 @@
         overflow: hidden;
     }
 
-    .armorer-car-main-side {
+    .tuner-car-main-side {
         position: relative;
         opacity: 0.4;
         background: transparent url(static/img/cars/car_1/car_side.png) no-repeat 100% 100%;
@@ -25,7 +25,7 @@
         overflow: hidden;
     }
 
-    .wheel-slot {
+    .tuner-wheel-slot {
         position: absolute;
         opacity: 0.4;
         background: transparent url(static/img/wheels/tr_sedan_wheel_001.png) no-repeat 100% 100%;
@@ -33,78 +33,52 @@
         width: 49px;
     }
 
-    .armorer_slot {
+    .tuner_slot {
         cursor: pointer;
     }
 
-    #wheel_slot_1 {top: 222px; left: 323px}
-    #wheel_slot_2 {top: 222px; left: 136px}
-    #wheel_slot_3 {top: 0px; left: 0px}
+    #tuner_wheel_slot_1 {top: 222px; left: 323px}
+    #tuner_wheel_slot_2 {top: 222px; left: 136px}
+    #tuner_wheel_slot_3 {top: 0px; left: 0px}
 
-    #top_slot_FL  { top: 0px; left: 0px}
-    #side_slot_FL { top: 0px; left: 0px}
+    #tuner_top_slot_t1  { top: 45px; left: 90px}
+    #tuner_side_slot_t1 { top: 175px; left: 90px;}
 
-    #top_slot_FC  { top: 43px; left: 320px}
-    #side_slot_FC { top: 180px; left: 320px}
+    #tuner_top_slot_t2  { top: 43px; left: 320px}
+    #tuner_side_slot_t2 { top: 220px; left: 80px}
 
-    #top_slot_FR  { top: 0px; left: 0px}
-    #side_slot_FR { top: 0px; left: 0px}
+    #tuner_top_slot_t3  { top: 43px; left: 215px}
+    #tuner_side_slot_t3 { top: 220px; left: 380px}
 
-    #top_slot_CL  { top: 0px; left: 0px}
-    #side_slot_CL { top: 0px; left: 0px}
 
-    #top_slot_CC  { top: 43px; left: 215px}
-    #side_slot_CC { top: 155px; left: 215px}
 
-    #top_slot_CR  { top: 0px; left: 0px}
-    #side_slot_CR { top: 0px; left: 0px}
-
-    #top_slot_BL  { top: 18px; left: 100px}
-    #side_slot_BL { top: 0px; left: 0px}
-
-    #top_slot_BC  { top: 0px; left: 0px}
-    #side_slot_BC { top: 0px; left: 0px}
-
-    #top_slot_BR  { top: 70px; left: 100px}
-    #side_slot_BR { top: 180px; left: 100px}
-
-    .armorer-slot {
+    .tuner-slot {
         position: absolute;
         height: 35px;
         width: 35px;
         background: transparent url(static/img/cars/slot_passive.png) no-repeat 100% 100%;
     }
-    .armorer-slot-hover { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
-    .armorer-slot-active { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
+    .tuner-slot-hover { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
+    .tuner-slot-active { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
 
-    .block-armorer-slot { display: none; }
+    .block-tuner-slot { display: none; }
 </style>
 
-<div class="armorer-car-main">
-    <div id="wheel_slot_1" class="wheel-slot"></div>
-    <div id="wheel_slot_2" class="wheel-slot"></div>
-    <div id="wheel_slot_3" class="wheel-slot block-armorer-slot"></div>
+<div class="tuner-car-main">
+    <div id="tuner_wheel_slot_1" class="tuner-wheel-slot"></div>
+    <div id="tuner_wheel_slot_2" class="tuner-wheel-slot"></div>
+    <div id="tuner_wheel_slot_3" class="tuner-wheel-slot block-tuner-slot"></div>
 
-    <div class="armorer-car-main-top"></div>
-    <div class="armorer-car-main-side"></div>
+    <div class="tuner-car-main-top"></div>
+    <div class="tuner-car-main-side"></div>
 
-    <div id="top_slot_FL" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_FC" class="armorer-slot"></div>
-    <div id="top_slot_FR" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_CL" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_CC" class="armorer-slot"></div>
-    <div id="top_slot_CR" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_BL" class="armorer-slot"></div>
-    <div id="top_slot_BC" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_BR" class="armorer-slot"></div>
+    <div id="tuner_top_slot_t1" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t1" class="tuner-slot"></div>
 
-    <div id="side_slot_FL" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_FC" class="armorer-slot"></div>
-    <div id="side_slot_FR" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_CL" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_CC" class="armorer-slot"></div>
-    <div id="side_slot_CR" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_BL" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_BC" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_BR" class="armorer-slot"></div>
+    <div id="tuner_top_slot_t2" class="tuner-slot block-tuner-slot"></div>
+    <div id="tuner_side_slot_t2" class="tuner-slot"></div>
+
+    <div id="tuner_top_slot_t3" class="tuner-slot block-tuner-slot"></div>
+    <div id="tuner_side_slot_t3" class="tuner-slot "></div>
+
 </div>

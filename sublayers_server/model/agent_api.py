@@ -18,7 +18,8 @@ from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply, TransactionTraderApply)
+    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
+    TransactionTunerApply, TransactionTraderApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -486,6 +487,17 @@ class AgentAPI(API):
 
     @public_method
     def mechanic_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+
+    # Тюнер
+
+    @public_method
+    def tuner_apply(self, tuner_slots):
+        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots).post()
+
+    @public_method
+    def tuner_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Торговец

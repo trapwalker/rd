@@ -8,7 +8,8 @@
         <div class="armorer-car">
             {% raw open(tuner_car_svg_link).read() %}
         </div>
-
+        <div class="tunerRightSide">
+        </div>
     </div>
     {% include npc_inventory.html %}
 </div>
@@ -37,6 +38,9 @@
         $("#tuner_top_" + slot_name).addClass("tuner-slot-active");
         $("#tuner_side_" + slot_name).addClass("tuner-slot-active");
     }
+
+
+
 
     {% for slot in tuner_slots %}
     $("#tuner_top_{{slot}}").mouseenter(function() {

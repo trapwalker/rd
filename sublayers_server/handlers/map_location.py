@@ -39,6 +39,7 @@ class MapLocationHandler(BaseHandler):
                     mechanic_slots = [v[0] for v in car_ex.iter_slots(tags='mechanic')]
                     tuner_slots = [v[0] for v in car_ex.iter_slots(tags='tuner')]
 
+
                 self.render("location/town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
                             tuner_car_svg_link=tuner_car_svg_link,
                             sector_svg_link=sector_svg_link, armorer_slots=armorer_slots, tuner_slots=tuner_slots,
