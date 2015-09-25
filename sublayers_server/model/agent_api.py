@@ -157,6 +157,9 @@ class SendSetCategoryEvent(Event):
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
+        """
+        @type example: sublayers_server.model.agents.Agent
+        """
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
