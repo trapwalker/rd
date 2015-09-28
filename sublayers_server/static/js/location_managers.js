@@ -789,6 +789,9 @@ var TunerManager = (function () {
         for (var key in this.items)
             if (this.items.hasOwnProperty(key))
                 this.reDrawItem(key);
+
+        // Отрисовать значение Очков Крутости
+        this._pont_points_refresh();
     };
 
     TunerManager.prototype.clear = function() {
@@ -924,6 +927,9 @@ var TunerManager = (function () {
             this.setActiveSlot(dest);
         else
             this.setActiveSlot(null);
+
+        // Отрисовать значение Очков Крутости
+        this._pont_points_refresh();
     };
 
     TunerManager.prototype.setActiveSlot = function(slotName) {
@@ -941,6 +947,16 @@ var TunerManager = (function () {
 
         // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
         setTunerSlotActive(this.activeSlot);
+    };
+
+    TunerManager.prototype._pont_points_refresh = function(){
+        var pp = 0;
+        for (var key in this.items)
+            if (this.items.hasOwnProperty(key))
+                if (key.toString().indexOf('slot') >= 0)
+                    if (this.items[key].example)
+                        pp += this.items[key].example.pont_points;
+        $('#tunerPontPointsValue').text(pp);
     };
 
     return TunerManager;
