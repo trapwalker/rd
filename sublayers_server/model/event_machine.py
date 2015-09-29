@@ -41,6 +41,7 @@ class Server(object):
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
         self.message_queue = deque()
         self.agents = {}  # Agents dictionary
+        """:type : dict[unicode, sublayers_server.model.event_machine.model.agents.Agent]"""
         # todo: Typehinting
         self.start_time = None
         self.api = ServerAPI(self)  # todo: fix type hinting

@@ -143,7 +143,7 @@ class Dispatcher(AbstractStorage):
             # log.debug('Try to get storage "{}"'.format(uri.storage))
             storage_obj = self.storage_map[uri.storage]
         except KeyError:
-            raise StorageNotFound('Storage {} not found. [{}] avalable'.format(
+            raise StorageNotFound('Storage "{}" not found. [{}] avalable'.format(
                 uri.storage, ', '.join(self.storage_map.keys())))
 
         return storage_obj.get_local(uri.path)
