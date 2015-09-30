@@ -68,9 +68,6 @@ class Mobile(Root):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
 
-    slot_m1 = Slot(caption=u'M1', doc=u'Слот механика 1', tags='mechanic')
-    slot_m2 = Slot(caption=u'M1', doc=u'Слот механика 2', tags='mechanic')
-
     slot_t1 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner spoiler')
     slot_t2 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner b_bumper')
     slot_t3 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_bumper')
@@ -117,6 +114,74 @@ class Car(Mobile):
     inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей')
     inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей')
     inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей')
+
+    # Атрибуты - слоты механика. Скиданы в кучу, работают по тегам систем
+    # Двигатель
+    slot_m1 = Slot(caption=u'M1', doc=u'Двигатель: впуск', tags='mechanic motor')
+    slot_m2 = Slot(caption=u'M1', doc=u'Двигатель: компрессор', tags='mechanic motor')
+    slot_m3 = Slot(caption=u'M1', doc=u'Двигатель: воздушный фильтр', tags='mechanic motor')
+    slot_m4 = Slot(caption=u'M1', doc=u'Двигатель: распредвал', tags='mechanic motor')
+    slot_m5 = Slot(caption=u'M1', doc=u'Двигатель: зажигание', tags='mechanic motor')
+    slot_m6 = Slot(caption=u'M1', doc=u'Двигатель: ГБЦ', tags='mechanic motor')
+    slot_m7 = Slot(caption=u'M1', doc=u'Двигатель: ЦПГ', tags='mechanic motor')
+    slot_m8 = Slot(caption=u'M1', doc=u'Двигатель: маховик', tags='mechanic motor')
+    slot_m9 = Slot(caption=u'M1', doc=u'Двигатель: масло', tags='mechanic motor')
+    slot_m10 = Slot(caption=u'M1', doc=u'Двигатель: выпуск', tags='mechanic motor')
+    slot_m11 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m12 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m13 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m14 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m15 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m16 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m17 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m18 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m19 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m20 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m21 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+    slot_m22 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
+
+    # Трансмиссия
+    slot_m23 = Slot(caption=u'M1', doc=u'Трансмиссия: сцепление', tags='mechanic transmission')
+    slot_m24 = Slot(caption=u'M1', doc=u'Трансмиссия: коробка передач', tags='mechanic transmission')
+    slot_m25 = Slot(caption=u'M1', doc=u'Трансмиссия: полуоси перед', tags='mechanic transmission')
+    slot_m26 = Slot(caption=u'M1', doc=u'Трансмиссия: полуоси зад', tags='mechanic transmission')
+    slot_m27 = Slot(caption=u'M1', doc=u'Трансмиссия: дифференциал перед', tags='mechanic transmission')
+    slot_m28 = Slot(caption=u'M1', doc=u'Трансмиссия: дифференциал зад', tags='mechanic transmission')
+    slot_m29 = Slot(caption=u'M1', doc=u'Трансмиссия: трансмиссионное масло', tags='mechanic transmission')
+    slot_m30 = Slot(caption=u'M1', doc=u'Трансмиссия: первичный вал', tags='mechanic transmission')
+    slot_m31 = Slot(caption=u'M1', doc=u'Трансмиссия: вторичный вал', tags='mechanic transmission')
+    slot_m32 = Slot(caption=u'M1', doc=u'Трансмиссия: гидротрансформатор', tags='mechanic transmission')
+    slot_m33 = Slot(caption=u'M1', doc=u'Трансмиссия: раздатка', tags='mechanic transmission')
+
+    # Подвеска
+    slot_m34 = Slot(caption=u'M1', doc=u'Подвеска: передние амортизаторы', tags='mechanic suspension')
+    slot_m35 = Slot(caption=u'M1', doc=u'Подвеска: передние амортизаторы', tags='mechanic suspension')
+    slot_m36 = Slot(caption=u'M1', doc=u'Подвеска: задние амортизаторы', tags='mechanic suspension')
+    slot_m37 = Slot(caption=u'M1', doc=u'Подвеска: задние амортизаторы', tags='mechanic suspension')
+    slot_m38 = Slot(caption=u'M1', doc=u'Подвеска: передние пружины', tags='mechanic suspension')
+    slot_m39 = Slot(caption=u'M1', doc=u'Подвеска: передние пружины', tags='mechanic suspension')
+    slot_m40 = Slot(caption=u'M1', doc=u'Подвеска: задние пружины', tags='mechanic suspension')
+    slot_m41 = Slot(caption=u'M1', doc=u'Подвеска: задние пружины', tags='mechanic suspension')
+    slot_m42 = Slot(caption=u'M1', doc=u'Подвеска: передние рычаги', tags='mechanic suspension')
+    slot_m43 = Slot(caption=u'M1', doc=u'Подвеска: передние рычаги', tags='mechanic suspension')
+    slot_m44 = Slot(caption=u'M1', doc=u'Подвеска: задние рычаги', tags='mechanic suspension')
+    slot_m45 = Slot(caption=u'M1', doc=u'Подвеска: задние рычаги', tags='mechanic suspension')
+    slot_m46 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m47 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m48 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m49 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m50 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m51 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m52 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+    slot_m53 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
+
+    # Тормоза
+    slot_m54 = Slot(caption=u'M1', doc=u'Тормоза: ', tags='mechanic brake')
+
+    # Охлаждение
+    slot_m55 = Slot(caption=u'M1', doc=u'Охлаждение: ', tags='mechanic cooling')
+
+
 
 
 class Drone(Mobile):
