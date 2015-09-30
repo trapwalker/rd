@@ -127,6 +127,7 @@ class Car(Mobile):
     slot_m8 = Slot(caption=u'M1', doc=u'Двигатель: маховик', tags='mechanic motor')
     slot_m9 = Slot(caption=u'M1', doc=u'Двигатель: масло', tags='mechanic motor')
     slot_m10 = Slot(caption=u'M1', doc=u'Двигатель: выпуск', tags='mechanic motor')
+
     slot_m11 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
     slot_m12 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
     slot_m13 = Slot(caption=u'M1', doc=u'Двигатель: свеча зажигания', tags='mechanic motor')
@@ -166,6 +167,7 @@ class Car(Mobile):
     slot_m43 = Slot(caption=u'M1', doc=u'Подвеска: передние рычаги', tags='mechanic suspension')
     slot_m44 = Slot(caption=u'M1', doc=u'Подвеска: задние рычаги', tags='mechanic suspension')
     slot_m45 = Slot(caption=u'M1', doc=u'Подвеска: задние рычаги', tags='mechanic suspension')
+
     slot_m46 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
     slot_m47 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
     slot_m48 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
@@ -176,12 +178,52 @@ class Car(Mobile):
     slot_m53 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension')
 
     # Тормоза
-    slot_m54 = Slot(caption=u'M1', doc=u'Тормоза: ', tags='mechanic brake')
+    slot_m54 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake')
+    slot_m55 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake')
+
+    slot_m56 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake')
+    slot_m57 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake')
+    slot_m58 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake')
+    slot_m59 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake')
+    slot_m60 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake')
+    slot_m61 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake')
+
+    slot_m62 = Slot(caption=u'M1', doc=u'Тормоза: передние колодки', tags='mechanic brake')
+    slot_m63 = Slot(caption=u'M1', doc=u'Тормоза: передние колодки', tags='mechanic brake')
+
+    slot_m64 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake')
+    slot_m65 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake')
+    slot_m66 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake')
+    slot_m67 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake')
+    slot_m68 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake')
+    slot_m69 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake')
+
+    slot_m70 = Slot(caption=u'M1', doc=u'Тормоза: усилитель тормозов', tags='mechanic brake')
+
+    slot_m71 = Slot(caption=u'M1', doc=u'Тормоза: АБС', tags='mechanic brake')
+
+    slot_m72 = Slot(caption=u'M1', doc=u'Тормоза: шланги перед', tags='mechanic brake')
+    slot_m73 = Slot(caption=u'M1', doc=u'Тормоза: шланги перед', tags='mechanic brake')
+
+    slot_m74 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake')
+    slot_m75 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake')
+    slot_m76 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake')
+    slot_m77 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake')
+    slot_m78 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake')
+    slot_m79 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake')
+
+    slot_m80 = Slot(caption=u'M1', doc=u'Тормоза: тормозная жидкость', tags='mechanic brake')
 
     # Охлаждение
-    slot_m55 = Slot(caption=u'M1', doc=u'Охлаждение: ', tags='mechanic cooling')
+    slot_m81 = Slot(caption=u'M1', doc=u'Охлаждение: радиатор', tags='mechanic cooling')
+    slot_m82 = Slot(caption=u'M1', doc=u'Охлаждение: помпа', tags='mechanic cooling')
+    slot_m83 = Slot(caption=u'M1', doc=u'Охлаждение: охлаждающая жидкость', tags='mechanic cooling')
+    slot_m84 = Slot(caption=u'M1', doc=u'Охлаждение: дополнительный радиатор', tags='mechanic cooling')
+    slot_m85 = Slot(caption=u'M1', doc=u'Охлаждение: термостат', tags='mechanic cooling')
 
-
+    slot_m86 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling')
+    slot_m87 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling')
+    slot_m88 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling')
 
 
 class Drone(Mobile):
