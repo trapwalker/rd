@@ -18,6 +18,9 @@ class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
 
     def __init__(self, login, time, example, connection=None, party=None, **kw):
+        """
+        @type example: sublayers_server.model.registry.tree.Node
+        """
         super(Agent, self).__init__(time=time, **kw)
         self.example = example
         self.observers = CounterSet()
@@ -45,7 +48,7 @@ class Agent(Object):
 
         # текущий город, если агент не в городе то None
         self.current_location = None
-        self.set_current_location_example(reg_link=example.current_location.uri)
+        self.set_current_location_example(reg_link=example.current_location.uri if example.current_location else None)  # todo: refactoring
 
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
@@ -56,6 +59,22 @@ class Agent(Object):
                 return barter
         return None
 
+    def save(self, time):
+        self.example.login = self.login
+        if self.car:
+            self.car.save(time)
+            self.example.car = self.car.example
+        else:
+            self.example.car = None
+        self.example.current_location = self.current_location
+        # todo: save chats, party...
+        self.example.save()
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['_connection']
+        return d
+
     def set_current_location_life(self, location):
         self.current_location = location
         if location is None:
@@ -65,6 +84,7 @@ class Agent(Object):
             self.example.current_location = location.example.uri
             
     def set_current_location_example(self, reg_link):
+        # todo: refactoring
         self.example.current_location = reg_link
         if reg_link is None:
             self.current_location = None

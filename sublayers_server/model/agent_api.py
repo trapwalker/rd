@@ -12,7 +12,6 @@ from sublayers_server.model.api_tools import API, public_method
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
-from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
@@ -72,6 +71,8 @@ class SetPartyEvent(Event):
                 party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
+
+        # todo: save parties
 
 
 class SendInviteEvent(Event):
@@ -157,6 +158,9 @@ class SendSetCategoryEvent(Event):
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
+        """
+        @type example: sublayers_server.model.agents.Agent
+        """
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
@@ -234,13 +238,6 @@ class AgentAPI(API):
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
 
-        # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
-        self.shell = Shell(self.cmd_line_context(), dict(
-            pi=pi,
-            P=Point,
-            log=log,
-        ))
-
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
@@ -257,7 +254,8 @@ class AgentAPI(API):
             return
 
         # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинкию вернуть его в город
-        self.agent.set_current_location_example(reg_link=self.agent.example.last_town.uri)
+        last_town = self.agent.example.last_town
+        self.agent.set_current_location_example(reg_link=last_town.uri if last_town else None)
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
@@ -401,6 +399,8 @@ class AgentAPI(API):
             car = self.car
             #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+        elif command == '/save':
+            self.agent.server.save()
         else:
             log.warning('Unknown console command "%s"', cmd)
 
