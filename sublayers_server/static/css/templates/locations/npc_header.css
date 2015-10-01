@@ -1,0 +1,42 @@
+ .npc-header {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 692px;
+    height: 205px;
+    padding-bottom: 6px;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+}
+
+.npc-wrap-header {
+    position: relative;
+    height: 175px;
+    width: 570px;
+    margin: 0px 0px 0px 13px;
+    padding-top: 5px;
+}
+
+.npc-info {
+    position: relative;
+    float: left;
+    margin-right: 5px;
+}
+
+.npc-name {
+    position: relative;
+    margin-top: 8px;
+    text-align: center;
+    font: 13pt Nouveau_IBM;
+}
+
+.npc-text {
+    height: 100%;
+    width: 395px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-top: solid 1px #135806;
+    box-sizing: border-box;
+    padding: 5px 0px 0px 0px;
+}

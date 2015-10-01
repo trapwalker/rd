@@ -619,7 +619,17 @@ class ExamplesShowMessage(Message):
         if self.agent.example.car:
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots()
+                for k, v in self.agent.example.car.iter_slots(tags='armorer')
+            ]
+
+            d['mechanic_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots(tags='mechanic')
+            ]
+
+            d['tuner_slots'] = [
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in self.agent.example.car.iter_slots2(tags='tuner')
             ]
 
             d['armorer_slots_flags'] = [

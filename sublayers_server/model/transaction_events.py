@@ -218,7 +218,7 @@ class TransactionArmorerApply(TransactionEvent):
             armorer_buffer.append(item)
 
         # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в armorer_buffer)
-        for slot_name, slot_value in ex_car.iter_slots():
+        for slot_name, slot_value in ex_car.iter_slots(tags='armorer'):
             old_item = slot_value
             new_item = self.armorer_slots[slot_name]['example']
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
@@ -228,7 +228,6 @@ class TransactionArmorerApply(TransactionEvent):
 
         # Проход 2: устанавливаем новые итемы (проход по armorer_slots и обработка всех ситуаций)
         for slot_name in self.armorer_slots.keys():
-            # slot_name_ascii = unicodedata.normalize('NFKD', slot_name).encode('ascii','ignore')
             old_item = getattr(ex_car, slot_name)
             new_item = self.armorer_slots[slot_name]['example']
 
@@ -255,6 +254,149 @@ class TransactionArmorerApply(TransactionEvent):
         position = 0
         agent.example.car.inventory = RegistryInventory()
         for item in armorer_buffer:
+            item.position = position
+            agent.example.car.inventory.append(item)
+            position += 1
+        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+
+
+class TransactionMechanicApply(TransactionEvent):
+    def __init__(self, agent, mechanic_slots, **kw):
+        super(TransactionMechanicApply, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.mechanic_slots = mechanic_slots
+
+    def on_perform(self):
+        super(TransactionMechanicApply, self).on_perform()
+
+        agent = self.agent
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
+            return
+
+        # Проверяем находится ли агент в локации с механиком
+        if not (isinstance(agent.current_location, Town) and agent.current_location.example.mechanic):
+            return
+
+        # Заполняем буфер итемов
+        ex_car = agent.example.car
+        mechanic_buffer = []
+        for item in agent.example.car.inventory:
+            mechanic_buffer.append(item)
+
+        # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в mechanic_buffer)
+        for slot_name, slot_value in ex_car.iter_slots(tags='mechanic'):
+            old_item = slot_value
+            new_item = self.mechanic_slots[slot_name]['example']
+            if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
+                # todo: добавить стоимость демонтажа итема
+                mechanic_buffer.append(slot_value)
+                ex_car.values[slot_name] = None
+
+        # Проход 2: устанавливаем новые итемы (проход по mechanic_slots и обработка всех ситуаций)
+        for slot_name in self.mechanic_slots.keys():
+            old_item = getattr(ex_car, slot_name)
+            new_item = self.mechanic_slots[slot_name]['example']
+
+            if new_item is None:  # если в данном слоте должно быть пусто
+                continue  # то идём к следующему шагу цикла
+
+            if old_item is None:  # установка итема в слот из mechanic_buffer
+                search_item = None
+                for item in mechanic_buffer:
+                    if item.node_hash() == new_item['node_hash']:
+                        search_item = item
+                        break
+                if search_item is not None:
+                    # todo: проверка тегов
+                    # todo: добавить стоимость монтажа итема
+                    mechanic_buffer.remove(search_item)
+                    ex_car.values[slot_name] = search_item
+
+        # Закидываем буффер в инвентарь
+        position = 0
+        agent.example.car.inventory = RegistryInventory()
+        for item in mechanic_buffer:
+            item.position = position
+            agent.example.car.inventory.append(item)
+            position += 1
+        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+
+
+class TransactionTunerApply(TransactionEvent):
+    def __init__(self, agent, tuner_slots, **kw):
+        super(TransactionTunerApply, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.tuner_slots = tuner_slots
+
+    def on_perform(self):
+        super(TransactionTunerApply, self).on_perform()
+
+        agent = self.agent
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
+            return
+
+        # Проверяем находится ли агент в локации с тюнером
+        if not (isinstance(agent.current_location, Town) and agent.current_location.example.tuner):
+            return
+
+        # todo: здесь можно сделать проход по self.tuner_slots для проверки по тегам.
+        for slot_name in self.tuner_slots.keys():
+            new_item_in_slot = self.tuner_slots[slot_name]['example']
+            slot = getattr(agent.example.car.__class__, slot_name)
+            proto_item = None
+            if new_item_in_slot:
+                proto_item = self.server.reg[new_item_in_slot['node_hash']]
+
+            if slot and proto_item:
+                # Все элементы slot.tags входят в (принадлежат) proto_item.tags
+                if not (slot.tags.issubset(proto_item.tags)):
+                    log.warning('Try to LIE !!!! Error Transaction!!!')
+                    log.warning([el for el in slot.tags])
+                    log.warning([el for el in proto_item.tags])
+                    return
+
+        # Заполняем буфер итемов
+        ex_car = agent.example.car
+        tuner_buffer = []
+        for item in agent.example.car.inventory:
+            tuner_buffer.append(item)
+
+        # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в tuner_buffer)
+        for slot_name, slot_value in ex_car.iter_slots(tags='tuner'):
+            old_item = slot_value
+            new_item = self.tuner_slots[slot_name]['example']
+            if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
+                # todo: добавить стоимость демонтажа итема
+                tuner_buffer.append(slot_value)
+                ex_car.values[slot_name] = None
+
+        # Проход 2: устанавливаем новые итемы (проход по tuner_slots и обработка всех ситуаций)
+        for slot_name in self.tuner_slots.keys():
+            old_item = getattr(ex_car, slot_name)
+            new_item = self.tuner_slots[slot_name]['example']
+
+            if new_item is None:  # если в данном слоте должно быть пусто
+                continue  # то идём к следующему шагу цикла
+
+            if old_item is not None:  # поворот итема или отсутствие действия  # todo: возможно убрать
+                pass
+            else:  # установка итема в слот из tuner_buffer
+                search_item = None
+                for item in tuner_buffer:
+                    if item.node_hash() == new_item['node_hash']:
+                        search_item = item
+                        break
+                if search_item is not None:
+                    # todo: добавить стоимость монтажа итема
+                    tuner_buffer.remove(search_item)
+                    ex_car.values[slot_name] = search_item
+
+        # Закидываем буффер в инвентарь
+        position = 0
+        agent.example.car.inventory = RegistryInventory()
+        for item in tuner_buffer:
             item.position = position
             agent.example.car.inventory.append(item)
             position += 1

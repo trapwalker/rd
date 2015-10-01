@@ -1,18 +1,9 @@
-<style>
-
-
-</style>
+{% set npc_photo = town.example.armorer.photo %}
+{% set npc_title = town.example.armorer.title %}
+{% set npc_text = town.example.armorer.text %}
 
 <div class="armorerWindow-main">
-    <div class="armorer-header">
-        <div class="armorer-wrap-header">
-            <div class="armorer-info">
-                <img class="armorer-foto" src="{{ town.example.armorer.photo }}" alt="Оружейник" />
-                <div class="armorer-name"> {{ town.example.armorer.title }} </div>
-            </div>
-            <div class="armorer-text">{{ town.example.armorer.text }}</div>
-        </div>
-    </div>
+    {% include npc_header.html %}
     <div class="armorer-center">
         <div class="armorer-car">
             {% raw open(car_svg_link).read() %}
@@ -24,32 +15,10 @@
             </div>
         </div>
     </div>
-    <div class="armorer-footer">
-        <div class="npcInventory-label">Инвентарь:</div>
-        <div class="npcInventory-wrap">
-            <div class="npcInventory-inventory"></div>
-        </div>
-    </div>
+    {% include npc_inventory.html %}
 </div>
 
 <script>
-    /*
-    Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
-    данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
-    горизонтальный слайдер будер расти вниз)
-    */
-    function resizeArmorerInventory() {
-        var inventory = $(".npcInventory-inventory:first");
-        var width = 0;
-        if (inventory) {
-            $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
-               width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-            });
-            $(inventory).width(width);
-        }
-    }
-    resizeArmorerInventory();
-
     // Подсветка слотов при наведении указателя мыши
     function setSlotOpacity(slot_name, hover) {
         if (hover) {
@@ -72,7 +41,7 @@
         $("#side_" + slot_name).addClass("armorer-slot-active");
     }
 
-    {% for slot in car_slots %}
+    {% for slot in armorer_slots %}
     $("#top_{{slot}}").mouseenter(function() {
         setSlotOpacity("{{slot}}", true);
     });

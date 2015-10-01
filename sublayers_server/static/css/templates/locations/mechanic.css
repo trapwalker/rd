@@ -1,0 +1,70 @@
+#townMechanicPageWrap {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
+.mechanicWindow-main {
+    position: relative;
+    width: 734px;
+    height: 661px;
+    cursor: default;
+}
+
+.mechanic-center {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 734px;
+    height: 330px;
+    padding-bottom: 5px;
+}
+
+.mechanic-center-block {
+    position: relative;
+    height: 100%;
+    float: left;
+}
+
+.mechanic-center-main-block {
+    width: 492px;
+}
+
+.mechanic-center-info-block {
+
+    background-color: red;
+    opacity: 0.2;
+
+    width: 242px;
+}
+
+.mechanic-center-page-control {
+    position: relative;
+    margin: 0px auto 0px auto;
+}
+
+.mechanic-center-page-control-page-button {
+    position: relative;
+    padding: 5px;
+    float: left;
+    font: 12pt Nouveau_IBM;
+    color: #29F200;
+    opacity: 0.6;
+}
+
+.mechanic-center-page-control-page-button:hover {
+    opacity: 1;
+}
+
+.mechanic-center-page-control-page-button-active {
+    opacity: 1;
+}
+
+.mechanic-center-main-block-page {
+    position: absolute;
+    top: 26px;
+    height: calc(100% - 26px);
+    width: 100%;
+    opacity: 0.2;
+}

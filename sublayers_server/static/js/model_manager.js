@@ -673,6 +673,8 @@ var ClientManager = (function () {
                 locationManager.visitorsManager.update_visitors();
                 locationManager.nucoil.update();
                 locationManager.armorer.update();
+                locationManager.mechanic.update();
+                locationManager.tuner.update();
                 locationManager.trader.updatePlayerInv();
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
@@ -692,6 +694,8 @@ var ClientManager = (function () {
         locationManager.visitorsManager.clear_visitors();
         locationManager.nucoil.clear();
         locationManager.armorer.clear();
+        locationManager.mechanic.clear();
+        locationManager.tuner.clear();
         locationManager.trader.clear();
     };
 
@@ -744,6 +748,8 @@ var ClientManager = (function () {
             inventoryList.addInventory(inv);
             locationManager.nucoil.update();
             locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
+            locationManager.mechanic.update(event.mechanic_slots);
+            locationManager.tuner.update(event.tuner_slots);
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
             locationManager.hangar.update();
@@ -1258,6 +1264,59 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendArmorerCancel');
         var mes = {
             call: "armorer_cancel",
+            rpc_call_id: rpcCallList.getID()
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Механик
+
+    ClientManager.prototype.sendMechanicApply = function () {
+        //console.log('ClientManager.prototype.sendMechanicApply');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "mechanic_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                mechanic_slots: locationManager.mechanic.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendMechanicCancel = function () {
+        //console.log('ClientManager.prototype.sendMechanicCancel');
+        var mes = {
+            call: "mechanic_cancel",
+            rpc_call_id: rpcCallList.getID()
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    // Тюнер
+
+    ClientManager.prototype.sendTunerApply = function () {
+        //console.log('ClientManager.prototype.sendTunerApply');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "tuner_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                tuner_slots: locationManager.tuner.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTunerCancel = function () {
+        //console.log('ClientManager.prototype.sendTunerCancel');
+        var mes = {
+            call: "tuner_cancel",
             rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
