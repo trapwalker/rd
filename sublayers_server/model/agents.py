@@ -282,6 +282,16 @@ class Agent(Object):
                 return False
         return True
 
+    def on_kill(self, time, obj):
+        # todo: добавить систему оценки трупика
+
+        # Начисление опыта и фрага агенту
+        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
+        self.stat_log.exp(time=time, delta=100)  # начисляем опыт машинке
+
+        # Отправить сообщение на клиент о начисленной экспе
+        messages.AddExperienceMessage(agent=self, time=time,
+                                     ).post()
 
 class User(Agent):
     # todo: realize

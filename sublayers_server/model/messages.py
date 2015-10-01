@@ -718,3 +718,15 @@ class SetupTraderReplica(Message):
             replica=self.replica
         )
         return d
+
+
+class AddExperienceMessage(Message):
+    def as_dict(self):
+        d = super(AddExperienceMessage, self).as_dict()
+        d.update(exp_agent=self.agent.stat_log.get_metric('exp'),
+                 exp_car=self.agent.car.stat_log.get_metric('exp'),
+                 frag_agent=self.agent.stat_log.get_metric('frag'),
+                 frag_car=self.agent.car.stat_log.get_metric('frag'),
+                 used_skill=self.agent.example.get_used_skill_point(),
+        )
+        return d

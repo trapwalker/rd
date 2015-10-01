@@ -311,6 +311,13 @@ class Unit(Observer):
             for w in sector.weapon_list:
                 yield w
 
+    def on_kill(self, time, obj):
+        # todo: добавить систему оценки трупика
+
+        # Начисление опыта и фрага машинке
+        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг машинке
+        self.stat_log.exp(time=time, delta=10)  # начисляем опыт машинке
+
 
 class Mobile(Unit):
     u"""Class of mobile units"""
@@ -412,6 +419,12 @@ class Bot(Mobile):
     def upd_observing_range(self, time):
         super(Bot, self).upd_observing_range(time)
         messages.UpdateObservingRange(agent=self.main_agent, obj=self, time=time).post()
+
+    def on_kill(self, time, obj):
+        super(Bot, self).on_kill(time=time, obj=obj)
+
+        # Начисление опыта и фрага агенту
+        self.main_agent.on_kill(time=time, obj=obj)
 
 
 class ExtraMobile(Mobile):

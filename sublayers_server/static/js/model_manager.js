@@ -856,11 +856,15 @@ var ClientManager = (function () {
         barterManager.ChangeMoneyBarter(event.barter_id, event.my_money, event.other_money);
     };
 
-
-
     ClientManager.prototype.StartBarterTimerMessage = function (event) {
         //console.log('ClientManager.prototype.StartBarterTimerMessage', event);
         barterManager.StartBarterTimer(event.barter_id, event.success_delay);
+    };
+
+    // Фраг
+
+    ClientManager.prototype.AddExperienceMessage = function (event) {
+        console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
 
     // Исходящие сообщения
