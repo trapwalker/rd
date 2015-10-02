@@ -26,6 +26,26 @@
     </div>
     {% end %}
 
+    {% if town.example.mechanic is not None %}
+    <div id="townMechanicPageWrap" class="townPageWrap" style="display: none">
+        {% if agent.example.car is not None %}
+            {% include mechanic_window.html %}
+        {% else %}
+            {% include npc_no_car.html %}
+        {% end %}
+    </div>
+    {% end %}
+
+    {% if town.example.tuner is not None %}
+    <div id="townTunerPageWrap" class="townPageWrap" style="display: none">
+        {% if agent.example.car is not None %}
+            {% include tuner_window.html %}
+        {% else %}
+            {% include npc_no_car.html %}
+        {% end %}
+    </div>
+    {% end %}
+
     {% if town.example.trader is not None %}
     <div id="townTraderPageWrap" class="townPageWrap" style="display: none">
         {% if agent.example.car is not None %}
@@ -64,6 +84,26 @@
         $('.townPageWrap').css('display', 'none');
         $('#townArmorerPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.armorer;
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
+
+    function openMechanic() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townMechanicPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.mechanic;
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
+
+    function openTuner() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTunerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.tuner;
         setBtnDisplay(7, "none");
         setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
@@ -138,17 +178,23 @@
 
     $("#img_house{{i}}_on").click(function(event) {
         switch (event.target.id) {
+            case "img_house1_on":
+                openArmorer();
+                break;
+            case "img_house2_on":
+                openMechanic();
+                break;
+            case "img_house4_on":
+                openHangar();
+                break;
             case "img_house5_on":
                 openNucoil();
                 break;
+            case "img_house6_on":
+                openTuner();
+                break;
             case "img_house7_on":
-                openArmorer();
-                break;
-            case "img_house4_on":
                 openTrader();
-                break;
-            case "img_house2_on":
-                openHangar();
                 break;
             default:
                 console.log(event.target.id);
@@ -156,17 +202,23 @@
     });
     $("#path_h{{i}}").click(function(event) {
         switch (event.target.id) {
+            case "path_h1":
+                openArmorer();
+                break;
+            case "path_h2":
+                openMechanic();
+                break;
+            case "path_h4":
+                openHangar();
+                break;
             case "path_h5":
                 openNucoil();
                 break;
+            case "path_h6":
+                openTuner();
+                break;
             case "path_h7":
-                openArmorer();
-                break;
-            case "path_h4":
                 openTrader();
-                break;
-            case "path_h2":
-                openHangar();
                 break;
             default:
                 console.log(event.target.id);

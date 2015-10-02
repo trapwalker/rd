@@ -1,0 +1,84 @@
+<style>
+    .tuner-car-main {
+        position: relative;
+        width: 492px;
+        height: 325px;
+    }
+
+    .tuner-car-main-top {
+        position: relative;
+        opacity: 0.4;
+        background: transparent url(static/img/cars/car_1/car_top.png) no-repeat 100% 100%;
+        height: 123px;
+        width: 326px;
+        margin: 15px auto 0px auto;
+        overflow: hidden;
+    }
+
+    .tuner-car-main-side {
+        position: relative;
+        opacity: 0.4;
+        background: transparent url(static/img/cars/car_1/car_side.png) no-repeat 100% 100%;
+        height: 73px;
+        width: 327px;
+        margin: 60px auto 0px auto;
+        overflow: hidden;
+    }
+
+    .tuner-wheel-slot {
+        position: absolute;
+        opacity: 0.4;
+        background: transparent url(static/img/wheels/tr_sedan_wheel_001.png) no-repeat 100% 100%;
+        height: 49px;
+        width: 49px;
+    }
+
+    .tuner_slot {
+        cursor: pointer;
+    }
+
+    #tuner_wheel_slot_1 {top: 222px; left: 323px}
+    #tuner_wheel_slot_2 {top: 222px; left: 136px}
+    #tuner_wheel_slot_3 {top: 0px; left: 0px}
+
+    #tuner_top_slot_t1  { top: 45px; left: 90px}
+    #tuner_side_slot_t1 { top: 175px; left: 90px;}
+
+    #tuner_top_slot_t2  { top: 43px; left: 320px}
+    #tuner_side_slot_t2 { top: 220px; left: 80px}
+
+    #tuner_top_slot_t3  { top: 43px; left: 215px}
+    #tuner_side_slot_t3 { top: 220px; left: 380px}
+
+
+
+    .tuner-slot {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+        background: transparent url(static/img/cars/slot_passive.png) no-repeat 100% 100%;
+    }
+    .tuner-slot-hover { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
+    .tuner-slot-active { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
+
+    .block-tuner-slot { display: none; }
+</style>
+
+<div class="tuner-car-main">
+    <div id="tuner_wheel_slot_1" class="tuner-wheel-slot"></div>
+    <div id="tuner_wheel_slot_2" class="tuner-wheel-slot"></div>
+    <div id="tuner_wheel_slot_3" class="tuner-wheel-slot block-tuner-slot"></div>
+
+    <div class="tuner-car-main-top"></div>
+    <div class="tuner-car-main-side"></div>
+
+    <div id="tuner_top_slot_t1" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t1" class="tuner-slot"></div>
+
+    <div id="tuner_top_slot_t2" class="tuner-slot block-tuner-slot"></div>
+    <div id="tuner_side_slot_t2" class="tuner-slot"></div>
+
+    <div id="tuner_top_slot_t3" class="tuner-slot block-tuner-slot"></div>
+    <div id="tuner_side_slot_t3" class="tuner-slot "></div>
+
+</div>

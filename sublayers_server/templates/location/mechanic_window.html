@@ -1,0 +1,36 @@
+{% set npc_photo = town.example.mechanic.photo %}
+{% set npc_title = town.example.mechanic.title %}
+{% set npc_text = town.example.mechanic.text %}
+
+<div class="mechanicWindow-main">
+    {% include npc_header.html %}
+    <div class="mechanic-center">
+        <div class="mechanic-center-main-block mechanic-center-block">
+            <div class="mechanic-center-page-control">
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_motor">Двигатель</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_transmission">Трансмиссия</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_suspension">Подвеска</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_break">Тормоза</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_cooling">Охлаждение</div>
+            </div>
+            <div id="mechanic_page_motor" class="mechanic-center-main-block-page" style="background-color: lime"></div>
+            <div id="mechanic_page_transmission" class="mechanic-center-main-block-page" style="background-color: green"></div>
+            <div id="mechanic_page_suspension" class="mechanic-center-main-block-page" style="background-color: orange"></div>
+            <div id="mechanic_page_break" class="mechanic-center-main-block-page" style="background-color: blue"></div>
+            <div id="mechanic_page_cooling" class="mechanic-center-main-block-page" style="background-color: white"></div>
+        </div>
+        <div class="mechanic-center-info-block mechanic-center-block"></div>
+    </div>
+    {% include npc_inventory.html %}
+</div>
+
+<script>
+    $('.mechanic-center-page-control-page-button').click(function(event) {
+        $('.mechanic-center-main-block-page').css('display', 'none');
+        $($(event.target).data('page')).css('display', 'block');
+        $('.mechanic-center-page-control-page-button').removeClass('mechanic-center-page-control-page-button-active');
+        $(event.target).addClass('mechanic-center-page-control-page-button-active');
+    });
+
+    $('.mechanic-center-page-control-page-button').first().click();
+</script>

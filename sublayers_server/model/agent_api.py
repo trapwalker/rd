@@ -17,7 +17,8 @@ from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionTraderApply)
+    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
+    TransactionTunerApply, TransactionTraderApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -157,6 +158,9 @@ class SendSetCategoryEvent(Event):
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
+        """
+        @type agent: sublayers_server.model.agents.Agent
+        """
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
@@ -249,10 +253,11 @@ class AgentAPI(API):
             self.send_init_car_map(time=time)
             return
 
-        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинкию вернуть его в город
+        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город
         last_town = self.agent.example.last_town
-        self.agent.set_current_location_example(reg_link=last_town.uri if last_town else None)
+        self.agent.current_location = last_town
         if self.agent.current_location is not None:
+            # todo: Выяснить для чего это нужно (!!!)
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
@@ -397,6 +402,17 @@ class AgentAPI(API):
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
         elif command == '/save':
             self.agent.server.save()
+        elif command == '/reset':
+            if args:
+                all_agents = self.agent.server.agents
+                agents = all_agents if '*' in args else filter(None, (all_agents.get(username) for username in args))
+                for agent_to_reset in agents:
+                    agent_to_reset.example.reset()
+                    self.send_kick(username=agent_to_reset.login)
+            else:
+                self.send_kick(username=self.agent.login)
+                self.agent.example.reset()
+
         else:
             log.warning('Unknown console command "%s"', cmd)
 
@@ -465,6 +481,8 @@ class AgentAPI(API):
         log.info('agent %r want loot =%r', self.agent, poi_id)
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
+    # Оружейник
+
     @public_method
     def armorer_apply(self, armorer_slots):
         TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots).post()
@@ -472,6 +490,29 @@ class AgentAPI(API):
     @public_method
     def armorer_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Механик
+
+    @public_method
+    def mechanic_apply(self, mechanic_slots):
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=mechanic_slots).post()
+
+    @public_method
+    def mechanic_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+
+    # Тюнер
+
+    @public_method
+    def tuner_apply(self, tuner_slots):
+        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots).post()
+
+    @public_method
+    def tuner_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Торговец
 
     @public_method
     def trader_apply(self, player_table, trader_table):

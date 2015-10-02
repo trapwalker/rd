@@ -3,9 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import User, AI
+from sublayers_server.model.agents import User
 from bson.objectid import ObjectId
-from sublayers_server.model.api_tools import API, public_method
+from sublayers_server.model.api_tools import API
 
 
 class ServerAPI(API):

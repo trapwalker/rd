@@ -196,6 +196,11 @@ class Node(object):
             raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
         storage.save_node(node=self)
 
+    def reset(self):
+        if self.storage is None:
+            raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
+        self.storage.reset(node=self)
+
     def __iter__(self):
         return iter(self._subnodes.values())
 
