@@ -92,7 +92,7 @@ class Agent(Object):
         if self.car:
             self.car.save(time)
             self.example.car = self.car.example
-        else:
+        elif self.current_location is None:
             self.example.car = None
         # todo: save chats, party...
         self.example.save()
