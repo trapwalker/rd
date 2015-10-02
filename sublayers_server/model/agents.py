@@ -96,6 +96,7 @@ class Agent(Object):
             self.example.car = None
         # todo: save chats, party...
         self.example.save()
+        log.debug('Agent %s saved', self)
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -210,7 +211,9 @@ class Agent(Object):
         pass
 
     def on_disconnect(self, connection):
-        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=-1.0)
+        t = self.server.get_time()
+        self.server.stat_log.s_agents_on(time=t, delta=-1.0)
+        self.save(time=t)
 
     def party_before_include(self, party, new_member, time):
         # party - куда включают, agent - кого включают
