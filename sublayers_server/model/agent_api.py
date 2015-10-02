@@ -159,7 +159,7 @@ class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
         """
-        @type example: sublayers_server.model.agents.Agent
+        @type agent: sublayers_server.model.agents.Agent
         """
         super(AgentAPI, self).__init__()
         self.agent = agent
@@ -253,10 +253,11 @@ class AgentAPI(API):
             self.send_init_car_map(time=time)
             return
 
-        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинкию вернуть его в город
+        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город
         last_town = self.agent.example.last_town
-        self.agent.set_current_location_example(reg_link=last_town.uri if last_town else None)
+        self.agent.current_location = last_town
         if self.agent.current_location is not None:
+            # todo: Выяснить для чего это нужно (!!!)
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
@@ -401,6 +402,17 @@ class AgentAPI(API):
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
         elif command == '/save':
             self.agent.server.save()
+        elif command == '/reset':
+            if args:
+                all_agents = self.agent.server.agents
+                agents = all_agents if '*' in args else filter(None, (all_agents.get(username) for username in args))
+                for agent_to_reset in agents:
+                    agent_to_reset.example.reset()
+                    self.send_kick(username=agent_to_reset.login)
+            else:
+                self.send_kick(username=self.agent.login)
+                self.agent.example.reset()
+
         else:
             log.warning('Unknown console command "%s"', cmd)
 

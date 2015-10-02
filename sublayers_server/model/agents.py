@@ -11,6 +11,8 @@ from sublayers_server.model.units import Unit
 from counterset import CounterSet
 from sublayers_server.model.stat_log import StatLogger
 from map_location import MapLocation
+from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry.tree import Node
 
 
 # todo: make agent offline status possible
@@ -47,13 +49,39 @@ class Agent(Object):
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 
         # текущий город, если агент не в городе то None
-        self.current_location = None
-        self.set_current_location_example(reg_link=example.current_location.uri if example.current_location else None)  # todo: refactoring
+        self._current_location = None
+        self.current_location = example.current_location
 
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
 
+    @property
+    def current_location(self):
+        return self._current_location
+
+    @current_location.setter
+    def current_location(self, value):
+        if value is None:
+            location = None
+            example_location = None
+        elif isinstance(value, URI):
+            location = MapLocation.get_location_by_uri(value)
+            example_location = value.resolve()
+        elif isinstance(value, MapLocation):
+            location = value
+            example_location = value.example
+        elif isinstance(value, Node):
+            assert value.uri
+            location = MapLocation.get_location_by_uri(value.uri)
+            example_location = value
+        else:
+            raise Exception('ILLEGAL ERROR: Wrong location type!')
+
+        self._current_location = location
+        self.example.current_location = example_location
+
     def get_barter_by_id(self, barter_id):
+        # todo: refactoring (!!!)
         for barter in self.barters:
             if barter.id == barter_id:
                 return barter
@@ -64,9 +92,8 @@ class Agent(Object):
         if self.car:
             self.car.save(time)
             self.example.car = self.car.example
-        else:
+        elif self.current_location is None:
             self.example.car = None
-        self.example.current_location = self.current_location
         # todo: save chats, party...
         self.example.save()
 
@@ -74,24 +101,6 @@ class Agent(Object):
         d = self.__dict__.copy()
         del d['_connection']
         return d
-
-    def set_current_location_life(self, location):
-        self.current_location = location
-        if location is None:
-            self.example.current_location = None
-        else:
-            # log.debug('reg_link = %s', location.example.uri)
-            self.example.current_location = location.example.uri
-            
-    def set_current_location_example(self, reg_link):
-        # todo: refactoring
-        self.example.current_location = reg_link
-        if reg_link is None:
-            self.current_location = None
-        else:
-            # log.debug('reg_link = %s', reg_link)
-            self.current_location = MapLocation.get_location_by_uri(uri=reg_link)
-            assert self.current_location
 
     @property
     def is_online(self):

@@ -184,6 +184,7 @@ class TransactionHangarChoice(TransactionEvent):
             return
 
         car_proto = self.server.reg[self.agent.current_location.example.hangar.car_list[self.car_number]]
+        # todo: refactoring (use inventory to choose car)
 
         if self.agent.example.balance >= car_proto.price:
             car_example = car_proto.instantiate()

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -13,6 +13,7 @@ import random
 class Agent(Root):
     login = TextAttribute(caption=u'Уникальное имя пользователя')
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
+    last_car = RegistryLink(caption=u"Последний активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
 
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента")  # todo: обсудить
