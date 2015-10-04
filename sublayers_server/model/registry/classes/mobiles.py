@@ -9,7 +9,7 @@ from sublayers_server.model.registry.attr import Attribute, Position, Parameter,
 from sublayers_server.model.registry.attr.link import Slot
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
-from sublayers_server.model.registry.classes.item import SlotLock  # tpodo: перенести к описанию слота
+from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 
 from math import pi
 
@@ -81,6 +81,11 @@ class Mobile(Root):
     class_car = Attribute(default="", caption=u"Класс автомобиля")
     name_car = Attribute(default="", caption=u"Название автомобиля")
 
+
+    # Влияние скилов
+    driving_max_control_speed = FloatAttribute(default=0.0, caption=u"")
+    # driving_v_backward
+
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots(tags='armorer') if isinstance(v, Weapon))
 
@@ -103,6 +108,21 @@ class Mobile(Root):
             if not isinstance(v, SlotLock) and v is not False:
                 result += 1
         return result
+
+    def get_modify_value(self, param_name, example_agent=None):
+        original_value = getattr(self, param_name)
+
+        mechanic_slots_effect = 0
+        for slot_name, slot_value in self.iter_slots(tags='mechanic'):
+            if isinstance(slot_value, MechanicItem):
+                mechanic_slots_effect += getattr(slot_value, param_name)
+
+        agent_effect = 0
+        if example_agent:
+            for skill_name, skill_value in example_agent.iter_skills():
+                agent_effect += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0)
+
+        return original_value + mechanic_slots_effect + agent_effect
 
 
 class Car(Mobile):

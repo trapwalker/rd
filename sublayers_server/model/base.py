@@ -124,7 +124,10 @@ class VisibleObject(PointObject):
         self.params = dict()
         self.set_default_params()
 
-        Parameter(original=self.example.p_visibility, name='p_visibility', owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_visibility',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_visibility',
+                  owner=self)
 
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
@@ -182,7 +185,10 @@ class VisibleObject(PointObject):
 class Observer(VisibleObject):
     def __init__(self, **kw):
         super(Observer, self).__init__(**kw)
-        Parameter(original=self.example.p_observing_range, name='p_observing_range', owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_observing_range',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_observing_range',
+                  owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 
