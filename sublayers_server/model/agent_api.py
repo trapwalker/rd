@@ -29,7 +29,7 @@ from sublayers_server.model.barter import InviteBarterMessage
 
 from sublayers_server.model.inventory import ItemState
 
-#todo: Проверить допустимость значений входных параметров
+# todo: Проверить допустимость значений входных параметров
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
