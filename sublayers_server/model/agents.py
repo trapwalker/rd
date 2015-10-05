@@ -3,9 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-
-from sublayers_server.model.base import Object
 import messages
+from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
 from counterset import CounterSet
@@ -21,7 +20,7 @@ class Agent(Object):
 
     def __init__(self, login, time, example, connection=None, party=None, **kw):
         """
-        @type example: sublayers_server.model.registry.tree.Node
+        @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
         self.example = example
@@ -295,6 +294,7 @@ class Agent(Object):
         return True
 
     def on_kill(self, time, obj):
+        log.debug('%s:: on_kill(%s)', self, obj)
         # todo: добавить систему оценки трупика
 
         # Начисление опыта и фрага агенту
@@ -302,8 +302,33 @@ class Agent(Object):
         self.stat_log.exp(time=time, delta=100)  # начисляем опыт машинке
 
         # Отправить сообщение на клиент о начисленной экспе
-        messages.AddExperienceMessage(agent=self, time=time,
-                                     ).post()
+        messages.AddExperienceMessage(agent=self, time=time,).post()
+
+    def on_inv_change(self):
+        log.debug('%s:: on_inv_change()', self)
+
+    def on_enter_location(self, location):
+        log.debug('%s:: on_enter_location(%s)', self, location)
+
+    def on_exit_location(self, location):
+        log.debug('%s:: on_exit_location(%s)', self, location)
+
+    def on_enter_npc(self, npc):
+        log.debug('%s:: on_enter_npc(%s)', self, npc)
+
+    def on_exit_npc(self, npc):
+        log.debug('%s:: on_exit_npc(%s)', self, npc)
+
+    def on_die(self):
+        log.debug('%s:: on_die()', self)
+
+    def on_trade_enter(self, user):
+        log.debug('%s:: on_trade_enter(%s)', self, user)
+
+    def on_trade_exit(self, user, canceled, buy, sale, cost):
+        log.debug('%s:: on_trade_exit(user=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
+                  self, user, canceled, buy, sale, cost)
+
 
 class User(Agent):
     # todo: realize
