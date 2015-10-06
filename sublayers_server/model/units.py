@@ -18,45 +18,12 @@ from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEven
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer, POILoot
 
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
-from  sublayers_server.model.vectors import Point
+from sublayers_server.model.vectors import Point
 
 from math import radians
-
-
-class POILoot(Observer):
-    def __init__(self, server, time, life_time=None, example=None, inventory_size=None, position=None, **kw):
-        # todo: p_observing_range - внести в классы ворлда
-        assert (example is not None) or ((inventory_size is not None) and (position is not None))
-        if example is None:
-            example = server.reg['/poi/stash'].instantiate(position=position, inventory_size=inventory_size)
-        super(POILoot, self).__init__(server=server, time=time, example=example, **kw)
-        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
-        self.load_inventory(time=time)
-        if life_time:
-            self.delete(time=time + life_time)
-
-    def is_available(self, agent):
-        return agent.car in self.visible_objects
-
-    def on_contact_out(self, time, obj):
-        super(POILoot, self).on_contact_out(time=time, obj=obj)
-        if isinstance(obj, Bot) and obj.owner:
-            self.inventory.del_visitor(agent=obj.owner, time=time)
-
-    def load_inventory(self, time):
-        for item_example in self.example.inventory:
-            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
-                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
-
-
-class POIContainer(POILoot):
-    def drop_item_to_map(self, item, time):
-        stash = POILoot(server=self.server, time=time, inventory_size=self.example.inventory_size,
-                         position=self.position(time), life_time=60.0)
-        # заполнить инвентарь сундука
-        item.set_inventory(time=time, inventory=stash.inventory)
 
 
 class Unit(Observer):
@@ -69,10 +36,14 @@ class Unit(Observer):
         @param float direction: Direction angle of unit
         @param list[sublayers_server.model.weapons.weapon] weapons: Set of weapon
         """
-        super(Unit, self).__init__(time=time, **kw)
         self.owner = owner
+        self.owner_example = None if self.owner is None else self.owner.example
+        super(Unit, self).__init__(time=time, **kw)
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-        self.hp_state = HPState(t=time, max_hp=self.example.max_hp, hp=self.example.hp)
+        self.hp_state = HPState(t=time,
+                                max_hp=self.example.get_modify_value(param_name='max_hp', 
+                                                                     example_agent=self.owner_example),
+                                hp=self.example.hp)
         self._direction = self.example.direction or direction
         self.altitude = 0.0
         self.check_zone_interval = None
@@ -87,6 +58,9 @@ class Unit(Observer):
 
         # загрузка инвенторя
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        if owner:
+            self.inventory.add_manager(agent=owner)
+
         self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
@@ -95,6 +69,11 @@ class Unit(Observer):
         server_stat = self.server.stat_log
         server_stat.s_units_all(time=time, delta=1.0)
         server_stat.s_units_on(time=time, delta=1.0)
+
+    def save(self, time):
+        super(Unit, self).save(time)
+        if self.owner:
+            self.owner.save(time)
 
     def direction(self, time):
         return self._direction
@@ -244,18 +223,15 @@ class Unit(Observer):
 
         # создать труп с инвентарём
         if not self.inventory.is_empty():
-            stash = POIContainer(server=self.server, time=event.time, inventory_size=self.example.inventory_size,
-                                 position=self.position(event.time), life_time=60.0)
-            # заполнить инвентарь сундука
-            for item in self.inventory.get_items():
-                item.set_inventory(time=event.time, inventory=stash.inventory)
+            CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
+                               inventory_size=self.example.inventory_size, position=self.position(event.time),
+                               life_time=60.0, items=self.inventory.get_items()).post()
 
     def drop_item_to_map(self, item, time):
-        #todo: исправить POIContainer на POILoot
-        stash = POIContainer(server=self.server, time=time, inventory_size=self.example.inventory_size,
-                        position=Point.random_gauss(self.position(time), 10))
-        # заполнить инвентарь сундука
-        item.set_inventory(time=time, inventory=stash.inventory)
+        CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,
+                           inventory_size=self.example.inventory_size,
+                           position=Point.random_gauss(self.position(time), 10),
+                           life_time=60.0, items=[item]).post()
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
@@ -330,15 +306,22 @@ class Unit(Observer):
                 self.upd_observing_range(time)
 
     def save(self, time):
-        super(Unit, self).save(time=time)
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
         self.save_inventory(time)
+        super(Unit, self).save(time=time)
 
     def weapon_list(self):
         for sector in self.fire_sectors:
             for w in sector.weapon_list:
                 yield w
+
+    def on_kill(self, time, obj):
+        # todo: добавить систему оценки трупика
+
+        # Начисление опыта и фрага машинке
+        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг машинке
+        self.stat_log.exp(time=time, delta=10)  # начисляем опыт машинке
 
 
 class Mobile(Unit):
@@ -347,25 +330,33 @@ class Mobile(Unit):
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params())
-        self.fuel_state = FuelState(t=time, max_fuel=self.example.max_fuel, fuel=self.example.fuel)
+        self.fuel_state = FuelState(t=time,
+                                    max_fuel=self.example.get_modify_value(param_name='max_fuel',
+                                                                           example_agent=self.owner_example),
+                                    fuel=self.example.fuel)
         self.cur_motion_task = None
 
-        assert self.example.v_forward <= self.example.max_control_speed
-        Parameter(original=self.example.v_forward / self.example.max_control_speed,
-                  min_value=0.05, max_value=1.0, owner=self, name='p_cc')
-        Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
+        v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
+        max_control_speed = self.example.get_modify_value(param_name='max_control_speed', 
+                                                          example_agent=self.owner_example)
+        assert v_forward <= max_control_speed
+        Parameter(original=v_forward / max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
+
+        Parameter(original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
+                  owner=self,
+                  name='p_fuel_rate')
 
     def init_state_params(self):
         return dict(
             p=self._position,
             fi=self._direction,
-            r_min=self.example.r_min,
-            ac_max=self.example.ac_max,
-            v_forward=self.example.v_forward,
-            v_backward=self.example.v_backward,
-            a_forward=self.example.a_forward,
-            a_backward=self.example.a_backward,
-            a_braking=self.example.a_braking,
+            r_min=self.example.get_modify_value(param_name='r_min', example_agent=self.owner_example),
+            ac_max=self.example.get_modify_value(param_name='ac_max', example_agent=self.owner_example),
+            v_forward=self.example.get_modify_value(param_name='max_control_speed', example_agent=self.owner_example),
+            v_backward=self.example.get_modify_value(param_name='v_backward', example_agent=self.owner_example),
+            a_forward=self.example.get_modify_value(param_name='a_forward', example_agent=self.owner_example),
+            a_backward=self.example.get_modify_value(param_name='a_backward', example_agent=self.owner_example),
+            a_braking=self.example.get_modify_value(param_name='a_braking', example_agent=self.owner_example),
         )
 
     def as_dict(self, time):
@@ -441,6 +432,12 @@ class Bot(Mobile):
     def upd_observing_range(self, time):
         super(Bot, self).upd_observing_range(time)
         messages.UpdateObservingRange(agent=self.main_agent, obj=self, time=time).post()
+
+    def on_kill(self, time, obj):
+        super(Bot, self).on_kill(time=time, obj=obj)
+
+        # Начисление опыта и фрага агенту
+        self.main_agent.on_kill(time=time, obj=obj)
 
 
 class ExtraMobile(Mobile):

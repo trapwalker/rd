@@ -3,9 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import User, AI
+from sublayers_server.model.agents import User
 from bson.objectid import ObjectId
-from sublayers_server.model.api_tools import API, public_method
+from sublayers_server.model.api_tools import API
 
 
 class ServerAPI(API):
@@ -27,14 +27,18 @@ class ServerAPI(API):
         if not agent and make:
             agent_exemplar = self.server.reg_agents.get([login])  # todo: fix it
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['/agents/user'].instantiate(storage=self.server.reg_agents,
-                                                                             name=login, login=login)
-
-            log.debug('Use agent exemplar: %s', agent_exemplar)
+                agent_exemplar = self.server.reg['/agents/user'].instantiate(
+                    storage=self.server.reg_agents, name=login, login=login,
+                )
+            log.debug('Use agent exemplar: %r', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
-            agent = User(server=self.server, login=agent_exemplar.login, time=self.server.get_time(),
-                         example=agent_exemplar)
+            agent = User(
+                server=self.server,
+                login=agent_exemplar.login,
+                time=self.server.get_time(),
+                example=agent_exemplar,
+            )
             log.info('Server API: New Agent is created: %s', agent_id)
         else:
             if agent and do_disconnect:

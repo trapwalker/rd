@@ -11,13 +11,18 @@ from sublayers_server.model.units import Unit
 from counterset import CounterSet
 from sublayers_server.model.stat_log import StatLogger
 from map_location import MapLocation
+from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry.tree import Node
 
 
 # todo: make agent offline status possible
 class Agent(Object):
-    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
 
     def __init__(self, login, time, example, connection=None, party=None, **kw):
+        """
+        @type example: sublayers_server.model.registry.tree.Node
+        """
         super(Agent, self).__init__(time=time, **kw)
         self.example = example
         self.observers = CounterSet()
@@ -44,25 +49,59 @@ class Agent(Object):
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 
         # текущий город, если агент не в городе то None
-        self.current_location = None
-        self.set_current_location_example(reg_link=example.current_location.uri)
+        self._current_location = None
+        self.current_location = example.current_location
 
-    def set_current_location_life(self, location):
-        self.current_location = location
-        if location is None:
-            self.example.current_location = None
+        # Бартер между игроками
+        self.barters = []  # бартеры в которых агент - участник
+
+    @property
+    def current_location(self):
+        return self._current_location
+
+    @current_location.setter
+    def current_location(self, value):
+        if value is None:
+            location = None
+            example_location = None
+        elif isinstance(value, URI):
+            location = MapLocation.get_location_by_uri(value)
+            example_location = value.resolve()
+        elif isinstance(value, MapLocation):
+            location = value
+            example_location = value.example
+        elif isinstance(value, Node):
+            assert value.uri
+            location = MapLocation.get_location_by_uri(value.uri)
+            example_location = value
         else:
-            # log.debug('reg_link = %s', location.example.uri)
-            self.example.current_location = location.example.uri
-            
-    def set_current_location_example(self, reg_link):
-        self.example.current_location = reg_link
-        if reg_link is None:
-            self.current_location = None
-        else:
-            # log.debug('reg_link = %s', reg_link)
-            self.current_location = MapLocation.get_location_by_uri(uri=reg_link)
-            assert self.current_location
+            raise Exception('ILLEGAL ERROR: Wrong location type!')
+
+        self._current_location = location
+        self.example.current_location = example_location
+
+    def get_barter_by_id(self, barter_id):
+        # todo: refactoring (!!!)
+        for barter in self.barters:
+            if barter.id == barter_id:
+                return barter
+        return None
+
+    def save(self, time):
+        self.example.login = self.login
+        if self.car:
+            self.car.save(time)
+            self.example.car = self.car.example
+        elif self.current_location is None:
+            self.example.car = None
+        # todo: save chats, party...
+        self.example.save()
+        log.debug('Agent %s saved', self)
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['_connection']
+        return d
 
     @property
     def is_online(self):
@@ -172,7 +211,9 @@ class Agent(Object):
         pass
 
     def on_disconnect(self, connection):
-        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=-1.0)
+        t = self.server.get_time()
+        self.server.stat_log.s_agents_on(time=t, delta=-1.0)
+        self.save(time=t)
 
     def party_before_include(self, party, new_member, time):
         # party - куда включают, agent - кого включают
@@ -253,6 +294,16 @@ class Agent(Object):
                 return False
         return True
 
+    def on_kill(self, time, obj):
+        # todo: добавить систему оценки трупика
+
+        # Начисление опыта и фрага агенту
+        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
+        self.stat_log.exp(time=time, delta=100)  # начисляем опыт машинке
+
+        # Отправить сообщение на клиент о начисленной экспе
+        messages.AddExperienceMessage(agent=self, time=time,
+                                     ).post()
 
 class User(Agent):
     # todo: realize

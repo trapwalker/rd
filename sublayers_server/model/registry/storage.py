@@ -143,7 +143,7 @@ class Dispatcher(AbstractStorage):
             # log.debug('Try to get storage "{}"'.format(uri.storage))
             storage_obj = self.storage_map[uri.storage]
         except KeyError:
-            raise StorageNotFound('Storage {} not found. [{}] avalable'.format(
+            raise StorageNotFound('Storage "{}" not found. [{}] avalable'.format(
                 uri.storage, ', '.join(self.storage_map.keys())))
 
         return storage_obj.get_local(uri.path)
@@ -183,7 +183,9 @@ class Collection(AbstractStorage):
     def get_local(self, path):
         key = self.make_key(path)
         try:
-            return self._deserialize(self._raw_storage[key])
+            node = self._deserialize(self._raw_storage[key])
+            node.storage = self
+            return node
         except KeyError:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
 
@@ -197,6 +199,10 @@ class Collection(AbstractStorage):
     def put(self, node):
         key = self.make_key(node.uri.path)
         self._raw_storage[key] = self._serialize(node)
+
+    def reset(self, node):
+        key = self.make_key(node.uri.path)
+        del self._raw_storage[key]
 
     def get_path_tuple(self, node):
         return [node.name]

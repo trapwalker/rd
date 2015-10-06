@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -13,6 +13,7 @@ import random
 class Agent(Root):
     login = TextAttribute(caption=u'Уникальное имя пользователя')
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
+    last_car = RegistryLink(caption=u"Последний активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
 
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента")  # todo: обсудить
@@ -28,6 +29,23 @@ class Agent(Root):
     # todo: invites list
     # todo: chats list?
 
-    def get_random_car_type(self):
-        all_car_types = list(self.storage['reg://registry/mobiles/cars'])
-        return random.choice(all_car_types)
+    # Скилы
+    driving = FloatAttribute(default=50, caption=u"Навык вождения", tags="skill")
+    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы", tags="skill")
+    masking = FloatAttribute(default=0, caption=u"Навык маскировки", tags="skill")
+    leading = FloatAttribute(default=0, caption=u"Навык лидерства", tags="skill")
+    trading = FloatAttribute(default=0, caption=u"Навык торговли", tags="skill")
+    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга", tags="skill")
+
+    def get_skill_point(self):
+        pass
+
+    def get_used_skill_point(self):
+        val = 0
+        for attr, getter in self.iter_attrs(tags='skill'):
+            val += getter()
+        return val
+
+    def iter_skills(self):
+        for attr, getter in self.iter_attrs(tags='skill'):
+            yield attr.name, getter()

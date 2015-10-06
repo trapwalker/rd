@@ -70,13 +70,13 @@ class Node(object):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self.abstract = abstract
         self._prepared_attrs = set()  # todo: optimize
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
         self.name = name or storage and storage.gen_uid().get_hex()
         self.owner = owner
         self.parent = parent
-        self.abstract = abstract
 
         self.values = values and values.copy() or {}
         for p in kw.keys():
@@ -97,7 +97,7 @@ class Node(object):
             return str(self.uri)
         elif self.parent:
             return self.parent.node_hash()
-        raise Exception('try to get node hash in wrong node')  # todo: exception specify
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
 
     def as_client_dict(self):
         # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
@@ -147,7 +147,11 @@ class Node(object):
         #log.debug('%s.__getstate__', self)
         #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
         values = self.values
-        d = dict(name=self.name)
+        d = dict(
+            name=self.name,
+            abstract=self.abstract,
+            parent=self.parent.uri if self.parent.storage else self.parent,
+        )
         for attr, getter in self.iter_attrs():
             if attr.name in values:  # todo: refactor it
                 v = getter()
@@ -161,10 +165,15 @@ class Node(object):
     def __setstate__(self, state):
         self._cache = {}
         self._subnodes = {}  # todo: проверить при переподчинении нода
+        self._prepared_attrs = set()
         self.name = None
         self.owner = None
         self.values = {}
         self.storage = None
+        parent = state.pop('parent')
+        if isinstance(parent, URI):
+            parent = parent.resolve()
+        self.parent = parent
 
         for k, v in state.items():
             setattr(self, k, v)
@@ -186,6 +195,11 @@ class Node(object):
         if storage is None:
             raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
         storage.save_node(node=self)
+
+    def reset(self):
+        if self.storage is None:
+            raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
+        self.storage.reset(node=self)
 
     def __iter__(self):
         return iter(self._subnodes.values())

@@ -38,7 +38,7 @@ class Message(object):
     def send(self):
         # todo: online status optimization
         connection = self.agent.connection
-        # log.debug('Send message: %s to %s', self, self.agent.login)
+        # log.debug('Send message: %s to %r', self, self.agent.login)
         if connection.ws_connection:
             connection.send(serialize(make_push_package([self])))
 
@@ -619,7 +619,17 @@ class ExamplesShowMessage(Message):
         if self.agent.example.car:
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots()
+                for k, v in self.agent.example.car.iter_slots(tags='armorer')
+            ]
+
+            d['mechanic_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots(tags='mechanic')
+            ]
+
+            d['tuner_slots'] = [
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in self.agent.example.car.iter_slots2(tags='tuner')
             ]
 
             d['armorer_slots_flags'] = [
@@ -706,5 +716,17 @@ class SetupTraderReplica(Message):
         d = super(SetupTraderReplica, self).as_dict()
         d.update(
             replica=self.replica
+        )
+        return d
+
+
+class AddExperienceMessage(Message):
+    def as_dict(self):
+        d = super(AddExperienceMessage, self).as_dict()
+        d.update(exp_agent=self.agent.stat_log.get_metric('exp'),
+                 exp_car=self.agent.car.stat_log.get_metric('exp'),
+                 frag_agent=self.agent.stat_log.get_metric('frag'),
+                 frag_car=self.agent.car.stat_log.get_metric('frag'),
+                 used_skill=self.agent.example.get_used_skill_point(),
         )
         return d

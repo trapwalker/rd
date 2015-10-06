@@ -77,13 +77,13 @@ class URI(tuple):
     def __str__(self):
         # todo: url encoding
         scheme, storage, path, params, anchor = self
-        return '{scheme}{storage}{path}{params}{anchor}'.format(
+        return u'{scheme}{storage}{path}{params}{anchor}'.format(
             scheme='{}://'.format(scheme) if scheme else '',
             storage=storage or '',
             path=('/' + '/'.join(path)) if path else '',
             params=('?' + '&'.join(('{}{}'.format(k, ('=' + v) if v else '') for k, v in params))) if params else '',
-            anchor='#{}'.format(anchor) if anchor is not None else '',
-        )
+            anchor='#{}'.format(anchor) if anchor is not None else '',  # todo: use unicode!
+        ).encode('utf-8')  # todo: test valid unicode
 
     @classmethod
     def _make(cls, iterable, new=tuple.__new__, len=len):

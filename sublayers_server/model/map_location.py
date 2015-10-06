@@ -4,9 +4,10 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
-from sublayers_server.model.balance import BALANCE
-from sublayers_server.model.messages import EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, \
-    ExamplesShowMessage, TraderInventoryShowMessage, InventoryHideMessage
+from sublayers_server.model.messages import (
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage,
+    ExamplesShowMessage, TraderInventoryShowMessage, InventoryHideMessage,
+)
 from sublayers_server.model.events import ActivateLocationChats
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
@@ -54,7 +55,6 @@ class MapLocation(Observer):
         # Раздеплоить машинку агента
         if agent.car:
             agent.car.displace(time=time)
-
         self.send_inventory_info(agent=agent, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
@@ -62,7 +62,7 @@ class MapLocation(Observer):
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=True, time=time).post()
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
-        agent.set_current_location_life(location=self)
+        agent.current_location = self
         self.visitors.append(agent)
 
         # Отправить инвентарь из экземпляра на клиент, при условии, что есть машинка
@@ -70,6 +70,7 @@ class MapLocation(Observer):
             ExamplesShowMessage(agent=agent, time=time).post()
 
     def on_re_enter(self, agent, time):
+        agent.save(time)  # todo: Уточнить можно ли сохранять здесь
         if agent in self.visitors:
             # Отправить инвентарь из экземпляра на клиент, при условии, что есть машинка
             if agent.example.car:
@@ -86,7 +87,7 @@ class MapLocation(Observer):
 
     def on_exit(self, agent, time):
         self.visitors.remove(agent)
-        agent.set_current_location_life(location=None)
+        agent.current_location = None
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
@@ -107,6 +108,7 @@ class MapLocation(Observer):
 
     @classmethod
     def get_location_by_uri(cls, uri):
+        # todo: Устранить метод
         for location in cls.locations:
             if location.example.uri == uri:
                 return location

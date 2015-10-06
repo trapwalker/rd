@@ -26,15 +26,24 @@ class MapLocationHandler(BaseHandler):
                 car_ex = agent.example.car
 
                 car_svg_link = None
+                tuner_car_svg_link=None
                 sector_svg_link = None
-                car_slots = []
+                armorer_slots = []
+                mechanic_slots = []
+                tuner_slots = []
                 if car_ex:
                     car_svg_link = os.path.join(os.getcwd(), car_ex.armorer_car_svg)
+                    tuner_car_svg_link = os.path.join(os.getcwd(), car_ex.tuner_car_svg)
                     sector_svg_link = os.path.join(os.getcwd(), car_ex.armorer_sectors_svg)
-                    car_slots = [v[0] for v in car_ex.iter_slots()]
+                    armorer_slots = [v[0] for v in car_ex.iter_slots(tags='armorer')]
+                    mechanic_slots = [v[0] for v in car_ex.iter_slots(tags='mechanic')]
+                    tuner_slots = [v[0] for v in car_ex.iter_slots(tags='tuner')]
+
 
                 self.render("location/town.html", town=location, svg_link=svg_link, car_svg_link=car_svg_link,
-                            sector_svg_link=sector_svg_link, car_slots=car_slots, agent=agent)
+                            tuner_car_svg_link=tuner_car_svg_link,
+                            sector_svg_link=sector_svg_link, armorer_slots=armorer_slots, tuner_slots=tuner_slots,
+                            mechanic_slots=mechanic_slots, agent=agent)
             elif isinstance(location, GasStation):
                 self.render("location/gas_station.html", station=location, svg_link=svg_link, agent=agent)
             else:

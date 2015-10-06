@@ -1,18 +1,9 @@
-<style>
-
-</style>
+{% set npc_photo = town.example.hangar.photo %}
+{% set npc_title = town.example.hangar.title %}
+{% set npc_text = town.example.hangar.text %}
 
 <div class="hangarWindow-main">
-     <div class="hangar-header">
-        <div class="hangar-wrap-header">
-            <div class="hangar-info">
-                <img class="hangar-foto" src="{{ town.example.hangar.photo }}" alt="Оружейник" />
-                <div class="hangar-name"> {{ town.example.hangar.title }} </div>
-            </div>
-            <div class="hangar-text">{{ town.example.hangar.text }}</div>
-        </div>
-    </div>
-
+    {% include npc_header.html %}
     <div class="hangar-center">
         {% for car_number in range(0, len(town.example.hangar.car_list)) %}
             {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}

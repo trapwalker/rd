@@ -188,6 +188,7 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             new WCarMarker(car);                 // виджет маркера
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
     };
 
@@ -200,7 +201,11 @@ var ClientManager = (function () {
 
             // Проверка: нет ли уже такого объекта.
             var obj = this._getMObj(uid);
-            if (obj) return;
+            if (obj) {
+                // todo: оптимизировать это: либо удалять объекты при раздеплое машинки, либо вынести этот if вниз
+                if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
+                return;
+            };
 
             // Создание объекта
             var direction = null;
@@ -219,10 +224,13 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             obj_marker = new WCarMarker(obj); // виджет маркера
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
 
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
-            if (obj.cls == 'Town')
+            if (obj.cls == 'Town') {
                 obj_marker.updateLabel(event.object.town_name);
+                obj.town_name = event.object.town_name;
+            }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
             if (obj.cls == 'POIStash')
@@ -330,6 +338,10 @@ var ClientManager = (function () {
                 mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
             }
+
+
+            // Инициализация контекстной панели
+            contextPanel = new ContextPanel();
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
@@ -661,6 +673,8 @@ var ClientManager = (function () {
                 locationManager.visitorsManager.update_visitors();
                 locationManager.nucoil.update();
                 locationManager.armorer.update();
+                locationManager.mechanic.update();
+                locationManager.tuner.update();
                 locationManager.trader.updatePlayerInv();
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
@@ -680,6 +694,8 @@ var ClientManager = (function () {
         locationManager.visitorsManager.clear_visitors();
         locationManager.nucoil.clear();
         locationManager.armorer.clear();
+        locationManager.mechanic.clear();
+        locationManager.tuner.clear();
         locationManager.trader.clear();
     };
 
@@ -732,6 +748,8 @@ var ClientManager = (function () {
             inventoryList.addInventory(inv);
             locationManager.nucoil.update();
             locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
+            locationManager.mechanic.update(event.mechanic_slots);
+            locationManager.tuner.update(event.tuner_slots);
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
             locationManager.hangar.update();
@@ -798,6 +816,56 @@ var ClientManager = (function () {
     //        }
     //    });
     //};
+
+    // Бартер
+
+    ClientManager.prototype.InviteBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.InviteBarterMessage', event);
+        if (contextPanel) {
+            contextPanel.activate_barter_manager.add_barter(event.barter_id);
+        }
+    };
+
+    ClientManager.prototype.ActivateBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.ActivateBarterMessage', event);
+        barterManager.ActivateBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.CancelBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.CancelBarterMessage', event);
+        barterManager.CancelBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.SuccessBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.SuccessBarterMessage', event);
+        barterManager.SuccessBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.LockBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.LockBarterMessage', event);
+        barterManager.LockBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.UnlockBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.UnlockBarterMessage', event);
+        barterManager.UnlockBarter(event.barter_id);
+    };
+
+    ClientManager.prototype.ChangeMoneyBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.ChangeMoneyBarterMessage', event);
+        barterManager.ChangeMoneyBarter(event.barter_id, event.my_money, event.other_money);
+    };
+
+    ClientManager.prototype.StartBarterTimerMessage = function (event) {
+        //console.log('ClientManager.prototype.StartBarterTimerMessage', event);
+        barterManager.StartBarterTimer(event.barter_id, event.success_delay);
+    };
+
+    // Фраг
+
+    ClientManager.prototype.AddExperienceMessage = function (event) {
+        console.log('ClientManager.prototype.AddExperienceMessage', event);
+    };
 
     // Исходящие сообщения
 
@@ -1206,6 +1274,59 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Механик
+
+    ClientManager.prototype.sendMechanicApply = function () {
+        //console.log('ClientManager.prototype.sendMechanicApply');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "mechanic_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                mechanic_slots: locationManager.mechanic.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendMechanicCancel = function () {
+        //console.log('ClientManager.prototype.sendMechanicCancel');
+        var mes = {
+            call: "mechanic_cancel",
+            rpc_call_id: rpcCallList.getID()
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+    // Тюнер
+
+    ClientManager.prototype.sendTunerApply = function () {
+        //console.log('ClientManager.prototype.sendTunerApply');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "tuner_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                tuner_slots: locationManager.tuner.exportSlotState()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTunerCancel = function () {
+        //console.log('ClientManager.prototype.sendTunerCancel');
+        var mes = {
+            call: "tuner_cancel",
+            rpc_call_id: rpcCallList.getID()
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Торговец
 
     ClientManager.prototype.sendTraderApply = function () {
@@ -1247,6 +1368,86 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Бартер
+
+    ClientManager.prototype.sendInitBarter = function (recipient_login) {
+        //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
+        var mes = {
+            call: "init_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient_login: recipient_login.toString()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivateBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendActivateBarter', barter_id);
+        var mes = {
+            call: "activate_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: parseInt(barter_id)
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCancelBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendCancelBarter', barter_id);
+        var mes = {
+            call: "cancel_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendLockBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendLockBarter', barter_id);
+        var mes = {
+            call: "lock_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendUnlockBarter = function (barter_id) {
+        //console.log('ClientManager.prototype.sendUnlockBarter', barter_id);
+        var mes = {
+            call: "unlock_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTableMoney = function (barter_id, money) {
+        //console.log('ClientManager.prototype.sendTableMoney', barter_id, money);
+        var mes = {
+            call: "table_money_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                barter_id: barter_id,
+                money: money
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

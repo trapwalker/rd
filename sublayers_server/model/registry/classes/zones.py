@@ -118,17 +118,19 @@ class RasterZone(FileZone):
 
     def __init__(self, **kw):
         super(RasterZone, self).__init__(**kw)
+        self._picker = None
+
+    def activate(self, server, time):
+        assert self.pixel_depth  # Должна быть задана глубина пикселя
         self._picker = TilePicker(
             path=os.path.join(options.world_path, self.path),
             pixel_depth=self.pixel_depth,
             extension=self.extension,
         )
-
-    def activate(self, server, time):
-        assert self.pixel_depth  # Должна быть задана глубина пикселя
         super(RasterZone, self).activate(server, time)
 
     def get_value(self, obj, time):
+        assert self._picker
         position = obj.position(time=time)
         mz = self.max_map_zoom + 8  # todo: speed optimization (attribute getter)
         x, y, z = Tileid(long(position.x), long(position.y), mz).parent(mz - self._picker.pixel_depth).xyz()

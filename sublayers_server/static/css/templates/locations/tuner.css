@@ -1,0 +1,38 @@
+#townTunerPageWrap {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
+.tunerWindow-main {
+    position: relative;
+    width: 734px;
+    height: 661px;
+    cursor: default;
+}
+
+.tuner-center {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 734px;
+    height: 330px;
+    padding-bottom: 5px;
+}
+
+
+.tuner-car {
+    width: 492px;
+    height: 100%;
+    float: left;
+}
+
+
+
+.tunerRightSide {
+    width: 242px;
+    height: 100%;
+    float: left;
+    background-color: #f5f5f5;
+}

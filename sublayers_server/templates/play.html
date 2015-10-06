@@ -48,8 +48,13 @@
     <link rel="stylesheet" href="{{ static_url('css/controls/cruise_control.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/controls/zoom_slider.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/context_panel.css') }}"/>
 
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_header.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_inventory.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/armorer.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/mechanic.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/tuner.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/hangar.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/nucoil.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/town_main.css') }}"/>
@@ -61,8 +66,6 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/party/party_main.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
-
-
 
 
     <script src="{{ static_url('js/third_party/leaflet-src.js') }}"></script>
@@ -112,6 +115,7 @@
     <script src="{{ static_url('js/widgets/w_dashboard/w_altmetr_radial.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_dashboard/w_cruise_control.js') }}"></script>
     <script src="{{ static_url('js/widgets/central/w_fire_sectors_scaled.js') }}"></script>
+    <script src="{{ static_url('js/context_panel.js') }}"></script>
 
     <script src="{{ static_url('js/effects/rocket_bang.js') }}"></script>
     <script src="{{ static_url('js/effects/e_fire_discharge.js') }}"></script>
@@ -126,6 +130,7 @@
     <script src="{{ static_url('js/view.js') }}"></script>
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location_managers.js') }}"></script>
+    <script src="{{ static_url('js/barter_manager.js') }}"></script>
     <script src="{{ static_url('js/cache.js') }}"></script>
     <script src="{{ static_url('js/third_party/leaflet_label.js') }}"></script>
     <script src="{{ static_url('js/cookie.js') }}"></script>
@@ -161,6 +166,12 @@
         </div>
     </div>
     <div id="zoomSetDivForZoomSlider"></div>
+    <div id="contextPanelDiv">
+        <div id="cpEnterToLocationIcon" class="cp_button_icon"></div>
+        <div id="cpEnterToContainer" class="cp_button_icon"></div>
+        <div id="cpBarterSendInvite" class="cp_button_icon"></div>
+        <div id="cpBarterInfoInvite" class="cp_button_icon"></div>
+    </div>
     <div id="chatAreaGlass"></div>
     <div id="fireControlArea"></div>
     <div id="modalDiv">

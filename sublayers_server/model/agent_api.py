@@ -12,20 +12,24 @@ from sublayers_server.model.api_tools import API, public_method
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
-from sublayers_server.model.console import Shell
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionTraderApply)
+    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
+    TransactionTunerApply, TransactionTraderApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town, GasStation
+from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
+    CancelBarterEvent, SetMoneyBarterEvent
+from sublayers_server.model.barter import InviteBarterMessage
 
 from sublayers_server.model.inventory import ItemState
 
+#todo: Проверить допустимость значений входных параметров
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
@@ -57,7 +61,7 @@ class SetPartyEvent(Event):
 
     def on_perform(self):
         super(SetPartyEvent, self).on_perform()
-        log.info('%s try to set or create party %s', self.agent.login, self.name)
+        log.info('%r try to set or create party %s', self.agent.login, self.name)
         if self.name is None:
             if self.agent.party:
                 self.agent.party.exclude(self.agent, time=self.time)
@@ -67,6 +71,8 @@ class SetPartyEvent(Event):
                 party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
+
+        # todo: save parties
 
 
 class SendInviteEvent(Event):
@@ -78,7 +84,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # log.info('%r invite %s to party %r', self.agent.login, username, self.agent.party)
         user = self.agent.server.agents.get(self.username)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
@@ -109,7 +115,7 @@ class SendKickEvent(Event):
     def on_perform(self):
         super(SendKickEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # log.info('%r invite %s to party %r', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             # todo: assert', warning'и -- ок. Зачем сообщения клиенту?
@@ -132,7 +138,7 @@ class SendSetCategoryEvent(Event):
     def on_perform(self):
         super(SendSetCategoryEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%s invite %s to party %s', self.agent.login, username, self.agent.party)
+        # log.info('%r invite %r to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             # todo: Зачем все эти сообщения клиенту?!
@@ -152,6 +158,9 @@ class SendSetCategoryEvent(Event):
 class AgentAPI(API):
     # todo: do not make instance of API for all agents
     def __init__(self, agent):
+        """
+        @type agent: sublayers_server.model.agents.Agent
+        """
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
@@ -217,19 +226,17 @@ class AgentAPI(API):
         for zone in self.agent.car.zones:
             messages.ZoneMessage(agent=self.agent, subj=self.agent.car, name=zone.name, is_start=True, time=time).post()
 
+        # отправить активные бартеры на клиент
+        for barter in self.agent.barters:
+            if barter.recipient is self.agent and barter.state == 'unactive':
+                InviteBarterMessage(agent=self.agent, time=time, barter=barter).post()
+
     def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
-
-        # todo: deprecated  (НЕ ПОНЯТНО ЗАЧЕМ!)
-        self.shell = Shell(self.cmd_line_context(), dict(
-            pi=pi,
-            P=Point,
-            log=log,
-        ))
 
         if self.agent.current_location is not None:
             log.debug('Need reenter to location')
@@ -246,9 +253,11 @@ class AgentAPI(API):
             self.send_init_car_map(time=time)
             return
 
-        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинкию вернуть его в город
-        self.agent.set_current_location_example(reg_link=self.agent.example.last_town.uri)
+        # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город
+        last_town = self.agent.example.last_town
+        self.agent.current_location = last_town
         if self.agent.current_location is not None:
+            # todo: Выяснить для чего это нужно (!!!)
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
@@ -349,7 +358,7 @@ class AgentAPI(API):
 
     @public_method
     def console_cmd(self, cmd):
-        log.debug('Agent %s cmd: %r', self.agent.login, cmd)
+        log.debug('Agent %r cmd: %r', self.agent.login, cmd)
         cmd = cmd.strip()
         assert cmd, 'console command is empty or False: {!r}'.format(cmd)
         words = cmd.split()
@@ -391,6 +400,19 @@ class AgentAPI(API):
             car = self.car
             #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
             #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+        elif command == '/save':
+            self.agent.server.save()
+        elif command == '/reset':
+            if args:
+                all_agents = self.agent.server.agents
+                agents = all_agents if '*' in args else filter(None, (all_agents.get(username) for username in args))
+                for agent_to_reset in agents:
+                    agent_to_reset.example.reset()
+                    self.send_kick(username=agent_to_reset.login)
+            else:
+                self.send_kick(username=self.agent.login)
+                self.agent.example.reset()
+
         else:
             log.warning('Unknown console command "%s"', cmd)
 
@@ -451,13 +473,15 @@ class AgentAPI(API):
 
     @public_method
     def choice_car_in_hangar(self, car_number):
-        log.info('agent %s want choice car, with number=%s', self.agent, car_number)
+        log.info('agent %r want choice car, with number=%r', self.agent, car_number)
         TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
 
     @public_method
     def get_loot(self, poi_id):
-        log.info('agent %s want loot =%s', self.agent, poi_id)
+        log.info('agent %r want loot =%r', self.agent, poi_id)
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
+
+    # Оружейник
 
     @public_method
     def armorer_apply(self, armorer_slots):
@@ -466,6 +490,29 @@ class AgentAPI(API):
     @public_method
     def armorer_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Механик
+
+    @public_method
+    def mechanic_apply(self, mechanic_slots):
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=mechanic_slots).post()
+
+    @public_method
+    def mechanic_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+
+    # Тюнер
+
+    @public_method
+    def tuner_apply(self, tuner_slots):
+        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots).post()
+
+    @public_method
+    def tuner_cancel(self):
+        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Торговец
 
     @public_method
     def trader_apply(self, player_table, trader_table):
@@ -477,3 +524,37 @@ class AgentAPI(API):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
         messages.SetupTraderReplica(agent=self.agent, time=self.agent.server.get_time(),
                                     replica=u'Ну как хочешь...').post()
+
+    # Бартер
+
+    @public_method
+    def init_barter(self, recipient_login):
+        # log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
+        InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
+                        time=self.agent.server.get_time()).post()
+
+    @public_method
+    def activate_barter(self, barter_id):
+        #log.debug('Agent %s accept barter_id %s ', self.agent, barter_id)
+        ActivateBarterEvent(barter_id=barter_id, recipient=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def lock_barter(self, barter_id):
+        #log.debug('Agent %s lock barter_id %s ', self.agent, barter_id)
+        LockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def unlock_barter(self, barter_id):
+        #log.debug('Agent %s unlock barter_id %s ', self.agent, barter_id)
+        UnLockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def cancel_barter(self, barter_id):
+        #log.debug('Agent %s cancel barter_id %s ', self.agent, barter_id)
+        CancelBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def table_money_barter(self, barter_id, money):
+        #log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
+        SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
+                            time=self.agent.server.get_time()).post()

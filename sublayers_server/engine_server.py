@@ -34,13 +34,16 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
 from sublayers_server.handlers.main_menu_character import MainMenuCharacterHandler
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler
-from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, ContainerInventoryHandler
+from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
+    ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
 from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
+from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
+    ContextPanelLocationsHandler
 from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
 from sublayers_server.model.event_machine import LocalServer
 
@@ -109,6 +112,11 @@ class Application(tornado.web.Application):
             (r"/api/inventory", MainInventoryHandler),
             (r"/api/party", PartyHandler),
             (r"/api/container", ContainerInventoryHandler),
+            (r"/api/barter", BarterInventoryHandler),
+
+            (r"/api/context_panel/locations", ContextPanelLocationsHandler),
+            (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
+            (r"/api/context_panel/barter_info", ContextPanelBarterInfoHandler),
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,
@@ -137,6 +145,9 @@ class Application(tornado.web.Application):
     def on_stop(self):
         if self.srv.is_active:
             self.srv.stop()
+
+    def __getstate__(self):
+        pass
 
 
 def main():

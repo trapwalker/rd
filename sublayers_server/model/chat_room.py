@@ -61,9 +61,10 @@ class ChatRoomPrivateCreateEvent(Event):
         super(ChatRoomPrivateCreateEvent, self).on_perform()
         recipient = self.server.agents.get(self.recipient_login, None)
         if not recipient:
-            log.warning('Agent with login %s not found', self.recipient_login)
+            log.warning('Agent with login %r not found', self.recipient_login)
             return
         if (self.agent.current_location is recipient.current_location) and (self.agent.current_location is not None):
+            # todo: refactoring
             if PrivateChatRoom.search_private(agent1=self.agent, agent2=recipient) is None:
                 PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
             else:
@@ -233,7 +234,7 @@ class PrivateChatRoom(ChatRoom):
                     chat.exclude(agent=agent, time=time)
 
     def __init__(self, agent, recipient, time):
-        super(PrivateChatRoom, self).__init__(time=time, name=(agent.login + '->' + recipient.login))
+        super(PrivateChatRoom, self).__init__(time=time, name=(agent.login + '->' + recipient.login))  # todo: use unicode
         self.include(agent=agent, time=time)
         self.include(agent=recipient, time=time)
 

@@ -4,7 +4,7 @@ import logging.config
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
-from sublayers_server.model.utils import get_uid, TimelineQueue, get_time, time_log_format
+from sublayers_server.model.utils import get_uid, TimelineQueue, get_time
 from sublayers_server.model.effects import get_effects
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
@@ -41,9 +41,9 @@ class Server(object):
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
         self.message_queue = deque()
         self.agents = {}  # Agents dictionary
+        """:type : dict[unicode, sublayers_server.model.event_machine.model.agents.Agent]"""
         # todo: Typehinting
         self.start_time = None
-        self.api = ServerAPI(self)
         # todo: blocking of init of servers with same uid
 
         self.reg = Registry(name='registry', path=os.path.join(options.world_path, 'registry'))
@@ -57,6 +57,11 @@ class Server(object):
         self.stat_log = StatLogger(owner=self)
         self.visibility_mng = VisibilityManager(server=self)
 
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['reg_agents']
+        return d
+
     @staticmethod
     def get_time():
         return get_time()
@@ -66,8 +71,8 @@ class Server(object):
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        zones = [zone for zone in self.reg['/zones']]
-        zones.sort(key=lambda zone: zone.order_key)
+        zones = list(self.reg['/zones'])
+        zones.sort(key=lambda a_zone: a_zone.order_key)
         for zone in zones:
             try:
                 if not zone.is_active:
@@ -137,6 +142,12 @@ class Server(object):
 
     memsize = sys.getsizeof
 
+    def save(self):
+        log.debug('=' * 10 + ' Server SAVE start ' + '=' * 10)
+        for agent in self.agents.values():
+            agent.save(self.get_time())  # todo: get right time
+        log.debug('=' * 10 + ' Server SAVE end   ' + '=' * 10)
+
 
 class EServerAlreadyStarted(errors.EIllegal):
     pass
@@ -150,9 +161,16 @@ class LocalServer(Server):
 
     def __init__(self, app=None, **kw):
         super(LocalServer, self).__init__(**kw)
+        self.api = ServerAPI(self)
         self.thread = None
         self.is_terminated = False
         self.app = app
+
+    def __getstate__(self):
+        d = super(LocalServer, self).__getstate__()
+        del d['app']
+        del d['thread']
+        return d
 
     def event_loop(self):
         log.info('---- Event loop start')
@@ -189,34 +207,9 @@ class LocalServer(Server):
 
         log.info('---- Event loop stop ' + '-' * 50 + '\n')
 
-    # def debug_console_start(self):
-    #     log.info('Try to start IPython shell kernel')
-    #     try:
-    #         from IPython.kernel.zmq.kernelapp import IPKernelApp
-    #         from IPython import embed_kernel
-    #         app = IPKernelApp.instance()
-    #     except:
-    #         log.exception('Ipython kernel import error')
-    #     else:
-    #         def ipython_start():
-    #             try:
-    #                 app.init_signal = lambda *args, **kw: None
-    #                 app.initialize()
-    #                 app.start()
-    #
-    #                 embed_kernel(local_ns=dict(
-    #                     srv=self,
-    #                     # todo: embeded shell tools (agents, cars, etc...)
-    #                 ))
-    #             except:
-    #                 log.exception('Ipython kernel start error')
-    #
-    #         Thread(target=ipython_start).start()
-
     def start(self):
         if self.thread:
             raise EServerAlreadyStarted()
-        # self.debug_console_start()
         self.start_time = self.get_time()
         self.thread = Thread(target=self.event_loop)
         self.thread.start()
@@ -236,6 +229,18 @@ class LocalServer(Server):
     @property
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
+
+    def dump(self):
+        import yaml
+        with open('srv_dump.yaml', 'w') as f:
+            yaml.dump(self, stream=f)
+
+        with open('srv_dump.yaml', 'r') as f:
+            srv2 = yaml.load(stream=f)
+
+    def reset_user(self, user=None):
+        if user is None:
+            pass
 
 
 def main():
