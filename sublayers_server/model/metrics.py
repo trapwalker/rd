@@ -7,7 +7,7 @@ from functools import partial
 
 
 class Metric(object):
-    __st1r_template__ = 'metric::{self.classname}[{time}] #{stat_log.owner}'
+    __st1r_template__ = 'metric::{self.classname}[{time}]'
 
     def __init__(self, name=None, doc=None):
         self.name = name or self.classname
@@ -40,16 +40,14 @@ class IncMetric(Metric):
 
     def call(self, stat_log, delta=None, **kw):
         name = self.name
-        storage = stat_log.m_dict
         if delta is None:
             delta = self.delta
         assert delta is not None
-        storage[name] = storage.get(name, self.init) + delta
+        stat_log[name] = stat_log.get(name, self.init) + delta
         super(IncMetric, self).call(stat_log=stat_log, **kw)
 
     def value(self, stat_log):
-        storage = stat_log.m_dict
-        return storage.get(self.name, self.init)
+        return stat_log.get(self.name, self.init)
 
 
 class ValueMetric(Metric):
@@ -60,15 +58,13 @@ class ValueMetric(Metric):
 
     def call(self, stat_log, value=None, **kw):
         name = self.name
-        storage = stat_log.m_dict
         if value is None:
             return
-        storage[name] = value
+        stat_log[name] = value
         super(ValueMetric, self).call(stat_log=stat_log, **kw)
 
     def value(self, stat_log):
-        storage = stat_log.m_dict
-        return storage.get(self.name, self.init)
+        return stat_log.get(self.name, self.init)
 
 
 # Метрика для расчёта средних значений. Использовать только для объектов-синглтонов !!!

@@ -35,7 +35,7 @@ class Object(object):
         self.events = []  # all events about this object
         self.is_alive = True
         self.limbo = False
-        self.stat_log = StatLogger(owner=self)
+        self.stat_log = StatLogger()
 
     def __hash__(self):
         return self.uid

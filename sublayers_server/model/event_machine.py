@@ -54,7 +54,7 @@ class Server(object):
 
         self.zones = []
 
-        self.stat_log = StatLogger(owner=self)
+        self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
 
     def __getstate__(self):
