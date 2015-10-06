@@ -238,6 +238,18 @@ class LocalServer(Server):
         with open('srv_dump.yaml', 'r') as f:
             srv2 = yaml.load(stream=f)
 
+    def save(self):
+        for agent in self.agents:
+            agent.save()
+
+    def dump(self):
+        import yaml
+        with open('srv_dump.yaml', 'w') as f:
+            yaml.dump(self, stream=f)
+
+        with open('srv_dump.yaml', 'r') as f:
+            srv2 = yaml.load(stream=f)
+
     def reset_user(self, user=None):
         if user is None:
             pass
