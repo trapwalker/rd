@@ -32,6 +32,9 @@ class State(dict):
 # - kill(login|uid)
 # - confiscate([items])
 # - нанести урон
+# - say(text, npc=None|link, dest=login|None)
+# - log(text, position=None, dest=login|None)
+# - like(diff=1, dest=login|None, who=None|npc|location)
 
 
 class Quest(Item):
