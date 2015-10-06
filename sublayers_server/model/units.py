@@ -439,6 +439,10 @@ class Bot(Mobile):
         # Начисление опыта и фрага агенту
         self.main_agent.on_kill(time=time, obj=obj)
 
+    def on_die(self, event):
+        super(Bot, self).on_die(event)
+        self.main_agent.on_die()
+
 
 class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):

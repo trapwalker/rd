@@ -1248,6 +1248,19 @@ var ClientManager = (function () {
 
     // Сообщения локаций
 
+    ClientManager.prototype.sendEnterToNPC = function (npc_type) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "enter_to_npc",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_type: npc_type
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Оружейник
 
     ClientManager.prototype.sendArmorerApply = function () {

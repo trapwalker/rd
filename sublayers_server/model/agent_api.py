@@ -15,7 +15,7 @@ from sublayers_server.model.slave_objects.stationary_turret import StationaryTur
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
     TransactionTunerApply, TransactionTraderApply)
@@ -436,6 +436,11 @@ class AgentAPI(API):
     def exit_from_location(self, location_id):
         # log.info('agent %s want exit from location is %s', self.agent, town_id)
         ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def enter_to_npc(self, npc_type):
+        # log.info('agent %s want enter to npc %s', self.agent, npc_type)
+        EnterToNPCEvent(agent=self.agent, npc_type=npc_type, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):

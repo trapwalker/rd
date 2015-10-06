@@ -84,6 +84,7 @@
         $('.townPageWrap').css('display', 'none');
         $('#townArmorerPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.armorer;
+        clientManager.sendEnterToNPC('armorer');
         setBtnDisplay(7, "none");
         setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
@@ -94,6 +95,7 @@
         $('.townPageWrap').css('display', 'none');
         $('#townMechanicPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.mechanic;
+        clientManager.sendEnterToNPC('mechanic');
         setBtnDisplay(7, "none");
         setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
@@ -104,6 +106,7 @@
         $('.townPageWrap').css('display', 'none');
         $('#townTunerPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.tuner;
+        clientManager.sendEnterToNPC('tuner');
         setBtnDisplay(7, "none");
         setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
@@ -114,6 +117,7 @@
         $('.townPageWrap').css('display', 'none');
         $('#townTraderPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.trader;
+        clientManager.sendEnterToNPC('trader');
         setBtnDisplay(7, "none");
         setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
