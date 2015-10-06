@@ -55,6 +55,7 @@ class MapLocation(Observer):
         # Раздеплоить машинку агента
         if agent.car:
             agent.car.displace(time=time)
+            # todo: agent.on_enter_location call
         self.send_inventory_info(agent=agent, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
