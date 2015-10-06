@@ -40,7 +40,6 @@ class Agent(Object):
             party.include(agent=self, time=time)
 
         self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
-        self.stat_log = StatLogger()
 
         self.chats = []
 
