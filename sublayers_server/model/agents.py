@@ -54,6 +54,12 @@ class Agent(Object):
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
 
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['_connection']
+        return d
+
+
     @property
     def current_location(self):
         return self._current_location

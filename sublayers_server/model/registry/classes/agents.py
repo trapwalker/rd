@@ -30,15 +30,22 @@ class Agent(Root):
     # todo: chats list?
 
     # Скилы
-    driving = FloatAttribute(default=0, caption=u"Навык вождения")
-    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы")
-    masking = FloatAttribute(default=0, caption=u"Навык маскировки")
-    leading = FloatAttribute(default=0, caption=u"Навык лидерства")
-    trading = FloatAttribute(default=0, caption=u"Навык торговли")
-    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга")
+    driving = FloatAttribute(default=50, caption=u"Навык вождения", tags="skill")
+    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы", tags="skill")
+    masking = FloatAttribute(default=0, caption=u"Навык маскировки", tags="skill")
+    leading = FloatAttribute(default=0, caption=u"Навык лидерства", tags="skill")
+    trading = FloatAttribute(default=0, caption=u"Навык торговли", tags="skill")
+    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга", tags="skill")
 
     def get_skill_point(self):
         pass
 
     def get_used_skill_point(self):
-        return self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
+        val = 0
+        for attr, getter in self.iter_attrs(tags='skill'):
+            val += getter()
+        return val
+
+    def iter_skills(self):
+        for attr, getter in self.iter_attrs(tags='skill'):
+            yield attr.name, getter()

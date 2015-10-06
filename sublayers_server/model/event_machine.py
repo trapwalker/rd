@@ -221,14 +221,26 @@ class LocalServer(Server):
         self.thread.join(timeout)
         self.thread = None
         self.is_terminated = False
-        #if self.app:
-        #    self.app.stop()  # todo: checkit
+        # if self.app:
+        #     self.app.stop()  # todo: checkit
 
     # todo: pause
 
     @property
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
+
+    def dump(self):
+        import yaml
+        with open('srv_dump.yaml', 'w') as f:
+            yaml.dump(self, stream=f)
+
+        with open('srv_dump.yaml', 'r') as f:
+            srv2 = yaml.load(stream=f)
+
+    def save(self):
+        for agent in self.agents:
+            agent.save()
 
     def dump(self):
         import yaml

@@ -36,10 +36,14 @@ class Unit(Observer):
         @param float direction: Direction angle of unit
         @param list[sublayers_server.model.weapons.weapon] weapons: Set of weapon
         """
-        super(Unit, self).__init__(time=time, **kw)
         self.owner = owner
+        self.owner_example = None if self.owner is None else self.owner.example
+        super(Unit, self).__init__(time=time, **kw)
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-        self.hp_state = HPState(t=time, max_hp=self.example.max_hp, hp=self.example.hp)
+        self.hp_state = HPState(t=time,
+                                max_hp=self.example.get_modify_value(param_name='max_hp', 
+                                                                     example_agent=self.owner_example),
+                                hp=self.example.hp)
         self._direction = self.example.direction or direction
         self.altitude = 0.0
         self.check_zone_interval = None
@@ -56,6 +60,7 @@ class Unit(Observer):
         self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
         if owner:
             self.inventory.add_manager(agent=owner)
+
         self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
@@ -325,25 +330,33 @@ class Mobile(Unit):
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params())
-        self.fuel_state = FuelState(t=time, max_fuel=self.example.max_fuel, fuel=self.example.fuel)
+        self.fuel_state = FuelState(t=time,
+                                    max_fuel=self.example.get_modify_value(param_name='max_fuel',
+                                                                           example_agent=self.owner_example),
+                                    fuel=self.example.fuel)
         self.cur_motion_task = None
 
-        assert self.example.v_forward <= self.example.max_control_speed
-        Parameter(original=self.example.v_forward / self.example.max_control_speed,
-                  min_value=0.05, max_value=1.0, owner=self, name='p_cc')
-        Parameter(original=self.example.p_fuel_rate, owner=self, name='p_fuel_rate')
+        v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
+        max_control_speed = self.example.get_modify_value(param_name='max_control_speed', 
+                                                          example_agent=self.owner_example)
+        assert v_forward <= max_control_speed
+        Parameter(original=v_forward / max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
+
+        Parameter(original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
+                  owner=self,
+                  name='p_fuel_rate')
 
     def init_state_params(self):
         return dict(
             p=self._position,
             fi=self._direction,
-            r_min=self.example.r_min,
-            ac_max=self.example.ac_max,
-            v_forward=self.example.v_forward,
-            v_backward=self.example.v_backward,
-            a_forward=self.example.a_forward,
-            a_backward=self.example.a_backward,
-            a_braking=self.example.a_braking,
+            r_min=self.example.get_modify_value(param_name='r_min', example_agent=self.owner_example),
+            ac_max=self.example.get_modify_value(param_name='ac_max', example_agent=self.owner_example),
+            v_forward=self.example.get_modify_value(param_name='max_control_speed', example_agent=self.owner_example),
+            v_backward=self.example.get_modify_value(param_name='v_backward', example_agent=self.owner_example),
+            a_forward=self.example.get_modify_value(param_name='a_forward', example_agent=self.owner_example),
+            a_backward=self.example.get_modify_value(param_name='a_backward', example_agent=self.owner_example),
+            a_braking=self.example.get_modify_value(param_name='a_braking', example_agent=self.owner_example),
         )
 
     def as_dict(self, time):
