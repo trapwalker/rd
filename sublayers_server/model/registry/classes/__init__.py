@@ -7,3 +7,4 @@ import poi
 import weapons
 import zones
 import quests
+import exptable
