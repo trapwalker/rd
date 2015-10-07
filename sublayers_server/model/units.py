@@ -116,17 +116,22 @@ class Unit(Observer):
                 return radians(90.0)
             return 0.0
 
-        for w_ex in self.example.iter_weapons():
+        example_agent = None if self.owner is None else self.owner.example
+        dps_rate = self.example.get_modify_value(param_name='dps_rate', example_agent=example_agent)
+        damage_rate = self.example.get_modify_value(param_name='damage_rate', example_agent=example_agent)
+        time_recharge_rate = self.example.get_modify_value(param_name='time_recharge_rate', example_agent=example_agent)
+        radius_rate = self.example.get_modify_value(param_name='radius_rate', example_agent=example_agent)
 
-            sector = FireSector(owner=self, radius=w_ex.radius, width=radians(w_ex.width),
+        for w_ex in self.example.iter_weapons():
+            sector = FireSector(owner=self, radius=w_ex.radius * radius_rate, width=radians(w_ex.width),
                                 fi=direction_by_symbol(w_ex.direction))
             if w_ex.is_auto:
-                WeaponAuto(owner=self, sector=sector, dps=w_ex.dps, items_cls_list=[w_ex.ammo], dv=w_ex.ammo_per_shot,
-                           ddvs=w_ex.ammo_per_second, example=w_ex)
+                WeaponAuto(owner=self, sector=sector, dps=w_ex.dps * dps_rate, items_cls_list=[w_ex.ammo],
+                           dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, example=w_ex)
             else:
-                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg, items_cls_list=[w_ex.ammo],
-                                dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, time_recharge=w_ex.time_recharge,
-                                example=w_ex)
+                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg * damage_rate, items_cls_list=[w_ex.ammo],
+                                dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second,
+                                time_recharge=w_ex.time_recharge * time_recharge_rate, example=w_ex)
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)

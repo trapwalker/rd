@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class Agent(Root):
     # todo: chats list?
 
     # Скилы
-    driving = FloatAttribute(default=50, caption=u"Навык вождения", tags="skill")
+    driving = FloatAttribute(default=0, caption=u"Навык вождения", tags="skill")
     shooting = FloatAttribute(default=0, caption=u"Навык стрельбы", tags="skill")
     masking = FloatAttribute(default=0, caption=u"Навык маскировки", tags="skill")
     leading = FloatAttribute(default=0, caption=u"Навык лидерства", tags="skill")

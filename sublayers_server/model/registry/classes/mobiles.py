@@ -44,6 +44,12 @@ class Mobile(Root):
     fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива")
     p_fuel_rate = FloatAttribute(default=0.5, caption=u"Расход топлива (л/с)")
 
+    # атрибуты влияющие на эффективность стрельбы
+    dps_rate = FloatAttribute(default=1.0, caption=u"Множитель модификации урона автоматического оружия")
+    damage_rate = FloatAttribute(default=1.0, caption=u"Множитель модификации урона залпового оружия")
+    time_recharge_rate = FloatAttribute(default=1.0, caption=u"Множитель модификации времени перезарядки залпового оружия")
+    radius_rate = FloatAttribute(default=1.0, caption=u"Множитель модификации дальности стрельбы")
+
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags='armorer')
     slot_FL_f = TextAttribute(default='FL', caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
     slot_CL = Slot(caption=u'LeftSlot', doc=u'Центральный левый слот', tags='armorer')
@@ -83,8 +89,21 @@ class Mobile(Root):
 
 
     # Влияние скилов
-    driving_max_control_speed = FloatAttribute(default=0.0, caption=u"")
-    # driving_v_backward
+    driving_r_min = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Минимальный радиус разворота")
+    driving_ac_max = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Максимальную перегрузка при развороте")
+    driving_max_control_speed = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Абсолютную максимальную скорость движения")
+    driving_v_forward = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Максимальную скорость движения вперед")
+    driving_v_backward = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Максимальную скорость движения назад")
+    driving_a_forward = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Ускорение разгона вперед")
+    driving_a_backward = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Ускорение разгона назад")
+    driving_a_braking = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Ускорение торможения")
+
+    shooting_dps_rate = FloatAttribute(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации урона автоматического оружия")
+    shooting_damage_rate = FloatAttribute(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации урона залпового оружия")
+    shooting_time_recharge_rate = FloatAttribute(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации времени перезарядки залпового оружия")
+    shooting_radius_rate = FloatAttribute(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации дальности стрельбы")
+
+    masking_p_visibility = FloatAttribute(default=0.0, caption=u"Влияние Маскировки на Коэффициент заметности")
 
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots(tags='armorer') if isinstance(v, Weapon))
@@ -115,13 +134,14 @@ class Mobile(Root):
         mechanic_slots_effect = 0
         for slot_name, slot_value in self.iter_slots(tags='mechanic'):
             if isinstance(slot_value, MechanicItem):
-                mechanic_slots_effect += getattr(slot_value, param_name)
+                mechanic_slots_effect += getattr(slot_value, param_name, 0.0)
 
         agent_effect = 0
         if example_agent:
             for skill_name, skill_value in example_agent.iter_skills():
-                agent_effect += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0)
+                agent_effect += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
 
+        # todo: проверить допустимость значения
         return original_value + mechanic_slots_effect + agent_effect
 
 
