@@ -16,7 +16,10 @@ class ExpTable(Root):
         """
         table = self.table or {}
         pairs = sorted(table.items(), key=lambda (k, v): v)
-        intervals = zip([(None, None)] + pairs, pairs + [(None, None)])
+        intervals = zip(
+            [(None, None)] + pairs,
+            pairs + [(None, None)]
+        )
         for a, b in intervals:
             if exp >= a[1] and (exp < b[1] or b[1] is None):
                 return a[0], b, (b[1] - exp) if b[1] is not None else None
