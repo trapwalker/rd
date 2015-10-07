@@ -141,6 +141,8 @@ class Mobile(Root):
             for skill_name, skill_value in example_agent.iter_skills():
                 agent_effect += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
 
+        # todo: посчитать перки
+
         # todo: проверить допустимость значения
         return original_value + mechanic_slots_effect + agent_effect
 
