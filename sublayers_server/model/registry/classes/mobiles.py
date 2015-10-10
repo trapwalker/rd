@@ -140,8 +140,8 @@ class Mobile(Root):
         if example_agent:
             for skill_name, skill_value in example_agent.iter_skills():
                 agent_effect += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
-
-        # todo: посчитать перки
+            for perk in example_agent.perks:
+                agent_effect += getattr(perk, param_name, 0.0)
 
         # todo: проверить допустимость значения
         return original_value + mechanic_slots_effect + agent_effect

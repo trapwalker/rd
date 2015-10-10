@@ -530,4 +530,37 @@ class TransactionSkillApply(TransactionEvent):
             self.agent.example.leading = self.leading
             self.agent.example.trading = self.trading
             self.agent.example.engineering = self.engineering
-        messages.SkillStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+        messages.SkillStateMessage(agent=self.agent, time=self.time).post()
+
+
+class TransactionActivatePerk(TransactionEvent):
+    def __init__(self, agent, perk_id, **kw):
+        super(TransactionActivatePerk, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.perk_id = perk_id
+
+    def on_perform(self):
+        super(TransactionActivatePerk, self).on_perform()
+        ex_agent = self.agent.example
+
+        activate_perk = None
+        for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter():
+            if perk.id == self.perk_id:
+                activate_perk = perk
+                break
+
+        if (activate_perk is None) or (activate_perk in ex_agent.perks):
+            return
+        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = ex_agent.experience_table.by_exp(
+            exp=self.agent.stat_log.get_metric('exp'))
+        if (activate_perk.driving_req <= ex_agent.driving) and (activate_perk.masking_req <= ex_agent.masking) and \
+           (activate_perk.shooting_req <= ex_agent.shooting) and (activate_perk.leading_req <= ex_agent.leading) and \
+           (activate_perk.trading_req <= ex_agent.trading) and \
+           (activate_perk.engineering_req <= ex_agent.engineering) and (activate_perk.level_req <= cur_lvl):
+            for perk in activate_perk.perks_req:
+                if self.agent.server.reg[perk] not in ex_agent.perks:
+                    return
+            ex_agent.perks.append(activate_perk)
+
+        messages.PerkStateMessage(agent=self.agent, time=self.time).post()

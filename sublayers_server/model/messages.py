@@ -749,3 +749,13 @@ class SkillStateMessage(Message):
                  next_level_exp=nxt_lvl_exp,
         )
         return d
+
+
+class PerkStateMessage(Message):
+    def as_dict(self):
+        d = super(PerkStateMessage, self).as_dict()
+        d['perks'] = [dict(
+            perk=perk.as_client_dict(),
+            active=perk in self.agent.example.perks
+        ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()]
+        return d

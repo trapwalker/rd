@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
+from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
 
 import random
 
@@ -29,6 +30,9 @@ class Agent(Root):
     # todo: invites list
     # todo: chats list?
 
+    # Механизм перков
+    perks = InventoryPerksAttribute(caption=u'Список прокачанных перков')
+
     # Механизм скилов
     experience_table = RegistryLink(caption=u"Таблица опыта")
 
@@ -42,3 +46,7 @@ class Agent(Root):
     def iter_skills(self):
         for attr, getter in self.iter_attrs(tags='skill'):
             yield attr.name, getter()
+
+    def iter_perks(self):
+        for perk in self.perks:
+            yield perk

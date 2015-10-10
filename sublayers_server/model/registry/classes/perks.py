@@ -6,22 +6,24 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Attribute, FloatAttribute, TextAttribute, IntAttribute
+from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
 
 
 class Perk(Root):
-    icon = Attribute(caption=u'Пиктограмма перка')
-    description = TextAttribute(caption=u'Расширенное описание перка')
+    title = TextAttribute(caption=u'Название перка', tags='client')
+    icon = Attribute(caption=u'Пиктограмма перка', tags='client')
+    description = TextAttribute(caption=u'Расширенное описание перка', tags='client')
 
-    driving_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка вождения")
-    shooting_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка стрельбы")
-    masking_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка маскировки")
-    leading_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка лидерства")
-    trading_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка торговли")
-    engineering_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка инженеринга")
+    driving_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка вождения", tags='client')
+    shooting_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка стрельбы", tags='client')
+    masking_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка маскировки", tags='client')
+    leading_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка лидерства", tags='client')
+    trading_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка торговли", tags='client')
+    engineering_req = IntAttribute(default=0, caption=u"Необходимый уровень навыка инженеринга", tags='client')
 
-    level_req = IntAttribute(default=0, caption=u"Необходимый уровень персонажа")
+    level_req = IntAttribute(default=0, caption=u"Необходимый уровень персонажа", tags='client')
 
-    # todo: добавить список других перков
+    perks_req = InventoryPerksAttribute(caption=u'Список прокачанных перков', tags='client')
 
 
 class PerkPassive(Perk):

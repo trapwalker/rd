@@ -873,6 +873,12 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.SkillStateMessage', event);
     };
 
+    // Перки
+
+    ClientManager.prototype.PerkStateMessage = function (event) {
+        console.log('ClientManager.prototype.PerkStateMessage', event);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1493,6 +1499,32 @@ var ClientManager = (function () {
                 leading: leading,
                 trading: trading,
                 engineering: engineering
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Перки
+
+    ClientManager.prototype.sendGetPerkStateMessage = function () {
+        //console.log('ClientManager.prototype.sendGetPerkStateMessage');
+        var mes = {
+            call: "get_perk_state",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivatePerkMessage = function (perk_id) {
+        console.log('ClientManager.prototype.sendSetPerkStateMessage');
+        var mes = {
+            call: "activate_perk",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                perk_id: perk_id
             }
         };
         rpcCallList.add(mes);

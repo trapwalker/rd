@@ -18,7 +18,7 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
-    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply)
+    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -567,11 +567,24 @@ class AgentAPI(API):
 
     @public_method
     def get_skill_state(self):
-        log.debug('Agent %s request skill state', self.agent)
+        # log.debug('Agent %s request skill state', self.agent)
         messages.SkillStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
-        log.debug('Agent %s try set skill state', self.agent)
+        # log.debug('Agent %s try set skill state', self.agent)
         TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
                               masking=masking, leading=leading, trading=trading, engineering=engineering).post()
+
+    # Перки
+
+    @public_method
+    def get_perk_state(self):
+        # log.debug('Agent %s request perk state', self.agent)
+        messages.PerkStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def activate_perk(self, perk_id):
+        # log.debug('Agent %s try aktivate perk %s', self.agent, perk_id)
+        TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
+
