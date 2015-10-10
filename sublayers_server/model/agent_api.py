@@ -18,7 +18,7 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
-    TransactionTunerApply, TransactionTraderApply)
+    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -506,7 +506,6 @@ class AgentAPI(API):
     def mechanic_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
-
     # Тюнер
 
     @public_method
@@ -563,3 +562,16 @@ class AgentAPI(API):
         #log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
         SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
                             time=self.agent.server.get_time()).post()
+
+    # Скилы
+
+    @public_method
+    def get_skill_state(self):
+        log.debug('Agent %s request skill state', self.agent)
+        messages.SkillStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
+        log.debug('Agent %s try set skill state', self.agent)
+        TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
+                              masking=masking, leading=leading, trading=trading, engineering=engineering).post()

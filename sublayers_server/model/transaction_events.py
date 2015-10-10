@@ -498,3 +498,36 @@ class TransactionTraderApply(TransactionEvent):
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
         # todo: вариативные реплики
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
+
+
+class TransactionSkillApply(TransactionEvent):
+    def __init__(self, agent, driving, shooting, masking, leading, trading, engineering, **kw):
+        super(TransactionSkillApply, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.driving = driving
+        self.shooting = shooting
+        self.masking = masking
+        self.leading = leading
+        self.trading = trading
+        self.engineering = engineering
+
+    def on_perform(self):
+        super(TransactionSkillApply, self).on_perform()
+
+        # todo: добавить проверку - находится ли агент в городе где есть Бордель (skill home)
+
+        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
+            exp=self.agent.stat_log.get_metric('exp'))
+        rqst_skill_pnt = self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
+
+        if (rqst_skill_pnt <= cur_lvl) and (self.agent.example.driving <= self.driving) and \
+                (self.agent.example.shooting <= self.shooting) and (self.agent.example.masking <= self.masking) and \
+                (self.agent.example.leading <= self.leading) and (self.agent.example.trading <= self.trading) and \
+                (self.agent.example.engineering <= self.engineering):
+            self.agent.example.driving = self.driving
+            self.agent.example.shooting = self.shooting
+            self.agent.example.masking = self.masking
+            self.agent.example.leading = self.leading
+            self.agent.example.trading = self.trading
+            self.agent.example.engineering = self.engineering
+        messages.SkillStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()

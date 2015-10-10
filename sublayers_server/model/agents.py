@@ -298,11 +298,12 @@ class Agent(Object):
 
     def on_kill(self, time, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
-        # todo: добавить систему оценки трупика
+        # todo: party
 
-        # Начисление опыта и фрага агенту
         self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        self.stat_log.exp(time=time, delta=100)  # начисляем опыт машинке
+        # self.stat_log.exp(time=time, delta=obj.example.exp_price)   # начисляем опыт агенту
+        self.stat_log.exp(time=time, delta=150)   # начисляем опыт агенту
+        self.car.example.exp_price += 1  # увеличиваем "опытную" стоимость своего автомобиля
 
         # Отправить сообщение на клиент о начисленной экспе
         messages.AddExperienceMessage(agent=self, time=time,).post()

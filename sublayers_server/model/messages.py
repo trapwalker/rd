@@ -725,8 +725,27 @@ class AddExperienceMessage(Message):
         d = super(AddExperienceMessage, self).as_dict()
         d.update(exp_agent=self.agent.stat_log.get_metric('exp'),
                  exp_car=self.agent.car.stat_log.get_metric('exp'),
+                 price_car=self.agent.car.example.exp_price,
                  frag_agent=self.agent.stat_log.get_metric('frag'),
                  frag_car=self.agent.car.stat_log.get_metric('frag'),
-                 used_skill=self.agent.example.get_used_skill_point(),
+        )
+        return d
+
+
+class SkillStateMessage(Message):
+    def as_dict(self):
+        d = super(SkillStateMessage, self).as_dict()
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
+            exp=self.agent.stat_log.get_metric('exp'))
+        d.update(driving=self.agent.example.driving,
+                 shooting=self.agent.example.shooting,
+                 masking=self.agent.example.masking,
+                 leading=self.agent.example.leading,
+                 trading=self.agent.example.trading,
+                 engineering=self.agent.example.engineering,
+                 current_level=lvl,
+                 current_exp=self.agent.stat_log.get_metric('exp'),
+                 next_level=nxt_lvl,
+                 next_level_exp=nxt_lvl_exp,
         )
         return d

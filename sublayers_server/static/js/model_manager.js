@@ -867,6 +867,12 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
 
+    // Скилы
+
+    ClientManager.prototype.SkillStateMessage = function (event) {
+        console.log('ClientManager.prototype.SkillStateMessage', event);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1456,6 +1462,37 @@ var ClientManager = (function () {
             params: {
                 barter_id: barter_id,
                 money: money
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Скилы
+
+    ClientManager.prototype.sendGetSkillStateMessage = function () {
+        //console.log('ClientManager.prototype.sendGetSkillStateMessage');
+        var mes = {
+            call: "get_skill_state",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSetSkillStateMessage = function (driving, shooting, masking, leading, trading, engineering) {
+        //console.log('ClientManager.prototype.sendSetSkillStateMessage');
+        var mes = {
+            call: "set_skill_state",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                driving: driving,
+                shooting: shooting,
+                masking: masking,
+                leading: leading,
+                trading: trading,
+                engineering: engineering
             }
         };
         rpcCallList.add(mes);

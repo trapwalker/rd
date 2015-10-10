@@ -81,12 +81,12 @@ class Mobile(Root):
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
+    exp_price = FloatAttribute(default=1.0, caption=u"Ценность машинки в очках опыта")
 
     # Косметика
     title = Attribute(default="", caption=u"Модель автомобиля")
     class_car = Attribute(default="", caption=u"Класс автомобиля")
     name_car = Attribute(default="", caption=u"Название автомобиля")
-
 
     # Влияние скилов
     driving_r_min = FloatAttribute(default=0.0, caption=u"Влияние Вождения на Минимальный радиус разворота")

@@ -322,11 +322,9 @@ class Unit(Observer):
                 yield w
 
     def on_kill(self, time, obj):
-        # todo: добавить систему оценки трупика
-
         # Начисление опыта и фрага машинке
-        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг машинке
-        self.stat_log.exp(time=time, delta=10)  # начисляем опыт машинке
+        self.stat_log.frag(time=time, delta=0)  # начисляем фраг машинке
+        self.stat_log.exp(time=time, delta=0)    # начисляем опыт машинке
 
 
 class Mobile(Unit):
