@@ -640,13 +640,34 @@ var MechanicManager = (function () {
         }
     };
 
+    MechanicManager.prototype._compare_tags = function(item, slot) {
+        // итем должен обладать всеми тегами слота, чтобы быть туда установленным
+        for (var i = 0; i < slot.tags.length; i++)
+            if (item.example.tags.indexOf(slot.tags[i]) < 0)
+                return false;
+        return true;
+
+    };
+
     MechanicManager.prototype.changeItem = function(src, dest) {
         //console.log('MechanicManager.prototype.changeItem', src, dest);
         if (src == dest) return;
 
-        // todo: проверка соответствия тегов системы и итема
-
         var item = this.items[src];
+        var slot = null;
+        for (var i = 0; i < this.mechanic_slots.length; i++)
+            if (this.mechanic_slots[i].name == dest)
+                slot = this.mechanic_slots[i];
+
+        if (! item) return;
+        if (slot) {
+            // проверка по тегам, можем ли мы это сделать
+            if (!this._compare_tags(item, slot)) {
+                //console.log('Проверка по тегам не пройдена!');
+                return;
+            }
+        }
+
         this.items[src] = this.items[dest];
         this.items[dest] = item;
 
@@ -722,7 +743,7 @@ var TunerManager = (function () {
     };
 
     TunerManager.prototype.update = function(tuner_slots) {
-        //console.log('TunerManager.prototype.update');
+        console.log('TunerManager.prototype.update', tuner_slots);
         this.clear();
 
         if (tuner_slots) this.tuner_slots = tuner_slots;
