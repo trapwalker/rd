@@ -13,7 +13,9 @@
                 <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_break">Тормоза</div>
                 <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_cooling">Охлаждение</div>
             </div>
-            <div id="mechanic_page_motor" class="mechanic-center-main-block-page" style="background-color: lime"></div>
+            <div id="mechanic_page_motor" class="mechanic-center-main-block-page">
+                {% raw open(mechanic_engine).read() %}
+            </div>
             <div id="mechanic_page_transmission" class="mechanic-center-main-block-page" style="background-color: green"></div>
             <div id="mechanic_page_suspension" class="mechanic-center-main-block-page" style="background-color: orange"></div>
             <div id="mechanic_page_break" class="mechanic-center-main-block-page" style="background-color: blue"></div>
