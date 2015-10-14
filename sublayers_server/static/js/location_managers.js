@@ -482,7 +482,6 @@ var MechanicManager = (function () {
         this.items = {};
         this.mechanic_slots = [];
         this.inv_show_div = null;
-        this.activeSlot = null;
     }
 
     MechanicManager.prototype._addEmptyInventorySlot = function(position) {
@@ -508,7 +507,7 @@ var MechanicManager = (function () {
     };
 
     MechanicManager.prototype.update = function(mechanic_slots) {
-        //console.log('MechanicManager.prototype.update');
+        //console.log('MechanicManager.prototype.update', mechanic_slots);
         this.clear();
 
         if (mechanic_slots) this.mechanic_slots = mechanic_slots;
@@ -559,7 +558,7 @@ var MechanicManager = (function () {
         }
 
         // Повесить дропабле на все слоты
-        $('.mechanic-slot').droppable({
+        $('.mechanic-engine-slot').droppable({
             greedy: true,
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
@@ -577,7 +576,6 @@ var MechanicManager = (function () {
     MechanicManager.prototype.clear = function() {
         //console.log('MechanicManager.prototype.clear');
         // todo: написать тут чтото
-        //this.setActiveSlot(null);
         this.items = {};
         if (this.inv_show_div)
             this.inv_show_div.empty();
@@ -585,17 +583,17 @@ var MechanicManager = (function () {
 
     MechanicManager.prototype.reDrawItem = function(position) {
         //console.log('MechanicManager.prototype.reDrawItem');
+        var item = this.items[position];
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
             var slot = $('#mechanic_' + position);
-
-            // Очистить слоты
-            slot.empty();
-
-            // создать вёрстку для отрисовки
-            var item = this.items[position];
+            // Очистить див под картинку
+            var img_div = slot.find('.mechanic-slot-img').first();
+            img_div.empty();
+            var is_supersmall = img_div.hasClass('mechanic-small-slot-img-item');
+            //создать вёрстку для отрисовки
             if (item.example) {
-                var itemImg = item.example['mechanic_img'];
+                var itemImg = is_supersmall ? item.example['inv_icon_supersmall'] : item.example['inv_icon_small'];
                 var itemDiv = $('<div class="mechanic-car-slot-picture"><img src="' + itemImg + '"></div>');
                 itemDiv.data('pos', position);
                 itemDiv.draggable({
@@ -606,7 +604,7 @@ var MechanicManager = (function () {
                     zIndex: 1,
                     appendTo: '#activeTownDiv'
                 });
-                slot.append(itemDiv);
+                img_div.append(itemDiv);
             }
         }
         else {
@@ -618,7 +616,6 @@ var MechanicManager = (function () {
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
-            var item = this.items[position];
             if (item.example) {
                 itemDiv.find('.npcInventory-name').text(item.example.title);
                 itemDiv.find('.npcInventory-picture')
@@ -673,28 +670,6 @@ var MechanicManager = (function () {
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
-        if (dest.toString().indexOf('slot') >= 0)
-            this.setActiveSlot(dest);
-        else
-            this.setActiveSlot(null);
-    };
-
-    MechanicManager.prototype.setActiveSlot = function(slotName) {
-        //console.log('MechanicManager.prototype.setActiveSlot');
-        if (! window.hasOwnProperty('dropMechanicSlotActive')) return;
-
-        // Гасим все слоты
-        dropMechanicSlotActive();
-
-        // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
-        if (this.activeSlot == slotName) this.activeSlot = null;
-        else this.activeSlot = slotName;
-
-        if (! this.items.hasOwnProperty(this.activeSlot)) return;
-        var item_rec = this.items[this.activeSlot];
-
-        // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
-        setMechanicSlotActive(this.activeSlot);
     };
 
     MechanicManager.prototype.apply = function() {
@@ -743,7 +718,7 @@ var TunerManager = (function () {
     };
 
     TunerManager.prototype.update = function(tuner_slots) {
-        console.log('TunerManager.prototype.update', tuner_slots);
+        //console.log('TunerManager.prototype.update', tuner_slots);
         this.clear();
 
         if (tuner_slots) this.tuner_slots = tuner_slots;
