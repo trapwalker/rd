@@ -24,9 +24,9 @@ class MapLocationHandler(BaseHandler):
             svg_link = os.path.join(os.getcwd(), location.example.svg_link)
             if isinstance(location, Town):
                 car_ex = agent.example.car
-
-                car_svg_link = None
-                tuner_car_svg_link=None
+                mechanic_engine = None
+                armorer_link = None
+                tuner_link=None
                 sector_svg_link = None
                 armorer_slots = []
                 mechanic_slots = []
