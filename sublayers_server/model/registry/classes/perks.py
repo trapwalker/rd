@@ -45,3 +45,8 @@ class PerkPassive(Perk):
     damage_rate = FloatAttribute(default=0, caption=u"Множитель модификации урона залпового оружия")
     time_recharge_rate = FloatAttribute(default=0, caption=u"Множитель модификации времени перезарядки залпового оружия")
     radius_rate = FloatAttribute(default=0, caption=u"Множитель модификации дальности стрельбы")
+
+
+class PerkRepairPassive(PerkPassive):
+    repair_rate = FloatAttribute(default=0, caption=u"Скорость отхила в секунду")
+    repair_rate_on_stay = FloatAttribute(default=0, caption=u"Дополнительная скорость отхила в стоячем положении")

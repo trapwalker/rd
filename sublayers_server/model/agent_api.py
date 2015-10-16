@@ -376,6 +376,10 @@ class AgentAPI(API):
         elif command == '/die':
             if self.agent.car:
                 self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=1000)
+        elif command == '/damage':
+            if args:
+                dhp = int(args[0])
+                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=dhp)
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
@@ -396,10 +400,14 @@ class AgentAPI(API):
             self.delete_car()
         elif command == '/init':
             self.update_agent_api()
-        elif command == '/fuel':
-            car = self.car
-            #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
-            #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+        elif command == '/money':
+            if args:
+                add_money = int(args[0])
+                self.agent.example.balance += add_money
+        elif command == '/exp':
+            if args:
+                add_exp = int(args[0])
+                self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=add_exp)
         elif command == '/save':
             self.agent.server.save()
         elif command == '/reset':
