@@ -867,6 +867,18 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
 
+    // Скилы
+
+    ClientManager.prototype.SkillStateMessage = function (event) {
+        console.log('ClientManager.prototype.SkillStateMessage', event);
+    };
+
+    // Перки
+
+    ClientManager.prototype.PerkStateMessage = function (event) {
+        console.log('ClientManager.prototype.PerkStateMessage', event);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1248,6 +1260,19 @@ var ClientManager = (function () {
 
     // Сообщения локаций
 
+    ClientManager.prototype.sendEnterToNPC = function (npc_type) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "enter_to_npc",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_type: npc_type
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Оружейник
 
     ClientManager.prototype.sendArmorerApply = function () {
@@ -1443,6 +1468,63 @@ var ClientManager = (function () {
             params: {
                 barter_id: barter_id,
                 money: money
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Скилы
+
+    ClientManager.prototype.sendGetSkillStateMessage = function () {
+        //console.log('ClientManager.prototype.sendGetSkillStateMessage');
+        var mes = {
+            call: "get_skill_state",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSetSkillStateMessage = function (driving, shooting, masking, leading, trading, engineering) {
+        //console.log('ClientManager.prototype.sendSetSkillStateMessage');
+        var mes = {
+            call: "set_skill_state",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                driving: driving,
+                shooting: shooting,
+                masking: masking,
+                leading: leading,
+                trading: trading,
+                engineering: engineering
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Перки
+
+    ClientManager.prototype.sendGetPerkStateMessage = function () {
+        //console.log('ClientManager.prototype.sendGetPerkStateMessage');
+        var mes = {
+            call: "get_perk_state",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivatePerkMessage = function (perk_id) {
+        console.log('ClientManager.prototype.sendSetPerkStateMessage');
+        var mes = {
+            call: "activate_perk",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                perk_id: perk_id
             }
         };
         rpcCallList.add(mes);

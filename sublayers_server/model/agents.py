@@ -3,13 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-
-from sublayers_server.model.base import Object
 import messages
+from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
 from counterset import CounterSet
-from sublayers_server.model.stat_log import StatLogger
 from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
@@ -21,7 +19,7 @@ class Agent(Object):
 
     def __init__(self, login, time, example, connection=None, party=None, **kw):
         """
-        @type example: sublayers_server.model.registry.tree.Node
+        @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
         self.example = example
@@ -41,7 +39,6 @@ class Agent(Object):
             party.include(agent=self, time=time)
 
         self._auto_fire_enable = None  # нужна, чтобы сохранить состояние авто-стрельбы перед партийными изменениями
-        self.stat_log = StatLogger(owner=self)
 
         self.chats = []
 
@@ -54,6 +51,11 @@ class Agent(Object):
 
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        del d['_connection']
+        return d
 
     @property
     def current_location(self):
@@ -295,15 +297,42 @@ class Agent(Object):
         return True
 
     def on_kill(self, time, obj):
-        # todo: добавить систему оценки трупика
+        log.debug('%s:: on_kill(%s)', self, obj)
+        # todo: party
 
-        # Начисление опыта и фрага агенту
         self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        self.stat_log.exp(time=time, delta=100)  # начисляем опыт машинке
+        # self.stat_log.exp(time=time, delta=obj.example.exp_price)   # начисляем опыт агенту
+        self.stat_log.exp(time=time, delta=150)   # начисляем опыт агенту
+        self.car.example.exp_price += 1  # увеличиваем "опытную" стоимость своего автомобиля
 
         # Отправить сообщение на клиент о начисленной экспе
-        messages.AddExperienceMessage(agent=self, time=time,
-                                     ).post()
+        messages.AddExperienceMessage(agent=self, time=time,).post()
+
+    def on_inv_change(self):
+        log.debug('%s:: on_inv_change()', self)
+
+    def on_enter_location(self, location):
+        log.debug('%s:: on_enter_location(%s)', self, location)
+
+    def on_exit_location(self, location):
+        log.debug('%s:: on_exit_location(%s)', self, location)
+
+    def on_enter_npc(self, npc):
+        log.debug('%s:: on_enter_npc(%s)', self, npc)
+
+    def on_exit_npc(self, npc):
+        log.debug('%s:: on_exit_npc(%s)', self, npc)
+
+    def on_die(self):
+        log.debug('%s:: on_die()', self)
+
+    def on_trade_enter(self, user):
+        log.debug('%s:: on_trade_enter(%s)', self, user)
+
+    def on_trade_exit(self, user, canceled, buy, sale, cost):
+        log.debug('%s:: on_trade_exit(user=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
+                  self, user, canceled, buy, sale, cost)
+
 
 class User(Agent):
     # todo: realize

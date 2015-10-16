@@ -149,6 +149,9 @@ class Application(tornado.web.Application):
     def __getstate__(self):
         pass
 
+    def __getstate__(self):
+        pass
+
 
 def main():
     settings.load('server.conf')

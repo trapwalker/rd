@@ -16,6 +16,9 @@ class POI(Root):
     position = Position(caption=u"Координаты")
     p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
 
+    def get_modify_value(self, param_name, example_agent=None):
+        return getattr(self, param_name, None)
+
 
 class PoiStash(POI):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')

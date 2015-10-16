@@ -134,3 +134,28 @@ class InventoryAttribute(Attribute):
                 inventory = Inventory(items=chain(old_value or [], inherited))
                 inventory.placing()
                 values[name] = inventory
+
+
+# todo: Сергей, разберись! Это методом научного тыка скопипастинный InventoryAttribute - почени!
+class InventoryPerksAttribute(Attribute):
+    def __init__(self, default=None, **kw):
+        assert default is None, 'Default value of InventoryAttribute is not supported'
+        super(InventoryPerksAttribute, self).__init__(default=default, **kw)
+
+    # def __set__(self, obj, value):  # todo: do not replace inventory list, but replace goods
+
+    def prepare(self, obj):
+        super(InventoryPerksAttribute, self).prepare(obj)
+        name = self.name
+        values = obj.values
+
+        old_value = values.get(name)
+        inherited = self.get_ex(obj.parent, obj.parent.__class__) if hasattr(obj.parent, self.name) else []  # todo: fixit
+
+        if obj.abstract or obj.storage and obj.storage.name == 'registry':
+            values[name] = ProtoInventory(items=chain(old_value or [], inherited))
+        else:
+            if not isinstance(old_value, Inventory):
+                inventory = Inventory(items=chain(old_value or [], inherited))
+                # inventory.placing()
+                values[name] = inventory

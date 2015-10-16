@@ -15,10 +15,10 @@ from sublayers_server.model.slave_objects.stationary_turret import StationaryTur
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
-    TransactionTunerApply, TransactionTraderApply)
+    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -29,7 +29,7 @@ from sublayers_server.model.barter import InviteBarterMessage
 
 from sublayers_server.model.inventory import ItemState
 
-#todo: Проверить допустимость значений входных параметров
+# todo: Проверить допустимость значений входных параметров
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
@@ -376,6 +376,10 @@ class AgentAPI(API):
         elif command == '/die':
             if self.agent.car:
                 self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=1000)
+        elif command == '/damage':
+            if args:
+                dhp = int(args[0])
+                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=dhp)
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
@@ -396,10 +400,14 @@ class AgentAPI(API):
             self.delete_car()
         elif command == '/init':
             self.update_agent_api()
-        elif command == '/fuel':
-            car = self.car
-            #ItemState(server=car.server, time=self.agent.server.get_time(), balance_cls='Tank10', max_count=1).\
-            #    set_inventory(time=self.agent.server.get_time(), inventory=car.inventory)
+        elif command == '/money':
+            if args:
+                add_money = int(args[0])
+                self.agent.example.balance += add_money
+        elif command == '/exp':
+            if args:
+                add_exp = int(args[0])
+                self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=add_exp)
         elif command == '/save':
             self.agent.server.save()
         elif command == '/reset':
@@ -436,6 +444,11 @@ class AgentAPI(API):
     def exit_from_location(self, location_id):
         # log.info('agent %s want exit from location is %s', self.agent, town_id)
         ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def enter_to_npc(self, npc_type):
+        # log.info('agent %s want enter to npc %s', self.agent, npc_type)
+        EnterToNPCEvent(agent=self.agent, npc_type=npc_type, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):
@@ -495,12 +508,12 @@ class AgentAPI(API):
 
     @public_method
     def mechanic_apply(self, mechanic_slots):
-        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=mechanic_slots).post()
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots)\
+            .post()
 
     @public_method
     def mechanic_cancel(self):
         messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
-
 
     # Тюнер
 
@@ -558,3 +571,29 @@ class AgentAPI(API):
         #log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
         SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
                             time=self.agent.server.get_time()).post()
+
+    # Скилы
+
+    @public_method
+    def get_skill_state(self):
+        # log.debug('Agent %s request skill state', self.agent)
+        messages.SkillStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
+        # log.debug('Agent %s try set skill state', self.agent)
+        TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
+                              masking=masking, leading=leading, trading=trading, engineering=engineering).post()
+
+    # Перки
+
+    @public_method
+    def get_perk_state(self):
+        # log.debug('Agent %s request perk state', self.agent)
+        messages.PerkStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def activate_perk(self, perk_id):
+        # log.debug('Agent %s try aktivate perk %s', self.agent, perk_id)
+        TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
+

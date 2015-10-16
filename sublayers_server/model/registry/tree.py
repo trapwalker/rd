@@ -201,6 +201,14 @@ class Node(object):
             raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
         self.storage.reset(node=self)
 
+    def deep_iter(self, reject_abstract=True):
+        queue = [self]
+        while queue:
+            item = queue.pop()
+            queue.extend(item)
+            if not item.abstract or not reject_abstract:
+                yield item
+
     def __iter__(self):
         return iter(self._subnodes.values())
 

@@ -279,6 +279,22 @@ class TransactionMechanicApply(TransactionEvent):
         if not (isinstance(agent.current_location, Town) and agent.current_location.example.mechanic):
             return
 
+        # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
+        for slot_name in self.mechanic_slots.keys():
+            new_item_in_slot = self.mechanic_slots[slot_name]['example']
+            slot = getattr(agent.example.car.__class__, slot_name)
+            proto_item = None
+            if new_item_in_slot:
+                proto_item = self.server.reg[new_item_in_slot['node_hash']]
+
+            if slot and proto_item:
+                # Все элементы slot.tags входят в (принадлежат) proto_item.tags
+                if not (slot.tags.issubset(proto_item.tags)):
+                    log.warning('Try to LIE !!!! Error Transaction!!!')
+                    log.warning([el for el in slot.tags])
+                    log.warning([el for el in proto_item.tags])
+                    return
+
         # Заполняем буфер итемов
         ex_car = agent.example.car
         mechanic_buffer = []
@@ -302,14 +318,15 @@ class TransactionMechanicApply(TransactionEvent):
             if new_item is None:  # если в данном слоте должно быть пусто
                 continue  # то идём к следующему шагу цикла
 
-            if old_item is None:  # установка итема в слот из mechanic_buffer
+            if old_item is not None:  # поворот итема или отсутствие действия  # todo: возможно убрать
+                pass
+            else:  # установка итема в слот из mechanic_buffer
                 search_item = None
                 for item in mechanic_buffer:
                     if item.node_hash() == new_item['node_hash']:
                         search_item = item
                         break
                 if search_item is not None:
-                    # todo: проверка тегов
                     # todo: добавить стоимость монтажа итема
                     mechanic_buffer.remove(search_item)
                     ex_car.values[slot_name] = search_item
@@ -498,3 +515,69 @@ class TransactionTraderApply(TransactionEvent):
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
         # todo: вариативные реплики
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
+
+
+class TransactionSkillApply(TransactionEvent):
+    def __init__(self, agent, driving, shooting, masking, leading, trading, engineering, **kw):
+        super(TransactionSkillApply, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.driving = driving
+        self.shooting = shooting
+        self.masking = masking
+        self.leading = leading
+        self.trading = trading
+        self.engineering = engineering
+
+    def on_perform(self):
+        super(TransactionSkillApply, self).on_perform()
+
+        # todo: добавить проверку - находится ли агент в городе где есть Бордель (skill home)
+
+        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
+            exp=self.agent.stat_log.get_metric('exp'))
+        rqst_skill_pnt = self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
+
+        if (rqst_skill_pnt <= cur_lvl) and (self.agent.example.driving <= self.driving) and \
+                (self.agent.example.shooting <= self.shooting) and (self.agent.example.masking <= self.masking) and \
+                (self.agent.example.leading <= self.leading) and (self.agent.example.trading <= self.trading) and \
+                (self.agent.example.engineering <= self.engineering):
+            self.agent.example.driving = self.driving
+            self.agent.example.shooting = self.shooting
+            self.agent.example.masking = self.masking
+            self.agent.example.leading = self.leading
+            self.agent.example.trading = self.trading
+            self.agent.example.engineering = self.engineering
+
+        messages.SkillStateMessage(agent=self.agent, time=self.time).post()
+
+
+class TransactionActivatePerk(TransactionEvent):
+    def __init__(self, agent, perk_id, **kw):
+        super(TransactionActivatePerk, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.perk_id = perk_id
+
+    def on_perform(self):
+        super(TransactionActivatePerk, self).on_perform()
+        ex_agent = self.agent.example
+
+        activate_perk = None
+        for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter():
+            if perk.id == self.perk_id:
+                activate_perk = perk
+                break
+
+        if (activate_perk is None) or (activate_perk in ex_agent.perks):
+            return
+        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = ex_agent.experience_table.by_exp(
+            exp=self.agent.stat_log.get_metric('exp'))
+        if (activate_perk.driving_req <= ex_agent.driving) and (activate_perk.masking_req <= ex_agent.masking) and \
+           (activate_perk.shooting_req <= ex_agent.shooting) and (activate_perk.leading_req <= ex_agent.leading) and \
+           (activate_perk.trading_req <= ex_agent.trading) and \
+           (activate_perk.engineering_req <= ex_agent.engineering) and (activate_perk.level_req <= cur_lvl):
+            for perk in activate_perk.perks_req:
+                if self.agent.server.reg[perk] not in ex_agent.perks:
+                    return
+            ex_agent.perks.append(activate_perk)
+
+        messages.PerkStateMessage(agent=self.agent, time=self.time).post()

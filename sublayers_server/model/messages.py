@@ -623,8 +623,8 @@ class ExamplesShowMessage(Message):
             ]
 
             d['mechanic_slots'] = [
-                dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots(tags='mechanic')
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in self.agent.example.car.iter_slots2(tags='mechanic')
             ]
 
             d['tuner_slots'] = [
@@ -725,8 +725,37 @@ class AddExperienceMessage(Message):
         d = super(AddExperienceMessage, self).as_dict()
         d.update(exp_agent=self.agent.stat_log.get_metric('exp'),
                  exp_car=self.agent.car.stat_log.get_metric('exp'),
+                 price_car=self.agent.car.example.exp_price,
                  frag_agent=self.agent.stat_log.get_metric('frag'),
                  frag_car=self.agent.car.stat_log.get_metric('frag'),
-                 used_skill=self.agent.example.get_used_skill_point(),
         )
+        return d
+
+
+class SkillStateMessage(Message):
+    def as_dict(self):
+        d = super(SkillStateMessage, self).as_dict()
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
+            exp=self.agent.stat_log.get_metric('exp'))
+        d.update(driving=self.agent.example.driving,
+                 shooting=self.agent.example.shooting,
+                 masking=self.agent.example.masking,
+                 leading=self.agent.example.leading,
+                 trading=self.agent.example.trading,
+                 engineering=self.agent.example.engineering,
+                 current_level=lvl,
+                 current_exp=self.agent.stat_log.get_metric('exp'),
+                 next_level=nxt_lvl,
+                 next_level_exp=nxt_lvl_exp,
+        )
+        return d
+
+
+class PerkStateMessage(Message):
+    def as_dict(self):
+        d = super(PerkStateMessage, self).as_dict()
+        d['perks'] = [dict(
+            perk=perk.as_client_dict(),
+            active=perk in self.agent.example.perks
+        ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()]
         return d

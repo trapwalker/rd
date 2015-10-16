@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
+from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
 
 import random
 
@@ -29,16 +30,23 @@ class Agent(Root):
     # todo: invites list
     # todo: chats list?
 
-    # Скилы
-    driving = FloatAttribute(default=0, caption=u"Навык вождения")
-    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы")
-    masking = FloatAttribute(default=0, caption=u"Навык маскировки")
-    leading = FloatAttribute(default=0, caption=u"Навык лидерства")
-    trading = FloatAttribute(default=0, caption=u"Навык торговли")
-    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга")
+    # Механизм перков
+    perks = InventoryPerksAttribute(caption=u'Список прокачанных перков')
 
-    def get_skill_point(self):
-        pass
+    # Механизм скилов
+    experience_table = RegistryLink(caption=u"Таблица опыта")
 
-    def get_used_skill_point(self):
-        return self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
+    driving = FloatAttribute(default=0, caption=u"Навык вождения", tags="skill")
+    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы", tags="skill")
+    masking = FloatAttribute(default=0, caption=u"Навык маскировки", tags="skill")
+    leading = FloatAttribute(default=0, caption=u"Навык лидерства", tags="skill")
+    trading = FloatAttribute(default=0, caption=u"Навык торговли", tags="skill")
+    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга", tags="skill")
+
+    def iter_skills(self):
+        for attr, getter in self.iter_attrs(tags='skill'):
+            yield attr.name, getter()
+
+    def iter_perks(self):
+        for perk in self.perks:
+            yield perk

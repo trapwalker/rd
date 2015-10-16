@@ -1,0 +1,267 @@
+<style> 
+    .mechanic-engine-img-list {
+        position: absolute;
+        margin: 60px 0px 0px 55px;
+    }
+
+    .mechanic-engine-img-background {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_bg.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-ballancer {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_ballancer.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-camshaft {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_camshaft.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-compressor {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_compressor.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-cylinderpiston {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_cylinderpiston.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-exhaust {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_exhaust.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-filter {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_filter.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-head {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_head.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-ignition {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_ignition.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-intake {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_intake.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-oil {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_oil.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-sparkplug {
+        background: transparent url(static/img/cars/engines/engine_1/engine_001_sparkplug.png) no-repeat 100% 100%;
+    }
+   
+    #mechanic_slot_m8 {
+        top: 230px;
+        left: 265px;
+    }
+
+    #mechanic_slot_m4 {
+        top: 155px;
+        left: 18px;
+    }
+
+    #mechanic_slot_m2 {
+        top: 10px;
+        left: 179px;
+    }
+
+    #mechanic_slot_m7 {
+        top: 230px;
+        left: 24px;
+    }
+
+    #mechanic_slot_m10 {
+        top: 230px;
+        left: 103px;
+    }
+
+    #mechanic_slot_m3 {
+        top: 10px;
+        left: 265px;
+    }
+
+    #mechanic_slot_m6 {
+        top: 10px;
+        left: 24px;
+    }
+
+    #mechanic_slot_m5 {
+        top: 80px;
+        left: 22px;
+    }
+
+    #mechanic_slot_m1 {
+        top: 10px;
+        left: 102px;
+    }
+
+    #mechanic_slot_m9 {
+        top: 230px;
+        left: 185px;
+    }
+
+    #mechanic_slot_m11 {
+        top: 10px;
+        left: 350px;
+    }
+    #mechanic_slot_m12 {
+        top: 10px;
+        left: 420px;
+    }
+    #mechanic_slot_m13 {
+        top: 60px;
+        left: 350px;
+    }
+    #mechanic_slot_m14 {
+        top: 60px;
+        left: 420px;
+    }
+    #mechanic_slot_m15 {
+        top: 110px;
+        left: 350px;
+    }
+    #mechanic_slot_m16 {
+        top: 110px;
+        left: 420px;
+    }
+    #mechanic_slot_m17 {
+        top: 160px;
+        left: 350px;
+    }
+    #mechanic_slot_m18 {
+        top: 160px;
+        left: 420px;
+    }
+
+    #mechanic-slot-sparkplug-caption {
+        position: absolute;
+        top: 200px;
+        left: 360px;
+        text-align: center;
+        font: 10pt Nouveau_IBM;
+        color: #28F100;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+</style>
+
+<div class="mechanic-main">
+    <div class="mechanic-img mechanic-engine-img-list">
+        <div class="mechanic-img mechanic-engine-img-background"></div>
+        <div id="mechanic-img-ballancer" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-camshaft" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-compressor" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-cylinderpiston" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-exhaust" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-filter" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-head" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-ignition" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-intake" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-oil" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-sparkplug" class="mechanic-img-subsystem mechanic-img"></div>
+    </div>
+    <div id="mechanic_slot_m8" class="mechanic-slot mechanic-big-slot-main" data-subsystem="ballancer">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Маховик</div>
+    </div>
+    <div id="mechanic_slot_m4" class="mechanic-slot mechanic-big-slot-main" data-subsystem="camshaft">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Распредвал</div>
+    </div>
+    <div id="mechanic_slot_m2" class="mechanic-slot mechanic-big-slot-main" data-subsystem="compressor">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Компрессор</div>
+    </div>
+    <div id="mechanic_slot_m7" class="mechanic-slot mechanic-big-slot-main" data-subsystem="cylinderpiston">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">ЦПГ</div>
+    </div>
+    <div id="mechanic_slot_m10" class="mechanic-slot mechanic-big-slot-main" data-subsystem="exhaust">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Выпуск</div>
+    </div>
+    <div id="mechanic_slot_m3" class="mechanic-slot mechanic-big-slot-main" data-subsystem="filter">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Фильтр</div>
+    </div>
+    <div id="mechanic_slot_m6" class="mechanic-slot mechanic-big-slot-main" data-subsystem="head">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">ГБЦ</div>
+    </div>
+    <div id="mechanic_slot_m5" class="mechanic-slot mechanic-big-slot-main" data-subsystem="ignition">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Зажигание</div>
+    </div>
+    <div id="mechanic_slot_m1" class="mechanic-slot mechanic-big-slot-main" data-subsystem="intake">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Впуск</div>
+    </div>
+    <div id="mechanic_slot_m9" class="mechanic-slot mechanic-big-slot-main" data-subsystem="oil">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Масло</div>
+    </div>
+
+    <div id="mechanic_slot_m11" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m12" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m13" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m14" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m15" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m16" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m17" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m18" class="mechanic-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-sparkplug-caption">Свечи зажигания</div>
+</div>

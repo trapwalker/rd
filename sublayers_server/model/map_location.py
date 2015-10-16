@@ -55,6 +55,9 @@ class MapLocation(Observer):
         # Раздеплоить машинку агента
         if agent.car:
             agent.car.displace(time=time)
+        # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
+        agent.on_enter_location(location=self)
+
         self.send_inventory_info(agent=agent, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
@@ -76,6 +79,9 @@ class MapLocation(Observer):
             if agent.example.car:
                 ExamplesShowMessage(agent=agent, time=time).post()
 
+            # todo: review agent.on_enter_location call
+            agent.on_enter_location(location=self)
+
             self.send_inventory_info(agent=agent, time=time)
 
             EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
@@ -88,6 +94,7 @@ class MapLocation(Observer):
     def on_exit(self, agent, time):
         self.visitors.remove(agent)
         agent.current_location = None
+        agent.on_exit_location(location=self)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
@@ -114,6 +121,9 @@ class MapLocation(Observer):
                 return location
 
     def send_inventory_info(self, agent, time):
+        pass
+
+    def on_enter_npc(self, agent, time, npc_type):
         pass
 
 
@@ -144,6 +154,11 @@ class Town(MapLocation):
         super(Town, self).send_inventory_info(agent=agent, time=time)
         if self.example.trader:
             TraderInventoryShowMessage(agent=agent, time=time, town_id=self.uid).post()
+
+    def on_enter_npc(self, agent, time, npc_type):
+        npc = getattr(self.example, npc_type)
+        if npc:
+            agent.on_enter_npc(npc)
 
 
 class GasStation(MapLocation):

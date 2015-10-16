@@ -329,6 +329,18 @@ class ExitFromMapLocation(Event):
             log.warning('agent %s try to exit from location %s, but location not find', self.agent, obj)
 
 
+class EnterToNPCEvent(Event):
+    def __init__(self, agent, npc_type, **kw):
+        super(EnterToNPCEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.npc_type = npc_type
+
+    def on_perform(self):
+        super(EnterToNPCEvent, self).on_perform()
+        if self.agent.current_location:
+            self.agent.current_location.on_enter_npc(agent=self.agent, time=self.time, npc_type=self.npc_type)
+
+
 class ActivateLocationChats(Event):
     def __init__(self, agent, location, **kw):
         super(ActivateLocationChats, self).__init__(server=agent.server, **kw)
