@@ -1,7 +1,8 @@
 <style>
     .mechanic-brakes-img-list {
         position: absolute;
-        margin: 70px 0px 0px 105px;
+        margin: -15px 0px 0px 102px;
+        pointer-events: none;
     }
 
     .mechanic-brakes-img-background {
@@ -44,60 +45,118 @@
         background: transparent url(static/img/cars/brakes/brakes_1/brakes_001_rear_brakes.png) no-repeat 100% 100%;
     }
 
-    #mechanic_slot_m29 {
-        top: 10px;
-        left: 274px;
+    #mechanic_slot_m71 {
+        top: 120px;
+        left: 231px;
     }
 
-    #mechanic_slot_m23 {
-        top: 75px;
-        left: 19px;
+    #mechanic_slot_m70 {
+        top: 240px;
+        left: 199px;
     }
 
-    #mechanic_slot_m25 {
-        top: 235px;
+    #mechanic_slot_m80 {
+        top: 180px;
+        left: 198px;
+    }
+
+    #mechanic_slot_m72 {
+        top: 120px;
+        left: 35px;
+    }
+
+    #mechanic_slot_m73 {
+        top: 120px;
         left: 100px;
     }
 
-    #mechanic_slot_m27 {
-        top: 156px;
-        left: 8px;
+    #mechanic_slot_m62 {
+        top: 240px;
+        left: 35px;
     }
 
-    #mechanic_slot_m24 {
-        top: 10px;
-        left: 188px;
+    #mechanic_slot_m63 {
+        top: 240px;
+        left: 100px;
     }
 
-    #mechanic_slot_m30 {
-        top: 10px;
-        left: 358px;
+    #mechanic_slot_m54 {
+        top: 180px;
+        left: 35px;
     }
 
-    #mechanic_slot_m26 {
-        top: 235px;
-        left: 359px;
+    #mechanic_slot_m55 {
+        top: 180px;
+        left: 100px;
     }
 
-    #mechanic_slot_m28 {
-        top: 156px;
+    #mechanic_slot_m74 {
+        top: 120px;
+        left: 360px;
+    }
+
+    #mechanic_slot_m75 {
+        top: 120px;
         left: 425px;
     }
 
-    #mechanic_slot_m31 {
-        top: 10px;
-        left: 98px;
+    #mechanic_slot_m64 {
+        top: 240px;
+        left: 360px;
     }
 
-    #mechanic_slot_m32 {
-        top: 235px;
-        left: 201px;
+    #mechanic_slot_m65 {
+        top: 240px;
+        left: 425px;
     }
 
-    #mechanic_slot_m33 {
-        top: 75px;
-        left: 437px;
+    #mechanic_slot_m56 {
+        top: 180px;
+        left: 360px;
     }
+
+    #mechanic_slot_m57 {
+        top: 180px;
+        left: 425px;
+    }
+
+    .mechanic-slot-caption {
+        position: absolute;
+        text-align: center;
+        font: 10pt Nouveau_IBM;
+        color: #28F100;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+    #mechanic-slot-caption-front_brake_lines {
+        top: 157px;
+        left: 10px;
+    }
+
+    #mechanic-slot-caption-rear_brake_lines {
+        top: 157px;
+        left: 341px;
+    }
+
+    #mechanic-slot-caption-front_brake_pads {
+        top: 278px;
+        left: 42px;
+    }
+    #mechanic-slot-caption-rear_brake_pads {
+        top: 278px;
+        left: 375px;
+    }
+
+    #mechanic-slot-caption-front_brakes {
+        top: 217px;
+        left: 37px;
+    }
+    #mechanic-slot-caption-rear_brakes {
+        top: 217px;
+        left: 372px;
+    }
+
 </style>
 
 <div class="mechanic-main">
@@ -114,71 +173,94 @@
         <div id="mechanic-img-rear_brakes" class="mechanic-img-subsystem mechanic-img"></div>
     </div>
 
-    <!--<div id="mechanic_slot_m29" class="mechanic-slot mechanic-big-slot-main" data-subsystem="ATF">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Масло</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m23" class="mechanic-slot mechanic-big-slot-main" data-subsystem="clutch">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Сцепление</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m25" class="mechanic-slot mechanic-big-slot-main" data-subsystem="front_axle">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Полуоси<br>(перед)</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m27" class="mechanic-slot mechanic-big-slot-main" data-subsystem="front_differential">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Дифференциал<br>(перед)</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m24" class="mechanic-slot mechanic-big-slot-main" data-subsystem="gearbox">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Коробка<br>передач</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m30" class="mechanic-slot mechanic-big-slot-main" data-subsystem="primary_shaft">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Первичный<br>вал</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m26" class="mechanic-slot mechanic-big-slot-main" data-subsystem="rear_axle">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Полуоси<br>(зад)</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m28" class="mechanic-slot mechanic-big-slot-main" data-subsystem="rear_differential">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Дифференциал<br>(зад)</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m31" class="mechanic-slot mechanic-big-slot-main" data-subsystem="secondary_shaft">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Вторичный<br>вал</div>-->
-    <!--</div>-->
-    <!--<div id="mechanic_slot_m32" class="mechanic-slot mechanic-big-slot-main" data-subsystem="torque_converter">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Гидротрансформатор</div>-->
-    <!--</div>-->
+    <div id="mechanic_slot_m71" class="mechanic-slot mechanic-big-slot-main" data-subsystem="abs">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">АБС</div>
+    </div>
+    <div id="mechanic_slot_m70" class="mechanic-slot mechanic-big-slot-main" data-subsystem="booster">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Усилитель тормозов</div>
+    </div>
+    <div id="mechanic_slot_m80" class="mechanic-slot mechanic-big-slot-main" data-subsystem="brake_fluid">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Тормозная жидкость</div>
+    </div>
 
-    <!--<div id="mechanic_slot_m33" class="mechanic-slot mechanic-big-slot-main" data-subsystem="transfer_case">-->
-        <!--<div class="mechanic-big-slot-img">-->
-            <!--<div class="mechanic-big-slot-img-item mechanic-slot-img"></div>-->
-        <!--</div>-->
-        <!--<div class="mechanic-big-slot-caption">Раздатка</div>-->
-    <!--</div>-->
+    <div id="mechanic_slot_m72" class="mechanic-slot mechanic-small-slot-main" data-subsystem="front_brake_lines">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m73" class="mechanic-slot mechanic-small-slot-main" data-subsystem="front_brake_lines">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-caption-front_brake_lines" class="mechanic-slot-caption">Тормозные шланги (перед)</div>
+
+    <div id="mechanic_slot_m62" class="mechanic-slot mechanic-small-slot-main" data-subsystem="front_brake_pads">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m63" class="mechanic-slot mechanic-small-slot-main" data-subsystem="front_brake_pads">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-caption-front_brake_pads" class="mechanic-slot-caption">Колодки (перед)</div>
+
+    <div id="mechanic_slot_m54" class="mechanic-slot mechanic-small-slot-main" data-subsystem="front_brakes">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m55" class="mechanic-slot mechanic-small-slot-main" data-subsystem="front_brakes">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-caption-front_brakes" class="mechanic-slot-caption">Механизм (перед)</div>
+
+    <div id="mechanic_slot_m74" class="mechanic-slot mechanic-small-slot-main" data-subsystem="rear_brake_lines">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m75" class="mechanic-slot mechanic-small-slot-main" data-subsystem="rear_brake_lines">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-caption-rear_brake_lines" class="mechanic-slot-caption">Тормозные шланги (зад)</div>
+
+    <div id="mechanic_slot_m64" class="mechanic-slot mechanic-small-slot-main" data-subsystem="rear_brake_pads">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m65" class="mechanic-slot mechanic-small-slot-main" data-subsystem="rear_brake_pads">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-caption-rear_brake_pads" class="mechanic-slot-caption">Колодки (зад)</div>
+
+    <div id="mechanic_slot_m56" class="mechanic-slot mechanic-small-slot-main" data-subsystem="rear_brakes">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m57" class="mechanic-slot mechanic-small-slot-main" data-subsystem="rear_brakes">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic-slot-caption-rear_brakes" class="mechanic-slot-caption">Механизм (зад)</div>
 </div>

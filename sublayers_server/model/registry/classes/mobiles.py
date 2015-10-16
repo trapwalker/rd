@@ -230,41 +230,41 @@ class Car(Mobile):
     slot_m53 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension hub')
 
     # Тормоза
-    slot_m54 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake front_caliper')
-    slot_m55 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake front_caliper')
+    slot_m54 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake front_brakes')
+    slot_m55 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake front_brakes')
 
-    slot_m56 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_caliper')
-    slot_m57 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_caliper')
-    slot_m58 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_caliper')
-    slot_m59 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_caliper')
-    slot_m60 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_caliper')
-    slot_m61 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_caliper')
+    slot_m56 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_brakes')
+    slot_m57 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_brakes')
+    slot_m58 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_brakes')
+    slot_m59 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_brakes')
+    slot_m60 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_brakes')
+    slot_m61 = Slot(caption=u'M1', doc=u'Тормоза: задние тормозные механизмы', tags='mechanic brake rear_brakes')
 
-    slot_m62 = Slot(caption=u'M1', doc=u'Тормоза: передние колодки', tags='mechanic brake front_pad')
-    slot_m63 = Slot(caption=u'M1', doc=u'Тормоза: передние колодки', tags='mechanic brake front_pad')
+    slot_m62 = Slot(caption=u'M1', doc=u'Тормоза: передние колодки', tags='mechanic brake front_brake_pads')
+    slot_m63 = Slot(caption=u'M1', doc=u'Тормоза: передние колодки', tags='mechanic brake front_brake_pads')
 
-    slot_m64 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_pad')
-    slot_m65 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_pad')
-    slot_m66 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_pad')
-    slot_m67 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_pad')
-    slot_m68 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_pad')
-    slot_m69 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_pad')
+    slot_m64 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_brake_pads')
+    slot_m65 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_brake_pads')
+    slot_m66 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_brake_pads')
+    slot_m67 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_brake_pads')
+    slot_m68 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_brake_pads')
+    slot_m69 = Slot(caption=u'M1', doc=u'Тормоза: задние колодки', tags='mechanic brake rear_brake_pads')
 
-    slot_m70 = Slot(caption=u'M1', doc=u'Тормоза: усилитель тормозов', tags='mechanic brake brake_booster')
+    slot_m70 = Slot(caption=u'M1', doc=u'Тормоза: усилитель тормозов', tags='mechanic brake booster')
 
-    slot_m71 = Slot(caption=u'M1', doc=u'Тормоза: АБС', tags='mechanic brake ABS')
+    slot_m71 = Slot(caption=u'M1', doc=u'Тормоза: АБС', tags='mechanic brake abs')
 
-    slot_m72 = Slot(caption=u'M1', doc=u'Тормоза: шланги перед', tags='mechanic brake front_hose')
-    slot_m73 = Slot(caption=u'M1', doc=u'Тормоза: шланги перед', tags='mechanic brake front_hose')
+    slot_m72 = Slot(caption=u'M1', doc=u'Тормоза: шланги перед', tags='mechanic brake front_brake_lines')
+    slot_m73 = Slot(caption=u'M1', doc=u'Тормоза: шланги перед', tags='mechanic brake front_brake_lines')
 
-    slot_m74 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_hose')
-    slot_m75 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_hose')
-    slot_m76 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_hose')
-    slot_m77 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_hose')
-    slot_m78 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_hose')
-    slot_m79 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_hose')
+    slot_m74 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_brake_lines')
+    slot_m75 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_brake_lines')
+    slot_m76 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_brake_lines')
+    slot_m77 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_brake_lines')
+    slot_m78 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_brake_lines')
+    slot_m79 = Slot(caption=u'M1', doc=u'Тормоза: шланги зад', tags='mechanic brake rear_brake_lines')
 
-    slot_m80 = Slot(caption=u'M1', doc=u'Тормоза: тормозная жидкость', tags='mechanic brake fluid')
+    slot_m80 = Slot(caption=u'M1', doc=u'Тормоза: тормозная жидкость', tags='mechanic brake brake_fluid')
 
     # Охлаждение
     slot_m81 = Slot(caption=u'M1', doc=u'Охлаждение: радиатор', tags='mechanic cooling radiator')
