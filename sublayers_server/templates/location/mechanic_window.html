@@ -10,16 +10,24 @@
                 <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_motor">Двигатель</div>
                 <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_transmission">Трансмиссия</div>
                 <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_suspension">Подвеска</div>
-                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_break">Тормоза</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_brakes">Тормоза</div>
                 <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_cooling">Охлаждение</div>
             </div>
             <div id="mechanic_page_motor" class="mechanic-center-main-block-page">
                 {% raw open(mechanic_engine).read() %}
             </div>
-            <div id="mechanic_page_transmission" class="mechanic-center-main-block-page" style="background-color: green"></div>
-            <div id="mechanic_page_suspension" class="mechanic-center-main-block-page" style="background-color: orange"></div>
-            <div id="mechanic_page_break" class="mechanic-center-main-block-page" style="background-color: blue"></div>
-            <div id="mechanic_page_cooling" class="mechanic-center-main-block-page" style="background-color: white"></div>
+            <div id="mechanic_page_transmission" class="mechanic-center-main-block-page">
+                {% raw open(mechanic_transmission).read() %}
+            </div>
+            <div id="mechanic_page_suspension" class="mechanic-center-main-block-page">
+                {% raw open(mechanic_suspension).read() %}
+            </div>
+            <div id="mechanic_page_brakes" class="mechanic-center-main-block-page">
+                {% raw open(mechanic_brakes).read() %}
+            </div>
+            <div id="mechanic_page_cooling" class="mechanic-center-main-block-page">
+                {% raw open(mechanic_cooling).read() %}
+            </div>
         </div>
         <div class="mechanic-center-info-block mechanic-center-block"></div>
     </div>

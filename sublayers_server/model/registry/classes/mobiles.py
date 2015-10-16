@@ -154,6 +154,10 @@ class Car(Mobile):
     hangar_car = Attribute(caption=u"Представление машинки в ангаре")
 
     mechanic_engine = Attribute(caption=u"Представление двигателя у механника")
+    mechanic_transmission = Attribute(caption=u"Представление трансмиссии у механника")
+    mechanic_brakes = Attribute(caption=u"Представление тормозной системы у механника")
+    mechanic_cooling = Attribute(caption=u"Представление системы охлаждения у механника")
+    mechanic_suspension = Attribute(caption=u"Представление подвески у механника")
 
     inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей')
     inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей')

@@ -24,7 +24,13 @@ class MapLocationHandler(BaseHandler):
             svg_link = os.path.join(os.getcwd(), location.example.svg_link)
             if isinstance(location, Town):
                 car_ex = agent.example.car
+
                 mechanic_engine = None
+                mechanic_transmission = None
+                mechanic_brakes = None
+                mechanic_cooling = None
+                mechanic_suspension = None
+
                 armorer_link = None
                 tuner_link=None
                 sector_svg_link = None
@@ -33,6 +39,11 @@ class MapLocationHandler(BaseHandler):
                 tuner_slots = []
                 if car_ex:
                     mechanic_engine = os.path.join(os.getcwd(), car_ex.mechanic_engine)
+                    mechanic_transmission = os.path.join(os.getcwd(), car_ex.mechanic_transmission)
+                    mechanic_brakes = os.path.join(os.getcwd(), car_ex.mechanic_brakes)
+                    mechanic_cooling = os.path.join(os.getcwd(), car_ex.mechanic_cooling)
+                    mechanic_suspension = os.path.join(os.getcwd(), car_ex.mechanic_suspension)
+
                     armorer_link = os.path.join(os.getcwd(), car_ex.armorer_car)
                     tuner_link = os.path.join(os.getcwd(), car_ex.tuner_car)
                     sector_svg_link = os.path.join(os.getcwd(), car_ex.armorer_sectors_svg)
@@ -42,7 +53,12 @@ class MapLocationHandler(BaseHandler):
                     tuner_slots = [v[0] for v in car_ex.iter_slots(tags='tuner')]
 
 
-                self.render("location/town.html", town=location, svg_link=svg_link, mechanic_engine=mechanic_engine,
+                self.render("location/town.html", town=location, svg_link=svg_link,
+                            mechanic_engine=mechanic_engine,
+                            mechanic_transmission=mechanic_transmission,
+                            mechanic_brakes=mechanic_brakes,
+                            mechanic_cooling=mechanic_cooling,
+                            mechanic_suspension=mechanic_suspension,
                             armorer_link=armorer_link, tuner_link=tuner_link, sector_svg_link=sector_svg_link,
                             armorer_slots=armorer_slots, tuner_slots=tuner_slots,
                             mechanic_slots=mechanic_slots, agent=agent)
