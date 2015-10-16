@@ -582,7 +582,7 @@ var MechanicManager = (function () {
     };
 
     MechanicManager.prototype.reDrawItem = function(position) {
-        //console.log('MechanicManager.prototype.reDrawItem');
+        //console.log('MechanicManager.prototype.reDrawItem', position);
         var item = this.items[position];
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
@@ -616,7 +616,7 @@ var MechanicManager = (function () {
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
-            if (item.example) {
+            if (item && item.example) {
                 itemDiv.find('.npcInventory-name').text(item.example.title);
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
