@@ -508,7 +508,8 @@ class AgentAPI(API):
 
     @public_method
     def mechanic_apply(self, mechanic_slots):
-        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=mechanic_slots).post()
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots)\
+            .post()
 
     @public_method
     def mechanic_cancel(self):
