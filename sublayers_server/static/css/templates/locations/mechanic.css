@@ -67,7 +67,6 @@
     width: 100%;
 }
 
-
 .mechanic-main {
     position: relative;
     width: 100%;
@@ -84,6 +83,9 @@
     opacity: 0.0;
 }
 
+.mechanic-slot {
+    position: absolute;
+}
 
 .mechanic-big-slot-main {
     position: absolute;
