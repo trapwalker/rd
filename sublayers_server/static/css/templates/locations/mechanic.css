@@ -28,15 +28,14 @@
 }
 
 .mechanic-center-main-block {
-    width: 492px;
+    width: 525px;
 }
 
 .mechanic-center-info-block {
 
     background-color: red;
     opacity: 0.2;
-
-    width: 242px;
+    width: 209px;
 }
 
 .mechanic-center-page-control {
@@ -71,7 +70,7 @@
 
 .mechanic-main {
     position: relative;
-    width: 492px;
+    width: 100%;
     height: 297px;
 }
 
