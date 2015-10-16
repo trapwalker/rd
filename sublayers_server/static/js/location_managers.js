@@ -558,7 +558,7 @@ var MechanicManager = (function () {
         }
 
         // Повесить дропабле на все слоты
-        $('.mechanic-engine-slot').droppable({
+        $('.mechanic-slot').droppable({
             greedy: true,
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
