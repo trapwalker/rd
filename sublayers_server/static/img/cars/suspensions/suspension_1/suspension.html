@@ -1,0 +1,330 @@
+<style>
+    .mechanic-main {
+        position: relative;
+        width: 492px;
+        height: 297px;
+    }
+
+    .mechanic-img {
+        position: absolute;
+        width: 320px;
+        height: 160px;
+    }
+
+    .mechanic-suspension-img-list {
+        position: absolute;
+        margin: 60px 0px 0px 55px;
+    }
+
+    .mechanic-img-subsystem {
+        opacity: 0.0;
+    }
+
+    .mechanic-suspension-img-background {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_bg.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_arm_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_arm_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_arm_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_arm_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_coil_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_coil_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_coil_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_coil_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_hub_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_hub_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_hub_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_hub_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_shock_absorber_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_shock_absorber_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-front_shock_absorber_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_front_shock_absorber_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_arm_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_arm_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_arm_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_arm_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_coil_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_coil_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_coil_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_coil_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_hub_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_hub_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_hub_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_hub_002.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_shock_absorber_1 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_shock_absorber_001.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-rear_shock_absorber_2 {
+        background: transparent url(static/img/cars/suspensions/suspension_1/suspension_001_rear_shock_absorber_002.png) no-repeat 100% 100%;
+    }
+
+{#    #mechanic_slot_m8 {#}
+{#        position: absolute;#}
+{#        top: 230px;#}
+{#        left: 265px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m4 {#}
+{#        position: absolute;#}
+{#        top: 155px;#}
+{#        left: 18px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m2 {#}
+{#        position: absolute;#}
+{#        top: 10px;#}
+{#        left: 179px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m7 {#}
+{#        position: absolute;#}
+{#        top: 230px;#}
+{#        left: 24px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m10 {#}
+{#        position: absolute;#}
+{#        top: 230px;#}
+{#        left: 103px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m3 {#}
+{#        position: absolute;#}
+{#        top: 10px;#}
+{#        left: 265px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m6 {#}
+{#        position: absolute;#}
+{#        top: 10px;#}
+{#        left: 24px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m5 {#}
+{#        position: absolute;#}
+{#        top: 80px;#}
+{#        left: 22px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m1 {#}
+{#        position: absolute;#}
+{#        top: 10px;#}
+{#        left: 102px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m9 {#}
+{#        position: absolute;#}
+{#        top: 230px;#}
+{#        left: 185px;#}
+{#    }#}
+{##}
+{#    #mechanic_slot_m11 {#}
+{#        position: absolute;#}
+{#        top: 10px;#}
+{#        left: 350px;#}
+{#    }#}
+{#    #mechanic_slot_m12 {#}
+{#        position: absolute;#}
+{#        top: 10px;#}
+{#        left: 420px;#}
+{#    }#}
+{#    #mechanic_slot_m13 {#}
+{#        position: absolute;#}
+{#        top: 60px;#}
+{#        left: 350px;#}
+{#    }#}
+{#    #mechanic_slot_m14 {#}
+{#        position: absolute;#}
+{#        top: 60px;#}
+{#        left: 420px;#}
+{#    }#}
+{#    #mechanic_slot_m15 {#}
+{#        position: absolute;#}
+{#        top: 110px;#}
+{#        left: 350px;#}
+{#    }#}
+{#    #mechanic_slot_m16 {#}
+{#        position: absolute;#}
+{#        top: 110px;#}
+{#        left: 420px;#}
+{#    }#}
+{#    #mechanic_slot_m17 {#}
+{#        position: absolute;#}
+{#        top: 160px;#}
+{#        left: 350px;#}
+{#    }#}
+{#    #mechanic_slot_m18 {#}
+{#        position: absolute;#}
+{#        top: 160px;#}
+{#        left: 420px;#}
+{#    }#}
+
+
+</style>
+
+<div class="mechanic-main">
+    <div class="mechanic-img mechanic-suspension-img-list">
+        <div class="mechanic-img mechanic-suspension-img-background"></div>
+        <div id="mechanic-img-front_arm_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_arm_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_coil_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_coil_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_hub_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_hub_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_shock_absorber_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-front_shock_absorber_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_arm_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_arm_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_coil_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_coil_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_hub_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_hub_2" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_shock_absorber_1" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-suspension-img-rear_shock_absorber_2" class="mechanic-img-subsystem mechanic-img"></div>
+    </div>
+
+    <div id="mechanic_slot_m8" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="ballancer">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Маховик</div>
+    </div>
+
+    <div id="mechanic_slot_m4" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="camshaft">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Распредвал</div>
+    </div>
+    <div id="mechanic_slot_m2" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="compressor">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Компрессор</div>
+    </div>
+    <div id="mechanic_slot_m7" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="cylinderpiston">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">ЦПГ</div>
+    </div>
+    <div id="mechanic_slot_m10" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="exhaust">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Выпуск</div>
+    </div>
+    <div id="mechanic_slot_m3" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="filter">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Фильтр</div>
+    </div>
+    <div id="mechanic_slot_m6" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="head">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">ГБЦ</div>
+    </div>
+    <div id="mechanic_slot_m5" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="ignition">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Зажигание</div>
+    </div>
+    <div id="mechanic_slot_m1" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="intake">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Впуск</div>
+    </div>
+    <div id="mechanic_slot_m9" class="mechanic-engine-slot mechanic-big-slot-main" data-subsystem="oil">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Масло</div>
+    </div>
+
+    <div id="mechanic_slot_m11" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m12" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m13" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m14" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m15" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m16" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m17" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+    <div id="mechanic_slot_m18" class="mechanic-engine-slot mechanic-small-slot-main" data-subsystem="sparkplug">
+        <div class="mechanic-small-slot-img">
+            <div class="mechanic-small-slot-img-item mechanic-slot-img"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.mechanic-engine-slot').mouseenter(function() {
+        var subs = $(this).data('subsystem');
+        $('#mechanic-engine-img-' + subs).removeClass('mechanic-engine-img-subsystem');
+    });
+
+    $('.mechanic-engine-slot').mouseleave(function() {
+        var subs = $(this).data('subsystem');
+        $('#mechanic-engine-img-' + subs).addClass('mechanic-engine-img-subsystem');
+    });
+</script>
