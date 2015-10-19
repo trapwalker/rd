@@ -482,6 +482,7 @@ var MechanicManager = (function () {
         this.items = {};
         this.mechanic_slots = [];
         this.inv_show_div = null;
+        this.inventory_tag = null;
     }
 
     MechanicManager.prototype._addEmptyInventorySlot = function(position) {
@@ -496,6 +497,38 @@ var MechanicManager = (function () {
             }
         });
         this.inv_show_div.append(itemWrapDiv);
+    };
+
+    MechanicManager.prototype.showItemInfo = function(position) {
+        //console.log('MechanicManager.prototype.showItemInfo', position);
+        $('#mechanic-info-block-title').text('');
+        $('#mechanic-info-block-description').text('');
+        $('#mechanic-info-block-img').css('background', 'transparent url() no-repeat 100% 100%');
+        if (this.items.hasOwnProperty(position)) {
+            var item = this.items[position];
+            if (item.example) {
+                $('#mechanic-info-block-title').text(item.example.title);
+                $('#mechanic-info-block-description').text(item.example.description);
+                $('#mechanic-info-block-img').css('background',
+                    'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
+            }
+        }
+    };
+
+    MechanicManager.prototype._inventoryFilter = function() {
+        var self = this;
+        $(this.inv_show_div).find('.npcInventory-itemWrap').each(function (index, element) {
+            var item = self.items[$(element).data('pos')];
+            $(element).css('display', 'block');
+            if ((item.example) && (item.example.tags.indexOf(self.inventory_tag) < 0))
+                $(element).css('display', 'none');
+        });
+        resizeInventory(this.inv_show_div);
+    };
+
+    MechanicManager.prototype.setInventoryTag = function(tag) {
+        this.inventory_tag = tag;
+        this._inventoryFilter();
     };
 
     MechanicManager.prototype.exportSlotState = function() {
@@ -545,7 +578,7 @@ var MechanicManager = (function () {
                 this.items[i] = item_rec;
             }
         }
-        resizeInventory(this.inv_show_div);
+        this._inventoryFilter();
 
         // Добавить итемы слотов
         for (var i = 0; i < this.mechanic_slots.length; i++) {
@@ -565,6 +598,22 @@ var MechanicManager = (function () {
                 var dropPos = $(event.target).data('pos');
                 locationManager.mechanic.changeItem(dragPos, dropPos);
             }
+        });
+
+        $('.mechanic-slot').mouseenter(function(event) {
+            locationManager.mechanic.showItemInfo($(this).data('pos'));
+        });
+
+        $('.mechanic-slot').mouseleave(function(event) {
+            locationManager.mechanic.showItemInfo(null);
+        });
+
+        this.inv_show_div.find('.npcInventory-itemWrap').mouseenter(function(event) {
+            locationManager.mechanic.showItemInfo($(this).data('pos'));
+        });
+
+        this.inv_show_div.find('.npcInventory-itemWrap').mouseleave(function(event) {
+            locationManager.mechanic.showItemInfo(null);
         });
 
         // Отрисовать верстку
