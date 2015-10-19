@@ -32,10 +32,31 @@
 }
 
 .mechanic-center-info-block {
-
-    background-color: red;
-    opacity: 0.2;
     width: 209px;
+}
+
+#mechanic-info-block-img {
+    position: relative;
+    height: 70px;
+    width: 130px;
+    margin: 10px auto 0px auto;
+    border: 1px solid #125206;
+}
+
+#mechanic-info-block-title {
+    position: relative;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+    margin: 8px auto 0px auto;
+    text-align: center;
+}
+
+#mechanic-info-block-description {
+    position: relative;
+    margin: 5px 0px 0px 0px;
+    width: 100%;
+    color: #29F200;
+    font: 10pt Nouveau_IBM;
 }
 
 .mechanic-center-page-control {

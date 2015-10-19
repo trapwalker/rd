@@ -7,11 +7,11 @@
     <div class="mechanic-center">
         <div class="mechanic-center-main-block mechanic-center-block">
             <div class="mechanic-center-page-control">
-                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_motor">Двигатель</div>
-                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_transmission">Трансмиссия</div>
-                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_suspension">Подвеска</div>
-                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_brakes">Тормоза</div>
-                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_cooling">Охлаждение</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_motor" data-tag="engine">Двигатель</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_transmission" data-tag="transmission">Трансмиссия</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_suspension" data-tag="suspension">Подвеска</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_brakes" data-tag="brake">Тормоза</div>
+                <div class="mechanic-center-page-control-page-button" data-page="#mechanic_page_cooling" data-tag="cooling">Охлаждение</div>
             </div>
             <div id="mechanic_page_motor" class="mechanic-center-main-block-page">
                 {% raw open(mechanic_engine).read() %}
@@ -29,7 +29,11 @@
                 {% raw open(mechanic_cooling).read() %}
             </div>
         </div>
-        <div class="mechanic-center-info-block mechanic-center-block"></div>
+        <div class="mechanic-center-info-block mechanic-center-block">
+            <div id="mechanic-info-block-img"></div>
+            <div id="mechanic-info-block-title"></div>
+            <div id="mechanic-info-block-description"></div>
+        </div>
     </div>
     {% include npc_inventory.html %}
 </div>
@@ -40,8 +44,8 @@
         $($(event.target).data('page')).css('display', 'block');
         $('.mechanic-center-page-control-page-button').removeClass('mechanic-center-page-control-page-button-active');
         $(event.target).addClass('mechanic-center-page-control-page-button-active');
+        locationManager.mechanic.setInventoryTag($(event.target).data('tag'));
     });
-
     $('.mechanic-center-page-control-page-button').first().click();
 
     $('.mechanic-slot').mouseenter(function() {
