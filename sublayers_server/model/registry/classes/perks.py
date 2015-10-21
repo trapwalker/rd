@@ -50,3 +50,8 @@ class PerkPassive(Perk):
 class PerkRepairPassive(PerkPassive):
     repair_rate = FloatAttribute(default=0, caption=u"Скорость отхила в секунду")
     repair_rate_on_stay = FloatAttribute(default=0, caption=u"Дополнительная скорость отхила в стоячем положении")
+
+
+class PerkCritPassive(PerkPassive):
+    crit_rate = FloatAttribute(default=0, caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
+    crit_power = FloatAttribute(default=0, caption=u"Сила крита [0 .. сколько угодно]")

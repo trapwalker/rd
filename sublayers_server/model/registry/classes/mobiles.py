@@ -54,6 +54,10 @@ class Mobile(Root):
     repair_rate = FloatAttribute(default=0, caption=u"Скорость отхила в секунду")
     repair_rate_on_stay = FloatAttribute(default=0, caption=u"Дополнительная скорость отхила в стоячем положении")
 
+    # атрибуты, связанные с критами.
+    crit_rate = FloatAttribute(default=0.5, caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
+    crit_power = FloatAttribute(default=0.5, caption=u"Сила крита [0 .. сколько угодно]")
+
     slot_FL = Slot(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags='armorer')
     slot_FL_f = TextAttribute(default='FL', caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
     slot_CL = Slot(caption=u'LeftSlot', doc=u'Центральный левый слот', tags='armorer')
