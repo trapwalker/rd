@@ -408,6 +408,12 @@ class AgentAPI(API):
             if args:
                 add_exp = int(args[0])
                 self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=add_exp)
+        elif command == '/param':
+            if args and self.agent.car:
+                param_name = args[0]
+                agent = self.agent
+                log.debug('Agent %s  have param %s = %s', agent, param_name,
+                          agent.car.example.get_modify_value(param_name=param_name, example_agent=agent.example))
         elif command == '/save':
             self.agent.server.save()
         elif command == '/reset':
