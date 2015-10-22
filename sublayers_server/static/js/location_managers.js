@@ -1395,9 +1395,44 @@ var HangarManager = (function () {
 var TrainerManager = (function () {
 
     function TrainerManager() {
+        this.cur_level = 0;
+        this.def_driving = 0;
+        this.def_engineering = 0;
+        this.def_leading = 0;
+        this.def_masking = 0;
+        this.def_shooting = 0;
+        this.def_trading = 0;
+        this.cur_driving = 0;
+        this.cur_engineering = 0;
+        this.cur_leading = 0;
+        this.cur_masking = 0;
+        this.cur_shooting = 0;
+        this.cur_trading = 0;
+        this.perks = [];
     }
 
-    TrainerManager.prototype.update = function() {
+    TrainerManager.prototype._getFreeSkillPoints = function() {
+        return this.cur_level - this.cur_driving - this.cur_engineering - this.cur_leading  -
+               this.cur_masking - this.cur_shooting - this.cur_trading;
+    };
+
+    TrainerManager.prototype._getFreePerkPoints = function() {
+        var res = 0;
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key))
+                if ((this.perks[key].state == 'default') || (this.perks[key].state == 'active')) res++;
+        return this.cur_level - res;
+    };
+
+    TrainerManager.prototype._getActivePerks = function() {
+        var res = [];
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key))
+                if (this.perks[key].state == 'active') res.push(this.perks[key].state);
+        return res;
+    };
+
+    TrainerManager.prototype.update = function(event) {
         console.log('TrainerManager.prototype.update');
         this.clear();
 
@@ -1407,18 +1442,124 @@ var TrainerManager = (function () {
             return;
         }
 
-        // Отрисовать собственный счет
-        //$('#hangar-footer-balance').text(user.balance);
+        this.cur_level = event.current_level;
+        this.cur_driving = this.def_driving = event.driving;
+        this.cur_engineering = this.def_engineering = event.engineering;
+        this.cur_leading = this.def_leading = event.leading;
+        this.cur_masking = this.def_masking = event.masking;
+        this.cur_shooting = this.def_shooting = event.shooting;
+        this.cur_trading = this.def_trading = event.trading;
+
+        var perk = {};
+        for (var i = 0; i < event.perks.length; i++) {
+            perk = {
+                title: event.perks[i].perk.title,
+                description: event.perks[i].perk.description,
+                id: event.perks[i].perk.id,
+                node_hash: event.perks[i].perk.node_hash,
+                req_level: event.perks[i].perk.level_req,
+                req_driving: event.perks[i].perk.driving_req,
+                req_engineering: event.perks[i].perk.engineering_req,
+                req_leading: event.perks[i].perk.leading_req,
+                req_masking: event.perks[i].perk.masking_req,
+                req_shooting: event.perks[i].perk.shooting_req,
+                req_trading: event.perks[i].perk.trading_req,
+                perk_req: event.perks[i].perk_req
+            };
+            if (event.perks[i].active) perk.state = 'default';
+            else perk.state = 'unactive';
+            this.perks[perk.node_hash] = perk;
+        }
+
+        this.refreshPerkState();
     };
 
     TrainerManager.prototype.clear = function() {
         //console.log('TrainerManager.prototype.clear');
+        this.cur_level = 0;
+        this.def_driving = 0;
+        this.def_engineering = 0;
+        this.def_leading = 0;
+        this.def_masking = 0;
+        this.def_shooting = 0;
+        this.def_trading = 0;
+        this.cur_driving = 0;
+        this.cur_engineering = 0;
+        this.cur_leading = 0;
+        this.cur_masking = 0;
+        this.cur_shooting = 0;
+        this.cur_trading = 0;
+        this.perks = [];
+    };
+
+    TrainerManager.prototype.refreshPerkState = function() {
+        var perk = {};
+        var enable;
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key)) {
+                perk = this.perks[key];
+                if (perk.state == 'default') continue;
+
+                enable = (perk.req_level <= this.cur_level) &&
+                         (perk.req_driving <= this.cur_driving) &&
+                         (perk.req_engineering <= this.cur_engineering) &&
+                         (perk.req_leading <= this.cur_leading) &&
+                         (perk.req_masking <= this.cur_masking) &&
+                         (perk.req_shooting <= this.cur_shooting) &&
+                         (perk.req_trading <= this.cur_trading);
+
+                for (var j = 0; enable && (j < perk.perk_req.length); j++)
+                    if ((this.perks[perk.perk_req[j]].state == 'unactive') ||
+                        (this.perks[perk.perk_req[j]].state == 'disable')) enable = false;
+
+                if (enable) {
+                    if (perk.state == 'disable') perk.state = 'unactive';
+                }
+                else
+                    perk.state = 'disable';
+            }
+        // todo: перерисовать
+    };
+
+    TrainerManager.prototype.setSkill = function(skill_name, d_val) {
+        if (this.hasOwnProperty(skill_name)) {
+            if (d_val > this._getFreeSkillPoints()) return;
+            this[skill_name] += d_val;
+            this.refreshPerkState();
+        }
+    };
+
+    TrainerManager.prototype.setPerk = function(perk_node_hash, state) {
+        if (this.perks.hasOwnProperty(perk_node_hash)) {
+            if ((state == 'active') && (this._getFreePerkPoints() <= 0)) return;
+            this.perks[perk_node_hash].state = state;
+            this.refreshPerkState();
+        }
     };
 
     TrainerManager.prototype.apply = function() {
         //console.log('TrainerManager.prototype.apply');
-        if (this.current_car != null)
-            clientManager.sendHangarCarChoice();
+        // Установить все навыки
+        clientManager.sendSetSkillState(this.cur_driving, this.cur_shooting, this.cur_masking, this.cur_leading,
+            this.cur_trading, this.cur_engineering);
+
+        // Установить перки в правильном порядке
+        var set_perks = this._getActivePerks();
+        var sort_perks = [];
+        while (set_perks.length > 0) {
+            var i;
+            var can_add = false;
+            for (i = 0; !can_add && (i < set_perks.length); i++) {
+                can_add = true;
+                for (var j = 0; can_add && (j < set_perks[i].perk_req.length); j++)
+                    can_add = sort_perks.indexOf(set_perks[i].perk_req[j]) >= 0;
+            }
+            sort_perks.push(set_perks[i].node_hash);
+            set_perks.splice(i, 1);
+        }
+
+        for (var j = 0; j < sort_perks.length; j++)
+            clientManager.sendActivatePerk(sort_perks[j]);
     };
 
     TrainerManager.prototype.cancel = function() {

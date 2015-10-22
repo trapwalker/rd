@@ -679,7 +679,9 @@ var ClientManager = (function () {
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
                 locationManager.hangar.update();
-                locationManager.trainer.update();
+
+                // Запрос RGP информации для тренера
+                clientManager.sendGetRPGInfo();
             }
         });
     };
@@ -698,6 +700,7 @@ var ClientManager = (function () {
         locationManager.mechanic.clear();
         locationManager.tuner.clear();
         locationManager.trader.clear();
+        locationManager.trainer.clear();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -754,7 +757,6 @@ var ClientManager = (function () {
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
             locationManager.hangar.update();
-            locationManager.trainer.update();
         }
     };
 
@@ -869,16 +871,11 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
 
-    // Скилы
+    // RPG
 
-    ClientManager.prototype.SkillStateMessage = function (event) {
-        console.log('ClientManager.prototype.SkillStateMessage', event);
-    };
-
-    // Перки
-
-    ClientManager.prototype.PerkStateMessage = function (event) {
-        console.log('ClientManager.prototype.PerkStateMessage', event);
+    ClientManager.prototype.RPGStateMessage = function (event) {
+        console.log('ClientManager.prototype.RPGStateMessage', event);
+        locationManager.trainer.update(event);
     };
 
     // Исходящие сообщения
@@ -1476,12 +1473,12 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    // Скилы
+    // RPG система
 
-    ClientManager.prototype.sendGetSkillStateMessage = function () {
-        //console.log('ClientManager.prototype.sendGetSkillStateMessage');
+    ClientManager.prototype.sendGetRPGInfo = function () {
+        //console.log('ClientManager.prototype.sendGetRPGInfo');
         var mes = {
-            call: "get_skill_state",
+            call: "get_rpg_info",
             rpc_call_id: rpcCallList.getID(),
             params: {}
         };
@@ -1489,8 +1486,8 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendSetSkillStateMessage = function (driving, shooting, masking, leading, trading, engineering) {
-        //console.log('ClientManager.prototype.sendSetSkillStateMessage');
+    ClientManager.prototype.sendSetSkillState = function (driving, shooting, masking, leading, trading, engineering) {
+        //console.log('ClientManager.prototype.sendSetSkillState');
         var mes = {
             call: "set_skill_state",
             rpc_call_id: rpcCallList.getID(),
@@ -1507,21 +1504,8 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    // Перки
-
-    ClientManager.prototype.sendGetPerkStateMessage = function () {
-        //console.log('ClientManager.prototype.sendGetPerkStateMessage');
-        var mes = {
-            call: "get_perk_state",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendActivatePerkMessage = function (perk_id) {
-        console.log('ClientManager.prototype.sendSetPerkStateMessage');
+    ClientManager.prototype.sendActivatePerk = function (perk_id) {
+        console.log('ClientManager.prototype.sendSetPerkState');
         var mes = {
             call: "activate_perk",
             rpc_call_id: rpcCallList.getID(),
@@ -1532,6 +1516,7 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
 
     return ClientManager;
 })();

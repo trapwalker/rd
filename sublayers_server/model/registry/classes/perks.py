@@ -23,7 +23,7 @@ class Perk(Root):
 
     level_req = IntAttribute(default=0, caption=u"Необходимый уровень персонажа", tags='client')
 
-    perks_req = InventoryPerksAttribute(caption=u'Список прокачанных перков', tags='client')
+    perks_req = InventoryPerksAttribute(caption=u'Список прокачанных перков')
 
 
 class PerkPassive(Perk):
