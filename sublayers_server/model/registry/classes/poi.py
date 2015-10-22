@@ -47,6 +47,7 @@ class Town(MapLocation):
     trader = RegistryLink(caption=u'Торговец')
     hangar = RegistryLink(caption=u'Ангар')
     nucoil = RegistryLink(caption=u'Заправка')
+    trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
 
 
 class Institution(Root):
@@ -68,6 +69,10 @@ class Mechanic(Institution):
 
 
 class Tuner(Institution):
+    pass
+
+
+class Trainer(Institution):
     pass
 
 

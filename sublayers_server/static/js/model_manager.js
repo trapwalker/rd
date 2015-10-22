@@ -679,6 +679,7 @@ var ClientManager = (function () {
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
                 locationManager.hangar.update();
+                locationManager.trainer.update();
             }
         });
     };
@@ -753,6 +754,7 @@ var ClientManager = (function () {
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
             locationManager.hangar.update();
+            locationManager.trainer.update();
         }
     };
 

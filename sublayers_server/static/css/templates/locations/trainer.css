@@ -1,0 +1,24 @@
+#townTrainerPageWrap {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
+.trainerWindow-main {
+    position: relative;
+    width: 734px;
+    height: 661px;
+    cursor: default;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.trainer-center {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 730px;
+    height: 450px;
+    background-color: white;
+}
