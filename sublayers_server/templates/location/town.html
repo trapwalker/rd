@@ -61,6 +61,12 @@
         {% include hangar_window.html %}
     </div>
     {% end %}
+
+    {% if town.example.trainer is not None %}
+    <div id="townTrainerPageWrap" class="townPageWrap" style="display: none">
+        {% include trainer_window.html %}
+    </div>
+    {% end %}
 </div>
 <script>
     function setBtnDisplay(btnIndex, state) {
@@ -128,6 +134,14 @@
         $('.townPageWrap').css('display', 'none');
         $('#townHangarPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.hangar;
+        setBtnDisplay(7, "none");
+        setBtnDisplay(8, "block");
+    }
+
+    function openTrainer() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTrainerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.trainer;
         setBtnDisplay(7, "none");
         setBtnDisplay(8, "block");
     }

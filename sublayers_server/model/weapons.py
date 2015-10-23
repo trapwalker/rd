@@ -3,10 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.balance import BALANCE
+
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
 from sublayers_server.model.inventory import Consumer
 from sublayers_server.model.events import FireDischargeEffectEvent
+
+from random import random
 
 
 class Weapon(Consumer):
@@ -123,6 +125,15 @@ class WeaponDischarge(Weapon):
         self.last_shoot = None
         self.t_rch = time_recharge
 
+        # сразу запоминаем шанс крита и силу крита, чтобы потом при каждом выстреле не пересчитывать
+        self.crit_rate = 0.0
+        self.crit_power = 0.0
+        mobile_ex = self.owner.example
+        agent_ex = None if self.owner.owner is None else self.owner.owner.example
+        if mobile_ex is not None and hasattr(mobile_ex, 'get_modify_value'):
+            self.crit_rate = mobile_ex.get_modify_value(param_name='crit_rate', example_agent=agent_ex)
+            self.crit_power = mobile_ex.get_modify_value(param_name='crit_power', example_agent=agent_ex)
+
     def as_dict(self, **kw):
         d = super(WeaponDischarge, self).as_dict(**kw)
         d.update(
@@ -130,6 +141,11 @@ class WeaponDischarge(Weapon):
             time_recharge=self.t_rch,
         )
         return d
+
+    def calc_dmg(self):
+        # определяем, прошёл ли крит
+        is_crit = random() < self.crit_rate
+        return self.dmg * (1 + (1.0 if is_crit else 0.0) * self.crit_power), is_crit
 
     def fire(self, time):
         if self.can_fire(time=time):
@@ -139,8 +155,14 @@ class WeaponDischarge(Weapon):
         super(WeaponDischarge, self).on_use(item=item, time=time)
         # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
         self.last_shoot = time
+        dmg, is_crit = self.calc_dmg()
         for car in self.sector.target_list:
-            car.set_hp(dhp=self.dmg, shooter=self.owner, time=time)
+            car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+
+        if is_crit:
+            # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел
+            # log.debug('Crrriiiiiiiiiiiiiiiiiiiiiiit = %s', dmg)
+            pass
 
         # евент залповая стрельба
         FireDischargeEffectEvent(obj=self.owner, side=self.sector.side, time=time).post()

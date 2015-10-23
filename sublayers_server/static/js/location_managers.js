@@ -13,6 +13,7 @@ var LocationManager = (function () {
         this.hangar = new HangarManager();
         this.mechanic = new MechanicManager();
         this.tuner = new TunerManager();
+        this.trainer = new TrainerManager();
         this.visitorsManager = new LocationVisitorsManager();
     }
 
@@ -482,7 +483,7 @@ var MechanicManager = (function () {
         this.items = {};
         this.mechanic_slots = [];
         this.inv_show_div = null;
-        this.activeSlot = null;
+        this.inventory_tag = null;
     }
 
     MechanicManager.prototype._addEmptyInventorySlot = function(position) {
@@ -499,6 +500,38 @@ var MechanicManager = (function () {
         this.inv_show_div.append(itemWrapDiv);
     };
 
+    MechanicManager.prototype.showItemInfo = function(position) {
+        //console.log('MechanicManager.prototype.showItemInfo', position);
+        $('#mechanic-info-block-title').text('');
+        $('#mechanic-info-block-description').text('');
+        $('#mechanic-info-block-img').css('background', 'transparent url() no-repeat 100% 100%');
+        if (this.items.hasOwnProperty(position)) {
+            var item = this.items[position];
+            if (item.example) {
+                $('#mechanic-info-block-title').text(item.example.title);
+                $('#mechanic-info-block-description').text(item.example.description);
+                $('#mechanic-info-block-img').css('background',
+                    'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
+            }
+        }
+    };
+
+    MechanicManager.prototype._inventoryFilter = function() {
+        var self = this;
+        $(this.inv_show_div).find('.npcInventory-itemWrap').each(function (index, element) {
+            var item = self.items[$(element).data('pos')];
+            $(element).css('display', 'block');
+            if ((item.example) && (item.example.tags.indexOf(self.inventory_tag) < 0))
+                $(element).css('display', 'none');
+        });
+        resizeInventory(this.inv_show_div);
+    };
+
+    MechanicManager.prototype.setInventoryTag = function(tag) {
+        this.inventory_tag = tag;
+        this._inventoryFilter();
+    };
+
     MechanicManager.prototype.exportSlotState = function() {
         var result = {};
         for (var slot_name in this.items)
@@ -508,7 +541,7 @@ var MechanicManager = (function () {
     };
 
     MechanicManager.prototype.update = function(mechanic_slots) {
-        //console.log('MechanicManager.prototype.update');
+        //console.log('MechanicManager.prototype.update', mechanic_slots);
         this.clear();
 
         if (mechanic_slots) this.mechanic_slots = mechanic_slots;
@@ -546,7 +579,7 @@ var MechanicManager = (function () {
                 this.items[i] = item_rec;
             }
         }
-        resizeInventory(this.inv_show_div);
+        this._inventoryFilter();
 
         // Добавить итемы слотов
         for (var i = 0; i < this.mechanic_slots.length; i++) {
@@ -568,6 +601,22 @@ var MechanicManager = (function () {
             }
         });
 
+        $('.mechanic-slot').mouseenter(function(event) {
+            locationManager.mechanic.showItemInfo($(this).data('pos'));
+        });
+
+        $('.mechanic-slot').mouseleave(function(event) {
+            locationManager.mechanic.showItemInfo(null);
+        });
+
+        this.inv_show_div.find('.npcInventory-itemWrap').mouseenter(function(event) {
+            locationManager.mechanic.showItemInfo($(this).data('pos'));
+        });
+
+        this.inv_show_div.find('.npcInventory-itemWrap').mouseleave(function(event) {
+            locationManager.mechanic.showItemInfo(null);
+        });
+
         // Отрисовать верстку
         for (var key in this.items)
             if (this.items.hasOwnProperty(key))
@@ -577,25 +626,24 @@ var MechanicManager = (function () {
     MechanicManager.prototype.clear = function() {
         //console.log('MechanicManager.prototype.clear');
         // todo: написать тут чтото
-        //this.setActiveSlot(null);
         this.items = {};
         if (this.inv_show_div)
             this.inv_show_div.empty();
     };
 
     MechanicManager.prototype.reDrawItem = function(position) {
-        //console.log('MechanicManager.prototype.reDrawItem');
+        //console.log('MechanicManager.prototype.reDrawItem', position);
+        var item = this.items[position];
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
             var slot = $('#mechanic_' + position);
-
-            // Очистить слоты
-            slot.empty();
-
-            // создать вёрстку для отрисовки
-            var item = this.items[position];
+            // Очистить див под картинку
+            var img_div = slot.find('.mechanic-slot-img').first();
+            img_div.empty();
+            var is_supersmall = img_div.hasClass('mechanic-small-slot-img-item');
+            //создать вёрстку для отрисовки
             if (item.example) {
-                var itemImg = item.example['mechanic_img'];
+                var itemImg = is_supersmall ? item.example['inv_icon_supersmall'] : item.example['inv_icon_small'];
                 var itemDiv = $('<div class="mechanic-car-slot-picture"><img src="' + itemImg + '"></div>');
                 itemDiv.data('pos', position);
                 itemDiv.draggable({
@@ -606,7 +654,7 @@ var MechanicManager = (function () {
                     zIndex: 1,
                     appendTo: '#activeTownDiv'
                 });
-                slot.append(itemDiv);
+                img_div.append(itemDiv);
             }
         }
         else {
@@ -618,8 +666,7 @@ var MechanicManager = (function () {
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
-            var item = this.items[position];
-            if (item.example) {
+            if (item && item.example) {
                 itemDiv.find('.npcInventory-name').text(item.example.title);
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
@@ -640,40 +687,39 @@ var MechanicManager = (function () {
         }
     };
 
+    MechanicManager.prototype._compare_tags = function(item, slot) {
+        // итем должен обладать всеми тегами слота, чтобы быть туда установленным
+        for (var i = 0; i < slot.tags.length; i++)
+            if (item.example.tags.indexOf(slot.tags[i]) < 0)
+                return false;
+        return true;
+
+    };
+
     MechanicManager.prototype.changeItem = function(src, dest) {
         //console.log('MechanicManager.prototype.changeItem', src, dest);
         if (src == dest) return;
 
-        // todo: проверка соответствия тегов системы и итема
-
         var item = this.items[src];
+        var slot = null;
+        for (var i = 0; i < this.mechanic_slots.length; i++)
+            if (this.mechanic_slots[i].name == dest)
+                slot = this.mechanic_slots[i];
+
+        if (! item) return;
+        if (slot) {
+            // проверка по тегам, можем ли мы это сделать
+            if (!this._compare_tags(item, slot)) {
+                //console.log('Проверка по тегам не пройдена!');
+                return;
+            }
+        }
+
         this.items[src] = this.items[dest];
         this.items[dest] = item;
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
-        if (dest.toString().indexOf('slot') >= 0)
-            this.setActiveSlot(dest);
-        else
-            this.setActiveSlot(null);
-    };
-
-    MechanicManager.prototype.setActiveSlot = function(slotName) {
-        //console.log('MechanicManager.prototype.setActiveSlot');
-        if (! window.hasOwnProperty('dropMechanicSlotActive')) return;
-
-        // Гасим все слоты
-        dropMechanicSlotActive();
-
-        // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
-        if (this.activeSlot == slotName) this.activeSlot = null;
-        else this.activeSlot = slotName;
-
-        if (! this.items.hasOwnProperty(this.activeSlot)) return;
-        var item_rec = this.items[this.activeSlot];
-
-        // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
-        setMechanicSlotActive(this.activeSlot);
     };
 
     MechanicManager.prototype.apply = function() {
@@ -722,7 +768,7 @@ var TunerManager = (function () {
     };
 
     TunerManager.prototype.update = function(tuner_slots) {
-        //console.log('TunerManager.prototype.update');
+        //console.log('TunerManager.prototype.update', tuner_slots);
         this.clear();
 
         if (tuner_slots) this.tuner_slots = tuner_slots;
@@ -1345,5 +1391,182 @@ var HangarManager = (function () {
     return HangarManager;
 })();
 
+
+var TrainerManager = (function () {
+
+    function TrainerManager() {
+        this.cur_level = 0;
+        this.def_driving = 0;
+        this.def_engineering = 0;
+        this.def_leading = 0;
+        this.def_masking = 0;
+        this.def_shooting = 0;
+        this.def_trading = 0;
+        this.cur_driving = 0;
+        this.cur_engineering = 0;
+        this.cur_leading = 0;
+        this.cur_masking = 0;
+        this.cur_shooting = 0;
+        this.cur_trading = 0;
+        this.perks = [];
+    }
+
+    TrainerManager.prototype._getFreeSkillPoints = function() {
+        return this.cur_level - this.cur_driving - this.cur_engineering - this.cur_leading  -
+               this.cur_masking - this.cur_shooting - this.cur_trading;
+    };
+
+    TrainerManager.prototype._getFreePerkPoints = function() {
+        var res = 0;
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key))
+                if ((this.perks[key].state == 'default') || (this.perks[key].state == 'active')) res++;
+        return this.cur_level - res;
+    };
+
+    TrainerManager.prototype._getActivePerks = function() {
+        var res = [];
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key))
+                if (this.perks[key].state == 'active') res.push(this.perks[key].state);
+        return res;
+    };
+
+    TrainerManager.prototype.update = function(event) {
+        console.log('TrainerManager.prototype.update');
+        this.clear();
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return;
+        }
+
+        this.cur_level = event.current_level;
+        this.cur_driving = this.def_driving = event.driving;
+        this.cur_engineering = this.def_engineering = event.engineering;
+        this.cur_leading = this.def_leading = event.leading;
+        this.cur_masking = this.def_masking = event.masking;
+        this.cur_shooting = this.def_shooting = event.shooting;
+        this.cur_trading = this.def_trading = event.trading;
+
+        var perk = {};
+        for (var i = 0; i < event.perks.length; i++) {
+            perk = {
+                title: event.perks[i].perk.title,
+                description: event.perks[i].perk.description,
+                id: event.perks[i].perk.id,
+                node_hash: event.perks[i].perk.node_hash,
+                req_level: event.perks[i].perk.level_req,
+                req_driving: event.perks[i].perk.driving_req,
+                req_engineering: event.perks[i].perk.engineering_req,
+                req_leading: event.perks[i].perk.leading_req,
+                req_masking: event.perks[i].perk.masking_req,
+                req_shooting: event.perks[i].perk.shooting_req,
+                req_trading: event.perks[i].perk.trading_req,
+                perk_req: event.perks[i].perk_req
+            };
+            if (event.perks[i].active) perk.state = 'default';
+            else perk.state = 'unactive';
+            this.perks[perk.node_hash] = perk;
+        }
+
+        this.refreshPerkState();
+    };
+
+    TrainerManager.prototype.clear = function() {
+        //console.log('TrainerManager.prototype.clear');
+        this.cur_level = 0;
+        this.def_driving = 0;
+        this.def_engineering = 0;
+        this.def_leading = 0;
+        this.def_masking = 0;
+        this.def_shooting = 0;
+        this.def_trading = 0;
+        this.cur_driving = 0;
+        this.cur_engineering = 0;
+        this.cur_leading = 0;
+        this.cur_masking = 0;
+        this.cur_shooting = 0;
+        this.cur_trading = 0;
+        this.perks = [];
+    };
+
+    TrainerManager.prototype.refreshPerkState = function() {
+        var perk = {};
+        var enable;
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key)) {
+                perk = this.perks[key];
+                if (perk.state == 'default') continue;
+
+                enable = (perk.req_level <= this.cur_level) &&
+                         (perk.req_driving <= this.cur_driving) &&
+                         (perk.req_engineering <= this.cur_engineering) &&
+                         (perk.req_leading <= this.cur_leading) &&
+                         (perk.req_masking <= this.cur_masking) &&
+                         (perk.req_shooting <= this.cur_shooting) &&
+                         (perk.req_trading <= this.cur_trading);
+
+                for (var j = 0; enable && (j < perk.perk_req.length); j++)
+                    if ((this.perks[perk.perk_req[j]].state == 'unactive') ||
+                        (this.perks[perk.perk_req[j]].state == 'disable')) enable = false;
+
+                if (enable) {
+                    if (perk.state == 'disable') perk.state = 'unactive';
+                }
+                else
+                    perk.state = 'disable';
+            }
+        // todo: перерисовать
+    };
+
+    TrainerManager.prototype.setSkill = function(skill_name, d_val) {
+        if (this.hasOwnProperty(skill_name)) {
+            if (d_val > this._getFreeSkillPoints()) return;
+            this[skill_name] += d_val;
+            this.refreshPerkState();
+        }
+    };
+
+    TrainerManager.prototype.setPerk = function(perk_node_hash, state) {
+        if (this.perks.hasOwnProperty(perk_node_hash)) {
+            if ((state == 'active') && (this._getFreePerkPoints() <= 0)) return;
+            this.perks[perk_node_hash].state = state;
+            this.refreshPerkState();
+        }
+    };
+
+    TrainerManager.prototype.apply = function() {
+        //console.log('TrainerManager.prototype.apply');
+        // Установить все навыки
+        clientManager.sendSetSkillState(this.cur_driving, this.cur_shooting, this.cur_masking, this.cur_leading,
+            this.cur_trading, this.cur_engineering);
+
+        // Установить перки в правильном порядке
+        var set_perks = this._getActivePerks();
+        var sort_perks = [];
+        while (set_perks.length > 0) {
+            var i;
+            var can_add = false;
+            for (i = 0; !can_add && (i < set_perks.length); i++) {
+                can_add = true;
+                for (var j = 0; can_add && (j < set_perks[i].perk_req.length); j++)
+                    can_add = sort_perks.indexOf(set_perks[i].perk_req[j]) >= 0;
+            }
+            sort_perks.push(set_perks[i].node_hash);
+            set_perks.splice(i, 1);
+        }
+
+        for (var j = 0; j < sort_perks.length; j++)
+            clientManager.sendActivatePerk(sort_perks[j]);
+    };
+
+    TrainerManager.prototype.cancel = function() {
+        //console.log('TrainerManager.prototype.cancel');
+    };
+
+    return TrainerManager;
+})();
 
 var locationManager = new LocationManager();

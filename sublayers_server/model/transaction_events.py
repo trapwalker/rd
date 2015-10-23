@@ -279,6 +279,22 @@ class TransactionMechanicApply(TransactionEvent):
         if not (isinstance(agent.current_location, Town) and agent.current_location.example.mechanic):
             return
 
+        # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
+        for slot_name in self.mechanic_slots.keys():
+            new_item_in_slot = self.mechanic_slots[slot_name]['example']
+            slot = getattr(agent.example.car.__class__, slot_name)
+            proto_item = None
+            if new_item_in_slot:
+                proto_item = self.server.reg[new_item_in_slot['node_hash']]
+
+            if slot and proto_item:
+                # Все элементы slot.tags входят в (принадлежат) proto_item.tags
+                if not (slot.tags.issubset(proto_item.tags)):
+                    log.warning('Try to LIE !!!! Error Transaction!!!')
+                    log.warning([el for el in slot.tags])
+                    log.warning([el for el in proto_item.tags])
+                    return
+
         # Заполняем буфер итемов
         ex_car = agent.example.car
         mechanic_buffer = []
@@ -302,14 +318,15 @@ class TransactionMechanicApply(TransactionEvent):
             if new_item is None:  # если в данном слоте должно быть пусто
                 continue  # то идём к следующему шагу цикла
 
-            if old_item is None:  # установка итема в слот из mechanic_buffer
+            if old_item is not None:  # поворот итема или отсутствие действия  # todo: возможно убрать
+                pass
+            else:  # установка итема в слот из mechanic_buffer
                 search_item = None
                 for item in mechanic_buffer:
                     if item.node_hash() == new_item['node_hash']:
                         search_item = item
                         break
                 if search_item is not None:
-                    # todo: проверка тегов
                     # todo: добавить стоимость монтажа итема
                     mechanic_buffer.remove(search_item)
                     ex_car.values[slot_name] = search_item

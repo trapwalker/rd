@@ -17,7 +17,8 @@
         var width = 0;
         if (inventory) {
             $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
-               width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+                if ($(element).css('display') == 'block')
+                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
             });
             $(inventory).width(width);
         }

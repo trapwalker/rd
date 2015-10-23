@@ -185,6 +185,9 @@ class Unit(Observer):
             item = self.inventory.get_item_by_cls(balance_cls_list=[weapon.example.ammo], time=event.time)
             if item:
                 weapon.set_item(item=item, time=event.time)
+        # включить пассивный отхил  # todo: убедиться, что отрицательное значение здесь - правильное решение
+        self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate',
+                                                                        example_agent=self.owner_example))
 
     def on_zone_check(self, event):
         # зонирование
@@ -445,6 +448,26 @@ class Bot(Mobile):
     def on_die(self, event):
         super(Bot, self).on_die(event)
         self.main_agent.on_die()
+
+    def on_init(self, event):
+        super(Bot, self).on_init(event=event)
+        # если при инициализации машина не движется, то включить возможный пассивнх хил
+        if not self.state.is_moving:
+            self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
+                                                                            example_agent=self.owner_example))
+
+    def on_start(self, event):
+        super(Bot, self).on_start(event=event)
+        # todo: убедиться, что отрицательное значение - хорошая идея
+        self.set_hp(time=event.time, dps=self.example.get_modify_value(param_name='repair_rate_on_stay',
+                                                                       example_agent=self.owner_example))
+
+    def on_stop(self, event):
+        super(Bot, self).on_stop(event=event)
+        # todo: убедиться, что отрицательное значение получается путём подставления минуса - хорошо
+        self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
+                                                                        example_agent=self.owner_example))
+
 
 
 class ExtraMobile(Mobile):

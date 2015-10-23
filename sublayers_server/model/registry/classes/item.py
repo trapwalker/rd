@@ -25,6 +25,7 @@ class Item(Root):
     inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
     inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
     inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
+    inv_icon_supersmall = Attribute(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
     title = TextAttribute(caption=u'Название предмета для отображения в инвентаре', tags='client')
     activate_type = Attribute(default='none', caption=u'Способ активации: none, self ...', tags='client')

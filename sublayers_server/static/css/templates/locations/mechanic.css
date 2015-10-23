@@ -28,15 +28,35 @@
 }
 
 .mechanic-center-main-block {
-    width: 492px;
+    width: 525px;
 }
 
 .mechanic-center-info-block {
+    width: 209px;
+}
 
-    background-color: red;
-    opacity: 0.2;
+#mechanic-info-block-img {
+    position: relative;
+    height: 70px;
+    width: 130px;
+    margin: 10px auto 0px auto;
+    border: 1px solid #125206;
+}
 
-    width: 242px;
+#mechanic-info-block-title {
+    position: relative;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+    margin: 8px auto 0px auto;
+    text-align: center;
+}
+
+#mechanic-info-block-description {
+    position: relative;
+    margin: 5px 0px 0px 0px;
+    width: 100%;
+    color: #29F200;
+    font: 10pt Nouveau_IBM;
 }
 
 .mechanic-center-page-control {
@@ -66,5 +86,69 @@
     top: 26px;
     height: calc(100% - 26px);
     width: 100%;
-    opacity: 0.2;
+}
+
+.mechanic-main {
+    position: relative;
+    width: 100%;
+    height: 297px;
+}
+
+.mechanic-img {
+    position: absolute;
+    width: 320px;
+    height: 160px;
+}
+
+.mechanic-img-subsystem {
+    opacity: 0.0;
+}
+
+.mechanic-slot {
+    position: absolute;
+}
+
+.mechanic-big-slot-main {
+    position: absolute;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.mechanic-big-slot-main:hover {
+    opacity: 1;
+}
+
+.mechanic-big-slot-img {
+    position: relative;
+    background: transparent url('../../../img/cars/slot_small.png') no-repeat 100% 100%;
+    margin: auto;
+    width: 62px;
+    height: 33px;
+}
+
+.mechanic-big-slot-caption {
+    position: relative;
+    padding-top: 5px;
+    margin: auto;
+    text-align: center;
+    font: 10pt Nouveau_IBM;
+    color: #28F100;
+}
+
+.mechanic-small-slot-main {
+    position: absolute;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.mechanic-small-slot-main:hover {
+    opacity: 1;
+}
+
+.mechanic-small-slot-img {
+    position: relative;
+    background: transparent url('../../../img/cars/slot_supersmall.png') no-repeat 100% 100%;
+    margin: auto;
+    width: 55px;
+    height: 32px;
 }

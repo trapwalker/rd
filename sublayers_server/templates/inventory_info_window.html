@@ -32,7 +32,6 @@
 </div>
 
 <script>
-
     $('#mainCarInfoWindow-body-trunk_id').find('.mainCarInfoWindow-body-trunk-filter-all').click(function(event){
         var inv_id_this_window = $('#mainCarInfoWindow-body-trunk_id');
         // отключить во всех фильтрах "выбранный"
@@ -54,6 +53,4 @@
 
     // Запрашиваем инвентарь
     inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
-
-
 </script>
