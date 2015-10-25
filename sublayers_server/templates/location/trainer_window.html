@@ -5,10 +5,106 @@
 <div class="trainerWindow-main">
     {% include npc_header.html %}
     <div class="trainer-center">
+        <div class="trainer-center-side">
+            <div id="trainer-perks" class="trainer-table-main">
+                <div class="trainer-table-header">Перки</div>
+                <div class="trainer-table-list">
 
+                    <div class="trainer-perk-item-main trainer-light-back">
+                        <div class="trainer-perk-item-caption">Перк 1</div>
+                        <div class="trainer-perk-item-checkbox"></div>
+                    </div>
+
+                    <div class="trainer-perk-item-main trainer-dark-back">
+                        <div class="trainer-perk-item-caption">Перк 1</div>
+                        <div class="trainer-perk-item-checkbox"></div>
+                    </div>
+
+                    <div class="trainer-perk-item-main trainer-light-back">
+                        <div class="trainer-perk-item-caption">Перк 1</div>
+                        <div class="trainer-perk-item-checkbox"></div>
+                    </div>
+
+                    <div class="trainer-perk-item-main trainer-dark-back">
+                        <div class="trainer-perk-item-caption">Перк 1</div>
+                        <div class="trainer-perk-item-checkbox"></div>
+                    </div>
+
+                </div>
+                <div class="trainer-table-footer">
+                    <div class="trainer-table-footer-caption">Свободные очки</div>
+                    <div id="trainer-perk-free" class="trainer-table-footer-value">0</div>
+                </div>
+            </div>
+            <div id="trainer-perks-drop-button" class="trainer-drop-button">Сбросить перки</div>
+        </div>
+        <div class="trainer-center-side">
+            <div id="trainer-skills" class="trainer-table-main">
+                <div class="trainer-table-header">Навыки</div>
+                <div class="trainer-table-list">
+                    <div class="trainer-skill-item-main trainer-light-back">
+                        <div class="trainer-skill-item-caption">Вождение:</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
+                             data-skill_name="driving" data-d_val="-1"></div>
+                        <div id="trainer-skill-driving" class="trainer-skill-item-value">0</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-inc"
+                             data-skill_name="driving" data-d_val="1"></div>
+                    </div>
+                    <div class="trainer-skill-item-main trainer-dark-back">
+                        <div class="trainer-skill-item-caption">Стрельба:</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
+                             data-skill_name="shooting" data-d_val="-1"></div>
+                        <div id="trainer-skill-shooting" class="trainer-skill-item-value">0</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-inc"
+                             data-skill_name="shooting" data-d_val="1"></div>
+                    </div>
+                    <div class="trainer-skill-item-main trainer-light-back">
+                        <div class="trainer-skill-item-caption">Скрытность:</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
+                             data-skill_name="masking" data-d_val="-1"></div>
+                        <div id="trainer-skill-masking" class="trainer-skill-item-value">0</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-inc"
+                             data-skill_name="masking" data-d_val="1"></div>
+                    </div>
+                    <div class="trainer-skill-item-main trainer-dark-back">
+                        <div class="trainer-skill-item-caption">Инженеринг:</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
+                             data-skill_name="engineering" data-d_val="-1"></div>
+                        <div id="trainer-skill-engineering" class="trainer-skill-item-value">0</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-inc"
+                             data-skill_name="engineering" data-d_val="1"></div>
+                    </div>
+                    <div class="trainer-skill-item-main trainer-light-back">
+                        <div class="trainer-skill-item-caption">Торговля:</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
+                             data-skill_name="trading" data-d_val="-1"></div>
+                        <div id="trainer-skill-trading" class="trainer-skill-item-value">0</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-inc"
+                             data-skill_name="trading" data-d_val="1"></div>
+                    </div>
+                    <div class="trainer-skill-item-main trainer-dark-back">
+                        <div class="trainer-skill-item-caption">Лидерство:</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
+                             data-skill_name="leading" data-d_val="-1"></div>
+                        <div id="trainer-skill-leading" class="trainer-skill-item-value">0</div>
+                        <div class="trainer-skill-item-change-arrow trainer-skill-item-inc"
+                             data-skill_name="leading" data-d_val="1"></div>
+                    </div>
+                </div>
+                <div class="trainer-table-footer">
+                    <div class="trainer-table-footer-caption">Свободные очки</div>
+                    <div id="trainer-skill-free" class="trainer-table-footer-value">0</div>
+                </div>
+            </div>
+            <div id="trainer-trains" class="trainer-table-main"></div>
+            <div id="trainer-skills-drop-button" class="trainer-drop-button">Сбросить навыки</div>
+        </div>
     </div>
 </div>
 
 <script>
-
+    $('.trainer-skill-item-change-arrow').click(function (event) {
+        var jq_this = $(this);
+        locationManager.trainer.setSkill(jq_this.data('skill_name'), jq_this.data('d_val'));
+    });
 </script>
