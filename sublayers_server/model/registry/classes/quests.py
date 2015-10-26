@@ -15,10 +15,17 @@ class O(dict):
 
 
 class State(O):
-    def __init__(self, quest, name):
+    def __init__(self, quest, name, **kw):
         super(State, self).__init__()
         self.name = name or self.__class__.__name__
         self.quest = quest
+        self.__dict__.update(kw)
+        self.on_state_init()
+
+    def as_dict(self):
+        d = self.__dict__.copy()
+        del d['quest']
+        return d
 
     def on_inv_change(self):
         # todo: diff argument
@@ -82,26 +89,33 @@ class State(O):
 
 
 class Quest(Item):
-    first_state = TextAttribute(default='begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
-    state_name = TextAttribute(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
+    first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
 
     def __init__(self, **kw):
         super(Quest, self).__init__(**kw)
         self._state = None
-        self.state = self.state_name
+        self.state = self.first_state
 
     @property
     def state(self):
         return self._state
 
     @state.setter
-    def state(self, new_state):
-        assert new_state
-        if isinstance(new_state, str):
-            new_state_name = new_state
-            new_state = getattr(self, new_state_name)(quest=self, name=new_state_name)
+    def state(self, value):
+        assert value
+        if isinstance(value, State):
+            new_state = value
         else:
-            new_state_name = new_state.name
+            if isinstance(value, str):
+                new_state_cls = getattr(self, value)
+                new_state_name = value
+            elif isinstance(value, type):
+                new_state_cls = value
+                new_state_name = new_state_cls.__name__
+            else:
+                raise TypeError('Try to set state by {!r}'.format(value))
+
+            new_state = new_state_cls(quest=self, name=new_state_name)
 
         old_state = self._state
 
@@ -110,15 +124,18 @@ class Quest(Item):
 
         self._state = new_state
         new_state.on_state_enter(old_state=old_state)
-        self.state_name = new_state_name
+        self.state_name = new_state.name
 
     def __getstate__(self):
         d = super(Quest, self).__getstate__()
-        d.update(state=self.state)
+        d.update(state=self.state.as_dict())
         return d
 
     def __setstate__(self, state):
-        self.state = state.pop('state', None)
+        st = state.pop('state', None)
+        if st:
+            st_name = st.pop('name')
+            self.state = getattr(self, st_name)(quest=self, name=st_name, **st)
         super(Quest, self).__setstate__(state)
 
     class Begin(State):
@@ -140,6 +157,12 @@ class QNKills(Quest):
         u'Стартовое состояние квеста'
         caption = u'Начало'
 
+        def on_state_init(self):
+            self.kills_count = 0
+
         def on_kill(self, killed_car):
             super(QNKills.Begin, self).on_kill(killed_car)
+            self.kills_count += 1
+            if self.kills_count >= 5:
+                self.quest.state = 'Win'
 

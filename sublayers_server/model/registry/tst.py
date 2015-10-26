@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+    log = logging.getLogger()
     sys.path.append('../../..')
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
@@ -50,22 +51,25 @@ if __name__ == '__main__':
     # print 'mj3.__getstate__()->'
     # pp(mj3.__getstate__())
 
-    a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
-    proto_agent = reg['/agents/user']
-    protocar = reg['/mobiles/cars/sedan']
-    user = proto_agent.instantiate(storage=a)
-    pp(user.resume_dict())
-    #print user.resume().decode('utf-8')
-    car = protocar.instantiate()
-    user.car = car
-    print car.resume().decode('utf-8')
-    #it = reg[car.inventory[0]]
-    #it.as_client_dict()
-    rt = reg['/poi/radio_towers/radio_tower1']
+    #a = storage.Collection(name='agents', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
+    #proto_agent = reg['/agents/user']
+    #protocar = reg['/mobiles/cars/sedan']
+    #user = proto_agent.instantiate(storage=a)
+    #pp(user.resume_dict())
+    ##print user.resume().decode('utf-8')
+    #car = protocar.instantiate()
+    #user.car = car
+    #print car.resume().decode('utf-8')
+    ##it = reg[car.inventory[0]]
+    ##it.as_client_dict()
+    #rt = reg['/poi/radio_towers/radio_tower1']
 
-    print [item.position for item in car.inventory]
-    ua = URI('reg://registry/agents')
-    print ua.match(user.parent)
+    #print [item.position for item in car.inventory]
+    #ua = URI('reg://registry/agents')
+    #print ua.match(user.parent)
 
-    tr = reg['/institutions/trader/buhman']
-    pp(tr.as_client_dict(items=car.inventory))
+    #tr = reg['/institutions/trader/buhman']
+    #pp(tr.as_client_dict(items=car.inventory))
+
+    q = reg['/quests/killer/n_kills']
+    print q
