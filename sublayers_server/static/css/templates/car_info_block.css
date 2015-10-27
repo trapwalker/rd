@@ -10,7 +10,9 @@
         position: relative;
         float: left;
         height: 100%;
-        width: 430px;
+        width: 421px;
+        border-right: 1px solid #30fc00;
+        margin-right: 8px;
     }
 
     .car-info-block-info {
