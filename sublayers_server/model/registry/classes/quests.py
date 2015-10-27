@@ -85,16 +85,48 @@ class State(O):
 # - нанести урон
 # - say(text, npc=None|link, dest=login|None)
 # - log(text, position=None, dest=login|None)
-# - like(diff=1, dest=login|None, who=None|npc|location)
+## - like(diff=1, dest=login|None, who=None|npc|location)
 
 
 class Quest(Item):
     first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
 
-    def __init__(self, **kw):
+    def __init__(self, agent=None, **kw):
         super(Quest, self).__init__(**kw)
+        self.agent = agent
+        # todo: log warning if agent and abstract inconsistency
         self._state = None
         self.state = self.first_state
+
+    def give(self, items):
+        # todo: makeit
+        pass
+
+    def drop(self, items):
+        # todo: makeit
+        pass
+
+    def tp(self, location, who=None, radius=None):
+        # todo: makeit
+        pass
+
+    def kill(self, who):
+        # todo: makeit
+        pass
+
+    def confiscate(self, items):
+        # todo: makeit
+        pass
+
+    def hit(self, value):
+        # todo: makeit
+        pass
+
+    def say(self, text, npc, dest):
+        pass
+
+    def log(self, text, dest, position=None):
+        pass
 
     @property
     def state(self):
@@ -134,8 +166,7 @@ class Quest(Item):
     def __setstate__(self, state):
         st = state.pop('state', None)
         if st:
-            st_name = st.pop('name')
-            self.state = getattr(self, st_name)(quest=self, name=st_name, **st)
+            self.state = getattr(self, st['name'])(quest=self, **st)
         super(Quest, self).__setstate__(state)
 
     class Begin(State):
@@ -164,5 +195,4 @@ class QNKills(Quest):
             super(QNKills.Begin, self).on_kill(killed_car)
             self.kills_count += 1
             if self.kills_count >= 5:
-                self.quest.state = 'Win'
-
+                self.quest.state = self.quest.Win
