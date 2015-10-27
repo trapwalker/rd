@@ -1505,7 +1505,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivatePerk = function (perk_id) {
-        console.log('ClientManager.prototype.sendSetPerkState');
+        console.log('ClientManager.prototype.sendSetPerkState', perk_id);
         var mes = {
             call: "activate_perk",
             rpc_call_id: rpcCallList.getID(),

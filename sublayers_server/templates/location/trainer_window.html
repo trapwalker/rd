@@ -8,29 +8,7 @@
         <div class="trainer-center-side">
             <div id="trainer-perks" class="trainer-table-main">
                 <div class="trainer-table-header">Перки</div>
-                <div class="trainer-table-list">
-
-                    <div class="trainer-perk-item-main trainer-light-back">
-                        <div class="trainer-perk-item-caption">Перк 1</div>
-                        <div class="trainer-perk-item-checkbox"></div>
-                    </div>
-
-                    <div class="trainer-perk-item-main trainer-dark-back">
-                        <div class="trainer-perk-item-caption">Перк 1</div>
-                        <div class="trainer-perk-item-checkbox"></div>
-                    </div>
-
-                    <div class="trainer-perk-item-main trainer-light-back">
-                        <div class="trainer-perk-item-caption">Перк 1</div>
-                        <div class="trainer-perk-item-checkbox"></div>
-                    </div>
-
-                    <div class="trainer-perk-item-main trainer-dark-back">
-                        <div class="trainer-perk-item-caption">Перк 1</div>
-                        <div class="trainer-perk-item-checkbox"></div>
-                    </div>
-
-                </div>
+                <div id="townTrainerPerkList" class="trainer-table-list"></div>
                 <div class="trainer-table-footer">
                     <div class="trainer-table-footer-caption">Свободные очки</div>
                     <div id="trainer-perk-free" class="trainer-table-footer-value">0</div>
@@ -107,4 +85,5 @@
         var jq_this = $(this);
         locationManager.trainer.setSkill(jq_this.data('skill_name'), jq_this.data('d_val'));
     });
+
 </script>

@@ -1408,14 +1408,17 @@ var TrainerManager = (function () {
         this.cur_masking = 0;
         this.cur_shooting = 0;
         this.cur_trading = 0;
-        this.perks = [];
+        this.perks = {};
 
         this.perk_state_class_btn = {
-            default: '',
-            active: '',
-            unactive: '',
-            disable: ''
-        }
+            default: 'default',
+            active: 'active',
+            unactive: 'unactive',
+            disable: 'disable'
+        };
+        this.str_for_remove_cls = 'default active unactive disable';
+
+        this.perk_list_div = null;
     }
 
     TrainerManager.prototype._getFreeSkillPoints = function() {
@@ -1435,7 +1438,7 @@ var TrainerManager = (function () {
         var res = [];
         for (var key in this.perks)
             if (this.perks.hasOwnProperty(key))
-                if (this.perks[key].state == 'active') res.push(this.perks[key].state);
+                if (this.perks[key].state == 'active') res.push(this.perks[key]);
         return res;
     };
 
@@ -1446,6 +1449,13 @@ var TrainerManager = (function () {
         // Проверить если город
         if (!locationManager.in_location) {
             console.warn('Вёрстка города не найдена');
+            return;
+        }
+
+        // Проверить, если ли тренер в вёрстке города
+        this.perk_list_div = $('#townTrainerPerkList');
+        if (! this.perk_list_div.length) {
+            console.warn('Вёрстка тренера в городе не найдена');
             return;
         }
 
@@ -1484,7 +1494,41 @@ var TrainerManager = (function () {
             else perk.state = 'unactive';
             this.perks[perk.node_hash] = perk;
         }
+
+        // Вёрстка перков, без вёрстки статусов
+        // todo: упорядочить (сначала default, затем unactive и в конце disabled - написать одим метод)
+        var index_of_backlight = 0; // todo: учитывать его при добавлении подсветки дива с названием
+
+        this.refreshPerkState(true);
+
+        index_of_backlight = this.append_div_perk('default', index_of_backlight);
+        index_of_backlight = this.append_div_perk('unactive', index_of_backlight);
+        index_of_backlight = this.append_div_perk('disable', index_of_backlight);
+
+        // после отрисовки повесить клики
+        this.perk_list_div.find('.trainer-perk-item-checkbox').click(function (event) {
+            var jq_this = $(this).parent();
+            locationManager.trainer.setPerk(jq_this.data('node_hash'));
+        });
+
         this.refreshPerkState();
+    };
+
+    TrainerManager.prototype.append_div_perk = function (state) {
+        //console.log('TrainerManager.prototype.append_div_perk', state);
+        for (var key in this.perks)
+            if (this.perks.hasOwnProperty(key)) {
+                var p = this.perks[key];
+                if (p.state == state) {
+                    var main_perk_div = $('<div class="trainer-perk-item-main" ' +
+                    'data-node_hash="' +
+                    p.node_hash +
+                    '"><div class="trainer-perk-item-caption ">' +
+                    p.title +
+                    '</div><div class="trainer-perk-item-checkbox"></div></div>');
+                    this.perk_list_div.append(main_perk_div);
+                }
+            }
     };
 
     TrainerManager.prototype.clear = function() {
@@ -1502,15 +1546,18 @@ var TrainerManager = (function () {
         this.cur_masking = 0;
         this.cur_shooting = 0;
         this.cur_trading = 0;
-        this.perks = [];
+        this.perks = {};
+
+        // Очитска вёрстки
+        if (this.perk_list_div && this.perk_list_div.length)
+            this.perk_list_div.empty();
     };
 
-    TrainerManager.prototype.refreshPerkState = function() {
-        var perk = {};
+    TrainerManager.prototype.refreshPerkState = function(without_html) {
         var enable;
         for (var key in this.perks)
             if (this.perks.hasOwnProperty(key)) {
-                perk = this.perks[key];
+                var perk = this.perks[key];
                 if (perk.state == 'default') continue;
 
                 enable = (perk.req_level <= this.cur_level) &&
@@ -1531,10 +1578,21 @@ var TrainerManager = (function () {
                 else
                     perk.state = 'disable';
             }
+
+        if (without_html) return;
+
         $('#trainer-perk-free').text(this._getFreePerkPoints());
-
-
-        // todo: перерисовать
+        // обновить статусы всех перков
+        // проходим по всем потомкам this.perk_list_div, в дате зашит node_hash перка, обновляем
+        this.perk_list_div.children().each(function() {
+            var node_hash = $(this).data('node_hash');
+            if (node_hash) {
+                var p_check = $(this).find('.trainer-perk-item-checkbox').first();
+                p_check.removeClass(locationManager.trainer.str_for_remove_cls);
+                p_check.addClass(locationManager.trainer
+                    .perk_state_class_btn[locationManager.trainer.perks[node_hash].state]);
+            }
+        });
     };
 
     TrainerManager.prototype.setSkill = function(skill_name, d_val) {
@@ -1549,9 +1607,13 @@ var TrainerManager = (function () {
         }
     };
 
-    TrainerManager.prototype.setPerk = function(perk_node_hash, state) {
+    TrainerManager.prototype.setPerk = function(perk_node_hash) {
+        //console.log('TrainerManager.prototype.setPerk', perk_node_hash);
         if (this.perks.hasOwnProperty(perk_node_hash)) {
-            if ((state == 'active') && (this._getFreePerkPoints() <= 0)) return;
+            var state = this.perks[perk_node_hash].state;
+            if (state != 'active' && state != 'unactive') return;
+            state = state == 'active' ? 'unactive' : 'active';
+            if ((state == 'active') && (this._getFreePerkPoints() <= 0))  return;
             this.perks[perk_node_hash].state = state;
             this.refreshPerkState();
         }
@@ -1574,8 +1636,10 @@ var TrainerManager = (function () {
                 for (var j = 0; can_add && (j < set_perks[i].perk_req.length); j++)
                     can_add = sort_perks.indexOf(set_perks[i].perk_req[j]) >= 0;
             }
-            sort_perks.push(set_perks[i].node_hash);
-            set_perks.splice(i, 1);
+            if (i != 0) {
+                sort_perks.push(set_perks[i-1].node_hash);
+                set_perks.splice(i-1, 1);
+            } else console.error('Алгоритм выбора перков в правильном порядке имеет ошибку. Проверить!')
         }
 
         for (var j = 0; j < sort_perks.length; j++)
@@ -1588,5 +1652,6 @@ var TrainerManager = (function () {
 
     return TrainerManager;
 })();
+
 
 var locationManager = new LocationManager();

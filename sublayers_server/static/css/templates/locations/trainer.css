@@ -177,12 +177,29 @@
 .trainer-perk-item-caption {
     position: relative;
     float: left;
-    width: 100%;
+    width: calc(100% - 28px);
     height: 100%;
     box-sizing: border-box;
     padding-left: 5px;
     text-align: left;
 }
+
+.trainer-perk-item-checkbox {
+    position: relative;
+    float: left;
+    cursor: pointer;
+    width: 20px;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0 5px 0 3px;
+}
+
+.trainer-perk-item-checkbox.default { background-color: blue;}
+.trainer-perk-item-checkbox.active { background-color: lightgreen;}
+.trainer-perk-item-checkbox.unactive { background-color: darkgreen;}
+.trainer-perk-item-checkbox.disable { background-color: red;}
+
+
 
 
 .trainer-light-back {

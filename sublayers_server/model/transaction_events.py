@@ -580,4 +580,4 @@ class TransactionActivatePerk(TransactionEvent):
                     return
             ex_agent.perks.append(activate_perk)
 
-        messages.PerkStateMessage(agent=self.agent, time=self.time).post()
+        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
