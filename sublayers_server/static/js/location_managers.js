@@ -1496,11 +1496,11 @@ var TrainerManager = (function () {
         }
 
         // Вёрстка перков, без вёрстки статусов
-        // todo: упорядочить (сначала default, затем unactive и в конце disabled - написать одим метод)
-        var index_of_backlight = 0; // todo: учитывать его при добавлении подсветки дива с названием
+        // упорядочить (сначала default, затем unactive и в конце disabled - написать одим метод)
 
         this.refreshPerkState(true);
 
+        var index_of_backlight = 0; // todo: учитывать его при добавлении подсветки дива с названием
         index_of_backlight = this.append_div_perk('default', index_of_backlight);
         index_of_backlight = this.append_div_perk('unactive', index_of_backlight);
         index_of_backlight = this.append_div_perk('disable', index_of_backlight);
@@ -1514,7 +1514,7 @@ var TrainerManager = (function () {
         this.refreshPerkState();
     };
 
-    TrainerManager.prototype.append_div_perk = function (state) {
+    TrainerManager.prototype.append_div_perk = function (state, index_of_backlight) {
         //console.log('TrainerManager.prototype.append_div_perk', state);
         for (var key in this.perks)
             if (this.perks.hasOwnProperty(key)) {
@@ -1523,12 +1523,16 @@ var TrainerManager = (function () {
                     var main_perk_div = $('<div class="trainer-perk-item-main" ' +
                     'data-node_hash="' +
                     p.node_hash +
-                    '"><div class="trainer-perk-item-caption ">' +
+                    '"><div class="trainer-perk-item-caption ' +
+                        (index_of_backlight % 2 ? 'trainer-dark-back' : 'trainer-light-back')
+                        +'">' +
                     p.title +
                     '</div><div class="trainer-perk-item-checkbox"></div></div>');
                     this.perk_list_div.append(main_perk_div);
+                    index_of_backlight++;
                 }
             }
+        return index_of_backlight;
     };
 
     TrainerManager.prototype.clear = function() {
@@ -1588,9 +1592,12 @@ var TrainerManager = (function () {
             var node_hash = $(this).data('node_hash');
             if (node_hash) {
                 var p_check = $(this).find('.trainer-perk-item-checkbox').first();
+                var state = locationManager.trainer.perk_state_class_btn[locationManager.trainer.perks[node_hash].state];
                 p_check.removeClass(locationManager.trainer.str_for_remove_cls);
-                p_check.addClass(locationManager.trainer
-                    .perk_state_class_btn[locationManager.trainer.perks[node_hash].state]);
+                p_check.addClass(state);
+                $(this).removeClass(locationManager.trainer.str_for_remove_cls);
+                $(this).addClass(state);
+
             }
         });
     };
