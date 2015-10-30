@@ -1409,6 +1409,13 @@ var TrainerManager = (function () {
         this.cur_shooting = 0;
         this.cur_trading = 0;
         this.perks = [];
+
+        this.perk_state_class_btn = {
+            default: '',
+            active: '',
+            unactive: '',
+            disable: ''
+        }
     }
 
     TrainerManager.prototype._getFreeSkillPoints = function() {
@@ -1449,6 +1456,13 @@ var TrainerManager = (function () {
         this.cur_masking = this.def_masking = event.masking;
         this.cur_shooting = this.def_shooting = event.shooting;
         this.cur_trading = this.def_trading = event.trading;
+        $('#trainer-skill-driving').text(this.cur_driving);
+        $('#trainer-skill-engineering').text(this.cur_engineering);
+        $('#trainer-skill-masking').text(this.cur_masking);
+        $('#trainer-skill-leading').text(this.cur_leading);
+        $('#trainer-skill-shooting').text(this.cur_shooting);
+        $('#trainer-skill-trading').text(this.cur_trading);
+        $('#trainer-skill-free').text(this._getFreeSkillPoints());
 
         var perk = {};
         for (var i = 0; i < event.perks.length; i++) {
@@ -1470,7 +1484,6 @@ var TrainerManager = (function () {
             else perk.state = 'unactive';
             this.perks[perk.node_hash] = perk;
         }
-
         this.refreshPerkState();
     };
 
@@ -1518,13 +1531,20 @@ var TrainerManager = (function () {
                 else
                     perk.state = 'disable';
             }
+        $('#trainer-perk-free').text(this._getFreePerkPoints());
+
+
         // todo: перерисовать
     };
 
     TrainerManager.prototype.setSkill = function(skill_name, d_val) {
-        if (this.hasOwnProperty(skill_name)) {
-            if (d_val > this._getFreeSkillPoints()) return;
-            this[skill_name] += d_val;
+        var attr_name = 'cur_' + skill_name;
+        var def_attr_name = 'def_' + skill_name;
+        if (this.hasOwnProperty(attr_name)) {
+            if ((d_val > this._getFreeSkillPoints()) || ((this[attr_name] + d_val) < this[def_attr_name])) return;
+            this[attr_name] += d_val;
+            $('#trainer-skill-' + skill_name).text(this[attr_name]);
+            $('#trainer-skill-free').text(this._getFreeSkillPoints());
             this.refreshPerkState();
         }
     };
