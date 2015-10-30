@@ -374,12 +374,9 @@ class AgentAPI(API):
             for name in args:
                 self.send_invite(username=name)
         elif command == '/die':
-            if self.agent.car:
-                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=1000)
+            self.agent.die()
         elif command == '/damage':
-            if args:
-                dhp = int(args[0])
-                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=dhp)
+            self.agent.hit(int(args[0]) if args else 0)
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)

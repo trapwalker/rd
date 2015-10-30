@@ -98,36 +98,6 @@ class Quest(Item):
         self._state = None
         self.state = self.first_state
 
-    def give(self, items):
-        # todo: makeit
-        pass
-
-    def drop(self, items):
-        # todo: makeit
-        pass
-
-    def tp(self, location, who=None, radius=None):
-        # todo: makeit
-        pass
-
-    def kill(self, who):
-        # todo: makeit
-        pass
-
-    def confiscate(self, items):
-        # todo: makeit
-        pass
-
-    def hit(self, value):
-        # todo: makeit
-        pass
-
-    def say(self, text, npc, dest):
-        pass
-
-    def log(self, text, dest, position=None):
-        pass
-
     @property
     def state(self):
         return self._state
@@ -185,7 +155,6 @@ class Quest(Item):
 class QNKills(Quest):
 
     class Begin(State):
-        u'Стартовое состояние квеста'
         caption = u'Начало'
 
         def on_state_init(self):
@@ -196,3 +165,30 @@ class QNKills(Quest):
             self.kills_count += 1
             if self.kills_count >= 5:
                 self.quest.state = self.quest.Win
+
+
+class QMortalCurse(Quest):
+    u"""Смертное прокльятье.
+    Каждое 13 убийство влечет смерть самого игрока.
+    Избавиться можно только пожертвовав 13 разным проходимцам какие-нибудь вещи бесплатно.
+    """
+
+    class Begin(State):
+        caption = u'Начало'
+
+        def on_state_init(self):
+            self.kills_count = 0
+            self.tramps = set()
+            self.magic_count = 13
+
+        def on_kill(self, killed_car):
+            super(QMortalCurse.Begin, self).on_kill(killed_car)
+            self.kills_count += 1
+            if (self.kills_count % self.magic_count) == 0:
+                self.quest.agent.die()
+
+        def on_trade_exit(self, user, canceled, buy, sale, cost):
+            if sale and not buy and cost == 0:
+                self.tramps.add(user.login)
+                if len(self.tramps) >= self.magic_count:
+                    self.quest.state = self.quest.Win

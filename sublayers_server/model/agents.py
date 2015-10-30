@@ -52,6 +52,37 @@ class Agent(Object):
         # Бартер между игроками
         self.barters = []  # бартеры в которых агент - участник
 
+    def tp(self, time, location, radius=None):
+        self.current_location = location
+        # todo: Реализовать телепортацию в заданную точку карты по координатам ##realize ##quest
+
+    def die(self, time):
+        self.hit(time=time, value=1000)  # todo: устранить магическую константу ##crutch
+
+    def hit(self, time, value):
+        if self.car:
+            self.car.set_hp(time=time, dhp=value)
+
+    def give(self, time, items):
+        # todo: ##realize ##quest
+        pass
+
+    def drop(self, time, items):
+        # todo: ##realize ##quest
+        pass
+
+    def confiscate(self, time, items):
+        # todo: ##realize ##quest
+        pass
+
+    def say(self, time, text, npc, dest):
+        # todo: ##realize ##quest
+        pass
+
+    def log(self, time, text, dest, position=None):
+        # todo: ##realize ##quest
+        pass
+
     def __getstate__(self):
         d = self.__dict__.copy()
         del d['_connection']
@@ -79,6 +110,7 @@ class Agent(Object):
         else:
             raise Exception('ILLEGAL ERROR: Wrong location type!')
 
+        # todo: реализовать возможность устанавливать в качестве локации координаты? ##realize ##quest
         self._current_location = location
         self.example.current_location = example_location
 
@@ -99,11 +131,6 @@ class Agent(Object):
         # todo: save chats, party...
         self.example.save()
         log.debug('Agent %s saved', self)
-
-    def __getstate__(self):
-        d = self.__dict__.copy()
-        del d['_connection']
-        return d
 
     @property
     def is_online(self):
@@ -218,6 +245,8 @@ class Agent(Object):
         self.save(time=t)
 
     def party_before_include(self, party, new_member, time):
+        # todo: Если это событие, назвать соответственно с приставкой on
+        # todo: docstring
         # party - куда включают, agent - кого включают
         #log.debug('ON_BEFORE INCLUDE !!!!!!')
         if not self.is_online:
@@ -230,6 +259,8 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=False, time=time)
 
     def party_after_include(self, party, new_member, time, old_enable=True):
+        # todo: Если это событие, назвать соответственно с приставкой on
+        # todo: docstring
         # party - куда включили, agent - кого включили
         #log.debug('ON_AFTER INCLUDE !!!!!!')
         if not self.is_online:
@@ -240,6 +271,8 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
 
     def party_before_exclude(self, party, old_member, time):
+        # todo: Если это событие, назвать соответственно с приставкой on
+        # todo: docstring
         # party - откуда исключабт, agent - кого исключают
         if not self.is_online:
             return
@@ -251,6 +284,8 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=False, time=time)
 
     def party_after_exclude(self, party, old_member, time):
+        # todo: Если это событие, назвать соответственно с приставкой on
+        # todo: docstring
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
             return
