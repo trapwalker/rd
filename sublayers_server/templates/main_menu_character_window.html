@@ -1,69 +1,332 @@
-﻿{% set window_caption = 'NUKE:\Приветствие>' %}
+﻿{% set window_caption = 'NUKE:\Профиль>' %}
 
-<style xmlns="http://www.w3.org/1999/html">
-    .mainWelcomeWindow {
+<style>
+    .character-window-main {
         position: relative;
-        height: 1652px;
-        width: 1026px;
-        background-color: rgba(0, 0, 0, 0.75);
-        color: #30fc00;
-        font-family: Nouveau_IBM;
+        box-sizing: border-box;
+        width: 660px;
+        height: 422px;
+        background-color: rgba(0, 0, 0, 0.9);
+        cursor: default;
     }
 
-    .mainWelcomeWindow-logo {
+    .character-window-body {
         position: relative;
-        width: 121px;
+        height: calc(100% - 26px);
+        width: 100%;
+    }
+
+    .character-window-body-info {
+        position: relative;
+        box-sizing: border-box;
+        float: left;
+        height: 100%;
+        width: 200px;
+        border-right: solid 1px #0F722C;
+    }
+
+    .character-window-body-main {
+        position: relative;
+        float: left;
+        height: 100%;
+        width: calc(100% - 200px);
+        color: #22BD00;
+        font: 12pt Nouveau_IBM;
+    }
+
+    #character-window-body-info-perk {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    #character-window-body-info-item {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    .character-window-body-info-item-picture {
+        position: relative;
+        box-sizing: border-box;
+        width: 140px;
+        height: 80px;
+        border: solid 1px #0F722C;
+        margin: 15px auto 5px auto;
+        padding: 5px;
+    }
+
+    .character-window-body-info-item-picture-picture {
+        position: relative;
+        height: 70px;
+        width: 130px;
+    }
+
+    .character-window-body-info-item-name {
+        color: #30fc00;
+        text-align: center;
+        margin: 5px;
+        font: 12pt Nouveau_IBM;
+        height: 16px;
+    }
+
+    .character-window-body-info-item-description {
+        box-sizing: border-box;
+        margin: auto;
+        width: 100%;
+        padding: 10px 3px 5px 3px;
+        color: #1e9604;
+        text-align: center;
+        height: calc(100% - 121px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .character-window-body-character-info {
+        position: relative;
+        border-bottom: solid 1px #0F722C;
+        height: 43%;
+        width: 100%
+    }
+
+    .character-window-body-main-page-control {
+        position: relative;
+        height: 57%;
+        width: 100%
+    }
+
+    .character-window-body-character-info-foto-wrap {
+        position: relative;
+        box-sizing: border-box;
+        float: left;
+        height: 100%;
+        width: 35%;
+        padding: 8px 10px 8px 10px;
+    }
+
+    .character-window-body-character-info-foto {
+        position: relative;
+        box-sizing: border-box;
+        border: solid 1px #0F722C;
+        height: 100%;
+        width: 100%;
+    }
+
+    .character-window-body-character-info-text-wrap {
+        position: relative;
+        float: left;
+        box-sizing: border-box;
+        padding: 5px 5px 5px 5px;
+        height: 100%;
+        width: 65%;
+        text-align: left;
+    }
+
+    .character-window-body-character-info-about-self {
+        position: relative;
+        box-sizing: border-box;
+        height: calc(100% - 3 * 16px);
+        padding-top: 5px;
+    }
+
+    .character-window-body-character-info-about-self-memo {
+        position: relative;
+        box-sizing: border-box;
+        border: solid 1px #0F722C;
+        color: #30fc00;
+        font: 12pt Nouveau_IBM;
+        background-color: rgba(255, 255, 255, 0);
+        height: calc(100% - 16px);
+        width: 100%;
+        resize: none;
+    }
+
+    .character-window-body-main-page-control-header {
+        position: relative;
+        box-sizing: border-box;
+        height: 20px;
+        width: 100%;
+        padding: 2px 5px 2px 5px;
+    }
+
+    .character-window-body-main-page-button {
+        position: relative;
         float: left;
         margin-right: 10px;
-        margin-top: 5px;
+        opacity: 0.6;
+        cursor: pointer;
     }
 
-    .mainWelcomeWindow-logo-picture {
-        margin: 5px 0px 0px 25px;
+    .character-window-body-main-page-button-active { opacity: 1; }
+
+    .character-window-body-main-page-control-page {
+        position: absolute;
+        top: 20px;
+        width: 100%;
+        height: calc(100% - 20px);
     }
 
-    .mainWelcomeWindow-logo-name {
-        height: 23px;
-        line-height: 23px;
-        text-align: center;
+    .character-window-page-perk-side {
+        position: relative;
+        float: left;
+        width: 40%;
+        height: 100%;
     }
 
-    .mainWelcomeWindow-text {
-        height: 16020px;
-        width: 1095px;
-        overflow-y: hidden;
-        overflow-x: hidden;
-        padding: 5px 0px 0px 0px;
+    .character-window-page-skill-side {
+        position: relative;
+        float: left;
+        width: 60%;
+        height: 100%;
     }
+
+    .character-table-list {
+        padding: 5px;
+    }
+
+    .character-table-main-spec {
+        height: calc(100% - 5px);
+    }
+
+    .character-skill-item-caption {
+        width: calc(100% - 62px);
+        margin-right: 10px;
+    }
+
+    character-perk-item-caption {
+        position: relative;
+        height: 16px;
+        width: 100%;
+    }
+
 </style>
 
-<div class="mainWelcomeWindow">
+<div class="character-window-main">
     {% include drag_close_header.html %}
-    <div class="mainWelcomeWindow-logo">
-        <img class="mainWelcomeWindow-logo-picture" src="/static/img/modal_window_image/mes_win_info_icon.png"
-             alt="Нукойл"/>
-
-        <div class="mainWelcomeWindow-logo-name">Нукойл</div>
-    </div>
-    <div class="mainWelcomeWindow-text">
-      <p align="center"><strong>Научись ездить и стрелять.</strong></p>
-      <p>Для езды используется кнопки стрелок или виджет круиз-контроля. Стеклянный уголок в правом нижнем углу экрана.</p>
-        <img class="mainWelcomeWindow-logo-picture" src="/static/img/modal_window_image/crouise_screen.png"
-             alt="Круиз-контроль"/>
-        <ul>
-          <li>Спидометр показывает актуальную скорость, с которой ты едешь.</li>
-          <li>Желаемую скорость можно выставить мышкой на шкале. Чем выше, тем быстрее  попытается разогнаться машинка-стрелочка.</li>
-          <li>Лимит местности – это то, выше чего скорость не поднимется, как ты не задирай желаемую скорость.</li>
-          <li>Топливо и здоровье – две дуги. Если они опустеют – случится некоторое дерьмо.</li>
-          <li>Можно сдавать назад, включая кнопку R мышкой, или долго нажимая на стрелку вниз на клавиатуре.</li>
-          <li>Стрелять можно с виджета стрельбы. Это пятиугольник в центре снизу.</li>
-        </ul>
-        <p>Задача поймать чужую машинку в один из своих секторов и успеть дать залп, или же продержать в них чужую машинку как можно дольше, если речь об автоматическом оружии. Контролировать попадание в сектора можно на боевой сетке в центре экрана, или на боевом радаре снизу.</p>
-        <p><img class="mainWelcomeWindow-logo-picture" src="/static/img/modal_window_image/radar_screen.png"
-             alt="Радар"/><br />
-          Сектора залпового оружия очерчены обычной линией, автоматического – прерывистой.<br />
-          На картинке выше у машинки залповое и автоматическое оружие смотрят вперед и наложились друг на друга.<br />
-          Что бы автоматическое оружие стреляло – нужно нажать круглую пимпочку в центре радара.</p>
-        <p>Что бы ездить и стрелять – нужно купить машинку и установить на нее оружие. Этим ты займешься в городе. За деньги, которые выдаются на старте, можно купить мотоцикл или легковушку. Что бы купить грузовик – нужно на него заработать. Награбить или наторговать. Удачки!</p>
+    <div class="character-window-body">
+        <div class="character-window-body-info">
+            <div id="character-window-body-info-perk" class="character-window-body-info-block"></div>
+            <div id="character-window-body-info-item" class="character-window-body-info-block">
+                <div class="character-window-body-info-item-picture">
+                    <div class="character-window-body-info-item-picture-picture"></div>
+                </div>
+                <div class="character-window-body-info-item-name"></div>
+                <div class="character-window-body-info-item-description"></div>
+            </div>
+        </div>
+        <div class="character-window-body-main">
+            <div class="character-window-body-character-info">
+                <div class="character-window-body-character-info-foto-wrap">
+                    <div class="character-window-body-character-info-foto"></div>
+                </div>
+                <div class="character-window-body-character-info-text-wrap">
+                    <div class="character-window-body-character-info-string">{{ agent.example.login }}</div>
+                    <div class="character-window-body-character-info-string">Избранный</div>
+                    <div class="character-window-body-character-info-string">Карма: 0 (Нейтрал)</div>
+                    <div class="character-window-body-character-info-about-self">
+                        <div class="character-window-body-character-info-about-self-caption">О себе:</div>
+                        <textarea class="character-window-body-character-info-about-self-memo" maxlength="100">
+                            {{ agent.example.about_self }}
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="character-window-body-main-page-control">
+                <div class="character-window-body-main-page-control-header">
+                    <div class="character-window-body-main-page-button"
+                         data-page="#character-window-page-characteristics"
+                         data-info="#character-window-body-info-perk">Характеристики</div>
+                    <div class="character-window-body-main-page-button"
+                         data-page="#character-window-body-info-item">Инвентарь</div>
+                </div>
+                <div id="character-window-page-characteristics" class="character-window-body-main-page-control-page">
+                    <div class="character-window-page-perk-side">
+                        <div class="trainer-table-main character-table-main-spec">
+                            <div class="trainer-table-header">Перки</div>
+                            <div id="townTrainerPerkList" class="trainer-table-list character-table-list">
+                                {% for perk in agent.example.perks %}
+                                <div class="character-perk-item-caption">{{ perk.title }}</div>
+                                {% end %}
+                            </div>
+                            <div class="trainer-table-footer">
+                                <div class="trainer-table-footer-caption">Св. очки</div>
+                                <div id="trainer-perk-free" class="trainer-table-footer-value">
+                                    {{ perk_free_point }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="character-window-page-skill-side">
+                        <div class="trainer-table-main character-table-main-spec">
+                            <div class="trainer-table-header">Навыки</div>
+                            <div class="trainer-table-list character-table-list">
+                                <div class="trainer-skill-item-main">
+                                    <div class="trainer-skill-item-caption character-skill-item-caption trainer-light-back">Вождение:</div>
+                                    <div id="trainer-skill-driving" class="trainer-skill-item-value trainer-light-back">
+                                        {{ agent.example.driving }}
+                                    </div>
+                                </div>
+                                <div class="trainer-skill-item-main">
+                                    <div class="trainer-skill-item-caption character-skill-item-caption trainer-dark-back">Стрельба:</div>
+                                    <div id="trainer-skill-shooting" class="trainer-skill-item-value trainer-dark-back">
+                                        {{ agent.example.shooting }}
+                                    </div>
+                                </div>
+                                <div class="trainer-skill-item-main">
+                                    <div class="trainer-skill-item-caption character-skill-item-caption trainer-light-back">Скрытность:</div>
+                                    <div id="trainer-skill-masking" class="trainer-skill-item-value trainer-light-back">
+                                        {{ agent.example.masking }}
+                                    </div>
+                                </div>
+                                <div class="trainer-skill-item-main">
+                                    <div class="trainer-skill-item-caption character-skill-item-caption trainer-dark-back">Инженеринг:</div>
+                                    <div id="trainer-skill-engineering" class="trainer-skill-item-value trainer-dark-back">
+                                        {{ agent.example.engineering }}
+                                    </div>
+                                </div>
+                                <div class="trainer-skill-item-main">
+                                    <div class="trainer-skill-item-caption character-skill-item-caption trainer-light-back">Торговля:</div>
+                                    <div id="trainer-skill-trading" class="trainer-skill-item-value trainer-light-back">
+                                        {{ agent.example.trading }}
+                                    </div>
+                                </div>
+                                <div class="trainer-skill-item-main">
+                                    <div class="trainer-skill-item-caption character-skill-item-caption trainer-dark-back">Лидерство:</div>
+                                    <div id="trainer-skill-leading" class="trainer-skill-item-value trainer-dark-back">
+                                        {{ agent.example.leading }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trainer-table-footer">
+                                <div class="trainer-table-footer-caption">Свободные очки</div>
+                                <div id="trainer-skill-free" class="trainer-table-footer-value">
+                                    {{ skill_free_point }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="character-window-page-inventory" class="character-window-body-main-page-control-page"></div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    $('.character-perk-item-caption').each(function(index, element){
+        if ((index & 1) == 0)
+            $(element).addClass('trainer-light-back');
+        else
+            $(element).addClass('trainer-dark-back');
+    });
+
+    $('.character-window-body-main-page-button').click(function(event) {
+        $('.character-window-body-main-page-control-page').css('display', 'none');
+        $('.character-window-body-info-block').css('display', 'none');
+        $($(event.target).data('page')).css('display', 'block');
+        $($(event.target).data('info')).css('display', 'block');
+        $('.character-window-body-main-page-button').removeClass('character-window-body-main-page-button-active');
+        $(event.target).addClass('character-window-body-main-page-button-active');
+    });
+    $('.character-window-body-main-page-button').first().click();
+</script>

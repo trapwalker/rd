@@ -46,15 +46,21 @@ $(document).ready(function () {
     document.getElementById('map').focus();
 
     // Повесить на кнопки меню возврат фокуса на карту
-//    document.getElementById('divMainMenuBtnCharacter').onclick =
-//        function () {
-//            windowTemplateManager.openUniqueWindow('character', '/main_menu_character', null);
-//            returnFocusToMap();
-//        };
+    document.getElementById('divMainMenuBtnCharacter').onclick =
+        function () {
+            windowTemplateManager.openUniqueWindow('character', '/main_menu_character', null);
+            returnFocusToMap();
+        };
 
     document.getElementById('divMainMenuBtnCar').onclick =
         function () {
             windowTemplateManager.openUniqueWindow('car_info', '/main_car_info', null);
+            returnFocusToMap();
+        };
+
+    document.getElementById('divMainMenuBtnInventory').onclick =
+        function () {
+            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
             returnFocusToMap();
         };
 

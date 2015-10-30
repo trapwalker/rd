@@ -71,6 +71,7 @@
     font: 12pt Nouveau_IBM;
     color: #29F200;
     opacity: 0.6;
+    cursor: pointer;
 }
 
 .mechanic-center-page-control-page-button:hover {
