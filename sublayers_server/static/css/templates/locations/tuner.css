@@ -19,16 +19,17 @@
     width: 734px;
     height: 330px;
     padding-bottom: 5px;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
 }
-
 
 .tuner-car {
     width: 492px;
     height: 100%;
     float: left;
 }
-
-
 
 .tunerRightSide {
     width: 242px;
