@@ -27,6 +27,7 @@
     color: #135806;
     cursor: pointer;
     font: 12pt Nouveau_IBM;
+    display: none;
 }
 
 .mainMenuNucoilWindow-menu-button:hover {
@@ -68,12 +69,18 @@
     width: 652px;
     height: 361px;
     overflow-y: hidden;
-    border: solid 1px #00f150;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     margin: 0px 3px 3px 3px;
 }
 
 .mainMenuNucoilWindow-body-fuel-left {
-    border-right: solid 1px #00f150;
+    border-width: 0 1px 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to top, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     width: 166px;
     height: 340px;
     margin-top: 10px;
@@ -115,7 +122,10 @@
 }
 
 .mainMenuNucoilWindow-body-fuel-center {
-    border-right: solid 1px #00f150;
+    border-width: 0 1px 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to top, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     width: 283px;
     height: 235px;
     margin-top: 10px;
@@ -123,7 +133,10 @@
 }
 
 .mainMenuNucoilWindow-body-fuel-center-balance {
-    border-bottom: solid 1px #00f150;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     margin: 0px 10px 0px 20px;
 }
 
@@ -363,7 +376,10 @@
 }
 
 .mainMenuNucoilWindow-body-fuel-down {
-    border-top: solid 1px #00f150;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     width: 443px;
     height: 37px;
     margin: 10px 20px 0px 20px;
