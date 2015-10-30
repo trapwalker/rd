@@ -19,12 +19,17 @@
     width: 734px;
     height: 330px;
     padding-bottom: 5px;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
 }
 
 .armorer-car {
-    width: 492px;
-    height: 100%;
+    width: 491px;
+    height: 328px;
     float: left;
+    border-right: 1px solid #30fc00;
 }
 
 .armorerSectors {
