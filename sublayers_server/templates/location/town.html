@@ -61,6 +61,12 @@
         {% include hangar_window.html %}
     </div>
     {% end %}
+
+    {% if town.example.trainer is not None %}
+    <div id="townTrainerPageWrap" class="townPageWrap" style="display: none">
+        {% include trainer_window.html %}
+    </div>
+    {% end %}
 </div>
 <script>
     function setBtnDisplay(btnIndex, state) {
@@ -132,6 +138,14 @@
         setBtnDisplay(8, "block");
     }
 
+    function openTrainer() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTrainerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.trainer;
+        setBtnDisplay(7, "none");
+        setBtnDisplay(8, "block");
+    }
+
     function openTown() {
         $('.townPageWrap').css('display', 'none');
         $('#layer1').css('display', 'block');
@@ -188,6 +202,9 @@
             case "img_house2_on":
                 openMechanic();
                 break;
+            case "img_house3_on":
+                openTrainer();
+                break;
             case "img_house4_on":
                 openHangar();
                 break;
@@ -211,6 +228,9 @@
                 break;
             case "path_h2":
                 openMechanic();
+                break;
+            case "path_h3":
+                openTrainer();
                 break;
             case "path_h4":
                 openHangar();

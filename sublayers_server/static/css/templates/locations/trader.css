@@ -14,12 +14,17 @@
 }
 
 .mainTraderWindow-up {
-    height: 220px;
+    height: 215px;
     width: 650px;
     float: left;
     color: #30fc00;
     font-family: Nouveau_IBM;
     font-size: 11pt;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    margin-bottom: 4px;
 }
 
 .mainTraderWindow-up-name {
@@ -46,7 +51,10 @@
     width: 395px;
     overflow-y: scroll;
     overflow-x: hidden;
-    border-top: solid 1px #135806;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     padding: 5px 0px 0px 0px;
 }
 

@@ -548,7 +548,7 @@ class TransactionSkillApply(TransactionEvent):
             self.agent.example.trading = self.trading
             self.agent.example.engineering = self.engineering
 
-        messages.SkillStateMessage(agent=self.agent, time=self.time).post()
+        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionActivatePerk(TransactionEvent):
@@ -580,4 +580,4 @@ class TransactionActivatePerk(TransactionEvent):
                     return
             ex_agent.perks.append(activate_perk)
 
-        messages.PerkStateMessage(agent=self.agent, time=self.time).post()
+        messages.RPGStateMessage(agent=self.agent, time=self.time).post()

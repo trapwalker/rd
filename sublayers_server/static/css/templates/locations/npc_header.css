@@ -1,13 +1,18 @@
- .npc-header {
+.npc-header {
     position: relative;
     box-sizing: border-box;
     margin-right: auto;
     margin-left: auto;
     width: 692px;
-    height: 205px;
+    height: 201px;
     padding-bottom: 6px;
     font: 11pt Nouveau_IBM;
     color: #29F200;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    margin-bottom: 4px;
 }
 
 .npc-wrap-header {
@@ -36,7 +41,10 @@
     width: 395px;
     overflow-y: scroll;
     overflow-x: hidden;
-    border-top: solid 1px #135806;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
     box-sizing: border-box;
     padding: 5px 0px 0px 0px;
 }

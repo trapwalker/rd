@@ -19,6 +19,10 @@
     width: 734px;
     height: 330px;
     padding-bottom: 5px;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
 }
 
 .mechanic-center-block {
@@ -28,7 +32,9 @@
 }
 
 .mechanic-center-main-block {
-    width: 525px;
+    width: 524px;
+    height: 328px;
+    border-right: 1px solid #30fc00;
 }
 
 .mechanic-center-info-block {
@@ -71,6 +77,7 @@
     font: 12pt Nouveau_IBM;
     color: #29F200;
     opacity: 0.6;
+    cursor: pointer;
 }
 
 .mechanic-center-page-control-page-button:hover {

@@ -408,6 +408,12 @@ class AgentAPI(API):
             if args:
                 add_exp = int(args[0])
                 self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=add_exp)
+        elif command == '/param':
+            if args and self.agent.car:
+                param_name = args[0]
+                agent = self.agent
+                log.debug('Agent %s  have param %s = %s', agent, param_name,
+                          agent.car.example.get_modify_value(param_name=param_name, example_agent=agent.example))
         elif command == '/save':
             self.agent.server.save()
         elif command == '/reset':
@@ -572,25 +578,17 @@ class AgentAPI(API):
         SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
                             time=self.agent.server.get_time()).post()
 
-    # Скилы
+    # RPG
 
     @public_method
-    def get_skill_state(self):
-        # log.debug('Agent %s request skill state', self.agent)
-        messages.SkillStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def get_rpg_info(self):
+        messages.RPGStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
         # log.debug('Agent %s try set skill state', self.agent)
         TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
                               masking=masking, leading=leading, trading=trading, engineering=engineering).post()
-
-    # Перки
-
-    @public_method
-    def get_perk_state(self):
-        # log.debug('Agent %s request perk state', self.agent)
-        messages.PerkStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def activate_perk(self, perk_id):
