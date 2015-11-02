@@ -1486,6 +1486,28 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendResetSkills = function () {
+        //console.log('ClientManager.prototype.sendResetSkills');
+        var mes = {
+            call: "reset_skills",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendResetPerks = function () {
+        //console.log('ClientManager.prototype.sendResetSkills');
+        var mes = {
+            call: "reset_perks",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendSetSkillState = function (driving, shooting, masking, leading, trading, engineering) {
         //console.log('ClientManager.prototype.sendSetSkillState');
         var mes = {
@@ -1516,7 +1538,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     return ClientManager;
 })();

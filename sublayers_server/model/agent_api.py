@@ -18,7 +18,8 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
-    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk)
+    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk,
+    TransactionResetSkills, TransactionResetPerks)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -583,6 +584,14 @@ class AgentAPI(API):
     @public_method
     def get_rpg_info(self):
         messages.RPGStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def reset_skills(self):
+        TransactionResetSkills(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def reset_perks(self):
+        TransactionResetPerks(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):

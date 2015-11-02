@@ -1655,6 +1655,17 @@ var TrainerManager = (function () {
 
     TrainerManager.prototype.cancel = function() {
         //console.log('TrainerManager.prototype.cancel');
+        clientManager.sendGetRPGInfo();
+    };
+
+    TrainerManager.prototype.resetSkills = function() {
+        //console.log('TrainerManager.prototype.resetSkills');
+        clientManager.sendResetSkills();
+    };
+
+    TrainerManager.prototype.resetPerks = function() {
+        //console.log('TrainerManager.prototype.resetPerks');
+        clientManager.sendResetPerks();
     };
 
     return TrainerManager;
