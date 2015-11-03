@@ -58,8 +58,8 @@
 .hangar-car-list-itemWrap {
     box-sizing: border-box;
     margin-right: 15px;
-    width: 140px;
-    height: 85px;
+    width: 139px;
+    height: 72px;
     float: left;
     opacity: 0.6;
 }
@@ -70,6 +70,7 @@
 
 .hangar-car-list-itemWrap-active {
     opacity: 1;
+    background-image: url('/static/img/slot_selection.png');
 }
 
 .hangar-car-list-item {
