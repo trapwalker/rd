@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.classes.item import Item
-from sublayers_server.model.registry.attr.link import RegistryLink
-from sublayers_server.model.registry.attr import Attribute, TextAttribute
+from sublayers_server.model.registry.attr import TextAttribute
+from sublayers_server.model.utils import SubscriptionList
 
 
 class O(dict):
@@ -21,6 +21,26 @@ class State(O):
         self.quest = quest
         self.__dict__.update(kw)
         self.on_state_init()
+
+    # todo: __getstate__ ##realize
+    # todo: __setstate__ ##realize
+
+    def subscribe(self, target):
+        if isinstance(target, SubscriptionList):
+            target.add(self)
+        elif hasattr(target, 'subscriptions'):
+            target.subscriptions.add(self)
+        else:
+            raise TypeError(u"State {!r} of quest {!r} can not be subscribed to {!r}".format(self, self.quest, target))
+
+    def unsubscribe(self, target):
+        if isinstance(target, SubscriptionList):
+            target.remove(self)
+        elif hasattr(target, 'subscriptions'):
+            target.subscriptions.remove(self)
+        else:
+            raise TypeError(u"State {!r} of quest {!r} can not be unsubscribed from {!r}".format(
+                self, self.quest, target))
 
     def as_dict(self):
         d = self.__dict__.copy()
@@ -59,10 +79,18 @@ class State(O):
     def on_state_init(self):
         pass
 
+    def on_state_enter(self, old_state):
+        self.subscribe(self.quest.agent)
+
     def on_state_exit(self, next_state):
+        self.unsubscribe(self.quest.agent)
+
+
+class FinalState(State):
+    def on_state_enter(self, old_state):
         pass
 
-    def on_state_enter(self, old_state):
+    def on_state_exit(self, next_state):
         pass
 
 
@@ -84,6 +112,7 @@ class State(O):
 # - confiscate([items])
 # - нанести урон
 # - say(text, npc=None|link, dest=login|None)
+# - ask(variants={True: 'Yes', False: 'None'}, text=None, title=None)
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
@@ -126,7 +155,6 @@ class Quest(Item):
 
         self._state = new_state
         new_state.on_state_enter(old_state=old_state)
-        self.state_name = new_state.name
 
     def __getstate__(self):
         d = super(Quest, self).__getstate__()
@@ -140,24 +168,28 @@ class Quest(Item):
         super(Quest, self).__setstate__(state)
 
     class Begin(State):
-        u'Стартовое состояние квеста'
+        u"""Стартовое состояние квеста"""
         caption = u'Начало'
 
-    class Win(State):
-        u'Состояние успешного прохождения квеста'
+    class Win(FinalState):
+        u"""Состояние успешного прохождения квеста"""
         caption = u'Успех'
 
-    class Fail(State):
-        u'Состояния провала квеста'
+    class Fail(FinalState):
+        u"""Состояния провала квеста"""
         caption = u'Провал'
+
+
+class UserQuest(Quest):
+    class Begin(Quest.Begin):
+        pass
 
 
 class QNKills(Quest):
 
     class Begin(State):
-        caption = u'Начало'
-
         def on_state_init(self):
+            State.on_state_init(self)
             self.kills_count = 0
 
         def on_kill(self, killed_car):
@@ -177,17 +209,19 @@ class QMortalCurse(Quest):
         caption = u'Начало'
 
         def on_state_init(self):
+            State.on_state_init(self)
             self.kills_count = 0
             self.tramps = set()
             self.magic_count = 13
 
         def on_kill(self, killed_car):
-            super(QMortalCurse.Begin, self).on_kill(killed_car)
+            State.on_kill(self, killed_car)
             self.kills_count += 1
             if (self.kills_count % self.magic_count) == 0:
                 self.quest.agent.die()
 
         def on_trade_exit(self, user, canceled, buy, sale, cost):
+            State.on_trade_exit(self, user, canceled, buy, sale, cost)
             if sale and not buy and cost == 0:
                 self.tramps.add(user.login)
                 if len(self.tramps) >= self.magic_count:

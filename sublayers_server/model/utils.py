@@ -9,11 +9,13 @@ from time import time as _time
 from datetime import datetime
 import heapq
 from pprint import pformat
-from functools import total_ordering
+from functools import total_ordering, partial
 from copy import copy
 import json
 from uuid import uuid1 as get_uid, UUID
 from time import time as get_time  # todo: integer vs float time
+from weakref import WeakSet, ref
+from collections import Callable
 import random
 
 
@@ -267,6 +269,25 @@ class TimelineQueue(object, PriorityQueue):
         q = copy(self)
         while q:
             yield q.get()
+
+
+class SubscriptionList(WeakSet):
+    def _send(self, method, *av, **kw):
+        # todo: генерировать как отдельные события? ##optimize
+        results = []
+        for subscriber in self:
+            f = getattr(subscriber, method, None)
+            if isinstance(f, Callable):
+                results.append((ref(subscriber), f(*av, **kw)))
+
+    def __getattr__(self, item):
+        return partial(self._send, method=item)
+
+    def remove(self, item):
+        try:
+            super(SubscriptionList, self).remove(item)
+        except KeyError:
+            pass
 
 
 __all__ = [get_uid, get_time, TimelineQueue]

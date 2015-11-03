@@ -11,6 +11,7 @@ from counterset import CounterSet
 from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
+from sublayers_server.model.utils import SubscriptionList
 
 
 # todo: make agent offline status possible
@@ -22,6 +23,7 @@ class Agent(Object):
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
+        self.subscriptions = SubscriptionList()
         self.example = example
         self.observers = CounterSet()
         self.api = None
@@ -42,15 +44,17 @@ class Agent(Object):
 
         self.chats = []
 
+        # Бартер между игроками
+        self.barters = []  # бартеры в которых агент - участник
+
+        # todo: subscriber list ##quest
+
         # статистика сервера
         self.server.stat_log.s_agents_all(time=time, delta=1.0)
 
         # текущий город, если агент не в городе то None
         self._current_location = None
         self.current_location = example.current_location
-
-        # Бартер между игроками
-        self.barters = []  # бартеры в которых агент - участник
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -157,6 +161,7 @@ class Agent(Object):
         self.observers[observer] -= 1
 
     def on_see(self, time, subj, obj):
+        # todo: delivery for subscribers ##quest
         # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
@@ -172,6 +177,7 @@ class Agent(Object):
             obj.send_auto_fire_messages(agent=self, action=True, time=time)
 
     def on_out(self, time, subj, obj):
+        # todo: delivery for subscribers ##quest
         # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_last = obj.subscribed_agents.dec(self) == 0
         if not is_last:
@@ -236,10 +242,8 @@ class Agent(Object):
                 car.owner = None
             self.car = None
 
-    def on_message(self, connection, message):
-        pass
-
     def on_disconnect(self, connection):
+        # todo: delivery for subscribers ##quest
         t = self.server.get_time()
         self.server.stat_log.s_agents_on(time=t, delta=-1.0)
         self.save(time=t)
@@ -271,7 +275,8 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
 
     def party_before_exclude(self, party, old_member, time):
-        # todo: Если это событие, назвать соответственно с приставкой on
+        # todo: Если это событие, назвать соответственно с приставкой on ##refactor
+        # todo: delivery for subscribers ##quest
         # todo: docstring
         # party - откуда исключабт, agent - кого исключают
         if not self.is_online:
@@ -284,7 +289,8 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=False, time=time)
 
     def party_after_exclude(self, party, old_member, time):
-        # todo: Если это событие, назвать соответственно с приставкой on
+        # todo: Если это событие, назвать соответственно с приставкой on ##refactor
+        # todo: delivery for subscribers ##quest
         # todo: docstring
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
@@ -331,7 +337,12 @@ class Agent(Object):
                 return False
         return True
 
+    def on_message(self, connection, message):
+        # todo: delivery for subscribers ##quest
+        pass
+
     def on_kill(self, time, obj):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_kill(%s)', self, obj)
         # todo: party
 
@@ -344,27 +355,35 @@ class Agent(Object):
         messages.AddExperienceMessage(agent=self, time=time,).post()
 
     def on_inv_change(self):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_inv_change()', self)
 
     def on_enter_location(self, location):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_enter_location(%s)', self, location)
 
     def on_exit_location(self, location):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_exit_location(%s)', self, location)
 
     def on_enter_npc(self, npc):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_enter_npc(%s)', self, npc)
 
     def on_exit_npc(self, npc):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_exit_npc(%s)', self, npc)
 
     def on_die(self):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_die()', self)
 
     def on_trade_enter(self, user):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_trade_enter(%s)', self, user)
 
     def on_trade_exit(self, user, canceled, buy, sale, cost):
+        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_trade_exit(user=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
                   self, user, canceled, buy, sale, cost)
 
