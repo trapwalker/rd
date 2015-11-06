@@ -1,33 +1,9 @@
 <div class="car-info-block-main">
-    <div class="car-info-block-picture" style="background: url({{ car.hangar_car }}) no-repeat center"></div>
-    <div class="car-info-block-info">
-        <div class="car-info-block-body-right-menu">
-            <div class="mainCarInfoWindow-body-right-menu-button mainCarInfoWindow-body-right-menu-button-active">Модель</div>
-            <div class="mainCarInfoWindow-body-right-menu-button">ТТХ</div>
-            <div class="mainCarInfoWindow-body-right-menu-button">Вооружение</div>
-            <div class="mainCarInfoWindow-body-right-menu-button">История</div>
-        </div>
-        <div class="car-info-block-body-right-list">
-            <div class="car-info-block-body-right-list-name car-info-block-body-right-list-even">&nbspМодель:</div>
-            <div class="car-info-block-body-right-list-value car-info-block-body-right-list-even">{{ car.title }}</div>
-            <div class="car-info-block-body-right-list-name car-info-block-body-right-list-uneven">&nbspКласс:</div>
-            <div class="car-info-block-body-right-list-value car-info-block-body-right-list-uneven">{{ car.class_car }}</div>
-            <div class="car-info-block-body-right-list-name car-info-block-body-right-list-even">&nbspСлотов кузова:</div>
-            <div class="car-info-block-body-right-list-value car-info-block-body-right-list-even">{{ car.get_count_slots() }}</div>
-            <div class="car-info-block-body-right-list-name car-info-block-body-right-list-uneven">&nbspСлотов багажника:</div>
-            <div class="car-info-block-body-right-list-value car-info-block-body-right-list-uneven">{{ car.inventory_size }}</div>
-            <div class="car-info-block-body-right-list-bonuses">Бонусы местности:</div>
-            <!--<div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>-->
-            <div class="car-info-block-body-right-list-bonuses">Пенальти местности:</div>
-            <!--<div class="mainCarInfoWindow-body-right-list-model-forest">&nbspЛес:</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-forest-value">Максимальная скорость</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-hill">&nbspХолмы:</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-hill-value">-</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-water">&nbspВода:</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-water-value">Невозможно</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-mountain">&nbspГоры:</div>-->
-            <!--<div class="mainCarInfoWindow-body-right-list-model-mountain-value">Невозможно</div>-->
-        </div>
+
+    <div class="car-info-block-picture-hangar">
+        {% include car_info_img.html %}
+    </div>
+    <div class="car-info-block-info-hangar">
+        {% include car_info_table.html %}
     </div>
 </div>
