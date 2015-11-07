@@ -190,6 +190,7 @@
                 </div>
             </div>
             <div class="journal-page-right">
+                {% if agent.example.car is not None %}
                 {% set car = agent.example.car %}
                 <div class="journal-page-parking-picture">
                     {% include car_info_img.html %}
@@ -197,6 +198,7 @@
                 <div class="journal-page-parking-info">
                     {% include car_info_table.html %}
                 </div>
+                {% end %}
             </div>
         </div>
         <div id="journal_page_trade" class="journal-page-block">

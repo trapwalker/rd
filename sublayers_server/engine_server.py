@@ -33,7 +33,7 @@ from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
 from sublayers_server.handlers.main_menu_character import MainMenuCharacterHandler
-from sublayers_server.handlers.main_car_info import MainCarInfoHandler
+from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
@@ -113,6 +113,7 @@ class Application(tornado.web.Application):
             (r"/api/party", PartyHandler),
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
+            (r"/api/person_info", PersonInfoHandler),
 
             (r"/api/context_panel/locations", ContextPanelLocationsHandler),
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
