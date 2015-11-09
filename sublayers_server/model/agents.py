@@ -160,38 +160,6 @@ class Agent(Object):
         observer.watched_agents[self] -= 1
         self.observers[observer] -= 1
 
-    def on_see(self, time, subj, obj):
-        # todo: delivery for subscribers ##quest
-        # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
-        is_first = obj.subscribed_agents.inc(self) == 1
-        if not is_first:
-            return
-        messages.See(
-            agent=self,
-            time=time,
-            subj=subj,
-            obj=obj,
-            is_first=is_first,
-        ).post()
-        if isinstance(obj, Unit):
-            obj.send_auto_fire_messages(agent=self, action=True, time=time)
-
-    def on_out(self, time, subj, obj):
-        # todo: delivery for subscribers ##quest
-        # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
-        is_last = obj.subscribed_agents.dec(self) == 0
-        if not is_last:
-            return
-        messages.Out(
-            agent=self,
-            time=time,
-            subj=subj,
-            obj=obj,
-            is_last=is_last,
-        ).post()
-        if isinstance(obj, Unit):
-            obj.send_auto_fire_messages(agent=self, action=False, time=time)
-
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
         d.update(
@@ -247,6 +215,7 @@ class Agent(Object):
         t = self.server.get_time()
         self.server.stat_log.s_agents_on(time=t, delta=-1.0)
         self.save(time=t)
+        self.subscriptions.on_disconnect(agent=self, time=t)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -261,6 +230,7 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=False, time=time)
+        # todo: Пробросить событие в квест ##quest
 
     def party_after_include(self, party, new_member, time, old_enable=True):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -273,6 +243,7 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
+        # todo: Пробросить событие в квест ##quest
 
     def party_before_exclude(self, party, old_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on ##refactor
@@ -287,6 +258,7 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=False, time=time)
+        # todo: Пробросить событие в квест ##quest
 
     def party_after_exclude(self, party, old_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on ##refactor
@@ -299,6 +271,7 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
+        # todo: Пробросить событие в квест ##quest
 
     def _invite_by_id(self, invite_id):
         for invite in self.invites:
@@ -337,12 +310,45 @@ class Agent(Object):
                 return False
         return True
 
+    def on_see(self, time, subj, obj):
+        # todo: delivery for subscribers ##quest
+        # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
+        is_first = obj.subscribed_agents.inc(self) == 1
+        if not is_first:
+            return
+        messages.See(
+            agent=self,
+            time=time,
+            subj=subj,
+            obj=obj,
+            is_first=is_first,
+        ).post()
+        if isinstance(obj, Unit):
+            obj.send_auto_fire_messages(agent=self, action=True, time=time)
+        self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
+
+    def on_out(self, time, subj, obj):
+        # todo: delivery for subscribers ##quest
+        # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
+        is_last = obj.subscribed_agents.dec(self) == 0
+        if not is_last:
+            return
+        messages.Out(
+            agent=self,
+            time=time,
+            subj=subj,
+            obj=obj,
+            is_last=is_last,
+        ).post()
+        if isinstance(obj, Unit):
+            obj.send_auto_fire_messages(agent=self, action=False, time=time)
+        self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
+
     def on_message(self, connection, message):
         # todo: delivery for subscribers ##quest
         pass
 
     def on_kill(self, time, obj):
-        # todo: delivery for subscribers ##quest
         log.debug('%s:: on_kill(%s)', self, obj)
         # todo: party
 
@@ -353,14 +359,16 @@ class Agent(Object):
 
         # Отправить сообщение на клиент о начисленной экспе
         messages.AddExperienceMessage(agent=self, time=time,).post()
+        self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
-    def on_inv_change(self):
-        # todo: delivery for subscribers ##quest
-        log.debug('%s:: on_inv_change()', self)
+    def on_inv_change(self, time, incomings, outgoings):
+        # todo: csll it ##quest
+        self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
 
-    def on_enter_location(self, location):
-        # todo: delivery for subscribers ##quest
+    def on_enter_location(self, time, location):
+        # todo: csll it ##quest
         log.debug('%s:: on_enter_location(%s)', self, location)
+        self.subscriptions.on_enter_location(agent=self, time=time, location=location)
 
     def on_exit_location(self, location):
         # todo: delivery for subscribers ##quest

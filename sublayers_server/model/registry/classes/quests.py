@@ -6,12 +6,29 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.classes.item import Item
 from sublayers_server.model.registry.attr import TextAttribute
 from sublayers_server.model.utils import SubscriptionList
+from functools import update_wrapper
 
 
 class O(dict):
     def __init__(self):
         super(O, self).__init__()
         self.__dict__ = self
+
+
+def state_event(func):
+    # return event_func
+    def closure(*av, **kw):
+        log.debug('{method}({args})'.format(
+            method=func.__name__,
+            args=', '.join([
+                '{}={!r}'.format(k, v)
+                for k, v in zip(func.func_code.co_varnames, av) + kw.items()
+            ]),
+        ))
+        res = func(*av, **kw)
+        return res
+    update_wrapper(closure, func)
+    return closure
 
 
 class State(O):
@@ -47,41 +64,64 @@ class State(O):
         del d['quest']
         return d
 
-    def on_inv_change(self):
-        # todo: diff argument
-        log.debug('%s:: on_inv_change()', self)
+    @state_event
+    def on_see(self, agent, time, subj, obj):
+        pass
 
-    def on_kill(self, killed_car):
-        log.debug('%s:: on_kill(%s)', self, killed_car)
+    @state_event
+    def on_out(self, agent, time, subj, obj):
+        pass
 
-    def on_enter_location(self, location):
-        log.debug('%s:: on_enter_location(%s)', self, location)
+    @state_event
+    def on_disconnect(self, agent, time):
+        # todo: call it
+        pass
 
+    @state_event
+    def on_kill(self, agent, time, obj):
+        pass
+
+    @state_event
+    def on_inv_change(self, agent, time, incomings, outgoings):
+        pass
+
+    @state_event
+    def on_enter_location(self, agent, time, location):
+        pass
+
+    @state_event
     def on_exit_location(self, location):
-        log.debug('%s:: on_exit_location(%s)', self, location)
+        pass
 
+    @state_event
     def on_enter_npc(self, npc):
-        log.debug('%s:: on_enter_npc(%s)', self, npc)
+        pass
 
+    @state_event
     def on_exit_npc(self, npc):
-        log.debug('%s:: on_exit_npc(%s)', self, npc)
+        pass
 
+    @state_event
     def on_die(self):
-        log.debug('%s:: on_die()', self)
+        pass
 
+    @state_event
     def on_trade_enter(self, user):
-        log.debug('%s:: on_trade_enter(%s)', self, user)
+        pass
 
+    @state_event
     def on_trade_exit(self, user, canceled, buy, sale, cost):
-        log.debug('%s:: on_trade_exit(user=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
-                  self, user, canceled, buy, sale, cost)
+        pass
 
+    @state_event
     def on_state_init(self):
         pass
 
+    @state_event
     def on_state_enter(self, old_state):
         self.subscribe(self.quest.agent)
 
+    @state_event
     def on_state_exit(self, next_state):
         self.unsubscribe(self.quest.agent)
 
