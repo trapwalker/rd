@@ -43,16 +43,44 @@
 
 .hangar-car-list-label {
     box-sizing: border-box;
-    padding-left: 70px;
     height: 21px;
     color: #29F200;
     font: 11pt Nouveau_IBM;
+    margin-left: 20px;
+}
+
+.hangar-car-list-button-left {
+    background-image: url('/static/img/mechanic/btn_slide_left.png');
+    float: left;
+    height: 18px;
+    width: 11px;
+    cursor: pointer;
+    margin-top: 30px;
+    margin-right: 16px;
+}
+
+.hangar-car-list-button-left:hover {
+    background-image: url('/static/img/mechanic/btn_slide_left_over.png');
+}
+
+.hangar-car-list-button-right {
+    background-image: url('/static/img/mechanic/btn_slide_right.png');
+    height: 18px;
+    width: 11px;
+    cursor: pointer;
+    margin-top: 30px;
+    margin-left: 606px;
+}
+
+.hangar-car-list-button-right:hover {
+    background-image: url('/static/img/mechanic/btn_slide_right_over.png');
 }
 
 .hangar-car-list-wrap {
-    width: 100%;
+    width: 563px;
     height: 94px;
     overflow-x: scroll;
+    float: left;
 }
 
 .hangar-car-list-itemWrap {
