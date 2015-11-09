@@ -1,17 +1,19 @@
 <div class="npcInventory-block">
     <div class="npcInventory-label">Инвентарь:</div>
+    <div class="npcInventory-button-left"></div>
     <div class="npcInventory-wrap">
         <div class="npcInventory-inventory"></div>
     </div>
+    <div class="npcInventory-button-right"></div>
 </div>
 
 <script>
     // todo: вынести ее куда угодно
     /*
-    Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
-    данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
-    горизонтальный слайдер будер расти вниз)
-    */
+     Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
+     данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
+     горизонтальный слайдер будер расти вниз)
+     */
     function resizeInventory(inventory) {
         //var inventory = $(".npcInventory-inventory:first");
         var width = 0;
@@ -24,4 +26,3 @@
         }
     }
 </script>
-
