@@ -33,20 +33,17 @@ var LocationVisitorsManager = (function () {
     };
 
     LocationVisitorsManager.prototype.visitor_record_info_click = function (event) {
-        console.log('LocationVisitorsManager.prototype.visitor_record_info_click');
+        //console.log('LocationVisitorsManager.prototype.visitor_record_info_click');
         var person = $(event.target).parent().data('visitor');
 
         var textAreaDiv = $('#textAreaGlobal');
         var personInfo = $('#VGM-PlayerInfoDivInCity');
         if (! personInfo.length) {
-            console.log('a');
             textAreaDiv.append('<div id="VGM-PlayerInfoDivInCity"></div>');
             personInfo = $('#VGM-PlayerInfoDivInCity');
         }
         else {
-            console.log('e');
             personInfo.empty();
-
         }
 
         // Делаем Ajax запрос на информацию по пользователю
@@ -54,31 +51,21 @@ var LocationVisitorsManager = (function () {
             url: "http://" + location.host + '/api/person_info',
             data: {person: person},
             success: function(data) {
-                console.log(data);
+                //console.log(data);
                 personInfo.append(data);
-                //if (self.unique[win_name] != 'waiting') return;
-                //var temp_window = new TemplateWindow({
-                //    parentDiv: 'bodydiv',
-                //    win_name: win_name
-                //});
-                //temp_window.mainDiv.append(data);
-                //temp_window.showWindow(true);
-
             }
         });
-
-
 
         personInfo.css('display', 'block');
     };
 
     LocationVisitorsManager.prototype.add_visitor_record = function (visitor) {
         //var visitorDiv = $('<div id="visitorRecord_' + visitor + '" class="VMG-message-message sublayers-clickable visitorRecord">' + visitor + '</div>');
-        // todo: по идее здесь не нужен id дива
         //var visitorDiv = $('<div class="VMG-message-message sublayers-clickable visitorRecord">' + visitor +
         //'<div>_info_</div>'+
         //'</div>');
-        var visitorDiv = $('<div class="VMG-message-message sublayers-clickable">'+
+
+        var visitorDiv = $('<div id="visitorRecord_' + visitor + '" class="VMG-message-message visitor-record sublayers-clickable">'+
         '<div class="visitorRecord visitorRecordName">' + visitor + '</div>'+
         '<div class="visitorRecord visitorRecordInfo">_info_</div>'+
         '</div>');
@@ -92,7 +79,7 @@ var LocationVisitorsManager = (function () {
     };
 
     LocationVisitorsManager.prototype.add_visitor = function (visitor) {
-        //console.log('LocationVisitorsManager.prototype.add_visitor');
+        //console.log('LocationVisitorsManager.prototype.add_visitor', visitor);
         if (this.visitors.indexOf(visitor) < 0) {
             this.visitors.push(visitor);
             this.add_visitor_record(visitor);
