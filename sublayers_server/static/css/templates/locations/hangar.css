@@ -85,9 +85,9 @@
 
 .hangar-car-list-itemWrap {
     box-sizing: border-box;
-    margin-right: 15px;
-    width: 139px;
-    height: 72px;
+    margin-right: 10px;
+    width: 164px;
+    height: 85px;
     float: left;
     opacity: 0.6;
 }
@@ -99,6 +99,7 @@
 .hangar-car-list-itemWrap-active {
     opacity: 1;
     background-image: url('/static/img/slot_selection.png');
+    background-size: contain;
 }
 
 .hangar-car-list-item {
@@ -114,6 +115,7 @@
     padding: 2px 2px 2px 2px;
     font: 10pt Nouveau_IBM;
     color: #135806;
+    margin-left: 3px;
 }
 
 .hangar-car-list-pictureWrap {
