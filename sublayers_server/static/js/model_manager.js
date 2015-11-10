@@ -1527,12 +1527,25 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivatePerk = function (perk_id) {
-        console.log('ClientManager.prototype.sendSetPerkState', perk_id);
+        //console.log('ClientManager.prototype.sendSetPerkState', perk_id);
         var mes = {
             call: "activate_perk",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 perk_id: perk_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSetAboutSelf = function (str) {
+        //console.log('ClientManager.prototype.sendSetAboutSelf', str);
+        var mes = {
+            call: "set_about_self",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                str: str
             }
         };
         rpcCallList.add(mes);

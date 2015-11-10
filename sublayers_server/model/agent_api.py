@@ -604,3 +604,6 @@ class AgentAPI(API):
         # log.debug('Agent %s try aktivate perk %s', self.agent, perk_id)
         TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
 
+    @public_method
+    def set_about_self(self, str):
+        self.agent.example.about_self = str
