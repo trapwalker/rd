@@ -29,18 +29,57 @@ var LocationVisitorsManager = (function () {
 
     LocationVisitorsManager.prototype.visitor_record_click = function (event) {
         //console.log('LocationVisitorsManager.prototype.visitor_record_click');
-        clientManager.sendCreatePrivateChat($(event.target).data('visitor'))
+        clientManager.sendCreatePrivateChat($(event.target).parent().data('visitor'))
+    };
+
+    LocationVisitorsManager.prototype.visitor_record_info_click = function (event) {
+        //console.log('LocationVisitorsManager.prototype.visitor_record_info_click');
+        var person = $(event.target).parent().data('visitor');
+
+        var textAreaDiv = $('#textAreaGlobal');
+        var personInfo = $('#VGM-PlayerInfoDivInCity');
+        if (! personInfo.length) {
+            textAreaDiv.append('<div id="VGM-PlayerInfoDivInCity"></div>');
+            personInfo = $('#VGM-PlayerInfoDivInCity');
+        }
+        else {
+            personInfo.empty();
+        }
+
+        // Делаем Ajax запрос на информацию по пользователю
+        $.ajax({
+            url: "http://" + location.host + '/api/person_info',
+            data: {person: person},
+            success: function(data) {
+                //console.log(data);
+                personInfo.append(data);
+            }
+        });
+
+        personInfo.css('display', 'block');
     };
 
     LocationVisitorsManager.prototype.add_visitor_record = function (visitor) {
-        var visitorDiv = $('<div id="visitorRecord_' + visitor + '" class="VMG-message-message sublayers-clickable visitorRecord">' + visitor + '</div>');
+        //var visitorDiv = $('<div id="visitorRecord_' + visitor + '" class="VMG-message-message sublayers-clickable visitorRecord">' + visitor + '</div>');
+        //var visitorDiv = $('<div class="VMG-message-message sublayers-clickable visitorRecord">' + visitor +
+        //'<div>_info_</div>'+
+        //'</div>');
+
+        var visitorDiv = $('<div id="visitorRecord_' + visitor + '" class="VMG-message-message visitor-record sublayers-clickable">'+
+        '<div class="visitorRecord visitorRecordName">' + visitor + '</div>'+
+        '<div class="visitorRecord visitorRecordInfo">_info_</div>'+
+        '</div>');
+
         visitorDiv.data('visitor', visitor);
-        visitorDiv.click(this.visitor_record_click);
+
+        visitorDiv.find('.visitorRecordName').first().click(this.visitor_record_click);
+        visitorDiv.find('.visitorRecordInfo').first().click(this.visitor_record_info_click);
+
         $('#visitorList').append(visitorDiv);
     };
 
     LocationVisitorsManager.prototype.add_visitor = function (visitor) {
-        //console.log('LocationVisitorsManager.prototype.add_visitor');
+        //console.log('LocationVisitorsManager.prototype.add_visitor', visitor);
         if (this.visitors.indexOf(visitor) < 0) {
             this.visitors.push(visitor);
             this.add_visitor_record(visitor);
@@ -1655,6 +1694,17 @@ var TrainerManager = (function () {
 
     TrainerManager.prototype.cancel = function() {
         //console.log('TrainerManager.prototype.cancel');
+        clientManager.sendGetRPGInfo();
+    };
+
+    TrainerManager.prototype.resetSkills = function() {
+        //console.log('TrainerManager.prototype.resetSkills');
+        clientManager.sendResetSkills();
+    };
+
+    TrainerManager.prototype.resetPerks = function() {
+        //console.log('TrainerManager.prototype.resetPerks');
+        clientManager.sendResetPerks();
     };
 
     return TrainerManager;

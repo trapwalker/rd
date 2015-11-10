@@ -6,24 +6,37 @@
     height: 100%;
 }
 
-.car-info-block-picture {
+.car-info-block-picture-hangar {
     position: relative;
     float: left;
     height: 100%;
     width: 421px;
-    border-right: 1px solid #30fc00;
     margin-right: 8px;
+}
+
+.car-info-block-picture {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border-right: 1px solid #30fc00;
+}
+
+.car-info-block-info-hangar {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 297px;
 }
 
 .car-info-block-info {
     position: relative;
-    float: left;
+    box-sizing: border-box;
     height: 100%;
-    width: 304px;
+    width: 100%;
 }
 
 .car-info-block-body-right-menu {
-    width: 297px;
+    width: 100%;
     height: 40px;
     font: 12pt Nouveau_IBM;
 }
@@ -59,7 +72,7 @@
 .car-info-block-body-right-list {
     position: relative;
     font: 12pt FreePixel;
-    width: 297px;
+    width: 100%;
     height: calc(100% - 43px);
     border: solid 1px #00f150;
     padding-top: 17px;
@@ -82,10 +95,9 @@
 .car-info-block-body-right-list-value {
     position: relative;
     float: left;
-    width: 125px;
+    width: calc(100% - 150px);
     color: #30fc00;
     margin-bottom: 2px;
-    margin-left: -8px;
     text-align: center;
     display: inline-block;
 }
@@ -110,6 +122,7 @@
     position: relative;
     float: left;
     height: 30px;
+    width: calc(100% - 10px);
     line-height: 30px;
     margin-left: 10px;
     margin-right: 10px;

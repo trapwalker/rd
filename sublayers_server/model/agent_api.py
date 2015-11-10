@@ -18,7 +18,8 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
-    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk)
+    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk,
+    TransactionResetSkills, TransactionResetPerks)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -585,6 +586,14 @@ class AgentAPI(API):
         messages.RPGStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
+    def reset_skills(self):
+        TransactionResetSkills(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def reset_perks(self):
+        TransactionResetPerks(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
     def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
         # log.debug('Agent %s try set skill state', self.agent)
         TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
@@ -595,3 +604,6 @@ class AgentAPI(API):
         # log.debug('Agent %s try aktivate perk %s', self.agent, perk_id)
         TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
 
+    @public_method
+    def set_about_self(self, str):
+        self.agent.example.about_self = str

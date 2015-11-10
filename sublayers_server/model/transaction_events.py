@@ -7,7 +7,7 @@ from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import GasStation, Town
-from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
+from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory, InventoryPerksAttribute
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 
 import sublayers_server.model.messages as messages
@@ -579,5 +579,46 @@ class TransactionActivatePerk(TransactionEvent):
                 if self.agent.server.reg[perk] not in ex_agent.perks:
                     return
             ex_agent.perks.append(activate_perk)
+
+        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
+
+
+class TransactionResetSkills(TransactionEvent):
+    def __init__(self, agent, **kw):
+        super(TransactionResetSkills, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(TransactionResetSkills, self).on_perform()
+        ex_agent = self.agent.example
+
+        # todo: списать деньги
+
+        ex_agent.driving = 0
+        ex_agent.shooting = 0
+        ex_agent.masking = 0
+        ex_agent.leading = 0
+        ex_agent.trading = 0
+        ex_agent.engineering = 0
+
+        # todo: сделать правильно удаление перков из массива перков
+        # ex_agent.perks = InventoryPerksAttribute()
+
+        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
+
+
+class TransactionResetPerks(TransactionEvent):
+    def __init__(self, agent, **kw):
+        super(TransactionResetPerks, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(TransactionResetPerks, self).on_perform()
+        ex_agent = self.agent.example
+
+        # todo: списать деньги
+
+        # todo: сделать правильно удаление перков из массива перков
+        # ex_agent.perks = InventoryPerksAttribute()
 
         messages.RPGStateMessage(agent=self.agent, time=self.time).post()

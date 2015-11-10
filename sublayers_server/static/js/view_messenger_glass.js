@@ -859,6 +859,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.showChatInMap = function(){
         this.chatWrapDiv.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '1px');
+        $('#VGM-PlayerInfoDivInCity').remove();
     };
 
     return ViewMessengerGlass;

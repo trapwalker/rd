@@ -193,7 +193,7 @@
         margin-right: 10px;
     }
 
-    character-perk-item-caption {
+    .character-perk-item-caption {
         position: relative;
         height: 16px;
         width: 100%;
@@ -201,7 +201,7 @@
 
 </style>
 
-<div class="character-window-main">
+<div id="CharacterWindowMain" class="character-window-main">
     {% include drag_close_header.html %}
     <div class="character-window-body">
         <div class="character-window-body-info">
@@ -225,9 +225,8 @@
                     <div class="character-window-body-character-info-string">Карма: 0 (Нейтрал)</div>
                     <div class="character-window-body-character-info-about-self">
                         <div class="character-window-body-character-info-about-self-caption">О себе:</div>
-                        <textarea class="character-window-body-character-info-about-self-memo" maxlength="100">
-                            {{ agent.example.about_self }}
-                        </textarea>
+                        <textarea class="character-window-body-character-info-about-self-memo" maxlength="100">{{
+                            agent.example.about_self }}</textarea>
                     </div>
                 </div>
             </div>
@@ -329,4 +328,8 @@
         $(event.target).addClass('character-window-body-main-page-button-active');
     });
     $('.character-window-body-main-page-button').first().click();
+
+    $('#CharacterWindowMain').find('.windowDragCloseHeader-close').first().click(function(event) {
+        clientManager.sendSetAboutSelf($('#CharacterWindowMain').find('.character-window-body-character-info-about-self-memo').val());
+    });
 </script>

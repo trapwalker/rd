@@ -8,6 +8,10 @@
         </div>
     </div>
 
+    <div id="townJournalPageWrap" class="townPageWrap" style="display: none">
+        {% include journal_window.html %}
+    </div>
+
     <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
         {% if agent.example.car is not None %}
             {% include nucoil_window.html %}
@@ -67,6 +71,10 @@
         {% include trainer_window.html %}
     </div>
     {% end %}
+
+    <div id="testBuilding" class="townPageWrap" style="display: none">
+        {% include building_window.html %}
+    </div>
 </div>
 <script>
     function setBtnDisplay(btnIndex, state) {
@@ -76,6 +84,13 @@
             $("#btn_" + btnIndex + "_select").css("display", state);
          }
     };
+
+    function openBuilding() {
+        $('.townPageWrap').css('display', 'none');
+        $('#testBuilding').css('display', 'block');
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+    }
 
     // Открытие зданий
     function openNucoil() {
@@ -143,7 +158,9 @@
         $('#townTrainerPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.trainer;
         setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
         setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
     }
 
     function openTown() {
@@ -166,6 +183,16 @@
         setBtnDisplay(6, "none");
         setBtnDisplay(7, "none");
     };
+
+    function openJournal() {
+    $('.townPageWrap').css('display', 'none');
+        $('#townJournalPageWrap').css('display', 'block');
+        locationManager.currentNPC = null;
+        setBtnDisplay(8, "none");
+        setBtnDisplay(9, "none");
+        setBtnDisplay(6, "none");
+        setBtnDisplay(7, "none");
+    }
 
     // Обработчики кнопок-зданий
     {% for i in xrange(10) %}
@@ -291,6 +318,14 @@
         openChat();
     });
 
+    $("#btn_2_select").mouseup(function(event) {
+        openTown();
+    });
+
+    $("#btn_1_select").mouseup(function(event) {
+        openJournal();
+    });
+
     $("#btn_8_select").mouseup(function(event) {
         if (locationManager.currentNPC)
             locationManager.currentNPC.apply();
@@ -301,7 +336,5 @@
             locationManager.currentNPC.cancel();
     });
 
-    $("#btn_2_select").mouseup(function(event) {
-        openTown();
-    });
+
 </script>

@@ -86,4 +86,11 @@
         locationManager.trainer.setSkill(jq_this.data('skill_name'), jq_this.data('d_val'));
     });
 
+    $('#trainer-skills-drop-button').click(function (event) {
+        locationManager.trainer.resetSkills();
+    });
+
+    $('#trainer-perks-drop-button').click(function (event) {
+        locationManager.trainer.resetPerks();
+    });
 </script>

@@ -1,0 +1,240 @@
+<style>
+    #townJournalPageWrap {
+        position: absolute;
+        top: 260px;
+        left: 630px;
+    }
+
+    .journal-main {
+        position: relative;
+        width: 660px;
+        height: 424px;
+        cursor: default;
+    }
+
+    .journal-header {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: 40px;
+        padding: 12px 0px 0px 20px;
+        margin-bottom: 5px;
+
+        border: 1px solid #29F200;
+    }
+
+    .journal-page-button-block {
+        position: relative;
+        cursor: pointer;
+        float: left;
+        margin-right: 30px;
+        color: #29F200;
+        font: 12pt Nouveau_IBM;
+        opacity: 0.6;
+    }
+    .journal-page-button-block:hover { opacity: 1; }
+    .journal-page-button-block.active { opacity: 1; }
+
+    .journal-page-list {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 45px);
+    }
+
+    .journal-page-block {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .journal-page-left {
+        position: relative;
+        padding: 10px 10px 10px 10px;
+        float: left;
+        height: 100%;
+        width: 200px;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        box-sizing: border-box;
+        border: 1px solid #29F200;
+    }
+
+    .journal-page-right {
+        position: relative;
+        float: left;
+        height: 100%;
+        width: 460px;
+
+        box-sizing: border-box;
+        border: 1px solid #29F200;
+    }
+
+    .journal-page-parking-picture {
+        position: relative;
+        width: 100%;
+        height: 200px;
+    }
+
+    .journal-page-parking-info {
+        position: relative;
+        margin: auto;
+        width: 97%;
+        height: calc(100% - 200px);
+    }
+
+
+    .journal-parking-menu-city-block {
+        position: relative;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .journal-parking-menu-city-name-block {
+        position: relative;
+        height: 15px;
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+        opacity: 0.6;
+    }
+
+    .journal-parking-menu-city-name-block:hover {opacity: 1.0;}
+    .journal-parking-menu-city-name-block.active {opacity: 1.0;}
+
+    .journal-parking-menu-city-arrow {
+        position: relative;
+        margin-right: 5px;
+        float: left;
+        width: 10px;
+        height: 10px;
+        background: transparent url('/static/img/journal/arrow_right.png') 50% 50% no-repeat;
+    }
+
+    .journal-parking-menu-city-arrow.active {
+        background: transparent url('/static/img/journal/arrow_down.png') 50% 50% no-repeat;
+    }
+
+    .journal-parking-menu-city-name {
+        position: relative;
+        float: left;
+    }
+
+    .journal-parking-menu-city-car-list {
+        position: relative;
+        padding-left: 17px;
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+        display: none;
+    }
+    .journal-parking-menu-city-car-list.active { display: block; }
+
+    .journal-parking-menu-city-car {
+        position: relative;
+        cursor: pointer;
+        opacity: 0.6;
+    }
+    .journal-parking-menu-city-car:hover { opacity: 1; }
+
+
+</style>
+
+<div class="journal-main">
+    <div class="journal-header">
+        <div class="journal-page-button-block" data-page_id="journal_page_task">Задания</div>
+        <div class="journal-page-button-block" data-page_id="journal_page_parking">Стоянки</div>
+        <div class="journal-page-button-block" data-page_id="journal_page_trade">Торговля</div>
+        <div class="journal-page-button-block" data-page_id="journal_page_note">Заметки</div>
+    </div>
+    <div class="journal-page-list">
+        <div id="journal_page_task" class="journal-page-block">
+            <div class="journal-page-left"></div>
+            <div class="journal-page-right"></div>
+        </div>
+        <div id="journal_page_parking" class="journal-page-block">
+            <div class="journal-page-left">
+                <div class="journal-parking-menu-city-block">
+                    <div class="journal-parking-menu-city-name-block">
+                        <div class="journal-parking-menu-city-arrow"></div>
+                        <div class="journal-parking-menu-city-name">Тестовый город N</div>
+                    </div>
+                    <div class="journal-parking-menu-city-car-list">
+                        <div class="journal-parking-menu-city-car">Машина 1</div>
+                        <div class="journal-parking-menu-city-car">Машина 2</div>
+                        <div class="journal-parking-menu-city-car">Машина 3</div>
+                        <div class="journal-parking-menu-city-car">Машина 4</div>
+                    </div>
+                </div>
+                <div class="journal-parking-menu-city-block">
+                    <div class="journal-parking-menu-city-name-block">
+                        <div class="journal-parking-menu-city-arrow"></div>
+                        <div class="journal-parking-menu-city-name">Тестовый город N</div>
+                    </div>
+                    <div class="journal-parking-menu-city-car-list">
+                        <div class="journal-parking-menu-city-car">Машина 1</div>
+                        <div class="journal-parking-menu-city-car">Машина 2</div>
+                        <div class="journal-parking-menu-city-car">Машина 3</div>
+                        <div class="journal-parking-menu-city-car">Машина 4</div>
+                    </div>
+                </div>
+                <div class="journal-parking-menu-city-block">
+                    <div class="journal-parking-menu-city-name-block">
+                        <div class="journal-parking-menu-city-arrow"></div>
+                        <div class="journal-parking-menu-city-name">Тестовый город N</div>
+                    </div>
+                    <div class="journal-parking-menu-city-car-list">
+                        <div class="journal-parking-menu-city-car">Машина 1</div>
+                        <div class="journal-parking-menu-city-car">Машина 2</div>
+                        <div class="journal-parking-menu-city-car">Машина 3</div>
+                        <div class="journal-parking-menu-city-car">Машина 4</div>
+                    </div>
+                </div>
+            </div>
+            <div class="journal-page-right">
+                {% if agent.example.car is not None %}
+                {% set car = agent.example.car %}
+                <div class="journal-page-parking-picture">
+                    {% include car_info_img.html %}
+                </div>
+                <div class="journal-page-parking-info">
+                    {% include car_info_table.html %}
+                </div>
+                {% end %}
+            </div>
+        </div>
+        <div id="journal_page_trade" class="journal-page-block">
+            <div class="journal-page-left"></div>
+            <div class="journal-page-right"></div>
+        </div>
+        <div id="journal_page_note" class="journal-page-block">
+            <div class="journal-page-left"></div>
+            <div class="journal-page-right"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.journal-page-button-block').click(function(){
+        $('.journal-page-button-block').removeClass('active');
+        $(this).addClass('active');
+        $('.journal-page-block').css('display', 'none');
+        $('#' + $(this).data('page_id')).css('display', 'block');
+    });
+    $('.journal-page-button-block')[1].click();
+
+    $('.journal-parking-menu-city-name-block').click(function() {
+        console.log('asdasdasd');
+        var j_self = $(this);
+        var j_list = j_self.parent().find('.journal-parking-menu-city-car-list').first();
+        var j_arrow = j_self.find('.journal-parking-menu-city-arrow').first();
+        if (j_self.hasClass('active')) {
+            j_self.removeClass('active');
+            j_list.removeClass('active');
+            j_arrow.removeClass('active');
+        } else {
+            j_self.addClass('active');
+            j_list.addClass('active');
+            j_arrow.addClass('active');
+        }
+    });
+
+</script>
