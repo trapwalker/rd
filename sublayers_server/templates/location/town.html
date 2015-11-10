@@ -71,6 +71,10 @@
         {% include trainer_window.html %}
     </div>
     {% end %}
+
+    <div id="testBuilding" class="townPageWrap" style="display: none">
+        {% include building_window.html %}
+    </div>
 </div>
 <script>
     function setBtnDisplay(btnIndex, state) {
@@ -80,6 +84,13 @@
             $("#btn_" + btnIndex + "_select").css("display", state);
          }
     };
+
+    function openBuilding() {
+        $('.townPageWrap').css('display', 'none');
+        $('#testBuilding').css('display', 'block');
+        setBtnDisplay(7, "none");
+        setBtnDisplay(6, "none");
+    }
 
     // Открытие зданий
     function openNucoil() {
