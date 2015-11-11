@@ -901,6 +901,12 @@ var TunerManager = (function () {
 
     TunerManager.prototype.reDrawItem = function(position) {
         //console.log('TunerManager.prototype.reDrawItem');
+
+        var top_before = $('#tunerCarTopBefore');
+        var top_after = $('#tunerCarTopAfter');
+        var side_before = $('#tunerCarSideBefore');
+        var side_after = $('#tunerCarSideAfter');
+
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
             var top_slot = $('#tuner_top_' + position);
@@ -910,15 +916,36 @@ var TunerManager = (function () {
             top_slot.empty();
             side_slot.empty();
 
+            top_before.find('#' + position + 'ImgTop').remove();
+            top_after.find('#' + position + 'ImgTop').remove();
+            side_before.find('#' + position + 'ImgSide').remove();
+            side_after.find('#' + position + 'ImgSide').remove();
+
             // создать вёрстку для отрисовки
             var item = this.items[position];
+
             if (item.example) {
                 var itemImgTop = item.example['tuner_top'];
                 var itemImgSide = item.example['tuner_side'];
+                var itemImgIcon = item.example['inv_icon_small'];
 
+                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_top"></div>');
+                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_side"></div>');
 
-                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgTop + '" class="tuner_top"></div>');
-                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgSide + '" class="tuner_side"></div>');
+                if (itemImgTop) {
+                    var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container">');
+                    if (item.example['tuner_top_pos'] > 0)
+                        top_after.append(itemViewImgTop);
+                    else
+                        top_before.append(itemViewImgTop);
+                }
+                if (itemImgSide) {
+                    var itemViewImgSide = $('<img id="' + position + 'ImgSide"  src="' + itemImgSide + '" class="tuner-car-main-container">');
+                    if (item.example['tuner_side_pos'] > 0)
+                        side_after.append(itemViewImgSide);
+                    else
+                        side_before.append(itemViewImgSide);
+                }
 
                 itemDivTop.data('pos', position);
                 itemDivSide.data('pos', position);
@@ -1018,20 +1045,20 @@ var TunerManager = (function () {
     };
 
     TunerManager.prototype.setActiveSlot = function(slotName) {
-        //console.log('TunerManager.prototype.setActiveSlot');
-        if (! window.hasOwnProperty('dropTunerSlotActive')) return;
-
-        // Гасим все слоты
-        dropTunerSlotActive();
-
-        // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
-        if (this.activeSlot == slotName) this.activeSlot = null;
-        else this.activeSlot = slotName;
-        if (! this.items.hasOwnProperty(this.activeSlot)) return;
-        var item_rec = this.items[this.activeSlot];
-
-        // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
-        setTunerSlotActive(this.activeSlot);
+        ////console.log('TunerManager.prototype.setActiveSlot');
+        //if (! window.hasOwnProperty('dropTunerSlotActive')) return;
+        //
+        //// Гасим все слоты
+        //dropTunerSlotActive();
+        //
+        //// Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
+        //if (this.activeSlot == slotName) this.activeSlot = null;
+        //else this.activeSlot = slotName;
+        //if (! this.items.hasOwnProperty(this.activeSlot)) return;
+        //var item_rec = this.items[this.activeSlot];
+        //
+        //// Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
+        //setTunerSlotActive(this.activeSlot);
     };
 
     TunerManager.prototype._pont_points_refresh = function(){
