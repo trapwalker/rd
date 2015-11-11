@@ -82,10 +82,6 @@ class Mobile(Root):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
 
-    slot_t1 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner spoiler')
-    slot_t2 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner b_bumper')
-    slot_t3 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_bumper')
-
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
 
     price = Attribute(default=0, caption=u"Цена")
@@ -280,6 +276,16 @@ class Car(Mobile):
     slot_m86 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
     slot_m87 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
     slot_m88 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
+
+    slot_t1 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner b_bumper')
+    slot_t2 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner b_fender')
+    slot_t3 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner b_glass')
+    slot_t4 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner f_bumper')
+    slot_t5 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner f_fender')
+    slot_t6 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_glass')
+    slot_t7 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner roof')
+    slot_t8 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
+    slot_t9 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner wheels')
 
 
 class Drone(Mobile):
