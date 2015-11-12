@@ -10,7 +10,7 @@
     position: relative;
     float: left;
     height: 100%;
-    width: 421px;
+    width: 400px;
     margin-right: 8px;
 }
 
@@ -25,7 +25,7 @@
     position: relative;
     float: left;
     height: 100%;
-    width: 297px;
+    width: 320px;
 }
 
 .car-info-block-info {
@@ -45,10 +45,32 @@
     position: relative;
     float: left;
     margin-top: 12px;
-    margin-left: 14px;
+    margin-left: 22px;
     text-align: center;
     color: #135806;
     cursor: pointer;
+}
+
+.mainCarInfoWindow-body-right-menu-button-arrow-left {
+    width: 0px;
+	height: 0px;
+	border-top: 5px solid transparent;
+	border-left: 5px solid #30fc00;
+	border-bottom: 5px solid transparent;
+    float: left;
+    margin-top: 14px;
+    margin-left: 3px;
+}
+
+.mainCarInfoWindow-body-right-menu-button-arrow-right {
+    width: 0;
+	height: 0;
+	border-top: 5px solid transparent;
+	border-right: 5px solid #30fc00;
+	border-bottom: 5px solid transparent;
+    margin-top: 14px;
+    float: left;
+    margin-left: 3px;
 }
 
 .mainCarInfoWindow-body-right-menu-button:hover {
@@ -67,6 +89,7 @@
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
     color: #30fc00;
+    margin-left: 3px;
 }
 
 .car-info-block-body-right-list {
