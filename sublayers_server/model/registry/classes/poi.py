@@ -4,10 +4,11 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, Position, Parameter, TextAttribute
+from sublayers_server.model.registry.attr import Attribute, Position, Parameter, TextAttribute, DictAttribute
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.price import PriceAttribute
+from sublayers_server.model.registry.uri import URI
 
 from itertools import chain
 
@@ -41,10 +42,24 @@ class GasStation(MapLocation):
 
 
 class Building(object):
-    def __init__(self, caption, instances, **kw):
+    def __init__(self, caption, head=None, instances=None, **kw):
         self.caption = caption
-        self.instances = instances
+        self._head = head and URI(head)
+        self._instances = [URI(inst) for inst in instances or []]
+        # todo: checking errors
         self.__dict__.update(kw)
+
+    @property
+    def head(self):
+        return self._head and self._head.resolve()
+
+    @property
+    def instances(self):
+        # todo: need ##refactor
+        if not hasattr(self, '_instances_resolved'):
+            self._instances_resolved = [uri.resolve() for uri in self._instances]
+        return self._instances_resolved
+
 
 
 class Town(MapLocation):
@@ -56,7 +71,9 @@ class Town(MapLocation):
     nucoil = RegistryLink(caption=u'Заправка')
     trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
 
-    buildings = Attribute(default=dict, caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.')
+    buildings = DictAttribute(
+        default=dict, itemclass=Building,
+        caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.')
 
 
 class Institution(Root):
