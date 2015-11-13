@@ -16,57 +16,20 @@
     {% include npc_inventory.html %}
 </div>
 
-
-
 <script>
-    // Подсветка слотов при наведении указателя мыши
-    function setTunerSlotOpacity(slot_name, hover) {
-        if (hover) {
-            $("#tuner_top_" + slot_name).addClass("tuner-slot-hover");
-            $("#tuner_side_" + slot_name).addClass("tuner-slot-hover");
-        }
-        else {
-            $("#tuner_top_" + slot_name).removeClass("tuner-slot-hover");
-            $("#tuner_side_" + slot_name).removeClass("tuner-slot-hover");
-        }
-    }
-
-    // Подсветка активных слотов
-    function dropTunerSlotActive() {
-        $('.tuner-slot').removeClass("tuner-slot-active");
-    }
-
-    function setTunerSlotActive(slot_name) {
-        $("#tuner_top_" + slot_name).addClass("tuner-slot-active");
-        $("#tuner_side_" + slot_name).addClass("tuner-slot-active");
-    }
-
-
-
-
     {% for slot in tuner_slots %}
     $("#tuner_top_{{slot}}").mouseenter(function() {
-        setTunerSlotOpacity("{{slot}}", true);
+        locationManager.tuner.hoverSlot("{{slot}}", true);
     });
     $("#tuner_side_{{slot}}").mouseenter(function() {
-        setTunerSlotOpacity("{{slot}}", true);
+        locationManager.tuner.hoverSlot("{{slot}}", true);
     });
 
     $("#tuner_top_{{slot}}").mouseleave(function() {
-        setTunerSlotOpacity("{{slot}}", false);
+        locationManager.tuner.hoverSlot("{{slot}}", false);
     });
     $("#tuner_side_{{slot}}").mouseleave(function() {
-        setTunerSlotOpacity("{{slot}}", false);
+        locationManager.tuner.hoverSlot("{{slot}}", false);
     });
-
-    $("#tuner_top_{{slot}}").click(function() {
-        locationManager.tuner.setActiveSlot("{{slot}}");
-    });
-    $("#tuner_side_{{slot}}").click(function() {
-        locationManager.tuner.setActiveSlot("{{slot}}");
-    });
-
     {% end %}
-
-
 </script>
