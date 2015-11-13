@@ -739,23 +739,24 @@ var MechanicManager = (function () {
         //console.log('MechanicManager.prototype.changeItem', src, dest);
         if (src == dest) return;
 
-        var item = this.items[src];
-        var slot = null;
+        var item1 = this.items[src];
+        if (! item1) return;
+        var slot1 = null;
         for (var i = 0; i < this.mechanic_slots.length; i++)
             if (this.mechanic_slots[i].name == dest)
-                slot = this.mechanic_slots[i];
+                slot1 = this.mechanic_slots[i];
 
-        if (! item) return;
-        if (slot) {
-            // проверка по тегам, можем ли мы это сделать
-            if (!this._compare_tags(item, slot)) {
-                //console.log('Проверка по тегам не пройдена!');
-                return;
-            }
-        }
+        var item2 = this.items[dest];
+        var slot2 = null;
+        for (var i = 0; i < this.mechanic_slots.length; i++)
+            if (this.mechanic_slots[i].name == src)
+                slot2 = this.mechanic_slots[i];
+
+        if ((slot1) && (!this._compare_tags(item1, slot1))) return;
+        if ((slot2) && (item2.example) && (!this._compare_tags(item2, slot2))) return;
 
         this.items[src] = this.items[dest];
-        this.items[dest] = item;
+        this.items[dest] = item1;
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
@@ -793,6 +794,25 @@ var TunerManager = (function () {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
                 locationManager.tuner.changeItem(dragPos, dropPos);
+            }
+        });
+
+        itemWrapDiv.mouseenter(function(){
+            var item = locationManager.tuner.items[$(this).data('pos')];
+            if (!item.example) return;
+            for (var i = 0; i < locationManager.tuner.tuner_slots.length; i++) {
+                var slot = locationManager.tuner.tuner_slots[i];
+                if (locationManager.tuner._compare_tags(item, slot))
+                    locationManager.tuner.hoverSlot(slot.name, true);
+            }
+        });
+        itemWrapDiv.mouseleave(function(){
+            var item = locationManager.tuner.items[$(this).data('pos')];
+            if (!item.example) return;
+            for (var i = 0; i < locationManager.tuner.tuner_slots.length; i++) {
+                var slot = locationManager.tuner.tuner_slots[i];
+                if (locationManager.tuner._compare_tags(item, slot))
+                    locationManager.tuner.hoverSlot(slot.name, false);
             }
         });
         this.inv_show_div.append(itemWrapDiv);
@@ -931,9 +951,6 @@ var TunerManager = (function () {
                 var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_top" style="display: none"></div>');
                 var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_side" style="display: none"></div>');
 
-//                var itemDivTop = $('<div class="tuner-car-slot-picture"></div>');
-//                var itemDivSide = $('<div class="tuner-car-slot-picture"></div>');
-
                 if (itemImgTop) {
                     var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container tuner-car-item-img">');
                     if (item.example['tuner_top_pos'] > 0)
@@ -965,7 +982,6 @@ var TunerManager = (function () {
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'none');
                     },
                     stop: function(event, ui) {
-                        ui.helper.children().css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'block');
                     }
@@ -983,7 +999,6 @@ var TunerManager = (function () {
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'none');
                     },
                     stop: function(event, ui) {
-                        ui.helper.children().css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'block');
                     }
