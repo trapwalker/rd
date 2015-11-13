@@ -71,5 +71,7 @@ if __name__ == '__main__':
     #tr = reg['/institutions/trader/buhman']
     #pp(tr.as_client_dict(items=car.inventory))
 
+    np1 = reg['/poi/locations/towns/prior']
+
     q = reg['/quests/killer/n_kills']
     print q

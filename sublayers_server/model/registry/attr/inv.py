@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 #from sublayers_server.model.registry.attr import Attribute
-from base import Attribute
+from sublayers_server.model.registry.attr import Attribute, DictAttribute
 from sublayers_server.model.registry import tree
 from sublayers_server.model.registry.uri import URI
 
