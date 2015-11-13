@@ -40,6 +40,13 @@ class GasStation(MapLocation):
     u"""Заправочная станция"""
 
 
+class Building(object):
+    def __init__(self, caption, instances, **kw):
+        self.caption = caption
+        self.instances = instances
+        self.__dict__.update(kw)
+
+
 class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
     mechanic = RegistryLink(caption=u'Механик')
@@ -48,6 +55,8 @@ class Town(MapLocation):
     hangar = RegistryLink(caption=u'Ангар')
     nucoil = RegistryLink(caption=u'Заправка')
     trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
+
+    buildings = Attribute(default=dict, caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.')
 
 
 class Institution(Root):

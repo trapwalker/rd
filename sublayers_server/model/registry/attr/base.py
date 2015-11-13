@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry.uri import URI
 
+from collections import Callable
+
 
 class AttributeError(Exception):
     # todo: detalization
@@ -54,6 +56,8 @@ class Attribute(object):
             value = self.get_ex(obj.parent, obj.parent.__class__)  # todo: check it
         else:
             value = self.default
+            if isinstance(value, Callable):
+                value = value()
 
         return value
 
@@ -73,6 +77,27 @@ class Attribute(object):
         self.name = name
         self.cls = cls
         # todo: global attribute registration
+
+
+class DictAttribute(Attribute):
+    def __init__(self, itemclass=None, **kw):
+        super(DictAttribute, self).__init__(**kw)
+        self.itemclass = itemclass
+
+    def prepare(self, obj):
+        super(DictAttribute, self).prepare(obj)
+        value = obj.values.get(self.name)
+        if value is not None:
+            if self.itemclass:
+                for k, v in value.items():
+                    if not isinstance(v, self.itemclass):
+                        if isinstance(v, dict):
+                            v = self.itemclass(**v)
+                        elif isinstance(v, (list, tuple)):
+                            v = self.itemclass(*v)
+                        else:
+                            v = self.itemclass(v)
+                        value[k] = v
 
 
 class TextAttribute(Attribute):
