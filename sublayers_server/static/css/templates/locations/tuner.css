@@ -37,3 +37,8 @@
     float: left;
     background-color: #f5f5f5;
 }
+
+.tuner-car-slot-picture {
+    width: 35px;
+    height: 35px;
+}

@@ -35,59 +35,72 @@
         height: 100%;
     }
 
-    .tuner_slot {
-        cursor: pointer;
-    }
+    .tuner-car-item-img { opacity: 0.6; }
+    .tuner-car-item-img.active { opacity: 1; }
 
+    #tuner_side_slot_t2  { top: 217px; left: 145px; }
 
-    #tuner_top_slot_t1  { top: 0px; left: 0px;}
-    #tuner_top_slot_t2  { top: 40px; left: 0px;}
-    #tuner_top_slot_t3  { top: 80px; left: 0px;}
-    #tuner_top_slot_t4  { top: 120px; left: 0px;}
-    #tuner_top_slot_t5  { top: 160px; left: 0px;}
-    #tuner_top_slot_t6  { top: 0px; left: 440px;}
-    #tuner_top_slot_t7  { top: 40px; left: 440px;}
-    #tuner_top_slot_t8  { top: 80px; left: 440px;}
-    #tuner_top_slot_t9  { top: 120px; left: 440px;}
+    #tuner_top_slot_t3  { top: 60px; left: 135px; }
+    #tuner_side_slot_t3  { top: 190px; left: 135px; }
 
+    #tuner_top_slot_t4  { top: 60px; left: 390px; }
+    #tuner_side_slot_t4  { top: 230px; left: 390px; }
 
+    #tuner_side_slot_t5  { top: 217px; left: 330px; }
+
+    #tuner_top_slot_t6  { top: 60px; left: 270px; }
+    #tuner_side_slot_t6  { top: 190px; left: 270px; }
+
+    #tuner_top_slot_t7  { top: 60px; left: 229px; }
+    #tuner_side_slot_t7  { top: 175px; left: 229px; }
+
+    #tuner_side_slot_t8  { top: 250px; left: 235px; }
+
+    #tuner_top_slot_t9  { top: 60px; left: 70px;}
+    #tuner_side_slot_t9  { top: 230px; left: 70px;}
 
     .tuner-slot {
         position: absolute;
+        cursor: pointer;
         height: 35px;
         width: 35px;
         background: transparent url(static/img/cars/slot_passive.png) no-repeat 100% 100%;
     }
     .tuner-slot-hover { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
-    .tuner-slot-active { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
 
     .block-tuner-slot { display: none; }
 </style>
 
 <div class="tuner-car-main">
-
     <div class="tuner-car-main-top">
         <div id="tunerCarTopBefore" class="tuner-car-main-container"></div>
         <div class="tuner-car-main-container tuner-car-main-top-background"></div>
         <div id="tunerCarTopAfter" class="tuner-car-main-container"></div>
     </div>
-
     <div class="tuner-car-main-side">
         <div id="tunerCarSideBefore" class="tuner-car-main-container"></div>
         <div class="tuner-car-main-container tuner-car-main-side-background"></div>
         <div id="tunerCarSideAfter" class="tuner-car-main-container"></div>
     </div>
 
-    <div id="tuner_top_slot_t1" class="tuner-slot"></div>
-    <div id="tuner_top_slot_t2" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t2" class="tuner-slot"></div>
+
     <div id="tuner_top_slot_t3" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t3" class="tuner-slot"></div>
+
     <div id="tuner_top_slot_t4" class="tuner-slot"></div>
-    <div id="tuner_top_slot_t5" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t4" class="tuner-slot"></div>
+
+    <div id="tuner_side_slot_t5" class="tuner-slot"></div>
+
     <div id="tuner_top_slot_t6" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t6" class="tuner-slot"></div>
+
     <div id="tuner_top_slot_t7" class="tuner-slot"></div>
-    <div id="tuner_top_slot_t8" class="tuner-slot"></div>
+    <div id="tuner_side_slot_t7" class="tuner-slot"></div>
+
+    <div id="tuner_side_slot_t8" class="tuner-slot"></div>
+
     <div id="tuner_top_slot_t9" class="tuner-slot"></div>
-
-<!--   <div id="tuner_side_slot_t3" class="tuner-slot block-tuner-slot"></div> -->
-
+    <div id="tuner_side_slot_t9" class="tuner-slot"></div>
 </div>

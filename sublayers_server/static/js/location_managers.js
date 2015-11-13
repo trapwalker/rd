@@ -882,7 +882,6 @@ var TunerManager = (function () {
     TunerManager.prototype.clear = function() {
         //console.log('TunerManager.prototype.clear');
         // todo: написать тут чтото
-        this.setActiveSlot(null);
         this.items = {};
 
         if (this.inv_show_div)
@@ -929,18 +928,21 @@ var TunerManager = (function () {
                 var itemImgSide = item.example['tuner_side'];
                 var itemImgIcon = item.example['inv_icon_small'];
 
-                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_top"></div>');
-                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_side"></div>');
+                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_top" style="display: none"></div>');
+                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_side" style="display: none"></div>');
+
+//                var itemDivTop = $('<div class="tuner-car-slot-picture"></div>');
+//                var itemDivSide = $('<div class="tuner-car-slot-picture"></div>');
 
                 if (itemImgTop) {
-                    var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container">');
+                    var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container tuner-car-item-img">');
                     if (item.example['tuner_top_pos'] > 0)
                         top_after.append(itemViewImgTop);
                     else
                         top_before.append(itemViewImgTop);
                 }
                 if (itemImgSide) {
-                    var itemViewImgSide = $('<img id="' + position + 'ImgSide"  src="' + itemImgSide + '" class="tuner-car-main-container">');
+                    var itemViewImgSide = $('<img id="' + position + 'ImgSide"  src="' + itemImgSide + '" class="tuner-car-main-container tuner-car-item-img">');
                     if (item.example['tuner_side_pos'] > 0)
                         side_after.append(itemViewImgSide);
                     else
@@ -956,7 +958,17 @@ var TunerManager = (function () {
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#activeTownDiv'
+                    appendTo: '#activeTownDiv',
+                    start: function(event, ui) {
+                        ui.helper.children().css('display', 'block');
+                        $('#' + $(this).data('pos') + 'ImgTop').css('display', 'none');
+                        $('#' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+                    },
+                    stop: function(event, ui) {
+                        ui.helper.children().css('display', 'block');
+                        $('#' + $(this).data('pos') + 'ImgTop').css('display', 'block');
+                        $('#' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                    }
                 });
                 itemDivSide.draggable({
                     helper: 'clone',
@@ -964,9 +976,18 @@ var TunerManager = (function () {
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#activeTownDiv'
+                    appendTo: '#activeTownDiv',
+                    start: function(event, ui) {
+                        ui.helper.children().css('display', 'block');
+                        $('#' + $(this).data('pos') + 'ImgTop').css('display', 'none');
+                        $('#' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+                    },
+                    stop: function(event, ui) {
+                        ui.helper.children().css('display', 'block');
+                        $('#' + $(this).data('pos') + 'ImgTop').css('display', 'block');
+                        $('#' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                    }
                 });
-
                 top_slot.append(itemDivTop);
                 side_slot.append(itemDivSide);
             }
@@ -1008,57 +1029,36 @@ var TunerManager = (function () {
             if (item.example.tags.indexOf(slot.tags[i]) < 0)
                 return false;
         return true;
-
     };
 
     TunerManager.prototype.changeItem = function(src, dest) {
         //console.log('TunerManager.prototype.changeItem', src, dest);
         if (src == dest) return;
 
-        var item = this.items[src];
-        var slot = null;
+        var item1 = this.items[src];
+        if (! item1) return;
+        var slot1 = null;
         for (var i = 0; i < this.tuner_slots.length; i++)
             if (this.tuner_slots[i].name == dest)
-                slot = this.tuner_slots[i];
+                slot1 = this.tuner_slots[i];
 
-        if (! item) return;
-        if (slot) {
-            // проверка по тегам, можем ли мы это сделать
-            if (!this._compare_tags(item, slot)) {
-                //console.log('Проверка по тегам не пройдена!');
-                return;
-            }
-        }
+        var item2 = this.items[dest];
+        var slot2 = null;
+        for (var i = 0; i < this.tuner_slots.length; i++)
+            if (this.tuner_slots[i].name == src)
+                slot2 = this.tuner_slots[i];
+
+        if ((slot1) && (!this._compare_tags(item1, slot1))) return;
+        if ((slot2) && (item2.example) && (!this._compare_tags(item2, slot2))) return;
 
         this.items[src] = this.items[dest];
-        this.items[dest] = item;
+        this.items[dest] = item1;
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
-        if (dest.toString().indexOf('slot') >= 0)
-            this.setActiveSlot(dest);
-        else
-            this.setActiveSlot(null);
 
         // Отрисовать значение Очков Крутости
         this._pont_points_refresh();
-    };
-
-    TunerManager.prototype.setActiveSlot = function(slotName) {
-        ////console.log('TunerManager.prototype.setActiveSlot');
-        //if (! window.hasOwnProperty('dropTunerSlotActive')) return;
-        //
-        //// Гасим все слоты
-        //dropTunerSlotActive();
-        //
-        //// Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
-        //if (this.activeSlot == slotName) this.activeSlot = null;
-        //else this.activeSlot = slotName;
-        //if (! this.items.hasOwnProperty(this.activeSlot)) return;
-        //var item_rec = this.items[this.activeSlot];
-        //
-        //// Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
-        //setTunerSlotActive(this.activeSlot);
     };
 
     TunerManager.prototype._pont_points_refresh = function(){
@@ -1069,6 +1069,22 @@ var TunerManager = (function () {
                     if (this.items[key].example)
                         pp += this.items[key].example.pont_points;
         $('#tunerPontPointsValue').text(pp);
+    };
+
+    TunerManager.prototype.hoverSlot = function(slot_name, hover) {
+        //console.log('TunerManager.prototype.hoverSlot', slot_name, hover);
+        if (hover) {
+            $('#' + slot_name + 'ImgTop').addClass('active');
+            $('#' + slot_name + 'ImgSide').addClass('active');
+            $("#tuner_top_" + slot_name).addClass("tuner-slot-hover");
+            $("#tuner_side_" + slot_name).addClass("tuner-slot-hover");
+        }
+        else {
+            $('#' + slot_name + 'ImgTop').removeClass('active');
+            $('#' + slot_name + 'ImgSide').removeClass('active');
+            $("#tuner_top_" + slot_name).removeClass("tuner-slot-hover");
+            $("#tuner_side_" + slot_name).removeClass("tuner-slot-hover");
+        }
     };
 
     return TunerManager;
