@@ -1,0 +1,262 @@
+
+<style>
+    .person-info-chat-header {
+        position: relative;
+        width: 100%;
+        height: 40px;
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+        box-sizing: border-box;
+        border-bottom: 1px solid green;
+    }
+
+    .person-info-chat-header-page-btn {
+        position: relative;
+        float: left;
+        margin-left: 15px;
+        margin-top: 13px;
+        opacity: 0.6;
+    }
+
+    .person-info-chat-header-page-btn:hover {opacity: 1}
+    .person-info-chat-header-page-btn.active {opacity: 1}
+
+
+    .person-info-chat-header-close-btn{
+        position: relative;
+        float: right;
+        width: 140px;
+        height: 20px;
+        line-height: 1.5;
+        border: 1px solid #008000;
+        border-radius: 2px;
+        margin-top: 10px;
+        box-sizing: border-box;
+        margin-right: 20px;
+        text-align: center;
+        opacity: 0.6;
+    }
+
+    .person-info-chat-header-close-btn:hover {opacity: 1}
+
+
+    .person-info-chat-body {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 40px);
+
+        color: #29F200;
+        font: 11pt Nouveau_IBM;
+    }
+
+    .person-info-chat-body-page {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        display: none;
+    }
+
+    .person-info-chat-page-transport-picture {
+        position: relative;
+        width: 100%;
+        height: 205px;
+    }
+
+    .person-info-chat-page-transport-info {
+        position: relative;
+        margin: auto;
+        width: 100%;
+        height: calc(100% - 205px);
+    }
+
+    .person-info-chat-person-up {
+        position: relative;
+        width: 100%;
+        height: 205px;
+    }
+
+    .person-info-chat-person-up-left {
+        position: relative;
+        float: left;
+        height: 100%;
+        width: 152px;
+    }
+
+    .person-info-chat-person-up-right {
+        position: relative;
+        float: left;
+        height: 100%;
+        width: calc(100% - 152px);
+    }
+
+    .person-info-chat-person-up-right-info {
+        position: relative;
+        height: 85px;
+        width: 100%;
+        box-sizing: border-box;
+        padding-top: 10px;
+    }
+
+    .person-info-chat-person-up-right-skills {
+        position: relative;
+        height: calc(100% - 85px);
+        width: 100%;
+        box-sizing: border-box;
+        border-top: 1px solid #008000;
+    }
+
+    .person-info-chat-person-string-item {
+        position: relative;
+        width: 100%;
+        height: 17px;
+        margin-top: 2px;
+        box-sizing: border-box;
+        overflow: hidden;
+        color: #008000;
+        font-size: 12pt;
+    }
+
+    .person-info-chat-person-string-item-part {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    .person-info-chat-person-string-item-part.left {
+        text-align: left;
+        padding: 0 0 0 10px;
+    }
+
+    .person-info-chat-person-string-item-part.right {
+        text-align: right;
+        padding: 0 10px 0 0;
+    }
+
+    .person-info-chat-person-string-item-part.value-color {
+        color: #29F200;
+    }
+
+
+    .person-info-chat-person-down {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 205px);
+    }
+
+    .person-info-chat-person-down-title {
+        position: relative;
+        width: 100%;
+        height: 30px;
+        line-height: 2.1;
+        box-sizing: border-box;
+        padding-left: 14px;
+        border-top: 1px solid #008000;
+    }
+
+    .person-info-chat-person-down-about {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 30px);
+        box-sizing: border-box;
+        padding-left: 14px;
+        padding-right: 14px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+</style>
+
+<div class="person-info-chat-header">
+    <div class="person-info-chat-header-page-btn sublayers-clickable" data-page_id="personInfoChatPagePerson">Персонаж</div>
+    <div class="person-info-chat-header-page-btn sublayers-clickable" data-page_id="personInfoChatPageTransport">Транспорт</div>
+    <div class="person-info-chat-header-close-btn sublayers-clickable">Закрыть</div>
+</div>
+<div class="person-info-chat-body">
+    <div id="personInfoChatPagePerson" class="person-info-chat-body-page">
+        <div class="person-info-chat-person-up">
+            <div class="person-info-chat-person-up-left"></div>
+            <div class="person-info-chat-person-up-right">
+                <div class="person-info-chat-person-up-right-info">
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left value-color">{{ agent.example.login }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">[5]</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Класс:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">Избранный</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Карма:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">Удлюдок (-100)</div>
+                    </div>
+                </div>
+                <div class="person-info-chat-person-up-right-skills">
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Вождение:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.driving }}</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Стрельба:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.shooting }}</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Скрытность:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.masking }}</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Механик:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.engineering }}</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Торговля:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.trading }}</div>
+                    </div>
+                    <div class="person-info-chat-person-string-item">
+                        <div class="person-info-chat-person-string-item-part left">Лидерство:</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.leading }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="person-info-chat-person-down">
+            <div class="person-info-chat-person-down-title">О себе:</div>
+            <div class="person-info-chat-person-down-about">{{ agent.example.about_self }}</div>
+        </div>
+
+
+    </div>
+    <div id="personInfoChatPageTransport" class="person-info-chat-body-page">
+        {% if agent.example.car is not None %}
+        {% set car = agent.example.car %}
+        <div class="person-info-chat-page-transport-picture">
+            {% include location/car_info_img.html %}
+        </div>
+        <div class="person-info-chat-page-transport-info">
+            {% include location/car_info_table.html %}
+        </div>
+        {% else %}
+            <div class="person-info-chat-page-transport-info">Транспорт отсутствует</div>
+        {% end %}
+    </div>
+</div>
+
+<script>
+    $('.person-info-chat-header-close-btn').click(function () {
+        $('#VGM-PlayerInfoDivInCity').css('display', 'none');
+    });
+
+    $('.person-info-chat-header-page-btn').click(function () {
+        $('.person-info-chat-header-page-btn').removeClass('active');
+        $(this).addClass('active');
+        $('.person-info-chat-body-page').css('display', 'none');
+
+        $('#' + $(this).data('page_id')).css('display', 'block');
+    });
+
+    $('.person-info-chat-header-page-btn').first().click();
+
+
+</script>

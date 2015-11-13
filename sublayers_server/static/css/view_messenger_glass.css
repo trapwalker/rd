@@ -35,10 +35,16 @@
     color: #2afd0a;
     font: 8pt MICRADI;
     letter-spacing: 1px;
+    position: relative;
+    float: left;
 }
 
 .visitorRecord:hover {
     opacity: 1;
+}
+
+.visitorRecordInfo {
+    margin-left: 5px;
 }
 
 #VMGDivHardware {
@@ -338,4 +344,22 @@
     letter-spacing: 1px;
     bottom: 0;
     position: relative;
+}
+
+
+#VGM-PlayerInfoDivInCity {
+    height: 100%;
+    width: 100%;
+    background-color: #000000;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.visitor-record {
+    position: relative;
+    height: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 5px;
 }

@@ -127,7 +127,7 @@
 .trainer-skill-item-caption {
     position: relative;
     float: left;
-    width: calc(100% - 74px);
+    width: calc(100% - 82px);
     height: 100%;
     box-sizing: border-box;
     padding-left: 5px;
@@ -148,10 +148,12 @@
 
 .trainer-skill-item-dec {
     border-right: 6px solid #22BD00;
+    margin-right: 4px;
 }
 
 .trainer-skill-item-inc {
     border-left: 6px solid #22BD00;
+    margin-left: 4px;
 }
 
 .trainer-skill-item-value {
@@ -174,16 +176,32 @@
     font: 12pt Nouveau_IBM;
 }
 
+.trainer-perk-item-main.disable { color: #555555; }
+
 .trainer-perk-item-caption {
     position: relative;
     float: left;
-    width: 100%;
+    width: calc(100% - 28px);
     height: 100%;
     box-sizing: border-box;
     padding-left: 5px;
     text-align: left;
 }
 
+.trainer-perk-item-checkbox {
+    position: relative;
+    float: left;
+    cursor: pointer;
+    width: 20px;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0 4px 0 4px;
+}
+
+.trainer-perk-item-checkbox.default { display: none; }
+.trainer-perk-item-checkbox.active {background: transparent url('../../../img/check_box/checkbox_check.png') no-repeat 100% 100%;}
+.trainer-perk-item-checkbox.unactive { background: transparent url('../../../img/check_box/checkbox_clear.png') no-repeat 100% 100%;}
+.trainer-perk-item-checkbox.disable { display: none; }
 
 .trainer-light-back {
     background-color: #000000;

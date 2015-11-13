@@ -17,7 +17,7 @@ var WindowTemplateManager = (function () {
         $.ajax({
             url: "http://" + location.host + '/api' + win_url,
             data: win_data,
-            success: function(data){
+            success: function(data) {
                 if (self.unique[win_name] != 'waiting') return;
                 var temp_window = new TemplateWindow({
                     parentDiv: 'bodydiv',

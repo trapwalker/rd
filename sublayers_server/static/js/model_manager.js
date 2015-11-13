@@ -1486,6 +1486,28 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendResetSkills = function () {
+        //console.log('ClientManager.prototype.sendResetSkills');
+        var mes = {
+            call: "reset_skills",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendResetPerks = function () {
+        //console.log('ClientManager.prototype.sendResetSkills');
+        var mes = {
+            call: "reset_perks",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendSetSkillState = function (driving, shooting, masking, leading, trading, engineering) {
         //console.log('ClientManager.prototype.sendSetSkillState');
         var mes = {
@@ -1505,7 +1527,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendActivatePerk = function (perk_id) {
-        console.log('ClientManager.prototype.sendSetPerkState');
+        //console.log('ClientManager.prototype.sendSetPerkState', perk_id);
         var mes = {
             call: "activate_perk",
             rpc_call_id: rpcCallList.getID(),
@@ -1517,6 +1539,18 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendSetAboutSelf = function (str) {
+        //console.log('ClientManager.prototype.sendSetAboutSelf', str);
+        var mes = {
+            call: "set_about_self",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                str: str
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

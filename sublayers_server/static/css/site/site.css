@@ -2,7 +2,7 @@
     height: 100%;
     width: 100%;
     position: absolute;
-    background: transparent url('/static/img/background.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/background.jpg') 100% 100% no-repeat;
     background-position: center;
 }
 
