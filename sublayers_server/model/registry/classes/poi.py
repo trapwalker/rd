@@ -80,29 +80,32 @@ class Institution(Root):
     title = TextAttribute(caption=u"Имя")
     photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
     text = TextAttribute(caption=u"Текст приветствия")
+    type = TextAttribute(caption=u"Специальность NPC")
 
 
 class Nucoil(Institution):
-    pass
+    type = TextAttribute(default='nucoil', caption=u"Специальность NPC")
 
 
 class Armorer(Institution):
-    pass
+    type = TextAttribute(default='armorer', caption=u"Специальность NPC")
 
 
 class Mechanic(Institution):
-    pass
+    type = TextAttribute(default='mechanic', caption=u"Специальность NPC")
 
 
 class Tuner(Institution):
-    pass
+    type = TextAttribute(default='tuner', caption=u"Специальность NPC")
 
 
 class Trainer(Institution):
-    pass
+    type = TextAttribute(default='trainer', caption=u"Специальность NPC")
 
 
 class Trader(Institution):
+    type = TextAttribute(default='trader', caption=u"Специальность NPC")
+
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceAttribute(caption=u"Прайс")
@@ -117,5 +120,6 @@ class Trader(Institution):
 
 
 class Hangar(Institution):
+    type = TextAttribute(default='hangar', caption=u"Специальность NPC")
     car_list = Attribute(caption=u"Список продаваемых машин")
 
