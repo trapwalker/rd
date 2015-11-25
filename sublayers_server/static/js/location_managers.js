@@ -378,28 +378,45 @@ var ArmorerManager = (function () {
                 var itemImgTop = item.example['armorer_top_' + item.direction];
                 var itemImgSide = item.example['armorer_side_' + item.direction];
 
-
-                var itemDivTop = $('<div class="armorer-car-slot-picture"><img src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
-                var itemDivSide = $('<div class="armorer-car-slot-picture"><img src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');
+                var itemDivTop = $('<div class="armorer-car-slot-picture"><img id="armorer' + position + 'ImgTop" src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
+                var itemDivSide = $('<div class="armorer-car-slot-picture"><img id="armorer' + position + 'ImgSide" src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');
 
                 itemDivTop.data('pos', position);
                 itemDivSide.data('pos', position);
 
                 itemDivTop.draggable({
-                    helper: 'clone',
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#activeTownDiv'
+                    appendTo: '#activeTownDiv',
+                    start: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+                    },
+                    stop: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                    }
                 });
                 itemDivSide.draggable({
-                    helper: 'clone',
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#activeTownDiv'
+                    appendTo: '#activeTownDiv',
+                    start: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+                    },
+                    stop: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                    }
                 });
 
                 top_slot.append(itemDivTop);
@@ -421,11 +438,8 @@ var ArmorerManager = (function () {
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: 'clone',
-                    cursorAt: {
-                        left: 60,
-                        top: 42
-                    },
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -711,10 +725,7 @@ var MechanicManager = (function () {
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
                     helper: 'clone',
-                    cursorAt: {
-                        left: 60,
-                        top: 42
-                    },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -948,8 +959,8 @@ var TunerManager = (function () {
                 var itemImgSide = item.example['tuner_side'];
                 var itemImgIcon = item.example['inv_icon_small'];
 
-                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_top" style="display: none"></div>');
-                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_side" style="display: none"></div>');
+                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" style="display: none"></div>');
+                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" style="display: none"></div>');
 
                 if (itemImgTop) {
                     var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container tuner-car-item-img">');
@@ -1017,16 +1028,14 @@ var TunerManager = (function () {
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
             var item = this.items[position];
+
             if (item.example) {
                 itemDiv.find('.npcInventory-name').text(item.example.title);
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: 'clone',
-                    cursorAt: {
-                        left: 60,
-                        top: 42
-                    },
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
