@@ -26,7 +26,7 @@
                 {% for npc in cur_build.instances %}
                 <div class="building-npc-list-item" onclick="openNPC('{{ npc.type }}', '{{ building }}')">
                     <img class="building-npc-photo" src="{{ npc.photo }}"/>
-                    <div class="building-npc-name">{{ npc.title }}</div>
+                    <div class="building-npc-name">{{ npc.title }}<br>({{ npc.doc }})</div>
                 </div>
                 {% end %}
             </div>
