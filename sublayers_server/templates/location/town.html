@@ -12,13 +12,20 @@
         {% include journal_window.html %}
     </div>
 
-    <div id="townNucoilPageWrap" class="townPageWrap" style="display: none">
+    <div id="building_nucoil" class="townPageWrap townNucoilPageWrap" style="display: none">
         {% if agent.example.car is not None %}
             {% include nucoil_window.html %}
         {% else %}
             {% include npc_no_car.html %}
         {% end %}
     </div>
+
+    {% for building in town.example.buildings %}
+        {% set cur_build = town.example.buildings[building] %}
+        <div id="building_{{ building }}" class="townPageWrap building-wrap" style="display: none">
+            {% include building_window.html %}
+        </div>
+    {% end %}
 
     {% if town.example.armorer is not None %}
     <div id="townArmorerPageWrap" class="townPageWrap" style="display: none">
@@ -71,127 +78,113 @@
         {% include trainer_window.html %}
     </div>
     {% end %}
-
-    <div id="testBuilding" class="townPageWrap" style="display: none">
-        {% include building_window.html %}
-    </div>
 </div>
+
 <script>
     function setBtnDisplay(btnIndex, state) {
-         $("#btn_" + btnIndex).css("display", state);
-         if (state == 'none') {
-            $("#btn_" + btnIndex + "_over").css("display", state);
-            $("#btn_" + btnIndex + "_select").css("display", state);
-         }
+        $("#btn_" + btnIndex).css("display", state);
+        if (state == 'none') {
+           $("#btn_" + btnIndex + "_over").css("display", state);
+           $("#btn_" + btnIndex + "_select").css("display", state);
+        }
     };
-
-    function openBuilding() {
-        $('.townPageWrap').css('display', 'none');
-        $('#testBuilding').css('display', 'block');
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-    }
-
-    // Открытие зданий
-    function openNucoil() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townNucoilPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.nucoil;
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-    }
-
-    function openArmorer() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townArmorerPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.armorer;
-        clientManager.sendEnterToNPC('armorer');
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(8, "block");
-        setBtnDisplay(9, "block");
-    }
-
-    function openMechanic() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townMechanicPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.mechanic;
-        clientManager.sendEnterToNPC('mechanic');
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(8, "block");
-        setBtnDisplay(9, "block");
-    }
-
-    function openTuner() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townTunerPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.tuner;
-        clientManager.sendEnterToNPC('tuner');
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(8, "block");
-        setBtnDisplay(9, "block");
-    }
-
-    function openTrader() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townTraderPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.trader;
-        clientManager.sendEnterToNPC('trader');
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(8, "block");
-        setBtnDisplay(9, "block");
-    }
-
-    function openHangar() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townHangarPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.hangar;
-        setBtnDisplay(7, "none");
-        setBtnDisplay(8, "block");
-    }
-
-    function openTrainer() {
-        $('.townPageWrap').css('display', 'none');
-        $('#townTrainerPageWrap').css('display', 'block');
-        locationManager.currentNPC = locationManager.trainer;
-        setBtnDisplay(7, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(8, "block");
-        setBtnDisplay(9, "block");
-    }
 
     function openTown() {
         $('.townPageWrap').css('display', 'none');
         $('#layer1').css('display', 'block');
         $('#layer2').css('display', 'block');
         locationManager.currentNPC = null;
-        setBtnDisplay(8, "none");
-        setBtnDisplay(9, "none");
-        setBtnDisplay(6, "block");
-        setBtnDisplay(7, "block");
+        for (var i = 6; i < 10; i++)
+            setBtnDisplay(i, "none");
+        setBtnDisplay(5, "block");
+        $("#btn_5_select").mouseup(function(event) {});
     };
+
+    function openBuilding(building_name) {
+        $('.townPageWrap').css('display', 'none');
+        $('#building_' + building_name).css('display', 'block');
+        for (var i = 6; i < 10; i ++)
+            setBtnDisplay(i, "none");
+        $("#btn_5_select").mouseup(function(event) { openTown(); });
+    }
+
+    function openNPC(npc_type, build_name) {
+
+
+        var func_name = 'open_' + npc_type;
+        if (window[func_name]) {
+            for (var i = 6; i < 10; i ++)
+                setBtnDisplay(i, "none");
+            window[func_name]();
+            $("#btn_5_select").mouseup(function(event) { openBuilding(build_name); });
+        }
+    }
+
+    function open_armorer() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townArmorerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.armorer;
+        clientManager.sendEnterToNPC('armorer');
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
+
+    function open_mechanic() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townMechanicPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.mechanic;
+        clientManager.sendEnterToNPC('mechanic');
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
+
+    function open_tuner() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTunerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.tuner;
+        clientManager.sendEnterToNPC('tuner');
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
+
+    function open_trader() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTraderPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.trader;
+        clientManager.sendEnterToNPC('trader');
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
+
+    function open_hangar() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townHangarPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.hangar;
+        setBtnDisplay(8, "block");
+    }
+
+    function open_trainer() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townTrainerPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.trainer;
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
+    }
 
     function openChat() {
         $('.townPageWrap').css('display', 'none');
         $('#townChatPageWrap').css('display', 'block');
         locationManager.currentNPC = null;
-        setBtnDisplay(8, "none");
-        setBtnDisplay(9, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(7, "none");
+        for (var i = 5; i < 10; i++)
+            setBtnDisplay(i, "none");
     };
 
     function openJournal() {
     $('.townPageWrap').css('display', 'none');
         $('#townJournalPageWrap').css('display', 'block');
         locationManager.currentNPC = null;
-        setBtnDisplay(8, "none");
-        setBtnDisplay(9, "none");
-        setBtnDisplay(6, "none");
-        setBtnDisplay(7, "none");
+        for (var i = 5; i < 10; i++)
+            setBtnDisplay(i, "none");
     }
 
     // Обработчики кнопок-зданий
@@ -222,58 +215,12 @@
     });
 
     $("#img_house{{i}}_on").click(function(event) {
-        switch (event.target.id) {
-            case "img_house1_on":
-                openArmorer();
-                break;
-            case "img_house2_on":
-                openMechanic();
-                break;
-            case "img_house3_on":
-                openTrainer();
-                break;
-            case "img_house4_on":
-                openHangar();
-                break;
-            case "img_house5_on":
-                openNucoil();
-                break;
-            case "img_house6_on":
-                openTuner();
-                break;
-            case "img_house7_on":
-                openTrader();
-                break;
-            default:
-                console.log(event.target.id);
-        }
+        // console.log($(this).data('building'));
+        openBuilding($(this).data('building'));
     });
     $("#path_h{{i}}").click(function(event) {
-        switch (event.target.id) {
-            case "path_h1":
-                openArmorer();
-                break;
-            case "path_h2":
-                openMechanic();
-                break;
-            case "path_h3":
-                openTrainer();
-                break;
-            case "path_h4":
-                openHangar();
-                break;
-            case "path_h5":
-                openNucoil();
-                break;
-            case "path_h6":
-                openTuner();
-                break;
-            case "path_h7":
-                openTrader();
-                break;
-            default:
-                console.log(event.target.id);
-        }
+        // console.log($(this).data('building'));
+        openBuilding($(this).data('building'));
     });
     {% end %}
 
@@ -335,6 +282,4 @@
         if (locationManager.currentNPC)
             locationManager.currentNPC.cancel();
     });
-
-
 </script>

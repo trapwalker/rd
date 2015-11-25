@@ -1,128 +1,6 @@
-{% set npc_photo = town.example.hangar.photo %}
-{% set npc_title = town.example.hangar.title %}
-{% set npc_text = town.example.hangar.text %}
-
-<style>
-    #testBuilding {
-        position: absolute;
-        top: 140px;
-        left: 592px;
-        width: 734px;
-        height: 661px;
-    }
-
-    .building-main {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-    .building-center-block {
-        position: relative;
-        width: 100%;
-        height: 240px;
-    }
-
-    .building-center-menu-block {
-        position: relative;
-        padding: 4px;
-        float: left;
-        height: 100%;
-        width: 30%;
-        border-right: 1px solid green;
-        box-sizing: border-box;
-    }
-
-    .building-center-menu-item {
-        position: relative;
-        height: 30px;
-        margin-bottom: 5px;
-        cursor: pointer;
-        font: 11pt Nouveau_IBM;
-        color: #29F200;
-        opacity: 0.6;
-        background-color: green;
-    }
-    .building-center-menu-item:hover { opacity: 1; }
-    .building-center-menu-item.active { opacity: 1; }
-
-    .building-center-menu-item-icon {
-        position: relative;
-        float: left;
-    }
-    .building-center-menu-item-caption {
-        position: relative;
-        float: left;
-        height: 100%;
-        line-height: 2;
-        padding-left: 10px;
-        box-sizing: border-box;
-    }
-
-    .building-center-pages-block {
-        position: relative;
-        float: left;
-        height: 100%;
-        width: 70%;
-    }
-
-    .building-center-page {
-        position: absolute;
-        box-sizing: border-box;
-        padding: 10px;
-        height: 100%;
-        width: 100%;
-        color: #28F100;
-    }
-
-    .building-bottom-block {
-        position: relative;
-        width: 100%;
-        height: 215px;
-        box-sizing: border-box;
-        padding: 20px 0px 0px 0px;
-    }
-
-    .building-npc-list-block {
-        position: relative;
-        margin: auto;
-        width: 590px;
-        height: 185px;
-        overflow-x: auto;
-    }
-
-    .building-npc-list {
-        position: relative;
-        margin: auto;
-    }
-
-    .building-npc-list-item {
-        position: relative;
-        cursor: pointer;
-        height: 170px;
-        width: 176px;
-        margin-right: 10px;
-        padding: 8px 0px 0px 2px;
-        border: 1px solid green;
-        box-sizing: border-box;
-        float: left;
-    }
-    .building-npc-list-item:hover { background-color: #124506;; }
-
-    .building-npc-photo {
-        position: relative;
-        margin: auto;
-    }
-
-    .building-npc-name {
-        position: absolute;
-        bottom: 10px;
-        width: 100%;
-        text-align: center;
-        font: 11pt Nouveau_IBM;
-        color: #29F200;
-    }
-</style>
+{% set npc_photo = cur_build.head.photo %}
+{% set npc_title = cur_build.head.title %}
+{% set npc_text = cur_build.head.text %}
 
 <div class="building-main">
     {% include npc_header.html %}
@@ -138,25 +16,19 @@
             </div>
         </div>
         <div class="building-center-pages-block">
-            <div id="buildingPageAvailableTasks" class="building-center-page">Доступные задания</div>
-            <div id="buildingPageActiveTasks" class="building-center-page">Активные задания</div>
+            <!--<div id="buildingPageAvailableTasks" class="building-center-page">Доступные задания</div>-->
+            <!--<div id="buildingPageActiveTasks" class="building-center-page">Активные задания</div>-->
         </div>
     </div>
     <div class="building-bottom-block">
         <div class="building-npc-list-block">
             <div class="building-npc-list">
-                <div class="building-npc-list-item">
-                    <img class="building-npc-photo" src="{{ npc_photo }}"/>
-                    <div class="building-npc-name">{{ npc_title }}</div>
+                {% for npc in cur_build.instances %}
+                <div class="building-npc-list-item" onclick="openNPC('{{ npc.type }}', '{{ building }}')">
+                    <img class="building-npc-photo" src="{{ npc.photo }}"/>
+                    <div class="building-npc-name">{{ npc.title }}<br>({{ npc.doc }})</div>
                 </div>
-                <div class="building-npc-list-item">
-                    <img class="building-npc-photo" src="{{ npc_photo }}"/>
-                    <div class="building-npc-name">{{ npc_title }}</div>
-                </div>
-                <div class="building-npc-list-item">
-                    <img class="building-npc-photo" src="{{ npc_photo }}"/>
-                    <div class="building-npc-name">{{ npc_title }}</div>
-                </div>
+                {% end %}
             </div>
         </div>
     </div>
@@ -165,7 +37,7 @@
 <script>
     // Функция подстраивает ширину списка под его содержимое
     function resizeNPCList() {
-        var inventory = $(".building-npc-list:first");
+        var inventory = $('#building_{{ building }}').find(".building-npc-list").first();
         var width = 0;
         if (inventory) {
             $(inventory).find('.building-npc-list-item').each(function (index, element) {
@@ -177,6 +49,7 @@
     }
     resizeNPCList();
 
+    /*
     $('.building-center-menu-item').click(function(){
         $('.building-center-menu-item').removeClass('active');
         $(this).addClass('active');
@@ -184,6 +57,7 @@
         $('#' + $(this).data('page_id')).css('display', 'block');
     });
     $('.building-center-menu-item').first().click();
+    */
 
 </script>
 

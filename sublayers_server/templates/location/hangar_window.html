@@ -40,6 +40,20 @@
 </div>
 
 <script>
+    // Функция подстраивает ширину списка под его содержимое
+    function resizeCarList() {
+        var inventory = $('.hangar-car-list-list').first();
+        var width = 0;
+        if (inventory) {
+            $(inventory).find('.hangar-car-list-itemWrap').each(function (index, element) {
+                if ($(element).css('display') == 'block')
+                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+            });
+            $(inventory).width(width);
+        }
+    }
+    resizeCarList();
+
     $('.hangar-car-list-itemWrap').click(function () {
         // Сбросить предыдущее выделение и выджелить выбранный итем
         $('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
@@ -55,6 +69,8 @@
         // Установить выбранную машинку в менеджер
         locationManager.hangar.current_car = $(this).data('car_number');
     })
+
+
 
     $('.hangar-car-list-itemWrap').first().click();
 </script>

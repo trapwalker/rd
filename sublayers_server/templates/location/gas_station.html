@@ -7,7 +7,7 @@
             </div>
         </div>
     </div>
-    <div id="townNucoilPageWrap" class="townPageWrap" style="display: block">
+    <div  class="townPageWrap townNucoilPageWrap" style="display: block">
         {% include nucoil_window.html %}
     </div>
 </div>
@@ -51,6 +51,6 @@
 
     $("#btn_2_select").mouseup(function(event){
         $('.townPageWrap').css('display', 'none');
-        $('#townNucoilPageWrap').css('display', 'block');
+        $('.townNucoilPageWrap').css('display', 'block');
     });
 </script>
