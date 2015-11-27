@@ -424,6 +424,11 @@ class AgentAPI(API):
             else:
                 self.send_kick(username=self.agent.login)
                 self.agent.example.reset()
+        elif command == '/quest':
+            if not args:
+                pass  # todo: Вывести перечень активных квестов
+            else:
+                pass
 
         else:
             log.warning('Unknown console command "%s"', cmd)

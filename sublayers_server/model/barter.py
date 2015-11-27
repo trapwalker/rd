@@ -310,8 +310,8 @@ class Barter(object):
         ActivateBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
         # Вызвать событие on_trade_enter у агентов
-        self.initiator.on_trade_enter(self.recipient)
-        self.recipient.on_trade_enter(self.initiator)
+        self.recipient.on_trade_enter(contragent=self.initiator, time=time, is_init=True)
+        self.initiator.on_trade_enter(contragent=self.recipient, time=time, is_init=False)
 
         # todo: остановить обе машинки
 

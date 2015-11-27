@@ -90,7 +90,7 @@ class State(O):
         pass
 
     @state_event
-    def on_exit_location(self, location):
+    def on_exit_location(self, agent, time, location):
         pass
 
     @state_event
@@ -106,11 +106,11 @@ class State(O):
         pass
 
     @state_event
-    def on_trade_enter(self, user):
+    def on_trade_enter(self, agent, contragent, time, is_init):
         pass
 
     @state_event
-    def on_trade_exit(self, user, canceled, buy, sale, cost):
+    def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
         pass
 
     @state_event
@@ -165,7 +165,8 @@ class Quest(Item):
         self.agent = agent
         # todo: log warning if agent and abstract inconsistency
         self._state = None
-        self.state = self.first_state
+        if not self.abstract:
+            self.state = self.first_state
 
     @property
     def state(self):
@@ -174,6 +175,9 @@ class Quest(Item):
     @state.setter
     def state(self, value):
         assert value
+        assert not self.abstract
+        assert self.agent
+
         if isinstance(value, State):
             new_state = value
         else:
@@ -232,8 +236,8 @@ class QNKills(Quest):
             State.on_state_init(self)
             self.kills_count = 0
 
-        def on_kill(self, killed_car):
-            super(QNKills.Begin, self).on_kill(killed_car)
+        def on_kill(self, agent, time, obj):
+            super(QNKills.Begin, self).on_kill(agent, time, obj)
             self.kills_count += 1
             if self.kills_count >= 5:
                 self.quest.state = self.quest.Win
@@ -254,15 +258,16 @@ class QMortalCurse(Quest):
             self.tramps = set()
             self.magic_count = 13
 
-        def on_kill(self, killed_car):
-            State.on_kill(self, killed_car)
-            self.kills_count += 1
-            if (self.kills_count % self.magic_count) == 0:
-                self.quest.agent.die()
+        def on_kill(self, agent, time, obj):
+            State.on_kill(self, agent, time, obj)
+            if agent is self.quest.agent:
+                self.kills_count += 1
+                if (self.kills_count % self.magic_count) == 0:
+                    self.quest.agent.die()
 
-        def on_trade_exit(self, user, canceled, buy, sale, cost):
-            State.on_trade_exit(self, user, canceled, buy, sale, cost)
-            if sale and not buy and cost == 0:
-                self.tramps.add(user.login)
+        def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
+            State.on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init)
+            if agent is self.quest.agent and sale and not buy and cost == 0:
+                self.tramps.add(contragent.login)
                 if len(self.tramps) >= self.magic_count:
                     self.quest.state = self.quest.Win

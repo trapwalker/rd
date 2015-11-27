@@ -56,7 +56,7 @@ class MapLocation(Observer):
         if agent.car:
             agent.car.displace(time=time)
         # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
-        agent.on_enter_location(location=self)
+        agent.on_enter_location(location=self, time=time)
 
         self.send_inventory_info(agent=agent, time=time)
 
@@ -80,7 +80,7 @@ class MapLocation(Observer):
                 ExamplesShowMessage(agent=agent, time=time).post()
 
             # todo: review agent.on_enter_location call
-            agent.on_enter_location(location=self)
+            agent.on_enter_location(location=self, time=time)
 
             self.send_inventory_info(agent=agent, time=time)
 
@@ -94,7 +94,7 @@ class MapLocation(Observer):
     def on_exit(self, agent, time):
         self.visitors.remove(agent)
         agent.current_location = None
-        agent.on_exit_location(location=self)
+        agent.on_exit_location(time=time, location=self)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)

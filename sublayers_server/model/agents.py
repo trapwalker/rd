@@ -366,34 +366,40 @@ class Agent(Object):
         self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
 
     def on_enter_location(self, time, location):
-        # todo: csll it ##quest
         log.debug('%s:: on_enter_location(%s)', self, location)
         self.subscriptions.on_enter_location(agent=self, time=time, location=location)
 
-    def on_exit_location(self, location):
-        # todo: delivery for subscribers ##quest
+    def on_exit_location(self, time, location):
         log.debug('%s:: on_exit_location(%s)', self, location)
+        self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
     def on_enter_npc(self, npc):
+        # todo: csll it ##quest
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_enter_npc(%s)', self, npc)
 
     def on_exit_npc(self, npc):
+        # todo: csll it ##quest
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_exit_npc(%s)', self, npc)
 
     def on_die(self):
+        # todo: csll it ##quest
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_die()', self)
 
-    def on_trade_enter(self, user):
-        # todo: delivery for subscribers ##quest
-        log.debug('%s:: on_trade_enter(%s)', self, user)
+    def on_trade_enter(self, contragent, time, is_init):
+        log.debug('%s:: on_trade_enter(%s)', self, contragent)
+        self.subscriptions.on_trade_enter(agent=self, contragent=contragent, time=time, is_init=is_init)
 
-    def on_trade_exit(self, user, canceled, buy, sale, cost):
-        # todo: delivery for subscribers ##quest
-        log.debug('%s:: on_trade_exit(user=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
-                  self, user, canceled, buy, sale, cost)
+    def on_trade_exit(self, contragent, canceled, buy, sale, cost, time, is_init):
+        # todo: csll it ##quest
+        log.debug('%s:: on_trade_exit(contragent=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
+                  self, contragent, canceled, buy, sale, cost)
+        self.subscriptions.on_trade_exit(
+            agent=self, contragent=contragent, 
+            canceled=canceled, buy=buy, sale=sale, cost=cost,
+            time=time, is_init=is_init)
 
 
 class User(Agent):
