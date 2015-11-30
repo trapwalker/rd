@@ -3,10 +3,13 @@
 import logging
 log = logging.getLogger(__name__)
 
+
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
+
+from sublayers_server.model.registry.attr.inv import InventoryAttribute
 
 import random
 
@@ -16,7 +19,7 @@ class Agent(Root):
     about_self = TextAttribute(default=u'', caption=u'Уникальное имя пользователя')
 
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
-    last_car = RegistryLink(caption=u"Последний активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
+    car_list = InventoryAttribute(caption=u"Список всех машин, кроме активной")
 
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента")  # todo: обсудить

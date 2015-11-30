@@ -37,7 +37,7 @@ class HPTask(TaskSingleton):
                 if self.shooter is not None:
                     self.shooter.on_kill(time=event.time, obj=owner)
                 else:
-                    if len(owner.hp_state.shooters) > 0:
+                    if owner.hp_state.shooters:
                         owner.hp_state.shooters[0].on_kill(time=event.time, obj=owner)
             return
         owner.hp_state.update(t=event.time, dhp=event.dhp, dps=event.dps)

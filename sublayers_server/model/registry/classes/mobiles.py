@@ -11,12 +11,17 @@ from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
 from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 
+from sublayers_server.model.registry.attr.link import RegistryLink
+
 from math import pi
 
 
 class Mobile(Root):
     # атрибуты от PointObject
     position = Position(caption=u"Последние координаты объекта")
+
+    # Последняя посещенная локация
+    last_location = RegistryLink(caption=u'Последняя посещенная локация')
 
     # атрибуты от VisibleObjects
     p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
@@ -286,7 +291,6 @@ class Car(Mobile):
     slot_t7 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner roof')
     slot_t8 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
     slot_t9 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner b_bumper')
-
 
 
 class Drone(Mobile):

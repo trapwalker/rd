@@ -54,7 +54,9 @@ class MapLocation(Observer):
     def on_enter(self, agent, time):
         # Раздеплоить машинку агента
         if agent.car:
+            agent.car.example.last_location = self.example
             agent.car.displace(time=time)
+
         # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
         agent.on_enter_location(location=self)
 

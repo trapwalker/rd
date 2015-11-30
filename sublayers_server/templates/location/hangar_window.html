@@ -41,8 +41,8 @@
 
 <script>
     // Функция подстраивает ширину списка под его содержимое
-    function resizeCarList() {
-        var inventory = $('.hangar-car-list-list').first();
+    function resizeHangarCarList() {
+        var inventory = $('#townHangarPageWrap').find('.hangar-car-list-list').first();
         var width = 0;
         if (inventory) {
             $(inventory).find('.hangar-car-list-itemWrap').each(function (index, element) {
@@ -52,25 +52,22 @@
             $(inventory).width(width);
         }
     }
-    resizeCarList();
+    resizeHangarCarList();
 
-    $('.hangar-car-list-itemWrap').click(function () {
+    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').click(function () {
         // Сбросить предыдущее выделение и выджелить выбранный итем
-        $('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
+        $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
         $(this).addClass('hangar-car-list-itemWrap-active');
 
         // Установить цену
         $('#hangar-footer-price').text($(this).data('car_price'));
 
         // Скрыть информационные окна всех машинок, показать выбранную
-        $('.hangar-center-info-car-wrap').css('display', 'none');
+        $('#townHangarPageWrap').find('.hangar-center-info-car-wrap').css('display', 'none');
         $('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
 
         // Установить выбранную машинку в менеджер
         locationManager.hangar.current_car = $(this).data('car_number');
     })
-
-
-
-    $('.hangar-car-list-itemWrap').first().click();
+    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').first().click();
 </script>
