@@ -70,6 +70,7 @@ class Town(MapLocation):
     hangar = RegistryLink(caption=u'Ангар')
     nucoil = RegistryLink(caption=u'Заправка')
     trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
+    parking = RegistryLink(caption=u'Автостоянка')
 
     buildings = DictAttribute(
         default=dict, itemclass=Building,
@@ -123,3 +124,5 @@ class Hangar(Institution):
     type = TextAttribute(default='hangar', caption=u"Специальность NPC")
     car_list = Attribute(caption=u"Список продаваемых машин")
 
+class Parking(Institution):
+    type = TextAttribute(default='parking', caption=u"Специальность NPC")

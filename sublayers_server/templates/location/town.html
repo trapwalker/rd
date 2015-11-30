@@ -73,6 +73,12 @@
     </div>
     {% end %}
 
+    {% if town.example.parking is not None %}
+    <div id="townParkingPageWrap" class="townPageWrap" style="display: none">
+        {% include parking_window.html %}
+    </div>
+    {% end %}
+
     {% if town.example.trainer is not None %}
     <div id="townTrainerPageWrap" class="townPageWrap" style="display: none">
         {% include trainer_window.html %}
@@ -109,8 +115,6 @@
     }
 
     function openNPC(npc_type, build_name) {
-
-
         var func_name = 'open_' + npc_type;
         if (window[func_name]) {
             for (var i = 6; i < 10; i ++)
@@ -161,6 +165,15 @@
         $('#townHangarPageWrap').css('display', 'block');
         locationManager.currentNPC = locationManager.hangar;
         setBtnDisplay(8, "block");
+    }
+
+    function open_parking() {
+        $('.townPageWrap').css('display', 'none');
+        $('#townParkingPageWrap').css('display', 'block');
+        locationManager.currentNPC = locationManager.parking;
+        clientManager.sendEnterToNPC('parking');
+        setBtnDisplay(8, "block");
+        setBtnDisplay(9, "block");
     }
 
     function open_trainer() {
