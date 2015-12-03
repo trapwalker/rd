@@ -7,6 +7,8 @@ var LocationManager = (function () {
         this.location_uid = null;
         this.trader_uid = null;
 
+        this.example_car_node = null;
+
         this.armorer = new ArmorerManager();
         this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
@@ -838,6 +840,15 @@ var TunerManager = (function () {
         return result;
     };
 
+    TunerManager.prototype.testItemForCar = function(item) {
+        //console.log('TunerManager.prototype.testItemForCar', item);
+        if (! item.hasTag('tuner')) return false;
+        if (item.example.hasOwnProperty('images'))
+            if (item.example.images.hasOwnProperty(locationManager.example_car_node))
+                return true;
+        return false
+    };
+
     TunerManager.prototype.update = function(tuner_slots) {
         //console.log('TunerManager.prototype.update', tuner_slots);
         this.clear();
@@ -867,7 +878,7 @@ var TunerManager = (function () {
             item = inventory.getItem(i);
             item_rec.position = i;
             if (item) {
-                if (item.hasTag('tuner')) {  // фильтрация итема
+                if (this.testItemForCar(item)) {  // фильтрация итема
                     this._addEmptyInventorySlot(i);
                     item_rec.example = item.example;
                     this.items[i] = item_rec;
@@ -956,8 +967,11 @@ var TunerManager = (function () {
             var item = this.items[position];
 
             if (item.example) {
-                var itemImgTop = item.example['tuner_top'];
-                var itemImgSide = item.example['tuner_side'];
+                //var itemImgTop = item.example['tuner_top'];
+                //var itemImgSide = item.example['tuner_side'];
+                var ex_car_images = item.example.images[locationManager.example_car_node];
+                var itemImgTop = ex_car_images.top.link;
+                var itemImgSide = ex_car_images.side.link;
                 var itemImgIcon = item.example['inv_icon_small'];
 
                 var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" style="display: none"></div>');
@@ -965,14 +979,16 @@ var TunerManager = (function () {
 
                 if (itemImgTop) {
                     var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container tuner-car-item-img">');
-                    if (item.example['tuner_top_pos'] > 0)
+                    //if (item.example['tuner_top_pos'] > 0)
+                    if (ex_car_images.top.z_index > 0)
                         top_after.append(itemViewImgTop);
                     else
                         top_before.append(itemViewImgTop);
                 }
                 if (itemImgSide) {
                     var itemViewImgSide = $('<img id="' + position + 'ImgSide"  src="' + itemImgSide + '" class="tuner-car-main-container tuner-car-item-img">');
-                    if (item.example['tuner_side_pos'] > 0)
+                    //if (item.example['tuner_side_pos'] > 0)
+                    if (ex_car_images.side.z_index > 0)
                         side_after.append(itemViewImgSide);
                     else
                         side_before.append(itemViewImgSide);
