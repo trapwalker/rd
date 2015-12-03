@@ -99,21 +99,6 @@ class MechanicItem(SlotItem):
 
 class TunerItem(SlotItem):
     pont_points = FloatAttribute(default=0, caption=u"Очки крутости для итемов тюнера", tags='client')
-    # tuner_side = Attribute(caption=u'Изображение у тюнера (вид сбоку)', tags='client')
-    # tuner_top = Attribute(caption=u'Изображение у тюнера (вид сверху)', tags='client')
-
-    tuner_side = DictAttribute(
-        default=dict, tags='client',
-        caption=u'Изображение у тюнера (вид сбоку)')
-
-    tuner_top = DictAttribute(
-        default=dict, tags='client',
-        caption=u'Изображение у тюнера (вид сверху)')
-
     images = DictAttribute(
         default=dict, tags='client',
         caption=u'Изображения у тюнера')
-
-    tuner_side_pos = IntAttribute(caption=u'Положение изображения у тюнера (вид сбоку)', default=1, tags='client')
-    tuner_top_pos = IntAttribute(caption=u'Положение изображения  у тюнера (вид сверху)', default=1, tags='client')
-

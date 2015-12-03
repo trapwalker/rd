@@ -746,6 +746,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.ExamplesShowMessage', event);
         // Обновление баланса пользователя
         user.balance = event.agent_balance;
+        locationManager.example_car_node = event.example_car_node
         if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
             var inv = this._getInventory(event.inventory);
             if (inventoryList.getInventory(inv.owner_id))
