@@ -617,6 +617,8 @@ class ExamplesShowMessage(Message):
         d['agent_balance'] = self.agent.example.balance
 
         if self.agent.example.car:
+            d['example_car_node'] = self.agent.example.car.node_hash()
+
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
                 for k, v in self.agent.example.car.iter_slots(tags='armorer')

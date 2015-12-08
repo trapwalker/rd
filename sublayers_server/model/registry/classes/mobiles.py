@@ -292,6 +292,15 @@ class Car(Mobile):
     slot_t8 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
     slot_t9 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner b_bumper')
 
+    slot_t10 = Slot(caption=u't1', doc=u'Слот тюнера воздухозаборник', tags='tuner airint')
+    slot_t11 = Slot(caption=u't1', doc=u'Слот тюнера броня', tags='tuner armor')
+    slot_t12 = Slot(caption=u't1', doc=u'Слот тюнера баул', tags='tuner bale')
+    slot_t13 = Slot(caption=u't1', doc=u'Слот тюнера шноркель', tags='tuner shnork')
+    slot_t14 = Slot(caption=u't1', doc=u'Слот тюнера ступенька', tags='tuner step')
+    slot_t15 = Slot(caption=u't1', doc=u'Слот тюнера доп.багажник', tags='tuner trunk')
+    slot_t16 = Slot(caption=u't1', doc=u'Слот тюнера козырек', tags='tuner visor')
+    slot_t17 = Slot(caption=u't1', doc=u'Слот тюнера защита стёкол', tags='tuner win_prot')
+
 
 class Drone(Mobile):
     pass
