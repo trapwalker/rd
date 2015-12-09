@@ -427,9 +427,18 @@ class AgentAPI(API):
         elif command == '/quest':
             if not args:
                 pass  # todo: Вывести перечень активных квестов
-            else:
-                pass
-
+            elif args[0] == 'get':
+                for q in args[1:]:
+                    try:
+                        q = self.agent.server.reg[q]
+                    except:
+                        log.error('Quest %s is not found', q)
+                        raise
+                    log.debug('Abstract quest %s selected', q)
+                    quest = q.instantiate()
+                    log.debug('Quest %s instantiated', quest)
+                    quest.start(agents=self.agent)  # todo: store quest to agent or global storage
+                    log.debug('Quest %s started', quest)
         else:
             log.warning('Unknown console command "%s"', cmd)
 

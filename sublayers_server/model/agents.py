@@ -55,6 +55,7 @@ class Agent(Object):
         # текущий город, если агент не в городе то None
         self._current_location = None
         self.current_location = example.current_location
+        self.quests = []
 
     def tp(self, time, location, radius=None):
         self.current_location = location

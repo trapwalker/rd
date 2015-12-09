@@ -42,6 +42,9 @@ class State(O):
     # todo: __getstate__ ##realize
     # todo: __setstate__ ##realize
 
+    def __hash__(self):
+        return id(self)
+
     def subscribe(self, target):
         if isinstance(target, SubscriptionList):
             target.add(self)
@@ -119,11 +122,13 @@ class State(O):
 
     @state_event
     def on_state_enter(self, old_state):
-        self.subscribe(self.quest.agent)
+        for agent in self.quest.agents:
+            self.subscribe(agent)
 
     @state_event
     def on_state_exit(self, next_state):
-        self.unsubscribe(self.quest.agent)
+        for agent in self.quest.agents:
+            self.unsubscribe(agent)
 
 
 class FinalState(State):
@@ -160,13 +165,18 @@ class FinalState(State):
 class Quest(Item):
     first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
 
-    def __init__(self, agent=None, **kw):
+    def __init__(self, **kw):
         super(Quest, self).__init__(**kw)
-        self.agent = agent
-        # todo: log warning if agent and abstract inconsistency
         self._state = None
-        if not self.abstract:
-            self.state = self.first_state
+        self.agents = []  # todo: weakset
+
+    def start(self, agents=None, **kw):
+        assert not self.abstract
+        if agents:
+            self.agents.append(agents)
+        for agent in self.agents:
+            agent.quests.append(self)
+        self.state = self.first_state
 
     @property
     def state(self):
@@ -176,7 +186,6 @@ class Quest(Item):
     def state(self, value):
         assert value
         assert not self.abstract
-        assert self.agent
 
         if isinstance(value, State):
             new_state = value
@@ -263,11 +272,12 @@ class QMortalCurse(Quest):
             if agent is self.quest.agent:
                 self.kills_count += 1
                 if (self.kills_count % self.magic_count) == 0:
-                    self.quest.agent.die()
+                    for a in self.quest.agents:
+                        a.die()
 
         def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
             State.on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init)
-            if agent is self.quest.agent and sale and not buy and cost == 0:
+            if agent in self.quest.agents and contragent not in self.quest.agents and sale and not buy and cost == 0:
                 self.tramps.add(contragent.login)
                 if len(self.tramps) >= self.magic_count:
                     self.quest.state = self.quest.Win
