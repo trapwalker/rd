@@ -40,21 +40,34 @@
 </div>
 
 <script>
-    $('.hangar-car-list-itemWrap').click(function () {
+    // Функция подстраивает ширину списка под его содержимое
+    function resizeHangarCarList() {
+        var inventory = $('#townHangarPageWrap').find('.hangar-car-list-list').first();
+        var width = 0;
+        if (inventory) {
+            $(inventory).find('.hangar-car-list-itemWrap').each(function (index, element) {
+                if ($(element).css('display') == 'block')
+                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+            });
+            $(inventory).width(width);
+        }
+    }
+    resizeHangarCarList();
+
+    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').click(function () {
         // Сбросить предыдущее выделение и выджелить выбранный итем
-        $('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
+        $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
         $(this).addClass('hangar-car-list-itemWrap-active');
 
         // Установить цену
         $('#hangar-footer-price').text($(this).data('car_price'));
 
         // Скрыть информационные окна всех машинок, показать выбранную
-        $('.hangar-center-info-car-wrap').css('display', 'none');
+        $('#townHangarPageWrap').find('.hangar-center-info-car-wrap').css('display', 'none');
         $('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
 
         // Установить выбранную машинку в менеджер
         locationManager.hangar.current_car = $(this).data('car_number');
     })
-
-    $('.hangar-car-list-itemWrap').first().click();
+    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').first().click();
 </script>

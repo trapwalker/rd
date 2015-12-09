@@ -11,12 +11,17 @@ from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
 from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 
+from sublayers_server.model.registry.attr.link import RegistryLink
+
 from math import pi
 
 
 class Mobile(Root):
     # атрибуты от PointObject
     position = Position(caption=u"Последние координаты объекта")
+
+    # Последняя посещенная локация
+    last_location = RegistryLink(caption=u'Последняя посещенная локация')
 
     # атрибуты от VisibleObjects
     p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
@@ -287,6 +292,14 @@ class Car(Mobile):
     slot_t8 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
     slot_t9 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner b_bumper')
 
+    slot_t10 = Slot(caption=u't1', doc=u'Слот тюнера воздухозаборник', tags='tuner airint')
+    slot_t11 = Slot(caption=u't1', doc=u'Слот тюнера броня', tags='tuner armor')
+    slot_t12 = Slot(caption=u't1', doc=u'Слот тюнера баул', tags='tuner bale')
+    slot_t13 = Slot(caption=u't1', doc=u'Слот тюнера шноркель', tags='tuner shnork')
+    slot_t14 = Slot(caption=u't1', doc=u'Слот тюнера ступенька', tags='tuner step')
+    slot_t15 = Slot(caption=u't1', doc=u'Слот тюнера доп.багажник', tags='tuner trunk')
+    slot_t16 = Slot(caption=u't1', doc=u'Слот тюнера козырек', tags='tuner visor')
+    slot_t17 = Slot(caption=u't1', doc=u'Слот тюнера защита стёкол', tags='tuner win_prot')
 
 
 class Drone(Mobile):

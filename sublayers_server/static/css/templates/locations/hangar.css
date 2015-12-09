@@ -4,6 +4,12 @@
     left: 592px;
 }
 
+#townParkingPageWrap {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
 .hangarWindow-main {
     position: relative;
     width: 734px;

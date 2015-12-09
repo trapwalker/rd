@@ -189,9 +189,60 @@ class TransactionHangarChoice(TransactionEvent):
         if self.agent.example.balance >= car_proto.price:
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
+            car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
             self.agent.example.balance -= car_proto.price
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
+
+
+class TransactionParkingSelectCar(TransactionEvent):
+    def __init__(self, agent, car_number, **kw):
+        super(TransactionParkingSelectCar, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.car_number = car_number
+
+    def on_perform(self):
+        super(TransactionParkingSelectCar, self).on_perform()
+
+        if not (self.agent.current_location and self.agent.current_location.example.hangar):
+            return
+
+        car_list = []
+        for car in self.agent.example.car_list:
+            car_list.append(car)
+
+        if len(car_list) <= self.car_number:
+            return
+
+        if self.agent.example.car:
+            car_list.append(self.agent.example.car)
+        self.agent.example.car = car_list[self.car_number]
+        car_list.remove(car_list[self.car_number])
+
+        self.agent.example.car_list = RegistryInventory()
+        for car in car_list:
+            self.agent.example.car_list.append(car)
+
+        ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
+
+
+class TransactionParkingLeaveCar(TransactionEvent):
+    def __init__(self, agent, **kw):
+        super(TransactionParkingLeaveCar, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(TransactionParkingLeaveCar, self).on_perform()
+
+        if not (self.agent.current_location and self.agent.current_location.example.parking):
+            return
+
+        if not self.agent.example.car:
+            return
+
+        self.agent.example.car_list.append(self.agent.example.car)
+        self.agent.example.car = None
+        ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
 
 
 class TransactionArmorerApply(TransactionEvent):

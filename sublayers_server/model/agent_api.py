@@ -17,9 +17,9 @@ from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionArmorerApply, TransactionMechanicApply,
-    TransactionTunerApply, TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk,
-    TransactionResetSkills, TransactionResetPerks)
+    TransactionGasStation, TransactionHangarChoice, TransactionParkingLeaveCar, TransactionParkingSelectCar,
+    TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply, TransactionTraderApply,
+    TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills, TransactionResetPerks)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -235,6 +235,11 @@ class AgentAPI(API):
     def update_agent_api(self, time=None):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
+
+        # For ReInit Time
+        t0 = self.agent.server.get_time()
+        for add_mul in xrange(1, 6):
+            InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
 
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
@@ -503,14 +508,28 @@ class AgentAPI(API):
                               tank_list=tank_list).post()
 
     @public_method
+    def get_loot(self, poi_id):
+        log.info('agent %r want loot =%r', self.agent, poi_id)
+        LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
+
+    # Ангар
+
+    @public_method
     def choice_car_in_hangar(self, car_number):
         log.info('agent %r want choice car, with number=%r', self.agent, car_number)
         TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
 
+    # Стоянка
+
     @public_method
-    def get_loot(self, poi_id):
-        log.info('agent %r want loot =%r', self.agent, poi_id)
-        LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
+    def parking_select_car(self, car_number):
+        # log.info('agent %r want get car from parking, with number=%r', self.agent, car_number)
+        TransactionParkingSelectCar(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
+
+    @public_method
+    def parking_leave_car(self):
+        # log.info('agent %r want leave car in parking', self.agent)
+        TransactionParkingLeaveCar(time=self.agent.server.get_time(), agent=self.agent).post()
 
     # Оружейник
 

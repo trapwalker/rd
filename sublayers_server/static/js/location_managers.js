@@ -7,10 +7,13 @@ var LocationManager = (function () {
         this.location_uid = null;
         this.trader_uid = null;
 
+        this.example_car_node = null;
+
         this.armorer = new ArmorerManager();
         this.trader = new TraderManager();
         this.nucoil = new NucoilManager();
         this.hangar = new HangarManager();
+        this.parking = new ParkingManager();
         this.mechanic = new MechanicManager();
         this.tuner = new TunerManager();
         this.trainer = new TrainerManager();
@@ -378,28 +381,45 @@ var ArmorerManager = (function () {
                 var itemImgTop = item.example['armorer_top_' + item.direction];
                 var itemImgSide = item.example['armorer_side_' + item.direction];
 
-
-                var itemDivTop = $('<div class="armorer-car-slot-picture"><img src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
-                var itemDivSide = $('<div class="armorer-car-slot-picture"><img src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');
+                var itemDivTop = $('<div class="armorer-car-slot-picture"><img id="armorer' + position + 'ImgTop" src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
+                var itemDivSide = $('<div class="armorer-car-slot-picture"><img id="armorer' + position + 'ImgSide" src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');
 
                 itemDivTop.data('pos', position);
                 itemDivSide.data('pos', position);
 
                 itemDivTop.draggable({
-                    helper: 'clone',
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#activeTownDiv'
+                    appendTo: '#activeTownDiv',
+                    start: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+                    },
+                    stop: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                    }
                 });
                 itemDivSide.draggable({
-                    helper: 'clone',
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#activeTownDiv'
+                    appendTo: '#activeTownDiv',
+                    start: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+                    },
+                    stop: function(event, ui) {
+                        $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
+                        $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                    }
                 });
 
                 top_slot.append(itemDivTop);
@@ -421,11 +441,8 @@ var ArmorerManager = (function () {
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: 'clone',
-                    cursorAt: {
-                        left: 60,
-                        top: 42
-                    },
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -711,10 +728,7 @@ var MechanicManager = (function () {
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
                     helper: 'clone',
-                    cursorAt: {
-                        left: 60,
-                        top: 42
-                    },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -826,6 +840,15 @@ var TunerManager = (function () {
         return result;
     };
 
+    TunerManager.prototype.testItemForCar = function(item) {
+        //console.log('TunerManager.prototype.testItemForCar', item);
+        if (! item.hasTag('tuner')) return false;
+        if (item.example.hasOwnProperty('images'))
+            if (item.example.images.hasOwnProperty(locationManager.example_car_node))
+                return true;
+        return false
+    };
+
     TunerManager.prototype.update = function(tuner_slots) {
         //console.log('TunerManager.prototype.update', tuner_slots);
         this.clear();
@@ -855,7 +878,7 @@ var TunerManager = (function () {
             item = inventory.getItem(i);
             item_rec.position = i;
             if (item) {
-                if (item.hasTag('tuner')) {  // фильтрация итема
+                if (this.testItemForCar(item)) {  // фильтрация итема
                     this._addEmptyInventorySlot(i);
                     item_rec.example = item.example;
                     this.items[i] = item_rec;
@@ -944,23 +967,28 @@ var TunerManager = (function () {
             var item = this.items[position];
 
             if (item.example) {
-                var itemImgTop = item.example['tuner_top'];
-                var itemImgSide = item.example['tuner_side'];
+                //var itemImgTop = item.example['tuner_top'];
+                //var itemImgSide = item.example['tuner_side'];
+                var ex_car_images = item.example.images[locationManager.example_car_node];
+                var itemImgTop = ex_car_images.top.link;
+                var itemImgSide = ex_car_images.side.link;
                 var itemImgIcon = item.example['inv_icon_small'];
 
-                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_top" style="display: none"></div>');
-                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" class="tuner_side" style="display: none"></div>');
+                var itemDivTop = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" style="display: none"></div>');
+                var itemDivSide = $('<div class="tuner-car-slot-picture"><img src="' + itemImgIcon + '" style="display: none"></div>');
 
                 if (itemImgTop) {
                     var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container tuner-car-item-img">');
-                    if (item.example['tuner_top_pos'] > 0)
+                    //if (item.example['tuner_top_pos'] > 0)
+                    if (ex_car_images.top.z_index > 0)
                         top_after.append(itemViewImgTop);
                     else
                         top_before.append(itemViewImgTop);
                 }
                 if (itemImgSide) {
                     var itemViewImgSide = $('<img id="' + position + 'ImgSide"  src="' + itemImgSide + '" class="tuner-car-main-container tuner-car-item-img">');
-                    if (item.example['tuner_side_pos'] > 0)
+                    //if (item.example['tuner_side_pos'] > 0)
+                    if (ex_car_images.side.z_index > 0)
                         side_after.append(itemViewImgSide);
                     else
                         side_before.append(itemViewImgSide);
@@ -1017,16 +1045,14 @@ var TunerManager = (function () {
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
             var item = this.items[position];
+
             if (item.example) {
                 itemDiv.find('.npcInventory-name').text(item.example.title);
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: 'clone',
-                    cursorAt: {
-                        left: 60,
-                        top: 42
-                    },
+                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -1486,6 +1512,42 @@ var HangarManager = (function () {
     };
 
     return HangarManager;
+})();
+
+
+var ParkingManager = (function () {
+
+    function ParkingManager() {
+        this.current_car = null;
+    }
+
+    ParkingManager.prototype.update = function() {
+        //console.log('ParkingManager.prototype.update');
+        this.clear();
+
+        // Проверить если город
+        if (!locationManager.in_location) {
+            console.warn('Вёрстка города не найдена');
+            return
+        }
+    };
+
+    ParkingManager.prototype.clear = function() {
+        //console.log('ParkingManager.prototype.clear');
+    };
+
+    ParkingManager.prototype.apply = function() {
+        //console.log('ParkingManager.prototype.apply');
+        if (this.current_car != null)
+            clientManager.sendParkingSelectCar();
+    };
+
+    ParkingManager.prototype.cancel = function() {
+        //console.log('ParkingManager.prototype.cancel');
+        clientManager.sendParkingLeaveCar();
+    };
+
+    return ParkingManager;
 })();
 
 

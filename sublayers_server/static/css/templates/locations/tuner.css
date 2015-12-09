@@ -42,3 +42,42 @@
     width: 35px;
     height: 35px;
 }
+
+
+/* общие для всех машинок классы */
+
+.tuner-car-main {
+    position: relative;
+    width: 492px;
+    height: 325px;
+}
+
+.tuner-car-main-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.tuner-car-item-img {
+    opacity: 1;
+}
+
+.tuner-car-item-img.active {
+    opacity: 1;
+}
+
+.tuner-slot {
+    position: absolute;
+    cursor: pointer;
+    height: 35px;
+    width: 35px;
+    background: transparent url(/static/img/cars/slot_passive.png) no-repeat 100% 100%;
+}
+
+.tuner-slot-hover {
+    background: transparent url(/static/img/cars/slot_active.png) no-repeat 100% 100%;
+}
+
+.block-tuner-slot {
+    display: none;
+}

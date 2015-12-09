@@ -132,7 +132,7 @@ var ClientManager = (function () {
                 if (typeof(this[e.cls]) === 'function')
                     this[e.cls](e);
                 else
-                    console.error('Error: неизвестная API-команда для клиента: ', e.cls);
+                    console.warn('Warning: неизвестная API-команда для ClientManager: ', e.cls);
             }
 
             /*
@@ -679,6 +679,7 @@ var ClientManager = (function () {
                 locationManager.trader.updateTraderInv();
                 locationManager.trader.updatePrice();
                 locationManager.hangar.update();
+                locationManager.parking.update();
 
                 // Запрос RGP информации для тренера
                 clientManager.sendGetRPGInfo();
@@ -745,6 +746,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.ExamplesShowMessage', event);
         // Обновление баланса пользователя
         user.balance = event.agent_balance;
+        locationManager.example_car_node = event.example_car_node
         if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
             var inv = this._getInventory(event.inventory);
             if (inventoryList.getInventory(inv.owner_id))
@@ -757,6 +759,7 @@ var ClientManager = (function () {
             locationManager.trader.updatePlayerInv();
             locationManager.trader.updateTraderInv();
             locationManager.hangar.update();
+            locationManager.parking.update();
         }
     };
 
@@ -1387,6 +1390,32 @@ var ClientManager = (function () {
             params: {
                 car_number: locationManager.hangar.current_car
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Стоянка
+
+    ClientManager.prototype.sendParkingSelectCar = function () {
+        //console.log('ClientManager.prototype.sendParkingSelectCar', car_number);
+        var mes = {
+            call: "parking_select_car",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_number: locationManager.hangar.current_car
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendParkingLeaveCar = function () {
+        //console.log('ClientManager.prototype.sendParkingLeaveCar');
+        var mes = {
+            call: "parking_leave_car",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
