@@ -236,6 +236,11 @@ class AgentAPI(API):
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
+        # For ReInit Time
+        t0 = self.agent.server.get_time()
+        for add_mul in xrange(1, 6):
+            InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
+
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
 
