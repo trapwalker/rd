@@ -132,7 +132,7 @@ var ClientManager = (function () {
                 if (typeof(this[e.cls]) === 'function')
                     this[e.cls](e);
                 else
-                    console.error('Error: неизвестная API-команда для клиента: ', e.cls);
+                    console.warn('Warning: неизвестная API-команда для ClientManager: ', e.cls);
             }
 
             /*
