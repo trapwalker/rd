@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
 
+import tornado.template
 
 def make_push_package(events):
     serv_time = events[0].agent.server.get_time()
@@ -761,14 +762,15 @@ class RPGStateMessage(Message):
 class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
-
-        import tornado.template
-
-        template = tornado.template.Loader("templates/location").load("car_info_table.html")
+        template_table = tornado.template.Loader("templates/location").load("car_info_table.html")
+        template_img = tornado.template.Loader("templates/location").load("car_info_img.html")
         d.update(cars=[dict(
-                     car=car.as_client_dict(),
-                     location=car.last_location.node_hash(),
-                     location_name=car.last_location.title,
-                     html_inner = template.generate(car=car),
-                 ) for car in self.agent.example.car_list])
+            car_info=dict(
+                car=car.as_client_dict(),
+                html_car_table=template_table.generate(car=car),
+                html_car_img=template_img.generate(car=car),
+            ),
+            location=car.last_location.node_hash(),
+            location_name=car.last_location.title,
+        ) for car in self.agent.example.car_list])
         return d
