@@ -224,6 +224,7 @@ class TransactionParkingSelectCar(TransactionEvent):
             self.agent.example.car_list.append(car)
 
         ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
+        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionParkingLeaveCar(TransactionEvent):
@@ -243,6 +244,7 @@ class TransactionParkingLeaveCar(TransactionEvent):
         self.agent.example.car_list.append(self.agent.example.car)
         self.agent.example.car = None
         ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
+        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionArmorerApply(TransactionEvent):

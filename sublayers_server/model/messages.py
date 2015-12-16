@@ -756,3 +756,19 @@ class RPGStateMessage(Message):
                  ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()],
         )
         return d
+
+
+class JournalParkingInfoMessage(Message):
+    def as_dict(self):
+        d = super(JournalParkingInfoMessage, self).as_dict()
+
+        import tornado.template
+
+        template = tornado.template.Loader("templates/location").load("car_info_table.html")
+        d.update(cars=[dict(
+                     car=car.as_client_dict(),
+                     location=car.last_location.node_hash(),
+                     location_name=car.last_location.title,
+                     html_inner = template.generate(car=car),
+                 ) for car in self.agent.example.car_list])
+        return d
