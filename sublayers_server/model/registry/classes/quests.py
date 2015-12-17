@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.classes.item import Item
 from sublayers_server.model.registry.attr import TextAttribute
 from sublayers_server.model.utils import SubscriptionList
+from sublayers_server.model.messages import Message
+
 from functools import update_wrapper
 
 
@@ -32,10 +34,15 @@ def state_event(func):
 
 
 class State(O):
-    def __init__(self, quest, name, **kw):
+    enter_state_message = None
+    enter_state_message_template = None
+    exit_state_message = None
+    exit_state_message_template = None
+    def __init__(self, time, quest, name, **kw):
         super(State, self).__init__()
         self.name = name or self.__class__.__name__
         self.quest = quest
+        self.start_time = time
         self.__dict__.update(kw)
         self.on_state_init()
 
@@ -125,10 +132,16 @@ class State(O):
         for agent in self.quest.agents:
             self.subscribe(agent)
 
+        if self.enter_state_message_template:
+            self.quest.log_fmt(template=self.enter_state_message_template, time=self.start_time)  # todo: send targets
+        elif self.enter_state_message:
+            self.quest.log(text=self.enter_state_message, time=self.start_time)  # todo: send targets, position
+
     @state_event
     def on_state_exit(self, next_state):
         for agent in self.quest.agents:
             self.unsubscribe(agent)
+        # todo: may be need to send state_exit_message?
 
 
 class FinalState(State):
@@ -137,6 +150,14 @@ class FinalState(State):
 
     def on_state_exit(self, next_state):
         pass
+
+
+class StandartWin(FinalState):
+    enter_state_message_template = u'Задание {quest.title} выполнено успешно.'
+
+
+class StandartFail(FinalState):
+    enter_state_message_template = u'Задание {quest.title} провалено.'
 
 
 # Условия:
@@ -162,28 +183,108 @@ class FinalState(State):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 
+class LogRecord(object):
+    def __init__(self, quest, time, text, position=None, target=None):
+        self.quest = quest  # todo: weakref #refactor
+        self.time = time
+        self.text = text
+        self.position = position
+        self.target = target
+
+    def as_dict(self):
+        return dict(
+            quest=self.quest.id,
+            time=self.time,
+            text=self.text,
+            position=self.position,
+            target=self.target,
+        )
+
+
+class QuestUpdateMessage(Message):
+    def __init__(self, quest, **kw):
+        super(QuestUpdateMessage, self).__init__(**kw)
+        self.quest = quest  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestUpdateMessage, self).as_dict()
+        d.update(
+            quest=self.quest.as_client_dict(),
+        )
+        return d
+
+
+class QuestLogMessage(Message):
+    def __init__(self, event_record, **kw):
+        super(QuestLogMessage, self).__init__(**kw)
+        self.event_record = event_record  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestLogMessage, self).as_dict()
+        d.update(
+            quest_event=self.event_record.as_dict(),
+        )
+        return d
+
+
 class Quest(Item):
     first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
+
+    title_template = TextAttribute(caption=u'Шаблон заголовка', doc=u'Шаблон заголовка квеста')
+    description_template = TextAttribute(caption=u'Шаблон описания', doc=u'Шаблон описания квеста')
 
     def __init__(self, **kw):
         super(Quest, self).__init__(**kw)
         self._state = None
         self.agents = []  # todo: weakset
+        self._log = []
 
-    def start(self, agents=None, **kw):
+    def as_client_dict(self):
+        d = super(Quest, self).as_client_dict()
+        d.update(log=self._log)
+        return d
+
+    def log_fmt(self, template, position=None, target=None, context=None):
+        context = context.copy() if context else {}
+        context.update(position=position, target=target, quest=self)
+        text = self._template_render(template, context)
+        self.log(text, position=position, target=target)
+
+    def log(self, time, text, position=None, target=None):
+        log_record = LogRecord(quest=self, time=time, text=text, position=position, target=target)
+        self._log.append(log_record)
+        self.update(time=time)  # todo: refactor (send quest event message)
+
+    def _template_render(self, template, context):
+        try:
+            return template.format(**context)
+        except Exception as e:
+            log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
+
+    def update(self, time):
+        # todo: #refactor
+        if self.title_template:
+            self.title = self._template_render(self.title_template, dict(quest=self, time=time))
+
+        if self.description_template:
+            self.description = self._template_render(self.description_template, dict(quest=self, time=time))
+
+        for agent in self.agents:
+            QuestUpdateMessage(agent=agent, time=time, quest=self).post()
+
+    def start(self, time, agents=None, **kw):
         assert not self.abstract
         if agents:
             self.agents.append(agents)
         for agent in self.agents:
             agent.quests.append(self)
-        self.state = self.first_state
+        self.set_state(self.first_state, time=time)
 
     @property
     def state(self):
         return self._state
 
-    @state.setter
-    def state(self, value):
+    def set_state(self, value, time):
         assert value
         assert not self.abstract
 
@@ -199,7 +300,7 @@ class Quest(Item):
             else:
                 raise TypeError('Try to set state by {!r}'.format(value))
 
-            new_state = new_state_cls(quest=self, name=new_state_name)
+            new_state = new_state_cls(quest=self, name=new_state_name, time=time)
 
         old_state = self._state
 
@@ -217,18 +318,18 @@ class Quest(Item):
     def __setstate__(self, state):
         st = state.pop('state', None)
         if st:
-            self.state = getattr(self, st['name'])(quest=self, **st)
+            self.set_state(getattr(self, st['name'])(quest=self, **st))
         super(Quest, self).__setstate__(state)
 
     class Begin(State):
         u"""Стартовое состояние квеста"""
         caption = u'Начало'
 
-    class Win(FinalState):
+    class Win(StandartWin):
         u"""Состояние успешного прохождения квеста"""
         caption = u'Успех'
 
-    class Fail(FinalState):
+    class Fail(StandartFail):
         u"""Состояния провала квеста"""
         caption = u'Провал'
 
@@ -249,7 +350,7 @@ class QNKills(Quest):
             super(QNKills.Begin, self).on_kill(agent, time, obj)
             self.kills_count += 1
             if self.kills_count >= 5:
-                self.quest.state = self.quest.Win
+                self.quest.set_state(self.quest.Win, time=time)
 
 
 class QMortalCurse(Quest):
@@ -280,4 +381,4 @@ class QMortalCurse(Quest):
             if agent in self.quest.agents and contragent not in self.quest.agents and sale and not buy and cost == 0:
                 self.tramps.add(contragent.login)
                 if len(self.tramps) >= self.magic_count:
-                    self.quest.state = self.quest.Win
+                    self.quest.set_state(self.quest.Win, time=time)

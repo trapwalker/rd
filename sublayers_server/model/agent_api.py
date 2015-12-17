@@ -442,7 +442,7 @@ class AgentAPI(API):
                     log.debug('Abstract quest %s selected', q)
                     quest = q.instantiate()
                     log.debug('Quest %s instantiated', quest)
-                    quest.start(agents=self.agent)  # todo: store quest to agent or global storage
+                    quest.start(agents=self.agent, time=self.agent.server.get_time())  # todo: store quest to agent or global storage
                     log.debug('Quest %s started', quest)
         else:
             log.warning('Unknown console command "%s"', cmd)
