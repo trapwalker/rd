@@ -21,6 +21,12 @@
     border-right: 1px solid #30fc00;
 }
 
+.car-info-block-picture-2 {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
 .car-info-block-info-hangar {
     position: relative;
     float: left;

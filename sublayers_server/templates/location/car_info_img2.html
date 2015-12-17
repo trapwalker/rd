@@ -1,0 +1,10 @@
+<div class="car-info-block-picture-2" style="background: url({{ car.hangar_car }}) no-repeat center; z-index: 1"></div>
+
+{% for k, v in car.iter_slots(tags='tuner') %}
+    {% if v is not None %}
+        {% if v.images[car.node_hash()]['side']['link'] is not None %}
+        <div class="car-info-block-picture-2" style="background: url({{ v.images[car.node_hash()]['side']['link'] }}) no-repeat center;
+                z-index: {{ v.images[car.node_hash()]['side']['z_index'] }}"></div>
+        {% end %}
+    {% end %}
+{% end %}
