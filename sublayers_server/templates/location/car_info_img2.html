@@ -8,3 +8,12 @@
         {% end %}
     {% end %}
 {% end %}
+
+{% for k, v in car.iter_slots(tags='armorer') %}
+    {% if v is not None %}
+        <div class="armorer-slot for-journal side_{{ k }}_{{ car.node_html() }} shift-for-journal_{{ car.node_html() }}">
+            <div class="armorer-car-slot-picture"><img src="{{ getattr(v, 'armorer_side_' + v.direction, '') }}" class="armorer_side_{{ v.direction }}"></div>
+        </div>
+    {% end %}
+{% end %}
+

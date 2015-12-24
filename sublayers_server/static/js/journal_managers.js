@@ -16,7 +16,6 @@ var ParkingJournalManager = (function () {
     function ParkingJournalManager() {
         this.town_cars = {};
 
-
     }
 
     ParkingJournalManager.prototype.update = function(car_list) {
@@ -65,6 +64,8 @@ var ParkingJournalManager = (function () {
                     ' data-car_id="' + car_info.car.id + '">' + car_info.car.title + '</div>');
 
                     var jq_car_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.id + '"></div>');
+
+                    jq_car_info_block.append(car_info.armorer_css);
 
                     var jq_car_img_block = $('<div class="journal-page-parking-picture">' + car_info.html_car_img +'</div>');
                     var jq_car_table_block = $('<div class="journal-page-parking-info">' + car_info.html_car_table +'</div>');

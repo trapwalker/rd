@@ -106,3 +106,21 @@
     top: -65px;
     left: -32px;
 }
+
+/* Общие классы для всех шаблонов оружейника */
+
+.armorer-car-main {
+    position: relative;
+    width: 492px;
+    height: 325px;
+}
+
+.armorer-slot {
+    position: absolute;
+    height: 35px;
+    width: 35px;
+    background: transparent url(/static/img/cars/slot_passive.png) no-repeat 100% 100%;
+}
+.armorer-slot.for-journal { background: none; }
+.armorer-slot-hover { background: transparent url(/static/img/cars/slot_active.png) no-repeat 100% 100%; }
+.armorer-slot-active { background: transparent url(/static/img/cars/slot_active.png) no-repeat 100% 100%; }
