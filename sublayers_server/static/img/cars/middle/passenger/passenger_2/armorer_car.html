@@ -1,10 +1,4 @@
 <style>
-    .armorer-car-main {
-        position: relative;
-        width: 492px;
-        height: 325px;
-    }
-
     .armorer-car-main-top {
         position: relative;
         opacity: 0.4;
@@ -25,86 +19,61 @@
         overflow: hidden;
     }
 
-    .wheel-slot {
-        position: absolute;
-        opacity: 0.4;
-        background: transparent url(static/img/wheels/tr_sedan_wheel_001.png) no-repeat 100% 100%;
-        height: 49px;
-        width: 49px;
-    }
+    .shift-for-journal_{{ car.node_html() }} {margin: -127px 0 0 -15px;}
 
-    .armorer_slot {
-        cursor: pointer;
-    }
+    .top_slot_FL_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
+    .side_slot_FL_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
 
-    #wheel_slot_1 {top: 222px; left: 323px}
-    #wheel_slot_2 {top: 222px; left: 136px}
-    #wheel_slot_3 {top: 0px; left: 0px}
+    .top_slot_FC_{{ car.node_html() }} { top: 43px; left: 320px; }
+    .side_slot_FC_{{ car.node_html() }} { top: 180px; left: 320px; }
 
-    #top_slot_FL  { top: 0px; left: 0px}
-    #side_slot_FL { top: 0px; left: 0px}
+    .top_slot_FR_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
+    .side_slot_FR_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
 
-    #top_slot_FC  { top: 43px; left: 320px}
-    #side_slot_FC { top: 180px; left: 320px}
+    .top_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
+    .side_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
 
-    #top_slot_FR  { top: 0px; left: 0px}
-    #side_slot_FR { top: 0px; left: 0px}
+    .top_slot_CC_{{ car.node_html() }} { top: 43px; left: 215px; }
+    .side_slot_CC_{{ car.node_html() }} { top: 155px; left: 215px; }
 
-    #top_slot_CL  { top: 0px; left: 0px}
-    #side_slot_CL { top: 0px; left: 0px}
+    .top_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
+    .side_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
 
-    #top_slot_CC  { top: 43px; left: 215px}
-    #side_slot_CC { top: 155px; left: 215px}
+    .top_slot_BL_{{ car.node_html() }} { top: 18px; left: 100px; }
+    .side_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
 
-    #top_slot_CR  { top: 0px; left: 0px}
-    #side_slot_CR { top: 0px; left: 0px}
+    .top_slot_BC_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
+    .side_slot_BC_{{ car.node_html() }} { top: 0px; left: 0px; display: none;}
 
-    #top_slot_BL  { top: 18px; left: 100px}
-    #side_slot_BL { top: 0px; left: 0px}
+    .top_slot_BR_{{ car.node_html() }} { top: 70px; left: 100px; }
+    .side_slot_BR_{{ car.node_html() }} { top: 180px; left: 100px; }
 
-    #top_slot_BC  { top: 0px; left: 0px}
-    #side_slot_BC { top: 0px; left: 0px}
 
-    #top_slot_BR  { top: 70px; left: 100px}
-    #side_slot_BR { top: 180px; left: 100px}
-
-    .armorer-slot {
-        position: absolute;
-        height: 35px;
-        width: 35px;
-        background: transparent url(static/img/cars/slot_passive.png) no-repeat 100% 100%;
-    }
-    .armorer-slot-hover { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
-    .armorer-slot-active { background: transparent url(static/img/cars/slot_active.png) no-repeat 100% 100%; }
-
-    .block-armorer-slot { display: none; }
 </style>
 
+{% if need_css_only is False %}
 <div class="armorer-car-main">
-    <div id="wheel_slot_1" class="wheel-slot"></div>
-    <div id="wheel_slot_2" class="wheel-slot"></div>
-    <div id="wheel_slot_3" class="wheel-slot block-armorer-slot"></div>
-
     <div class="armorer-car-main-top"></div>
     <div class="armorer-car-main-side"></div>
 
-    <div id="top_slot_FL" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_FC" class="armorer-slot"></div>
-    <div id="top_slot_FR" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_CL" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_CC" class="armorer-slot"></div>
-    <div id="top_slot_CR" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_BL" class="armorer-slot"></div>
-    <div id="top_slot_BC" class="armorer-slot block-armorer-slot"></div>
-    <div id="top_slot_BR" class="armorer-slot"></div>
+    <div id="top_slot_FL" class="armorer-slot top_slot_FL_{{ car.node_html() }}"></div>
+    <div id="top_slot_FC" class="armorer-slot top_slot_FC_{{ car.node_html() }}"></div>
+    <div id="top_slot_FR" class="armorer-slot top_slot_FR_{{ car.node_html() }}"></div>
+    <div id="top_slot_CL" class="armorer-slot top_slot_CL_{{ car.node_html() }}"></div>
+    <div id="top_slot_CC" class="armorer-slot top_slot_CC_{{ car.node_html() }}"></div>
+    <div id="top_slot_CR" class="armorer-slot top_slot_CR_{{ car.node_html() }}"></div>
+    <div id="top_slot_BL" class="armorer-slot top_slot_BL_{{ car.node_html() }}"></div>
+    <div id="top_slot_BC" class="armorer-slot top_slot_BC_{{ car.node_html() }}"></div>
+    <div id="top_slot_BR" class="armorer-slot top_slot_BR_{{ car.node_html() }}"></div>
 
-    <div id="side_slot_FL" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_FC" class="armorer-slot"></div>
-    <div id="side_slot_FR" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_CL" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_CC" class="armorer-slot"></div>
-    <div id="side_slot_CR" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_BL" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_BC" class="armorer-slot block-armorer-slot"></div>
-    <div id="side_slot_BR" class="armorer-slot"></div>
+    <div id="side_slot_FL" class="armorer-slot side_slot_FL_{{ car.node_html() }}"></div>
+    <div id="side_slot_FC" class="armorer-slot side_slot_FC_{{ car.node_html() }}"></div>
+    <div id="side_slot_FR" class="armorer-slot side_slot_FR_{{ car.node_html() }}"></div>
+    <div id="side_slot_CL" class="armorer-slot side_slot_CL_{{ car.node_html() }}"></div>
+    <div id="side_slot_CC" class="armorer-slot side_slot_CC_{{ car.node_html() }}"></div>
+    <div id="side_slot_CR" class="armorer-slot side_slot_CR_{{ car.node_html() }}"></div>
+    <div id="side_slot_BL" class="armorer-slot side_slot_BL_{{ car.node_html() }}"></div>
+    <div id="side_slot_BC" class="armorer-slot side_slot_BC_{{ car.node_html() }}"></div>
+    <div id="side_slot_BR" class="armorer-slot side_slot_BR_{{ car.node_html() }}"></div>
 </div>
+{% end %}

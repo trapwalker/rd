@@ -99,6 +99,9 @@ class Node(object):
             return self.parent.node_hash()
         raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
 
+    def node_html(self):
+        return self.node_hash().replace('://', '-').replace('/', '-')
+
     def as_client_dict(self):
         # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
         d = dict(
