@@ -11,6 +11,7 @@
         position: relative;
         width: 1600px;
         height: 900px;
+        background-color: rgb(17, 29, 19);
     }
 </style>
 <body>
@@ -21,12 +22,10 @@
 //                zoomAnimationThreshold: 4
 //            }).setView([50.595, 36.59], 8);
 
-            var map = L.map('map', {
-                scrollWheelZoom: "center",
-                zoomAnimationThreshold: 4
-            }).setView([32.3729505, -112.8802], 18);
-
-//        2530273856, 956304471
+        var map = L.map('map', {
+            scrollWheelZoom: "center",
+            zoomAnimationThreshold: 4
+        }).setView([32.3729505, -112.8802], 18);
 
 
 //        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

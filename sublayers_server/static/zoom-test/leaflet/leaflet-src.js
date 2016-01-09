@@ -7086,10 +7086,10 @@ L.DomEvent = {
 		var delta = 0;
 
 		if (e.wheelDelta) {
-			delta = e.wheelDelta / 360;
+			delta = e.wheelDelta / 480;
 		}
 		if (e.detail) {
-			delta = -e.detail / 9;
+			delta = -e.detail / 12;
 		}
 		return delta;
 	},
