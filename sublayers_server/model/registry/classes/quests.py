@@ -233,11 +233,33 @@ class Quest(Item):
     title_template = TextAttribute(caption=u'Шаблон заголовка', doc=u'Шаблон заголовка квеста')
     description_template = TextAttribute(caption=u'Шаблон описания', doc=u'Шаблон описания квеста')
 
-    def __init__(self, **kw):
+    def __init__(self, agents=None, npc=None, **kw):
         super(Quest, self).__init__(**kw)
         self._state = None
-        self.agents = []  # todo: weakset
+        self.agents = agents or []  # todo: weakset
+        self.npc = npc  # todo: weakset
         self._log = []
+        self.key = None
+
+    def instantiate(self, *av, **kw):
+        inst = super(Quest, self).instantiate(*av, **kw)
+        inst.key = inst.gen_key()
+        return inst
+
+    def gen_key(self, agents=None, npc=None):
+        u"""Генерирует ключ уникальности квеста для агента.
+        Этот ключ определяет может ли агент получить этот квест у данного персонажа.
+        Перекрывая этот метод в квестах можно добиться запрета повторной выдачи квеста как в глобальном,
+        так и в локальном смысле. В ключ можно добавлять дополнительные обстоятельства, например если мы взяли квест по
+        доставке фуфаек и больше не должны иметь возможности взять этот квест по фуфайкам, зато можно взять по доставке
+        медикаментов, то нужно включить в кортеж ключа uri прототипа доставляемого товара.
+        """
+        if agents is None:
+            agents = self.agents
+        if npc is None:
+            npc = getattr(self, 'npc', None)
+
+        return self.id, tuple([agent.login for agent in agents]), npc.id
 
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()

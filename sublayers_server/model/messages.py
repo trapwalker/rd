@@ -662,7 +662,24 @@ class ExamplesShowMessage(Message):
         return d
 
 
+class NPCQuestsListMessage(Message):
+    # todo: переделать этот кошмар
+    def __init__(self, npc, **kw):
+        super(NPCQuestsListMessage, self).__init__(**kw)
+        self.npc = npc
+
+    def as_dict(self):
+        d = super(NPCQuestsListMessage, self).as_dict()
+        server = self.agent.server
+        quests = []
+        # todo: get/regenerate quests list
+
+        d['quests'] = [q.as_dict() for q in quests]
+        return d
+
+
 class TraderInventoryShowMessage(Message):
+    # todo: переделать этот кошмар
     def __init__(self, town_id, **kw):
         super(TraderInventoryShowMessage, self).__init__(**kw)
         self.town_id = town_id

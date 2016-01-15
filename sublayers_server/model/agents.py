@@ -55,7 +55,8 @@ class Agent(Object):
         # текущий город, если агент не в городе то None
         self._current_location = None
         self.current_location = example.current_location
-        self.quests = []
+
+        self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -87,6 +88,12 @@ class Agent(Object):
     def log(self, time, text, dest, position=None):
         # todo: ##realize ##quest
         pass
+
+    def update_quest_list(self, npc):
+        for quest in npc.quests or []:
+            # todo: Проверка на доступность этого квеста данному агенту
+            # todo: Проверка на наличие этого квеста у агента
+            pass
 
     def __getstate__(self):
         d = self.__dict__.copy()
