@@ -881,6 +881,12 @@ var ClientManager = (function () {
         locationManager.trainer.update(event);
     };
 
+    // Журнал (стоянка)
+    ClientManager.prototype.JournalParkingInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
+        journalManager.parking.update(event.cars);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1398,12 +1404,12 @@ var ClientManager = (function () {
     // Стоянка
 
     ClientManager.prototype.sendParkingSelectCar = function () {
-        //console.log('ClientManager.prototype.sendParkingSelectCar', car_number);
+//        console.log('ClientManager.prototype.sendParkingSelectCar', locationManager.parking.current_car);
         var mes = {
             call: "parking_select_car",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_number: locationManager.hangar.current_car
+                car_number: locationManager.parking.current_car
             }
         };
         rpcCallList.add(mes);
