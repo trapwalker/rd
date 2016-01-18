@@ -243,10 +243,10 @@ class Quest(Item):
 
     def instantiate(self, *av, **kw):
         inst = super(Quest, self).instantiate(*av, **kw)
-        inst.key = inst.gen_key()
+        inst.key = inst.gen_key(**kw)
         return inst
 
-    def gen_key(self, agents=None, npc=None):
+    def gen_key(self, agents=None, npc=None, **kw):
         u"""Генерирует ключ уникальности квеста для агента.
         Этот ключ определяет может ли агент получить этот квест у данного персонажа.
         Перекрывая этот метод в квестах можно добиться запрета повторной выдачи квеста как в глобальном,

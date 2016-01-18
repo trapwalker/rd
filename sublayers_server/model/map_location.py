@@ -8,6 +8,7 @@ from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage,
     ExamplesShowMessage, TraderInventoryShowMessage, InventoryHideMessage,
 )
+from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
@@ -56,6 +57,16 @@ class MapLocation(Observer):
         if agent.car:
             agent.car.example.last_location = self.example
             agent.car.displace(time=time)
+
+        for building in self.example.buildings.values():
+            head = building.head
+            if head and head.quests:
+                for quest in head.quests:
+                    quest_uri = URI(quest)
+                    quest = quest_uri.resolve()
+                    quest_key = quest.gen_key(agents=[agent], npc=head, **quest_uri.params)
+                    if quest_key not in agent.quests:
+                        agent.quests[quest_key] = quest.instantiate(agents=[agent], npc=head, **quest_uri.params)
 
         # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
         agent.on_enter_location(location=self, time=time)
