@@ -70,6 +70,7 @@ class Node(object):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self.storage = None
         self.abstract = abstract
         self._prepared_attrs = set()  # todo: optimize
         self._cache = {}
@@ -80,7 +81,8 @@ class Node(object):
 
         self.values = values and values.copy() or {}
         for p in kw.keys():
-            assert hasattr(self, p)  # todo: replace to warning
+            if not hasattr(self, p):
+                log.warning("Object {!r} has no attribute like {}".format(self, p))
         self.values.update(kw)
         self.storage = storage
 
