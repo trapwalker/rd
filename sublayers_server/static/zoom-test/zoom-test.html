@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+    <script src="leaflet/leaflet-src.js"></script>
+</head>
+<style>
+    #map{
+        position: relative;
+        width: 1600px;
+        height: 900px;
+        background-color: rgb(17, 29, 19);
+    }
+</style>
+<body>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map', {
+                scrollWheelZoom: "center",
+                zoomAnimationThreshold: 4
+        }).setView([50.595, 36.59], 11);
+
+//        var map = L.map('map', {
+//            scrollWheelZoom: "center",
+//            zoomAnimationThreshold: 4
+//        }).setView([32.3729505, -112.8802], 18);
+
+
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//        L.tileLayer('http://sublayers.net/map/{z}/{x}/{y}.jpg', {
+            continuousWorld: true,
+            opacity: 1.0,
+//            errorTileUrl: 'http://sublayers.net/map/404.jpg',
+            maxZoom: 18,
+            minZoom: 10
+        }).addTo(map);
+
+//        var zoom = 8;
+//        var interval = setInterval(function() {
+//            zoom += 0.1;
+//            map.setZoom(zoom)
+//        }, 1000);
+//        setTimeout(function(){clearInterval(interval)}, 30000);
+    </script>
+</body>
+</html>
