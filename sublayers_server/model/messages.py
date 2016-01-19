@@ -663,19 +663,14 @@ class ExamplesShowMessage(Message):
         return d
 
 
-class NPCQuestsListMessage(Message):
-    # todo: переделать этот кошмар
-    def __init__(self, npc, **kw):
-        super(NPCQuestsListMessage, self).__init__(**kw)
-        self.npc = npc
+class QuestUpdateMessage(Message):
+    def __init__(self, quest, **kw):
+        super(QuestUpdateMessage, self).__init__(**kw)
+        self.quest = quest
 
     def as_dict(self):
-        d = super(NPCQuestsListMessage, self).as_dict()
-        server = self.agent.server
-        quests = []
-        # todo: get/regenerate quests list
-
-        d['quests'] = [q.as_dict() for q in quests]
+        d = super(QuestUpdateMessage, self).as_dict()
+        d['quest'] = self.quest.as_client_dict()
         return d
 
 

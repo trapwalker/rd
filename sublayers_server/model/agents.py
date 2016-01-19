@@ -12,6 +12,7 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
+from sublayers_server.model.messages import QuestUpdateMessage
 
 
 # todo: make agent offline status possible
@@ -57,6 +58,10 @@ class Agent(Object):
         self.current_location = example.current_location
 
         self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
+
+    def add_quest(self, quest, time):
+        self.quests[quest.key] = quest
+        QuestUpdateMessage(agent=self, time=time, quest=quest).post()
 
     def tp(self, time, location, radius=None):
         self.current_location = location
