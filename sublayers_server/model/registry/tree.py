@@ -80,7 +80,8 @@ class Node(object):
 
         self.values = values and values.copy() or {}
         for p in kw.keys():
-            assert hasattr(self, p)  # todo: replace to warning
+            if not hasattr(self, p):
+                log.warning("Object {!r} has no attribute like {}".format(self, p))
         self.values.update(kw)
         self.storage = storage
 
