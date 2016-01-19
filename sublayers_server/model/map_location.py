@@ -8,6 +8,7 @@ from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage,
     ExamplesShowMessage, TraderInventoryShowMessage, InventoryHideMessage,
 )
+from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
@@ -57,8 +58,19 @@ class MapLocation(Observer):
             agent.car.example.last_location = self.example
             agent.car.displace(time=time)
 
+        for building in self.example.buildings.values():
+            head = building.head
+            if head and head.quests:
+                for quest in head.quests:
+                    quest_uri = URI(quest)
+                    quest = quest_uri.resolve()
+                    quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))
+                    if quest_key not in agent.quests:
+                        new_quest = quest.instantiate(agents=[agent], npc=head, **dict(quest_uri.params))
+                        agent.add_quest(quest=new_quest, time=time)
+
         # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
-        agent.on_enter_location(location=self)
+        agent.on_enter_location(location=self, time=time)
 
         self.send_inventory_info(agent=agent, time=time)
 
@@ -82,7 +94,7 @@ class MapLocation(Observer):
                 ExamplesShowMessage(agent=agent, time=time).post()
 
             # todo: review agent.on_enter_location call
-            agent.on_enter_location(location=self)
+            agent.on_enter_location(location=self, time=time)
 
             self.send_inventory_info(agent=agent, time=time)
 
@@ -96,7 +108,7 @@ class MapLocation(Observer):
     def on_exit(self, agent, time):
         self.visitors.remove(agent)
         agent.current_location = None
-        agent.on_exit_location(location=self)
+        agent.on_exit_location(time=time, location=self)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)

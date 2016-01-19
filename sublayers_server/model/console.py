@@ -3,6 +3,16 @@
 import logging
 log = logging.getLogger(__name__)
 
+import functools
+
+
+def command_deco(func):
+    def closure(*av, **kw):
+        return func(*av, **kw)
+
+    functools.update_wrapper(closure, func)
+    return closure
+
 
 class Shell(object):
     def __init__(self, global_context, local_context=None):
@@ -16,3 +26,5 @@ class Shell(object):
 
     def run(self, cmd):
         exec cmd in self.global_context, self.local_context
+
+

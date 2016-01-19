@@ -61,7 +61,6 @@ class Building(object):
         return self._instances_resolved
 
 
-
 class Town(MapLocation):
     armorer = RegistryLink(caption=u'Оружейник')
     mechanic = RegistryLink(caption=u'Механик')
@@ -82,6 +81,7 @@ class Institution(Root):
     photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
     text = TextAttribute(caption=u"Текст приветствия")
     type = TextAttribute(caption=u"Специальность NPC")
+    quests = Attribute(caption=u"Квесты")
 
 
 class Nucoil(Institution):
