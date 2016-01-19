@@ -70,6 +70,7 @@ class Node(object):
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
+        self.storage = None
         self.abstract = abstract
         self._prepared_attrs = set()  # todo: optimize
         self._cache = {}
