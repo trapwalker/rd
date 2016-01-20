@@ -38,3 +38,6 @@ local.*.conf
 sublayers_server/static/map/*
 map/altitude
 map/tilesets
+temp/*
+temp_archive.zip
+

@@ -383,12 +383,9 @@ class AgentAPI(API):
             for name in args:
                 self.send_invite(username=name)
         elif command == '/die':
-            if self.agent.car:
-                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=1000)
+            self.agent.die()
         elif command == '/damage':
-            if args:
-                dhp = int(args[0])
-                self.agent.car.set_hp(time=self.agent.server.get_time(), dhp=dhp)
+            self.agent.hit(int(args[0]) if args else 0)
         elif command == '/kick':
             for name in args:
                 self.send_kick(username=name)
@@ -435,6 +432,24 @@ class AgentAPI(API):
             else:
                 self.send_kick(username=self.agent.login)
                 self.agent.example.reset()
+        elif command == '/quest':
+            if not args:
+                pass  # todo: Вывести перечень активных квестов
+            elif args[0] == 'get':
+                for q in args[1:]:
+                    try:
+                        q = self.agent.server.reg[q]
+                    except:
+                        log.error('Quest %s is not found', q)
+                        raise
+                    log.debug('Abstract quest %s selected', q)
+                    quest = q.instantiate()
+                    log.debug('Quest %s instantiated', quest)
+                    quest.start(agents=self.agent, time=self.agent.server.get_time())  # todo: store quest to agent or global storage
+                    log.debug('Quest %s started', quest)
+        elif command == '/qi':
+            for k, q in self.agent.quests.items():
+                log.info('QUEST: {}:: {}'.format(k, q))
 
         else:
             log.warning('Unknown console command "%s"', cmd)
@@ -629,3 +644,10 @@ class AgentAPI(API):
     @public_method
     def set_about_self(self, str):
         self.agent.example.about_self = str
+
+    # Административные методы
+    @public_method
+    def get_tiles_admin(self, x, y):
+        from sublayers_server.model.tile_archive import get_tiles_admin
+        get_tiles_admin(x, y)
+        messages.AdminArchiveCompleteMessage(agent=self.agent, time=self.agent.server.get_time()).post()

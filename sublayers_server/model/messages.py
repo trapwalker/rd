@@ -663,7 +663,19 @@ class ExamplesShowMessage(Message):
         return d
 
 
+class QuestUpdateMessage(Message):
+    def __init__(self, quest, **kw):
+        super(QuestUpdateMessage, self).__init__(**kw)
+        self.quest = quest
+
+    def as_dict(self):
+        d = super(QuestUpdateMessage, self).as_dict()
+        d['quest'] = self.quest.as_client_dict()
+        return d
+
+
 class TraderInventoryShowMessage(Message):
+    # todo: переделать этот кошмар
     def __init__(self, town_id, **kw):
         super(TraderInventoryShowMessage, self).__init__(**kw)
         self.town_id = town_id
@@ -776,3 +788,7 @@ class JournalParkingInfoMessage(Message):
             location_name=car.last_location.title,
         ) for car in self.agent.example.car_list])
         return d
+
+
+class AdminArchiveCompleteMessage(Message):
+    pass

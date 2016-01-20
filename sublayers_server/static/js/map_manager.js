@@ -25,8 +25,12 @@ function onMouseDblClick(mouseEventObject) {
 }
 
 function onMouseRightClick(mouseEventObject) {
-    chat.addMessageToSys(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
-    console.log(map.project(mouseEventObject.latlng, myMap.getMaxZoom()))
+    var p = map.project(mouseEventObject.latlng, myMap.getMaxZoom());
+    chat.addMessageToSys(p);
+    console.log(p);
+
+    if (map.dragging._enabled)
+        clientManager.sendTileCoord(p.x, p.y);
 }
 
 function onMouseMoveMap(mouseEventObject) {
