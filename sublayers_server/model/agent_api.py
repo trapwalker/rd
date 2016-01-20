@@ -644,3 +644,10 @@ class AgentAPI(API):
     @public_method
     def set_about_self(self, str):
         self.agent.example.about_self = str
+
+    # Административные методы
+    @public_method
+    def get_tiles_admin(self, x, y):
+        from sublayers_server.model.tile_archive import get_tiles_admin
+        get_tiles_admin(x, y)
+        messages.AdminArchiveCompleteMessage(agent=self.agent, time=self.agent.server.get_time()).post()

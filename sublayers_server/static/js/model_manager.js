@@ -887,6 +887,13 @@ var ClientManager = (function () {
         journalManager.parking.update(event.cars);
     };
 
+
+    // Административные сообщения
+    ClientManager.prototype.AdminArchiveCompleteMessage = function (event) {
+        console.log('ClientManager.prototype.AdminArchiveCompleteMessage  Start Download temp_archive');
+        window.open(window.location.protocol + "//" + location.host + '/static/temp_archive.zip', '_self');
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1586,6 +1593,20 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+
+    // Административные сообщения
+    ClientManager.prototype.sendTileCoord = function (x, y) {
+        console.log('ClientManager.prototype.sendTileCoord', x, y);
+        var mes = {
+            call: "get_tiles_admin",
+            rpc_call_id: rpcCallList.getID(),
+            params: { x: x, y: y }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     return ClientManager;
 })();

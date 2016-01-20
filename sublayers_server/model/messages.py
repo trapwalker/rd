@@ -788,3 +788,7 @@ class JournalParkingInfoMessage(Message):
             location_name=car.last_location.title,
         ) for car in self.agent.example.car_list])
         return d
+
+
+class AdminArchiveCompleteMessage(Message):
+    pass
