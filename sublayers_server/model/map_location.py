@@ -66,6 +66,7 @@ class MapLocation(Observer):
                     quest = quest_uri.resolve()
                     quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))
                     if quest_key not in agent.quests:
+                        log.info('new quest %r', quest)
                         new_quest = quest.instantiate(agents=[agent], npc=head, **dict(quest_uri.params))
                         agent.add_quest(quest=new_quest, time=time)
 

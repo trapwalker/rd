@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.classes.item import Item
-from sublayers_server.model.registry.attr import TextAttribute
+from sublayers_server.model.registry.attr import TextAttribute, Attribute
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import Message
 
@@ -230,8 +230,13 @@ class QuestLogMessage(Message):
 class Quest(Item):
     first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
 
-    title_template = TextAttribute(caption=u'Шаблон заголовка', doc=u'Шаблон заголовка квеста')
-    description_template = TextAttribute(caption=u'Шаблон описания', doc=u'Шаблон описания квеста')
+    caption = TextAttribute(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
+    text = TextAttribute(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
+    text_short = TextAttribute(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    typename = TextAttribute(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
+    list_icon = Attribute(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')
+    level = Attribute(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
+    deadline = Attribute(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
     def __init__(self, agents=None, npc=None, **kw):
         super(Quest, self).__init__(**kw)
