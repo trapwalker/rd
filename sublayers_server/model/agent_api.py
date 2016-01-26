@@ -383,7 +383,7 @@ class AgentAPI(API):
             for name in args:
                 self.send_invite(username=name)
         elif command == '/die':
-            self.agent.die()
+            self.agent.die(time=self.agent.server.get_time())
         elif command == '/damage':
             self.agent.hit(int(args[0]) if args else 0)
         elif command == '/kick':
