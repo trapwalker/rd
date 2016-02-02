@@ -887,6 +887,11 @@ var ClientManager = (function () {
         journalManager.parking.update(event.cars);
     };
 
+    // Журнал (квесты)
+    ClientManager.prototype.QuestUpdateMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestUpdateMessage', event);
+        journalManager.quests.updateQuest(event.quest);
+    };
 
     // Административные сообщения
     ClientManager.prototype.AdminArchiveCompleteMessage = function (event) {
