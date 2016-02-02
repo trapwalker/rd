@@ -38,6 +38,9 @@ class State(O):
     enter_state_message_template = None
     exit_state_message = None
     exit_state_message_template = None
+    status = 'active'
+    result = None
+
     def __init__(self, time, quest, name, **kw):
         super(State, self).__init__()
         self.name = name or self.__class__.__name__
@@ -145,6 +148,9 @@ class State(O):
 
 
 class FinalState(State):
+    status = 'end'
+    result = None
+
     def on_state_enter(self, old_state):
         pass
 
@@ -154,10 +160,12 @@ class FinalState(State):
 
 class StandartWin(FinalState):
     enter_state_message_template = u'Задание {quest.title} выполнено успешно.'
+    result = 'win'
 
 
 class StandartFail(FinalState):
     enter_state_message_template = u'Задание {quest.title} провалено.'
+    result = 'fail'
 
 
 # Условия:
@@ -228,6 +236,7 @@ class QuestLogMessage(Message):
 
 
 class Quest(Item):
+    # todo: Сделать квесты не итемами
     first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
 
     caption = TextAttribute(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
@@ -237,6 +246,9 @@ class Quest(Item):
     list_icon = Attribute(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')
     level = Attribute(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     deadline = Attribute(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+
+    hirer = Attribute(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
+    town = Attribute(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
 
     def __init__(self, agents=None, npc=None, **kw):
         super(Quest, self).__init__(**kw)
@@ -268,7 +280,11 @@ class Quest(Item):
 
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()
-        d.update(log=self._log)
+        d.update(
+            status=self.state.status if self.state else None,
+            result=self.state.result if self.state else None,
+            log=self._log,
+        )
         return d
 
     def log_fmt(self, template, position=None, target=None, context=None):
