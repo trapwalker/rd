@@ -136,98 +136,109 @@ var QuestJournalManager = (function () {
     }
 
     QuestJournalManager.prototype.updateQuest = function(quest) {
-        console.log('ParkingJournalManager.prototype.updateQuest', quest);
-        if (this.quests.hasOwnProperty(quest.id))
-
-        // Сортируем машинки по городам
-        for (var i = 0; i < car_list.length; i++)
-            if (this.town_cars.hasOwnProperty(car_list[i].location_name))
-                this.town_cars[car_list[i].location_name].car_list.push(car_list[i].car_info);
-            else
-                this.town_cars[car_list[i].location_name] = {
-                    location_name: car_list[i].location_name,
-                    location_node: car_list[i].location,
-                    car_list: [car_list[i].car_info]
-                };
+        console.log('QuestJournalManager.prototype.updateQuest', quest);
+        if (this.quests.hasOwnProperty(quest.id)) {
+            // todo: Такой квест уже есть - прост найти по ID и сделать апдейт
+        }
+        else {
+            this.quests[quest.id] = quest
+        }
 
         this.redraw();
     };
 
     QuestJournalManager.prototype.redraw = function() {
-        console.log('ParkingJournalManager.prototype.redraw');
+        console.log('QuestJournalManager.prototype.redraw');
 
         // Очищаем верстку в журнале
         var jq_quest_main = $('#journal_page_task');
-        var jq_town_list = jq_quest_main.find('.journal-page-left').first();
+        var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
         var jq_page_right = jq_quest_main.find('.journal-page-right').first();
-        jq_town_list.empty();
+        jq_quest_list.empty();
         jq_page_right.empty();
 
+        // Добавляем "Активные" "Выполненные" "Проваленные"
+        var jq_active_group = $(
+            '<div class="journal-parking-menu-city-block">' +
+                '<div class="journal-parking-menu-city-name-block">' +
+                    '<div class="journal-parking-menu-city-arrow"></div>' +
+                    '<div class="journal-parking-menu-city-name">Активные</div>' +
+                '</div>' +
+                '<div class="journal-parking-menu-city-car-list"></div>' +
+            '</div>');
+        var jq_completed_group = $(
+            '<div class="journal-parking-menu-city-block">' +
+                '<div class="journal-parking-menu-city-name-block">' +
+                    '<div class="journal-parking-menu-city-arrow"></div>' +
+                    '<div class="journal-parking-menu-city-name">Выполненные</div>' +
+                '</div>' +
+                '<div class="journal-parking-menu-city-car-list"></div>' +
+            '</div>');
+        var jq_failed_active = $(
+            '<div class="journal-parking-menu-city-block">' +
+                '<div class="journal-parking-menu-city-name-block">' +
+                    '<div class="journal-parking-menu-city-arrow"></div>' +
+                    '<div class="journal-parking-menu-city-name">Проваленные</div>' +
+                '</div>' +
+                '<div class="journal-parking-menu-city-car-list"></div>' +
+            '</div>');
+
+        jq_quest_list.append(jq_active_group);
+        jq_quest_list.append(jq_completed_group);
+        jq_quest_list.append(jq_failed_active);
+
+        // Добавление квестов
+        for (var key in this.quests)
+            if (this.quests.hasOwnProperty(key)) {
+                var quest = this.quests[key];
+
+                //todo: сортировка по статусам
+                //todo: сортировка по городам
+
+                var jq_cur_status_list = jq_completed_group.find('.journal-parking-menu-city-car-list').first();
+                jq_cur_status_list.append('<div class="journal-parking-menu-city-car"' +
+                                          ' data-quest_id="' + key + '">' + quest.caption + '</div>');
 
 
 
 
 
+                var jq_quest_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.id + '"></div>');
+                jq_car_info_block.append(car_info.armorer_css);
+                var jq_car_img_block = $('<div class="journal-page-parking-picture">' + car_info.html_car_img +'</div>');
+                var jq_car_table_block = $('<div class="journal-page-parking-info">' + car_info.html_car_table +'</div>');
+                jq_car_info_block.append(jq_car_img_block);
+                jq_car_info_block.append(jq_car_table_block);
 
-        for (var key in this.town_cars)
-            if (this.town_cars.hasOwnProperty(key)) {
-                var town = this.town_cars[key];
 
-                var jq_town_block = $('<div class="journal-parking-menu-city-block"></div>');
-                jq_town_block.append(
-                    '<div class="journal-parking-menu-city-name-block">' +
-                        '<div class="journal-parking-menu-city-arrow"></div>' +
-                        '<div class="journal-parking-menu-city-name">' + town.location_name +'</div>' +
-                    '</div>'
-                );
 
-                var jq_town_car_list = $('<div class="journal-parking-menu-city-car-list"></div>');
 
-                for (var k = 0; k < town.car_list.length; k++) {
-                    var car_info = town.car_list[k];
-                    jq_town_car_list.append('<div class="journal-parking-menu-city-car"' +
-                    ' data-car_id="' + car_info.car.id + '">' + car_info.car.title + '</div>');
-
-                    var jq_car_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.id + '"></div>');
-
-                    jq_car_info_block.append(car_info.armorer_css);
-
-                    var jq_car_img_block = $('<div class="journal-page-parking-picture">' + car_info.html_car_img +'</div>');
-                    var jq_car_table_block = $('<div class="journal-page-parking-info">' + car_info.html_car_table +'</div>');
-
-                    jq_car_info_block.append(jq_car_img_block);
-                    jq_car_info_block.append(jq_car_table_block);
-
-                    jq_page_right.append(jq_car_info_block);
-
-                }
-                jq_town_block.append(jq_town_car_list);
-                jq_town_list.append(jq_town_block);
+                jq_page_right.append(jq_quest_info_block);
             }
 
         // Вешаем клики на названия машинок в городах
-        jq_town_list.find('.journal-parking-menu-city-car').click(function () {
-            var car_id = $(this).data('car_id');
-            console.log(car_id);
-            var jq_parking_main = $('#journal_page_parking');
-
-            jq_parking_main.find('.journal-parking-menu-city-car').removeClass('active');
-            $(this).addClass('active');
-
-            var jq_page_right = jq_parking_main.find('.journal-page-right').first();
-
-            jq_page_right.find('.journal-page-parking-car-info-block').each(function (index, element) {
-                var jq_elem = $(element);
-                var elem_car_id = jq_elem.data('car_id');
-                if (car_id == elem_car_id)
-                    jq_elem.css('display', 'block');
-                else
-                    jq_elem.css('display', 'none');
-            });
-        });
+        //jq_town_list.find('.journal-parking-menu-city-car').click(function () {
+        //    var car_id = $(this).data('car_id');
+        //    console.log(car_id);
+        //    var jq_parking_main = $('#journal_page_parking');
+        //
+        //    jq_parking_main.find('.journal-parking-menu-city-car').removeClass('active');
+        //    $(this).addClass('active');
+        //
+        //    var jq_page_right = jq_parking_main.find('.journal-page-right').first();
+        //
+        //    jq_page_right.find('.journal-page-parking-car-info-block').each(function (index, element) {
+        //        var jq_elem = $(element);
+        //        var elem_car_id = jq_elem.data('car_id');
+        //        if (car_id == elem_car_id)
+        //            jq_elem.css('display', 'block');
+        //        else
+        //            jq_elem.css('display', 'none');
+        //    });
+        //});
 
         // Вешаем клики на названия городов
-        jq_town_list.find('.journal-parking-menu-city-name-block').click(function () {
+        jq_quest_list.find('.journal-parking-menu-city-name-block').click(function () {
             var j_self = $(this);
             var j_list = j_self.parent().find('.journal-parking-menu-city-car-list').first();
             var j_arrow = j_self.find('.journal-parking-menu-city-arrow').first();
@@ -243,8 +254,8 @@ var QuestJournalManager = (function () {
         });
 
         // Открываем первый город и первую машинку
-        jq_town_list.find('.journal-parking-menu-city-name-block').first().click();
-        jq_town_list.find('.journal-parking-menu-city-car').first().click();
+        //jq_town_list.find('.journal-parking-menu-city-name-block').first().click();
+        //jq_town_list.find('.journal-parking-menu-city-car').first().click();
     };
 
     QuestJournalManager.prototype.clear = function() {

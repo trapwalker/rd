@@ -683,6 +683,9 @@ var ClientManager = (function () {
 
                 // Запрос RGP информации для тренера
                 clientManager.sendGetRPGInfo();
+
+                // Принудительно перерисовать все квесты
+                journalManager.quest.redraw();
             }
         });
     };
@@ -890,7 +893,7 @@ var ClientManager = (function () {
     // Журнал (квесты)
     ClientManager.prototype.QuestUpdateMessage = function (event) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', event);
-        journalManager.quests.updateQuest(event.quest);
+        journalManager.quest.updateQuest(event.quest);
     };
 
     // Административные сообщения

@@ -362,7 +362,7 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype._drawFillArea = function (prc) {
-        //console.log('WCruiseControl.prototype.onStopSpeedHandle', ui.position.top, event.data);
+        //console.log('WCruiseControl.prototype._drawFillArea', prc);
         if (prc > 1.0) prc = 1.0;
         if (prc < 0.0) prc = 0.0;
         if (this.fill_area) this.fill_area.remove();
