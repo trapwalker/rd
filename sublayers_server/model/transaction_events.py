@@ -48,7 +48,7 @@ class TransactionActivateTank(TransactionActivateItem):
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
 
-        tank_proto = self.server.reg['/items/usable/fuel/tanks/tank_empty/tank' + str(item.example.value_fuel)]
+        tank_proto = self.server.reg['/items/usable/tanks/tank_empty/tank' + str(item.example.value_fuel)]
         ItemState(server=self.server, time=self.time, example=tank_proto.instantiate()) \
             .set_inventory(time=self.time, inventory=inventory, position=position)
 
@@ -156,7 +156,7 @@ class TransactionGasStation(TransactionEvent):
                 dec_val = item.value_fuel
                 if dec_val < agent.example.balance:
                     agent.example.balance -= dec_val
-                    new_tank = self.server.reg['/items/usable/fuel/tanks/tank_full/tank' + str(dec_val)].instantiate()
+                    new_tank = self.server.reg['/items/usable/tanks/tank_full/tank' + str(dec_val)].instantiate()
                     new_tank.position = item.position
                     agent.example.car.inventory.append(new_tank)
                 else:
