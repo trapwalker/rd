@@ -83,6 +83,9 @@ class Institution(Root):
     type = TextAttribute(caption=u"Специальность NPC")
     quests = Attribute(caption=u"Квесты")
 
+    def as_dict4quest(self):
+        pass
+
 
 class Nucoil(Institution):
     type = TextAttribute(default='nucoil', caption=u"Специальность NPC")
