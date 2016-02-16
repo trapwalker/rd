@@ -17,3 +17,14 @@ class ServerStatisticsHandler(BaseHandler):
 class ServerStatisticsRefreshHandler(BaseHandler):
     def get(self):
         self.write(self.application.srv.get_server_stat())
+
+
+class ServerStatForSite(BaseHandler):
+    def get(self):
+        # todo: use cachetools or something else
+        stat_log = self.application.srv.stat_log
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.finish({
+            's_agents_on': stat_log.get_metric('s_agents_on'),
+            's_units_on': stat_log.get_metric('s_units_on')
+        })
