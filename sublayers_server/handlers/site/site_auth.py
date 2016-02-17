@@ -49,7 +49,8 @@ class StandardLoginHandler(BaseHandler):
         db_res = None
         if name is not None:
             db_res = auth_db.profiles.find({'name': name})
-            if db_res.count() > 0:
+            cnt = db_res.count()
+            if cnt > 0:
                 return db_res[0]
         if password is None:
             db_res = auth_db.profiles.find({'auth.standard.email': email})

@@ -76,6 +76,7 @@ class Application(tornado.web.Application):
             log.error('MongoDB is not found: %r', e)
             raise DBError('Database connection error: {!r}'.format(e))
 
+        # todo: Сделать коннект к монге синхронным. Проверить на успех коннекта.
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db
         else:

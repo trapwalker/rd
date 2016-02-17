@@ -53,7 +53,7 @@ class State(O):
     # todo: __setstate__ ##realize
 
     def __hash__(self):
-        return id(self)
+        return id(self)  #todo: Так нельзя
 
     def subscribe(self, target):
         if isinstance(target, SubscriptionList):
@@ -303,6 +303,7 @@ class Quest(Item):
             return template.format(**context)
         except Exception as e:
             log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
+            raise e
 
     def update(self, time):
         # todo: #refactor

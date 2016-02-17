@@ -142,10 +142,10 @@ class Server(object):
 
     memsize = sys.getsizeof
 
-    def save(self):
+    def save(self, time):
         log.debug('=' * 10 + ' Server SAVE start ' + '=' * 10)
         for agent in self.agents.values():
-            agent.save(self.get_time())  # todo: get right time
+            agent.save(time=time)
         log.debug('=' * 10 + ' Server SAVE end   ' + '=' * 10)
 
 
@@ -238,9 +238,8 @@ class LocalServer(Server):
         with open('srv_dump.yaml', 'r') as f:
             srv2 = yaml.load(stream=f)
 
-    def save(self):
-        for agent in self.agents:
-            agent.save()
+    def save(self, *av, **kw):
+        super(LocalServer, self).save(*av, **kw)
 
     def dump(self):
         import yaml
