@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-import functools
 from itertools import chain
 from collections import Iterable, Callable
 import re
@@ -63,7 +62,8 @@ class ConsoleCommandExecutionError(ConsoleError):
     pass
 
 
-class NameSpace(object):
+class Namespace(object):
+    # todo: stackable namespace
     def __init__(self, **kw):
         self.update_scope(**kw)
 
@@ -71,7 +71,7 @@ class NameSpace(object):
         self.__dict__.update(kw)
 
 
-class NSTest(NameSpace):
+class NSTest(Namespace):
     def test(self, *av, **kw):
         if hasattr(self, write):
             self.write('test done\n')
@@ -153,7 +153,7 @@ class Console(object):
 if __name__ == '__main__':
     import sys
 
-    class NSTest2(NameSpace):
+    class NSTest2(Namespace):
         def test2(self, *av, **kw):
             self.write('test2 done\n')
             #raise Exception('qqq')

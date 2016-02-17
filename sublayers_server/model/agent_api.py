@@ -2,16 +2,15 @@
 from __future__ import absolute_import
 
 import logging
-from math import pi
 
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
-from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
-from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
-from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
+# from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
+# from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
+# from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
@@ -27,10 +26,107 @@ from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
     CancelBarterEvent, SetMoneyBarterEvent
 from sublayers_server.model.barter import InviteBarterMessage
-
-from sublayers_server.model.inventory import ItemState
+from sublayers_server.model.console import Namespace, Console, LogStream
 
 # todo: Проверить допустимость значений входных параметров
+
+
+class AgentConsoleNamespace(Namespace):
+    agent = None
+    api = None
+
+    def party(self, cmd, *av):
+        # todo: options of party create
+        cmd = cmd.strip().lower()
+        if cmd == 'new':
+            self.api.set_party(name=av[0] if av else None)
+        elif cmd == 'leave':
+            self.api.set_party()
+        elif cmd == 'invite':
+            for name in av:
+                self.api.send_invite(username=name)
+
+    def die(self):
+        self.agent.die(time=self.agent.server.get_time())
+
+    def damage(self, value=0):
+        self.agent.hit(int(value))
+
+    def kick(self, *av):
+        for name in av:
+            self.api.send_kick(username=name)
+
+    def metric(self, name='server'):
+        # todo: отправку метрик необходимо сделать через евент (потому что мессаджи должны проходить через евент!)
+        result = None
+        if name == 'server':
+            result = self.agent.server.get_server_stat()
+        elif hasattr(self.agent.car.stat_log, name):
+            if name == 'frag':
+                result = '{} / {}'.format(
+                    self.agent.car.stat_log.get_metric('frag'),
+                    self.agent.stat_log.get_metric('frag'),
+                )
+            else:
+                result = self.agent.car.stat_log.get_metric(name)
+
+        result = result or 'Unknown metric name'
+        messages.Message(time=self.agent.server.get_time(), agent=self.agent, comment=result).post()
+        # todo: self.write(result)
+
+    def dropcar(self):
+        self.api.delete_car()
+
+    def money(self, value=0):
+        self.agent.example.balance += int(value)
+
+    def exp(self, value):
+        self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=int(value))
+
+    def param(self, name=None):
+        if name and self.agent.car:
+            # todo: use self.write()
+            log.debug(
+                'Agent %s  have param %s = %s',
+                self.agent,
+                name,
+                self.agent.car.example.get_modify_value(param_name=name, example_agent=self.agent.example),
+            )
+
+    def save(self):
+        self.agent.server.save(time=self.agent.server.get_time())
+
+    def reset(self, *names):
+        names = names or [self.agent.login]
+        agents = self.agent.server.agents
+        if '*' not in names:
+            agents = filter(None, (agents.get(username) for username in names))
+
+        for agent_to_reset in agents:
+            self.api.send_kick(username=agent_to_reset.login)
+            agent_to_reset.example.reset()
+
+    def quest(self, *args):
+        if not args:
+            pass  # todo: Вывести перечень активных квестов
+        elif args[0] == 'get':
+            for q in args[1:]:
+                try:
+                    q = self.agent.server.reg[q]
+                except:
+                    log.error('Quest %s is not found', q)
+                    raise
+                log.debug('Abstract quest %s selected', q)
+                quest = q.instantiate()
+                log.debug('Quest %s instantiated', quest)
+                quest.start(agents=self.agent, time=self.agent.server.get_time())
+                # todo: store quest to agent or global storage
+                log.debug('Quest %s started', quest)
+
+    def qi(self):
+        for k, q in self.agent.quests.items():
+            log.info('QUEST: {}:: {}'.format(k, q))
+
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
@@ -68,7 +164,7 @@ class SetPartyEvent(Event):
                 self.agent.party.exclude(self.agent, time=self.time)
         else:
             party = Party.search(self.name)
-            if party is None:
+            if party is None:  # tido: checkit
                 party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
@@ -167,6 +263,14 @@ class AgentAPI(API):
         self.car = None
         agent.api = self
         self.update_agent_api()
+        self.console = Console(
+            root=AgentConsoleNamespace(
+                agent=agent,
+                api=self,
+            ),
+            stream_log=LogStream(logger=log, level=logging.WARNING),
+        )
+        # todo: inject write() function
 
     def cmd_line_context(self):
         # todo: deprecated
@@ -344,10 +448,11 @@ class AgentAPI(API):
 
     @public_method
     def send_scout_droid(self, x, y):
-        if self.car.limbo or not self.car.is_alive:
-            return
-        assert x and y
-        p = Point(x, y)
+        pass
+        # if self.car.limbo or not self.car.is_alive:
+        #     return
+        # assert x and y
+        # p = Point(x, y)
         # ScoutDroidStartEvent(starter=self.car, target=p, time=self.agent.server.get_time()).post()
 
     @public_method
@@ -368,92 +473,6 @@ class AgentAPI(API):
     @public_method
     def console_cmd(self, cmd):
         log.debug('Agent %r cmd: %r', self.agent.login, cmd)
-        cmd = cmd.strip()
-        assert cmd, 'console command is empty or False: {!r}'.format(cmd)
-        words = cmd.split()
-        command, args = words[0], words[1:]
-
-        # todo: need refactoring
-        if command == '/create':
-            # todo: options of party create
-            self.set_party(name=args[0] if args else None)
-        elif command == '/leave':
-            self.set_party()
-        elif command == '/invite':
-            for name in args:
-                self.send_invite(username=name)
-        elif command == '/die':
-            self.agent.die(time=self.agent.server.get_time())
-        elif command == '/damage':
-            self.agent.hit(int(args[0]) if args else 0)
-        elif command == '/kick':
-            for name in args:
-                self.send_kick(username=name)
-        # todo: отправку метрик необходимо сделать через евент (потому что мессаджи должны проходить через евент!)
-        # elif command == '/metric':
-        # metric_name = args[0] if args else None
-        #    if metric_name:
-        #        if hasattr(self.car.stat_log, metric_name):
-        #            if metric_name == 'frag':
-        #                m_car = self.car.stat_log.get_metric('frag')
-        #                m_agent = self.agent.stat_log.get_metric('frag')
-        #                messages.Message(agent=self.agent, comment='{} / {}'.format(m_car, m_agent)).post()
-        #            else:
-        #                messages.Message(agent=self.agent, comment=self.car.stat_log.get_metric(metric_name)).post()
-        #        elif metric_name == 'server':
-        #            messages.Message(agent=self.agent, comment=self.agent.server.get_server_stat()).post()
-        elif command == '/delete':
-            self.delete_car()
-        elif command == '/init':
-            self.update_agent_api()
-        elif command == '/money':
-            if args:
-                add_money = int(args[0])
-                self.agent.example.balance += add_money
-        elif command == '/exp':
-            if args:
-                add_exp = int(args[0])
-                self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=add_exp)
-        elif command == '/param':
-            if args and self.agent.car:
-                param_name = args[0]
-                agent = self.agent
-                log.debug('Agent %s  have param %s = %s', agent, param_name,
-                          agent.car.example.get_modify_value(param_name=param_name, example_agent=agent.example))
-        elif command == '/save':
-            self.agent.server.save(time=self.agent.server.get_time())
-            log.debug('!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        elif command == '/reset':
-            if args:
-                all_agents = self.agent.server.agents
-                agents = all_agents if '*' in args else filter(None, (all_agents.get(username) for username in args))
-                for agent_to_reset in agents:
-                    agent_to_reset.example.reset()
-                    self.send_kick(username=agent_to_reset.login)
-            else:
-                self.send_kick(username=self.agent.login)
-                self.agent.example.reset()
-        elif command == '/quest':
-            if not args:
-                pass  # todo: Вывести перечень активных квестов
-            elif args[0] == 'get':
-                for q in args[1:]:
-                    try:
-                        q = self.agent.server.reg[q]
-                    except:
-                        log.error('Quest %s is not found', q)
-                        raise
-                    log.debug('Abstract quest %s selected', q)
-                    quest = q.instantiate()
-                    log.debug('Quest %s instantiated', quest)
-                    quest.start(agents=self.agent, time=self.agent.server.get_time())  # todo: store quest to agent or global storage
-                    log.debug('Quest %s started', quest)
-        elif command == '/qi':
-            for k, q in self.agent.quests.items():
-                log.info('QUEST: {}:: {}'.format(k, q))
-
-        else:
-            log.warning('Unknown console command "%s"', cmd)
 
     @public_method
     def create_private_chat(self, recipient):
@@ -593,27 +612,27 @@ class AgentAPI(API):
 
     @public_method
     def activate_barter(self, barter_id):
-        #log.debug('Agent %s accept barter_id %s ', self.agent, barter_id)
+        # log.debug('Agent %s accept barter_id %s ', self.agent, barter_id)
         ActivateBarterEvent(barter_id=barter_id, recipient=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def lock_barter(self, barter_id):
-        #log.debug('Agent %s lock barter_id %s ', self.agent, barter_id)
+        # log.debug('Agent %s lock barter_id %s ', self.agent, barter_id)
         LockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def unlock_barter(self, barter_id):
-        #log.debug('Agent %s unlock barter_id %s ', self.agent, barter_id)
+        # log.debug('Agent %s unlock barter_id %s ', self.agent, barter_id)
         UnLockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def cancel_barter(self, barter_id):
-        #log.debug('Agent %s cancel barter_id %s ', self.agent, barter_id)
+        # log.debug('Agent %s cancel barter_id %s ', self.agent, barter_id)
         CancelBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def table_money_barter(self, barter_id, money):
-        #log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
+        # log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
         SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
                             time=self.agent.server.get_time()).post()
 
@@ -643,8 +662,8 @@ class AgentAPI(API):
         TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
 
     @public_method
-    def set_about_self(self, str):
-        self.agent.example.about_self = str
+    def set_about_self(self, s):
+        self.agent.example.about_self = s
 
     # Административные методы
     @public_method
