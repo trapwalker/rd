@@ -330,14 +330,14 @@ var MapManager = (function(_super){
                 maxZoom: ConstMaxMapZoom,
                 continuousWorld: true,
                 opacity: 1.0,
-                errorTileUrl: 'http://sublayers.net/map/404.jpg',
+                errorTileUrl: 'http://185.58.206.115/map/404.jpg',
                 storage: storage});
         }
         else {
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
                 opacity: 1.0,
-                errorTileUrl: 'http://sublayers.net/map/404.jpg',
+                errorTileUrl: 'http://185.58.206.115/map/404.jpg',
                 maxZoom: ConstMaxMapZoom});
         }
         if(cookieStorage.optionsMapTileVisible)

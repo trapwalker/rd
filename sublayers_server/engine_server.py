@@ -44,7 +44,8 @@ from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogou
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
 from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
     ContextPanelLocationsHandler
-from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
+from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatisticsRefreshHandler,
+                                                  ServerStatForSite)
 from sublayers_server.model.event_machine import LocalServer
 
 try:
@@ -105,6 +106,7 @@ class Application(tornado.web.Application):
             (r"/login/vk", VKLoginHandler),
 
             (r"/stat", ServerStatisticsHandler),
+            (r"/site_stat", ServerStatForSite),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
             (r"/api/location", MapLocationHandler),
             (r"/api/main_menu_character", MainMenuCharacterHandler),
