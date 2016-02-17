@@ -421,7 +421,8 @@ class AgentAPI(API):
                 log.debug('Agent %s  have param %s = %s', agent, param_name,
                           agent.car.example.get_modify_value(param_name=param_name, example_agent=agent.example))
         elif command == '/save':
-            self.agent.server.save()
+            self.agent.server.save(time=self.agent.server.get_time())
+            log.debug('!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         elif command == '/reset':
             if args:
                 all_agents = self.agent.server.agents
