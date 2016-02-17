@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 import functools
 from itertools import chain
-from collections import Iterable
+from collections import Iterable, Callable
 import re
 
 # todo: add AgentLogStream
@@ -108,8 +108,9 @@ class Console(object):
         )))
 
     def on_cmd(self, cmdline):
+        cmdline += ' '
         cmd, params = cmdline.split(' ', 1)
-        params += ' '  # todo: refactor this hack
+        #params += ' '  # todo: refactor this hack
         av = []
         kw = {}
         for p in self._RE_PARAMS.findall(params):
@@ -121,10 +122,12 @@ class Console(object):
             else:
                 av.append(p)  # todo: type cast
 
-        self.stream_log.write(u'CALL: {}\n'.format(self._call_fmt(cmd, av, kw)))
         try:
             result = self.on_call(cmd, *av, **kw)
-            self.stream_log.write(u'RESULT: {!r}\n'.format(result))  # todo: pformat
+            if not isinstance(result, basestring):
+                result = repr(result)
+                
+            self.stream_log.write(u'RESULT: {}\n'.format(result))  # todo: pformat
         except ConsoleCommandExecutionError as e:
             self.stream_log.write(u'ERROR: {!r}\n'.format(e))  # todo: pformat
         except Exception as e:
@@ -137,31 +140,14 @@ class Console(object):
             raise UnknownConsoleCommandError('Unknown console command "{}"'.format(f))
         # todo: test to valid console function
         try:
-            return func(*av, **kw)
+            if isinstance(func, Callable):
+                self.stream_log.write(u'CALL: {}\n'.format(self._call_fmt(f, av, kw)))
+                return func(*av, **kw)
+            else:
+                self.stream_log.write(u'ECHO: {}\n'.format(f))
+                return func
         except Exception as e:
             raise ConsoleCommandExecutionError('{}: {}'.format(e.__class__.__name__, e.message))
-
-
-def command_deco(func):
-    def closure(*av, **kw):
-        return func(*av, **kw)
-
-    functools.update_wrapper(closure, func)
-    return closure
-
-
-class Shell(object):
-    def __init__(self, global_context, local_context=None):
-        self.global_context = global_context
-        self.local_context = local_context or {}
-        self.local_context.update(
-            CON=self,
-            __name__="__console__",
-            __doc__=None,
-        )
-
-    def run(self, cmd):
-        exec cmd in self.global_context, self.local_context
 
 
 if __name__ == '__main__':
@@ -170,10 +156,12 @@ if __name__ == '__main__':
     class NSTest2(NameSpace):
         def test2(self, *av, **kw):
             self.write('test2 done\n')
-            raise Exception('qqq')
-            print 'qwe'
+            #raise Exception('qqq')
             return av, kw, '.2'
+
+        x = '-=-'
 
     con = Console(root=NSTest2(), stream_log=sys.stderr)
     con.root.write = sys.stdout.write
     con.on_cmd('test2 asd fgh asddd')
+    con.on_cmd('x')
