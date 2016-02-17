@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -8,24 +8,29 @@ from itertools import chain
 from collections import Iterable
 import re
 
+# todo: add AgentLogStream
 
-class StreamHub(object):
+
+class StreamHub(list):
     # todo: move to tools module
+    # todo: optional weak reference to streams
+    # todo: reading methods
     def __init__(self, *av):
-        # todo: optional weak reference to streams
-        # todo: reading methods
-        self.streams = []
-        for stream in av:
-            if hasattr(stream, 'write'):
-                self.streams.append(stream)
-            elif isinstance(stream, Iterable):
-                self.streams.extend(stream)
-            else:
-                raise TypeError('Wrong type of stream or stream list.')
+        super(StreamHub, self).__init__()
+        self.add(av)
+
+    def add(self, stream):
+        if hasattr(stream, 'write'):
+            self.append(stream)
+        elif isinstance(stream, Iterable):
+            for substream in stream:
+                self.add(substream)
+        else:
+            raise TypeError('Wrong type of stream or stream list.')
 
     def write(self, text):
         # todo: closed streams
-        for stream in self.streams:
+        for stream in self:
             stream.write(text)
 
     def writelines(self,lines):
@@ -33,7 +38,8 @@ class StreamHub(object):
             self.write(line)
 
     def close(self):
-        self.streams = []
+        while self:
+            self.pop()
 
 
 class LogStream(object):
@@ -57,10 +63,26 @@ class ConsoleCommandExecutionError(ConsoleError):
     pass
 
 
+class NameSpace(object):
+    def __init__(self, **kw):
+        self.update_scope(**kw)
+
+    def update_scope(self, **kw):
+        self.__dict__.update(kw)
+
+
+class NSTest(NameSpace):
+    def test(self, *av, **kw):
+        if hasattr(self, write):
+            self.write('test done\n')
+        return av, kw, '.'
+
+
 class Console(object):
-    def __init__(self, agent_api):
-        self.agent_api = agent_api
-        self.stream_out = StreamHub(LogStream())  # todo: add AgentLogStream
+    def __init__(self, root=None, stream=None, stream_log=None):
+        self.stream_log = stream_log or LogStream()
+        self.stream_out = stream or self.stream_log
+        self.root = root or NSTest(write=self.stream_out.write)
 
     _RE_PARAMS = re.compile(r'''
         (?:
@@ -99,18 +121,18 @@ class Console(object):
             else:
                 av.append(p)  # todo: type cast
 
-        self.stream_out.write(u'CALL: {}'.format(self._call_fmt(cmd, av, kw)))
+        self.stream_log.write(u'CALL: {}\n'.format(self._call_fmt(cmd, av, kw)))
         try:
             result = self.on_call(cmd, *av, **kw)
-            self.stream_out.write(u'RESULT: {!r}'.format(result))  # todo: pformat
+            self.stream_log.write(u'RESULT: {!r}\n'.format(result))  # todo: pformat
         except ConsoleCommandExecutionError as e:
-            self.stream_out.write(u'ERROR: {!r}'.format(e))  # todo: pformat
+            self.stream_log.write(u'ERROR: {!r}\n'.format(e))  # todo: pformat
         except Exception as e:
             log.exception(repr(e))
             raise e
 
     def on_call(self, f, *av, **kw):
-        func = getattr(self, f, None)
+        func = getattr(self.root, f, None)
         if func is None:
             raise UnknownConsoleCommandError('Unknown console command "{}"'.format(f))
         # todo: test to valid console function
@@ -118,10 +140,6 @@ class Console(object):
             return func(*av, **kw)
         except Exception as e:
             raise ConsoleCommandExecutionError('{}: {}'.format(e.__class__.__name__, e.message))
-
-    def test(self, *av, **kw):
-        self.stream_out.write('test done')
-        print av, kw
 
 
 def command_deco(func):
@@ -147,5 +165,15 @@ class Shell(object):
 
 
 if __name__ == '__main__':
-    con = Console(None)
-    con.on_cmd('test asd fgh asddd')
+    import sys
+
+    class NSTest2(NameSpace):
+        def test2(self, *av, **kw):
+            self.write('test2 done\n')
+            raise Exception('qqq')
+            print 'qwe'
+            return av, kw, '.2'
+
+    con = Console(root=NSTest2(), stream_log=sys.stderr)
+    con.root.write = sys.stdout.write
+    con.on_cmd('test2 asd fgh asddd')
