@@ -47,6 +47,8 @@ class LogStream(object):
         self.level = level
 
     def write(self, text):
+        if text and text[-1] == '\n':
+            text = text[:-1]
         self.logger.log(self.level, text)
 
 
@@ -73,7 +75,7 @@ class Namespace(object):
 
 class NSTest(Namespace):
     def test(self, *av, **kw):
-        if hasattr(self, write):
+        if hasattr(self, 'write'):
             self.write('test done\n')
         return av, kw, '.'
 

@@ -26,14 +26,35 @@ from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
     CancelBarterEvent, SetMoneyBarterEvent
 from sublayers_server.model.barter import InviteBarterMessage
-from sublayers_server.model.console import Namespace, Console, LogStream
+from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 
 # todo: Проверить допустимость значений входных параметров
+
+
+class AgentConsoleEchoMessage(messages.Message):
+    pass
+
+
+class AgentMessageStream(object):
+    def __init__(self, agent, message_class=AgentConsoleEchoMessage):
+        """
+        @param sublayers_server.model.agents.Agent agent: Receiver of message
+        @param type message_class: class of message, AgentConsoleEchoMessage by default
+        """
+        self.agent = agent
+        self.message_class = message_class
+
+    def write(self, text):
+        # todo: html format of message
+        self.message_class(agent=self.agent, time=self.agent.server.get_time(), comment=text).post()
 
 
 class AgentConsoleNamespace(Namespace):
     agent = None
     api = None
+
+    def test(self, *av, **kw):
+        self.write('test command:: {}, {}'.format(repr(av), repr(kw)))
 
     def party(self, cmd, *av):
         # todo: options of party create
@@ -263,27 +284,20 @@ class AgentAPI(API):
         self.car = None
         agent.api = self
         self.update_agent_api()
+
+        agent_output_stream = StreamHub(
+            LogStream(logger=log, level=logging.DEBUG),
+            AgentMessageStream(agent=agent, message_class=AgentConsoleEchoMessage),
+        )
         self.console = Console(
             root=AgentConsoleNamespace(
                 agent=agent,
                 api=self,
+                write=agent_output_stream.write,
             ),
-            stream_log=LogStream(logger=log, level=logging.WARNING),
+            stream_log=LogStream(logger=log, level=logging.DEBUG),
+            stream=agent_output_stream,
         )
-        # todo: inject write() function
-
-    def cmd_line_context(self):
-        # todo: deprecated
-        ctx = dict(
-            srv=self.agent.server,
-            car=self.car,
-        )
-        for attr_name in dir(self):
-            attr = getattr(self, attr_name)
-            # todo: do not use protected methods outside
-            if hasattr(attr, '_public_method') and attr._public_method:
-                ctx[attr_name] = attr
-        return ctx
 
     def send_init_car_map(self, time):
         messages.InitCar(agent=self.agent, time=time).post()
@@ -473,6 +487,7 @@ class AgentAPI(API):
     @public_method
     def console_cmd(self, cmd):
         log.debug('Agent %r cmd: %r', self.agent.login, cmd)
+        self.console.on_cmd(cmd.lstrip('/'))
 
     @public_method
     def create_private_chat(self, recipient):
