@@ -494,6 +494,11 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.Message :', event.comment);
     };
 
+    ClientManager.prototype.AgentConsoleEchoMessage = function (event){
+        console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
+        chat.addMessageToSys(event.comment);
+    };
+
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang ');
