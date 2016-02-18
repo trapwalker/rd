@@ -1,0 +1,31 @@
+.journal-main {
+    position: relative;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+    width: 660px;
+    height: 424px;
+    cursor: default;
+}
+
+.journal-menu-arrow {
+    position: relative;
+    margin-right: 5px;
+    float: left;
+    width: 10px;
+    height: 10px;
+    background: transparent url('/static/img/journal/arrow_right.png') 50% 50% no-repeat;
+}
+.journal-menu-arrow.active { background: transparent url('/static/img/journal/arrow_down.png') 50% 50% no-repeat; }
+
+.journal-menu-name {
+    position: relative;
+    float: left;
+}
+
+.journal-menu-counter {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+
