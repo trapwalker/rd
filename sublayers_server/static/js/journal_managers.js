@@ -7,6 +7,11 @@ var JournalManager = (function () {
         this.quest = new QuestJournalManager();
     }
 
+    JournalManager.prototype.redraw = function() {
+        this.parking.redraw();
+        this.quest.redraw();
+    };
+
     return JournalManager;
 })();
 
@@ -19,13 +24,6 @@ var ParkingJournalManager = (function () {
 
     ParkingJournalManager.prototype.update = function(car_list) {
         //console.log('ParkingJournalManager.prototype.update', car_list);
-
-        // Очищаем верстку в журнале
-        var jq_parking_main = $('#journal_page_parking');
-        var jq_town_list = jq_parking_main.find('.journal-page-left').first();
-        var jq_page_right = jq_parking_main.find('.journal-page-right').first();
-        jq_town_list.empty();
-        jq_page_right.empty();
 
         // Сортируем машинки по городам
         if (car_list) {
@@ -41,6 +39,19 @@ var ParkingJournalManager = (function () {
                     };
         }
 
+        this.redraw();
+    };
+
+    ParkingJournalManager.prototype.redraw = function() {
+        //console.log('ParkingJournalManager.prototype.redraw');
+
+        this.clear();
+
+        var jq_parking_main = $('#journal_page_parking');
+        var jq_town_list = jq_parking_main.find('.journal-page-left').first();
+        var jq_page_right = jq_parking_main.find('.journal-page-right').first();
+
+        // Перерисовываем все что касается стоянки
         for (var key in this.town_cars)
             if (this.town_cars.hasOwnProperty(key)) {
                 var town = this.town_cars[key];
@@ -112,7 +123,12 @@ var ParkingJournalManager = (function () {
     };
 
     ParkingJournalManager.prototype.clear = function() {
-        //console.log('NucoilManager.prototype.clear');
+        //console.log('ParkingJournalManager.prototype.clear');
+        var jq_parking_main = $('#journal_page_parking');
+        var jq_town_list = jq_parking_main.find('.journal-page-left').first();
+        var jq_page_right = jq_parking_main.find('.journal-page-right').first();
+        jq_town_list.empty();
+        jq_page_right.empty();
     };
 
     return ParkingJournalManager;
@@ -125,7 +141,8 @@ var QuestJournalManager = (function () {
         this.quests = {};
     }
 
-    QuestJournalManager.prototype.updateQuest = function(quest) {
+    QuestJournalManager.prototype.update = function(quest) {
+        //console.log('QuestJournalManager.prototype.update', quests);
         /*
         quest.status
             null - не взят и находится у NPC
@@ -138,21 +155,12 @@ var QuestJournalManager = (function () {
             'failed' - провален
         */
 
-        console.log('QuestJournalManager.prototype.updateQuest', quest);
-
         quest.status = 'active';
         this.id_counter++;
         quest.town_id = 1111;
         quest.town = 'Белгород';
 
-
-
-        if (this.quests.hasOwnProperty(quest.id)) {
-            // todo: Такой квест уже есть - прост найти по ID и сделать апдейт
-        }
-        else {
-            this.quests[quest.id] = quest
-        }
+        this.quests[quest.id] = quest;
         this.redraw();
     };
 
@@ -200,14 +208,12 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.redraw = function() {
-        console.log('QuestJournalManager.prototype.redraw');
+        console.log('QuestJournalManager.prototype.redraw', this.quests);
+        this.clear();
 
-        // Очищаем верстку в журнале
         var jq_quest_main = $('#journal_page_task');
         var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
         var jq_quest_info_list = jq_quest_main.find('.journal-page-right').first();
-        jq_quest_list.empty();
-        jq_quest_info_list.empty();
 
         // Добавляем "Активные" "Выполненные" "Проваленные"
         var active_group_count = 0;
@@ -307,6 +313,11 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.clear = function() {
         //console.log('QuestJournalManager.prototype.clear');
+        var jq_quest_main = $('#journal_page_task');
+        var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
+        var jq_quest_info_list = jq_quest_main.find('.journal-page-right').first();
+        jq_quest_list.empty();
+        jq_quest_info_list.empty();
     };
 
     return QuestJournalManager;

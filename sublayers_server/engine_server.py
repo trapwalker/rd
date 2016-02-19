@@ -37,6 +37,7 @@ from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonIn
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
+from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
@@ -117,6 +118,7 @@ class Application(tornado.web.Application):
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
             (r"/api/person_info", PersonInfoHandler),
+            (r"/api/map_journal", MainJournalHandler),
 
             (r"/api/context_panel/locations", ContextPanelLocationsHandler),
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),

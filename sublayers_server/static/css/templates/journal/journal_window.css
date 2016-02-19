@@ -1,3 +1,11 @@
+.mainMapJournalWindow {
+    position: relative;
+    width: 666px;
+    height: 456px;
+    background-color: rgba(0, 0, 0, 0.9);
+    cursor: default;
+}
+
 #townJournalPageWrap {
     position: absolute;
     top: 260px;
@@ -8,6 +16,7 @@
     position: relative;
     font: 11pt Nouveau_IBM;
     color: #29F200;
+    margin: 3px auto 0px auto;
     width: 660px;
     height: 424px;
     cursor: default;
