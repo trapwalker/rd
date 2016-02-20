@@ -2,8 +2,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.vectors import Point
-
 from Queue import PriorityQueue, Full
 from time import time as _time
 from datetime import datetime
@@ -71,6 +69,8 @@ tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchil
 
 
 def special_type_serialize_prepare(obj):
+    from sublayers_server.model.vectors import Point
+    
     if isinstance(obj, (Point, complex)):
         return dict(x=obj.real, y=obj.imag)
     elif isinstance(obj, UUID):
