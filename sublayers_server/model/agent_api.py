@@ -56,16 +56,24 @@ class AgentConsoleNamespace(Namespace):
     def test(self, *av, **kw):
         self.write('test command:: {}, {}'.format(repr(av), repr(kw)))
 
-    def party(self, cmd, *av):
+    def party(self, *av):
         # todo: options of party create
-        cmd = cmd.strip().lower()
-        if cmd == 'new':
-            self.api.set_party(name=av[0] if av else None)
-        elif cmd == 'leave':
-            self.api.set_party()
-        elif cmd == 'invite':
-            for name in av:
-                self.api.send_invite(username=name)
+        if av:
+            cmd, av = av[0], av[1:]
+            cmd = cmd.strip().lower()
+            if cmd == 'new':
+                self.api.set_party(name=av[0] if av else None)
+            elif cmd == 'leave':
+                self.api.set_party()
+            elif cmd == 'invite':
+                for name in av:
+                    self.api.send_invite(username=name)
+        else:
+            party = self.agent.party
+            if party:
+                self.write(u'Your party is {}'.format(party.as_html()))
+            else:
+                self.write(u'You are not in party')
 
     def die(self):
         self.agent.die(time=self.agent.server.get_time())
