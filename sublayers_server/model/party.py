@@ -395,6 +395,14 @@ class Party(object):
     def __str__(self):
         return '<Party {self.name!r}/{n}>'.format(self=self, n=len(self))
 
+    @property
+    def slug(self):
+        # todo: cache it #optimize
+        return 'party__{}'.format(id(self))  # todo: use slug of name
+
+    def as_html(self):
+        return u'<a class="party_link" id="{party.slug}">{party.name}</a>'.format(party=self)
+
     id = property(id)
 
     def __contains__(self, agent):
