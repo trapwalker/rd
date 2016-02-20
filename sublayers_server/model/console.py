@@ -149,6 +149,7 @@ class Console(object):
                 self.stream_log.write(u'ECHO: {}\n'.format(f))
                 return func
         except Exception as e:
+            log.exception('User console error:')
             raise ConsoleCommandExecutionError('{}: {}'.format(e.__class__.__name__, e.message))
 
 
