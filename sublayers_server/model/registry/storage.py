@@ -251,7 +251,7 @@ class Registry(AbstractStorage):
         attrs = {}
         for f in os.listdir(path):
             p = os.path.join(path, f)
-            if not f.startswith('_') and os.path.isfile(p):
+            if not f.startswith('_') and os.path.isfile(p):  # todo: filter yaml-files
                 with open(p) as attr_file:
                     try:
                         d = yaml.load(attr_file)
