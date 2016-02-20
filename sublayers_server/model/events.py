@@ -9,6 +9,7 @@ from sublayers_server.model.messages import FireDischargeEffect
 
 from functools import total_ordering
 
+
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
