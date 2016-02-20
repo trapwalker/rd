@@ -70,6 +70,14 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
+    document.getElementById('divMainMenuBtnJournal').onclick =
+        function () {
+            windowTemplateManager.openUniqueWindow('map_journal', '/map_journal', null, function() {
+                if (journalManager) journalManager.redraw();
+            });
+            returnFocusToMap();
+        };
+
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
 //    document.getElementById('divMainMenuBtnNucoil').onclick =

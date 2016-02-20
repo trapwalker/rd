@@ -1346,7 +1346,7 @@ var TraderManager = (function () {
             if (price_list.hasOwnProperty(item.id)) {  // если данный предмет покупается торговцем
                 new_inventory.push(item);
             } else {  // если предмета нет в этом списке, значит торговец его не покупает
-                console.warn('Данный предмет не покупается этим торговцем:', item)
+                //console.warn('Данный предмет не покупается этим торговцем:', item)
             }
         }
         this.playerInv = new_inventory;

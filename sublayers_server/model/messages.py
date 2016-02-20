@@ -233,12 +233,14 @@ class Out(Contact):
 
 
 class Bang(Message):
-    def __init__(self,
-                 position,
-                 bang_power=BALANCE.RocketBang.bang_power,
-                 duration=BALANCE.RocketBang.duration,
-                 end_duration=BALANCE.RocketBang.end_duration,
-                 **kw):
+    def __init__(
+        self,
+        position,
+        bang_power=BALANCE.RocketBang.bang_power,
+        duration=BALANCE.RocketBang.duration,
+        end_duration=BALANCE.RocketBang.end_duration,
+        **kw
+    ):
         super(Bang, self).__init__(**kw)
         self.position = position
         self.bang_power = bang_power
@@ -247,10 +249,12 @@ class Bang(Message):
 
     def as_dict(self):
         d = super(Bang, self).as_dict()
-        d.update(position=self.position,
-                 bang_power=self.bang_power,
-                 duration=self.duration,
-                 end_duration=self.end_duration)
+        d.update(
+            position=self.position,
+            bang_power=self.bang_power,
+            duration=self.duration,
+            end_duration=self.end_duration,
+        )
         return d
 
 
@@ -436,9 +440,10 @@ class ChangeAltitude(Message):
 
     def as_dict(self):
         d = super(ChangeAltitude, self).as_dict()
-        d.update(altitude=self.altitude,
-                 obj_id=self.obj_id,
-                 )
+        d.update(
+            altitude=self.altitude,
+            obj_id=self.obj_id,
+        )
         return d
 
 
@@ -451,7 +456,7 @@ class EnterToLocation(Message):
         d = super(EnterToLocation, self).as_dict()
         d.update(
             location=self.location.as_dict(time=self.time)
-            )
+        )
         return d
 
 
@@ -464,7 +469,7 @@ class ExitFromLocation(Message):
         d = super(ExitFromLocation, self).as_dict()
         d.update(
             location=self.location.as_dict(time=self.time)
-            )
+        )
         return d
 
 
@@ -479,7 +484,7 @@ class ChangeLocationVisitorsMessage(Message):
         d.update(
             visitor=self.visitor_login,
             action=self.action
-            )
+        )
         return d
 
 
@@ -495,7 +500,7 @@ class ChatRoomMessage(Message):
             msg=self.msg.text,
             sender=self.msg.sender_login,
             msg_time=self.msg.time,
-            )
+        )
         return d
 
 
@@ -510,7 +515,7 @@ class ChatRoomIncludeMessage(Message):
         d.update(
             room_name=self.room_name,
             chat_type=self.chat_type
-            )
+        )
         return d
 
 
@@ -523,7 +528,7 @@ class ChatRoomExcludeMessage(Message):
         d = super(ChatRoomExcludeMessage, self).as_dict()
         d.update(
             room_name=self.room_name,
-            )
+        )
         return d
 
 
@@ -544,7 +549,7 @@ class InventoryShowMessage(Message):
         d = super(InventoryShowMessage, self).as_dict()
         d.update(
             inventory=self.inventory.as_dict()
-            )
+        )
         return d
 
 
@@ -557,7 +562,7 @@ class InventoryHideMessage(Message):
         d = super(InventoryHideMessage, self).as_dict()
         d.update(
             inventory_owner_id=self.inventory_id
-            )
+        )
         return d
 
 
@@ -574,7 +579,7 @@ class InventoryItemMessage(Message):
             item=self.item.export_item_state(),
             position=self.position,
             owner_id=self.inventory.owner.uid,
-            )
+        )
         return d
 
 
@@ -707,8 +712,7 @@ class TraderInventoryShowMessage(Message):
                             val0=server.reg[ex].stack_size,
                             dvs=0,
                         )
-                    )
-                    for ex in trader.inventory
+                    ) for ex in trader.inventory
                 ],
                 owner_id=str(self.town_id) + '_trader'
             )
@@ -730,7 +734,7 @@ class SetupTraderReplica(Message):
     def as_dict(self):
         d = super(SetupTraderReplica, self).as_dict()
         d.update(
-            replica=self.replica
+            replica=self.replica,
         )
         return d
 
@@ -738,11 +742,12 @@ class SetupTraderReplica(Message):
 class AddExperienceMessage(Message):
     def as_dict(self):
         d = super(AddExperienceMessage, self).as_dict()
-        d.update(exp_agent=self.agent.stat_log.get_metric('exp'),
-                 exp_car=self.agent.car.stat_log.get_metric('exp'),
-                 price_car=self.agent.car.example.exp_price,
-                 frag_agent=self.agent.stat_log.get_metric('frag'),
-                 frag_car=self.agent.car.stat_log.get_metric('frag'),
+        d.update(
+            exp_agent=self.agent.stat_log.get_metric('exp'),
+            exp_car=self.agent.car.stat_log.get_metric('exp'),
+            price_car=self.agent.car.example.exp_price,
+            frag_agent=self.agent.stat_log.get_metric('frag'),
+            frag_car=self.agent.car.stat_log.get_metric('frag'),
         )
         return d
 
@@ -752,21 +757,24 @@ class RPGStateMessage(Message):
         d = super(RPGStateMessage, self).as_dict()
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
             exp=self.agent.stat_log.get_metric('exp'))
-        d.update(driving=self.agent.example.driving,
-                 shooting=self.agent.example.shooting,
-                 masking=self.agent.example.masking,
-                 leading=self.agent.example.leading,
-                 trading=self.agent.example.trading,
-                 engineering=self.agent.example.engineering,
-                 current_level=lvl,
-                 current_exp=self.agent.stat_log.get_metric('exp'),
-                 next_level=nxt_lvl,
-                 next_level_exp=nxt_lvl_exp,
-                 perks=[dict(
-                     perk=perk.as_client_dict(),
-                     active=perk in self.agent.example.perks,
-                     perk_req=[self.agent.server.reg[p_req].node_hash() for p_req in perk.perks_req],
-                 ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()],
+        d.update(
+            driving=self.agent.example.driving,
+            shooting=self.agent.example.shooting,
+            masking=self.agent.example.masking,
+            leading=self.agent.example.leading,
+            trading=self.agent.example.trading,
+            engineering=self.agent.example.engineering,
+            current_level=lvl,
+            current_exp=self.agent.stat_log.get_metric('exp'),
+            next_level=nxt_lvl,
+            next_level_exp=nxt_lvl_exp,
+            perks=[
+                dict(
+                    perk=perk.as_client_dict(),
+                    active=perk in self.agent.example.perks,
+                    perk_req=[self.agent.server.reg[p_req].node_hash() for p_req in perk.perks_req],
+                ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()
+            ],
         )
         return d
 

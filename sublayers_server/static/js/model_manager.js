@@ -494,6 +494,11 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.Message :', event.comment);
     };
 
+    ClientManager.prototype.AgentConsoleEchoMessage = function (event){
+        console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
+        chat.addMessageToSys(event.comment);
+    };
+
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang ');
@@ -683,6 +688,9 @@ var ClientManager = (function () {
 
                 // Запрос RGP информации для тренера
                 clientManager.sendGetRPGInfo();
+
+                // Принудительно перерисовать все квесты
+                journalManager.quest.redraw();
             }
         });
     };
@@ -887,6 +895,11 @@ var ClientManager = (function () {
         journalManager.parking.update(event.cars);
     };
 
+    // Журнал (квесты)
+    ClientManager.prototype.QuestUpdateMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestUpdateMessage', event);
+        journalManager.quest.update(event.quest);
+    };
 
     // Административные сообщения
     ClientManager.prototype.AdminArchiveCompleteMessage = function (event) {

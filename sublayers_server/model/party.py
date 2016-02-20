@@ -282,8 +282,8 @@ class Party(object):
         self._on_include(agent=agent, time=time)
         PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2), time=time)
         agent.party = self
-        #todo: проблемы с русским языком
-        #log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
+        # todo: проблемы с русским языком ##review(svp)
+        # log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
 
         # after include for members
         for member in self.members:
@@ -293,8 +293,8 @@ class Party(object):
         self.room.include(agent=agent, time=time)
 
     def _on_include(self, agent, time):
-        #log.info('==============Start include')
-        #log.info(len(self.share_obs))
+        # log.info('==============Start include')
+        # log.info(len(self.share_obs))
 
         agent_observers = agent.observers.keys()
         for obs in agent_observers:
@@ -307,8 +307,8 @@ class Party(object):
         for obs in self.share_obs:
             agent.add_observer(observer=obs, time=time)
 
-        #log.info(len(self.share_obs))
-        #log.info('==============End include')
+        # log.info(len(self.share_obs))
+        # log.info('==============End include')
 
     def exclude(self, agent, time):
         PartyExcludeEvent(party=self, agent=agent, time=time).post()
@@ -337,8 +337,8 @@ class Party(object):
         self.room.exclude(agent=agent, time=time)
 
     def _on_exclude(self, agent, time):
-        #log.info('---------------Start exclude')
-        #log.info(len(self.share_obs))
+        # log.info('---------------Start exclude')
+        # log.info(len(self.share_obs))
 
         for obs in self.share_obs:
             agent.drop_observer(observer=obs, time=time)
@@ -351,8 +351,8 @@ class Party(object):
         for obs in agent_observers:
             self.share_obs.remove(obs)
 
-        #log.info(len(self.share_obs))
-        #log.info('---------------End exclude')
+        # log.info(len(self.share_obs))
+        # log.info('---------------End exclude')
 
     def drop_observer_from_party(self, observer, time):
         if observer in self.share_obs:
@@ -394,6 +394,14 @@ class Party(object):
 
     def __str__(self):
         return '<Party {self.name!r}/{n}>'.format(self=self, n=len(self))
+
+    @property
+    def slug(self):
+        # todo: cache it #optimize
+        return 'party__{}'.format(id(self))  # todo: use slug of name
+
+    def as_html(self):
+        return u'<a class="party_link" id="{party.slug}">{party.name}</a>'.format(party=self)
 
     id = property(id)
 

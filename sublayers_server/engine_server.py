@@ -37,6 +37,7 @@ from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonIn
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
+from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
@@ -44,7 +45,8 @@ from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogou
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
 from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
     ContextPanelLocationsHandler
-from sublayers_server.handlers.statistics import ServerStatisticsHandler, ServerStatisticsRefreshHandler
+from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatisticsRefreshHandler,
+                                                  ServerStatForSite)
 from sublayers_server.model.event_machine import LocalServer
 
 try:
@@ -75,6 +77,7 @@ class Application(tornado.web.Application):
             log.error('MongoDB is not found: %r', e)
             raise DBError('Database connection error: {!r}'.format(e))
 
+        # todo: Сделать коннект к монге синхронным. Проверить на успех коннекта.
         if self.db_connection:
             self.auth_db = self.db_connection.auth_db
         else:
@@ -104,6 +107,7 @@ class Application(tornado.web.Application):
             (r"/login/vk", VKLoginHandler),
 
             (r"/stat", ServerStatisticsHandler),
+            (r"/site_stat", ServerStatForSite),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
             (r"/api/location", MapLocationHandler),
             (r"/api/main_menu_character", MainMenuCharacterHandler),
@@ -114,6 +118,7 @@ class Application(tornado.web.Application):
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
             (r"/api/person_info", PersonInfoHandler),
+            (r"/api/map_journal", MainJournalHandler),
 
             (r"/api/context_panel/locations", ContextPanelLocationsHandler),
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
