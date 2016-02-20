@@ -15,7 +15,11 @@ from time import time as get_time  # todo: integer vs float time
 from weakref import WeakSet, ref
 from collections import Callable
 import random
+# import slugger  # todo: search good slugger lib
 
+
+# _slugger = slugger.Slugger(lang='ru_RU', invalid_replacement='_')
+# slug = _slugger.sluggify
 
 TimeClass = get_time().__class__
 
