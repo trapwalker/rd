@@ -1,0 +1,124 @@
+.mainMapJournalWindow {
+    position: relative;
+    width: 666px;
+    height: 456px;
+    background-color: rgba(0, 0, 0, 0.9);
+    cursor: default;
+}
+
+#townJournalPageWrap {
+    position: absolute;
+    top: 260px;
+    left: 630px;
+}
+
+.journal-main {
+    position: relative;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+    margin: 3px auto 0px auto;
+    width: 660px;
+    height: 424px;
+    cursor: default;
+}
+
+.journal-header {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    padding: 12px 0px 0px 20px;
+    margin-bottom: 5px;
+
+    border: 1px solid #29F200;
+}
+
+.journal-page-button-block {
+    position: relative;
+    cursor: pointer;
+    float: left;
+    margin-right: 30px;
+    color: #29F200;
+    font: 12pt Nouveau_IBM;
+    opacity: 0.6;
+}
+.journal-page-button-block:hover { opacity: 1; }
+.journal-page-button-block.active { opacity: 1; }
+
+.journal-page-list {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 45px);
+}
+
+.journal-page-block {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.journal-page-left {
+    position: relative;
+    padding: 10px 10px 10px 10px;
+    float: left;
+    height: 100%;
+    width: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    box-sizing: border-box;
+    border: 1px solid #29F200;
+}
+
+.journal-page-right {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 460px;
+
+    box-sizing: border-box;
+    border: 1px solid #29F200;
+}
+
+
+.journal-menu-block {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+}
+
+.journal-menu-name-block {
+    position: relative;
+    height: 15px;
+    opacity: 0.6;
+}
+.journal-menu-name-block:hover {opacity: 1.0;}
+.journal-menu-name-block.active {opacity: 1.0;}
+
+.journal-menu-arrow {
+    position: relative;
+    margin-right: 5px;
+    float: left;
+    width: 10px;
+    height: 10px;
+    background: transparent url('/static/img/journal/arrow_right.png') 50% 50% no-repeat;
+}
+.journal-menu-arrow.active { background: transparent url('/static/img/journal/arrow_down.png') 50% 50% no-repeat; }
+
+.journal-menu-name {
+    position: relative;
+    float: left;
+}
+
+.journal-menu-counter {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.journal-menu-list {
+    position: relative;
+    padding-left: 17px;
+    display: none;
+}
+.journal-menu-list.active { display: block; }

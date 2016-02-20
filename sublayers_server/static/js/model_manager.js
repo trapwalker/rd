@@ -898,7 +898,7 @@ var ClientManager = (function () {
     // Журнал (квесты)
     ClientManager.prototype.QuestUpdateMessage = function (event) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', event);
-        journalManager.quest.updateQuest(event.quest);
+        journalManager.quest.update(event.quest);
     };
 
     // Административные сообщения

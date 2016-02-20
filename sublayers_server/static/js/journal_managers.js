@@ -7,6 +7,11 @@ var JournalManager = (function () {
         this.quest = new QuestJournalManager();
     }
 
+    JournalManager.prototype.redraw = function() {
+        this.parking.redraw();
+        this.quest.redraw();
+    };
+
     return JournalManager;
 })();
 
@@ -19,15 +24,6 @@ var ParkingJournalManager = (function () {
 
     ParkingJournalManager.prototype.update = function(car_list) {
         //console.log('ParkingJournalManager.prototype.update', car_list);
-
-        // Очищаем верстку в журнале
-        var jq_parking_main = $('#journal_page_parking');
-        var jq_town_list = jq_parking_main.find('.journal-page-left').first();
-        var jq_page_right = jq_parking_main.find('.journal-page-right').first();
-
-        jq_town_list.empty();
-
-        jq_page_right.empty();
 
         // Сортируем машинки по городам
         if (car_list) {
@@ -43,37 +39,45 @@ var ParkingJournalManager = (function () {
                     };
         }
 
+        this.redraw();
+    };
+
+    ParkingJournalManager.prototype.redraw = function() {
+        //console.log('ParkingJournalManager.prototype.redraw');
+
+        this.clear();
+
+        var jq_parking_main = $('#journal_page_parking');
+        var jq_town_list = jq_parking_main.find('.journal-page-left').first();
+        var jq_page_right = jq_parking_main.find('.journal-page-right').first();
+
+        // Перерисовываем все что касается стоянки
         for (var key in this.town_cars)
             if (this.town_cars.hasOwnProperty(key)) {
                 var town = this.town_cars[key];
 
-                var jq_town_block = $('<div class="journal-parking-menu-city-block"></div>');
-                jq_town_block.append(
-                    '<div class="journal-parking-menu-city-name-block">' +
-                        '<div class="journal-parking-menu-city-arrow"></div>' +
-                        '<div class="journal-parking-menu-city-name">' + town.location_name +'</div>' +
-                    '</div>'
-                );
+                var jq_town_block = $(
+                    '<div class="journal-menu-block">' +
+                        '<div class="journal-menu-name-block">' +
+                            '<div class="journal-menu-arrow"></div>' +
+                            '<div class="journal-menu-name">' + town.location_name +'</div>' +
+                        '</div>' +
+                    '</div>');
 
-                var jq_town_car_list = $('<div class="journal-parking-menu-city-car-list"></div>');
-
+                var jq_town_car_list = $('<div class="journal-menu-list"></div>');
                 for (var k = 0; k < town.car_list.length; k++) {
                     var car_info = town.car_list[k];
-                    jq_town_car_list.append('<div class="journal-parking-menu-city-car"' +
-                    ' data-car_id="' + car_info.car.id + '">' + car_info.car.title + '</div>');
-
+                    jq_town_car_list.append(
+                        '<div class="journal-parking-menu-city-car" data-car_id="' + car_info.car.id + '">' +
+                            car_info.car.title +
+                        '</div>');
                     var jq_car_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.id + '"></div>');
-
                     jq_car_info_block.append(car_info.armorer_css);
-
                     var jq_car_img_block = $('<div class="journal-page-parking-picture">' + car_info.html_car_img +'</div>');
                     var jq_car_table_block = $('<div class="journal-page-parking-info">' + car_info.html_car_table +'</div>');
-
                     jq_car_info_block.append(jq_car_img_block);
                     jq_car_info_block.append(jq_car_table_block);
-
                     jq_page_right.append(jq_car_info_block);
-
                 }
                 jq_town_block.append(jq_town_car_list);
                 jq_town_list.append(jq_town_block);
@@ -82,18 +86,15 @@ var ParkingJournalManager = (function () {
         // Вешаем клики на названия машинок в городах
         jq_town_list.find('.journal-parking-menu-city-car').click(function () {
             var car_id = $(this).data('car_id');
-            console.log(car_id);
             var jq_parking_main = $('#journal_page_parking');
 
             jq_parking_main.find('.journal-parking-menu-city-car').removeClass('active');
             $(this).addClass('active');
 
             var jq_page_right = jq_parking_main.find('.journal-page-right').first();
-
             jq_page_right.find('.journal-page-parking-car-info-block').each(function (index, element) {
                 var jq_elem = $(element);
-                var elem_car_id = jq_elem.data('car_id');
-                if (car_id == elem_car_id)
+                if (car_id == jq_elem.data('car_id'))
                     jq_elem.css('display', 'block');
                 else
                     jq_elem.css('display', 'none');
@@ -101,10 +102,10 @@ var ParkingJournalManager = (function () {
         });
 
         // Вешаем клики на названия городов
-        jq_town_list.find('.journal-parking-menu-city-name-block').click(function () {
+        jq_town_list.find('.journal-menu-name-block').click(function () {
             var j_self = $(this);
-            var j_list = j_self.parent().find('.journal-parking-menu-city-car-list').first();
-            var j_arrow = j_self.find('.journal-parking-menu-city-arrow').first();
+            var j_list = j_self.parent().find('.journal-menu-list').first();
+            var j_arrow = j_self.find('.journal-menu-arrow').first();
             if (j_self.hasClass('active')) {
                 j_self.removeClass('active');
                 j_list.removeClass('active');
@@ -122,7 +123,12 @@ var ParkingJournalManager = (function () {
     };
 
     ParkingJournalManager.prototype.clear = function() {
-        //console.log('NucoilManager.prototype.clear');
+        //console.log('ParkingJournalManager.prototype.clear');
+        var jq_parking_main = $('#journal_page_parking');
+        var jq_town_list = jq_parking_main.find('.journal-page-left').first();
+        var jq_page_right = jq_parking_main.find('.journal-page-right').first();
+        jq_town_list.empty();
+        jq_page_right.empty();
     };
 
     return ParkingJournalManager;
@@ -135,7 +141,8 @@ var QuestJournalManager = (function () {
         this.quests = {};
     }
 
-    QuestJournalManager.prototype.updateQuest = function(quest) {
+    QuestJournalManager.prototype.update = function(quest) {
+        //console.log('QuestJournalManager.prototype.update', quests);
         /*
         quest.status
             null - не взят и находится у NPC
@@ -148,44 +155,35 @@ var QuestJournalManager = (function () {
             'failed' - провален
         */
 
-        console.log('QuestJournalManager.prototype.updateQuest', quest);
-
         quest.status = 'active';
         this.id_counter++;
         quest.town_id = 1111;
         quest.town = 'Белгород';
 
-
-
-        if (this.quests.hasOwnProperty(quest.id)) {
-            // todo: Такой квест уже есть - прост найти по ID и сделать апдейт
-        }
-        else {
-            this.quests[quest.id] = quest
-        }
+        this.quests[quest.id] = quest;
         this.redraw();
     };
 
     QuestJournalManager.prototype._create_status_group = function(status_name) {
         return $(
-            '<div class="journal-quest-menu-block">' +
-                '<div class="journal-quest-menu-name-block">' +
+            '<div class="journal-menu-block">' +
+                '<div class="journal-menu-name-block">' +
                     '<div class="journal-menu-arrow"></div>' +
                     '<div class="journal-menu-name">' + status_name + '</div>' +
                     '<div class="journal-menu-counter">0</div>' +
                 '</div>' +
-                '<div class="journal-quest-menu-list"></div>' +
+                '<div class="journal-menu-list"></div>' +
             '</div>');
     };
 
     QuestJournalManager.prototype._create_town_group = function(town_name, town_id) {
         return $(
-            '<div class="journal-quest-menu-town-' + town_id + ' journal-quest-menu-block">' +
-                '<div class="journal-quest-menu-name-block">' +
+            '<div class="journal-quest-menu-town-' + town_id + ' journal-menu-block">' +
+                '<div class="journal-menu-name-block">' +
                     '<div class="journal-menu-arrow"></div>' +
                     '<div class="journal-menu-name">' + town_name + '</div>' +
                 '</div>' +
-                '<div class="journal-quest-menu-list"></div>' +
+                '<div class="journal-menu-list"></div>' +
             '</div>');
     };
 
@@ -210,14 +208,12 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.redraw = function() {
-        console.log('QuestJournalManager.prototype.redraw');
+        console.log('QuestJournalManager.prototype.redraw', this.quests);
+        this.clear();
 
-        // Очищаем верстку в журнале
         var jq_quest_main = $('#journal_page_task');
         var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
         var jq_quest_info_list = jq_quest_main.find('.journal-page-right').first();
-        jq_quest_list.empty();
-        jq_quest_info_list.empty();
 
         // Добавляем "Активные" "Выполненные" "Проваленные"
         var active_group_count = 0;
@@ -268,12 +264,12 @@ var QuestJournalManager = (function () {
                 var jq_town_group = jq_current_group.find('.journal-quest-menu-town-' + quest.town_id);
                 if (jq_town_group.length == 0) {
                     jq_town_group = this._create_town_group(quest.town, quest.town_id);
-                    jq_current_group.find('.journal-quest-menu-list').first().append(jq_town_group);
+                    jq_current_group.find('.journal-menu-list').first().append(jq_town_group);
                 }
                 else jq_town_group = jq_town_group.first();
 
                 // Добавляем квест в меню
-                jq_town_group.find('.journal-quest-menu-list').first().append(this._create_menu_quest(quest.caption, key));
+                jq_town_group.find('.journal-menu-list').first().append(this._create_menu_quest(quest.caption, key));
 
                 // Добавляем инфоблок квеста
                 jq_quest_info_list.append(this._create_quest_info_block(quest));
@@ -299,9 +295,9 @@ var QuestJournalManager = (function () {
         });
 
         // Вешаем клики на все группы (статусы и города)
-        jq_quest_list.find('.journal-quest-menu-name-block').click(function () {
+        jq_quest_list.find('.journal-menu-name-block').click(function () {
             var j_self = $(this);
-            var j_list = j_self.parent().find('.journal-quest-menu-list').first();
+            var j_list = j_self.parent().find('.journal-menu-list').first();
             var j_arrow = j_self.find('.journal-menu-arrow').first();
             if (j_self.hasClass('active')) {
                 j_self.removeClass('active');
@@ -317,6 +313,11 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.clear = function() {
         //console.log('QuestJournalManager.prototype.clear');
+        var jq_quest_main = $('#journal_page_task');
+        var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
+        var jq_quest_info_list = jq_quest_main.find('.journal-page-right').first();
+        jq_quest_list.empty();
+        jq_quest_info_list.empty();
     };
 
     return QuestJournalManager;
