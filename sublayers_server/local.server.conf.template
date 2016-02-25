@@ -1,3 +1,4 @@
 ﻿
 port = 8100
 ws_port = 8100
+pidfile = "sl_test.pid"
