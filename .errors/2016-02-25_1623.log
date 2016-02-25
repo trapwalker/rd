@@ -1,0 +1,44 @@
+﻿2016-02-25 16:22:10,733 INFO     [sublayers_server.model.server_api->server_api.py:42  ] Server API: New Agent is created: 56cee84dd7bd900579b48fc4
+2016-02-25 16:22:10,733 INFO     [sublayers_server.handlers.client_connector->client_connector.py:36  ] Agent <sublayers_server.handlers.client_connector.AgentSocketHandler object at 0x7f75cc6abcd0> socket Init
+2016-02-25 16:22:10,777 ERROR    [sublayers_server.model.event_machine->event_machine.py:206 ] Event performing error <UpdateAgentAPIEvent #140143914517648 [16:22:10.734]>
+Traceback (most recent call last):
+  File "/home/sl/sublayers/sublayers_server/model/event_machine.py", line 204, in event_loop
+    event.perform()
+  File "/home/sl/sublayers/sublayers_server/model/events.py", line 94, in perform
+    self.on_perform()
+  File "/home/sl/sublayers/sublayers_server/model/agent_api.py", line 167, in on_perform
+    self.api.on_update_agent_api(time=self.time)
+  File "/home/sl/sublayers/sublayers_server/model/agent_api.py", line 383, in on_update_agent_api
+    self.make_car(time=time)
+  File "/home/sl/sublayers/sublayers_server/model/agent_api.py", line 402, in make_car
+    self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
+  File "/home/sl/sublayers/sublayers_server/model/units.py", line 337, in __init__
+    super(Mobile, self).__init__(time=time, **kw)
+  File "/home/sl/sublayers/sublayers_server/model/units.py", line 64, in __init__
+    self.load_inventory(time=time)
+  File "/home/sl/sublayers/sublayers_server/model/units.py", line 89, in load_inventory
+    ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
+  File "/home/sl/sublayers/sublayers_server/model/inventory.py", line 289, in __init__
+    assert count > 0
+AssertionError
+2016-02-25 16:22:10,793 ERROR    [sublayers_server.model.event_machine->event_machine.py:206 ] Event performing error <Init#140143914152848 [16:22:10.734] Bot#140143917448976>
+Traceback (most recent call last):
+  File "/home/sl/sublayers/sublayers_server/model/event_machine.py", line 204, in event_loop
+    event.perform()
+  File "/home/sl/sublayers/sublayers_server/model/events.py", line 94, in perform
+    self.on_perform()
+  File "/home/sl/sublayers/sublayers_server/model/events.py", line 136, in on_perform
+    self.obj.on_init(self)
+  File "/home/sl/sublayers/sublayers_server/model/units.py", line 453, in on_init
+    super(Bot, self).on_init(event=event)
+  File "/home/sl/sublayers/sublayers_server/model/units.py", line 179, in on_init
+    super(Unit, self).on_init(event)
+  File "/home/sl/sublayers/sublayers_server/model/base.py", line 141, in on_init
+    self.server.visibility_mng.add_object(obj=self, time=event.time)
+  File "/home/sl/sublayers/sublayers_server/model/visibility_manager.py", line 74, in add_object
+    p = obj.position(time=time)
+  File "/home/sl/sublayers/sublayers_server/model/units.py", line 410, in position
+    return self.state.p(t=time)
+AttributeError: 'Bot' object has no attribute 'state'
+2016-02-25 16:22:25,985 INFO     [sublayers_server.model.registry.classes.zones->zones.py:105 ] Successful read zone road from file: ./world/tilesets/ts_road
+2016-02-25 16:22:25,986 INFO     [sublayers_server.model.event_machine->event_machine.py:83  ] Zone <TilesetZone@reg://registry/zones/road> activated successfully
