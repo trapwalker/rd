@@ -1602,7 +1602,7 @@ var TrainerManager = (function () {
     };
 
     TrainerManager.prototype.update = function(event) {
-        console.log('TrainerManager.prototype.update');
+        //console.log('TrainerManager.prototype.update');
         this.clear();
 
         // Проверить если город
