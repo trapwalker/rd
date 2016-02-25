@@ -16,13 +16,66 @@
             </div>
         </div>
         <div class="building-center-pages-block">
-            <!--<div id="buildingPageAvailableTasks" class="building-center-page">Доступные задания</div>-->
-            <!--<div id="buildingPageActiveTasks" class="building-center-page">Активные задания</div>-->
+            <div id="buildingPageAvailableTasks" class="building-center-page">
+                <div class="building-quest-list-block">
+                    <div class="building-quest-list building-inventory-list">
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 2</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 3</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 4</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 5</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="buildingPageActiveTasks" class="building-center-page">
+                <div class="building-quest-list-block">
+                    <div class="building-quest-list building-inventory-list">
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                        <div class="building-quest-list-item">
+                            <div class="building-quest-list-item-caption">Тестовый квест 2</div>
+                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
+                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
+                            <div class="building-quest-list-item-time">00:00:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="building-bottom-block">
+        <div class="building-bottom-caption">Выбор специалиста</div>
         <div class="building-npc-list-block">
-            <div class="building-npc-list">
+            <div class="building-npc-list building-inventory-list">
                 {% for npc in cur_build.instances %}
                 <div class="building-npc-list-item" onclick="openNPC('{{ npc.type }}', '{{ building }}')">
                     <img class="building-npc-photo" src="{{ npc.photo }}"/>
@@ -35,21 +88,24 @@
 </div>
 
 <script>
-    // Функция подстраивает ширину списка под его содержимое
-    function resizeNPCList() {
-        var inventory = $('#building_{{ building }}').find(".building-npc-list").first();
-        var width = 0;
-        if (inventory) {
-            $(inventory).find('.building-npc-list-item').each(function (index, element) {
-                if ($(element).css('display') == 'block')
-                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-            });
-            $(inventory).width(width);
-        }
+    // Функции подстраивающие ширины списка под их содержимое
+    function resizeLists() {
+        var lists = $('#building_{{ building }}').find(".building-inventory-list");
+        lists.each(function(index, list) {
+            console.log(list);
+            var width = 0;
+            var jq_list = $(list);
+            if (jq_list) {
+                jq_list.children().each(function (index, element) {
+                    if ($(element).css('display') == 'block')
+                        width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+                });
+                jq_list.width(width);
+            }
+        });
     }
-    resizeNPCList();
+    resizeLists();
 
-    /*
     $('.building-center-menu-item').click(function(){
         $('.building-center-menu-item').removeClass('active');
         $(this).addClass('active');
@@ -57,7 +113,5 @@
         $('#' + $(this).data('page_id')).css('display', 'block');
     });
     $('.building-center-menu-item').first().click();
-    */
-
 </script>
 
