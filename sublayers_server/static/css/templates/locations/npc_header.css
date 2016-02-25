@@ -7,6 +7,7 @@
     height: 195px;
     font: 11pt Nouveau_IBM;
     color: #29F200;
+    overflow: hidden;
 }
 
 .npc-wrap-header {
