@@ -1,0 +1,26 @@
+﻿2016-02-25 14:50:09,218 WARNING  [sublayers_server.model.registry.tree->tree.py:85  ] Object <QNKills@139774332907472> has no attribute like n
+2016-02-25 14:50:09,219 DEBUG    [sublayers_server.model.agents->agents.py:382 ] <User #139774959114576 AKA u'1'>:: on_enter_location(<Town #139774880259664> => u'\u041f\u0440\u0430\u0439\u043e\u0440')
+2016-02-25 14:50:09,326 INFO     [sublayers_server.model.server_api->server_api.py:47  ] Server API: Old Agent given: 56cecee2d7bd907418837b1d
+2016-02-25 14:50:09,584 DEBUG    [sublayers_server.model.agents->agents.py:392 ] <User #139774332835600 AKA u'abbir'>:: on_enter_npc(<Armorer@reg://registry/institutions/armorer/timofey>)
+2016-02-25 14:50:10,146 ERROR    [sublayers_server.model.event_machine->event_machine.py:206 ] Event performing error <TaskInitEvent #139774322955792 [14:50:10.055]>
+Traceback (most recent call last):
+  File "/home/sl/sublayers/sublayers_server/model/event_machine.py", line 204, in event_loop
+    event.perform()
+  File "/home/sl/sublayers/sublayers_server/model/events.py", line 94, in perform
+    self.on_perform()
+  File "/home/sl/sublayers/sublayers_server/model/tasks.py", line 50, in on_perform
+    self.task.on_start(self)
+  File "/home/sl/sublayers/sublayers_server/model/motion_task.py", line 186, in on_start
+    self._calc_goto(start_time=event.time)
+  File "/home/sl/sublayers/sublayers_server/model/motion_task.py", line 112, in _calc_goto
+    MotionTaskEvent(time=time, task=self, turn=0.0).post()
+  File "/home/sl/sublayers/sublayers_server/model/motion_task.py", line 20, in __init__
+    super(MotionTaskEvent, self).__init__(**kw)
+  File "/home/sl/sublayers/sublayers_server/model/tasks.py", line 19, in __init__
+    super(TaskPerformEvent, self).__init__(server=task.owner.server, **kw)
+  File "/home/sl/sublayers/sublayers_server/model/events.py", line 29, in __init__
+    assert time is not None, 'classname event is {}'.format(self.classname)
+AssertionError: classname event is MotionTaskEvent
+2016-02-25 14:50:11,083 DEBUG    [sublayers_server.model.agents->agents.py:386 ] <User #139774959114576 AKA u'1'>:: on_exit_location(<Town #139774880259664> => u'\u041f\u0440\u0430\u0439\u043e\u0440')
+2016-02-25 14:50:11,431 DEBUG    [sublayers_server.model.agents->agents.py:392 ] <User #139774332642384 AKA u'777'>:: on_enter_npc(<Armorer@reg://registry/institutions/armorer/timofey>)
+2016-02-25 14:50:15,111 DEBUG    [sublayers_server.model.agents->agents.py:392 ] <User #139774334892880 AKA u'andrew'>:: on_enter_npc(<Armorer@reg://registry/institutions/armorer/timofey>)
