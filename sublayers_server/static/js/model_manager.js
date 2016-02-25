@@ -885,7 +885,7 @@ var ClientManager = (function () {
     // RPG
 
     ClientManager.prototype.RPGStateMessage = function (event) {
-        console.log('ClientManager.prototype.RPGStateMessage', event);
+        //console.log('ClientManager.prototype.RPGStateMessage', event);
         locationManager.trainer.update(event);
     };
 
