@@ -4,6 +4,8 @@
     left: 592px;
     width: 734px;
     height: 661px;
+    font-family: Nouveau_IBM;
+    color: #29F200;
 }
 
 .building-main {
@@ -15,7 +17,72 @@
 .building-center-block {
     position: relative;
     width: 100%;
-    height: 240px;
+    height: 242px;
+    border-width: 1px 0 1px 0;
+    box-sizing: border-box;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    padding: 3px 0 3px 0;
+}
+
+.building-quest-list-block {
+    position: relative;
+    margin: auto;
+    width: 500px;
+    height: 190px;
+    overflow-x: auto;
+}
+
+.building-quest-list {
+    position: relative;
+}
+
+.building-quest-list-item {
+    position: relative;
+    cursor: pointer;
+    height: 170px;
+    width: 170px;
+    margin-right: 10px;
+    box-sizing: border-box;
+    float: left;
+    border: 1px solid #1A8901;
+    font-family: FreePixel;
+    opacity: 0.6;
+}
+.building-quest-list-item:hover { border-color: #29FB00; opacity: 1; }
+
+.building-quest-list-item-caption {
+    position: relative;
+    width: 100%;
+    padding: 5px 5px 0px 25px;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.building-quest-list-item-lvl {
+    position: relative;
+    width: 100%;
+    padding: 0px 5px 0px 25px;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.building-quest-list-item-description {
+    position: relative;
+    width: 100%;
+    padding: 5px 5px 0px 5px;
+    font-size: 11pt;
+    box-sizing: border-box;
+}
+
+.building-quest-list-item-time {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    box-sizing: border-box;
+    font-size: 10pt;
+    margin: 0px 5px 2px 0px;
 }
 
 .building-center-menu-block {
@@ -33,10 +100,10 @@
     height: 30px;
     margin-bottom: 5px;
     cursor: pointer;
-    font: 11pt Nouveau_IBM;
+    font-size: 11pt;
     color: #29F200;
     opacity: 0.6;
-    background-color: green;
+    background-color: rgba(0, 128, 0, 0.6);
 }
 .building-center-menu-item:hover { opacity: 1; }
 .building-center-menu-item.active { opacity: 1; }
@@ -68,14 +135,23 @@
     height: 100%;
     width: 100%;
     color: #28F100;
+    display: none;
 }
 
 .building-bottom-block {
     position: relative;
     width: 100%;
-    height: 215px;
+    height: 235px;
     box-sizing: border-box;
-    padding: 20px 0px 0px 0px;
+}
+
+.building-bottom-caption {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    font-size: 13pt;
+    text-align: center;
+    line-height: 2;
 }
 
 .building-npc-list-block {
@@ -98,11 +174,15 @@
     width: 176px;
     margin-right: 10px;
     padding: 8px 0px 0px 2px;
-    border: 1px solid green;
+    border-width: 1px;
+    border-image: radial-gradient(rgba(0, 0, 0, 0) 80%, #1A8901 100%, #fff) 1%;
     box-sizing: border-box;
     float: left;
 }
-.building-npc-list-item:hover { background-color: #124506;; }
+.building-npc-list-item:hover {
+    background-color: #124506;
+    border-image: radial-gradient(rgba(0, 0, 0, 0) 80%, #29FB00 100%, #fff) 1%;
+}
 
 .building-npc-photo {
     position: relative;
