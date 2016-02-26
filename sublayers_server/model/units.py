@@ -469,7 +469,6 @@ class Bot(Mobile):
                                                                         example_agent=self.owner_example))
 
 
-
 class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):
         self.starter = starter

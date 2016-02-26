@@ -303,6 +303,10 @@ class ItemState(object):
         self.limbo = False
         self.is_alive = True  # костыль для тасков
 
+        self._id = id(self)
+
+    id = property(id)
+
     def _fix_item_state(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
         if t != self.t0:
@@ -314,6 +318,7 @@ class ItemState(object):
 
     @assert_time_in_items
     def update_item_state(self, t=None, dt=0.0, dv=None, ddvs=None):
+        log.debug('ItemState<%s>.update_item_state() t=%s, dt=%s, dv=%s, ddvs=%s  cur_dvs=%s', self._id, t, dt, dv, ddvs, self.dvs)
         self._fix_item_state(t=t, dt=dt)
         self.t_empty = None
         if dv:
@@ -469,7 +474,12 @@ class Consumer(object):
         self.dv = dv
         self.ddvs = ddvs
         self.swap = swap
+        self.is_call_start = False
+        self.is_call_stop = False
         self.is_started = False
+        self._id = id(self)
+
+    id = property(id)
 
     def __str__(self):
         dv = self.dv if self.dv is not None else 'None'
@@ -495,22 +505,31 @@ class Consumer(object):
             self.item.change(consumer=self, dv=self.dv, ddvs=None, action='on_use', time=time)
 
     def start(self, time):
+        if self.is_call_start:
+            return False
         if self.item is not None:
+            self.is_call_start = True
             self.item.change(consumer=self, dv=None, ddvs=self.ddvs, action='on_start', time=time)
             return True
         return False
 
     def stop(self, time):
+        log.debug('Consumer<%s>.stop', self._id)
+        if self.is_call_stop:
+            return
         if self.item is not None:
+            self.is_call_stop = True
             self.item.change(consumer=self, dv=None, ddvs=-self.ddvs, action='on_stop', time=time)
 
     def on_use(self, item, time):
         pass
 
     def on_start(self, item, time):
+        self.is_call_start = False
         self.is_started = True
 
     def on_stop(self, item, time):
+        self.is_call_stop = False
         self.is_started = False
 
     # при установки итема, если необходимо сменить параметры потребления,
@@ -518,13 +537,15 @@ class Consumer(object):
     def set_item(self, item, time, action=None):
         started = self.is_started
         # останавливаем использование
-        if started:
+        if started or self.is_call_start:
             self.stop(time=time)
             self.is_started = False  # перестать стрелять, если что старт потом установит стрельбу
 
         # разряжаем итем
         if self.item is not None:
             self.item.unlinking(consumer=self)
+            self.is_call_start = False
+            self.is_call_stop = False
 
         # пытаемся зарядить итем
         if (item is not None) and (item.example.parent in self.items_cls_list):
@@ -539,12 +560,13 @@ class Consumer(object):
                 self.use(time=time)
 
     def on_empty_item(self, item, time, action):
-        # log.debug('on_empty_item')
+        # log.debug('Consumer.on_empty_item')
         balance_cls_list = []
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
             balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
-        # log.debug('on_empty_item new_item = %s ', new_item)
+        log.debug('Consumer<%s>.on_empty_item new_item = %s ', self._id, new_item)
         self.set_item(time=time, item=new_item, action=action)
+
