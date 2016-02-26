@@ -123,6 +123,7 @@ do_restart() {
 }
 
 do_update() {
+    log_daemon_msg "Updating $DESC" "$NAME"
 	echo `date --rfc-3339=seconds` Start update of $BASE_DIR
 
 	REV1=`hg identify -R $BASE_DIR | awk '{print $1}'`
