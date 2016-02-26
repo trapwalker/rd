@@ -40,6 +40,8 @@ define("port", default=80, help="run on the given port", type=int)
 define("ws_port", default=80, help="run ws on the given port", type=int)
 define("map_link", default='http://localhost/map/{z}/{x}/{y}.jpg', help="map link", type=str)
 
+define("disconnect_timeout", default=60, help="Timeout of displacing by disconnect.", type=int)
+
 define("world_path", default='./world', help="Path to world data", type=str)
 
 

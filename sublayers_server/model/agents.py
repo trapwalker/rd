@@ -16,6 +16,8 @@ from sublayers_server.model.messages import QuestUpdateMessage
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 
+from tornado.options import options
+
 
 # todo: make agent offline status possible
 class Agent(Object):
@@ -236,7 +238,7 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
-        timeout = 10  # todo: move to server settings ##refactor
+        timeout = options.disconnect_timeout
         log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
         # todo: Измерять длительность подключения ##defend ##realize
         t = self.server.get_time()
