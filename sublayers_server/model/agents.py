@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-import messages
 from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
@@ -12,7 +11,7 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import QuestUpdateMessage
+from sublayers_server.model.messages import QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 
@@ -324,8 +323,10 @@ class Agent(Object):
         if (invite is not None) and (invite.can_delete_by_agent(self)):
             PartyInviteDeleteEvent(invite=invite, time=time).post()
         else:
-            messages.PartyErrorMessage(agent=self, time=time,
-                                       comment="You not have access for this invite {}".format(invite_id)).post()
+            PartyErrorMessage(
+                agent=self, time=time,
+                comment="You not have access for this invite {}".format(invite_id),
+            ).post()
 
     def is_target(self, target):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
@@ -351,7 +352,7 @@ class Agent(Object):
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
             return
-        messages.See(
+        See(
             agent=self,
             time=time,
             subj=subj,
@@ -368,7 +369,7 @@ class Agent(Object):
         is_last = obj.subscribed_agents.dec(self) == 0
         if not is_last:
             return
-        messages.Out(
+        Out(
             agent=self,
             time=time,
             subj=subj,
@@ -393,7 +394,7 @@ class Agent(Object):
         self.car.example.exp_price += 1  # увеличиваем "опытную" стоимость своего автомобиля
 
         # Отправить сообщение на клиент о начисленной экспе
-        messages.AddExperienceMessage(agent=self, time=time,).post()
+        AddExperienceMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
     def on_inv_change(self, time, incomings, outgoings):
