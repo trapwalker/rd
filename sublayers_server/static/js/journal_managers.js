@@ -208,7 +208,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.redraw = function() {
-        console.log('QuestJournalManager.prototype.redraw', this.quests);
+        //console.log('QuestJournalManager.prototype.redraw', this.quests);
         this.clear();
 
         var jq_quest_main = $('#journal_page_task');

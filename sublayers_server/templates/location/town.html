@@ -99,6 +99,7 @@
         $('.townPageWrap').css('display', 'none');
         $('#layer1').css('display', 'block');
         $('#layer2').css('display', 'block');
+        $('#img_grid').css('opacity', '1');
         locationManager.currentNPC = null;
         for (var i = 6; i < 10; i++)
             setBtnDisplay(i, "none");
@@ -108,6 +109,7 @@
 
     function openBuilding(building_name) {
         $('.townPageWrap').css('display', 'none');
+        $('#img_grid').css('opacity', '0.5');
         $('#building_' + building_name).css('display', 'block');
         for (var i = 6; i < 10; i ++)
             setBtnDisplay(i, "none");
