@@ -78,7 +78,27 @@ var WSConnector = (function(_super){
                     timeManager.timerStop();
                 } else {
                     modalWindow.modalRestartShow();
-                }
+                    // Автореконнект
+                    var reconnect_interval;
+
+                    function refresh_server_stat_request() {
+                        $.ajax({
+                            url: window.location.protocol + "//" + location.hostname + '/site_stat',
+                            success: function() {
+                                window.location.reload();
+                            },
+                            error: function() {console.log('Сервер недоступен.');}
+                        });
+                    }
+                    reconnect_interval = setInterval(refresh_server_stat_request, 3000);
+
+
+
+
+
+
+}
+
                 //alert('Код: ' + event.code + ' причина: ' + event.reason);
             };
 
