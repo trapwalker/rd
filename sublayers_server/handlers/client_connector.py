@@ -30,9 +30,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         srv = self.application.srv
         agent = srv.api.get_agent(self.user_id, make=True, do_disconnect=True)  # todo: Change to make=False
         if agent is None:
-            log.warning('Agent not found in database')
+            log.warning('Agent not found in database')  # todo: ##fixit
             return
-        log.info('Agent %r socket Init', self)
 
         self.agent = agent
         agent.on_connect(connection=self)

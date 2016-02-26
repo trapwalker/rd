@@ -222,6 +222,9 @@ class Agent(Object):
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
             self._disconnect_timeout_event = None
+            log.info('Connection of agent %s restored. Disconnect timeout cancelled.', self)
+        else:
+            log.info('Agent %s connected', self)
 
         if self.api:
             connection.api = self.api
