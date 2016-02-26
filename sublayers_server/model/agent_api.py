@@ -290,7 +290,7 @@ class AgentAPI(API):
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
-        agent.api = self
+        agent.api = self  # todo: убрать
         self.update_agent_api()
 
         agent_output_stream = StreamHub(
@@ -359,6 +359,7 @@ class AgentAPI(API):
                 InviteBarterMessage(agent=self.agent, time=time, barter=barter).post()
 
     def update_agent_api(self, time=None):
+        # todo: review(svp)
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 

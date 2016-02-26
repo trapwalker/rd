@@ -13,24 +13,26 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import QuestUpdateMessage
+from sublayers_server.model.events import event_deco
+from sublayers_server.model.agent_api import AgentAPI
 
 
 # todo: make agent offline status possible
 class Agent(Object):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
 
-    def __init__(self, login, time, example, connection=None, party=None, **kw):
+    def __init__(self, login, time, example, party=None, **kw):
         """
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
+        self._disconnect_timeout_event = None
         self.subscriptions = SubscriptionList()
         self.example = example
         self.observers = CounterSet()
         self.api = None
-        # todo: replace Counter to CounterSet
+        self.connection = None
         self.login = login
-        self._connection = connection
         # todo: normalize and check login
         self.server.agents[login] = self
         self.car = None
@@ -102,7 +104,7 @@ class Agent(Object):
 
     def __getstate__(self):
         d = self.__dict__.copy()
-        del d['_connection']
+        del d['connection']
         return d
 
     @property
@@ -151,7 +153,7 @@ class Agent(Object):
 
     @property
     def is_online(self):
-        return self._connection is not None
+        return self.connection is not None
 
     def add_observer(self, observer, time):
         if not self.is_online:
@@ -181,14 +183,6 @@ class Agent(Object):
             balance=self.example.balance,
         )
         return d
-
-    @property
-    def connection(self):
-        return self._connection
-
-    @connection.setter
-    def connection(self, new_connection):
-        self._connection = new_connection
 
     def append_obj(self, obj, time):
         if obj not in self.slave_objects:
@@ -223,18 +217,48 @@ class Agent(Object):
                 car.owner = None
             self.car = None
 
+    def on_connect(self, connection):
+        self.connection = connection
+        if self._disconnect_timeout_event:
+            self._disconnect_timeout_event.cancel()
+            self._disconnect_timeout_event = None
+            log.info('Connection of agent %s restored. Disconnect timeout cancelled.', self)
+        else:
+            log.info('Agent %s connected', self)
+
+        if self.api:
+            connection.api = self.api
+            self.api.update_agent_api()
+        else:
+            self.api = AgentAPI(agent=self)
+
+        # обновление статистики по онлайну агентов
+        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
+
     def on_disconnect(self, connection):
-        # todo: delivery for subscribers ##quest
+        log.info('Agent %s disconnected', self)  # todo: log disconnected ip and duration
+        # todo: Измерять длительность подключения ##defend ##realize
         t = self.server.get_time()
-        self.server.stat_log.s_agents_on(time=t, delta=-1.0)
-        self.save(time=t)
-        self.subscriptions.on_disconnect(agent=self, time=t)
+        DISCONNECT_TIMEOUT = 10  # todo: move to server settings ##refactor
+        log.debug('!!! set timeout from %s to %s', t, t + DISCONNECT_TIMEOUT)
+        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + DISCONNECT_TIMEOUT)
+        log.debug('!!! set timeout res: %r', self._disconnect_timeout_event)
+
+    @event_deco
+    def on_disconnect_timeout(self, event):
+        log.info('Agent %s disconnect timeout event', self, event)
+        self._disconnect_timeout_event = None
+        self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
+        self.save(time=event.time)
+        self.subscriptions.on_disconnect(agent=self, time=event.time)
+        if self.car:
+            self.car.displace(time=event.time)
+        log.info('Agent %s disconnect timeout', self)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
         # todo: docstring
         # party - куда включают, agent - кого включают
-        #log.debug('ON_BEFORE INCLUDE !!!!!!')
         if not self.is_online:
             return
         car = self.car
@@ -249,7 +273,6 @@ class Agent(Object):
         # todo: Если это событие, назвать соответственно с приставкой on
         # todo: docstring
         # party - куда включили, agent - кого включили
-        #log.debug('ON_AFTER INCLUDE !!!!!!')
         if not self.is_online:
             return
         self.car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
