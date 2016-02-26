@@ -1,6 +1,5 @@
 #! /bin/sh
 
-BRANCHE=''
 SUFFIX=''
 
 PTH=/home/sl/sublayers$SUFFIX
@@ -12,11 +11,8 @@ REV1=`hg identify -R $PTH | awk '{print $1}'`
 REV1w=`hg identify -R $PTHW | awk '{print $1}'`
 echo `date --rfc-3339=seconds` repo: $PTH revisions: [$REV1] [$REV1w]
 
-hg pull -R $PTH
-hg update $BRANCHE -R $PTH
-
-hg pull -R $PTHW
-hg update $BRANCHE -R $PTHW
+hg pull -u -R $PTH
+hg pull -u -R $PTHW
 
 REV2=`hg identify -R $PTH | awk '{print $1}'`
 REV2w=`hg identify -R $PTHW | awk '{print $1}'`

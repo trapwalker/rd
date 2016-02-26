@@ -123,8 +123,22 @@ do_restart() {
 }
 
 do_update() {
+	echo `date --rfc-3339=seconds` Start update of $BASE_DIR
+
+	REV1=`hg identify -R $BASE_DIR | awk '{print $1}'`
+	REV1w=`hg identify -R $BASE_DIR/sublayers_server/world | awk '{print $1}'`
+	echo `date --rfc-3339=seconds` repo: $PTH revisions: [$REV1] [$REV1w]
+
 	hg pull -u -R $BASE_DIR
-	do_restart
+	hg pull -u -R $BASE_DIR/sublayers_server/world
+
+	REV2=`hg identify -R $BASE_DIR | awk '{print $1}'`
+	REV2w=`hg identify -R $BASE_DIR/sublayers_server/world | awk '{print $1}'`
+	echo `date --rfc-3339=seconds` repo: $BASE_DIR new_revisions: [$REV2] [$REV2w]
+
+	[ "$REV1" = "$REV2" ] || echo "Server source changed: $REV1 != $REV2"
+	[ "$REV1w" = "$REV2w" ] || echo "Server world changed: $REV1w != $REV2w"
+	[ "$REV1" = "$REV2" ] && [ "$REV1w" = "$REV2w" ] && echo 'no changes' || do_restart
 	return 0
 }
 
