@@ -236,24 +236,21 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
-        log.info('Agent %s disconnected', self)  # todo: log disconnected ip and duration
+        timeout = 10  # todo: move to server settings ##refactor
+        log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
         # todo: Измерять длительность подключения ##defend ##realize
         t = self.server.get_time()
-        DISCONNECT_TIMEOUT = 10  # todo: move to server settings ##refactor
-        log.debug('!!! set timeout from %s to %s', t, t + DISCONNECT_TIMEOUT)
-        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + DISCONNECT_TIMEOUT)
-        log.debug('!!! set timeout res: %r', self._disconnect_timeout_event)
+        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
 
     @event_deco
     def on_disconnect_timeout(self, event):
-        log.info('Agent %s disconnect timeout event', self, event)
         self._disconnect_timeout_event = None
         self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
         self.save(time=event.time)
         self.subscriptions.on_disconnect(agent=self, time=event.time)
         if self.car:
             self.car.displace(time=event.time)
-        log.info('Agent %s disconnect timeout', self)
+        log.info('Agent %s displaced by disconnect timeout', self)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
