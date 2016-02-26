@@ -43,8 +43,6 @@ class WeaponAuto(Weapon):
         self.targets = []
         self.dps = dps
         self.is_enable = False
-        self.call_start = False  # Равна True, если start уже вызван, но on_start ещё не было
-        self.call_stop = False  # Равна True, если stop уже вызван, но on_stop ещё не было
 
     def as_dict(self, **kw):
         d = super(WeaponAuto, self).as_dict(**kw)
@@ -54,29 +52,19 @@ class WeaponAuto(Weapon):
         )
         return d
 
-    def start(self, time):
-        if super(WeaponAuto, self).start(time=time):
-            self.call_start = True
-
-    def stop(self, time):
-        # log.debug('WeaponAuto.stop call_stop=%s', self.call_stop)
-        self.call_stop = True
-        super(WeaponAuto, self).stop(time=time)
-
     def add_car(self, car, time):
         if self.is_enable:  # если оружию разрешено вести стрельбу
-            if not self.call_start:  # если ещё не вызывался старт ведения стрельбы
+            if not self.is_call_start:  # если ещё не вызывался старт ведения стрельбы
                 if not self.is_started:  # если стрельба ещё не началась
                     self.start(time=time)  # вызвать начало стрельбы по всем таргетам в таргет листе
                 else:
                     self._start_fire_to_car(car=car, time=time)  # вызвать начало стрельбы по данному таргету
-                    if self.call_stop:
-                        self.call_stop = False
+                    if self.is_call_stop:
+                        self.start(time=time)
 
     def del_car(self, car, time):
-        # log.debug('Weapon del     car=%s    len(sector.target_list)=%s     call_stop=%s', car, len(self.sector.target_list), self.call_stop)
         if self.is_started:
-            if len(self.sector.target_list) == 0 and not self.call_stop:
+            if len(self.sector.target_list) == 0:
                 self.stop(time=time)
             self._stop_fire_to_car(car=car, time=time)
 
@@ -95,26 +83,20 @@ class WeaponAuto(Weapon):
 
     def on_start(self, item, time):
         super(WeaponAuto, self).on_start(item=item, time=time)
-        self.call_start = False  # сделать False, так как уже on_start произошёл и отсеивать другие страрты не нужно
         for car in self.sector.target_list:
             self._start_fire_to_car(car=car, time=time)
 
     def on_stop(self, item, time):
-        # log.debug('WeaponAuto.on_stop')
         super(WeaponAuto, self).on_stop(item=item, time=time)
         targets = self.targets[:]
         for car in targets:
             self._stop_fire_to_car(car=car, time=time)
-        # assert self.call_stop
-        # if not self.call_stop:
-        #     self.start(time=time + 0.01)
-        self.call_stop = False
 
     def set_enable(self, time, enable):
         if self.is_enable == enable:
             return
         self.is_enable = enable
-        if not enable and self.is_started and not self.call_stop:
+        if not enable and self.is_started:
             self.stop(time=time)
 
     def get_enable(self):

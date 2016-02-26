@@ -318,7 +318,7 @@ class ItemState(object):
 
     @assert_time_in_items
     def update_item_state(self, t=None, dt=0.0, dv=None, ddvs=None):
-        log.debug('ItemState<%s>.update_item_state() t=%s, dt=%s, dv=%s, ddvs=%s  cur_dvs=%s', self._id, t, dt, dv, ddvs, self.dvs)
+        # log.debug('ItemState<%s>.update_item_state() t=%s, dt=%s, dv=%s, ddvs=%s  cur_dvs=%s', self._id, t, dt, dv, ddvs, self.dvs)
         self._fix_item_state(t=t, dt=dt)
         self.t_empty = None
         if dv:
@@ -514,7 +514,7 @@ class Consumer(object):
         return False
 
     def stop(self, time):
-        log.debug('Consumer<%s>.stop', self._id)
+        # log.debug('Consumer<%s>.stop', self._id)
         if self.is_call_stop:
             return
         if self.item is not None:
@@ -567,6 +567,5 @@ class Consumer(object):
         else:
             balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
-        log.debug('Consumer<%s>.on_empty_item new_item = %s ', self._id, new_item)
         self.set_item(time=time, item=new_item, action=action)
 
