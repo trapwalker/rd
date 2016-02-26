@@ -13,7 +13,8 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import QuestUpdateMessage
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import event_deco
+from sublayers_server.model.agent_api import AgentAPI
 
 
 # todo: make agent offline status possible
@@ -25,7 +26,7 @@ class Agent(Object):
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
-        self.disconnect_timeout_event = None
+        self._disconnect_timeout_event = None
         self.subscriptions = SubscriptionList()
         self.example = example
         self.observers = CounterSet()
@@ -218,21 +219,36 @@ class Agent(Object):
 
     def on_connect(self, connection):
         self.connection = connection
-        # todo: Отсменить ожижание таймацта по дисконнекту ##! ##realize
+        if self._disconnect_timeout_event:
+            self._disconnect_timeout_event.cancel()
+            self._disconnect_timeout_event = None
+
+        if self.api:
+            connection.api = self.api
+            self.api.update_agent_api()
+        else:
+            self.api = AgentAPI(agent=self)
+
+        # обновление статистики по онлайну агентов
+        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
         log.info('Agent %s disconnected', self)  # todo: log disconnected ip and duration
         # todo: Измерять длительность подключения ##defend ##realize
         t = self.server.get_time()
-        self.server.stat_log.s_agents_on(time=t, delta=-1.0)
-        self.save(time=t)
-        self.subscriptions.on_disconnect(agent=self, time=t)
-        DISCONNECT_TIMEOUT = 60  # todo: move to server settings ##refactor
-        self.disconnect_timeout_event = Event(t + DISCONNECT_TIMEOUT, callback_after=self.on_disconnect_timeout)
+        DISCONNECT_TIMEOUT = 10  # todo: move to server settings ##refactor
+        log.debug('!!! set timeout from %s to %s', t, t + DISCONNECT_TIMEOUT)
+        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + DISCONNECT_TIMEOUT)
+        log.debug('!!! set timeout res: %r', self._disconnect_timeout_event)
 
+    @event_deco
     def on_disconnect_timeout(self, event):
+        log.info('Agent %s disconnect timeout event', self, event)
+        self._disconnect_timeout_event = None
+        self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
+        self.save(time=event.time)
+        self.subscriptions.on_disconnect(agent=self, time=event.time)
         log.info('Agent %s disconnect timeout', self)
-        pass  # todo: unload car ##realize
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on

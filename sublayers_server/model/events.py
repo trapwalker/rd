@@ -7,7 +7,22 @@ log.info('\n\n\n')
 from sublayers_server.model.utils import time_log_format
 from sublayers_server.model.messages import FireDischargeEffect
 
-from functools import total_ordering
+from functools import total_ordering, wraps, partial
+
+
+def event_deco(func):
+    @wraps(func)
+    def closure(self, time, **kw):
+        server = (
+            hasattr(self, 'server') and self.server or
+            hasattr(self, 'agent') and self.agent.server
+        )
+        assert server
+        event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
+        event.post()
+        return event
+
+    return closure
 
 
 @total_ordering
@@ -24,7 +39,11 @@ class Event(object):
 
     def __init__(self, server, time, callback_before=None, callback_after=None, comment=None):
         """
+        @param sublayers_server.model.event_machine.Server server: Server for new event
         @param float time: Time of event
+        @param collections.Callable | None callback_before: Callback to call before on_perform
+        @param collections.Callable | None callback_after: Callback to call after on_perform
+        @param basestring comment: Debug text
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
         assert time is not None, 'classname event is {}'.format(self.classname)

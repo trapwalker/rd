@@ -290,7 +290,7 @@ class AgentAPI(API):
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
-        agent.api = self
+        agent.api = self  # todo: убрать
         self.update_agent_api()
 
         agent_output_stream = StreamHub(
