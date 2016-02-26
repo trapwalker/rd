@@ -248,6 +248,8 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
         self.save(time=event.time)
         self.subscriptions.on_disconnect(agent=self, time=event.time)
+        if self.car:
+            self.car.displace(time=event.time)
         log.info('Agent %s disconnect timeout', self)
 
     def party_before_include(self, party, new_member, time):
