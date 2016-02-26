@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 
-from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model import messages
 
 
@@ -31,19 +30,11 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
         srv = self.application.srv
         agent = srv.api.get_agent(self.user_id, make=True, do_disconnect=True)  # todo: Change to make=False
         if agent is None:
-            log.warning('Agent not found in database')
+            log.warning('Agent not found in database')  # todo: ##fixit
             return
-        log.info('Agent %r socket Init', self)
-        self.agent = agent
-        agent.connection = self
-        if agent.api:
-            self.api = agent.api
-            agent.api.update_agent_api()
-        else:
-            self.api = AgentAPI(agent=agent)
 
-        # обновление статистики по онлайну агентов
-        srv.stat_log.s_agents_on(time=srv.get_time(), delta=1.0)
+        self.agent = agent
+        agent.on_connect(connection=self)
 
     def on_close(self):
         if self.agent:
@@ -56,7 +47,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         # log.debug("Got message from %s: %r", self.agent, message)
-        result = self.api.__rpc_call__(message)
+        result = self.agent.api.__rpc_call__(message)
         self.send(result)
 
     def send(self, data):
