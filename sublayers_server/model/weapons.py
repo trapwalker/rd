@@ -59,8 +59,9 @@ class WeaponAuto(Weapon):
             self.call_start = True
 
     def stop(self, time):
-        super(WeaponAuto, self).stop(time=time)
+        # log.debug('WeaponAuto.stop call_stop=%s', self.call_stop)
         self.call_stop = True
+        super(WeaponAuto, self).stop(time=time)
 
     def add_car(self, car, time):
         if self.is_enable:  # если оружию разрешено вести стрельбу
@@ -73,6 +74,7 @@ class WeaponAuto(Weapon):
                         self.call_stop = False
 
     def del_car(self, car, time):
+        # log.debug('Weapon del     car=%s    len(sector.target_list)=%s     call_stop=%s', car, len(self.sector.target_list), self.call_stop)
         if self.is_started:
             if len(self.sector.target_list) == 0 and not self.call_stop:
                 self.stop(time=time)
@@ -98,13 +100,14 @@ class WeaponAuto(Weapon):
             self._start_fire_to_car(car=car, time=time)
 
     def on_stop(self, item, time):
+        # log.debug('WeaponAuto.on_stop')
         super(WeaponAuto, self).on_stop(item=item, time=time)
         targets = self.targets[:]
         for car in targets:
             self._stop_fire_to_car(car=car, time=time)
-        assert self.call_stop
-        if not self.call_stop:
-            self.start(time=time + 0.01)
+        # assert self.call_stop
+        # if not self.call_stop:
+        #     self.start(time=time + 0.01)
         self.call_stop = False
 
     def set_enable(self, time, enable):
