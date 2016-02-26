@@ -103,6 +103,45 @@ do_reload() {
 	return 0
 }
 
+do_restart() {
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			1) log_end_msg 1 ;; # Old process is still running
+			*) log_end_msg 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+		# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+}
+
+do_update() {
+	echo `date --rfc-3339=seconds` Start update of $BASE_DIR
+
+	REV1=`hg identify -R $BASE_DIR | awk '{print $1}'`
+	REV1w=`hg identify -R $BASE_DIR/sublayers_server/world | awk '{print $1}'`
+	echo `date --rfc-3339=seconds` repo: $PTH revisions: [$REV1] [$REV1w]
+
+	hg pull -u -R $BASE_DIR
+	hg pull -u -R $BASE_DIR/sublayers_server/world
+
+	REV2=`hg identify -R $BASE_DIR | awk '{print $1}'`
+	REV2w=`hg identify -R $BASE_DIR/sublayers_server/world | awk '{print $1}'`
+	echo `date --rfc-3339=seconds` repo: $BASE_DIR new_revisions: [$REV2] [$REV2w]
+
+	[ "$REV1" = "$REV2" ] || echo "Server source changed: $REV1 != $REV2"
+	[ "$REV1w" = "$REV2w" ] || echo "Server world changed: $REV1w != $REV2w"
+	[ "$REV1" = "$REV2" ] && [ "$REV1w" = "$REV2w" ] && echo 'no changes' || do_restart
+	return 0
+}
+
 case "$1" in
   start)
 	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
@@ -132,27 +171,17 @@ case "$1" in
 	#do_reload
 	#log_end_msg $?
 	#;;
+
   restart|force-reload)
 	#
 	# If the "reload" option is implemented then remove the
 	# 'force-reload' alias
 	#
-	log_daemon_msg "Restarting $DESC" "$NAME"
-	do_stop
-	case "$?" in
-	  0|1)
-		do_start
-		case "$?" in
-			0) log_end_msg 0 ;;
-			1) log_end_msg 1 ;; # Old process is still running
-			*) log_end_msg 1 ;; # Failed to start
-		esac
-		;;
-	  *)
-		# Failed to stop
-		log_end_msg 1
-		;;
-	esac
+	do_restart
+	;;
+
+  update)
+	do_update
 	;;
   *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
