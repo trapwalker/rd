@@ -286,7 +286,7 @@ class ItemState(object):
     __str_template__ = 'Item: <limbo={self.limbo}> class={self.example.parent.uri} value0={self.val0}'
 
     def __init__(self, server, time, example, count=1):
-        assert count > 0
+        assert count > 0, 'count = {}'.format(count)
         self.server = server
         self.example = example
         self.inventory = None
