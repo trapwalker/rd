@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-import messages
 from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
@@ -12,9 +11,11 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import QuestUpdateMessage
+from sublayers_server.model.messages import QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
+
+from tornado.options import options
 
 
 # todo: make agent offline status possible
@@ -236,24 +237,21 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
-        log.info('Agent %s disconnected', self)  # todo: log disconnected ip and duration
+        timeout = options.disconnect_timeout
+        log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
         # todo: Измерять длительность подключения ##defend ##realize
         t = self.server.get_time()
-        DISCONNECT_TIMEOUT = 10  # todo: move to server settings ##refactor
-        log.debug('!!! set timeout from %s to %s', t, t + DISCONNECT_TIMEOUT)
-        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + DISCONNECT_TIMEOUT)
-        log.debug('!!! set timeout res: %r', self._disconnect_timeout_event)
+        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
 
     @event_deco
     def on_disconnect_timeout(self, event):
-        log.info('Agent %s disconnect timeout event', self, event)
         self._disconnect_timeout_event = None
         self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
         self.save(time=event.time)
         self.subscriptions.on_disconnect(agent=self, time=event.time)
         if self.car:
             self.car.displace(time=event.time)
-        log.info('Agent %s disconnect timeout', self)
+        log.info('Agent %s displaced by disconnect timeout', self)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -325,8 +323,10 @@ class Agent(Object):
         if (invite is not None) and (invite.can_delete_by_agent(self)):
             PartyInviteDeleteEvent(invite=invite, time=time).post()
         else:
-            messages.PartyErrorMessage(agent=self, time=time,
-                                       comment="You not have access for this invite {}".format(invite_id)).post()
+            PartyErrorMessage(
+                agent=self, time=time,
+                comment="You not have access for this invite {}".format(invite_id),
+            ).post()
 
     def is_target(self, target):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
@@ -352,7 +352,7 @@ class Agent(Object):
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
             return
-        messages.See(
+        See(
             agent=self,
             time=time,
             subj=subj,
@@ -369,7 +369,7 @@ class Agent(Object):
         is_last = obj.subscribed_agents.dec(self) == 0
         if not is_last:
             return
-        messages.Out(
+        Out(
             agent=self,
             time=time,
             subj=subj,
@@ -394,7 +394,7 @@ class Agent(Object):
         self.car.example.exp_price += 1  # увеличиваем "опытную" стоимость своего автомобиля
 
         # Отправить сообщение на клиент о начисленной экспе
-        messages.AddExperienceMessage(agent=self, time=time,).post()
+        AddExperienceMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
     def on_inv_change(self, time, incomings, outgoings):

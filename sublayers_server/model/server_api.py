@@ -39,7 +39,7 @@ class ServerAPI(API):
                 time=self.server.get_time(),
                 example=agent_exemplar,
             )
-            log.info('Server API: New Agent is created: %s', agent_id)
+            log.info('Server API: New Agent is created: %s', agent_id)  # todo: fix text
         else:
             if agent and do_disconnect:
                 if agent.connection:
