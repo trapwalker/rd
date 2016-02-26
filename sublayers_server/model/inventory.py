@@ -61,7 +61,7 @@ class Inventory(object):
             if (item_rec2['item'] is None) or (item_rec2['val'] >= item_rec2['max_val']) or \
                (item_rec1['item'].example.parent != item_rec2['item'].example.parent):
                 return
-            log.debug('------------------ dosipaem')
+            # log.debug('------------------ dosipaem')
             dv = min(item_rec2['max_val'] - item_rec2['val'], item_rec1['val'])
             item_rec1['val'] -= dv
             item_rec2['val'] += dv
@@ -539,10 +539,12 @@ class Consumer(object):
                 self.use(time=time)
 
     def on_empty_item(self, item, time, action):
+        # log.debug('on_empty_item')
         balance_cls_list = []
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
             balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
+        # log.debug('on_empty_item new_item = %s ', new_item)
         self.set_item(time=time, item=new_item, action=action)
