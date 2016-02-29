@@ -7,7 +7,7 @@ from sublayers_server.model.tasks import TaskPerformEvent, TaskSingleton
 from sublayers_server.model.state import EPS
 from copy import copy
 from sublayers_server.model.vectors import Point
-from math import sqrt
+from math import sqrt, copysign
 
 
 class MotionTaskEvent(TaskPerformEvent):
@@ -57,7 +57,8 @@ class MotionTask(TaskSingleton):
         # log.debug('============================== start last_time= %s', st.t_max)
         # Шаг 0: Прекратить ускорение/замедление
         if st.t_max is not None:
-            cur_cc = st.v0 / st.get_max_v_by_cc(cc=self.cc)
+            # log.debug('_calc_goto  cc=%s,  v0=%s', self.cc, st.v0)
+            cur_cc = copysign(st.v0 / st.get_max_v_by_cc(cc=self.cc), st.v0)
             st.update(t=time, cc=cur_cc)
             MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
         # log.debug('============================== 0 last_time= %s', st.t_max)
