@@ -77,6 +77,7 @@ var pressedArrowUp;
 var pressedArrowDown;
 var pressedArrowLeft;
 var pressedArrowRight;
+var pressedTurn=0;
 
 var crazy_timer = null;
 
@@ -92,7 +93,8 @@ function onKeyDownMap(event) {
     switch (event.keyCode) {
         case 37:
             if (!pressedArrowLeft) {
-                clientManager.sendTurn(1);
+                pressedTurn ++;
+                clientManager.sendTurn(pressedTurn);
                 pressedArrowLeft = true;
             }
             break;
@@ -105,7 +107,8 @@ function onKeyDownMap(event) {
             break;
         case 39:
             if (!pressedArrowRight) {
-                clientManager.sendTurn(-1);
+                pressedTurn --;
+                clientManager.sendTurn(pressedTurn);
                 pressedArrowRight = true;
             }
             break;
@@ -188,7 +191,8 @@ function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
     switch (event.keyCode) {
         case 37:
-            clientManager.sendTurn(0);
+            pressedTurn--;
+            clientManager.sendTurn(pressedTurn);
             pressedArrowLeft = false;
             break;
         case 38:
@@ -197,7 +201,8 @@ function onKeyUpMap(event) {
             pressedArrowUp = false;
             break;
         case 39:
-            clientManager.sendTurn(0);
+            pressedTurn++;
+            clientManager.sendTurn(pressedTurn);
             pressedArrowRight = false;
             break;
         case 40:
