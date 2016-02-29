@@ -7,7 +7,7 @@ from sublayers_server.model.tasks import TaskPerformEvent, TaskSingleton
 from sublayers_server.model.state import EPS
 from copy import copy
 from sublayers_server.model.vectors import Point
-from math import sqrt
+from math import sqrt, copysign
 
 
 class MotionTaskEvent(TaskPerformEvent):
@@ -57,7 +57,8 @@ class MotionTask(TaskSingleton):
         # log.debug('============================== start last_time= %s', st.t_max)
         # Шаг 0: Прекратить ускорение/замедление
         if st.t_max is not None:
-            cur_cc = st.v0 / st.get_max_v_by_cc(cc=self.cc)
+            # log.debug('_calc_goto  cc=%s,  v0=%s', self.cc, st.v0)
+            cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
             st.update(t=time, cc=cur_cc)
             MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
         # log.debug('============================== 0 last_time= %s', st.t_max)
@@ -87,7 +88,7 @@ class MotionTask(TaskSingleton):
         # Шаг 4: Расчет поворота
         st.update(t=time)
         if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
-            #log.debug('============================== 4')
+            # log.debug('============================== 4')
             dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
             # Если target_point слишком близко, то проехать некоторое расстояние вперед
             if dist <= 0.0:
@@ -100,8 +101,9 @@ class MotionTask(TaskSingleton):
                     target_v = min(5.0, st.get_max_v_by_cc(self.cc) * self.cc)
                 target_cc = target_v / st.get_max_v_by_cc(self.cc)
 
-                MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
-                time = st.update(t=time, cc=target_cc, turn=0.0)
+                if abs(target_v - st.v(t=time)) > EPS:
+                    MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
+                    time = st.update(t=time, cc=target_cc, turn=0.0)
 
                 # Если мы близко, то проехать 2 радиуса
                 st.update(t=time)

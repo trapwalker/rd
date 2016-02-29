@@ -1600,7 +1600,7 @@ var ClientManager = (function () {
             call: "set_about_self",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                str: str
+                text: str
             }
         };
         rpcCallList.add(mes);

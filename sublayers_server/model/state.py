@@ -145,7 +145,11 @@ class MotionState(BaseMotionState):
     def _need_turn(self, target_point):
         v_dir = Point.polar(r=1, fi=self.fi0)
         v_t = (target_point - self.p0)
-        return abs(v_dir.angle_with(v_t)) > EPS
+        angle = abs(v_dir.angle_with(v_t))
+        if self.cc >= 0:
+            return angle > EPS
+        else:
+            return abs(angle - pi) > EPS
 
     def _get_turn_sign(self, target_point):
         assert target_point is not None
@@ -233,6 +237,9 @@ class MotionState(BaseMotionState):
 
     def get_max_v_by_cc(self, cc):
         return self.v_forward if cc >= 0.0 else self.v_backward
+
+    def get_max_v_by_curr_v(self, v):
+        return self.v_forward if v >= 0.0 else self.v_backward
 
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None):
