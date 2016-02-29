@@ -165,7 +165,7 @@ class PartyMember(object):
 
     @category.setter
     def category(self, new_category):
-        self.category = new_category
+        self._category = new_category
         # todo: сообщение о присвоении роли
 
     def set_description(self, new_description):
