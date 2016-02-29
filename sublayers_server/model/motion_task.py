@@ -88,7 +88,7 @@ class MotionTask(TaskSingleton):
         # Шаг 4: Расчет поворота
         st.update(t=time)
         if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
-            #log.debug('============================== 4')
+            # log.debug('============================== 4')
             dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
             # Если target_point слишком близко, то проехать некоторое расстояние вперед
             if dist <= 0.0:

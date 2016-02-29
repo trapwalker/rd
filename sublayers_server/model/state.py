@@ -145,7 +145,11 @@ class MotionState(BaseMotionState):
     def _need_turn(self, target_point):
         v_dir = Point.polar(r=1, fi=self.fi0)
         v_t = (target_point - self.p0)
-        return abs(v_dir.angle_with(v_t)) > EPS
+        angle = abs(v_dir.angle_with(v_t))
+        if self.cc >= 0:
+            return angle > EPS
+        else:
+            return abs(angle - pi) > EPS
 
     def _get_turn_sign(self, target_point):
         assert target_point is not None
