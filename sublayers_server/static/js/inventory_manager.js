@@ -77,7 +77,7 @@ var InventoryItem = (function (_super) {
     };
 
     InventoryItem.prototype.setState = function (item_state) {
-        console.log("InventoryItem.prototype.setState", item_state);
+        //console.log("InventoryItem.prototype.setState", item_state);
         this._item_state = item_state;
         this._manage_tm();
         this.change();
