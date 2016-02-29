@@ -686,8 +686,8 @@ class AgentAPI(API):
         TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
 
     @public_method
-    def set_about_self(self, s):
-        self.agent.example.about_self = s
+    def set_about_self(self, text):
+        self.agent.example.about_self = text
 
     # Административные методы
     @public_method
