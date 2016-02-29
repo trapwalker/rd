@@ -234,6 +234,9 @@ class MotionState(BaseMotionState):
     def get_max_v_by_cc(self, cc):
         return self.v_forward if cc >= 0.0 else self.v_backward
 
+    def get_max_v_by_curr_v(self, v):
+        return self.v_forward if v >= 0.0 else self.v_backward
+
     @assert_time_in_state
     def update(self, t=None, dt=0.0, cc=None, turn=None):
         self.fix(t=t, dt=dt)
