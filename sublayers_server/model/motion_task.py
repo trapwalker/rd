@@ -100,8 +100,9 @@ class MotionTask(TaskSingleton):
                     target_v = min(5.0, st.get_max_v_by_cc(self.cc) * self.cc)
                 target_cc = target_v / st.get_max_v_by_cc(self.cc)
 
-                MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
-                time = st.update(t=time, cc=target_cc, turn=0.0)
+                if abs(target_v - st.v(t=time)) > EPS:
+                    MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
+                    time = st.update(t=time, cc=target_cc, turn=0.0)
 
                 # Если мы близко, то проехать 2 радиуса
                 st.update(t=time)
