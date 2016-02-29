@@ -58,7 +58,7 @@ class MotionTask(TaskSingleton):
         # Шаг 0: Прекратить ускорение/замедление
         if st.t_max is not None:
             # log.debug('_calc_goto  cc=%s,  v0=%s', self.cc, st.v0)
-            cur_cc = copysign(st.v0 / st.get_max_v_by_cc(cc=self.cc), st.v0)
+            cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
             st.update(t=time, cc=cur_cc)
             MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
         # log.debug('============================== 0 last_time= %s', st.t_max)
