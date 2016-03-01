@@ -33,6 +33,31 @@ class Mobile(Root):
     p_obs_range_rate_min = Parameter(default=1, caption=u"Коэффициент радиуса обзора при максимальной скорости")
     p_obs_range_rate_max = Parameter(default=1, caption=u"Коэффициент радиуса обзора при скорости = 0")
 
+    # Модификаторы эффектов зон
+    m_cc_dirt = Parameter(default=0.2, caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier')
+    m_cc_wood = Parameter(default=0.3, caption=u"Модификатор CC в лесу", tags='parameter p_modifier')
+    m_visibility_wood = Parameter(default=0.5, caption=u"Модификатор видимости в лесу", tags='parameter p_modifier')
+    m_observing_range_wood = Parameter(default=0.5, caption=u"Модификатор обзора в лесу", tags='parameter p_modifier')
+    m_cc_slope = Parameter(default=0.2, caption=u"Модификатор CC в горах", tags='parameter p_modifier')
+    m_cc_water = Parameter(default=0.45, caption=u"Модификатор CC на воде", tags='parameter p_modifier')
+    m_r_cc_wood_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС в лесу на дороге", tags='parameter p_modifier')
+    m_r_cc_water_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС в воде на дороге ", tags='parameter p_modifier')
+    m_r_cc_dirt_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС на бездорожье на дороге", tags='parameter p_modifier')
+    m_r_cc_slope_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС в горах на дороге ", tags='parameter p_modifier')
+    m_cc_mine = Parameter(default=0.5, caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier')
+    m_cc_fuel_empty = Parameter(default=0.9, caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier')
+
+    # Резисты к модификаторам эффетов зон
+    r_empty = Parameter(default=0.0, caption=u"Пустой резист", tags='parameter p_resist')
+    r_cc_dirt = Parameter(default=0.0, caption=u"Резист к модификатору CC на бездорожье", tags='parameter p_resist')
+    r_cc_wood = Parameter(default=0.0, caption=u"Резист к модификатору CC в лесу", tags='parameter p_resist')
+    r_visibility_wood = Parameter(default=0.0, caption=u"Резист к модификатору видимости в лесу", tags='parameter p_resist')
+    r_observing_range_wood = Parameter(default=0.0, caption=u"Резист к модификатору обзора в лесу", tags='parameter p_resist')
+    r_cc_slope = Parameter(default=0.0, caption=u"Резист к модификатору CC в горах", tags='parameter p_resist')
+    r_cc_water = Parameter(default=0.0, caption=u"Резист к модификатору CC в воде", tags='parameter p_resist')
+    r_cc_mine = Parameter(default=0.0, caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist')
+    r_cc_fuel_empty = Parameter(default=0.0, caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist')
+
     # атрибуты от Unit
     p_defence = Parameter(default=1, caption=u"Броня")
     max_hp = FloatAttribute(caption=u"Максимальное значение HP")
