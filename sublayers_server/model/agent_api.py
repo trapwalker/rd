@@ -30,6 +30,8 @@ from sublayers_server.model.console import Namespace, Console, LogStream, Stream
 
 # todo: Проверить допустимость значений входных параметров
 
+import random
+
 
 class AgentConsoleEchoMessage(messages.Message):
     pass
@@ -106,8 +108,23 @@ class AgentConsoleNamespace(Namespace):
     def dropcar(self):
         self.api.delete_car()
 
-    def money(self, value=0):
-        self.agent.example.balance += int(value)
+    def money(self, value=None):
+        if value is not None:
+            value = int(value)
+            if value > 1000:
+                self.write(random.choice([  # todo: вынести вариации диалогов в ямл
+                    u'А харя не треснет?',
+                    u'Поди заработай, халявщик!',
+                    u'Не евгей ли вы случайно, судагь?',
+                    u'Слипнется.',
+                    u'Может тебе ещё и ключи от тачки, где лут лежит?',
+                    u'Губа не дура',
+                    u'Да ты охренел!',
+                ]))
+            self.agent.example.balance += value
+
+        self.write('You have {} money.'.format(self.agent.example.balance))
+        return self.agent.example.balance
 
     def exp(self, value):
         self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=int(value))

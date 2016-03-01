@@ -44,5 +44,5 @@ class ServerAPI(API):
             if agent and do_disconnect:
                 if agent.connection:
                     agent.connection.close()
-            log.info('Server API: Old Agent given: %s', agent_id)
+            # log.info('Server API: Old Agent given: %s', agent_id)
         return agent

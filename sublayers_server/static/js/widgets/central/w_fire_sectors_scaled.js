@@ -492,7 +492,7 @@ var WFireSectorsScaled = (function (_super) {
             .fill(this.svg_params.rechArea.rech_text.fill)
             .transform({rotation: radToGrad(direction), cx: size, cy: size})
             .path(this.svg_params.rechArea.text_path);
-        text.textPath.attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
+        text.textPath().attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
 
         this.rechAreas[side_str] = {
             rech_arc: rech,
@@ -556,7 +556,7 @@ var WFireSectorsScaled = (function (_super) {
         // todo: передать сюда ещё текст времени, чтобы обнулить его (сделать равным  "")
         var text = this.rechAreas[side_str].rech_text;
         text.text(rech_text);
-        text.textPath.attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
+        text.textPath().attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
     };
 
     WFireSectorsScaled.prototype.change = function(t){

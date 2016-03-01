@@ -77,7 +77,8 @@ var pressedArrowUp;
 var pressedArrowDown;
 var pressedArrowLeft;
 var pressedArrowRight;
-var pressedTurn=0;
+var pressedTurnLeft = false;
+var pressedTurnRight = false;
 
 var crazy_timer = null;
 
@@ -93,9 +94,11 @@ function onKeyDownMap(event) {
     switch (event.keyCode) {
         case 37:
             if (!pressedArrowLeft) {
-                pressedTurn ++;
-                clientManager.sendTurn(pressedTurn);
                 pressedArrowLeft = true;
+                var turn = 0;
+                if (pressedArrowLeft) turn++;
+                if (pressedArrowRight) turn--;
+                clientManager.sendTurn(turn);
             }
             break;
         case 38:
@@ -107,9 +110,11 @@ function onKeyDownMap(event) {
             break;
         case 39:
             if (!pressedArrowRight) {
-                pressedTurn --;
-                clientManager.sendTurn(pressedTurn);
                 pressedArrowRight = true;
+                var turn = 0;
+                if (pressedArrowLeft) turn++;
+                if (pressedArrowRight) turn--;
+                clientManager.sendTurn(turn);
             }
             break;
         case 40:
@@ -191,9 +196,11 @@ function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
     switch (event.keyCode) {
         case 37:
-            pressedTurn--;
-            clientManager.sendTurn(pressedTurn);
             pressedArrowLeft = false;
+            var turn = 0;
+            if (pressedArrowLeft) turn++;
+            if (pressedArrowRight) turn--;
+            clientManager.sendTurn(turn);
             break;
         case 38:
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
@@ -201,9 +208,11 @@ function onKeyUpMap(event) {
             pressedArrowUp = false;
             break;
         case 39:
-            pressedTurn++;
-            clientManager.sendTurn(pressedTurn);
             pressedArrowRight = false;
+            var turn = 0;
+            if (pressedArrowLeft) turn++;
+            if (pressedArrowRight) turn--;
+            clientManager.sendTurn(turn);
             break;
         case 40:
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
