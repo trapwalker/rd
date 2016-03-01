@@ -3,17 +3,15 @@
 import logging
 log = logging.getLogger(__name__)
 
-#from utils import get_uid, serialize
+# from utils import get_uid, serialize
 from sublayers_server.model import messages
 from sublayers_server.model.events import Init, Delete
 from sublayers_server.model.parameters import Parameter
-from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.stat_log import StatLogger
 
 import sys
 from abc import ABCMeta
 from counterset import CounterSet
-from functools import update_wrapper
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -110,7 +108,7 @@ class PointObject(Object):
         return self._position
 
     def displace(self, time):  # раздеплоивание объекта с карты
-        if self.example is not None: # todo: в example добавить флаг необходимости сохранения
+        if self.example is not None:  # todo: в example добавить флаг необходимости сохранения
             self.save(time)
         self.delete(time)
 
@@ -257,4 +255,3 @@ class Observer(VisibleObject):
 
     def upd_observing_range(self, time):
         pass
-
