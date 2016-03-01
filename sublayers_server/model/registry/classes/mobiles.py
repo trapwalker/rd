@@ -23,11 +23,16 @@ class Mobile(Root):
     # Последняя посещенная локация
     last_location = RegistryLink(caption=u'Последняя посещенная локация')
 
-    # атрибуты от VisibleObjects
-    p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
-
     # атрибуты от ObserverObjects
     p_observing_range = Parameter(default=1000, caption=u"Радиус обзора")
+
+    # атрибуты от VisibleObjects
+    p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
+    p_vigilance = Parameter(default=0, caption=u"Коэффициент зоркости")
+    p_visibility_min = Parameter(default=1, caption=u"Минимальный коэффициент заметности")
+    p_visibility_max = Parameter(default=1, caption=u"Максимальный коэффициент заметности")
+    p_obs_range_rate_min = Parameter(default=1, caption=u"Коэффициент радиуса обзора при максимальной скорости")
+    p_obs_range_rate_max = Parameter(default=1, caption=u"Коэффициент радиуса обзора при скорости = 0")
 
     # атрибуты от Unit
     p_defence = Parameter(default=1, caption=u"Броня")

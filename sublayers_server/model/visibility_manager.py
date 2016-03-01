@@ -66,9 +66,11 @@ class VisibilityManager(object):
                 return t
         assert False
 
-    def _can_see(self, obj, subj, obj_pos, subj_pos):
-        return (subj.params.get('p_observing_range').value * obj.params.get('p_visibility').value) >= \
-               abs(obj_pos - subj_pos)
+    def _can_see(self, time, obj, subj, obj_pos, subj_pos):
+        # 1 - (1 - v) * (1 - z)
+        vis = obj.get_visibility(time=time) + subj.params.get('p_vigilance').value + \
+              obj.get_visibility(time=time) * subj.params.get('p_vigilance').value
+        return (subj.get_observing_range(time=time) * vis) >= abs(obj_pos - subj_pos)
 
     def add_object(self, obj, time):
         p = obj.position(time=time)
@@ -89,7 +91,7 @@ class VisibilityManager(object):
                 subj_pos = objs[subj]
                 for obj in objs:
                     if obj is not subj:
-                        can_see = self._can_see(obj=obj, subj=subj, obj_pos=objs[obj], subj_pos=subj_pos)
+                        can_see = self._can_see(time=time, obj=obj, subj=subj, obj_pos=objs[obj], subj_pos=subj_pos)
                         see = obj in subj.visible_objects
                         if can_see != see:
                             if can_see:

@@ -16,23 +16,28 @@ from itertools import chain
 class POI(Root):
     position = Position(caption=u"Координаты")
     p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
+    p_visibility_min = Parameter(default=1, caption=u"Минимальный коэффициент заметности")
+    p_visibility_max = Parameter(default=1, caption=u"Максимальный коэффициент заметности")
 
     def get_modify_value(self, param_name, example_agent=None):
         return getattr(self, param_name, None)
 
 
-class PoiStash(POI):
+class POIObserver(POI):
+    p_observing_range = Parameter(default=50, caption=u"Радиус подбора лута")
+    p_vigilance = Parameter(default=1, caption=u"Коэффициент зоркости")
+
+
+class PoiStash(POIObserver):
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')
     inventory_size = Attribute(caption=u"размер инвентаря")
-    p_observing_range = Parameter(default=50, caption=u"Радиус подбора лута")
 
 
-class RadioTower(POI):
-    p_observing_range = Parameter(caption=u"Радиус покрытия")
+class RadioTower(POIObserver):
+    pass
 
 
-class MapLocation(POI):
-    p_observing_range = Parameter(default=1000, caption=u"Радиус входа")
+class MapLocation(POIObserver):
     svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
     title = TextAttribute(caption=u"Название локации")
 

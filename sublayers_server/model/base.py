@@ -129,12 +129,26 @@ class VisibleObject(PointObject):
                   name='p_visibility',
                   owner=self)
 
+        Parameter(original=self.example.get_modify_value(param_name='p_visibility_min',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_visibility_min',
+                  owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_visibility_max',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_visibility_max',
+                  owner=self)
+
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
         Init(obj=self, time=time).post()
         # работа с тегами
         self.tags = set()
         self.set_default_tags()
+
+    def get_visibility(self, time):
+        value = (self.params.get('p_visibility_min').value + self.params.get('p_visibility_max').value) / 2.0
+        assert 0 <= value <= 1, 'value={}'.format(value)
+        return value
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
@@ -189,8 +203,15 @@ class Observer(VisibleObject):
                                                          example_agent=getattr(self, 'owner_example', None)),
                   name='p_observing_range',
                   owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_vigilance',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_vigilance',
+                  owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
+
+    def get_observing_range(self, time):
+        return self.params.get('p_observing_range').value
 
     def on_contact_in(self, time, obj):
         self.visible_objects.append(obj)
