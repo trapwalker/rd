@@ -158,7 +158,8 @@ class WeaponDischarge(Weapon):
                 agent=agent,
                 side=self.sector.side,
                 t_rch=self.t_rch,
-                time=time
+                time=time,
+                car_id=self.owner.uid
             ).post()
 
     def can_fire(self, time):

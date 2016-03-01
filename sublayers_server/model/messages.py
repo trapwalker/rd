@@ -259,19 +259,21 @@ class Bang(Message):
 
 
 class FireDischarge(Message):
-    def __init__(self, side, t_rch, **kw):
+    def __init__(self, side, t_rch, car_id, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
         """
         super(FireDischarge, self).__init__(**kw)
         self.side = side
         self.t_rch = t_rch
+        self.car_id = car_id
 
     def as_dict(self):
         d = super(FireDischarge, self).as_dict()
         d.update(
             side=self.side,
             t_rch=self.t_rch,
+            car_id=self.car_id
         )
         return d
 
