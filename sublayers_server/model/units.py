@@ -343,14 +343,38 @@ class Mobile(Unit):
         self.cur_motion_task = None
 
         v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
-        max_control_speed = self.example.get_modify_value(param_name='max_control_speed', 
+        self.max_control_speed = self.example.get_modify_value(param_name='max_control_speed',
                                                           example_agent=self.owner_example)
-        assert v_forward <= max_control_speed
-        Parameter(original=v_forward / max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
+        assert v_forward <= self.max_control_speed
+        Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
 
         Parameter(original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
                   owner=self,
                   name='p_fuel_rate')
+
+        Parameter(original=self.example.get_modify_value(param_name='p_obs_range_rate_max', example_agent=self.owner_example),
+                  owner=self,
+                  name='p_obs_range_rate_max')
+
+        Parameter(original=self.example.get_modify_value(param_name='p_obs_range_rate_min', example_agent=self.owner_example),
+                  owner=self,
+                  name='p_obs_range_rate_min')
+
+    def get_visibility(self, time):
+        cur_v = abs(self.v(time=time))
+        visibility_min = self.params.get('p_visibility_min').value
+        visibility_max = self.params.get('p_visibility_max').value
+        value = visibility_min + ((visibility_max - visibility_min) * (cur_v / self.max_control_speed))
+        assert 0 <= value <= 1, 'value={}'.format(value)
+        return value
+
+    def get_observing_range(self, time):
+        cur_v = abs(self.v(time=time))
+        p_obs_range_rate_min = self.params.get('p_obs_range_rate_min').value
+        p_obs_range_rate_max = self.params.get('p_obs_range_rate_max').value
+        value = p_obs_range_rate_min + ((p_obs_range_rate_max - p_obs_range_rate_min) * (1 - cur_v / self.max_control_speed))
+        assert 0 <= value <= 1, 'value={}'.format(value)
+        return self.params.get('p_observing_range').value * value
 
     def init_state_params(self):
         return dict(

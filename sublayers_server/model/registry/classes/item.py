@@ -82,7 +82,8 @@ class MapWeaponMineItem(MapWeaponItem):
 
 
 class MechanicItem(SlotItem):
-    p_visibility = FloatAttribute(default=0, caption=u"Коэффициент заметности")
+    p_visibility_min = FloatAttribute(default=0, caption=u"Коэффициент минимальной заметности")
+    p_visibility_max = FloatAttribute(default=0, caption=u"Коэффициент максимальной заметности")
     p_observing_range = FloatAttribute(default=0, caption=u"Радиус обзора")
     max_hp = FloatAttribute(default=0, caption=u"Максимальное значение HP")
     r_min = FloatAttribute(default=0, caption=u"Минимальный радиус разворота")

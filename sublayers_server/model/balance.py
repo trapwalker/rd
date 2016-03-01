@@ -16,7 +16,9 @@ class EffectsDict:
         # wood
         dict(name='EffectWoodCC', param_name='p_cc', m_name='m_cc_wood', r_name='r_cc_wood',
              upd_method='set_motion', sign=-1.0),
-        dict(name='EffectWoodVisibility', param_name='p_visibility', m_name='m_visibility_wood',
+        dict(name='EffectWoodVisibilityMin', param_name='p_visibility_min', m_name='m_visibility_wood',
+             r_name='r_visibility_wood', sign=-1.0),
+        dict(name='EffectWoodVisibilityMax', param_name='p_visibility_max', m_name='m_visibility_wood',
              r_name='r_visibility_wood', sign=-1.0),
         dict(name='EffectWoodObsRange', param_name='p_observing_range', m_name='m_observing_range_wood',
              r_name='r_observing_range_wood', upd_method='upd_observing_range', sign=-1.0),
@@ -47,7 +49,6 @@ class EffectsDict:
         # empty fuel effect
         dict(name='EffectEmptyFuel', param_name='p_cc', m_name='m_cc_fuel_empty', r_name='r_cc_fuel_empty',
              upd_method='set_motion', sign=-1.0),
-
     ]
 
 
@@ -55,46 +56,10 @@ class BALANCE(BalanceSettingsABS):
     """Gameplay balancing settings"""
 
     default_resists = [
-        dict(name='r_empty', original=0.0, max_value=1.0),
 
-        dict(name='r_cc_dirt', original=0.0, max_value=1.0),
-
-        dict(name='r_cc_wood', original=0.0, max_value=1.0),
-        dict(name='r_visibility_wood', original=0.0, max_value=1.0),
-        dict(name='r_observing_range_wood', original=0.0, max_value=1.0),
-
-        dict(name='r_cc_slope', original=0.0, max_value=1.0),
-
-        dict(name='r_cc_water', original=0.0, max_value=1.0),
-
-        dict(name='r_cc_road', original=0.0, max_value=1.0),
-        dict(name='r_visibility_road', original=0.0, max_value=1.0),
-        dict(name='r_fuel_rate_road', original=0.0, max_value=1.0),
-
-        dict(name='r_cc_mine', original=0.0, max_value=1.0),
-
-        dict(name='r_cc_fuel_empty', original=0.0, max_value=1.0),
     ]
 
     default_modifiers = [
-        dict(name='m_cc_dirt', original=0.2),
-
-        dict(name='m_cc_wood', original=0.3),
-        dict(name='m_visibility_wood', original=0.5),
-        dict(name='m_observing_range_wood', original=0.5),
-
-        dict(name='m_cc_slope', original=0.2),
-
-        dict(name='m_cc_water', original=0.45),
-
-        dict(name='m_r_cc_wood_on_road', original=1.0),
-        dict(name='m_r_cc_water_on_road', original=1.0),
-        dict(name='m_r_cc_dirt_on_road', original=1.0),
-        dict(name='m_r_cc_slope_on_road', original=1.0),
-
-        dict(name='m_cc_mine', original=0.5),
-
-        dict(name='m_cc_fuel_empty', original=0.9),
     ]
 
     interval_refresh = 1.0

@@ -3,17 +3,15 @@
 import logging
 log = logging.getLogger(__name__)
 
-#from utils import get_uid, serialize
+# from utils import get_uid, serialize
 from sublayers_server.model import messages
 from sublayers_server.model.events import Init, Delete
 from sublayers_server.model.parameters import Parameter
-from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.stat_log import StatLogger
 
 import sys
 from abc import ABCMeta
 from counterset import CounterSet
-from functools import update_wrapper
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -110,7 +108,7 @@ class PointObject(Object):
         return self._position
 
     def displace(self, time):  # раздеплоивание объекта с карты
-        if self.example is not None: # todo: в example добавить флаг необходимости сохранения
+        if self.example is not None:  # todo: в example добавить флаг необходимости сохранения
             self.save(time)
         self.delete(time)
 
@@ -124,9 +122,13 @@ class VisibleObject(PointObject):
         self.params = dict()
         self.set_default_params()
 
-        Parameter(original=self.example.get_modify_value(param_name='p_visibility',
+        Parameter(original=self.example.get_modify_value(param_name='p_visibility_min',
                                                          example_agent=getattr(self, 'owner_example', None)),
-                  name='p_visibility',
+                  name='p_visibility_min',
+                  owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_visibility_max',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_visibility_max',
                   owner=self)
 
         self.subscribed_agents = CounterSet()
@@ -135,6 +137,11 @@ class VisibleObject(PointObject):
         # работа с тегами
         self.tags = set()
         self.set_default_tags()
+
+    def get_visibility(self, time):
+        value = (self.params.get('p_visibility_min').value + self.params.get('p_visibility_max').value) / 2.0
+        assert 0 <= value <= 1, 'value={}'.format(value)
+        return value
 
     def on_init(self, event):
         super(VisibleObject, self).on_init(event)
@@ -170,10 +177,17 @@ class VisibleObject(PointObject):
         pass
 
     def set_default_params(self):
-        for d in BALANCE.default_resists:
-            Parameter(owner=self, **d)
-        for d in BALANCE.default_modifiers:
-            Parameter(owner=self, **d)
+        for name, value in self.example.iter_attrs(tags='parameter p_modifier'):
+            Parameter(original=self.example.get_modify_value(param_name=name.name,
+                                                             example_agent=getattr(self, 'owner_example', None)),
+                      name=name.name,
+                      owner=self)
+        for name, value in self.example.iter_attrs(tags='parameter p_resist'):
+            Parameter(original=self.example.get_modify_value(param_name=name.name,
+                                                             example_agent=getattr(self, 'owner_example', None)),
+                      name=name.name,
+                      max_value=1.0,
+                      owner=self)
 
     def add_to_chat(self, chat, time):
         pass
@@ -189,8 +203,15 @@ class Observer(VisibleObject):
                                                          example_agent=getattr(self, 'owner_example', None)),
                   name='p_observing_range',
                   owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_vigilance',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_vigilance',
+                  owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
+
+    def get_observing_range(self, time):
+        return self.params.get('p_observing_range').value
 
     def on_contact_in(self, time, obj):
         self.visible_objects.append(obj)
@@ -234,4 +255,3 @@ class Observer(VisibleObject):
 
     def upd_observing_range(self, time):
         pass
-

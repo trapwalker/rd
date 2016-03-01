@@ -526,7 +526,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.FireDischarge = function (event) {
         //console.log('ClientManager.prototype.FireDischarge ', event);
-
+        if (event.car_id != user.userCar.ID) return;
         // установка last_shoot
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
