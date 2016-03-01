@@ -141,6 +141,7 @@ class AgentConsoleNamespace(Namespace):
 
     def save(self):
         self.agent.server.save(time=self.agent.server.get_time())
+        self.write('Server saved.')
 
     def reset(self, *names):
         names = names or [self.agent.login]
