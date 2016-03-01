@@ -15,7 +15,6 @@ from itertools import chain
 
 class POI(Root):
     position = Position(caption=u"Координаты")
-    p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
     p_visibility_min = Parameter(default=1, caption=u"Минимальный коэффициент заметности")
     p_visibility_max = Parameter(default=1, caption=u"Максимальный коэффициент заметности")
 

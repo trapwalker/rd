@@ -27,7 +27,6 @@ class Mobile(Root):
     p_observing_range = Parameter(default=1000, caption=u"Радиус обзора")
 
     # атрибуты от VisibleObjects
-    p_visibility = Parameter(default=1, caption=u"Коэффициент заметности")
     p_vigilance = Parameter(default=0, caption=u"Коэффициент зоркости")
     p_visibility_min = Parameter(default=1, caption=u"Минимальный коэффициент заметности")
     p_visibility_max = Parameter(default=1, caption=u"Максимальный коэффициент заметности")

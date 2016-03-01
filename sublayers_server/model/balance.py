@@ -16,7 +16,9 @@ class EffectsDict:
         # wood
         dict(name='EffectWoodCC', param_name='p_cc', m_name='m_cc_wood', r_name='r_cc_wood',
              upd_method='set_motion', sign=-1.0),
-        dict(name='EffectWoodVisibility', param_name='p_visibility', m_name='m_visibility_wood',
+        dict(name='EffectWoodVisibilityMin', param_name='p_visibility_min', m_name='m_visibility_wood',
+             r_name='r_visibility_wood', sign=-1.0),
+        dict(name='EffectWoodVisibilityMax', param_name='p_visibility_max', m_name='m_visibility_wood',
              r_name='r_visibility_wood', sign=-1.0),
         dict(name='EffectWoodObsRange', param_name='p_observing_range', m_name='m_observing_range_wood',
              r_name='r_observing_range_wood', upd_method='upd_observing_range', sign=-1.0),

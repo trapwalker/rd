@@ -124,11 +124,6 @@ class VisibleObject(PointObject):
         self.params = dict()
         self.set_default_params()
 
-        Parameter(original=self.example.get_modify_value(param_name='p_visibility',
-                                                         example_agent=getattr(self, 'owner_example', None)),
-                  name='p_visibility',
-                  owner=self)
-
         Parameter(original=self.example.get_modify_value(param_name='p_visibility_min',
                                                          example_agent=getattr(self, 'owner_example', None)),
                   name='p_visibility_min',
