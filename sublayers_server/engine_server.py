@@ -83,7 +83,8 @@ class Application(tornado.web.Application):
         else:
             self.auth_db = None
 
-        log.info('\n' + '=-' * 70 + '\nGAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
+        log.info('\n' + '=-' * 70)
+        log.info('GAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
         self.srv.start()
         self.clients = []
