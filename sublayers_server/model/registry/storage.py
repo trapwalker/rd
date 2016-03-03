@@ -8,7 +8,7 @@ from sublayers_server.model.registry.uri import URI
 
 from collections import deque
 from uuid import uuid4 as uid_func
-import shelve
+import pickle
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
@@ -153,21 +153,11 @@ class Dispatcher(AbstractStorage):
 
 
 class Collection(AbstractStorage):
-    def __init__(self, path, filename=None, **kw):
+    def __init__(self, db, **kw):
         super(Collection, self).__init__(dispatcher=Node.DISPATCHER, **kw)
-        self.path = path
-        self.filename = filename or self.name
 
-        if self.filename is None:
-            raise WrongStorageError('Storage name or filename is not specified')
-
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)  # todo: exceptions
-
-        if not os.path.isdir(self.path):
-            raise WrongStorageError('Wrong path to storage: {}'.format(self.path))
-
-        self._raw_storage = shelve.open(os.path.join(self.path, self.filename))  # todo: make persistent
+        assert self.name  # todo: рассмотреть возможность сделать name обязательным параметром конструктора
+        self.dataset = db[self.name]
 
     def make_key(self, path):
         key = path if isinstance(path, basestring) else ('/' + '/'.join(path))
@@ -175,45 +165,37 @@ class Collection(AbstractStorage):
             key = key.encode('utf-8')
         return key
 
-    def close(self):
-        if hasattr(self._raw_storage, 'close'):
-            self._raw_storage.close()
-        super(Collection, self).close()
-
     def get_local(self, path):
         key = self.make_key(path)
-        try:
-            node = self._deserialize(self._raw_storage[key])
-            node.storage = self
-            return node
-        except KeyError:
+        rec = self.dataset.find_one({'name': key})
+        if rec is None:
             raise ObjectNotFound('Object not found by key="{}"'.format(key))
+
+        node = self._deserialize(rec['data'])
+        node.storage = self
+        return node
 
     def _deserialize(self, data):
         # todo: Перейти на MongoDB
-        return data
+        return pickle.loads(data)
 
     def _serialize(self, node):
-        return node
+        return pickle.dumps(node)
 
     def put(self, node):
         key = self.make_key(node.uri.path)
-        self._raw_storage[key] = self._serialize(node)
+        doc = dict(name=key, data=self._serialize(node))
+        self.dataset.update({'name': key}, doc, upsert=True)  # todo: db index
 
     def reset(self, node):
         key = self.make_key(node.uri.path)
-        del self._raw_storage[key]
+        self.dataset.remove({'name': key})
 
     def get_path_tuple(self, node):
         return [node.name]
 
     def save_node(self, node):
         self.put(node)
-        self.sync()
-
-    def sync(self):
-        if hasattr(self._raw_storage, 'sync'):
-            self._raw_storage.sync()
 
 
 # noinspection PyProtectedMember

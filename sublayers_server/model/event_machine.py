@@ -47,7 +47,6 @@ class Server(object):
         # todo: blocking of init of servers with same uid
 
         self.reg = Registry(name='registry', path=os.path.join(options.world_path, 'registry'))
-        self.reg_agents = Collection(name='agents', path=os.path.join(options.world_path, 'state'))
 
         self.effects = dict()
         get_effects(server=self)
@@ -165,6 +164,8 @@ class LocalServer(Server):
         self.thread = None
         self.is_terminated = False
         self.app = app
+        self.reg_agents = Collection(name='agents', db=app.db)
+
 
     def __getstate__(self):
         d = super(LocalServer, self).__getstate__()

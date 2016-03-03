@@ -50,10 +50,7 @@ from sublayers_server.handlers.statistics import (ServerStatisticsHandler, Serve
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
-try:
-    from pymongo import Connection
-except ImportError:
-    from pymongo import MongoClient as Connection
+from pymongo import MongoClient
 
 
 class DBError(Exception):
@@ -68,21 +65,7 @@ class Application(tornado.web.Application):
             self.revision = None
             log.warning("Can't get HG revision info: %s", e)
 
-        self.db_connection = None
-        self.auth_db = None
-
-        try:
-            self.db_connection = Connection()
-            # todo: Если предполагается возможность работы без монги, то нужно ее реализовывать, иначе это просто лишнее
-        except Exception as e:
-            log.error('MongoDB is not found: %r', e)
-            raise DBError('Database connection error: {!r}'.format(e))
-
-        # todo: Сделать коннект к монге синхронным. Проверить на успех коннекта.
-        if self.db_connection:
-            self.auth_db = self.db_connection.auth_db
-        else:
-            self.auth_db = None
+        self.db = MongoClient(options.db)[options.db_name]
 
         log.info('\n' + '=-' * 70)
         log.info('GAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
