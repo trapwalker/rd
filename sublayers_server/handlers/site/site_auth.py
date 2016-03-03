@@ -13,17 +13,10 @@ import json
 import hashlib
 import urllib
 from tornado.httpclient import HTTPClient
-from random import randint
-from bson.objectid import ObjectId
 
 
 class SiteLoginHandler(BaseHandler):
     def get(self):
-        if self.application.auth_db is None:
-            # todo: сделать через механизм одноразовых пользователей
-            self.set_secure_cookie("user", str(hashlib.md5(str(randint(0, 1000000))).hexdigest()))
-            self.redirect("/")
-            return
         msg = self.get_argument("msg", "")
         self.render("site/login.html", msg=msg)
 
@@ -45,17 +38,17 @@ class StandardLoginHandler(BaseHandler):
             self.redirect("/login?msg=Ошибка%20авторизации")
 
     def _db_request(self, email, name=None, password=None):
-        auth_db = self.application.auth_db
+        db = self.application.db
         db_res = None
         if name is not None:
-            db_res = auth_db.profiles.find({'name': name})
+            db_res = db.profiles.find({'name': name})
             cnt = db_res.count()
             if cnt > 0:
                 return db_res[0]
         if password is None:
-            db_res = auth_db.profiles.find({'auth.standard.email': email})
+            db_res = db.profiles.find({'auth.standard.email': email})
         else:
-            db_res = auth_db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}})
+            db_res = db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}})
         user_ids = []
         for db_rec in db_res:
             user_ids.append(db_rec)
@@ -74,7 +67,7 @@ class StandardLoginHandler(BaseHandler):
         username = username[0:20]  # todo: Странная обрезка длины. Выяснить, устранить.
         user_id = self._db_request(email=email, name=username)
         if user_id is None:
-            user_db_uid = str(self.application.auth_db.profiles.insert({
+            user_db_uid = str(self.application.db.profiles.insert({
                 'name': username,
                 'auth': {
                     'standard': {
@@ -134,8 +127,8 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
         action = self.get_cookie("action")
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)[u'id']
-            auth_db = self.application.auth_db
-            db_res = auth_db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})
+            db = self.application.db
+            db_res = db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -143,7 +136,7 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
+                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
                 return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
@@ -207,8 +200,8 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
         action = self.get_cookie("action")
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)['uid']
-            auth_db = self.application.auth_db
-            db_res = auth_db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})
+            db = self.application.db
+            db_res = db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -216,7 +209,7 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
+                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
                 return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
@@ -270,13 +263,12 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
                 response_type='code',
             )
 
-
     def _on_get_user_info(self, response):
         action = self.get_cookie("action")
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)['response'][0]['uid']
-            auth_db = self.application.auth_db
-            db_res = auth_db.profiles.find({'auth': {'vk': {'id': body_id}}}, {'id': 1})
+            db = self.application.db
+            db_res = db.profiles.find({'auth': {'vk': {'id': body_id}}}, {'id': 1})
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -284,7 +276,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
             if len(user_ids) == 1:
                 user_id = user_ids[0]
             if (action == '1') and (user_id is None):
-                user_db_uid = str(auth_db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
+                user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
                 return user_db_uid
             if (action == '2') and (user_id is not None):
                 return str(user_id[u'_id'])
