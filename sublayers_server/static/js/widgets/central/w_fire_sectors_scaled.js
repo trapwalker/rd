@@ -583,6 +583,7 @@ var WFireSectorsScaled = (function (_super) {
     };
 
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
+        console.log('WFireSectorsScaled.prototype.setZoom', new_zoom);
         var zoomAnimateTime = ConstDurationAnimation;
         var size = this.size_of_icon;
         //var diff_zoom = new_zoom - last_zoom;
@@ -592,8 +593,17 @@ var WFireSectorsScaled = (function (_super) {
         var scale_center = size - size * k_radius;
 
         // анимация изменения размера секторов
-        var matrix_str = k_radius + ", 0, 0, " + k_radius + ", "+ (scale_center) + ", "+ (scale_center);
-        g.animate(zoomAnimateTime).transform({matrix: matrix_str});
+        //var matrix_str = k_radius + ", 0, 0, " + k_radius + ", "+ (scale_center) + ", "+ (scale_center);
+        var matrix = {
+            a: k_radius,
+            b: 0,
+            c: 0,
+            d: k_radius,
+            e: scale_center,
+            f: scale_center
+        };
+
+        g.animate(zoomAnimateTime).transform(matrix);
 
         // анимация изменения толщины линий
         for(var i = 0; i < this.stroke_zoom_elements.length; i++) {
