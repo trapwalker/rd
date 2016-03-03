@@ -47,6 +47,7 @@ from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandle
     ContextPanelLocationsHandler
 from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatisticsRefreshHandler,
                                                   ServerStatForSite)
+from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
 try:
@@ -124,6 +125,8 @@ class Application(tornado.web.Application):
             (r"/api/context_panel/locations", ContextPanelLocationsHandler),
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
             (r"/api/context_panel/barter_info", ContextPanelBarterInfoHandler),
+
+            (r"/interlacing", TestInterlacingHandler)
         ]
         app_settings = dict(
             cookie_secret=options.cookie_secret,

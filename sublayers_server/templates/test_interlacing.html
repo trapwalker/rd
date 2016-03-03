@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+
+    <style>
+        body {
+            background: #111;
+            color: white;
+            padding-top: 20px;
+            padding-left: 20px;
+        }
+
+        .path {
+            position: relative;
+            float: left;
+            width: 500px;
+            height: 500px;
+            margin-right: 20px;
+            border: 2px solid #00F150;
+            text-align: center;
+        }
+
+        .path label {
+            position: relative;
+            color: #2afd0a;
+            font-size: 18pt;
+        }
+
+        .best_car {
+            position: relative;
+            margin: auto;
+            background: transparent url('/static/img/best_car.png') 100% 100% no-repeat;
+            width: 492px;
+            height: 328px;
+        }
+        
+        .path .img_container {
+            position: relative;
+            width: 492px;
+            height: 328px;
+        }
+        
+        .interlacing .best_car {
+            filter: brightness({{ brightness }}%);
+            -webkit-filter: brightness({{ brightness }}%);
+        }
+
+        .interlacing .best_car::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.0));
+{#                        background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 50%,#}
+{#                rgba(0, 0, 0, 0.0) 51%, rgba(0, 0, 0, 0.0) 100%);#}
+            z-index: 2;
+            background-size: 100% 2px;
+            pointer-events: none;
+        }
+
+    </style>
+
+
+</head>
+<body>
+
+
+<div class="main">
+    <div class="path original">
+        <label>Original</label>
+        <div class="best_car"></div>
+    </div>
+    <div class="path interlacing">
+        <label>Web Interlacing</label>
+        <div class="best_car"></div>
+    </div>
+
+</div>
+
+</body>
+</html>

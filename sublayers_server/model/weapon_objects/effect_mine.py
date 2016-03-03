@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.units import UnitWeapon
-from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.events  import Event
 import sublayers_server.model.tags as tags
 
