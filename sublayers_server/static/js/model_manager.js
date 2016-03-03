@@ -116,7 +116,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype._sendMessage = function (msg) {
-        //console.log('ClientManager.prototype._sendMessage');
+        //console.log('ClientManager.prototype._sendMessage', msg);
+        // добавление координат центра карты в сообщение
+        var center_map_coords;
+        center_map_coords = map.project(map.getCenter(), map.getMaxZoom());
+        msg.map_coords_center = center_map_coords;
+        msg.map_coords_zoom = map.getZoom();
+
         message_stream.sendMessage({
             type: 'ws_message_send',
             body: msg
