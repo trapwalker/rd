@@ -11,6 +11,7 @@ var WCarMarker = (function (_super) {
         this.marker = null;
         this._createMarker();
         this._lastRotateAngle = 0.0;
+        this.old_position = {x: 0, y: 0};
         this.change();
     }
 
@@ -59,6 +60,7 @@ var WCarMarker = (function (_super) {
 
     WCarMarker.prototype.change = function() {
         //console.log('WCarMarker.prototype.change');
+        //return;
         if (mapManager.inZoomChange && this.car != user.userCar) return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
@@ -68,11 +70,13 @@ var WCarMarker = (function (_super) {
             this.marker.options.angle = tempAngle;
             this._lastRotateAngle = tempAngle;
         }
-        if (!mapManager.inZoomChange)
-            this.marker.setLatLng(tempLatLng);
-        else
-            this.marker.update();
-
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            if (!mapManager.inZoomChange)
+                this.marker.setLatLng(tempLatLng);
+            else
+                this.marker.update();
+        }
     };
 
     WCarMarker.prototype.updateIcon = function() {

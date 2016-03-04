@@ -268,6 +268,7 @@ var WWindRadial = (function (_super) {
     };
 
     WWindRadial.prototype.change = function () {
+        //console.log('WWindRadial.prototype.change');
         //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
         //this.draw_fill_area(prc);

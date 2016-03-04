@@ -268,6 +268,8 @@ var WFuelRadial = (function (_super) {
     };
 
     WFuelRadial.prototype.change = function () {
+        //console.log('WFuelRadial.prototype.change');
+        //return;
         var prc = this.car.getCurrentFuel(clock.getCurrentTime()) / this.car._fuel_state.max_fuel;
         if (prc < 0.0) prc = 0.0;
         if (Math.abs(this.value_prc - prc) > 0.005) {

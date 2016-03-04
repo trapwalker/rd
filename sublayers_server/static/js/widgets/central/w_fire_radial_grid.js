@@ -16,6 +16,7 @@ var WFireRadialGrid = (function (_super) {
         this.init_marker();
 
         this._lastRotateAngle = 0.0;
+        this.old_position = {x: 0, y: 0};
 
         this.change(clock.getCurrentTime());
     }
@@ -609,16 +610,20 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
+        //return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
         // Установка новых координат маркера или просто обновление угла;
-        if (!mapManager.inZoomChange)
-            this.marker.setLatLng(tempLatLng);
-        else
-            this.marker.update();
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            if (!mapManager.inZoomChange)
+                this.marker.setLatLng(tempLatLng);
+            else
+                this.marker.update();
+        }
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон

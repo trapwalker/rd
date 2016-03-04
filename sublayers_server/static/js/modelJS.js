@@ -196,6 +196,7 @@ var UserCar = (function (_super) {
         _super.prototype.change.call(this);
         // Если перезарядки нет и мы не движемся
         // todo: переделать это условие. Возможно стоит обойтись setTimeout, чтобы удаляться из таймера
+        //console.log('UserCar.prototype.change');
         if (!this.fireSidesMng.inRecharge(clock.getCurrentTime())
             && !this._hp_state.is_changed()
             && !this._motion_state.is_moving()) {

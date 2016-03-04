@@ -13,6 +13,7 @@ var EAutoFireOnShooter = (function () {
         this.currentIcon = null;
         this.duration = 0.0;
         this.time_start = null;
+        this.old_position = {x: 0, y: 0};
 
     }
 
@@ -99,17 +100,21 @@ var EAutoFireOnShooter = (function () {
 
 
     EAutoFireOnShooter.prototype.change = function(t){
-        // todo: продолжать стрелять чтобы не случиолсь !
+        // todo: продолжать стрелять чтобы не случилось
         //console.log('EAutoFireOnShooter.prototype.change');
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
-        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
-        // Установка угла для поворота иконки маркера
-        this.marker.options.angle = this.car.getCurrentDirection(time) + this.direction;
+
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            // Установка угла для поворота иконки маркера
+            this.marker.options.angle = this.car.getCurrentDirection(time) + this.direction;
+            // Установка новых координат маркера);
+            this.marker.setLatLng(tempLatLng);
+        }
         // установка правильной иконки
-        this._setIconByTime(time);
-        // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+            this._setIconByTime(time);
     };
 
     EAutoFireOnShooter.prototype.start = function () {

@@ -50,7 +50,7 @@ var Clock = (function () {
 
 // todo: подумать над синхронизацией
 
-var ConstTimerInterval = 20;   // Интервал таймера минимальный (мс)
+var ConstTimerInterval = 30;   // Интервал таймера минимальный (мс)
 var ConstTimerIntervalMax = 75;   // Интервал таймера максимальный (мс)
 var ConstTimerIntervalModificator = 3;   // Разовое изменение интервала таймера (мс)
 var ConstIntervalTimeEps = 5; // Допустимая погрешность средней величины реального интервала таймера (мс)
