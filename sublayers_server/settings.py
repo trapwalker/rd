@@ -32,6 +32,8 @@ def _rel(*folders):
 
 # Options definintion block:
 
+define("service_name", default="sl", help="Game server service name", type=str)
+
 define("cookie_secret", help="cookie secret key", type=str)
 define("static_path", default=_rel("static"), help="path to static files", type=str)
 define("template_path", default=_rel("templates"), help="path to static files", type=str)
