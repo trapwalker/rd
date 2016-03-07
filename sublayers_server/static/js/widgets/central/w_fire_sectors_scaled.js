@@ -19,6 +19,7 @@ var WFireSectorsScaled = (function (_super) {
         this.init_marker();
 
         this._lastRotateAngle = 0.0;
+        this.old_position = {x: 0, y: 0};
 
         this.change(clock.getCurrentTime());
     }
@@ -512,7 +513,7 @@ var WFireSectorsScaled = (function (_super) {
         var side_str = options.side_str;
         if (! this.rechAreas[side_str]) return; // если такой стороны нет в данном виджете
         var side = this.rechAreas[side_str];
-        if (Math.abs(prc - side.rech_prc) < 0.005 && prc < 1.) return; // если не было изменений более чем на пол процента
+        if (Math.abs(prc - side.rech_prc) < 0.01 && prc < 1.) return; // если не было изменений более чем на пол процента
         side.rech_prc = prc;
         if(prc < 1.) { // если ещё перезарядка
             if(! side.rech_flag){ // если до этого не перезаряжались, то установить текст перезарядки
@@ -561,7 +562,7 @@ var WFireSectorsScaled = (function (_super) {
 
     WFireSectorsScaled.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
-
+        //return;
 
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
@@ -569,11 +570,13 @@ var WFireSectorsScaled = (function (_super) {
         // Установка угла для поворота иконки маркера
         var angle = this.car.getCurrentDirection(time);
         // Установка новых координат маркера или просто обновление угла;
-        if (!mapManager.inZoomChange)
-            this.marker.setLatLng(tempLatLng);
-        else
-            this.marker.update();
-
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            if (!mapManager.inZoomChange)
+                this.marker.setLatLng(tempLatLng);
+            else
+                this.marker.update();
+        }
         this.rotate(radToGrad(angle));
 
         // запрос и установка перезарядки для каждой из сторон

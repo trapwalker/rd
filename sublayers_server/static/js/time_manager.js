@@ -1,3 +1,28 @@
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+
 var Clock = (function () {
     function Clock() {
         this.dt = 0;
@@ -50,7 +75,7 @@ var Clock = (function () {
 
 // todo: подумать над синхронизацией
 
-var ConstTimerInterval = 20;   // Интервал таймера минимальный (мс)
+var ConstTimerInterval = 30;   // Интервал таймера минимальный (мс)
 var ConstTimerIntervalMax = 75;   // Интервал таймера максимальный (мс)
 var ConstTimerIntervalModificator = 3;   // Разовое изменение интервала таймера (мс)
 var ConstIntervalTimeEps = 5; // Допустимая погрешность средней величины реального интервала таймера (мс)
@@ -58,6 +83,9 @@ var ConstSetFPSTimeout = 5000; // Время (мс), через которое �
 
 var TimeManager = (function () {
     function TimeManager() {
+        this._fps_interval = 0;
+        this._redraw_time  = 0;
+
         this._FPSEvent = null;
         this._FPSCount = 0;
         this._FPSInterval = ConstTimerInterval;
@@ -83,26 +111,32 @@ var TimeManager = (function () {
 
     // Запуск таймера
     TimeManager.prototype.timerStart = function () {
-        console.log('TimeManager.prototype.timerStart');
+        //console.log('TimeManager.prototype.timerStart');
         var self = this;
-        this._timer = setInterval(function () {
-            self._interval_perform();
-        }, this._interval)
+
+        setTimeout(function() { timeManager._timer = timeManager._interval_perform(); }, 1000);
+
+        //this._timer = setInterval(function () {
+        //    self._interval_perform();
+        //}, this._interval)
     };
 
     // Остановка таймера
     TimeManager.prototype.timerStop = function () {
-        console.log('TimeManager.prototype.timerStop');
-        clearInterval(this._timer);
+        //console.log('TimeManager.prototype.timerStop');
+
+        window.cancelAnimationFrame(this._timer);
+         //clearInterval(this._timer);
     };
 
     // Функция таймера
     TimeManager.prototype._interval_perform = function () {
-        //console.log('TimeManager.prototype._interval_perform');
+        //console.log('TimeManager.prototype._interval_perform', this);
+
         var time = clock.getCurrentTime();
         var time_start = clock.getClientTime();
 
-        var list = this._timer_list;
+        var list = timeManager._timer_list;
         // основной проход
         for (var i = 0; i < list.length; i++)
             list[i].obj[list[i].method](time);
@@ -110,16 +144,25 @@ var TimeManager = (function () {
         if(visualManager)
             visualManager.perform(time);
 
-        var d_time = clock.getClientTime() - time_start;
-        if (d_time > this.render_time)
-            this.render_time = d_time;
+        timeManager._fps_interval = timeManager._fps_interval + 1;
+        //console.log(timeManager._fps_interval);
+        if (timeManager._fps_interval == 1000) {
+            console.log('FPS = ', 1000 / (time_start - timeManager._redraw_time));
+            timeManager._fps_interval = 0;
+        }
+        timeManager._redraw_time = time_start;
 
-        this._FPSInterval += d_time;
-        this._FPSCount++;
+        return requestAnimationFrame(timeManager._interval_perform);
 
-        if (d_time > this._interval)
-            console.log('Таймер не успел отработать! Время работы: ', d_time,  '      Желаемое время: ', this._interval);
-
+        //var d_time = clock.getClientTime() - time_start;
+        //if (d_time > this.render_time)
+        //    this.render_time = d_time;
+        //
+        //this._FPSInterval += d_time;
+        //this._FPSCount++;
+        //
+        //if (d_time > this._interval)
+        //    console.log('Таймер не успел отработать! Время работы: ', d_time,  '      Желаемое время: ', this._interval);
     };
 
     // Установка интервала таймера
@@ -158,7 +201,6 @@ var TimeManager = (function () {
             if (list[i].obj == obj)
                 list.splice(i, 1);
     };
-
 
     // Запустить авто-контроль FPS
     TimeManager.prototype.autoFPSStart = function () {

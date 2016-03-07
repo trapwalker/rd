@@ -264,6 +264,8 @@ var WHPRadial = (function (_super) {
     };
 
     WHPRadial.prototype.change = function () {
+        //console.log('WHPRadial.prototype.change');
+        //return;
         var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
         if (Math.abs(this.value_prc - prc) > 0.005) {

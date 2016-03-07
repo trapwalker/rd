@@ -83,7 +83,7 @@ var DistanceObserver = (function(_super){
     };
 
     DistanceObserver.prototype.change = function (time) {
-//        console.log('DistanceObserver.prototype.change   ', time);
+        //console.log('DistanceObserver.prototype.change');
         var t_point = this.target_obj.getCurrentCoord(time);
         for (var i = 0; i < this._model_objects.length; i++) {
             var mobj = this._model_objects[i];

@@ -125,6 +125,7 @@ var EPointsTracerPNG = (function(){
         this.direction = angleVectorRadCCW(track_vect);
         // вычислим время движения между точками
         this.duration = track_vect.abs() / speed;
+        this.old_position = {x: 0, y: 0};
 
         // создание маркера
         this.div_id = 'EPointsTracerPNG' + (-generator_ID.getID());
@@ -164,9 +165,14 @@ var EPointsTracerPNG = (function(){
 
     EPointsTracerPNG.prototype.change = function (time) {
         if (mapManager.inZoomChange) return;
-        var pos = this.get_position(time);
-        var tempLatLng = map.unproject([pos.x, pos.y], map.getMaxZoom());
-        this.marker.setLatLng(tempLatLng);
+        var tempPoint = this.get_position(time);
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            this.marker.setLatLng(tempLatLng);
+        }
+
+
     };
 
     EPointsTracerPNG.prototype.start = function () {
