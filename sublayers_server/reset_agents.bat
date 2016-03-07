@@ -1,0 +1,2 @@
+﻿
+admin.py reset q
