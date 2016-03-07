@@ -205,6 +205,7 @@ var WFireController = (function (_super) {
         for (var i = 0; i < sides.length; i++) {
             // Создание объекта в котором будет вся информация о секторе
             var side = {};
+            side.current_prc = 0;
 
             // Создание и добавление группы для сектора
             side.SVGGroup = document.createElementNS(this.NS, "g");
@@ -329,7 +330,7 @@ var WFireController = (function (_super) {
         var newRelRadius = this._radarCircleRelRadius + (difTime / ConstFireControllerRadarCircleSpeed) * 1.0
         var newAbsRadius = this.radiusIn + this._difOutIn * newRelRadius;
         // Обновить круг если радиус изменился больше чем на 1px
-        if ((newAbsRadius - this._radarCircleAbsRadius) > 1) {
+        if (Math.abs(newAbsRadius - this._radarCircleAbsRadius) > 1) {
             if (newRelRadius > 1) {
                 newRelRadius = 0;
                 newAbsRadius = this.radiusIn;
@@ -343,6 +344,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.change = function () {
         //console.log('WFireController.prototype.change');
+        //return;
         var time = clock.getCurrentTime();
 
         // Вращаем виджет
@@ -353,11 +355,14 @@ var WFireController = (function (_super) {
         for (var i = 0; i < this.sides.length; i++) {
             var side = this.sides[i];
             var sideState = side.side.getRechargeState(time);
-            if (sideState.prc == 1)
-                side.SVGPath.setAttribute('d', this.normalPath);
-            else {
-                var pathstr = this._getSVGPathSide(sideState.prc);
-                side.SVGPath.setAttribute('d', pathstr);
+            if (Math.abs(side.current_prc - sideState.prc) > 0.02) {
+                if (sideState.prc == 1)
+                    side.SVGPath.setAttribute('d', this.normalPath);
+                else {
+                    var pathstr = this._getSVGPathSide(sideState.prc);
+                    side.SVGPath.setAttribute('d', pathstr);
+                }
+                side.current_prc = sideState.prc;
             }
         }
 

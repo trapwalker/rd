@@ -236,6 +236,8 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype.change = function () {
+        //console.log('WAltmetrRadial.prototype.change');
+        //return;
         var prc = this.car.altitude / 255.;
         if (prc < 0.0) prc = 0.0;
         if (prc > 1.0) prc = 1.0;

@@ -13,6 +13,7 @@ var WViewRadius = (function (_super) {
         this.car = car;
         this.r = car.radius_visible;
         this.lastZoom = 1;
+        this.old_position = {x: 0, y: 0};
 
         this.marker = L.circleMarker([0, 0], {
             fill: false,
@@ -31,12 +32,18 @@ var WViewRadius = (function (_super) {
 
     WViewRadius.prototype.change = function(t){
         //console.log('WViewRadius.prototype.change');
+        //return;
         // todo: радиус может меняться. всегда запрашивать его у машинки, позже !!! если появится state для радиуса
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
-        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+
         // Установка новых координат маркера);
-        this.marker.setLatLng(tempLatLng);
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            this.marker.setLatLng(tempLatLng);
+        }
+
         // если был изменён зум, то изменить радиус
         if(map.getZoom() != this.lastZoom) {
             this.lastZoom = map.getZoom();

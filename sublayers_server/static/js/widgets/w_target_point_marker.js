@@ -23,6 +23,7 @@ var WTargetPointMarker = (function (_super) {
             lineCap: 'round',
             dashArray: '8, 5' // для пунктира
         });
+        this.old_position = {x: 0, y: 0};
     }
 
     WTargetPointMarker.prototype.change = function(t){
@@ -31,8 +32,12 @@ var WTargetPointMarker = (function (_super) {
         if (mapManager.inZoomChange) return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
-        var carLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
-        this.line.setLatLngs([this.ltln_tp, carLatLng]);
+
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+            this.old_position = tempPoint;
+            var carLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            this.line.setLatLngs([this.ltln_tp, carLatLng]);
+        }
     };
 
     WTargetPointMarker.prototype.equals_target_points = function(target){
