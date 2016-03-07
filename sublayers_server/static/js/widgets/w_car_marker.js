@@ -62,6 +62,7 @@ var WCarMarker = (function (_super) {
         //console.log('WCarMarker.prototype.change');
         //return;
         if (mapManager.inZoomChange && this.car != user.userCar) return;
+        var need_rotate = false;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
@@ -69,8 +70,10 @@ var WCarMarker = (function (_super) {
         if (Math.abs(this._lastRotateAngle - tempAngle) > 0.01) {
             this.marker.options.angle = tempAngle;
             this._lastRotateAngle = tempAngle;
+            need_rotate = true;
         }
-        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
+
+        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5) || need_rotate) {
             this.old_position = tempPoint;
             if (!mapManager.inZoomChange)
                 this.marker.setLatLng(tempLatLng);
