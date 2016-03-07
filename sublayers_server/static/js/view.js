@@ -80,11 +80,11 @@ $(document).ready(function () {
 
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
-    document.getElementById('divMainMenuBtnNucoil').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
-            returnFocusToMap();
-        };
+    //document.getElementById('divMainMenuBtnNucoil').onclick =
+    //    function () {
+    //        windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
+    //        returnFocusToMap();
+    //    };
 
 //    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
     document.getElementById('divMainMenuBtnMain').onclick = function () {
