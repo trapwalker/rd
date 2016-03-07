@@ -459,6 +459,19 @@ var ArmorerManager = (function () {
         if (src == dest) return;
 
         var item = this.items[src];
+
+        // Проверка класса тяжести
+        if (dest.toString().indexOf('slot') >= 0) {
+            var split_res = this.armorer_slots_flags[dest].split('_');
+            if (split_res.length <= 1) return;
+            var slot_weight = split_res[1];
+            var item_weight = item.example.weight_class;
+            if (parseInt(slot_weight) < parseInt(item_weight)) {
+                console.log('Вы не можете поставить данное оружие в данный слот');
+                return;
+            }
+        }
+
         this.items[src] = this.items[dest];
         this.items[dest] = item;
 

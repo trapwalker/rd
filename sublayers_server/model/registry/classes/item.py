@@ -103,3 +103,7 @@ class TunerItem(SlotItem):
     images = DictAttribute(
         default=dict, tags='client',
         caption=u'Изображения у тюнера')
+
+
+class ArmorerItem(SlotItem):
+    weight_class = IntAttribute(default=0, caption=u"Класс тяжести итема у оружейника", tags='client')

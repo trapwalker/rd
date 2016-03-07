@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.classes.item import SlotItem
+from sublayers_server.model.registry.classes.item import ArmorerItem
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr import Attribute, FloatAttribute, TextAttribute
 
 
-class Weapon(SlotItem):
+class Weapon(ArmorerItem):
     ammo = RegistryLink(caption=u'Боеприпас', need_to_instantiate=False)  # todo: store set of ammo types
     direction = TextAttribute(caption=u'Направление (FBRL)', tags='client')
     ammo_per_shot = FloatAttribute(default=0, caption=u'Расход патронов за выстрел (< 0)')
