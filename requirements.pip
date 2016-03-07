@@ -6,3 +6,4 @@ jsonpickle
 #PIL
 cachetools
 PyYAML
+cmd2

@@ -75,7 +75,7 @@ class Server(object):
         for zone in zones:
             try:
                 if not zone.is_active:
-                    log.info('Try to activate zone %s', zone)
+                    log.debug('Zone %s activation start', zone)
                     zone.activate(server=self, time=time)
                     # todo: Генерировать исключения при неудачной активации зон
                 if zone.is_active:
@@ -83,7 +83,7 @@ class Server(object):
                 else:
                     log.warning('Zone %s is not activated')
             except Exception as e:
-                log.error('Loading zone %r error: %s', zone, e)
+                log.exception('Loading zone %s error: %s', zone, e)
 
     def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
