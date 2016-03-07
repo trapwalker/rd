@@ -12,6 +12,7 @@ var WCarMarker = (function (_super) {
         this._createMarker();
         this._lastRotateAngle = 0.0;
         this.old_position = {x: 0, y: 0};
+        this.circle = null;
         this.change();
     }
 
@@ -80,6 +81,26 @@ var WCarMarker = (function (_super) {
             else
                 this.marker.update();
         }
+
+        //if (this.car == user.userCar) {
+        //    var polygon_list = [];
+        //    var lat_lng_list = [];
+        //    lat_lng_list.push(map.unproject([tempPoint.x + 200000, tempPoint.y + 200000], map.getMaxZoom()));
+        //    lat_lng_list.push(map.unproject([tempPoint.x + 200000, tempPoint.y - 200000], map.getMaxZoom()));
+        //    lat_lng_list.push(map.unproject([tempPoint.x - 200000, tempPoint.y - 200000], map.getMaxZoom()));
+        //    lat_lng_list.push(map.unproject([tempPoint.x - 200000, tempPoint.y + 200000], map.getMaxZoom()));
+        //    var lat_lng_hole_list1 = [];
+        //    for (var i = 0; i < 72; i++) {
+        //        var pnt = polarPoint(400, gradToRad(i * 5));
+        //        pnt = summVector(pnt, tempPoint);
+        //        lat_lng_hole_list1.push(map.unproject([pnt.x, pnt.y], map.getMaxZoom()));
+        //    }
+        //    polygon_list.push(lat_lng_list, lat_lng_hole_list1);
+        //    if (this.circle)
+        //        this.circle.setLatLngs(polygon_list);
+        //    else
+        //        this.circle = L.polygon(polygon_list, {color: 'black', weight: 0, fillOpacity: 0.5}).addTo(map);
+        //}
     };
 
     WCarMarker.prototype.updateIcon = function() {
