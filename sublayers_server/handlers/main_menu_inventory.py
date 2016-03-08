@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from .base import BaseHandler
 
-from sublayers_server.model.units import POIContainer
+from sublayers_server.model.units import POILoot
 
 
 class MainInventoryHandler(BaseHandler):
@@ -29,7 +29,7 @@ class ContainerInventoryHandler(BaseHandler):
         container = None
         if container_id:
             container = self.application.srv.objects.get(long(container_id))
-        if isinstance(container, POIContainer) and container.is_available(agent=agent):
+        if isinstance(container, POILoot) and container.is_available(agent=agent):
             self.render("inventory_container_window.html", car_id=agent.api.car.uid, container_id=container_id)
 
 

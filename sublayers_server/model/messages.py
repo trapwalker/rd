@@ -585,6 +585,20 @@ class InventoryItemMessage(Message):
         return d
 
 
+class InventoryIncSizeMessage(Message):
+    def __init__(self, inventory, **kw):
+        super(InventoryIncSizeMessage, self).__init__(**kw)
+        self.inventory = inventory
+
+    def as_dict(self):
+        d = super(InventoryIncSizeMessage, self).as_dict()
+        d.update(
+            size=self.inventory.max_size,
+            inventory_owner_id=self.inventory.owner.uid,
+        )
+        return d
+
+
 class InventoryAddItemMessage(InventoryItemMessage):
     pass
 

@@ -34,6 +34,9 @@ class Item(Root):
     def activate(cls):
         pass
 
+    def __str__(self):
+        return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
+
 
 class Tank(Item):
     value_fuel = FloatAttribute(caption=u'Объем канистры', tags='client')
@@ -103,3 +106,7 @@ class TunerItem(SlotItem):
     images = DictAttribute(
         default=dict, tags='client',
         caption=u'Изображения у тюнера')
+
+
+class ArmorerItem(SlotItem):
+    weight_class = IntAttribute(default=0, caption=u"Класс тяжести итема у оружейника", tags='client')
