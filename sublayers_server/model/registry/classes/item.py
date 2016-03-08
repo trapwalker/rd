@@ -34,6 +34,9 @@ class Item(Root):
     def activate(cls):
         pass
 
+    def __str__(self):
+        return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
+
 
 class Tank(Item):
     value_fuel = FloatAttribute(caption=u'Объем канистры', tags='client')
