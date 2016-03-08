@@ -95,13 +95,13 @@ var InventoryItem = (function (_super) {
     InventoryItem.prototype.activate = function () {
         switch (this.example.activate_type) {
             case 'none':
-                console.warn('Активация неактивируемого итема');
+                console.warn('Активация неактивируемого итема', this.example);
                 break;
             case 'self':
                 clientManager.sendActivateItem(this);
                 break;
             default:
-                console.warn('Неизвестный типа активации итема !');
+                console.warn('Неизвестный типа активации итема !', this.example);
         }
     };
 
