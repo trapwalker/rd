@@ -89,6 +89,7 @@ var InventoryItem = (function (_super) {
 
     InventoryItem.prototype.delItem = function () {
         this.delFromVisualManager();
+        //if (this.widget) this.widget.delFromVisualManager()
     };
 
     InventoryItem.prototype.activate = function () {
@@ -147,47 +148,8 @@ var Inventory = (function () {
 
     Inventory.prototype.showInventory = function (inventoryDiv) {
         //console.log('Inventory.prototype.showInventory', this, inventoryDiv);
-        for (var i = 0; i < this.max_size; i++) {
-            /*
-                Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
-                можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
-            */
-            var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap inventory-wrap-' + this.owner_id +
-                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
-                '-pos-' + i + '" data-owner_id="' + this.owner_id + '" data-pos="' + i + '">' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
-                '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
-            $(inventoryDiv).append(emptyItemDiv);
-
-            $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + i + '').droppable({
-                greedy: true,
-                accept: function(target) {
-                    return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item');
-                },
-                drop: function(event, ui) {
-                    var dragOwnerID = ui.draggable.data('owner_id');
-                    var dragPos = ui.draggable.data('pos');
-                    var dropOwnerID = $(event.target).data('owner_id');
-                    var dropPos = $(event.target).data('pos');
-
-                    // Проверим не сами ли в себя мы перемещаемся
-                    if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
-                        clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
-                }
-            });
-
-            $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + i + '').draggable({
-                disabled: true,
-                helper: 'clone',
-                opacity: 0.8,
-                revert: true,
-                revertDuration: 0,
-                zIndex: 1,
-                appendTo: '#map'
-            });
-        }
+        for (var i = 0; i < this.max_size; i++)
+            this.addEmptyItemDiv(i, inventoryDiv);
 
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
@@ -207,6 +169,48 @@ var Inventory = (function () {
             if (!item) return;
             item.activate();
         })
+    };
+
+    Inventory.prototype.addEmptyItemDiv = function (position, inventoryDiv) {
+        /*
+            Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
+            можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
+        */
+        var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap inventory-wrap-' + this.owner_id +
+            '-pos-' + position + '" data-owner_id="' + this.owner_id + '" data-pos="' + position + '">' +
+            '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
+            '-pos-' + position + '" data-owner_id="' + this.owner_id + '" data-pos="' + position + '">' +
+            '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
+            '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
+            '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
+        $(inventoryDiv).append(emptyItemDiv);
+
+        $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + position + '').droppable({
+            greedy: true,
+            accept: function (target) {
+                return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item');
+            },
+            drop: function (event, ui) {
+                var dragOwnerID = ui.draggable.data('owner_id');
+                var dragPos = ui.draggable.data('pos');
+                var dropOwnerID = $(event.target).data('owner_id');
+                var dropPos = $(event.target).data('pos');
+
+                // Проверим не сами ли в себя мы перемещаемся
+                if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
+                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
+            }
+        });
+
+        $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + position + '').draggable({
+            disabled: true,
+            helper: 'clone',
+            opacity: 0.8,
+            revert: true,
+            revertDuration: 0,
+            zIndex: 1,
+            appendTo: '#map'
+        });
     };
 
     Inventory.prototype.addItem = function (item) {
@@ -229,7 +233,9 @@ var Inventory = (function () {
                 this.items[key].delItem();
                 delete this.items[key];
             }
+
         // todo: снять драг анд дроп
+        $('.inventory-' + this.owner_id).each(function() { $(this).empty(); });
     };
 
     Inventory.prototype.getItem = function (position) {
@@ -258,6 +264,17 @@ var Inventory = (function () {
         return res_list;
     };
 
+    Inventory.prototype.setNewSize = function (new_size) {
+        //console.log('Inventory.prototype.setNewSize', new_size);
+        var self = this;
+
+        $('.inventory-' + self.owner_id).each(function () {
+            for (var i = self.max_size; i < new_size; i++)
+                self.addEmptyItemDiv(i, this);
+        });
+        this.max_size = new_size;
+    };
+
     return Inventory;
 })();
 
@@ -278,6 +295,8 @@ var InventoryList = (function () {
         if (inv == null) return;
         inv.destroyInventory();
         delete this.inventories[owner_id];
+
+        windowTemplateManager.closeUniqueWindow('container' + owner_id);
     };
 
     InventoryList.prototype.getInventory = function (owner_id) {

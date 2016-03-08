@@ -106,3 +106,11 @@ class VisibilityManager(object):
             if n_tid != tile_id:
                 self._del_obj_from_tile(obj=obj, tile_id=tile_id)
                 self._add_obj_to_tile(obj=obj, tile_id=n_tid, time=time)
+
+    def get_around_objects(self, pos, time):
+        tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
+        result = []
+        for t in tid.get_around_tiles():
+            if t in self.tiles.keys():
+                result += self.tiles[t][1]
+        return result

@@ -3,7 +3,7 @@
 <div class="containerInventoryWindow-main">
     {% include drag_close_header.html %}
     <div class="containerInventoryWindow-window-wrap">
-        <div id="containerInventoryWindow-id-car-{{ car_id }}" class="containerInventoryWindow-inventory-wrap containerInventoryWindow-inventory-wrap-left">
+        <div id="containerInventoryWindow-id-car-{{ car_id }}-{{ container_id }}" class="containerInventoryWindow-inventory-wrap containerInventoryWindow-inventory-wrap-left">
             <div class="containerInventoryWindow-inventory-header">Ваш инвентарь:</div>
             <div class="containerInventoryWindow-inventory-body inventory-{{ car_id }}"></div>
         </div>
@@ -17,7 +17,7 @@
 
 <script>
     // Запрашиваем инвентарь
-    inventoryList.showInventory({{ car_id }}, $('#containerInventoryWindow-id-car-{{ car_id }}')
+    inventoryList.showInventory({{ car_id }}, $('#containerInventoryWindow-id-car-{{ car_id }}-{{ container_id }}')
             .find('.inventory-{{ car_id }}').first());
     inventoryList.showInventory({{ container_id }}, $('#containerInventoryWindow-id-container-{{ container_id }}')
             .find('.inventory-{{ container_id }}').first());

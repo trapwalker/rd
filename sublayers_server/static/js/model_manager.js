@@ -756,6 +756,15 @@ var ClientManager = (function () {
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
+    ClientManager.prototype.InventoryIncSizeMessage = function (event) {
+        //console.log('ClientManager.prototype.InventoryHideMessage', event);
+        var inventory = inventoryList.getInventory(event.inventory_owner_id);
+        if (inventory)
+            inventory.setNewSize(event.size);
+        else
+            console.warn('InventoryIncSizeMessage:: инвентарь' + event.inventory_owner_id + ' отсутствует на клиенте:');
+    };
+
     ClientManager.prototype.ExamplesShowMessage = function (event) {
         //console.log('ClientManager.prototype.ExamplesShowMessage', event);
         // Обновление баланса пользователя
