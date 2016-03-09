@@ -30,8 +30,8 @@ class Effect(Root):
 
     def __init__(self, *av, **kw):
         super(Effect, self).__init__(*av, **kw)
-        self.dependence_list = [m_name, r_name]
-        #server.effects.update({name: self})
+        self.dependence_list = [self.m_name, self.r_name]
+        # server.effects.update({name: self})
 
     def __str__(self):
         return '{}<{} := ({}, {})>'.format(self.name, self.param_name, self.m_name, self.r_name)
