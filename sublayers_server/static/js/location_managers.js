@@ -235,6 +235,7 @@ var ArmorerManager = (function () {
         this.armorer_slots = [];
         this.armorer_slots_flags = {};
         this.activeSlot = null;
+        this.image_scale = null;
     }
 
     ArmorerManager.prototype._addEmptyInventorySlot = function(position) {
@@ -267,9 +268,11 @@ var ArmorerManager = (function () {
         return result;
     };
 
-    ArmorerManager.prototype.update = function(armorer_slots, armorer_slots_flags) {
+    ArmorerManager.prototype.update = function(armorer_slots, armorer_slots_flags, image_scale) {
         //console.log('ArmorerManager.prototype.update');
         this.clear();
+
+        if (image_scale) this.image_scale = image_scale;
 
         if (armorer_slots) this.armorer_slots = armorer_slots;
         if (armorer_slots_flags) this._update_armorer_slots_flags(armorer_slots_flags);
@@ -377,9 +380,11 @@ var ArmorerManager = (function () {
 
             // создать вёрстку для отрисовки
             var item = this.items[position];
-            if (item.example) {
-                var itemImgTop = item.example['armorer_top_' + item.direction];
-                var itemImgSide = item.example['armorer_side_' + item.direction];
+            if (item.example && this.image_scale) {
+                var item_image_scale = item.example.armorer_images[this.image_scale];
+
+                var itemImgTop = item_image_scale['armorer_top_' + item.direction];
+                var itemImgSide = item_image_scale['armorer_side_' + item.direction];
 
                 var itemDivTop = $('<div class="armorer-car-slot-picture"><img id="armorer' + position + 'ImgTop" src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '"></div>');
                 var itemDivSide = $('<div class="armorer-car-slot-picture"><img id="armorer' + position + 'ImgSide" src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '"></div>');

@@ -16,16 +16,6 @@ class Weapon(ArmorerItem):
     radius = FloatAttribute(caption=u'Дальность стрельбы (м)')
     width = FloatAttribute(caption=u'Ширина сектора стрельбы (град)')
 
-    armorer_side_F = Attribute(caption=u'Изображение у оружейника (вид сбоку, вперед)', tags='client')
-    armorer_side_B = Attribute(caption=u'Изображение у оружейника (вид сбоку, назад)', tags='client')
-    armorer_side_R = Attribute(caption=u'Изображение у оружейника (вид сбоку, право)', tags='client')
-    armorer_side_L = Attribute(caption=u'Изображение у оружейника (вид сбоку, лево)', tags='client')
-    armorer_top_F = Attribute(caption=u'Изображение у оружейника (вид сверху, вперед)', tags='client')
-    armorer_top_B = Attribute(caption=u'Изображение у оружейника (вид сверху, назад)', tags='client')
-    armorer_top_R = Attribute(caption=u'Изображение у оружейника (вид сверху, право)', tags='client')
-    armorer_top_L = Attribute(caption=u'Изображение у оружейника (вид сверху, лево)', tags='client')
-
-
 class Cannon(Weapon):
     is_auto = False
     dmg = FloatAttribute(caption=u'Урон за выстрел')

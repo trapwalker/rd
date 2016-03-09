@@ -33,8 +33,6 @@ class EffectsDict:
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
         dict(name='EffectRoadRCCWater', param_name='r_cc_water', m_name='m_r_cc_water_on_road',
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
-        dict(name='EffectRoadRCCDirt', param_name='r_cc_dirt', m_name='m_r_cc_dirt_on_road',
-             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
         dict(name='EffectRoadRCCSlope', param_name='r_cc_slope', m_name='m_r_cc_slope_on_road',
              r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
 
@@ -49,6 +47,10 @@ class EffectsDict:
         # empty fuel effect
         dict(name='EffectEmptyFuel', param_name='p_cc', m_name='m_cc_fuel_empty', r_name='r_cc_fuel_empty',
              upd_method='set_motion', sign=-1.0),
+
+        # Отмена бездорожья (работает во всех основных зонах)
+        dict(name='EffectRCCDirt', param_name='r_cc_dirt', m_name='m_r_cc_dirt',   # todo: добавить в модификаторы
+             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
     ]
 
 

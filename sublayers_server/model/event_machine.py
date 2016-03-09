@@ -242,14 +242,6 @@ class LocalServer(Server):
     def save(self, *av, **kw):
         super(LocalServer, self).save(*av, **kw)
 
-    def dump(self):
-        import yaml
-        with open('srv_dump.yaml', 'w') as f:
-            yaml.dump(self, stream=f)
-
-        with open('srv_dump.yaml', 'r') as f:
-            srv2 = yaml.load(stream=f)
-
     def reset_user(self, user=None):
         if user is None:
             pass

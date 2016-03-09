@@ -44,6 +44,7 @@ class Mobile(Root):
     m_r_cc_water_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС в воде на дороге ", tags='parameter p_modifier')
     m_r_cc_dirt_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС на бездорожье на дороге", tags='parameter p_modifier')
     m_r_cc_slope_on_road = Parameter(default=1.0, caption=u"Модификатор резиста штрафа СС в горах на дороге ", tags='parameter p_modifier')
+    m_r_cc_dirt = Parameter(default=1.0, caption=u"Модификатор резиста бездорожья для отмены бездорожья", tags='parameter p_modifier')
     m_cc_mine = Parameter(default=0.5, caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier')
     m_cc_fuel_empty = Parameter(default=0.9, caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier')
 
@@ -190,6 +191,7 @@ class Car(Mobile):
     tuner_car = Attribute(caption=u"Представление машинки у тюнера")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
     hangar_car = Attribute(caption=u"Представление машинки в ангаре")
+    image_scale = Attribute(default="middle", caption=u"Масштаб машинки для отрисовки обвеса: small, middle, big", tags="client")
 
     mechanic_engine = Attribute(caption=u"Представление двигателя у механника")
     mechanic_transmission = Attribute(caption=u"Представление трансмиссии у механника")

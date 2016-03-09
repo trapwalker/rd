@@ -10,6 +10,12 @@ import tornado.web
 import os
 
 
+def patch_svg_links(src, pth):
+    import re
+    r = re.compile(r'(xlink:href=")([^\.]+\.(jpg|png)")')  # todo: opimize
+    return r.sub(r'\1{}\2'.format(pth), src)
+
+
 class MapLocationHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -22,6 +28,12 @@ class MapLocationHandler(BaseHandler):
         location = self.application.srv.objects.get(int(location_id))
         if location:
             svg_link = os.path.join(os.getcwd(), location.example.svg_link)
+
+            svg_code = ''
+            with open(os.path.join(svg_link, 'location.svg')) as f:
+                svg_code = f.read()
+                svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
+
             if isinstance(location, Town):
                 car_ex = agent.example.car
 
@@ -52,7 +64,7 @@ class MapLocationHandler(BaseHandler):
                     mechanic_slots = [v[0] for v in car_ex.iter_slots(tags='mechanic')]
                     tuner_slots = [v[0] for v in car_ex.iter_slots(tags='tuner')]
 
-                self.render("location/town.html", town=location, svg_link=svg_link,
+                self.render("location/town.html", town=location, svg_code=svg_code,
                             mechanic_engine=mechanic_engine,
                             mechanic_transmission=mechanic_transmission,
                             mechanic_brakes=mechanic_brakes,
@@ -62,7 +74,7 @@ class MapLocationHandler(BaseHandler):
                             armorer_slots=armorer_slots, tuner_slots=tuner_slots,
                             mechanic_slots=mechanic_slots, agent=agent)
             elif isinstance(location, GasStation):
-                self.render("location/gas_station.html", station=location, svg_link=svg_link, agent=agent)
+                self.render("location/gas_station.html", station=location, svg_code=svg_code, agent=agent)
             else:
                 log.warn('Unknown type location: %s', location)
         else:
