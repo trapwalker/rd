@@ -200,7 +200,7 @@ class LocalServer(Server):
 
             event = timeline.get()
             try:
-                event.pe33rform()
+                event.perform()
             except:
                 log.exception('Event performing error %s', event)
 
