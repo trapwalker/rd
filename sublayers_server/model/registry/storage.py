@@ -236,7 +236,7 @@ class Registry(AbstractStorage):
             if not f.startswith('_') and os.path.isfile(p):  # todo: filter yaml-files
                 with open(p) as attr_file:
                     try:
-                        d = yaml.load(attr_file)
+                        d = yaml.load(attr_file) or {}
                     except yaml.scanner.ScannerError as e:
                         raise RegistryNodeFormatError(e)
                     attrs.update(d)
