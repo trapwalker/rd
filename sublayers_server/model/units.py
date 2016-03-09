@@ -412,8 +412,12 @@ class Mobile(Unit):
 
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
-            self.server.effects.get('EffectEmptyFuel').done(owner=self, time=time)  # снять эффект
-            # log.debug('====== ----- ====== EffectEmptyFuel is done ====== ----- ======')
+            ef = self.server.effects.get('EffectEmptyFuel')
+            if ef is None:
+                log.warning('Effect "%s" is not registered', 'EffectEmptyFuel')
+            else:
+                ef.done(owner=self, time=time)  # снять эффект
+
         FuelTask(owner=self, df=df).start(time=time)
 
     def on_before_delete(self, event):
@@ -424,8 +428,11 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        self.server.effects.get('EffectEmptyFuel').start(owner=self, time=event.time)
-        # log.debug('====== ----- ====== EffectEmptyFuel is started ====== ----- ======')
+        ef = self.server.effects.get('EffectEmptyFuel')
+        if ef:
+            ef.start(owner=self, time=event.time)
+        else:
+            log.warning('Effect "%s" is not registered', 'EffectEmptyFuel')
 
     def v(self, time):
         return self.state.v(t=time)

@@ -32,7 +32,11 @@ class Zone(Root):
     def activate(self, server, time):
         assert not self.abstract  # нельзя активировать абстрактные зоны
         for effect_name in self.effect_names or ():
-            self.effects.append(server.effects.get(effect_name))
+            ef = server.effects.get(effect_name)
+            if ef:            
+                self.effects.append(ef)
+            else:
+                log.warning('Effect "%s" is not registered', 'effect_name')
         InsertNewServerZone(server=server, time=time, zone=self).post()
         self.is_active = True
 
@@ -51,6 +55,7 @@ class Zone(Root):
         for effect in self.effects:
             effect.done(owner=obj, time=time)
         self.send_message(obj=obj, active=False, time=time)
+        # todo: Убрать сообщения о зонах, оставить только сообщения эффектов
 
     def get_value(self, obj, time):
         return

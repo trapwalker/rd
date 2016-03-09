@@ -9,3 +9,4 @@ import weapons
 import zones
 import quests
 import exptable
+import effects
