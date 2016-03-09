@@ -9,16 +9,26 @@
 .car-info-block-picture-hangar {
     position: relative;
     float: left;
-    height: 100%;
     width: 400px;
+    height: 100%;
+    padding-top: 55px;
     margin-right: 8px;
+    overflow: hidden;
+    box-sizing: border-box;
 }
+.car-info-block-picture-hangar .car-info-block-picture-2-main { margin-left: -55px; }
 
 .car-info-block-picture {
     position: relative;
     height: 100%;
     width: 100%;
     border-right: 1px solid #30fc00;
+}
+
+.car-info-block-picture-2-main {
+    position: relative;
+    width: 492px;
+    height: 170px;
 }
 
 .car-info-block-picture-2 {
