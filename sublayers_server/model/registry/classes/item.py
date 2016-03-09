@@ -110,3 +110,5 @@ class TunerItem(SlotItem):
 
 class ArmorerItem(SlotItem):
     weight_class = IntAttribute(default=0, caption=u"Класс тяжести итема у оружейника", tags='client')
+    armorer_images = DictAttribute(default=dict,  tags='client', caption=u'Картинки оружейника',
+                                   doc=u'Ссылки на картинки у оружейника по масштабам.')

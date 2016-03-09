@@ -191,6 +191,7 @@ class Car(Mobile):
     tuner_car = Attribute(caption=u"Представление машинки у тюнера")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
     hangar_car = Attribute(caption=u"Представление машинки в ангаре")
+    image_scale = Attribute(default="middle", caption=u"Масштаб машинки для отрисовки обвеса: small, middle, big", tags="client")
 
     mechanic_engine = Attribute(caption=u"Представление двигателя у механника")
     mechanic_transmission = Attribute(caption=u"Представление трансмиссии у механника")

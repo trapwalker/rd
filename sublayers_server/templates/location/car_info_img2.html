@@ -1,5 +1,5 @@
 <div class="car-info-block-picture-2" style="background: url({{ car.hangar_car }}) no-repeat center; z-index: 1"></div>
-
+{% set scale = getattr(car, 'image_scale') %}
 {% for k, v in car.iter_slots(tags='tuner') %}
     {% if v is not None %}
         {% if v.images[car.node_hash()]['side']['link'] is not None %}
@@ -11,9 +11,13 @@
 
 {% for k, v in car.iter_slots(tags='armorer') %}
     {% if v is not None %}
-        <div class="armorer-slot for-journal side_{{ k }}_{{ car.node_html() }} shift-for-journal_{{ car.node_html() }}">
-            <div class="armorer-car-slot-picture"><img src="{{ getattr(v, 'armorer_side_' + v.direction, '') }}" class="armorer_side_{{ v.direction }}"></div>
-        </div>
+        {% set scale_images = getattr(v, 'armorer_images', None) %}
+        {% if scale_images is not None %}
+            {% set scale_images_links = scale_images[str(scale)] %}
+            <div class="armorer-slot for-journal side_{{ k }}_{{ car.node_html() }} shift-for-journal_{{ car.node_html() }}">
+                <div class="armorer-car-slot-picture"><img src="{{ scale_images_links['armorer_side_' + v.direction] }}" class="armorer_side_{{ v.direction }}"></div>
+            </div>
+        {% end %}
     {% end %}
 {% end %}
 

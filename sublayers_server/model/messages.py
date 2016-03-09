@@ -640,6 +640,7 @@ class ExamplesShowMessage(Message):
 
         if self.agent.example.car:
             d['example_car_node'] = self.agent.example.car.node_hash()
+            d['example_car_image_scale'] = self.agent.example.car.image_scale
 
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
