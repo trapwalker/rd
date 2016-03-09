@@ -1,4 +1,5 @@
 <style>
+    {% if need_css_only is False %}
     .armorer-car-main-top {
         position: relative;
         opacity: 0.4;
@@ -18,8 +19,9 @@
         margin: 5px auto 0px auto;
         overflow: hidden;
     }
+    {% end %}
 
-    .shift-for-journal_{{ car.node_html() }} {margin: -146px 0 0 -15px;}
+    .shift-for-journal_{{ car.node_html() }} {margin: -158px 0 0 0; }
 
     .top_slot_FC_{{ car.node_html() }} { top: 60px; left: 190px; }
     .side_slot_FC_{{ car.node_html() }} { top: 153px; left: 190px; }
