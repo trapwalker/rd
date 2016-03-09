@@ -52,4 +52,9 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
 
     def send(self, data):
         #log.debug('\n\nconnection.send(%s)', data)
-        self.write_message(data)
+        try:
+            # todo: Разобраться с этой странной редкой ошибкой. Почему-то дек буффера торнадо оказывается пустым
+            self.write_message(data)
+        except Exception as e:
+            log.exception('Fucking scarry deque error (%r) with data=%r', e, data)
+            raise e
