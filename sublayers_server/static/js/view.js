@@ -97,6 +97,9 @@ $(document).ready(function () {
         returnFocusToMap();
     });
 
+
+    setTimeout(CanvasTestStart, 3000);
+
 });
 
 

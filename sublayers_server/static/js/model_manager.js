@@ -137,8 +137,8 @@ var ClientManager = (function () {
                 var e = params.events[0];
                 if (typeof(this[e.cls]) === 'function')
                     this[e.cls](e);
-                else
-                    console.warn('Warning: неизвестная API-команда для ClientManager: ', e.cls);
+                //else
+                //    console.warn('Warning: неизвестная API-команда для ClientManager: ', e.cls);
             }
 
             /*

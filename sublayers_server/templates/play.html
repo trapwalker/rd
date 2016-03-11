@@ -83,6 +83,7 @@
 
     <script src="{{ static_url('js/geometric.js') }}"></script>
     <script src="{{ static_url('js/generator_ID.js') }}"></script>
+    <script src="{{ static_url('js/canvas_test.js') }}"></script>
 
     <script src="{{ static_url('js/message_stream.js') }}"></script>
 
@@ -145,6 +146,11 @@
 <body>
 <div id="bodydiv">
     <div id="map"></div>
+
+    <div style="position: absolute; width: 100%; height: 100%; pointer-events: none;">
+        <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
+    </div>
+
     <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
     <div id="divMainMenu">
         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Персонаж</div>
@@ -197,6 +203,7 @@
         <span id="settings_ws_port">{{ ws_port }}</span>
         <span id="settings_map_link">{{ map_link }}</span>
     </div>
+
 </div>
 </body>
 </html>

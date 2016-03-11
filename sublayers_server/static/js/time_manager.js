@@ -49,7 +49,7 @@ var Clock = (function () {
     // Расчет серверной "поправки".
     Clock.prototype.setDt = function (aDiffTime) {
         this.dt = aDiffTime;
-        console.log('Поправка времени = ', this.dt)
+        //console.log('Поправка времени = ', this.dt)
     };
 
     Clock.prototype.receiveMessage = function (params) {
