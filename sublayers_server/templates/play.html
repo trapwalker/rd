@@ -83,6 +83,8 @@
 
     <script src="{{ static_url('js/geometric.js') }}"></script>
     <script src="{{ static_url('js/generator_ID.js') }}"></script>
+
+    <script src="{{ static_url('js/third_party/blur.js') }}"></script>
     <script src="{{ static_url('js/canvas_test.js') }}"></script>
 
     <script src="{{ static_url('js/message_stream.js') }}"></script>
@@ -148,7 +150,7 @@
     <div id="map"></div>
 
     <div style="position: absolute; width: 100%; height: 100%; pointer-events: none;">
-        <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
+        <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none; filter: blur(20px); ">My Canvas !!! </canvas>
     </div>
 
     <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>

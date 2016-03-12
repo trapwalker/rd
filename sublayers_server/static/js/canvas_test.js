@@ -1,16 +1,25 @@
-
-
 function CanvasTestStart() {
-    console.log('CanvasTestStart');
-    var b_canvas = document.getElementById("ctest_1");
-    var b_context = b_canvas.getContext("2d");
+    //console.log('CanvasTestStart');
 
-    var grd = b_context.createRadialGradient(960, 540, 200, 960, 540, 800);
+    b_context.clearRect(0, 0, 100, 50);
 
-    grd.addColorStop(0,"transparent");
-    grd.addColorStop(1,"rgba(100, 0, 0, 0.7)");
+    var center_x = 50;
+    var center_y = 25;
+    var radius = 12;
 
-    b_context.fillStyle = grd;
-    b_context.fillRect(0, 0, 1920, 1080);
+    b_context.fillStyle="rgba(0, 0, 0, 0.5)";
+    b_context.fillRect(0, 0, 100, 50);
 
+    b_context.globalCompositeOperation = "destination-out";
+
+    b_context.fillStyle="rgb(0, 0, 0)";
+    b_context.beginPath();
+    b_context.arc(center_x, center_y, radius, 0, 2 * Math.PI, false);
+    b_context.fill();
+
+    b_context.beginPath();
+    b_context.arc(center_x + 10, center_y, radius, 0, 2 * Math.PI, false);
+    b_context.fill();
+
+    b_context.globalCompositeOperation = "source-over";
 };

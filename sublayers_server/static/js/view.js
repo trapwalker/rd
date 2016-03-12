@@ -97,10 +97,16 @@ $(document).ready(function () {
         returnFocusToMap();
     });
 
-
-    setTimeout(CanvasTestStart, 3000);
-
+    b_canvas = document.getElementById("ctest_1");
+    b_context = b_canvas.getContext("2d");
+    b_canvas.width = 100;
+    b_canvas.style.width = window.innerWidth + 'px';
+    b_canvas.height = 50;
+    b_canvas.style.height = window.innerHeight + 'px';
 });
+
+var b_canvas;
+var b_context;
 
 
 function returnFocusToMap() {
