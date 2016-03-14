@@ -103,11 +103,22 @@ $(document).ready(function () {
     //b_canvas.style.width = window.innerWidth + 'px';
     b_canvas.height = 1080;
     //b_canvas.style.height = window.innerHeight + 'px';
+
+    img.push(new Image());
+    img.push(new Image());
+    img.push(new Image());
+    img.push(new Image());
+    img[0].src = '/static/img/n1.png';
+    img[1].src = '/static/img/n2.png';
+    img[2].src = '/static/img/n3.png';
+    img[3].src = '/static/img/n4.png';
     CanvasTestStart();
 });
 
 var b_canvas;
 var b_context;
+var pat;
+var img = [];
 
 
 function returnFocusToMap() {
