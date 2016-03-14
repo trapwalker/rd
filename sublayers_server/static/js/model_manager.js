@@ -769,14 +769,14 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.ExamplesShowMessage', event);
         // Обновление баланса пользователя
         user.balance = event.agent_balance;
-        locationManager.example_car_node = event.example_car_node
+        locationManager.example_car_node = event.example_car_node;
         if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
             var inv = this._getInventory(event.inventory);
             if (inventoryList.getInventory(inv.owner_id))
                 inventoryList.delInventory(inv.owner_id);
             inventoryList.addInventory(inv);
             locationManager.nucoil.update();
-            locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags);
+            locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags, event.example_car_image_scale);
             locationManager.mechanic.update(event.mechanic_slots);
             locationManager.tuner.update(event.tuner_slots);
             locationManager.trader.updatePlayerInv();

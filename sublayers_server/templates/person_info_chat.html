@@ -1,4 +1,3 @@
-
 <style>
     .person-info-chat-header {
         position: relative;
@@ -17,10 +16,8 @@
         margin-top: 13px;
         opacity: 0.6;
     }
-
     .person-info-chat-header-page-btn:hover {opacity: 1}
     .person-info-chat-header-page-btn.active {opacity: 1}
-
 
     .person-info-chat-header-close-btn{
         position: relative;
@@ -60,7 +57,10 @@
         position: relative;
         width: 100%;
         height: 205px;
+        padding-top: 17px;
+        box-sizing: border-box;
     }
+    .person-info-chat-page-transport-picture .car-info-block-picture-main { margin-left: -21px; }
 
     .person-info-chat-page-transport-info {
         position: relative;
@@ -218,21 +218,18 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="person-info-chat-person-down">
             <div class="person-info-chat-person-down-title">О себе:</div>
             <div class="person-info-chat-person-down-about">{{ agent.example.about_self }}</div>
         </div>
-
-
     </div>
     <div id="personInfoChatPageTransport" class="person-info-chat-body-page">
         {% if agent.example.car is not None %}
         {% set car = agent.example.car %}
         <div class="person-info-chat-page-transport-picture">
-            {% include location/car_info_img.html %}
+            {% include location/car_info_img2.html %}
         </div>
         <div class="person-info-chat-page-transport-info">
             {% include location/car_info_table.html %}

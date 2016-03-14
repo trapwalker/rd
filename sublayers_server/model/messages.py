@@ -640,6 +640,7 @@ class ExamplesShowMessage(Message):
 
         if self.agent.example.car:
             d['example_car_node'] = self.agent.example.car.node_hash()
+            d['example_car_image_scale'] = self.agent.example.car.image_scale
 
             d['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
@@ -799,14 +800,15 @@ class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
         template_table = tornado.template.Loader("templates/location").load("car_info_table.html")
-        template_img = tornado.template.Loader("templates/location").load("car_info_img2.html")
+        template_img = tornado.template.Loader("templates/location").load("car_info_img_ext.html")
 
         d.update(cars=[dict(
             car_info=dict(
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
-                armorer_css=tornado.template.Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True)
+                # armorer_css=tornado.template.Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True)
+                armorer_css=''
             ),
             location=car.last_location.node_hash(),
             location_name=car.last_location.title,
