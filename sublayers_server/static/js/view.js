@@ -99,10 +99,11 @@ $(document).ready(function () {
 
     b_canvas = document.getElementById("ctest_1");
     b_context = b_canvas.getContext("2d");
-    b_canvas.width = 100;
-    b_canvas.style.width = window.innerWidth + 'px';
-    b_canvas.height = 50;
-    b_canvas.style.height = window.innerHeight + 'px';
+    b_canvas.width = 1920;
+    //b_canvas.style.width = window.innerWidth + 'px';
+    b_canvas.height = 1080;
+    //b_canvas.style.height = window.innerHeight + 'px';
+    CanvasTestStart();
 });
 
 var b_canvas;

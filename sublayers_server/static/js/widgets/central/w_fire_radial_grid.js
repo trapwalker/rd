@@ -610,7 +610,7 @@ var WFireRadialGrid = (function (_super) {
 
     WFireRadialGrid.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
-        //return;
+        return;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());

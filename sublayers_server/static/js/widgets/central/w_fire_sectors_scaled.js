@@ -562,7 +562,7 @@ var WFireSectorsScaled = (function (_super) {
 
     WFireSectorsScaled.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
-        //return;
+        return;
 
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
