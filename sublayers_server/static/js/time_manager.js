@@ -147,8 +147,9 @@ var TimeManager = (function () {
 
         timeManager._fps_all_time += time_start - timeManager._redraw_time;
         timeManager._fps_interval = timeManager._fps_interval + 1;
-        if (timeManager._fps_interval == 500) {
-            console.log('FPS = ', (timeManager._fps_interval / timeManager._fps_all_time) * 1000);
+        if (timeManager._fps_interval == 200) {
+            //console.log('FPS = ', (timeManager._fps_interval / timeManager._fps_all_time) * 1000);
+            $('#FPSSpan').text((((timeManager._fps_interval / timeManager._fps_all_time) * 1000) >> 1) << 1);
             timeManager._fps_interval = 0;
             timeManager._fps_all_time = 0;
         }
