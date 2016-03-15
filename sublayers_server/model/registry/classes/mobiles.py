@@ -336,4 +336,4 @@ class Drone(Mobile):
 
 
 class MapWeaponEffectMine(Mobile):
-    effects = Attribute(default='', caption=u'Названия эффектов накладываемых миной через пробел')
+    effects = Attribute(default=(), caption=u'Список эффектов (URI) накладываемых миной')

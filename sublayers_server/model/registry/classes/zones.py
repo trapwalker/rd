@@ -13,6 +13,8 @@ from sublayers_server.model.messages import ZoneMessage
 from sublayers_server.model.events import InsertNewServerZone
 from sublayers_server.model import tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
+from sublayers_server.model.registry.uri import URIFormatError
+from sublayers_server.model.registry.storage import RegistryError
 
 from tornado.options import options
 from collections import Iterable
@@ -21,22 +23,28 @@ import os
 
 class Zone(Root):
 
-    effect_names = Attribute(caption=u'Эффекты', doc=u'Список эффектов, действующих в зоне')  # todo: list attribute
+    effects = Attribute(caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне')  # todo: list attribute
     order_key = TextAttribute(caption=u'Порядковый ключ', doc=u'Алфавитный ключ, определяющий порядок загрузки зон')
 
     def __init__(self, **kw):
         super(Zone, self).__init__(**kw)
-        self.effects = []
         self.is_active = False
 
     def activate(self, server, time):
         assert not self.abstract  # нельзя активировать абстрактные зоны
-        for effect_name in self.effect_names or ():
-            ef = server.effects.get(effect_name)
-            if ef:            
-                self.effects.append(ef)
-            else:
-                log.warning('Effect "%s" is not registered', 'effect_name')
+        effects = []
+        for uri in self.effects or ():
+            try:
+                effect_folder = self.storage[uri]
+
+                for effect in effect_folder.deep_iter(reject_abstract=True):
+                    effects.append(effect)
+            except URIFormatError as e:
+                log.error('Wrong zone (%r) effect URI %r: %r', self, uri, e)
+            except RegistryError as e:
+                log.error('Wrong zone (%r) effect link: %r', self, e)
+
+        self.effects = effects
         InsertNewServerZone(server=server, time=time, zone=self).post()
         self.is_active = True
 
