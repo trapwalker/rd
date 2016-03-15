@@ -11,6 +11,7 @@ from uuid import uuid4 as uid_func
 import pickle
 import yaml
 import yaml.scanner  # todo: extract serialization layer
+import sys
 import os
 
 
@@ -83,7 +84,7 @@ class AbstractStorage(object):
         if dispatcher:
             return dispatcher.get_node(proto=uri.scheme, storage=uri.storage, path=uri.path)
 
-        raise WrongStorageError("Can't resolve storage {}".format(uri.storage))
+        raise WrongStorageError("Can't resolve storage {!r}".format(uri.storage))
 
     def __getitem__(self, item):
         if isinstance(item, basestring):
@@ -143,7 +144,7 @@ class Dispatcher(AbstractStorage):
             # log.debug('Try to get storage "{}"'.format(uri.storage))
             storage_obj = self.storage_map[uri.storage]
         except KeyError:
-            raise StorageNotFound('Storage "{}" not found. [{}] avalable'.format(
+            raise StorageNotFound('Storage {!r} not found. [{}] avalable'.format(
                 uri.storage, ', '.join(self.storage_map.keys())))
 
         return storage_obj.get_local(uri.path)
@@ -169,7 +170,7 @@ class Collection(AbstractStorage):
         key = self.make_key(path)
         rec = self.dataset.find_one({'name': key})
         if rec is None:
-            raise ObjectNotFound('Object not found by key="{}"'.format(key))
+            raise ObjectNotFound('Object not found by key={!r}'.format(key))
 
         node = self._deserialize(rec['data'])
         node.storage = self
@@ -212,7 +213,7 @@ class Registry(AbstractStorage):
             name = path.pop(0)
             next_node = node._subnodes.get(name)
             if next_node is None:
-                raise ObjectNotFound('Node "{}" is not found in the node "{}" by path: {}'.format(
+                raise ObjectNotFound('Node {!r} is not found in the node {!r} by path: {!r}'.format(
                     name, node.name, path))
             node = next_node
 
@@ -230,8 +231,11 @@ class Registry(AbstractStorage):
             self.root = node
 
     def _load_node(self, path, owner):
+        assert isinstance(path, unicode)
         attrs = {}
         for f in os.listdir(path):
+            assert isinstance(f, unicode)
+            # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
             if not f.startswith('_') and os.path.isfile(p):  # todo: filter yaml-files
                 with open(p) as attr_file:
@@ -247,7 +251,7 @@ class Registry(AbstractStorage):
             cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
             if cls is None:
                 raise NodeClassError(
-                    'Unknown registry class ({}) found into the path: {}'.format(class_name, path))
+                    'Unknown registry class ({}) found into the path: {!r}'.format(class_name, path))
 
         # todo: get parent
         parent = None
@@ -262,7 +266,7 @@ class Registry(AbstractStorage):
 
         cls = cls or parent and parent.__class__
         if cls is None:
-            raise NodeClassError('Node class unspecified on path: {}'.format(path))
+            raise NodeClassError('Node class unspecified on path: {!r}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
         abstract = attrs.pop('abstract', True)
         return cls(name=name, parent=parent, owner=owner, storage=self, abstract=abstract, values=attrs)

@@ -2,11 +2,20 @@
 
 import logging
 log = logging.getLogger(__name__)
+import sys
 
+if __name__ == '__main__':
+    log.addHandler(logging.StreamHandler(sys.stderr))
+    log.level = logging.DEBUG
+    
 import re
 from collections import OrderedDict
 from operator import itemgetter
-from urllib import splitvalue
+from urllib import splitvalue, quote, unquote
+from pprint import pformat
+
+
+URI_ENCODING = 'utf-8'
 
 
 class URIFormatError(Exception):
@@ -23,7 +32,7 @@ class URI(tuple):
     __slots__ = ()
     _fields = ('scheme', 'storage', 'path', 'params', 'anchor')
 
-    _RE_URI = re.compile(r'''
+    _RE_URI = re.compile(ur'''
         ^
         (?:(?P<scheme>\w+)://)?
         (?P<storage>[^/]+)?
@@ -40,20 +49,31 @@ class URI(tuple):
         and return tuple like: ('scheme', ['path', 'to', 'the', 'some', 'object'])
         """
         # todo: url decoding
+        if isinstance(uri, unicode):
+            uri = uri.encode(URI_ENCODING)
+
+        # todo: Test to tries to parse URI from non unicode string
+            
         m = cls._RE_URI.match(uri)
         if m is None:
-            raise URIFormatError('Wrong link format: "{}"'.format(uri))
+            raise URIFormatError('Wrong link format: {!r}'.format(uri))
 
         d = m.groupdict()
         scheme = d.get('scheme')
+        scheme = unquote(scheme).decode(URI_ENCODING) if scheme else scheme
+
         storage = d.get('storage')
+        storage = unquote(storage).decode(URI_ENCODING) if storage else storage
+
         path = d.get('path', '')
-        path = tuple(path.split('/'))  # todo: add tailslash
+        path = tuple([unquote(s).decode(URI_ENCODING) for s in path.split('/')])  # todo: add tailslash
         assert path[0] == ''
         path = path[1:]
         params = d.get('params', '') or ''
-        params = splitparams(params)
+        params = tuple([(unquote(k).decode(URI_ENCODING), unquote(v).decode(URI_ENCODING)) for k, v in splitparams(params)])
         anchor = d.get('anchor', None)
+        if anchor:
+            anchor = unquote(anchor).decode(URI_ENCODING)
         return scheme, storage, path, params, anchor
 
     def __new__(cls, scheme=None, storage=None, path=None, params=None, anchor=None):
@@ -74,16 +94,36 @@ class URI(tuple):
 
         return tuple.__new__(cls, (_scheme, _storage, _path, _params, _anchor))
 
+    def __unicode__(self):
+        return str(self).decode(URI_ENCODING)
+        
     def __str__(self):
-        # todo: url encoding
         scheme, storage, path, params, anchor = self
-        return u'{scheme}{storage}{path}{params}{anchor}'.format(
-            scheme='{}://'.format(scheme) if scheme else '',
-            storage=storage or '',
-            path=('/' + '/'.join(path)) if path else '',
-            params=('?' + '&'.join(('{}{}'.format(k, ('=' + v) if v else '') for k, v in params))) if params else '',
-            anchor='#{}'.format(anchor) if anchor is not None else '',  # todo: use unicode!
-        ).encode('utf-8')  # todo: test valid unicode
+        try:
+            if path:
+                path = [quote(s.encode(URI_ENCODING)) for s in path]
+
+            if params:
+                params = [
+                    '{}{}'.format(
+                        quote(k.encode(URI_ENCODING)),
+                        '=' + quote(v.encode(URI_ENCODING))
+                    ) if v else ''
+                    for k, v in params
+                ]
+                
+            return '{scheme}{storage}{path}{params}{anchor}'.format(
+                scheme='{}://'.format(scheme.encode(URI_ENCODING)) if scheme else '',
+                storage=storage and quote(storage.encode(URI_ENCODING)) or '',
+                path=('/' + '/'.join(path)) if path else '',
+                params=('?' + '&'.join(params)) if params else '',
+                anchor='#{}'.format(quote(anchor.encode(URI_ENCODING))) if anchor is not None else '',
+            )
+        except UnicodeDecodeError as e:
+            e_info = dict(locals())
+            del e_info['self']
+            log.exception('Uri to string conversion error: %s', pformat(e_info))
+            raise e
 
     @classmethod
     def _make(cls, iterable, new=tuple.__new__, len=len):
@@ -185,7 +225,7 @@ class Selector(URI):
 if __name__ == '__main__':
     from pprint import pprint as pp
     try:
-        uri = URI('scheme://path/to/the/some/object?x=3&y=4&x=#my anchor')
+        uri = URI(u'scheme://path/to/the/some/object?x=3&y=4&x=#my anchor')
     except URIFormatError as e:
         print 'fail', e
     else:

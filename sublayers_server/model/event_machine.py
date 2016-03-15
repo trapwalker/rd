@@ -44,11 +44,7 @@ class Server(object):
         self.start_time = None
         # todo: blocking of init of servers with same uid
 
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, 'registry'))
-
-        self.effects = dict()
-        # get_effects(server=self)
-
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
         self.zones = []
 
         self.stat_log = StatLogger()
