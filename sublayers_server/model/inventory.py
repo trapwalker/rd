@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
-    InventoryDelItemMessage, InventoryHideMessage
+    InventoryDelItemMessage, InventoryHideMessage, InventoryIncSizeMessage
 
 EPS = 1e-5
 
@@ -128,12 +128,27 @@ class Inventory(object):
                 item_rec['item'].change(consumer=None, dv=item_rec['val'] - item_rec['val0'], ddvs=0, action=None,
                                         time=time)
 
+    def add_change_call_back(self, method):
+        if method not in self.on_change_list:
+            self.on_change_list.append(method)
+
+    def del_change_call_back(self, method):
+        if method in self.on_change_list:
+            self.on_change_list.remove(method)
+
     def on_change(self, time):
         for func in self.on_change_list:
             func(inventory=self, time=time)
 
     def can_change(self, agent):
         return agent in self.managers
+
+    def inc_max_size(self, d_size, time):
+        if d_size < 0:
+            return
+        self.max_size += d_size
+        for agent in self.visitors:
+            InventoryIncSizeMessage(agent=agent, time=time, inventory=self).post()
 
     def add_visitor(self, agent, time):
         if agent not in self.visitors:
@@ -164,7 +179,7 @@ class Inventory(object):
     def get_items(self):
         return self._items.values()
 
-    def add_item(self, item, time, position=None):
+    def add_item(self, item, time, position=None, make_change=True):
         if position is None:
             # todo: сначала поискать такой же стак, чтобы оно влезло в один стак
             position = self.get_free_position()
@@ -177,10 +192,11 @@ class Inventory(object):
         self._items.update({position: item})
         for agent in self.visitors:
             InventoryAddItemMessage(agent=agent, time=time, item=item, inventory=self, position=position).post()
-        self.on_change(time=time)
+        if make_change:
+            self.on_change(time=time)
         return True
 
-    def del_item(self, time, position=None, item=None):
+    def del_item(self, time, position=None, item=None, make_change=True):
         assert (position is not None) or (item is not None) or \
                ((position is not None) and (item is not None) and (self._items[position] == item))
         if position is None:
@@ -190,18 +206,20 @@ class Inventory(object):
         for agent in self.visitors:
             InventoryDelItemMessage(agent=agent, time=time, item=deleted_item, inventory=self,
                                     position=position).post()
-        self.on_change(time=time)
+        if make_change:
+            self.on_change(time=time)
 
     def change_position(self, item, new_position, time):
         old_position = self.get_position(item=item)
         if new_position == old_position:
             return False
         item2 = self.get_item(new_position)
-        self.del_item(position=old_position, time=time)
+        self.del_item(position=old_position, time=time, make_change=False)
         if item2 is not None:
-            self.del_item(position=new_position, time=time)
-            self.add_item(item=item2, position=old_position, time=time)
-        self.add_item(item=item, position=new_position, time=time)
+            self.del_item(position=new_position, time=time, make_change=False)
+            self.add_item(item=item2, position=old_position, time=time, make_change=False)
+        self.add_item(item=item, position=new_position, time=time, make_change=False)
+        self.on_change(time=time)
         return True
 
     def get_position(self, item):
@@ -219,6 +237,9 @@ class Inventory(object):
         for i in xrange(self.max_size):
             if self.get_item(position=i) is None:
                 return i
+
+    def get_item_count(self):
+        return len(self._items)
 
     def get_item_by_cls(self, balance_cls_list, time, min_value=0):
         for position in self._items.keys():

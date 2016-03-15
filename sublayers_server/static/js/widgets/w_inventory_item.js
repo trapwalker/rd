@@ -82,6 +82,7 @@ var WInventoryItem = (function (_super) {
     };
 
     WInventoryItem.prototype.delFromVisualManager = function () {
+        //console.log('WInventoryItem.prototype.delFromVisualManager');
         var self = this;
 
         // снетси верстку и отключить таскание

@@ -586,7 +586,7 @@ var WFireSectorsScaled = (function (_super) {
     };
 
     WFireSectorsScaled.prototype.setZoom = function(new_zoom){
-        console.log('WFireSectorsScaled.prototype.setZoom', new_zoom);
+        //console.log('WFireSectorsScaled.prototype.setZoom', new_zoom);
         var zoomAnimateTime = ConstDurationAnimation;
         var size = this.size_of_icon;
         //var diff_zoom = new_zoom - last_zoom;

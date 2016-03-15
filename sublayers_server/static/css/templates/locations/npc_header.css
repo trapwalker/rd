@@ -1,45 +1,44 @@
 .npc-header {
     position: relative;
     box-sizing: border-box;
-    margin-right: auto;
-    margin-left: auto;
-    width: 692px;
-    height: 195px;
-    font: 11pt Nouveau_IBM;
-    color: #29F200;
-    overflow: hidden;
-}
-
-.npc-wrap-header {
-    position: relative;
-    height: 175px;
-    width: 570px;
-    margin: 0px 0px 0px 13px;
-    padding-top: 5px;
+    margin: 0 auto 0 auto;
+    width: 640px;
+    height: 160px;
+    font: 13pt Nouveau_IBM;
+    color: #30fc00;
 }
 
 .npc-info {
     position: relative;
+    width: 170px;
+    height: 146px;
     float: left;
-    margin-right: 5px;
+    margin: 10px 28px 0px 10px;
+}
+
+.npc-photo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 .npc-name {
     position: relative;
-    margin-top: 8px;
+    margin: 120px auto 0 auto;
     text-align: center;
-    font: 13pt Nouveau_IBM;
+}
+
+.npc-name-span {
+    background-color: black;
+    padding: 0 5px 0 5px;
+    box-sizing: border-box;
 }
 
 .npc-text {
     height: 100%;
-    width: 395px;
+    width: 432px;
     overflow-y: auto;
     overflow-x: hidden;
-    border-width: 1px 0 0 0;
-    border-style: solid;
-    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
-    border-image-slice: 1;
+    padding: 40px 0px 0px 0px;
     box-sizing: border-box;
-    padding: 5px 0px 0px 0px;
 }

@@ -37,7 +37,7 @@ var WCarMarker = (function (_super) {
                 break;
             case 'POILoot':
                 marker.obj_id = car.ID;
-                marker.on('click', onClickPOILootMarker);
+                marker.on('click', onClickPOIContainerMarker);
                 break;
             case 'POIContainer':
                 marker.obj_id = car.ID;
@@ -243,13 +243,8 @@ function onClickUserCarMarker() {
         clientManager.sendInitBarter(car.owner.login)
 }
 
-function onClickPOILootMarker() {
-    //console.log('клик на лут! ', this.obj_id);
-    clientManager.sendGetLoot(this.obj_id)
-}
-
 function onClickPOIContainerMarker() {
     //console.log('клик на onClickPOIContainerMarker! ', this.obj_id);
-    windowTemplateManager.openUniqueWindow('container', '/container', {container_id: this.obj_id});
+    windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
     returnFocusToMap();
 }

@@ -1,5 +1,5 @@
 <div>
-    {% raw open(svg_link).read() %}
+    {% raw svg_code %}
     <div id="townChatPageWrap" class="townPageWrap" style="display: none">
         <div id="chatTownWrap"></div>
         <div id="visitorListWrap">
@@ -68,13 +68,13 @@
     {% end %}
 
     {% if town.example.hangar is not None %}
-    <div id="townHangarPageWrap" class="townPageWrap" style="display: none">
+    <div id="townHangarPageWrap" class="townPageWrap townHTMLPage" style="display: none">
         {% include hangar_window.html %}
     </div>
     {% end %}
 
     {% if town.example.parking is not None %}
-    <div id="townParkingPageWrap" class="townPageWrap" style="display: none">
+    <div id="townParkingPageWrap" class="townPageWrap townHTMLPage" style="display: none">
         {% include parking_window.html %}
     </div>
     {% end %}

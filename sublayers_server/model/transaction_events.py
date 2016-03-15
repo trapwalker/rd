@@ -255,7 +255,7 @@ class TransactionArmorerApply(TransactionEvent):
 
     def on_perform(self):
         super(TransactionArmorerApply, self).on_perform()
-
+        get_flags = '{}_f'.format
         agent = self.agent
         # Проверяем есть ли у агента машинка
         if not agent.example.car:
@@ -288,6 +288,12 @@ class TransactionArmorerApply(TransactionEvent):
             if new_item is None:  # если в данном слоте должно быть пусто
                 continue  # то идём к следующему шагу цикла
 
+            # Если у слота установлено недопустимое направление, то перейти к следующему итему
+            if self.armorer_slots[slot_name]['direction'] not in getattr(ex_car, get_flags(slot_name)):
+                log.warning('Alarm: Direction for slot<%s> dont access (slot: %s; direction: %s)', slot_name,
+                            getattr(ex_car, get_flags(slot_name)), self.armorer_slots[slot_name]['direction'])
+                continue
+
             if old_item is not None:  # поворот итема или отсутствие действия
                 if old_item.direction != self.armorer_slots[slot_name]['direction']:  # поворот
                     # todo: добавить стоимость поворота итема
@@ -300,9 +306,16 @@ class TransactionArmorerApply(TransactionEvent):
                         break
                 if search_item is not None:
                     # todo: добавить стоимость монтажа итема
-                    armorer_buffer.remove(search_item)
-                    search_item.direction = self.armorer_slots[slot_name]['direction']
-                    ex_car.values[slot_name] = search_item
+                    # Проверка допустимости веса для слота
+                    slot_weight = int(getattr(ex_car, get_flags(slot_name)).split('_')[1])
+                    item_weight = int(getattr(search_item, 'weight_class'))
+                    if slot_weight >= item_weight:
+                        armorer_buffer.remove(search_item)
+                        search_item.direction = self.armorer_slots[slot_name]['direction']
+                        ex_car.values[slot_name] = search_item
+                    else:
+                        log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s', item_weight,
+                                    slot_name, slot_weight)
 
         # Закидываем буффер в инвентарь
         position = 0

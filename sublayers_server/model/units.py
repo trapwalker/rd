@@ -233,13 +233,13 @@ class Unit(Observer):
         if not self.inventory.is_empty():
             CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
                                inventory_size=self.example.inventory_size, position=self.position(event.time),
-                               life_time=60.0, items=self.inventory.get_items()).post()
+                               life_time=600.0, items=self.inventory.get_items()).post()
 
     def drop_item_to_map(self, item, time):
         CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,
-                           inventory_size=self.example.inventory_size,
+                           inventory_size=1,
                            position=Point.random_gauss(self.position(time), 10),
-                           life_time=60.0, items=[item]).post()
+                           life_time=600.0, items=[item]).post()
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
