@@ -200,7 +200,7 @@ class LocalServer(Server):
             except:
                 log.exception('Event performing error %s', event)
 
-        log.info('---- Event loop stop ' + '-' * 50 + '\n')
+        log.info('---- Event loop finished ' + '-' * 50 + '\n')
 
     def start(self):
         if self.thread:
