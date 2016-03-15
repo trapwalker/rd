@@ -26,7 +26,6 @@ class Effect(Root):
     sign        = TextAttribute(caption=u'Знак', default=-1)
     is_stack    = TextAttribute(caption=u'Стекается?', default=False)
     absolute    = TextAttribute(caption=u'Абсолютное значение', default=False)
-    message     = TextAttribute(caption=u'Класс сообщения клиенту', default=None)
 
     def __init__(self, *av, **kw):
         super(Effect, self).__init__(*av, **kw)
@@ -82,9 +81,8 @@ class Effect(Root):
                 method = getattr(owner, self.upd_method)
                 if method:
                     method(time=time)
-            if self.message:
-                if owner.owner:
-                    self.message(agent=owner.owner, subj=owner, effect=self, is_start=True).post()
+
+            # todo: send message to client
 
         owner.effects.append(self)
 
@@ -108,9 +106,8 @@ class Effect(Root):
                 method = getattr(owner, self.upd_method)
                 if method:
                     method(time=time)
-            if self.message:
-                if owner.owner:
-                    self.message(agent=owner.owner, subj=owner, effect=self, is_start=False).post()
+
+            # todo: send message to client
 
 
 class EffectStartEvent(Event):
