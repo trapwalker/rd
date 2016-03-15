@@ -155,7 +155,8 @@ var TimeManager = (function () {
         }
         timeManager._redraw_time = time_start;
 
-        CanvasTestStart();
+        //CanvasTestStart();
+        mapCanvasManager.redraw(time);
 
         return requestAnimationFrame(timeManager._interval_perform);
 

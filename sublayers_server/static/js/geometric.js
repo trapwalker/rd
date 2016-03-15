@@ -15,6 +15,12 @@ var Point = (function () {
         return Math.sqrt((this.x * this.x) + (this.y * this.y));
     };
 
+    Point.prototype.round = function() {
+        var x_sign = this.x > 0 ? 1 : -1;
+        var y_sign = this.y > 0 ? 1 : -1;
+        return new Point(((Math.abs(this.x) >> 1) << 1) * x_sign, ((Math.abs(this.y) >> 1) << 1) * y_sign);
+    };
+
     return Point;
 })();
 

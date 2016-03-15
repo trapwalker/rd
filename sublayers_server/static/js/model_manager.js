@@ -346,6 +346,9 @@ var ClientManager = (function () {
             }
 
 
+            // Инициализация виджетов работы с канвасом
+            new WObservingRange(mcar);
+
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
         }

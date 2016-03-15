@@ -10,9 +10,6 @@ function CanvasTestStart() {
     //console.log('CanvasTestStart');
     b_context.clearRect(0, 0, 1920, 1080);
 
-    var center_x = 1000;
-    var center_y = 500;
-
     var center = [{x: 700, y: 400}, {x: 1000, y: 500}];
     var radius = [400, 390, 380, 370, 360];
     //var color = ["rgba(255, 0, 0, 0.8)", "rgba(0, 255, 0, 0.6)", "rgba(0, 0, 255, 0.4)", "rgba(0, 255, 255, 0.2)", "rgba(255, 255, 255, 0)"];

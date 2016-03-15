@@ -97,12 +97,9 @@ $(document).ready(function () {
         returnFocusToMap();
     });
 
-    b_canvas = document.getElementById("ctest_1");
-    b_context = b_canvas.getContext("2d");
-    b_canvas.width = 1920;
-    //b_canvas.style.width = window.innerWidth + 'px';
-    b_canvas.height = 1080;
-    //b_canvas.style.height = window.innerHeight + 'px';
+
+    mapCanvasManager = new MapCanvasManager();
+
 
     img.push(new Image());
     img.push(new Image());
@@ -112,7 +109,6 @@ $(document).ready(function () {
     img[1].src = '/static/img/n2.png';
     img[2].src = '/static/img/n3.png';
     img[3].src = '/static/img/n4.png';
-    CanvasTestStart();
 });
 
 var b_canvas;
