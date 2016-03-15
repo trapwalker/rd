@@ -49,11 +49,13 @@ class Effect(Root):
         EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
     def _modify(self, on, p, m_value, r_value):
+        assert not self.abstract
         sign = self.sign if on else -self.sign
         original = 1.0 if self.absolute else p.original
         p.current += sign * original * m_value * (1 - r_value)
 
     def on_update(self, owner, param_name, old_p_value):
+        assert not self.abstract
         if param_name in self.dependence_list:
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
@@ -64,6 +66,7 @@ class Effect(Root):
             self._modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
     def on_start(self, owner, time):
+        assert not self.abstract
         if self.is_stack or not (self in owner.effects):
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
@@ -86,6 +89,7 @@ class Effect(Root):
         owner.effects.append(self)
 
     def on_done(self, owner, time):
+        assert not self.abstract
         if self not in owner.effects:
             return
         owner.effects.remove(self)
