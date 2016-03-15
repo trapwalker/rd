@@ -7,15 +7,6 @@ from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Attribute, TextAttribute
 
 from sublayers_server.model.events import Event
-from sublayers_server.model.balance import EffectsDict
-
-
-# def get_effects(server):
-#     for d in EffectsDict.dicts:
-#         e = Effect(server=server, **d)
-#         log.info(e)
-# 
-#     log.info('Effects Ready: %s', len(server.effects.keys()))
 
 
 class Effect(Root):
@@ -30,7 +21,6 @@ class Effect(Root):
     def __init__(self, *av, **kw):
         super(Effect, self).__init__(*av, **kw)
         self.dependence_list = [self.m_name, self.r_name]
-        # server.effects.update({name: self})
 
     def __str__(self):
         return ('<{self.uri} {details}>'.format(

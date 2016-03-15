@@ -7,51 +7,6 @@ class BalanceSettingsABS:
         raise NotImplementedError
 
 
-class EffectsDict:
-    dicts = [
-        # dirt
-        dict(name='EffectDirtCC', param_name='p_cc', m_name='m_cc_dirt', r_name='r_cc_dirt',
-             upd_method='set_motion', sign=-1.0),
-
-        # wood
-        dict(name='EffectWoodCC', param_name='p_cc', m_name='m_cc_wood', r_name='r_cc_wood',
-             upd_method='set_motion', sign=-1.0),
-        dict(name='EffectWoodVisibilityMin', param_name='p_visibility_min', m_name='m_visibility_wood',
-             r_name='r_visibility_wood', sign=-1.0),
-        dict(name='EffectWoodVisibilityMax', param_name='p_visibility_max', m_name='m_visibility_wood',
-             r_name='r_visibility_wood', sign=-1.0),
-        dict(name='EffectWoodObsRange', param_name='p_observing_range', m_name='m_observing_range_wood',
-             r_name='r_observing_range_wood', upd_method='upd_observing_range', sign=-1.0),
-
-        # water
-        dict(name='EffectWaterCC', param_name='p_cc', m_name='m_cc_water', r_name='r_cc_water',
-             upd_method='set_motion', sign=-1.0),
-
-        # road
-        # road effects_resist
-        dict(name='EffectRoadRCCWood', param_name='r_cc_wood', m_name='m_r_cc_wood_on_road',
-             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
-        dict(name='EffectRoadRCCWater', param_name='r_cc_water', m_name='m_r_cc_water_on_road',
-             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
-        dict(name='EffectRoadRCCDirt', param_name='r_cc_dirt', m_name='m_r_cc_dirt_on_road',
-             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
-        dict(name='EffectRoadRCCSlope', param_name='r_cc_slope', m_name='m_r_cc_slope_on_road',
-             r_name='r_empty', upd_method='set_motion', absolute=True, sign=1.0),
-
-        # slope
-        dict(name='EffectSlopeCC', param_name='p_cc', m_name='m_cc_slope', r_name='r_cc_slope',
-             upd_method='set_motion', sign=-1.0),
-
-        # mine effects
-        dict(name='EffectMineCC', param_name='p_cc', m_name='m_cc_mine', r_name='r_cc_mine',
-             upd_method='set_motion', sign=-1.0),
-
-        # empty fuel effect
-        dict(name='EffectEmptyFuel', param_name='p_cc', m_name='m_cc_fuel_empty', r_name='r_cc_fuel_empty',
-             upd_method='set_motion', sign=-1.0),
-    ]
-
-
 class BALANCE(BalanceSettingsABS):
     """Gameplay balancing settings"""
 
