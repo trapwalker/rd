@@ -336,10 +336,10 @@ class Mobile(Unit):
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params())
-        self.fuel_state = FuelState(t=time,
-                                    max_fuel=self.example.get_modify_value(param_name='max_fuel',
-                                                                           example_agent=self.owner_example),
-                                    fuel=self.example.fuel)
+        self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self.example.get_modify_value(
+            param_name='max_fuel',
+            example_agent=self.owner_example
+        ))
         self.cur_motion_task = None
 
         v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
