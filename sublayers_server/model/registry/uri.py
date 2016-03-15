@@ -196,6 +196,11 @@ class URI(tuple):
     anchor = property(itemgetter(4), doc='Anchor of the link')
 
     def resolve(self):
+        """
+        @rtype: Node
+        @return: Registry node, resolved by URI
+        """
+        # todo: declare throwing exceptions: URIFormatError, StorageNotFound
         from sublayers_server.model.registry.tree import Node
         return Node.DISPATCHER[self]  # todo: (!!!!) fix it
 

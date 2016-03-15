@@ -11,7 +11,6 @@ from uuid import uuid4 as uid_func
 import pickle
 import yaml
 import yaml.scanner  # todo: extract serialization layer
-import sys
 import os
 
 
@@ -87,6 +86,10 @@ class AbstractStorage(object):
         raise WrongStorageError("Can't resolve storage {!r}".format(uri.storage))
 
     def __getitem__(self, item):
+        """
+        @rtype: Node
+        @return: Registry node, resolved by URI
+        """
         if isinstance(item, basestring):
             item = URI(item)  # todo: optimize избавиться от неоднозначности строка/uri
 
