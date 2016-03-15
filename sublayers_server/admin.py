@@ -56,8 +56,8 @@ class AdmCmd(cmd2.Cmd):
         self.db = db
 
     def do_stat(self, arg):
-        print '{:20}: {:6}'.format('Agents count', db.agents.count())
-        print '{:20}: {:6}'.format('Profiles count', db.profiles.count())
+        print '{:20}: {:6}'.format('Agents count', self.db.agents.count())
+        print '{:20}: {:6}'.format('Profiles count', self.db.profiles.count())
     
     def do_reset(self, arg):
         '''
@@ -69,7 +69,7 @@ class AdmCmd(cmd2.Cmd):
         args = arg.split()
 
         for collection in args:
-            clean_collection(db, collection)
+            clean_collection(self.db, collection)
 
     def do_update(self, arg):
         r1p = os.path.join(PROJECT_PATH, '..')
