@@ -114,16 +114,16 @@ class AbstractStorage(object):
             self.dispatcher = None
 
     def get_local(self, path):
-        raise Exception('Unimplemented abstract method')
+        raise NotImplementedError('Unimplemented abstract method')
 
     def put(self, node):
-        raise Exception('Unimplemented abstract method')
+        raise NotImplementedError('Unimplemented abstract method')
 
     def get_path_tuple(self, node):
-        raise Exception('Unimplemented abstract method')
+        raise NotImplementedError('Unimplemented abstract method')
 
     def save_node(self, node):
-        raise Exception('Unimplemented abstract method')
+        raise NotImplementedError('Unimplemented abstract method')
 
 
 class Dispatcher(AbstractStorage):
