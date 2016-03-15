@@ -34,7 +34,13 @@ class Effect(Root):
         # server.effects.update({name: self})
 
     def __str__(self):
-        return '{}<{} := ({}, {})>'.format(self.name, self.param_name, self.m_name, self.r_name)
+        return ('<{self.uri} {details}>'.format(
+            self=self,
+            details= (
+                'ABSTRACT' if self.abstract else
+                '{self.param_name}=*{self.m_name}/{self.r_name})'.format(self=self)
+            )
+        ))
 
     def start(self, owner, time):
         EffectStartEvent(effect=self, owner=owner, time=time).post()
