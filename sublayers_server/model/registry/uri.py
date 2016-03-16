@@ -205,6 +205,7 @@ class URI(tuple):
         return Node.DISPATCHER[self]  # todo: (!!!!) fix it
 
     def instantiate(self, storage=None, name=None, **kw):
+        u'''Этот метод отличается от того, что в ноде добавлением в инстанс параметров из URI'''
         # todo: declare exceptions
         params = self.params
         params = params.copy() if params else {}

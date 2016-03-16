@@ -84,6 +84,9 @@
     <script src="{{ static_url('js/geometric.js') }}"></script>
     <script src="{{ static_url('js/generator_ID.js') }}"></script>
 
+{#    <script src="{{ static_url('js/third_party/blur.js') }}"></script>#}
+{#    <script src="{{ static_url('js/canvas_test.js') }}"></script>#}
+
     <script src="{{ static_url('js/message_stream.js') }}"></script>
 
     <script src="{{ static_url('js/window.js') }}"></script>
@@ -96,6 +99,8 @@
     <script src="{{ static_url('js/fire_manager.js') }}"></script>
     <script src="{{ static_url('js/inventory_manager.js') }}"></script>
     <script src="{{ static_url('js/item_balance_cls_manager.js') }}"></script>
+
+    <script src="{{ static_url('js/map_canvas_manager.js') }}"></script>
 
     <script src="{{ static_url('js/connector.js') }}"></script>
 
@@ -119,6 +124,9 @@
     <script src="{{ static_url('js/widgets/w_dashboard/w_altmetr_radial.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_dashboard/w_cruise_control.js') }}"></script>
     <script src="{{ static_url('js/widgets/central/w_fire_sectors_scaled.js') }}"></script>
+
+    <script src="{{ static_url('js/widgets/canvas/w_observing_range.js') }}"></script>
+
     <script src="{{ static_url('js/context_panel.js') }}"></script>
 
     <script src="{{ static_url('js/effects/rocket_bang.js') }}"></script>
@@ -144,7 +152,13 @@
 <body>
 <div id="bodydiv">
     <div id="map"></div>
+
+    <div style="position: absolute; width: 100%; height: 100%; pointer-events: none;">
+        <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
+    </div>
+
     <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
+    <div style="position: absolute; right: 15px; top: 6px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
     <div id="divMainMenu">
         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Персонаж</div>
         <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Главная</div>
@@ -196,6 +210,7 @@
         <span id="settings_ws_port">{{ ws_port }}</span>
         <span id="settings_map_link">{{ map_link }}</span>
     </div>
+
 </div>
 </body>
 </html>

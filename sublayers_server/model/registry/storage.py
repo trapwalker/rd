@@ -81,7 +81,7 @@ class AbstractStorage(object):
 
         dispatcher = self.dispatcher
         if dispatcher:
-            return dispatcher.get_node(proto=uri.scheme, storage=uri.storage, path=uri.path)
+            return dispatcher.get_node(uri)
 
         raise WrongStorageError("Can't resolve storage {!r}".format(uri.storage))
 

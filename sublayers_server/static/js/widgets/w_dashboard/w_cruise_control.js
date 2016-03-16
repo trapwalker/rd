@@ -163,6 +163,7 @@ var WCruiseControl = (function (_super) {
         this.zoneWaterIconDiv = $("<div id='cruiseControlZoneWaterIconDiv'></div>");
         this.zoneSlopeIconDiv = $("<div id='cruiseControlZoneSlopeIconDiv'></div>");
 
+        // todo: Получать полный список зон с сервера
         this.zoneIconAreaDiv.append(this.zoneDirtIconDiv);
         this.zoneIconAreaDiv.append(this.zoneWoodIconDiv);
         this.zoneIconAreaDiv.append(this.zoneRoadIconDiv);

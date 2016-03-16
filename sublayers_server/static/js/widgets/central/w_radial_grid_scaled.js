@@ -223,8 +223,6 @@ var WRadialGridScaled = (function (_super) {
 
     };
 
-
-
     WRadialGridScaled.prototype.change = function(t){
         //console.log('WFireRadialGrid.prototype.change');
         return;
@@ -263,7 +261,6 @@ var WRadialGridScaled = (function (_super) {
                 return true;
         return false;
     };
-
 
     WRadialGridScaled.prototype.setZoom = function(new_zoom){
         //console.log('WRadialGridScaled.prototype.setZoom ', new_zoom);

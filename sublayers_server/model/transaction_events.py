@@ -176,7 +176,7 @@ class TransactionHangarChoice(TransactionEvent):
 
     def on_perform(self):
         super(TransactionHangarChoice, self).on_perform()
-
+        # todo: (!) сделать проверки безопасности правильно
         if not (self.agent.current_location and self.agent.current_location.example.hangar):
             return
 
@@ -187,6 +187,7 @@ class TransactionHangarChoice(TransactionEvent):
         # todo: refactoring (use inventory to choose car)
 
         if self.agent.example.balance >= car_proto.price:
+            # todo: message to client if not enough money
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example

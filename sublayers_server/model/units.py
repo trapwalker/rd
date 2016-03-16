@@ -397,6 +397,8 @@ class Mobile(Unit):
             v_forward=self.state.v_forward,
             v_backward=self.state.v_backward,
             p_cc=self.params.get('p_cc').value,
+            p_obs_range_rate_max=self.params.get('p_obs_range_rate_max').value,
+            p_obs_range_rate_min=self.params.get('p_obs_range_rate_min').value,
         )
         return d
 
@@ -413,7 +415,9 @@ class Mobile(Unit):
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
-            self.server.reg['/effects/fuel/empty'].done(owner=self, time=time)  # снять эффект
+            ef = self.server.reg.get('/effects/fuel/empty')
+            if ef:
+                ef.done(owner=self, time=time)  # снять эффект
 
         FuelTask(owner=self, df=df).start(time=time)
 
@@ -425,7 +429,9 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        self.server.reg['/effects/fuel/empty'].start(owner=self, time=event.time)
+        ef = self.server.reg.get('/effects/fuel/empty')
+        if ef:
+            ef.start(owner=self, time=event.time)
 
     def v(self, time):
         return self.state.v(t=time)
@@ -443,6 +449,10 @@ class Mobile(Unit):
         super(Mobile, self).save(time=time)
         self.example.fuel = self.fuel(time=time)
 
+    def upd_observing_range(self, time):  # todo: возможно это неверно работает! найти высоту или лес и проверить в пати
+        super(Mobile, self).upd_observing_range(time)
+        for agent in self.watched_agents:
+            messages.UpdateObservingRange(agent=agent, obj=self, time=time).post()
 
 class Bot(Mobile):
     @property
@@ -458,10 +468,6 @@ class Bot(Mobile):
         super(Bot, self).del_from_chat(chat=chat, time=time)
         if self.owner:
             chat.room.exclude(agent=self.owner, time=time)
-
-    def upd_observing_range(self, time):
-        super(Bot, self).upd_observing_range(time)
-        messages.UpdateObservingRange(agent=self.main_agent, obj=self, time=time).post()
 
     def on_kill(self, time, obj):
         super(Bot, self).on_kill(time=time, obj=obj)

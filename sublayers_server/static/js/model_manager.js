@@ -137,8 +137,8 @@ var ClientManager = (function () {
                 var e = params.events[0];
                 if (typeof(this[e.cls]) === 'function')
                     this[e.cls](e);
-                else
-                    console.warn('Warning: неизвестная API-команда для ClientManager: ', e.cls);
+                //else
+                //    console.warn('Warning: неизвестная API-команда для ClientManager: ', e.cls);
             }
 
             /*
@@ -171,8 +171,11 @@ var ClientManager = (function () {
             var fuel_state = null; //this._getFuelState(event.object.fuel_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
-            var radius_visible = event.object.r;
+            var p_observing_range = event.object.p_observing_range;
+            var aObsRangeRateMin = event.object.p_obs_range_rate_min;
+            var aObsRangeRateMax = event.object.p_obs_range_rate_max;
             var main_agent_login = event.object.main_agent_login;
+            var v_forward = event.object.v_forward;
 
             // Проверка: нет ли уже такой машинки.
             var car = this._getMObj(uid);
@@ -183,7 +186,7 @@ var ClientManager = (function () {
             }
 
             // Создание новой машинки
-            car = new MapCar(uid, state, hp_state, fuel_state);
+            car = new MapCar(uid, state, hp_state, fuel_state, v_forward, p_observing_range, aObsRangeRateMin, aObsRangeRateMax);
             car.role = event.object.role;
             car.cls = event.object.cls;
             car.main_agent_login = main_agent_login;
@@ -294,7 +297,9 @@ var ClientManager = (function () {
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
-        var radius_visible = event.car.r;
+        var p_observing_range = event.car.p_observing_range;
+        var aObsRangeRateMin = event.car.p_obs_range_rate_min;
+        var aObsRangeRateMax = event.car.p_obs_range_rate_max;
         var uid = event.car.uid;
         var role = event.car.role;
         var state = this._getState(event.car.state);
@@ -313,7 +318,9 @@ var ClientManager = (function () {
                 state,
                 hp_state,
                 fuel_state,
-                radius_visible
+                p_observing_range,
+                aObsRangeRateMin,
+                aObsRangeRateMax
             );
             for (var i = 0; i < fireSectors.length; i++)
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
@@ -334,7 +341,7 @@ var ClientManager = (function () {
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            new WViewRadius(mcar); // виджет радиуса видимости
+            //new WViewRadius(mcar); // виджет радиуса видимости
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
@@ -345,6 +352,12 @@ var ClientManager = (function () {
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
             }
 
+            // Инициализация виджетов работы с канвасом
+            if (!wObservingRange) {
+                wObservingRange = new WObservingRange();
+                wObservingRange.addModelObject(mcar);
+            } else
+                wObservingRange.addModelObject(mcar);
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
@@ -481,7 +494,8 @@ var ClientManager = (function () {
             // Удаление машинки (убрать саму машинку из визуалменеджера)
             car.delFromVisualManager();
 
-            if (car == user.userCar) user.userCar = null;
+            if (car == user.userCar)
+                user.userCar = null;
         }
     };
 
@@ -521,13 +535,20 @@ var ClientManager = (function () {
             console.error('Error! Пришла высота на неизветную машинку!')
     };
 
-    ClientManager.prototype.UpdateObservingRange = function(event){
-//         console.log('ClientManager.prototype.UpdateObservingRange ', event);
-        if (event.obj_id == user.userCar.ID){
-            user.userCar.radius_visible = event.p_observing_range;
-        }
+    ClientManager.prototype.UpdateObservingRange = function (event) {
+        //console.log('ClientManager.prototype.UpdateObservingRange ', event);
+        var car = this._getMObj(event.obj_id);
+        car.p_observing_range = event.p_observing_range;
+    };
+
+    ClientManager.prototype.SetObserverForClient = function(event) {
+        //console.log('ClientManager.prototype.SetObserverForClient ', event.enable, event.obj_id, mobj);
+        var mobj = this._getMObj(event.obj_id);
+        if (! mobj) return;
+        if (event.enable)
+            wObservingRange.addModelObject(mobj);
         else
-            console.error('Error! Пришло изменение радиуса обзора на неизветную машинку!')
+            wObservingRange.delModelObject(mobj);
     };
 
     ClientManager.prototype.FireDischarge = function (event) {

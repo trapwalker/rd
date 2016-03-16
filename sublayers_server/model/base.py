@@ -241,13 +241,9 @@ class Observer(VisibleObject):
 
         super(Observer, self).on_before_delete(event=event)
 
-    @property
-    def r(self):
-        return self.params.get('p_observing_range').value
-
     def as_dict(self, time):
         d = super(Observer, self).as_dict(time=time)
-        d.update(r=self.r)
+        d.update(p_observing_range=self.get_observing_range(time=time))
         return d
 
     def on_die(self, event):
