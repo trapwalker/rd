@@ -344,7 +344,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.change = function () {
         //console.log('WFireController.prototype.change');
-        return;
+        //return;
         var time = clock.getCurrentTime();
 
         // Вращаем виджет
