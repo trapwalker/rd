@@ -64,14 +64,14 @@ class Server(object):
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        zones = list(self.reg['/zones'])
-        zones.sort(key=lambda a_zone: a_zone.order_key)
-        for zone in zones:
+        for zone in sorted(self.reg.get('/zones', ()), key=lambda a_zone: a_zone.order_key):
             try:
                 if not zone.is_active:
                     log.debug('Zone %s activation start', zone)
                     zone.activate(server=self, time=time)
                     # todo: Генерировать исключения при неудачной активации зон
+                    # todo: Измерять время активации зон
+                    # todo: Фрагментарная параллельная загрузка зон
                 if zone.is_active:
                     log.info('Zone %s activated successfully', zone)
                 else:

@@ -56,7 +56,6 @@ class Node(object):
 
     # todo: override attributes in subclasses
     #abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
-    #parent = RegistryLink(caption=u'Родительский элемент', need_to_instantiate=False)
     can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
     doc = DocAttribute()
     tags = TagsAttribute(caption=u'Теги', tags="client")
