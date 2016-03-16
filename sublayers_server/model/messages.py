@@ -177,6 +177,18 @@ class UpdateObservingRange(Message):
         return d
 
 
+class SetObserverForClient(Message):
+    def __init__(self, obj, enable, **kw):
+        super(SetObserverForClient, self).__init__(**kw)
+        self.obj = obj
+        self.enable = enable
+
+    def as_dict(self):
+        d = super(SetObserverForClient, self).as_dict()
+        d.update(obj_id=self.obj.uid, enable=self.enable)
+        return d
+
+
 class Contact(Subjective):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}; obj={self.obj}>'
 

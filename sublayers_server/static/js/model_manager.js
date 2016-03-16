@@ -531,13 +531,25 @@ var ClientManager = (function () {
             console.error('Error! Пришла высота на неизветную машинку!')
     };
 
-    ClientManager.prototype.UpdateObservingRange = function(event){
-//         console.log('ClientManager.prototype.UpdateObservingRange ', event);
-        if (event.obj_id == user.userCar.ID){
-            user.userCar.radius_visible = event.p_observing_range;
+    ClientManager.prototype.UpdateObservingRange = function (event) {
+        //console.log('ClientManager.prototype.UpdateObservingRange ', event);
+        var car = this._getMObj(event.obj_id);
+        car.p_observing_range = event.p_observing_range;
+    };
+
+    ClientManager.prototype.SetObserverForClient = function(event) {
+        console.log('ClientManager.prototype.SetObserverForClient ', event);
+        var mobj = this._getMObj(event.uid);
+        if (! mobj) {
+            console.error('Такого объекта нет на клиенте.');
+            return;
         }
-        else
-            console.error('Error! Пришло изменение радиуса обзора на неизветную машинку!')
+        if (event.enable) {
+            wObservingRange.addModelObject(mobj);
+        }
+        else {
+            wObservingRange.delModelObject(mobj);
+        }
     };
 
     ClientManager.prototype.FireDischarge = function (event) {
