@@ -22,7 +22,9 @@ if __name__ == '__main__':
     from pprint import pprint as pp
     import yaml
 
-    reg = storage.Registry(name='registry', path=r'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    log.debug('Registry loading start')
+    reg = storage.Registry(name='registry', path=ur'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    log.debug('Registry loading done')
     # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
     # sedan = reg['/mobiles/cars/sedan']
     #
@@ -71,7 +73,5 @@ if __name__ == '__main__':
     #tr = reg['/institutions/trader/buhman']
     #pp(tr.as_client_dict(items=car.inventory))
 
-    np1 = reg['/poi/locations/towns/prior']
-
-    q = reg['/quests/killer/n_kills']
-    print q
+    e = reg['/effects/zonal/water']
+    print repr(e)

@@ -336,10 +336,10 @@ class Mobile(Unit):
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params())
-        self.fuel_state = FuelState(t=time,
-                                    max_fuel=self.example.get_modify_value(param_name='max_fuel',
-                                                                           example_agent=self.owner_example),
-                                    fuel=self.example.fuel)
+        self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self.example.get_modify_value(
+            param_name='max_fuel',
+            example_agent=self.owner_example
+        ))
         self.cur_motion_task = None
 
         v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
@@ -412,8 +412,9 @@ class Mobile(Unit):
 
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
-            self.server.effects.get('EffectEmptyFuel').done(owner=self, time=time)  # снять эффект
-            # log.debug('====== ----- ====== EffectEmptyFuel is done ====== ----- ======')
+            # todo: fix it for df < 0 #fixit
+            self.server.reg['/effects/fuel/empty'].done(owner=self, time=time)  # снять эффект
+
         FuelTask(owner=self, df=df).start(time=time)
 
     def on_before_delete(self, event):
@@ -424,8 +425,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        self.server.effects.get('EffectEmptyFuel').start(owner=self, time=event.time)
-        # log.debug('====== ----- ====== EffectEmptyFuel is started ====== ----- ======')
+        self.server.reg['/effects/fuel/empty'].start(owner=self, time=event.time)
 
     def v(self, time):
         return self.state.v(t=time)
