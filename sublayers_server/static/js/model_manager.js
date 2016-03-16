@@ -341,7 +341,7 @@ var ClientManager = (function () {
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            new WViewRadius(mcar); // виджет радиуса видимости
+            //new WViewRadius(mcar); // виджет радиуса видимости
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
@@ -354,7 +354,12 @@ var ClientManager = (function () {
 
 
             // Инициализация виджетов работы с канвасом
-            wObservingRange = new WObservingRange(mcar);
+            if (!wObservingRange) {
+                wObservingRange = new WObservingRange();
+                wObservingRange.addModelObject(mcar);
+            } else {
+                wObservingRange.addModelObject(mcar);
+            }
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
@@ -491,7 +496,8 @@ var ClientManager = (function () {
             // Удаление машинки (убрать саму машинку из визуалменеджера)
             car.delFromVisualManager();
 
-            if (car == user.userCar) user.userCar = null;
+            if (car == user.userCar)
+                user.userCar = null;
         }
     };
 
@@ -538,12 +544,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.SetObserverForClient = function(event) {
-        console.log('ClientManager.prototype.SetObserverForClient ', event);
-        var mobj = this._getMObj(event.uid);
-        if (! mobj) {
-            console.error('Такого объекта нет на клиенте.');
-            return;
-        }
+        var mobj = this._getMObj(event.obj_id);
+        console.log('ClientManager.prototype.SetObserverForClient ', event.enable, mobj, event.obj_id);
+        if (! mobj) return;
         if (event.enable) {
             wObservingRange.addModelObject(mobj);
         }

@@ -8,8 +8,8 @@
 var WObservingRange = (function (_super) {
     __extends(WObservingRange, _super);
 
-    function WObservingRange(car) {
-        _super.call(this, [car]);
+    function WObservingRange() {
+        _super.call(this, []);
         this.lastZoom = 1;
         this.old_position = {x: 0, y: 0};
         mapCanvasManager.add_vobj(this);
@@ -29,7 +29,7 @@ var WObservingRange = (function (_super) {
 
             var grad1 = ctx.createRadialGradient(car_ctx_pos.x, car_ctx_pos.y, 0, car_ctx_pos.x, car_ctx_pos.y, outher_radius);
             grad1.addColorStop(0, "rgba(0,0,0,1)");
-            grad1.addColorStop(0.5, "rgba(0,0,0,1)");
+            grad1.addColorStop(0.8, "rgba(0,0,0,1)");
             grad1.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.fillStyle = grad1;

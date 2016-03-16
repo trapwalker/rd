@@ -168,17 +168,17 @@ class Agent(Object):
             self.on_see(time=time, subj=observer, obj=vo)
         SetObserverForClient(agent=self, time=time, obj=observer, enable=True).post()
 
-
     def drop_observer(self, observer, time):
         if not self.is_online:
             return
-        SetObserverForClient(agent=self, time=time, obj=observer, enable=False).post()
         # remove _self_ from all _visible objects_ by _observer_
         for vo in observer.visible_objects:
             self.on_out(time=time, subj=observer, obj=vo)
         self.on_out(time=time, subj=observer, obj=observer)
         observer.watched_agents[self] -= 1
         self.observers[observer] -= 1
+        if self.observers[observer] == 0:
+            SetObserverForClient(agent=self, time=time, obj=observer, enable=False).post()
 
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
