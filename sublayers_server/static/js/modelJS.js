@@ -132,9 +132,16 @@ var DynamicObject = (function (_super) {
 var MapCar = (function (_super) {
     __extends(MapCar, _super);
 
-    function MapCar(aID, aState, aHPState, aFuelState) {
+    function MapCar(aID, aState, aHPState, aFuelState, aVForward, aObservingRange, aObsRangeRateMin, aObsRangeRateMax) {
         _super.call(this, aID, aState, aHPState, aFuelState);
         this.fireSectors = [];
+
+        this.max_control_speed = aVForward;
+        this.p_observing_range = aObservingRange;
+
+        this.p_obs_range_rate_min = aObsRangeRateMin;
+        this.p_obs_range_rate_max = aObsRangeRateMax;
+
     }
 
 
@@ -156,6 +163,14 @@ var MapCar = (function (_super) {
     };
 
 
+    MapCar.prototype.getObservingRange = function (time) {
+        var value = this.p_obs_range_rate_min +
+            ((this.p_obs_range_rate_max - this.p_obs_range_rate_min) *  (1.0 - Math.abs(this.getCurrentSpeed(time)) / this.max_control_speed));
+        var res = value * this.p_observing_range;
+        if (res < 5) return 5; // info: перестраховка, когда скорость машинки из-за неверного времени может быть неверной
+        return res;
+    };
+
     return MapCar;
 })(DynamicObject);
 
@@ -163,13 +178,13 @@ var MapCar = (function (_super) {
 var UserCar = (function (_super) {
     __extends(UserCar, _super);
 
-    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState, radius_visible) {
-        _super.call(this, aID, aState, aHPState, aFuelState);
+    function UserCar(aID, aVForward, aVBackward, aState, aHPState, aFuelState, aObservingRange, aObsRangeRateMin, aObsRangeRateMax) {
+        _super.call(this, aID, aState, aHPState, aFuelState, aVForward, aObservingRange, aObsRangeRateMin, aObsRangeRateMax);
         this.v_forward = aVForward;
         this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
         this.altitude = 0.0;
-        this.radius_visible = radius_visible;
+        this.radius_visible = aObservingRange;  // todo: поискать и стереть
     }
 
     UserCar.prototype._manage_tm = function () {

@@ -397,6 +397,8 @@ class Mobile(Unit):
             v_forward=self.state.v_forward,
             v_backward=self.state.v_backward,
             p_cc=self.params.get('p_cc').value,
+            p_obs_range_rate_max=self.params.get('p_obs_range_rate_max').value,
+            p_obs_range_rate_min=self.params.get('p_obs_range_rate_min').value,
         )
         return d
 

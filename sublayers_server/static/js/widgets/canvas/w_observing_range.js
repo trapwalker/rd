@@ -11,11 +11,8 @@ var WObservingRange = (function (_super) {
     function WObservingRange(car) {
         _super.call(this, [car]);
         this.car = car;
-        this.r = car.radius_visible;
         this.lastZoom = 1;
         this.old_position = {x: 0, y: 0};
-
-
         mapCanvasManager.add_vobj(this);
     }
 
@@ -31,7 +28,7 @@ var WObservingRange = (function (_super) {
         var real_zoom = mapManager.getRealZoom(time);
         var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
         var zoom_koeff =  Math.pow(2., (ConstMaxMapZoom - real_zoom));
-        var outher_radius = this.r / zoom_koeff;
+        var outher_radius = this.car.getObservingRange(time) / zoom_koeff;
         var inner_radius = 0.2 * outher_radius;
 
         var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
@@ -55,8 +52,8 @@ var WObservingRange = (function (_super) {
 
         //ctx.fillStyle = 'red';
         //ctx.font="40px Georgia";
-        //ctx.fillText(car_ctx_pos.x + '    ' +  car_ctx_pos.y, 100, 100);
-        //ctx.fillText(map_tl.x + '    ' +  map_tl.y, 100, 150);
+        //ctx.fillText(outher_radius, 100, 100);
+        //ctx.fillText(this.car.getCurrentSpeed(time), 100, 150);
         //ctx.fillText(outher_radius, 100, 200);
         //ctx.fillText(inner_radius, 100, 250);
     };

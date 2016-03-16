@@ -171,8 +171,11 @@ var ClientManager = (function () {
             var fuel_state = null; //this._getFuelState(event.object.fuel_state);
             var uid = event.object.uid;
             var aOwner = this._getOwner(event.object.owner);
-            var radius_visible = event.object.r;
+            var p_observing_range = event.object.p_observing_range;
+            var aObsRangeRateMin = event.object.p_obs_range_rate_min;
+            var aObsRangeRateMax = event.object.p_obs_range_rate_max;
             var main_agent_login = event.object.main_agent_login;
+            var v_forward = event.object.v_forward;
 
             // Проверка: нет ли уже такой машинки.
             var car = this._getMObj(uid);
@@ -183,7 +186,7 @@ var ClientManager = (function () {
             }
 
             // Создание новой машинки
-            car = new MapCar(uid, state, hp_state, fuel_state);
+            car = new MapCar(uid, state, hp_state, fuel_state, v_forward, p_observing_range, aObsRangeRateMin, aObsRangeRateMax);
             car.role = event.object.role;
             car.cls = event.object.cls;
             car.main_agent_login = main_agent_login;
@@ -294,7 +297,9 @@ var ClientManager = (function () {
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
-        var radius_visible = event.car.r;
+        var p_observing_range = event.car.p_observing_range;
+        var aObsRangeRateMin = event.car.p_obs_range_rate_min;
+        var aObsRangeRateMax = event.car.p_obs_range_rate_max;
         var uid = event.car.uid;
         var role = event.car.role;
         var state = this._getState(event.car.state);
@@ -313,7 +318,9 @@ var ClientManager = (function () {
                 state,
                 hp_state,
                 fuel_state,
-                radius_visible
+                p_observing_range,
+                aObsRangeRateMin,
+                aObsRangeRateMax
             );
             for (var i = 0; i < fireSectors.length; i++)
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
