@@ -45,5 +45,7 @@ var VisualObject = (function () {
         visualManager.delVisualObject(this, this._model_objects);
     };
 
+    VisualObject.prototype.change = function () {};
+
     return VisualObject;
 })();

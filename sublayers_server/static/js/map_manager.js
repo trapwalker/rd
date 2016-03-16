@@ -238,6 +238,8 @@ var MapManager = (function(_super){
         _super.call(this);
 
         this.inZoomChange = false;
+        this.oldZoomForCalcZoom = 0;
+        this.startZoomChangeTime = 0;
         this.tileLayerPath = '';
         this.tileLayer = null;
 
@@ -359,10 +361,39 @@ var MapManager = (function(_super){
         return true;
     };
 
+
+    // =============================== Map Coords
+
+    MapManager.prototype.getMapCenter = function () {
+        var c = map.project(map.getCenter(), map.getMaxZoom());
+        return new Point(c.x, c.y);
+    };
+
+    MapManager.prototype.getTopLeftCoords = function(zoom) {
+        var c = this.getMapCenter();
+        var map_size = mulScalVector(map.getSize(), 0.5);
+        var koeff = Math.pow(2., (ConstMaxMapZoom - zoom));
+        return subVector(c, mulScalVector(map_size, koeff));
+    };
+
     // =============================== Zoom
 
-    MapManager.prototype.getZoom = function(){
-        return map.getZoom();
+
+    MapManager.prototype.getRealZoom = function (time) {
+        if ((this.inZoomChange) && (time >= this.startZoomChangeTime)) {
+            // todo: пока будет считаться по линейной функции
+            var path_time = (time - this.startZoomChangeTime) / (ConstDurationAnimation / 1000.0);
+            if (path_time > 1.0) path_time = 1.0;
+            var zoom_diff = this.anim_zoom - this.oldZoomForCalcZoom;
+            return this.oldZoomForCalcZoom + zoom_diff * path_time;
+        }
+        else {
+            return this.getZoom();
+        }
+    };
+
+    MapManager.prototype.getZoom = function() {
+            return map.getZoom();
     };
 
     MapManager.prototype.setZoom = function(zoom) {
@@ -402,8 +433,10 @@ var MapManager = (function(_super){
     };
 
     MapManager.prototype.onZoomStart = function (event) {
-        //console.log('MapManager.prototype.onZoomStart');
+        //console.log('MapManager.prototype.onZoomStart', map.getZoom());
         mapManager.inZoomChange = true;
+        mapManager.oldZoomForCalcZoom = map.getZoom();
+        mapManager.startZoomChangeTime = clock.getCurrentTime();
     };
 
     MapManager.prototype.onZoomEnd = function (event) {

@@ -11,7 +11,8 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out
+from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out,
+                                             SetObserverForClient)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 
@@ -165,6 +166,7 @@ class Agent(Object):
         self.on_see(time=time, subj=observer, obj=observer)
         for vo in observer.visible_objects:
             self.on_see(time=time, subj=observer, obj=vo)
+        SetObserverForClient(agent=self, time=time, obj=observer, enable=True).post()
 
     def drop_observer(self, observer, time):
         if not self.is_online:
@@ -175,6 +177,8 @@ class Agent(Object):
         self.on_out(time=time, subj=observer, obj=observer)
         observer.watched_agents[self] -= 1
         self.observers[observer] -= 1
+        if self.observers[observer] == 0:
+            SetObserverForClient(agent=self, time=time, obj=observer, enable=False).post()
 
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)

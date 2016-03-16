@@ -356,6 +356,10 @@ class AgentAPI(API):
                 is_first=True,
             ).post()
 
+        # Для всех обсёрверов данного агента прислать сообщение видимости
+        for obs in self.agent.observers:
+            messages.SetObserverForClient(agent=self.agent, time=time, obj=obs, enable=True).post()
+
         # отобразить информацию о стрельбе по нашей машинке и нашей машинки
         self.car.send_auto_fire_messages(agent=self.agent, action=True, time=time)
 

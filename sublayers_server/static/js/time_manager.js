@@ -49,7 +49,7 @@ var Clock = (function () {
     // Расчет серверной "поправки".
     Clock.prototype.setDt = function (aDiffTime) {
         this.dt = aDiffTime;
-        console.log('Поправка времени = ', this.dt)
+        //console.log('Поправка времени = ', this.dt)
     };
 
     Clock.prototype.receiveMessage = function (params) {
@@ -84,6 +84,7 @@ var ConstSetFPSTimeout = 5000; // Время (мс), через которое �
 var TimeManager = (function () {
     function TimeManager() {
         this._fps_interval = 0;
+        this._fps_all_time = 0;
         this._redraw_time  = 0;
 
         this._FPSEvent = null;
@@ -144,13 +145,18 @@ var TimeManager = (function () {
         if(visualManager)
             visualManager.perform(time);
 
+        timeManager._fps_all_time += time_start - timeManager._redraw_time;
         timeManager._fps_interval = timeManager._fps_interval + 1;
-        //console.log(timeManager._fps_interval);
-        if (timeManager._fps_interval == 1000) {
-            console.log('FPS = ', 1000 / (time_start - timeManager._redraw_time));
+        if (timeManager._fps_interval == 200) {
+            //console.log('FPS = ', (timeManager._fps_interval / timeManager._fps_all_time) * 1000);
+            $('#FPSSpan').text((((timeManager._fps_interval / timeManager._fps_all_time) * 1000) >> 1) << 1);
             timeManager._fps_interval = 0;
+            timeManager._fps_all_time = 0;
         }
         timeManager._redraw_time = time_start;
+
+        //CanvasTestStart();
+        mapCanvasManager.redraw(time);
 
         return requestAnimationFrame(timeManager._interval_perform);
 

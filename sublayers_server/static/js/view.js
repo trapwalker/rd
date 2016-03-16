@@ -6,6 +6,8 @@ $(document).ready(function () {
 
     mapManager._init();
 
+    mapCanvasManager = new MapCanvasManager();
+
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
         parent: 'modalDiv',
@@ -97,7 +99,21 @@ $(document).ready(function () {
         returnFocusToMap();
     });
 
+
+    img.push(new Image());
+    img.push(new Image());
+    img.push(new Image());
+    img.push(new Image());
+    img[0].src = '/static/img/n1.png';
+    img[1].src = '/static/img/n2.png';
+    img[2].src = '/static/img/n3.png';
+    img[3].src = '/static/img/n4.png';
 });
+
+var b_canvas;
+var b_context;
+var pat;
+var img = [];
 
 
 function returnFocusToMap() {
