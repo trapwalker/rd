@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
 from sublayers_server.model.utils import get_uid, TimelineQueue, get_time
-from sublayers_server.model.effects import get_effects
 from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
@@ -20,7 +19,6 @@ import os
 import sys
 from time import sleep
 from threading import Thread
-from pprint import pprint as pp
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 
@@ -46,11 +44,7 @@ class Server(object):
         self.start_time = None
         # todo: blocking of init of servers with same uid
 
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, 'registry'))
-
-        self.effects = dict()
-        get_effects(server=self)
-
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
         self.zones = []
 
         self.stat_log = StatLogger()
@@ -206,7 +200,7 @@ class LocalServer(Server):
             except:
                 log.exception('Event performing error %s', event)
 
-        log.info('---- Event loop stop ' + '-' * 50 + '\n')
+        log.info('---- Event loop finished ' + '-' * 50 + '\n')
 
     def start(self):
         if self.thread:

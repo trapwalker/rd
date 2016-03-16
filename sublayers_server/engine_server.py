@@ -68,9 +68,11 @@ class Application(tornado.web.Application):
         self.db = MongoClient(options.db)[options.db_name]
 
         log.info('\n' + '=-' * 70)
-        log.info('GAME ENGINE SERVICE STARTED %s\n' + '--' * 70, self.revision)
+        log.info('GAME ENGINE SERVICE STARTING %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
+        log.debug('server instance init')
         self.srv.start()
+        log.info('ENGINE LOOP STARTED' + '-' * 50)
         self.clients = []
         self.chat = []
         # todo: tuncate chat history
@@ -144,11 +146,13 @@ class Application(tornado.web.Application):
 
 
 def main():
+    log.info('\n\n\n' + '==' * 70)
     settings.load('server.conf')
     service_tools.pidfile_save(options.pidfile)
     app = Application()
     # service_tools.set_terminate_handler(app.stop)
     try:
+        log.info('port %s listening', options.port)
         app.listen(options.port)
     except socket.error as e:
         log.critical(e)
@@ -157,9 +161,9 @@ def main():
         log.critical(e)
         print e
     else:
-        log.debug('====== ioloop before start')
+        log.debug('====== ioloop start')
         tornado.ioloop.IOLoop.instance().start()
-        log.debug('====== ioloop after start')
+        log.debug('====== ioloop finished')
     finally:
         log.debug('====== finally before stop')
         app.stop()

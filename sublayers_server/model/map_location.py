@@ -63,6 +63,7 @@ class MapLocation(Observer):
                 head = building.head
                 if head and head.quests:
                     for quest in head.quests:
+                        # todo: (!) Проверить quest на unicode
                         quest_uri = URI(quest)
                         quest = quest_uri.resolve()
                         quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))

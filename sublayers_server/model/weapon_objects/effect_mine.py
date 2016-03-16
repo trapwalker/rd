@@ -16,9 +16,9 @@ class SlowMineStartEvent(Event):
 
     def on_perform(self):
         super(SlowMineStartEvent, self).on_perform()
-        effects = self.server.effects
-        # todo: забирать названия эффектов из экзампла  self.example_mine.effects
-        SlowMine(time=self.time, starter=self.starter, example=self.example_mine, effects=[effects.get('EffectMineCC')])
+        # todo: забирать названия эффектов из экзампла  self.example_mine.effects (использовать URI эффекта)
+        ef = self.server.reg['/effects/weapon/mines/effect_mine_cc']
+        SlowMine(time=self.time, starter=self.starter, example=self.example_mine, effects=[ef])
 
 
 class SlowMine(UnitWeapon):
@@ -31,7 +31,7 @@ class SlowMine(UnitWeapon):
                                        server=starter.server,
                                        **kw)
         self.targets = []
-        self.effects = effects[:]  # todo: забирать названия эффектов из экзампла
+        self.effects = effects  # todo: забирать названия эффектов из экзампла
 
     def on_init(self, event):
         super(SlowMine, self).on_init(event)

@@ -66,7 +66,7 @@ class Node(object):
         @param str name: Name of node
         @param Node parent: Parent of node
         @param dict values: Override attributes values dict
-        @param AbstractStorage storage: Storage o this node
+        @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
         @param Node owner: Owner of node in dhe tree
         """
         super(Node, self).__init__()
