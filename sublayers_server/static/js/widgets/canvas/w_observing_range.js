@@ -17,14 +17,14 @@ var WObservingRange = (function (_super) {
 
     WObservingRange.prototype.redraw = function(ctx, time){
         //console.log('WObservingRange.prototype.change');
+        var real_zoom = mapManager.getRealZoom(time);
+        var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
+        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
+        //if (real_zoom <= 14) return;
         for (var i = 0; i < this._model_objects.length; i++) {
             var car = this._model_objects[i];
-            var car_pos =car.getCurrentCoord(time);  // положение машинки
-            var real_zoom = mapManager.getRealZoom(time);
-            var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-            var zoom_koeff =  Math.pow(2., (ConstMaxMapZoom - real_zoom));
+            var car_pos = car.getCurrentCoord(time);  // положение машинки
             var outher_radius = car.getObservingRange(time) / zoom_koeff;
-
             var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
 
             var grad1 = ctx.createRadialGradient(car_ctx_pos.x, car_ctx_pos.y, 0, car_ctx_pos.x, car_ctx_pos.y, outher_radius);
@@ -38,12 +38,12 @@ var WObservingRange = (function (_super) {
             ctx.closePath();
             ctx.fill();
         }
+
+        //var opacity = (0.9 - 0.05 * (ConstMaxMapZoom - real_zoom)).toFixed(2);
         ctx.globalCompositeOperation = "xor";
-        ctx.fillStyle = "rgba(0,0,0,1)";
+        ctx.fillStyle = "rgba(0,0,0,0.85)";
         ctx.fillRect(0, 0, 1920, 1080);
         ctx.globalCompositeOperation = "source-over";
-
-
 
         //ctx.fillStyle = 'red';
         //ctx.font="40px Georgia";
