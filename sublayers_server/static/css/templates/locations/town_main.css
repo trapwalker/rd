@@ -1,3 +1,11 @@
+.townHTMLPage {
+    position: absolute;
+    width: 896px;
+    height: 665px;
+    top: 136px;
+    left: 515px;
+}
+
 /* Это классы пока никак не присваиваются, придумать как и присвоить их */
 .townNucoilPageWrap-no_car {
     position: absolute;

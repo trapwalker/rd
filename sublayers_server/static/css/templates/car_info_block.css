@@ -1,37 +1,28 @@
 .car-info-block-main {
     position: relative;
-    box-sizing: border-box;
-    margin: auto;
+    margin:  0 auto 0 auto;
     width: 734px;
-    height: 100%;
+    height: 392px;
 }
 
 .car-info-block-picture-hangar {
     position: relative;
     float: left;
-    width: 400px;
-    height: 100%;
-    padding-top: 55px;
-    margin-right: 8px;
+    width: 408px;
+    height: 390px;
     overflow: hidden;
+    border-right: 1px solid #30fc00;
     box-sizing: border-box;
 }
-.car-info-block-picture-hangar .car-info-block-picture-2-main { margin-left: -55px; }
+.car-info-block-picture-hangar .car-info-block-picture-main { margin: 110px 0  0 -42px; }
 
-.car-info-block-picture {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    border-right: 1px solid #30fc00;
-}
-
-.car-info-block-picture-2-main {
+.car-info-block-picture-main {
     position: relative;
     width: 492px;
     height: 170px;
 }
 
-.car-info-block-picture-2 {
+.car-info-block-picture {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -41,7 +32,7 @@
     position: relative;
     float: left;
     height: 100%;
-    width: 320px;
+    width: 326px;
 }
 
 .car-info-block-info {
@@ -52,16 +43,21 @@
 }
 
 .car-info-block-body-right-menu {
-    width: 100%;
-    height: 40px;
+width: 100%;
+    height: 30px;
     font: 12pt Nouveau_IBM;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, #30fc00, transparent);
+    border-image-slice: 1;
+    padding-left: 10px;
+    box-sizing: border-box;
 }
 
 .mainCarInfoWindow-body-right-menu-button {
     position: relative;
     float: left;
-    margin-top: 12px;
-    margin-left: 22px;
+    margin: 6px 0 0 22px;
     text-align: center;
     color: #135806;
     cursor: pointer;
@@ -69,24 +65,22 @@
 
 .mainCarInfoWindow-body-right-menu-button-arrow-left {
     width: 0px;
-	height: 0px;
-	border-top: 5px solid transparent;
-	border-left: 5px solid #30fc00;
-	border-bottom: 5px solid transparent;
+    height: 0px;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #30fc00;
+    border-bottom: 5px solid transparent;
+    margin: 8px 3px 0 0;
     float: left;
-    margin-top: 14px;
-    margin-left: 3px;
 }
 
 .mainCarInfoWindow-body-right-menu-button-arrow-right {
-    width: 0;
-	height: 0;
-	border-top: 5px solid transparent;
-	border-right: 5px solid #30fc00;
-	border-bottom: 5px solid transparent;
-    margin-top: 14px;
+    width: 0px;
+    height: 0px;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #30fc00;
+    border-bottom: 5px solid transparent;
+    margin: 8px 0 0 3px;
     float: left;
-    margin-left: 3px;
 }
 
 .mainCarInfoWindow-body-right-menu-button:hover {
@@ -112,9 +106,8 @@
     position: relative;
     font: 12pt FreePixel;
     width: 100%;
-    height: calc(100% - 43px);
-    border: solid 1px #00f150;
-    padding-top: 17px;
+    height: calc(100% - 30px);
+    padding-top: 15px;
     padding-left: 10px;
     padding-right: 10px;
     box-sizing: border-box;
@@ -132,13 +125,14 @@
 }
 
 .car-info-block-body-right-list-value {
-    position: relative;
+position: relative;
     float: left;
     width: calc(100% - 150px);
     color: #30fc00;
     margin-bottom: 2px;
-    text-align: center;
+    padding-left: 10px;
     display: inline-block;
+    box-sizing: border-box;
 }
 
 .car-info-block-body-right-list-even {

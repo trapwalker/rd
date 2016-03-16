@@ -1,19 +1,7 @@
-#townHangarPageWrap {
-    position: absolute;
-    top: 140px;
-    left: 592px;
-}
-
-#townParkingPageWrap {
-    position: absolute;
-    top: 140px;
-    left: 592px;
-}
-
 .hangarWindow-main {
     position: relative;
-    width: 734px;
-    height: 661px;
+    width: 100%;
+    height: 100%;
     cursor: default;
     overflow-x: hidden;
     overflow-y: auto;
@@ -21,70 +9,42 @@
 
 .hangar-center {
     position: relative;
-    box-sizing: border-box;
-    margin-right: auto;
-    margin-left: auto;
+    margin: 0 auto 0 auto;
     width: 734px;
-    height: 290px;
-    padding-bottom: 5px;
+    height: 392px;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
 }
 
 .hangar-center-info-car-wrap {
     position: relative;
     height: 100%;
     display: none;
-    border-width: 1px 0 1px 0;
-    border-style: solid;
-    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
-    border-image-slice: 1;
 }
 
 .hangar-car-list {
     position: relative;
     margin-right: auto;
     margin-left: auto;
-    width: 606px;
-    height: 124px;
+    width: 635px;
+    height: 113px;
 }
 
 .hangar-car-list-label {
     box-sizing: border-box;
-    height: 21px;
+    height: 20px;
     color: #29F200;
     font: 11pt Nouveau_IBM;
+    padding-top: 3px;
     margin-left: 20px;
 }
 
-.hangar-car-list-button-left {
-    background-image: url('/static/img/mechanic/btn_slide_left.png');
-    float: left;
-    height: 18px;
-    width: 11px;
-    cursor: pointer;
-    margin-top: 30px;
-    margin-right: 16px;
-}
-
-.hangar-car-list-button-left:hover {
-    background-image: url('/static/img/mechanic/btn_slide_left_over.png');
-}
-
-.hangar-car-list-button-right {
-    background-image: url('/static/img/mechanic/btn_slide_right.png');
-    height: 18px;
-    width: 11px;
-    cursor: pointer;
-    margin-top: 30px;
-    margin-left: 606px;
-}
-
-.hangar-car-list-button-right:hover {
-    background-image: url('/static/img/mechanic/btn_slide_right_over.png');
-}
-
 .hangar-car-list-wrap {
-    width: 563px;
-    height: 100px;
+    width: 100%;
+    height: 90px;
     overflow-x: scroll;
     float: left;
 }
@@ -92,27 +52,27 @@
 .hangar-car-list-itemWrap {
     box-sizing: border-box;
     margin-right: 10px;
-    width: 164px;
-    height: 85px;
+    width: 130px;
+    height: 70px;
     float: left;
+    background-color: #021503;
     opacity: 0.6;
 }
-
 .hangar-car-list-itemWrap:hover {
     opacity: 1;
+    background-color: #073D06;
 }
 
 .hangar-car-list-itemWrap-active {
     opacity: 1;
-    background-image: url('/static/img/slot_selection.png');
-    background-size: contain;
+    background-color: #073D06;
 }
 
 .hangar-car-list-item {
     position: relative;
     cursor: pointer;
     width: 100%;
-    height: 85px;
+    height: 100%;
     float: left;
 }
 
@@ -120,7 +80,7 @@
     position: absolute;
     padding: 2px 2px 2px 2px;
     font: 10pt Nouveau_IBM;
-    color: #135806;
+    color: #29F200;
     margin-left: 3px;
 }
 
@@ -128,25 +88,4 @@
     position: absolute;
     height: 100%;
     width: 100%;
-}
-
-.hangar-footer {
-    position: relative;
-    margin: auto;
-    height: 40px;
-    width: 90%;
-    font: 15pt Nouveau_IBM;
-    color: #28F100;
-    text-align: center;
-    border-width: 1px 0 0 0;
-    border-style: solid;
-    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
-    border-image-slice: 1;
-}
-
-.hangar-footer-text-block {
-    position: relative;
-    float: left;
-    width: 50%;
-    padding: 10px 0 0 0;
 }
