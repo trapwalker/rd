@@ -15,6 +15,7 @@ var MapCanvasManager = (function(_super){
     }
 
     MapCanvasManager.prototype.add_vobj = function(vobj, priority) {
+        //console.log('MapCanvasManager.prototype.add_vobj');
         for (var i = 0; i < this.vobj_list.length; i++)
             if (this.vobj_list[i].obj == vobj) {
                 console.error('[visual_manager] Попытка повторного добавления визуального объекта.');
@@ -32,11 +33,12 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype.del_vobj = function (vobj) {
+        //console.log('MapCanvasManager.prototype.del_vobj');
         var index = -1;
         for (var i = 0; i < this.vobj_list.length; i++)
             if (this.vobj_list[i].obj == vobj)
                 index = i;
-        if ((index > 0) && (index < this.vobj_list.length))
+        if ((index >= 0) && (index < this.vobj_list.length))
             this.vobj_list.splice(index, 1);
     };
 

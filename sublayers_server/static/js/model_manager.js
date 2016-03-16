@@ -352,14 +352,12 @@ var ClientManager = (function () {
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
             }
 
-
             // Инициализация виджетов работы с канвасом
             if (!wObservingRange) {
                 wObservingRange = new WObservingRange();
                 wObservingRange.addModelObject(mcar);
-            } else {
+            } else
                 wObservingRange.addModelObject(mcar);
-            }
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
@@ -544,15 +542,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.SetObserverForClient = function(event) {
+        //console.log('ClientManager.prototype.SetObserverForClient ', event.enable, event.obj_id, mobj);
         var mobj = this._getMObj(event.obj_id);
-        console.log('ClientManager.prototype.SetObserverForClient ', event.enable, mobj, event.obj_id);
         if (! mobj) return;
-        if (event.enable) {
+        if (event.enable)
             wObservingRange.addModelObject(mobj);
-        }
-        else {
+        else
             wObservingRange.delModelObject(mobj);
-        }
     };
 
     ClientManager.prototype.FireDischarge = function (event) {

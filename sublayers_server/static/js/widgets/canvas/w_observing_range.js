@@ -29,7 +29,7 @@ var WObservingRange = (function (_super) {
 
             var grad1 = ctx.createRadialGradient(car_ctx_pos.x, car_ctx_pos.y, 0, car_ctx_pos.x, car_ctx_pos.y, outher_radius);
             grad1.addColorStop(0, "rgba(0,0,0,1)");
-            grad1.addColorStop(0.8, "rgba(0,0,0,1)");
+            grad1.addColorStop(0.65, "rgba(0,0,0,1)");
             grad1.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.fillStyle = grad1;
@@ -54,9 +54,10 @@ var WObservingRange = (function (_super) {
     };
 
     WObservingRange.prototype.delFromVisualManager = function () {
-        //console.log('WViewRadius.prototype.delFromVisualManager');
+        //console.log('WObservingRange.prototype.delFromVisualManager');
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
+        wObservingRange = null;
     };
 
     return WObservingRange;
