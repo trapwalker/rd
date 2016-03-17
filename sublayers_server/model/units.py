@@ -70,11 +70,6 @@ class Unit(Observer):
         server_stat.s_units_all(time=time, delta=1.0)
         server_stat.s_units_on(time=time, delta=1.0)
 
-    def save(self, time):
-        super(Unit, self).save(time)
-        if self.owner:
-            self.owner.save(time)
-
     def direction(self, time):
         return self._direction
 
@@ -314,6 +309,9 @@ class Unit(Observer):
                 self.upd_observing_range(time)
 
     def save(self, time):
+        # if self.owner:
+        #     self.owner.save(time)
+
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
         self.save_inventory(time)
