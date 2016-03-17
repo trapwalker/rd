@@ -68,29 +68,27 @@ var FireEffectManager = (function () {
     };
 
     FireEffectManager.prototype.fireDischargeEffect = function (options) {
-        var vekt = subVector(options.pos_obj, options.pos_subj);
+        var vekt = subVector(options.fake_position, options.pos_subj);
         var direction = angleVectorRadCCW(vekt);
-        if (!options.is_fake) {
-            new EDischargeFirePNG_1(options.pos_subj, direction).start();
-            //for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
-            var pos = getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight);
-            if (distancePoints(options.pos_obj, pos) > ConstFlashlightOrientedRadius)
+
+        for (var i = 0; i < options.targets.length; i++) {
+            var pos_obj = new Point(options.targets[i].x, options.targets[i].y)
+            var pos = getRadialRandomPoint(pos_obj, ConstRangeFireDischargeFlashlight);
+            if (distancePoints(pos_obj, pos) > ConstFlashlightOrientedRadius)
                 new EHeavyBangPNG_2(pos).start(ConstDelayFireDischargeFlashlight);
             else if (Math.random() > 0.5)
-                new EHeavyBangOrientedPNG_1(options.pos_obj, direction).start();
+                new EHeavyBangOrientedPNG_1(pos_obj, direction).start();
             else
-                new EHeavyBangOrientedPNG_2(options.pos_obj, direction).start();
+                new EHeavyBangOrientedPNG_2(pos_obj, direction).start();
         }
-        else {
-            //new EDischargeFire(options.pos_subj, direction).start();
-            new EDischargeFirePNG_2(options.pos_subj, direction).start();
-            var temp = 1 / ConstCountFireDischargeFlashlight;
-            var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
-            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
-                new EHeavyBangPNG_1(getRadialRandomPoint(summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
-                                                         ConstRangeFireDischargeFlashlight))
-                    .start(i * tempDuration + tempDuration * Math.random());
-        }
+
+        new EDischargeFirePNG_1(options.pos_subj, direction).start();
+        var temp = 1 / ConstCountFireDischargeFlashlight;
+        var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
+        for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
+            new EHeavyBangPNG_1(getRadialRandomPoint(summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
+                                                     ConstRangeFireDischargeFlashlight))
+                .start(i * tempDuration + tempDuration * Math.random());
     };
 
     FireEffectManager.prototype.perform = function () {
