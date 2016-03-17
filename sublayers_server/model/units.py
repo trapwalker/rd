@@ -129,8 +129,8 @@ class Unit(Observer):
                 WeaponAuto(owner=self, sector=sector, dps=w_ex.dps * dps_rate, items_cls_list=[w_ex.ammo],
                            dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, example=w_ex)
             else:
-                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg * damage_rate, items_cls_list=[w_ex.ammo],
-                                dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second,
+                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg * damage_rate, area_dmg=w_ex.area_dmg * damage_rate,
+                                items_cls_list=[w_ex.ammo], dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second,
                                 time_recharge=w_ex.time_recharge * time_recharge_rate, example=w_ex)
 
     def is_target(self, target):
@@ -194,11 +194,11 @@ class Unit(Observer):
         for zone in self.server.zones:
             zone.test_in_zone(obj=self, time=event.time)
 
-    def on_auto_fire_test(self, obj, time):
+    def on_auto_fire_test(self, target_list, time):
         #log.debug('on_auto_fire_test bot = %s', self.uid)
         for sector in self.fire_sectors:
             if sector.is_auto():
-                sector.fire_auto(target=obj, time=time)
+                sector.fire_auto(target_list=target_list, time=time)
 
     def send_auto_fire_messages(self, agent, action, time):
         for shooter in self.hp_state.shooters:
@@ -209,11 +209,6 @@ class Unit(Observer):
                     for target in weapon.targets:
                         messages.FireAutoEffect(agent=agent, subj=self, obj=target,
                                                 action=action, side=sector.side, time=time).post()
-
-    def on_contact_out(self, obj, time, **kw):
-        for sector in self.fire_sectors:
-            sector.out_car(target=obj, time=time)
-        super(Unit, self).on_contact_out(obj=obj, time=time, **kw)
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
@@ -453,6 +448,7 @@ class Mobile(Unit):
         super(Mobile, self).upd_observing_range(time)
         for agent in self.watched_agents:
             messages.UpdateObservingRange(agent=agent, obj=self, time=time).post()
+
 
 class Bot(Mobile):
     @property

@@ -350,6 +350,14 @@ class Agent(Object):
                 return False
         return True
 
+    def get_all_visible_objects(self):
+        obj_list = []
+        for observer in self.observers:
+            for v_o in observer.visible_objects:
+                if v_o not in obj_list:
+                    obj_list.append(v_o)
+        return obj_list
+
     def on_see(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
         # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])

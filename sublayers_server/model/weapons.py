@@ -104,9 +104,10 @@ class WeaponAuto(Weapon):
 
 
 class WeaponDischarge(Weapon):
-    def __init__(self, dmg, time_recharge, **kw):
+    def __init__(self, dmg, area_dmg, time_recharge, **kw):
         super(WeaponDischarge, self).__init__(**kw)
         self.dmg = dmg
+        self.area_dmg = area_dmg
         self.last_shoot = None
         self.t_rch = time_recharge
 
@@ -143,6 +144,9 @@ class WeaponDischarge(Weapon):
         dmg, is_crit = self.calc_dmg()
         for car in self.sector.target_list:
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+
+        for car in self.sector.area_target_list:
+            car.set_hp(dhp=self.area_dmg, shooter=self.owner, time=time)
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел

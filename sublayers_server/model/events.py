@@ -243,6 +243,8 @@ class FireDischargeEffectEvent(Objective):
                 max_radius = max(max_radius, sector.radius)
                 for target in sector.target_list:
                     targets.append(target.position(time=self.time))
+                for target in sector.area_target_list:
+                    targets.append(target.position(time=self.time))
 
         # todo: добавить гео-позиционный фильтр агентов
         subj_position = self.obj.position(time=self.time)
@@ -272,8 +274,12 @@ class FireAutoTestEvent(Objective):
     def on_perform(self):
         super(FireAutoTestEvent, self).on_perform()
         obj = self.obj
-        for target in obj.visible_objects:
-            obj.on_auto_fire_test(obj=target, time=self.time)
+        target_list = None
+        if obj.main_agent is not None:
+            target_list = set(obj.main_agent.get_all_visible_objects())
+        else:
+            target_list = set(obj.visible_objects)
+        obj.on_auto_fire_test(target_list=target_list, time=self.time)
         FireAutoTestEvent(obj=obj, time=self.time + obj.check_auto_fire_interval).post()
 
 

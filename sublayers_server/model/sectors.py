@@ -60,6 +60,7 @@ class FireSector(Sector):
         super(FireSector, self).__init__(**kw)
         self.weapon_list = []
         self.target_list = []
+        self.area_target_list = []
         self._is_auto = 0
         self._is_discharge = 0
         self.side = get_side_by_angle(self.fi)
@@ -111,20 +112,39 @@ class FireSector(Sector):
         fi = self.owner.direction(time=time) + self.fi
         return shortest_angle(v.angle - fi) <= self.half_width
 
-    def fire_auto(self, target, time):
-        if self._test_target_in_sector(target=target, time=time):
-            if target not in self.target_list:
-                self.target_list.append(target)
-                self._fire_auto_start(target=target, time=time)
-        else:
+    def fire_auto(self, target_list, time):
+        old_target_list = set(self.target_list)
+        for target in (old_target_list - target_list):
             self.out_car(target=target, time=time)
+        for target in target_list:
+            if self._test_target_in_sector(target=target, time=time):
+                if target not in self.target_list:
+                    self.target_list.append(target)
+                    self._fire_auto_start(target=target, time=time)
+            else:
+                self.out_car(target=target, time=time)
 
     def fire_discharge(self, time):
-        cars = []
-        for vo in self.owner.visible_objects:
+        # Формирование списка целей, по которым пройдёт полный дамаг
+        target_list = []
+        temp_list = []
+        if self.owner.main_agent is not None:
+            temp_list = self.owner.main_agent.get_all_visible_objects()
+        else:
+            temp_list = self.owner.visible_objects
+        for vo in temp_list:
             if self._test_target_in_sector(target=vo, time=time):
-                cars.append(vo)
-        self.target_list = cars
+                target_list.append(vo)
+        self.target_list = target_list
+
+        # Формирование списка целей, которых юнит не видит (осколочный дамаг)
+        target_list = []
+        temp_list = self.owner.server.visibility_mng.get_around_objects(pos=self.owner.position(time=time), time=time)
+        for vo in temp_list:
+            if (vo not in self.target_list) and self._test_target_in_sector(target=vo, time=time):
+                target_list.append(vo)
+        self.area_target_list = target_list
+
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):
                 wp.fire(time=time)
