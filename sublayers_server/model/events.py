@@ -507,5 +507,3 @@ class ItemActivationEvent(Event):
         event_cls = item.example.activate()
         if event_cls:
             event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
-
-

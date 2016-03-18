@@ -12,8 +12,10 @@ from random import random
 
 
 class Weapon(Consumer):
-    def __init__(self, owner, sector, example, **kw):
+    def __init__(self, owner, sector, example, items_cls_list, swap=False, **kw):
         super(Weapon, self).__init__(server=owner.server, **kw)
+        self.items_cls_list = items_cls_list
+        self.swap = swap
         self.owner = owner
         self.sector = sector
         self.example = example
@@ -29,6 +31,18 @@ class Weapon(Consumer):
             radius=self.sector.radius,
             width=self.sector.width,
         )
+
+    def can_set(self, item):
+        return item.example.parent in self.items_cls_list
+
+    def on_empty_item(self, item, time, action):
+        balance_cls_list = []
+        if self.swap:
+            balance_cls_list = self.items_cls_list
+        else:
+            balance_cls_list = [item.example.parent]
+        new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
+        self.set_item(time=time, item=new_item, action=action)
 
     def add_car(self, car, time):
         pass

@@ -22,6 +22,7 @@ from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIConta
 
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
 from sublayers_server.model.vectors import Point
+from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
 
 from math import radians
 
@@ -449,6 +450,15 @@ class Mobile(Unit):
 
 
 class Bot(Mobile):
+    def __init__(self, **kw):
+        super(Bot, self).__init__(**kw)
+        self.quick_consumer_panel = QuickConsumerPanel(owner=self)
+
+    def as_dict(self, time):
+        d = super(Bot, self).as_dict(time=time)
+        d.update(quick_consumer_panel=self.quick_consumer_panel.as_dict(time=time))
+        return d
+
     @property
     def is_frag(self):
         return True
