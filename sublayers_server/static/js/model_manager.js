@@ -345,13 +345,13 @@ var ClientManager = (function () {
             mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
-            //new WCanvasFireSectorsScaled(mcar);
-
             if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {  // если есть хоть один сектор
                 //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
-                mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
-                mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
+                //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
+                //mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
+
+                mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
             }
 
             // Инициализация виджетов работы с канвасом

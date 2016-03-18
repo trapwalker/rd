@@ -361,10 +361,13 @@ var FireSide = (function () {
         if (dt - this.sideRecharge > 0.3) {
             // todo: разобраться с синхронизацией времени, иначе будут проблемы!!!
             console.error(' !!!! Логическая ошибка !!!! dt > sideRecharge');
-            console.log(' dt            = ', dt);
-            console.log(' sideRecharge  = ', this.sideRecharge);
-            console.log(' time  = ', time);
-            return null;
+            //console.log(' dt            = ', dt);
+            //console.log(' sideRecharge  = ', this.sideRecharge);
+            //console.log(' time  = ', time);
+            return {
+                prc: 0,
+                time: dt
+            }
         }
         return {
             prc: 1. - (dt / this.sideRecharge),
