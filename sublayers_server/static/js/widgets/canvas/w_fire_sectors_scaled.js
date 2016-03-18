@@ -14,6 +14,11 @@ var WCanvasFireSectorsScaled = (function (_super) {
         this.in_visible_change = false;
         this.start_change_visible_time = 0;
 
+
+        // чтобы не так дёргалось
+        this.old_map_size = new Point(0, 0);
+        this.old_ctx_car_pos = new Point(0, 0);
+
         mapCanvasManager.add_vobj(this, 2);
 
     }
@@ -155,20 +160,24 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.lineWidth = 3;
 
         // вывод линий перезарядки
-        var prc = 1 - recharge_state.prc;
-
-        var temp_rech_angle = -half_width * prc;
-        temp_rech_angle = -half_width > temp_rech_angle ? -half_width : temp_rech_angle;
-        ctx.beginPath();
-        ctx.arc(0, 0, recharge_area_radius, -half_width, temp_rech_angle, false);
-        ctx.stroke();
-
-        temp_rech_angle = (half_width * prc) + 0.005;
-        temp_rech_angle = temp_rech_angle > half_width ? half_width : temp_rech_angle;
-        ctx.beginPath();
-        ctx.arc(0, 0, recharge_area_radius, temp_rech_angle, half_width, false);
-        ctx.stroke();
-
+        if (recharge_state.prc >= 1){
+            ctx.beginPath();
+            ctx.arc(0, 0, recharge_area_radius, -half_width, half_width, false);
+            ctx.stroke();
+        }
+        else {
+            var prc = 1 - recharge_state.prc;
+            var temp_rech_angle = -half_width * prc;
+            temp_rech_angle = -half_width > temp_rech_angle ? -half_width : temp_rech_angle;
+            ctx.beginPath();
+            ctx.arc(0, 0, recharge_area_radius, -half_width, temp_rech_angle, false);
+            ctx.stroke();
+            temp_rech_angle = half_width * prc;
+            temp_rech_angle = temp_rech_angle > half_width ? half_width : temp_rech_angle;
+            ctx.beginPath();
+            ctx.arc(0, 0, recharge_area_radius, temp_rech_angle, half_width, false);
+            ctx.stroke();
+        }
 
         ctx.font = "11pt MICRADI";
         ctx.textAlign = "center";
@@ -177,17 +186,9 @@ var WCanvasFireSectorsScaled = (function (_super) {
 
         var const_width_letter = 15; // Ширина одной буквы равна 15px;
         // todo: вычисляем
+        var recharge_text = recharge_state.prc >= 1 ? "READY" : "RELOAD";
 
-        if (recharge_state.prc >= 1) {
-            // Вывод READY
-            var s = "READY";
-        }
-        else {
-            // Вывод RELOAD...
-            var s = "RELOAD";
-        }
-
-        this.fillTextCircle(ctx, s, recharge_area_radius + 20, -half_width / 2 + Math.PI / 2,
+        this.fillTextCircle(ctx, recharge_text, recharge_area_radius + 20, -half_width / 2 + Math.PI / 2,
                 half_width / 2 + Math.PI / 2);
 
         ctx.restore();
@@ -230,12 +231,6 @@ var WCanvasFireSectorsScaled = (function (_super) {
 
     };
 
-    WCanvasFireSectorsScaled.prototype._setRechText = function(side_str, rech_text){
-        // todo: передать сюда ещё текст времени, чтобы обнулить его (сделать равным  "")
-        var text = this.rechAreas[side_str].rech_text;
-        text.text(rech_text);
-        text.textPath().attr('startOffset', 0.5 * (this.svg_params.rechArea.l_text_path - text.length())/ this.svg_params.rechArea.l_text_path);
-    };
 
     WCanvasFireSectorsScaled.prototype.setVisible = function (visible) {
         //console.log('WCanvasFireSectorsScaled.prototype.setVisible', visible);
@@ -274,16 +269,24 @@ var WCanvasFireSectorsScaled = (function (_super) {
             ctx.globalAlpha = visible_state;
         }
 
-        var real_zoom = mapManager.getRealZoom(time);
-        var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
-        var car = this.car;
-        var car_pos = car.getCurrentCoord(time);
-        var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
-        var car_dir = car.getCurrentDirection(time);
 
-        ctx.translate(car_ctx_pos.x, car_ctx_pos.y);
-        ctx.rotate(car_dir);
+        var real_zoom = mapManager.getRealZoom(time);
+        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
+
+        var map_size = mapManager.getMapSize();
+
+        if (subVector(map_size, this.old_map_size).abs() > 0.2) {
+            var car_pos = this.car.getCurrentCoord(time);
+            var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
+            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
+
+            this.old_map_size = map_size;
+            this.old_ctx_car_pos = car_ctx_pos;
+        }
+
+
+        ctx.translate(this.old_ctx_car_pos.x, this.old_ctx_car_pos.y);
+        ctx.rotate(this.car.getCurrentDirection(time));
 
         this._drawSectors(ctx, zoom_koeff, time);
 
