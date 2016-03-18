@@ -12,10 +12,11 @@ var WObservingRange = (function (_super) {
         _super.call(this, []);
         this.lastZoom = 1;
         this.old_position = {x: 0, y: 0};
-        mapCanvasManager.add_vobj(this);
+        mapCanvasManager.add_vobj(this, 100);
     }
 
     WObservingRange.prototype.redraw = function(ctx, time){
+        //return;
         //console.log('WObservingRange.prototype.change');
         var real_zoom = mapManager.getRealZoom(time);
         var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
