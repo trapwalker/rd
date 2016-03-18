@@ -912,6 +912,10 @@ var ClientManager = (function () {
         barterManager.StartBarterTimer(event.barter_id, event.success_delay);
     };
 
+    ClientManager.prototype.QuickConsumerPanelInfoMessage = function (event) {
+        console.log('ClientManager.prototype.QuickConsumerPanelInfoMessage', event);
+    };
+
     // Фраг
 
     ClientManager.prototype.AddExperienceMessage = function (event) {
@@ -1389,7 +1393,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
     // Тюнер
 
     ClientManager.prototype.sendTunerApply = function () {
@@ -1643,7 +1646,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
     // Административные сообщения
     ClientManager.prototype.sendTileCoord = function (x, y) {
         console.log('ClientManager.prototype.sendTileCoord', x, y);
@@ -1656,6 +1658,45 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    //Активация через панель быстрого доступа
+    ClientManager.prototype.sendSetQuickItem = function(index, position) {
+        //console.log('ClientManager.prototype.sendSetQuickItem');
+        var mes = {
+            call: "set_quick_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                index: index,
+                position: position
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivateQuickItem = function(index, target_id) {
+        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        var mes = {
+            call: "activate_quick_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                index: index,
+                target_id: target_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetQuickItemInfo = function() {
+        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        var mes = {
+            call: "get_quick_item_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

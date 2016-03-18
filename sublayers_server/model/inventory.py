@@ -488,13 +488,11 @@ class ItemState(object):
 
 
 class Consumer(object):
-    def __init__(self, server, items_cls_list, dv=None, ddvs=None, swap=False):
+    def __init__(self, server, dv=None, ddvs=None):
         self.server = server
-        self.items_cls_list = items_cls_list
         self.item = None
         self.dv = dv
         self.ddvs = ddvs
-        self.swap = swap
         self.is_call_start = False
         self.is_call_stop = False
         self.is_started = False
@@ -520,6 +518,9 @@ class Consumer(object):
          # если нужно, пытаемся восстановить использование с новыми параметрами
         if started:
             self.start(time=time)
+
+    def can_set(self, item):
+        return True
 
     def use(self, time):
         if self.item is not None:
@@ -569,7 +570,7 @@ class Consumer(object):
             self.is_call_stop = False
 
         # пытаемся зарядить итем
-        if (item is not None) and (item.example.parent in self.items_cls_list):
+        if (item is not None) and self.can_set(item=item):
             item.linking(consumer=self)
 
             # если нужно, пытаемся восстановить использование
@@ -581,12 +582,6 @@ class Consumer(object):
                 self.use(time=time)
 
     def on_empty_item(self, item, time, action):
-        # log.debug('Consumer.on_empty_item')
-        balance_cls_list = []
-        if self.swap:
-            balance_cls_list = self.items_cls_list
-        else:
-            balance_cls_list = [item.example.parent]
-        new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
+        new_item = item.inventory.get_item_by_cls(balance_cls_list=[item.example.parent], time=time, min_value=-self.dv)
         self.set_item(time=time, item=new_item, action=action)
 
