@@ -368,9 +368,14 @@ var MapManager = (function(_super){
         return new Point(c.x, c.y);
     };
 
+    MapManager.prototype.getMapSize = function() {
+        var s = map.getSize();
+        return new Point(s.x, s.y);
+    };
+
     MapManager.prototype.getTopLeftCoords = function(zoom) {
         var c = this.getMapCenter();
-        var map_size = mulScalVector(map.getSize(), 0.5);
+        var map_size = mulScalVector(this.getMapSize(), 0.5);
         var koeff = Math.pow(2., (ConstMaxMapZoom - zoom));
         return subVector(c, mulScalVector(map_size, koeff));
     };
