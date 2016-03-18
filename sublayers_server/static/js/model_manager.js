@@ -352,6 +352,8 @@ var ClientManager = (function () {
                 //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
 
                 mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
+                mapManager.widget_fire_radial_grid = new WFCanvasireRadialGrid(mcar);
+
             }
 
             // Инициализация виджетов работы с канвасом

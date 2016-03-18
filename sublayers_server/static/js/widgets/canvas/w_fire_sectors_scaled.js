@@ -19,8 +19,16 @@ var WCanvasFireSectorsScaled = (function (_super) {
         this.old_map_size = new Point(0, 0);
         this.old_ctx_car_pos = new Point(0, 0);
 
-        mapCanvasManager.add_vobj(this, 2);
+        // Инициализация всяких нужных штук
+        this.max_circles = 6; // кол-во кругов сетки
+        var sides = this.car.fireSidesMng.sides;
+        this.max_radius = Math.max(
+            sides.front.sideRadius,
+            sides.back.sideRadius,
+            sides.left.sideRadius,
+            sides.right.sideRadius);
 
+        mapCanvasManager.add_vobj(this, 10);
     }
 
     WCanvasFireSectorsScaled.prototype.setZoom = function(){};
@@ -95,22 +103,13 @@ var WCanvasFireSectorsScaled = (function (_super) {
         var sp21 = rotateVector(new Point(maxRadius, 0), half_width);
         var sp22 = rotateVector(new Point(maxRadius, 0), -half_width);
 
+        ctx.save();
 
         var grad_stroke = ctx.createRadialGradient(0, 0, minRadius, 0, 0, maxRadius);
         grad_stroke.addColorStop(0.0, "rgba(85, 255, 85, 0)");
         grad_stroke.addColorStop(0.2, "rgba(85, 255, 85, 1)");
         grad_stroke.addColorStop(1.0, "rgba(85, 255, 85, 1)");
 
-        //var grad_stroke_arc = ctx.createRadialGradient(maxRadius, 0, 3, 0, maxRadius, Math.abs(sp22.x));
-        //grad_stroke_arc.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        //grad_stroke_arc.addColorStop(0.9, "rgba(85, 255, 85, 0)");
-        //grad_stroke_arc.addColorStop(1.0, "rgba(85, 255, 85, 1)");
-
-        //var grad_stroke_arc = ctx.createLinearGradient(sp21.x, 0, sp22.x, 1);
-        //grad_stroke_arc.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        //grad_stroke_arc.addColorStop(1.0, "rgba(85, 255, 85, 1)");
-
-        ctx.save();
         ctx.rotate(direction);
 
         ctx.strokeStyle = grad_stroke;
@@ -129,11 +128,21 @@ var WCanvasFireSectorsScaled = (function (_super) {
 
         ctx.strokeStyle = 'rgba(85, 255, 85, 0.6)';
 
+        var grad_left_zacep_22 = ctx.createRadialGradient(sp22.x, sp22.y, 0, sp22.x, sp22.y, 50);
+        grad_left_zacep_22.addColorStop(0.0, "rgba(85, 255, 85, 0.65)");
+        grad_left_zacep_22.addColorStop(1.0, "rgba(85, 255, 85, 0)");
 
+        var grad_left_zacep_21 = ctx.createRadialGradient(sp21.x, sp21.y, 0, sp21.x, sp21.y, 50);
+        grad_left_zacep_21.addColorStop(0.0, "rgba(85, 255, 85, 0.65)");
+        grad_left_zacep_21.addColorStop(1.0, "rgba(85, 255, 85, 0)");
+
+        ctx.strokeStyle = 'rgba(85, 255, 85, 0.6)';
+        ctx.strokeStyle = grad_left_zacep_22;
         ctx.beginPath();
         ctx.arc(0, 0, maxRadius, -half_width, -half_width + diff_zacep, false);
         ctx.stroke();
 
+        ctx.strokeStyle = grad_left_zacep_21;
         ctx.beginPath();
         ctx.arc(0, 0, maxRadius, half_width, half_width - diff_zacep, true);
         ctx.stroke();
@@ -197,7 +206,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
     WCanvasFireSectorsScaled.prototype.fillTextCircle = function (ctx, text, radius, startRotation, endRotation) {
         var numRadsPerLetter = Math.abs(endRotation - startRotation) / text.length;
         ctx.save();
-        ctx.rotate(startRotation);
+        ctx.rotate(startRotation + numRadsPerLetter / 2.);
 
         for (var i = 0; i < text.length; i++) {
             ctx.save();
@@ -230,7 +239,6 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.restore();
 
     };
-
 
     WCanvasFireSectorsScaled.prototype.setVisible = function (visible) {
         //console.log('WCanvasFireSectorsScaled.prototype.setVisible', visible);
