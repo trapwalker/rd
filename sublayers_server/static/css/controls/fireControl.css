@@ -19,6 +19,24 @@
     bottom: -225px
 }
 
+.fire-controll-quick-btn-block {
+    position: absolute;
+    cursor: pointer;
+    pointer-events: auto;
+    width: 62px;
+    height: 33px;
+    border: 1px solid green;
+    box-sizing: border-box;
+    background-size: contain;
+    opacity: 0.7;
+}
+.fire-controll-quick-btn-block:hover { opacity: 1; }
+
+#fireControlQuickBtn1 { top: 100px; left: 21px; }
+#fireControlQuickBtn2 { top: 145px; left: 32px; }
+#fireControlQuickBtn3 { top: 100px; left: 300px; }
+#fireControlQuickBtn4 { top: 145px; left: 294px; }
+
 #divForSVG {
     margin-left: 118px;
     margin-top: 22px;

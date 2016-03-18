@@ -53,11 +53,16 @@ class QuickConsumerPanelMessageEvent(Event):
 
 
 class QuickItem(Consumer):
-    def __init__(self, server):
-        super(QuickItem, self).__init__(server=server, dv=0, ddvs=0)
+    def __init__(self, owner):
+        super(QuickItem, self).__init__(server=owner.owner.server, dv=0, ddvs=0)
+        self.owner = owner
 
     def can_set(self, item):
         return item.example.activate() is not None
+
+    def set_item(self, time, **kw):
+        super(QuickItem, self).set_item(time=time, **kw)
+        QuickConsumerPanelMessageEvent(owner=self.owner, time=time + 0.1).post()
 
 
 class QuickConsumerPanel(object):
@@ -65,10 +70,10 @@ class QuickConsumerPanel(object):
         super(QuickConsumerPanel, self).__init__()
         self.owner = owner
         self.quick_items = {
-            1: QuickItem(server=owner.server),
-            2: QuickItem(server=owner.server),
-            3: QuickItem(server=owner.server),
-            4: QuickItem(server=owner.server),
+            1: QuickItem(owner=self),
+            2: QuickItem(owner=self),
+            3: QuickItem(owner=self),
+            4: QuickItem(owner=self),
         }
 
     def activate_item(self, index, target_id, time):
@@ -83,7 +88,6 @@ class QuickConsumerPanel(object):
             if position is not None:
                 item = self.owner.inventory.get_item(position=position)
             self.quick_items[index].set_item(item=item, time=time)
-            QuickConsumerPanelMessageEvent(owner=self, time=time + 0.1).post()
 
     def on_activate_item(self, index, target_id, time):
         if index in self.quick_items:

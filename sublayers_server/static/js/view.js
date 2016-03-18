@@ -66,12 +66,6 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
-    document.getElementById('divMainMenuBtnInventory').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
-            returnFocusToMap();
-        };
-
     document.getElementById('divMainMenuBtnJournal').onclick =
         function () {
             windowTemplateManager.openUniqueWindow('map_journal', '/map_journal', null, function() {

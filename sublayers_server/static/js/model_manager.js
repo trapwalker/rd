@@ -915,7 +915,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.QuickConsumerPanelInfoMessage = function (event) {
-        console.log('ClientManager.prototype.QuickConsumerPanelInfoMessage', event);
+        //console.log('ClientManager.prototype.QuickConsumerPanelInfoMessage', event);
+        wFireController.updateQuickConsumerPanel(event.quick_panel);
     };
 
     // Фраг

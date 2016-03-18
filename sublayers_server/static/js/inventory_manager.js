@@ -208,7 +208,7 @@ var Inventory = (function () {
             opacity: 0.8,
             revert: true,
             revertDuration: 0,
-            zIndex: 1,
+            zIndex: 100,
             appendTo: '#map'
         });
     };

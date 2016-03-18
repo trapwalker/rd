@@ -52,6 +52,48 @@ var WFireController = (function (_super) {
         this.dFSVG = $("<div id='divForSVG'></div>");
         this.fCT.append(this.dFSVG);
 
+        // Создание кнопок быстрого доступа
+        this.jq_quick_btns = {
+            1: $('<div id="fireControlQuickBtn1" class="fire-controll-quick-btn-block" data-index="1"></div>'),
+            2: $('<div id="fireControlQuickBtn2" class="fire-controll-quick-btn-block" data-index="2"></div>'),
+            3: $('<div id="fireControlQuickBtn3" class="fire-controll-quick-btn-block" data-index="3"></div>'),
+            4: $('<div id="fireControlQuickBtn4" class="fire-controll-quick-btn-block" data-index="4"></div>')
+        };
+        for (var key in this.jq_quick_btns)
+            if (this.jq_quick_btns.hasOwnProperty(key)) {
+                this.fCT.append(this.jq_quick_btns[key]);
+                this.jq_quick_btns[key].on('click', function() {
+                    clientManager.sendActivateQuickItem($(this).data('index'), user.userCar.ID)
+                });
+            }
+        $('.fire-controll-quick-btn-block').droppable({
+            greedy: true,
+            accept: function (target) {
+                return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item') ||
+                       target.hasClass('fire-controll-quick-btn-block');
+            },
+            drop: function (event, ui) {
+                var dragOwnerID = ui.draggable.data('owner_id');
+                var dragPos = ui.draggable.data('pos');
+                var index = $(this).data('index');
+                if (dragOwnerID == user.userCar.ID)
+                    clientManager.sendSetQuickItem(index, dragPos);
+            }
+        });
+
+         $('.fire-controll-quick-btn-block').draggable({
+            disabled: true,
+            helper: 'clone',
+            opacity: 0.8,
+            revert: true,
+            revertDuration: 0,
+            zIndex: 100,
+            appendTo: '#map',
+            start: function(event, ui) {
+                if (!windowTemplateManager.unique.hasOwnProperty('inventory_info')) return false;
+            }
+        });
+
         // Создание SVG полотна
         this.NS = 'http://www.w3.org/2000/svg';
         this.SVG = document.createElementNS(this.NS, 'svg');
@@ -114,6 +156,20 @@ var WFireController = (function (_super) {
         // todo: сделать это правильно
         timeManager.addTimerEvent(this, 'change');
     }
+
+    WFireController.prototype.updateQuickConsumerPanel = function(panel_info) {
+        //console.log("WFireController.prototype.updateQuickConsumerPanel", panel_info);
+        for (var i = 0; i < panel_info.items.length; i++) {
+            var btn = panel_info.items[i];
+            this.jq_quick_btns[btn.index].draggable("disable");
+            if (btn.item) {
+                this.jq_quick_btns[btn.index].css('background-image', 'url("' + btn.item.example.inv_icon_small + '")');
+                this.jq_quick_btns[btn.index].draggable("enable");
+            }
+            else
+                this.jq_quick_btns[btn.index].css('background-image', 'none');
+        }
+    };
 
     WFireController.prototype.changeCombatState = function(event){
         var self = event.data.self;
