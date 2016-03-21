@@ -284,7 +284,12 @@ var LeafletIconManager = (function(){
             };
             iconsLeaflet.count_loading_img--;
             iconsLeaflet.load_complete();
-        }
+        };
+        img.onerror = function() {
+            console.warn('LeafletIconManager: Content dont load: ', icon_url);
+            iconsLeaflet.count_loading_img--;
+            iconsLeaflet.load_complete();
+        };
         img.src = icon_url;
     };
 
