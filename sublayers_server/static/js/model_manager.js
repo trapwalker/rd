@@ -1678,6 +1678,20 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendSwapQuickItems = function(index1, index2) {
+        //console.log('ClientManager.prototype.sendSetQuickItem');
+        var mes = {
+            call: "swap_quick_items",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                index1: index1,
+                index2: index2
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendActivateQuickItem = function(index, target_id) {
         //console.log('ClientManager.prototype.sendActivateQuickItem');
         var mes = {
