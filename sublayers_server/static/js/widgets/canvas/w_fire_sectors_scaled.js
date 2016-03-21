@@ -14,11 +14,6 @@ var WCanvasFireSectorsScaled = (function (_super) {
         this.in_visible_change = false;
         this.start_change_visible_time = 0;
 
-
-        // чтобы не так дёргалось
-        this.old_map_size = new Point(0, 0);
-        this.old_ctx_car_pos = new Point(0, 0);
-
         // Инициализация всяких нужных штук
         this.max_circles = 6; // кол-во кругов сетки
         var sides = this.car.fireSidesMng.sides;
@@ -277,26 +272,10 @@ var WCanvasFireSectorsScaled = (function (_super) {
             ctx.globalAlpha = visible_state;
         }
 
-
-        var real_zoom = mapManager.getRealZoom(time);
-        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
-
-        var map_size = mapManager.getMapSize();
-
-        if (subVector(map_size, this.old_map_size).abs() > 0.2 || map.dragging._enabled) {
-            var car_pos = this.car.getCurrentCoord(time);
-            var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
-
-            this.old_map_size = map_size;
-            this.old_ctx_car_pos = car_ctx_pos;
-        }
-
-
-        ctx.translate(this.old_ctx_car_pos.x, this.old_ctx_car_pos.y);
+        ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
         ctx.rotate(this.car.getCurrentDirection(time));
 
-        this._drawSectors(ctx, zoom_koeff, time);
+        this._drawSectors(ctx, mapCanvasManager.zoom_koeff, time);
 
         ctx.restore();
     };
@@ -305,7 +284,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
         //console.log('WCanvasFireSectorsScaled.prototype.delFromVisualManager');
         this.car = null;
         mapManager.widget_fire_sectors = null;
-        mapCanvasManager.del_vobj(this);
+
         _super.prototype.delFromVisualManager.call(this);
     };
 

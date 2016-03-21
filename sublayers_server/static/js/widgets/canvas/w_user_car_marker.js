@@ -5,9 +5,6 @@ var WCanvasUserCarMarker = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
 
-        // чтобы не так дёргалось
-        this.old_map_size = new Point(0, 0);
-        this.old_ctx_car_pos = new Point(0, 0);
         this.icon_id = 5; // todo: временно так. Дать нормальный алиасинг (текстовое имя)
 
         this.icon_obj = iconsLeaflet.getIconByID(this.icon_id, 'canvas_icon');
@@ -20,28 +17,10 @@ var WCanvasUserCarMarker = (function (_super) {
         //console.log('WCanvasUserCarMarker.prototype.redraw');
         ctx.save();
 
-        var real_zoom = mapManager.getRealZoom(time);
-        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
-
-        var map_size = mapManager.getMapSize();
-
-        if (subVector(map_size, this.old_map_size).abs() > 0.2 || map.dragging._enabled) {
-            var car_pos = this.car.getCurrentCoord(time);
-            var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
-
-            this.old_map_size = map_size;
-            this.old_ctx_car_pos = car_ctx_pos;
-        }
-
-
-        ctx.translate(this.old_ctx_car_pos.x, this.old_ctx_car_pos.y);
-
+        ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
         ctx.save(); // для возврата от поворота
         ctx.rotate(this.car.getCurrentDirection(time));
-
         ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
-
         ctx.restore(); // Возврат после поворота
 
         // Вывод лейбла

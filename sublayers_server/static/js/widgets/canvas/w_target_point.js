@@ -12,10 +12,6 @@ var WCanvasTargetPoint = (function (_super) {
         this.car = car;
         this.target_point = null;
 
-        // чтобы не так дЄргалось
-        this.old_map_size = new Point(0, 0);
-        this.old_ctx_car_pos = new Point(0, 0);
-
         mapCanvasManager.add_vobj(this, 20);
     }
 
@@ -26,24 +22,11 @@ var WCanvasTargetPoint = (function (_super) {
 
         ctx.save();
 
-        var real_zoom = mapManager.getRealZoom(time);
-        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
-        var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Ёта точка соответствует 0,0 на канвасе
-
-        var map_size = mapManager.getMapSize();
-
-        if (subVector(map_size, this.old_map_size).abs() > 0.2 || map.dragging._enabled) {
-            var car_pos = this.car.getCurrentCoord(time);
-            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
-
-            this.old_map_size = map_size;
-            this.old_ctx_car_pos = car_ctx_pos;
-        }
 
         // ¬ычисл€ем координаты
-        var tp_ctx = mulScalVector(subVector(this.target_point, this.car.getCurrentCoord(time)), 1.0 / zoom_koeff);
+        var tp_ctx = mulScalVector(subVector(this.target_point, this.car.getCurrentCoord(time)), 1.0 / mapCanvasManager.zoom_koeff);
         if (tp_ctx.abs() > 10.0) { // если меньше 10 пикселей, то просто не показываем
-            ctx.translate(this.old_ctx_car_pos.x, this.old_ctx_car_pos.y);
+            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
 
             ctx.strokeStyle = 'rgba(0, 255, 84, 0.2)';
             ctx.lineCap = 'round';

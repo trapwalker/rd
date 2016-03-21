@@ -87,7 +87,6 @@ $(document).ready(function () {
 //    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 
     $('.anti-click-class').click(function(){
-        console.log('wioufsdf pisudah ipsduh fpdhio ');
         returnFocusToMap();
     });
 

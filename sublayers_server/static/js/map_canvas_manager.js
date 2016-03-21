@@ -18,6 +18,13 @@ var MapCanvasManager = (function(_super){
 
         // todo: сделать это не просто списком, а списком с параметрами
         this.vobj_list = [];
+
+        // Общие переменные
+        this.real_zoom = null; // Зум текущей итерации перерисовки
+        this.zoom_koeff = null; // Коэффициент зуммирования: 2 в стемени 18 зум минус текущий зум
+        this.map_tl = null;  // Игровые координаты, которые соответствуют 0,0 на канвасе (Map Top Left)
+        this.cur_map_size = new Point(0, 0); // Текущие размеры карты
+        this.cur_ctx_car_pos = new Point(0, 0); // Текущее положение userCar
     }
 
     MapCanvasManager.prototype.add_vobj = function(vobj, priority) {
@@ -58,16 +65,24 @@ var MapCanvasManager = (function(_super){
 
     MapCanvasManager.prototype.redraw = function(time) {
         this.context.clearRect(0, 0, 1920, 1080);
+
+        this.real_zoom = mapManager.getRealZoom(time);
+        this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
+        var map_size = mapManager.getMapSize();
+        if (subVector(map_size, this.cur_map_size).abs() > 0.2 || map.dragging._enabled) {
+            var car_pos = user.userCar.getCurrentCoord(time);
+            this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
+            var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
+            this.cur_map_size = map_size;
+            this.cur_ctx_car_pos = car_ctx_pos;
+        }
+
         for (var i = 0; i < this.vobj_list.length; i++)
             this.vobj_list[i].obj.redraw(this.context, time);
     };
 
     MapCanvasManager.prototype.on_new_map_size = function() {
-        for (var i = 0; i < this.vobj_list.length; i++) {
-            if (this.vobj_list[i].obj.hasOwnProperty('old_map_size')){
-                this.vobj_list[i].obj.old_map_size = new Point(0, 0);
-            }
-        }
+        this.cur_map_size = new Point(0, 0);
     };
 
 
