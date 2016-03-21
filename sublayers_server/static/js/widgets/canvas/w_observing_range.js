@@ -10,48 +10,42 @@ var WObservingRange = (function (_super) {
 
     function WObservingRange() {
         _super.call(this, []);
-        this.lastZoom = 1;
-        this.old_position = {x: 0, y: 0};
         mapCanvasManager.add_vobj(this, 100);
     }
 
     WObservingRange.prototype.redraw = function(ctx, time){
-        //return;
         //console.log('WObservingRange.prototype.change');
-        var real_zoom = mapManager.getRealZoom(time);
-        var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-        var zoom_koeff = Math.pow(2., (ConstMaxMapZoom - real_zoom));
+        var zoom_koeff = mapCanvasManager.zoom_koeff;
+        var map_tl = mapCanvasManager.map_tl;
         //if (real_zoom <= 14) return;
         for (var i = 0; i < this._model_objects.length; i++) {
             var car = this._model_objects[i];
             var car_pos = car.getCurrentCoord(time);  // положение машинки
             var outher_radius = car.getObservingRange(time) / zoom_koeff;
-            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
+            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
 
-            var grad1 = ctx.createRadialGradient(car_ctx_pos.x, car_ctx_pos.y, 0, car_ctx_pos.x, car_ctx_pos.y, outher_radius);
+            ctx.save();
+
+            ctx.translate(car_ctx_pos.x, car_ctx_pos.y);
+
+            var grad1 = ctx.createRadialGradient(0, 0, 0, 0, 0, outher_radius);
             grad1.addColorStop(0, "rgba(0,0,0,1)");
             grad1.addColorStop(0.65, "rgba(0,0,0,1)");
             grad1.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.fillStyle = grad1;
             ctx.beginPath();
-            ctx.arc(car_ctx_pos.x, car_ctx_pos.y, outher_radius, 0, 2 * Math.PI, false);
+            ctx.arc(0, 0, outher_radius, 0, 2 * Math.PI, false);
             ctx.closePath();
             ctx.fill();
+
+            ctx.restore();
         }
 
-        //var opacity = (0.9 - 0.05 * (ConstMaxMapZoom - real_zoom)).toFixed(2);
         ctx.globalCompositeOperation = "xor";
         ctx.fillStyle = "rgba(0,0,0,0.85)";
         ctx.fillRect(0, 0, 1920, 1080);
         ctx.globalCompositeOperation = "source-over";
-
-        //ctx.fillStyle = 'red';
-        //ctx.font="40px Georgia";
-        //ctx.fillText(outher_radius, 100, 100);
-        //ctx.fillText(this.car.getCurrentSpeed(time), 100, 150);
-        //ctx.fillText(outher_radius, 100, 200);
-        //ctx.fillText(inner_radius, 100, 250);
     };
 
     WObservingRange.prototype.delFromVisualManager = function () {

@@ -68,10 +68,10 @@ var MapCanvasManager = (function(_super){
 
         this.real_zoom = mapManager.getRealZoom(time);
         this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
+        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
         var map_size = mapManager.getMapSize();
         if (subVector(map_size, this.cur_map_size).abs() > 0.2 || map.dragging._enabled) {
             var car_pos = user.userCar.getCurrentCoord(time);
-            this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
             var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
             this.cur_map_size = map_size;
             this.cur_ctx_car_pos = car_ctx_pos;
