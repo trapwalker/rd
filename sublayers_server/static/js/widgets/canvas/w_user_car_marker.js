@@ -72,6 +72,3 @@ var WCanvasUserCarMarker = (function (_super) {
     return WCanvasUserCarMarker;
 })(VisualObject);
 
-
-var userCarMarkerImg = new Image('/static/img/n1.png');
-

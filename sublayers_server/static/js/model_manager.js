@@ -342,19 +342,12 @@ var ClientManager = (function () {
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            //new WViewRadius(mcar); // виджет радиуса видимости
-            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            mapManager.widget_target_point = new WCanvasTargetPoint(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
-            if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {  // если есть хоть один сектор
-                //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
-                //mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
-                //mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
-                //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
-
+            if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
                 mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
                 mapManager.widget_fire_radial_grid = new WFCanvasireRadialGrid(mcar);
-
             }
 
             // Инициализация виджетов работы с канвасом
