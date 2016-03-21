@@ -730,6 +730,17 @@ class AgentAPI(API):
                                                           time=self.agent.server.get_time())
 
     @public_method
+    def swap_quick_items(self, index1, index2):
+        self.agent.car.quick_consumer_panel.swap_items(index1=index1, index2=index2, time=self.agent.server.get_time())
+
+    @public_method
     def get_quick_item_info(self):
         from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
         QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def get_quick_item_info(self):
+        from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
+        QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
+
+
