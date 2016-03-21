@@ -31,7 +31,6 @@ var WSConnector = (function(_super){
         this.options = {
             url: "ws://" + location.host.split(':')[0] + ":" + $('#settings_ws_port').text() + "/ws"
         };
-        console.info('connect to:', this.options.url);
         if (options) setOptions(options, this.options);
 
         this.isConnected = false;
@@ -55,6 +54,7 @@ var WSConnector = (function(_super){
 
     WSConnector.prototype.connect = function(){
         // создание коннекта и обвешивание евентами
+        console.info('WSConnector connect to:', this.options.url);
         this.connection = new WebSocket(this.options.url);
         var self = this;
         this.connection.onopen = function() {

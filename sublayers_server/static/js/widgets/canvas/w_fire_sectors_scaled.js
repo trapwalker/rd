@@ -68,7 +68,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
                     this._drawOneSide(ctx, second_radius / zoom_koeff, max_disch_radius / zoom_koeff, max_disch_width,
                         side.direction);
 
-                    this._drawOneRechargeSide(ctx, 350, max_disch_width, side.direction, side.getRechargeState(time))
+                    this._drawOneRechargeSide(ctx, side.sideRadius + 30, max_disch_width, side.direction, side.getRechargeState(time))
                 }
             }
     };
@@ -283,10 +283,10 @@ var WCanvasFireSectorsScaled = (function (_super) {
 
         var map_size = mapManager.getMapSize();
 
-        if (subVector(map_size, this.old_map_size).abs() > 0.2) {
+        if (subVector(map_size, this.old_map_size).abs() > 0.2 || map.dragging._enabled) {
             var car_pos = this.car.getCurrentCoord(time);
             var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
+            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
 
             this.old_map_size = map_size;
             this.old_ctx_car_pos = car_ctx_pos;
@@ -305,6 +305,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
         //console.log('WCanvasFireSectorsScaled.prototype.delFromVisualManager');
         this.car = null;
         mapManager.widget_fire_sectors = null;
+        mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
     };
 

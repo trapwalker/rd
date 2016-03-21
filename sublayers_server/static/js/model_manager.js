@@ -328,7 +328,8 @@ var ClientManager = (function () {
             user.userCar = mcar;
 
             // Виджеты:
-            new WCarMarker(mcar);    // виджет маркера
+            //new WCarMarker(mcar);    // виджет маркера
+            new WCanvasUserCarMarker(mcar);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз

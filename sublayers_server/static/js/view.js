@@ -43,8 +43,6 @@ $(document).ready(function () {
     chat.setActivePage(chat.page_global);
 
 
-    ws_connector.connect();
-
     document.getElementById('map').focus();
 
     // Повесить на кнопки меню возврат фокуса на карту
@@ -98,16 +96,21 @@ $(document).ready(function () {
     img.push(new Image());
     img.push(new Image());
     img.push(new Image());
+
     img[0].src = '/static/img/n1.png';
     img[1].src = '/static/img/n2.png';
     img[2].src = '/static/img/n3.png';
     img[3].src = '/static/img/n4.png';
+
+    //ws_connector.connect(); // вызывается лишь тогда, когда всё будет загружено и проинициализировано
+
 });
 
 var b_canvas;
 var b_context;
 var pat;
 var img = [];
+var img1;
 
 
 function returnFocusToMap() {

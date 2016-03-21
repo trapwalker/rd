@@ -7,69 +7,38 @@ var LeafletIconManager = (function(){
         var icons = {};
         this.icons = icons;
         this.max_id = 0;
+        this.count_loading_img = 0;
+        resourceLoadManager.add(this);
+        var self = this;
+        var img;
+
+        function load_img_complete() {
+            self.count_loading_img--;
+            if (self.count_loading_img == 0) {
+                self.load_complete();
+            }
+        }
 
         // Создание иконки города
-        icons['icon_city'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_ico_city.png',
-                iconSize: [26, 29]
-            }),
-            id: this.max_id
-        };
+        this.load_new_icon('icon_city', '/static/img/map_icons/map_ico_city.png', [26, 29], this.max_id++);
 
         // Создание иконки заправочной станции
-        icons['icon_station'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_ico_fuelstation.png',
-                iconSize: [26, 29]
-            }),
-            id: this.max_id++
-        };
+        this.load_new_icon('icon_station', '/static/img/map_icons/map_ico_fuelstation.png', [26, 29], this.max_id++);
 
         // Создание иконки движущейся машинки V 1
-        icons['icon_moving_V1'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v1_moving.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
+        this.load_new_icon('icon_moving_V1', '/static/img/map_icons/map_icon_player_v1_moving.png', [51, 28], this.max_id++);
 
         // Создание иконки стоящей машинки V 1
-        icons['icon_stopped_V1'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v1_stopped.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
+        this.load_new_icon('icon_stopped_V1', '/static/img/map_icons/map_icon_player_v1_stopped.png', [51, 28], this.max_id++);
 
         // Создание иконки убитой машинки V 1
-        icons['icon_killed_V1'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v1_killed.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
+        this.load_new_icon('icon_killed_V1', '/static/img/map_icons/map_icon_player_v1_killed.png', [51, 28], this.max_id++);
 
         // Создание иконки движущейся машинки V 2
-        icons['icon_moving_V2'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v2_moving_slow.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
+        this.load_new_icon('icon_moving_V2', '/static/img/map_icons/map_icon_player_v2_moving_slow.png', [51, 28], this.max_id++);
 
         // Создание иконки БЫСТРО движущейся машинки V 2
-        icons['icon_moving_fast_V2'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v2_moving_fast.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
+        this.load_new_icon('icon_moving_fast_V2', '/static/img/map_icons/map_icon_player_v2_moving_fast.png', [51, 28], this.max_id++);
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
@@ -86,6 +55,10 @@ var LeafletIconManager = (function(){
                 iconUrl: '/static/img/map_icons/map_icon_player_v2_killed.png',
                 iconSize: [51, 28]
             }),
+            canvas_icon: {
+                img: new Image('/static/img/map_icons/map_icon_player_v2_killed.png'),
+                iconSize: [51, 28]
+            },
             id: this.max_id++
         };
 
@@ -104,6 +77,10 @@ var LeafletIconManager = (function(){
                 iconUrl: '/static/img/map_icons/map_icon_player_v3_stopped.png',
                 iconSize: [51, 28]
             }),
+            canvas_icon: {
+                img: new Image('/static/img/map_icons/map_icon_player_v3_stopped.png'),
+                iconSize: [51, 28]
+            },
             id: this.max_id++
         };
 
@@ -113,6 +90,10 @@ var LeafletIconManager = (function(){
                 iconUrl: '/static/img/map_icons/map_icon_rocket.png',
                 iconSize: [40, 18]
             }),
+            canvas_icon: {
+                img: new Image('/static/img/map_icons/map_icon_rocket.png'),
+                iconSize: [51, 28]
+            },
             id: this.max_id++
         };
 
@@ -271,16 +252,50 @@ var LeafletIconManager = (function(){
         return this.icons[icon_name].icon;
     };
 
-    LeafletIconManager.prototype.getIconByID = function(ID) {
+    LeafletIconManager.prototype.getIconByID = function(ID, type) {
+        type = type ? type : 'icon';
         var tid = ID % this.max_id;
         for(var key in this.icons)
             if (this.icons[key].id == tid)
-                return this.icons[key].icon;
-        return this.icons['icon_city'].icon;
+                return this.icons[key][type];
+        return this.icons['icon_city'][type];
     };
+
+    LeafletIconManager.prototype.load_complete = function () {
+        if (this.count_loading_img == 0) {
+            resourceLoadManager.del(this);
+        }
+    };
+
+    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id){
+        var img = new Image();
+        this.count_loading_img++;
+        img.onload = function() {
+            iconsLeaflet.icons[icon_name] = {
+                icon: new L.icon({
+                    iconUrl: icon_url,
+                    iconSize: icon_size
+                }),
+                canvas_icon: {
+                    img: img,
+                    iconSize: [this.width, this.height]
+                },
+                id: icon_id
+            };
+            iconsLeaflet.count_loading_img--;
+            iconsLeaflet.load_complete();
+        }
+        img.src = icon_url;
+    };
+
+
 
     return LeafletIconManager;
 })();
+
+
+
+
 
 
 // Массив иконок

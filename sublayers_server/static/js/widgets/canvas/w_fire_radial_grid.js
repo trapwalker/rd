@@ -73,10 +73,10 @@ var WFCanvasireRadialGrid = (function (_super) {
         var map_size = mapManager.getMapSize();
         var car_dir = this.car.getCurrentDirection(time);
 
-        if (subVector(map_size, this.old_map_size).abs() > 0.2) {
+        if (subVector(map_size, this.old_map_size).abs() > 0.2 || map.dragging._enabled) {
             var car_pos = this.car.getCurrentCoord(time);
             var map_tl = mapManager.getTopLeftCoords(real_zoom);  // Эта точка соответствует 0,0 на канвасе
-            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff).round();
+            var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
 
             this.old_map_size = map_size;
             this.old_ctx_car_pos = car_ctx_pos;
@@ -170,6 +170,7 @@ var WFCanvasireRadialGrid = (function (_super) {
         //console.log('WCanvasFireRadialGrid.prototype.delFromVisualManager');
         this.car = null;
         mapManager.widget_fire_radial_grid = null;
+        mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
     };
 

@@ -1,3 +1,9 @@
+/*
+* MapCanvasManager - объект, занимающийся отрисовкой на мап-канвас своих виджетов
+*
+* Чем выше приоритет добавляемого объекта, тем раньше он отрисуется на канвас!
+* */
+
 
 var MapCanvasManager = (function(_super){
     __extends(MapCanvasManager, _super);
@@ -55,6 +61,17 @@ var MapCanvasManager = (function(_super){
         for (var i = 0; i < this.vobj_list.length; i++)
             this.vobj_list[i].obj.redraw(this.context, time);
     };
+
+    MapCanvasManager.prototype.on_new_map_size = function() {
+        for (var i = 0; i < this.vobj_list.length; i++) {
+            if (this.vobj_list[i].obj.hasOwnProperty('old_map_size')){
+                this.vobj_list[i].obj.old_map_size = new Point(0, 0);
+            }
+        }
+    };
+
+
+
 
     return MapCanvasManager;
 })(ClientObject);

@@ -169,6 +169,7 @@ function onKeyDownMap(event) {
                 map.dragging.disable();
             else
                 map.dragging.enable();
+            mapCanvasManager.on_new_map_size();
             break;
         case 90:  // Z
             //console.log('Was pressed: Z');
