@@ -188,7 +188,13 @@ var Inventory = (function () {
         $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + position + '').droppable({
             greedy: true,
             accept: function (target) {
-                return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item');
+                if (!target.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) return false;
+                var pos = $(this).position();
+                pos.right = pos.left + $(this).width();
+                pos.bottom = pos.top + $(this).height();
+                var parent_width = $(this).parent().width();
+                var parent_height = $(this).parent().height();
+                return !((pos.bottom <= 0) || (pos.top >= parent_height) || (pos.left >= parent_width) || (pos.right <= 0))
             },
             drop: function (event, ui) {
                 var dragOwnerID = ui.draggable.data('owner_id');
