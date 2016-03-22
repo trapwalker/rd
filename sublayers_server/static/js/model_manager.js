@@ -326,6 +326,7 @@ var ClientManager = (function () {
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
 
             user.userCar = mcar;
+            mapCanvasManager.on_new_map_size();
 
             // Виджеты:
             //new WCarMarker(mcar);    // виджет маркера

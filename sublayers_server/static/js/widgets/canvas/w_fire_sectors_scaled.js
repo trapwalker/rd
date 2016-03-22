@@ -284,7 +284,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
         //console.log('WCanvasFireSectorsScaled.prototype.delFromVisualManager');
         this.car = null;
         mapManager.widget_fire_sectors = null;
-
+        mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
     };
 

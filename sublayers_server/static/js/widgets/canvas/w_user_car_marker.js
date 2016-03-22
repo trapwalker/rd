@@ -16,10 +16,16 @@ var WCanvasUserCarMarker = (function (_super) {
     WCanvasUserCarMarker.prototype.redraw = function(ctx, time){
         //console.log('WCanvasUserCarMarker.prototype.redraw');
         ctx.save();
-
-        ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+        if (this.car == user.userCar)
+            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+        else {
+            var car_pos = this.car.getCurrentCoord(time);
+            var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+            ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        }
         ctx.save(); // для возврата от поворота
         ctx.rotate(this.car.getCurrentDirection(time));
+        //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
         ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
         ctx.restore(); // Возврат после поворота
 

@@ -6,7 +6,7 @@ var LeafletIconManager = (function(){
     function LeafletIconManager(){
         var icons = {};
         this.icons = icons;
-        this.max_id = 0;
+        this.max_id = -1;
         this.count_loading_img = 0;
         resourceLoadManager.add(this);
         var self = this;
