@@ -243,6 +243,15 @@ var ArmorerManager = (function () {
                             '" data-pos="' + position + '"></div>');
         itemWrapDiv.droppable({
             greedy: true,
+            accept: function (target) {
+                var pos = $(this).position();
+                pos.right = pos.left + $(this).width();
+                pos.bottom = pos.top + $(this).height();
+                var parent_width = $(this).parent().parent().width();
+                var parent_height = $(this).parent().parent().height();
+                //console.log(pos, parent_height, parent_width);
+                return !((pos.bottom <= 0) || (pos.top >= parent_height) || (pos.left >= parent_width) || (pos.right <= 0))
+            },
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
@@ -565,6 +574,15 @@ var MechanicManager = (function () {
             '" data-pos="' + position + '"></div>');
         itemWrapDiv.droppable({
             greedy: true,
+            accept: function (target) {
+                var pos = $(this).position();
+                pos.right = pos.left + $(this).width();
+                pos.bottom = pos.top + $(this).height();
+                var parent_width = $(this).parent().parent().width();
+                var parent_height = $(this).parent().parent().height();
+                //console.log(pos, parent_height, parent_width);
+                return !((pos.bottom <= 0) || (pos.top >= parent_height) || (pos.left >= parent_width) || (pos.right <= 0))
+            },
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
@@ -822,6 +840,15 @@ var TunerManager = (function () {
                             '" data-pos="' + position + '"></div>');
         itemWrapDiv.droppable({
             greedy: true,
+            accept: function (target) {
+                var pos = $(this).position();
+                pos.right = pos.left + $(this).width();
+                pos.bottom = pos.top + $(this).height();
+                var parent_width = $(this).parent().parent().width();
+                var parent_height = $(this).parent().parent().height();
+                //console.log(pos, parent_height, parent_width);
+                return !((pos.bottom <= 0) || (pos.top >= parent_height) || (pos.left >= parent_width) || (pos.right <= 0))
+            },
             drop: function(event, ui) {
                 var dragPos = ui.draggable.data('pos');
                 var dropPos = $(event.target).data('pos');
