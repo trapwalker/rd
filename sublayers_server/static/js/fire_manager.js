@@ -188,12 +188,12 @@ var FireAutoEffectController = (function () {
                 var p2 = obj.getCurrentCoord(time);
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
                 if (distancePoints(p2, p_obj) > ConstFlashlightOrientedRadius)
-                    new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
+                    new ECanvasPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
                         new ECanvasLightBangPNG_1(pos).start();
                     }).start();
                 else {
                     var dir = angleVectorRadCCW(subVector(p_subj, p_obj)) + Math.PI;
-                    new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
+                    new ECanvasPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
                         new ECanvasLightBangPNG_2(pos, dir).start();
                     }).start();
                 }
@@ -204,7 +204,7 @@ var FireAutoEffectController = (function () {
                 this.last_time = time;
                 var p2 = obj.getCurrentCoord(time);
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
-                new ELightBangPNG_1(p_obj).start();
+                new ECanvasLightBangPNG_1(p_obj).start();
             }
     };
 

@@ -8,6 +8,7 @@ var ConstStartDistance = 20; // Расстояние от центра маши�
 
 var EPointsTracer = (function(){
     function EPointsTracer(p1, p2, speed, length, call_back){
+        console.log('Не используемый код !!!!');
         // получим вектор-направление движения трассера и дистанцию
         var track_vect = subVector(p2, p1);
         var dist_track = track_vect.abs();
@@ -114,6 +115,7 @@ var EPointsTracer = (function(){
 
 var EPointsTracerPNG = (function(){
     function EPointsTracerPNG(p1, p2, speed, call_back){
+        console.log('Не используемый код !!!!');
         // получим вектор-направление движения трассера и дистанцию
         var track_vect = subVector(p2, p1);
         var dist_track = track_vect.abs();
@@ -191,4 +193,69 @@ var EPointsTracerPNG = (function(){
     };
 
     return EPointsTracerPNG
+})();
+
+
+var ECanvasPointsTracerPNG = (function () {
+    function ECanvasPointsTracerPNG(p1, p2, speed, call_back) {
+        // получим вектор-направление движения трассера и дистанцию
+        var track_vect = subVector(p2, p1);
+        var dist_track = track_vect.abs();
+        if (dist_track < 20) return; // todo не рисовать, если очень близко. можно сразу рисовать вспышки
+        // расчёт начальной точки
+        var p11 = summVector(mulScalVector(track_vect, ConstStartDistance / dist_track), p1);
+        track_vect = subVector(p2, p11);
+        // вычислим направление движения трассера
+        this.direction = angleVectorRadCCW(track_vect);
+        // вычислим время движения между точками
+        this.duration = track_vect.abs() / speed;
+
+        this.image_obj = effectPNGLoader.getImage("effect-tracer-png");
+        // сохраняем параметры движения трассера
+        this.x0 = p11.x;
+        this.y0 = p11.y;
+        this.t0 = clock.getCurrentTime();
+        this.kx = (p2.x - p11.x) / this.duration;
+        this.ky = (p2.y - p11.y) / this.duration;
+
+        // сохраняем call_back и p2 для него
+        this.cb = call_back;
+        this.p2 = p2;
+    }
+
+    ECanvasPointsTracerPNG.prototype.get_position = function (time) {
+        return new Point(
+            this.x0 + this.kx * (time - this.t0),
+            this.y0 + this.ky * (time - this.t0)
+        )
+    };
+
+    ECanvasPointsTracerPNG.prototype.redraw = function (ctx, time) {
+
+        ctx.save();
+        var pos = this.get_position(time);
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+        ctx.rotate(this.direction);
+
+        var img_obj = this.image_obj;
+        ctx.drawImage(img_obj.img, 0, 0, img_obj.size[1], img_obj.size[0],
+            0, 0, img_obj.size[1], img_obj.size[0]);
+
+        ctx.restore();
+
+    };
+
+    ECanvasPointsTracerPNG.prototype.start = function () {
+        timeManager.addTimeoutEvent(this, 'finish', this.duration * 1000.);
+        mapCanvasManager.add_vobj(this, 50);
+    };
+
+    ECanvasPointsTracerPNG.prototype.finish = function () {
+        mapCanvasManager.del_vobj(this);
+        if (typeof (this.cb) === 'function')
+            this.cb(this.p2);
+    };
+
+    return ECanvasPointsTracerPNG
 })();
