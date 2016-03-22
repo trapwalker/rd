@@ -199,6 +199,7 @@ var EPointsTracerPNG = (function(){
 var ECanvasPointsTracerPNG = (function () {
     function ECanvasPointsTracerPNG(p1, p2, speed, call_back) {
         // получим вектор-направление движения трассера и дистанцию
+        this.image_obj = effectPNGLoader.getImage("effect-tracer-png");
         var track_vect = subVector(p2, p1);
         var dist_track = track_vect.abs();
         if (dist_track < 20) return; // todo не рисовать, если очень близко. можно сразу рисовать вспышки
@@ -210,7 +211,6 @@ var ECanvasPointsTracerPNG = (function () {
         // вычислим время движения между точками
         this.duration = track_vect.abs() / speed;
 
-        this.image_obj = effectPNGLoader.getImage("effect-tracer-png");
         // сохраняем параметры движения трассера
         this.x0 = p11.x;
         this.y0 = p11.y;
@@ -231,19 +231,20 @@ var ECanvasPointsTracerPNG = (function () {
     };
 
     ECanvasPointsTracerPNG.prototype.redraw = function (ctx, time) {
-
         ctx.save();
         var pos = this.get_position(time);
         var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         ctx.translate(ctx_pos.x, ctx_pos.y);
         ctx.rotate(this.direction);
-
         var img_obj = this.image_obj;
-        ctx.drawImage(img_obj.img, 0, 0, img_obj.size[1], img_obj.size[0],
-            0, 0, img_obj.size[1], img_obj.size[0]);
-
+        if (img_obj) {
+            ctx.drawImage(img_obj.img, 0, 0, img_obj.size[1], img_obj.size[0],
+                0, 0, img_obj.size[1], img_obj.size[0]);
+        }
+        else {
+            console.warn('Странная ошибка! Говорит, что не смог найти картинку. Странно это. Очень странно!');
+        }
         ctx.restore();
-
     };
 
     ECanvasPointsTracerPNG.prototype.start = function () {
