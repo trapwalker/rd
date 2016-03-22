@@ -5,6 +5,9 @@
 var EAnimationPNG = (function () {
 
     function EAnimationPNG(position, direction){
+
+
+        console.log('Это не должно быть видно - устаревший код !!!');
         this.duration = 0;
         this.frame_count = 0;
         this.time_of_frame = 0;

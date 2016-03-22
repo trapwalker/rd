@@ -189,12 +189,12 @@ var FireAutoEffectController = (function () {
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
                 if (distancePoints(p2, p_obj) > ConstFlashlightOrientedRadius)
                     new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
-                        new ELightBangPNG_1(pos).start();
+                        new ECanvasLightBangPNG_1(pos).start();
                     }).start();
                 else {
                     var dir = angleVectorRadCCW(subVector(p_subj, p_obj)) + Math.PI;
                     new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
-                        new ELightBangPNG_2(pos, dir).start();
+                        new ECanvasLightBangPNG_2(pos, dir).start();
                     }).start();
                 }
             }
@@ -232,8 +232,9 @@ var FireAutoMuzzleFlashController = (function () {
 
     FireAutoMuzzleFlashController.prototype.start = function () {
         var subj = visualManager.getModelObject(this.subj);
-        if (subj && !this.muzzle_flash && this.side)
-            this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
+        if (subj && !this.muzzle_flash && this.side){
+            this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
+        }
     };
 
     FireAutoMuzzleFlashController.prototype.finish = function (options) {

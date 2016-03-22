@@ -21,7 +21,7 @@ var ECanvasAnimationPNG = (function () {
     ECanvasAnimationPNG.prototype._get_frame_num = function (time) {
         var time_off = time - this.start_time; // время, прошедшее сначала анимации
         time_off = time_off < 0 ? 0 : time_off;
-        return (time_off * 1000 / this.time_of_frame).toFixed(0);
+        return ((time_off * 1000 / this.time_of_frame).toFixed(0)) % this.frame_count;
     };
 
     ECanvasAnimationPNG.prototype._start = function () {
@@ -102,55 +102,46 @@ var ECanvasDischargeFirePNG_2 = (function (_super) {
 })(ECanvasAnimationPNG);
 
 
-var EAutoFirePNG = (function (_super) {
-    __extends(EAutoFirePNG, _super);
+var ECanvasAutoFirePNG = (function (_super) {
+    __extends(ECanvasAutoFirePNG, _super);
 
-    function EAutoFirePNG(car, side) {
+    function ECanvasAutoFirePNG(car, side) {
         this.car = car;
-        this.direction = user.userCar.fireSidesMng.sides[side].direction;
-        _super.call(this, car.getCurrentCoord(clock.getCurrentTime()), this.direction);
-        this.frame_count = 2;
-        this.time_of_frame = 100;
-        this._offset = 20;
-        this.icon_size_x = 20;
-        this.icon_size_y = 32;
-        this.div_class = "effect-fire-auto-png";
+        this.side_direction = user.userCar.fireSidesMng.sides[side].direction;
+        _super.call(this, car.getCurrentCoord(clock.getCurrentTime()), car.getCurrentDirection(clock.getCurrentTime()));
+        this.duration = 200;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-fire-auto-png");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
         if (side == 'front')
-            this.icon_offset = 35;
+            this.offset_x = 0.8;
         else
-            this.icon_offset = 20;
-        this._lastRotateAngle = 0.0;
+            this.offset_x = 0.4;
+
     }
 
-    EAutoFirePNG.prototype.change = function() {
-        //console.log('EAutoFirePNG.prototype.change');
-        if (mapManager.inZoomChange && this.car != user.userCar) return;
-        var time = clock.getCurrentTime();
-        var tempPoint = this.car.getCurrentCoord(time);
-        var dir = this.car.getCurrentDirection(time) + this.direction;
+    ECanvasAutoFirePNG.prototype.redraw = function (ctx, time) {
+        this.direction = this.car.getCurrentDirection(time) + this.side_direction;
+        this.position = this.car.getCurrentCoord(time);
 
-        var pos = summVector(tempPoint, polarPoint(this.icon_offset, dir));
-        var tempLatLng = map.unproject([pos.x, pos.y], map.getMaxZoom());
-
-        if (Math.abs(this._lastRotateAngle - dir) > 0.01) {
-            this.marker.options.angle = dir;
-            this._lastRotateAngle = dir;
-        }
-        if (!mapManager.inZoomChange)
-            this.marker.setLatLng(tempLatLng);
-        else
-            this.marker.update();
-    };
-
-    EAutoFirePNG.prototype.start = function (delay) {
-        _super.prototype.start.call(this, delay);
-        timeManager.addTimerEvent(this, 'change');
-        return this
+        _super.prototype.redraw.call(this, ctx, time);
     };
 
 
-    return EAutoFirePNG
-})(EAnimationPNG);
+    ECanvasAutoFirePNG.prototype._start = function () {
+        mapCanvasManager.add_vobj(this, 50);
+        this.start_time = clock.getCurrentTime();
+        return this;
+    };
+
+
+    return ECanvasAutoFirePNG
+})(ECanvasAnimationPNG);
 
 
 var ECanvasHeavyBangPNG_1 = (function (_super) {
@@ -194,7 +185,7 @@ var ECanvasHeavyBangPNG_2 = (function (_super) {
 var ECanvasLightBangPNG_1 = (function (_super) {
     __extends(ECanvasLightBangPNG_1, _super);
 
-    function ECanvasLightBangPNG_1(position){
+    function ECanvasLightBangPNG_1(position) {
         _super.call(this, position, 2 * Math.random() * Math.PI);
         this.duration = 300;
         this.effect_image_obj = effectPNGLoader.getImage("effect-light-bang-png-1");
@@ -213,7 +204,7 @@ var ECanvasLightBangPNG_1 = (function (_super) {
 var ECanvasLightBangPNG_2 = (function (_super) {
     __extends(ECanvasLightBangPNG_2, _super);
 
-    function ECanvasLightBangPNG_2(position, direction){
+    function ECanvasLightBangPNG_2(position, direction) {
         _super.call(this, position, direction);
         this.duration = 300;
         this.effect_image_obj = effectPNGLoader.getImage("effect-light-bang-png-2");
