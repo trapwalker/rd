@@ -2,8 +2,16 @@
  * Виджет стрельбы
  */
 var ConstFireControllerSectorWidth = 70;         // Ширина сектора, которая будет отображаться в виджете (в градусах)
-var ConstFireControllerSectorDiameter = 150;     // Диаметр виджета (в пикселях)
-var ConstFireControllerRadarCircleSpeed = 2;  // Время за которое радиус радарного круга меняется от 0% до 100% (с)
+
+var constFireControllerSectorDiameter = 150;    // диаметр для svg секторов (px)
+var constRadarCircleSpeed = 6;                  // время за которое радиус радарного круга меняется от 0% до 100% (сек)
+var constRadarTimeReStartCircle = 5;            // период запуска радарных круга (сек)
+var constRadarRadiusIn = 15;                    // мимнимальный радиус радарного круга (px)
+var constRadarRadiusOut = 95;                   // максимальный радиус радарного круга (px)
+var constRadarMaxOpacity = 0.6;                 // начальная прозрачность радарного круга
+var constRadarMinOpacity = 0;                   // конечная прозрачность радарного круга
+var constRadarMaxWidth = 0.3;                   // начальная ширина радарного круга (в частях от всей ширины радара)
+var constRadarMinWidth = 0.1;                   // конечная ширина радарного круга (в частях от всей ширины радара)
 
 var WFireController = (function (_super) {
     __extends(WFireController, _super);
@@ -12,45 +20,39 @@ var WFireController = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
         this.cars = [];
+
         this.autoShoot = false;
         this.sides = [];
         this.visible = true;
         this.combatState = true;
         this.rotateAngle = 0;
-        this.diameter = ConstFireControllerSectorDiameter;
         this.halfSectorWidth = gradToRad(ConstFireControllerSectorWidth / 2.);
-        this.radiusOut = this.diameter / 2 - 1;
-        this.radiusIn = this.diameter / 6 + 5;
-        this._difOutIn = this.radiusOut - this.radiusIn;
-        this.radiusAll = this.diameter / 6;
+        this.radiusOut = constFireControllerSectorDiameter / 2 - 1;
+        this.radiusIn = constFireControllerSectorDiameter / 6 + 5;
+        this._difRadius = this.radiusOut - this.radiusIn;
+        this.radiusAll = constFireControllerSectorDiameter / 6;
         this.center = {
-            x: this.diameter / 2,
-            y: this.diameter / 2
+            x: constFireControllerSectorDiameter / 2,
+            y: constFireControllerSectorDiameter / 2
         };
 
-        this.radar_circle_enable = ifBrowser() == 'chrome';
+        // Вставляем всю верстку тут, потому как при вход в город она нахуй сносится
+        $('#fireControlArea').append(
+            '<div id="fireControlAreaRumble">' +
+                '<div id="fireControlTop">' +
+                    '<div id="divForSVG"></div>' +
+                    '<div id="divForCanvas"><canvas id="fireControlRadarCanvas"></canvas></div>' +
+                '</div>' +
+                '<div id="fireControlBottom">' +
+                    '<div id="fireControlSlideButton" class="fire-control-slide-button-show sublayers-clickable" onclick="wFireController.changeCombatState()"></div>' +
+                '</div>' +
+            '</div>'
+        );
 
-        var mainParent = $('#fireControlArea');
-        mainParent.addClass('fire-control-parent');
-        mainParent.append('<div id="fireControlAreaRumble"></div>');
-        var parent = $('#fireControlAreaRumble');
-
-        // Добавление верхнего дива
-        this.fCT = $("<div id='fireControlTop'></div>");
-        parent.append(this.fCT);
-
-        // Добавление нижнего дива
-        this.fCB = $("<div id='fireControlBottom'></div>");
-        parent.append(this.fCB);
-
-        // Добавление дива с кнопкой
-        this.fCSB = $("<div id='fireControlSlideButton' class='fire-control-slide-button-show sublayers-clickable'></div>");
-        this.fCB.append(this.fCSB);
-        this.fCSB.on('click', {self: this}, this.changeCombatState);
-
-        // Создание дива под SVG полотно
-        this.dFSVG = $("<div id='divForSVG'></div>");
-        this.fCT.append(this.dFSVG);
+        // Получаем основные дивы виджета
+        this.fCT = $("#fireControlTop");                // верхний див
+        this.fCSB = $("#fireControlSlideButton");       // див с кнопкой
+        this.dFSVG = $("#divForSVG");                   // див под SVG полотно
 
         // Создание кнопок быстрого доступа
         this.initQuickConsumerPanel();
@@ -58,9 +60,8 @@ var WFireController = (function (_super) {
         // Создание SVG полотна
         this.NS = 'http://www.w3.org/2000/svg';
         this.SVG = document.createElementNS(this.NS, 'svg');
-        //this.SVG.setAttribute('class', 'fire-control-svg');
-        this.SVG.setAttribute('height', this.diameter);
-        this.SVG.setAttribute('width', this.diameter);
+        this.SVG.setAttribute('height', constFireControllerSectorDiameter);
+        this.SVG.setAttribute('width', constFireControllerSectorDiameter);
         this.SVG.innerHTML = '<defs>' +
                              '   <radialGradient id="fcRadarCircleGradient" r="52%" spreadMethod="pad">' +
                             '        <stop offset="0.0" stop-color="#00FF00" stop-opacity="0"></stop>' +
@@ -99,19 +100,8 @@ var WFireController = (function (_super) {
         this._initSides();
 
         // Создание радарного круга
+        this.initRadarCircles();
 
-        if (this.radar_circle_enable) {
-            this._radarCircleLastTime = 0;
-            this._radarCircleRelRadius = 0;                                                            // относительный радиус (от 0 .. 1)
-            this._radarCircleAbsRadius = this.radiusIn + this._difOutIn * this._radarCircleRelRadius;  // абсолютный радиус (px)
-            this.SVGRadarCirle = document.createElementNS(this.NS, 'circle');
-            this.SVGRadarCirle.setAttribute('class', 'fire-control-radar-circle sublayers-unclickable');
-            this.SVGRadarCirle.setAttribute('r', this._radarCircleAbsRadius);
-            this.SVGRadarCirle.setAttribute('cx', this.center.x);
-            this.SVGRadarCirle.setAttribute('cy', this.center.y);
-            this.SVGRadarCirle.setAttribute('fill', 'url(#fcRadarCircleGradient)');
-            this.SVG.appendChild(this.SVGRadarCirle);
-        }
         this.change();
 
         // todo: сделать это правильно
@@ -120,12 +110,16 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.initQuickConsumerPanel = function() {
         //console.log("WFireController.prototype.initQuickConsumerPanel");
+
+        // Создаем 4 дива под кнопки
         this.jq_quick_btns = {
             1: $('<div id="fireControlQuickBtn1" class="fire-controll-quick-btn-block" data-index="1"></div>'),
             2: $('<div id="fireControlQuickBtn2" class="fire-controll-quick-btn-block" data-index="2"></div>'),
             3: $('<div id="fireControlQuickBtn3" class="fire-controll-quick-btn-block" data-index="3"></div>'),
             4: $('<div id="fireControlQuickBtn4" class="fire-controll-quick-btn-block" data-index="4"></div>')
         };
+
+        // Добавляем дивы кнопок в верстку и вешаем на них клики с активейтами
         for (var key in this.jq_quick_btns)
             if (this.jq_quick_btns.hasOwnProperty(key)) {
                 this.fCT.append(this.jq_quick_btns[key]);
@@ -133,27 +127,29 @@ var WFireController = (function (_super) {
                     clientManager.sendActivateQuickItem($(this).data('index'), user.userCar.ID)
                 });
             }
+
+        // Делаем дивы кнопок droppabe, чтобы ловить итемы из инвентаря и из других кнопок
         $('.fire-controll-quick-btn-block').droppable({
             greedy: true,
             accept: function (target) {
+                // Принимать инвентарные итемы и итемы других кнопок
                 return target.hasClass('mainCarInfoWindow-body-trunk-body-right-item') ||
                        target.hasClass('fire-controll-quick-btn-block');
             },
             drop: function (event, ui) {
+                // Итем прилетел из инвентаря
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
-                    var dragOwnerID = ui.draggable.data('owner_id');
-                    var dragPos = ui.draggable.data('pos');
-                    var index = $(this).data('index');
-                    if (dragOwnerID == user.userCar.ID)
-                        clientManager.sendSetQuickItem(index, dragPos);
+                    if (ui.draggable.data('owner_id') == user.userCar.ID)
+                        clientManager.sendSetQuickItem($(this).data('index'), ui.draggable.data('pos'));
                 }
+                // Итем прилетел из другой кнопки
                 if (ui.draggable.hasClass('fire-controll-quick-btn-block')) {
-                    var index1 = $(this).data('index');
-                    var index2 = ui.draggable.data('index');
-                    clientManager.sendSwapQuickItems(index1, index2);
+                    clientManager.sendSwapQuickItems($(this).data('index'), ui.draggable.data('index'));
                 }
             }
         });
+
+        // Делаем дивы кнопок draggable, чтобы выкидывать и менять местами итемы
         $('.fire-controll-quick-btn-block').draggable({
             disabled: true,
             helper: 'clone',
@@ -163,6 +159,7 @@ var WFireController = (function (_super) {
             zIndex: 100,
             appendTo: '#map',
             start: function (event, ui) {
+                // Разрешить таскание только если открыто окно своего инвентаря
                 if (!windowTemplateManager.unique.hasOwnProperty('inventory_info')) return false;
             }
         });
@@ -182,16 +179,94 @@ var WFireController = (function (_super) {
         }
     };
 
-    WFireController.prototype.changeCombatState = function(event){
-        var self = event.data.self;
-        self.combatState = !self.combatState;
-        self.setVisible(self.combatState);
+    WFireController.prototype.initRadarCircles = function() {
+        //console.log('WFireController.prototype.initRadarCircle');
+        var canvas = document.getElementById("fireControlRadarCanvas");
+        canvas.width = 174;
+        canvas.height = 174;
+        this.radarCTX = canvas.getContext("2d");
+        this._difRadarRadius = constRadarRadiusOut - constRadarRadiusIn;
+        this._difRadarWidth = constRadarMaxWidth - constRadarMinWidth;
+        this._difRadarOpacity = constRadarMaxOpacity - constRadarMinOpacity;
+        this.radarLastTimeStart = 0;
+        this.radarCircles = [];
     };
 
-    WFireController.prototype.changeVisible = function (event) {
+    WFireController.prototype._updateRadarCircles = function(time) {
+        //console.log('WFireController.prototype._updateRadarCircle', this.radarCircles);
+
+        // Сбрасываем кадр
+        this.radarCTX.clearRect(0, 0, constRadarRadiusOut * 2, constRadarRadiusOut * 2);
+
+        // Создаем общий градиент
+        var grd = this.radarCTX.createRadialGradient(constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusIn,
+                                                     constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusOut);
+        for (var i = 0; i < this.radarCircles.length; i++) {
+            var circle = this.radarCircles[i];
+            var difTime = time - circle.start_time;
+            var newRelRadius = difTime / constRadarCircleSpeed;
+            var newAbsRadius = constRadarRadiusIn + this._difRadarRadius * newRelRadius;
+            if ((newRelRadius <= 1) || (newRelRadius >= constRadarMinWidth)) {
+                var tempWidth = constRadarMinWidth + this._difRadarWidth * newRelRadius;
+                var tempOpacity = constRadarMaxOpacity - this._difRadarOpacity * newRelRadius;
+
+                var startGradient = newRelRadius - 0.5 * tempWidth;
+                var midleGradient = newRelRadius;
+                var endGradient = newRelRadius + 0.5 * tempWidth;
+
+                startGradient = startGradient < 0 ? 0 : ( startGradient > 1 ? 1 : startGradient );
+                midleGradient = midleGradient < 0 ? 0 : ( midleGradient > 1 ? 1 : midleGradient );
+                endGradient = endGradient < 0 ? 0 : ( endGradient > 1 ? 1 : endGradient );
+
+                grd.addColorStop(startGradient, "rgba(0, 255, 0, 0)");
+                grd.addColorStop(midleGradient, "rgba(0, 200, 0, " + tempOpacity + ")");
+                grd.addColorStop(endGradient, "rgba(0, 255, 0, 0)");
+
+                circle.abs_radius = newAbsRadius;
+            }
+            circle.rel_radius = newRelRadius;
+        }
+        this.radarCTX.fillStyle = grd;
+        this.radarCTX.fillRect(0, 0, 174, 174);
+
+        // Вырезать прозрачную дырку в центре
+        this.radarCTX.globalCompositeOperation = "destination-out";
+        this.radarCTX.fillStyle = 'rgba(255, 0, 0, 1)';
+        this.radarCTX.beginPath();
+        this.radarCTX.arc(constRadarRadiusOut, constRadarRadiusOut, this.radiusAll, Math.PI * 2, 0, false);
+        this.radarCTX.closePath();
+        this.radarCTX.fill();
+        this.radarCTX.globalCompositeOperation = "source-over";
+
+        // Удаляем те круги которые выросли до конца
+        var index = this.radarCircles.length - 1;
+        while (index >= 0) {
+            if (this.radarCircles[index].rel_radius >= 1) this.radarCircles.splice(index, 1);
+            index--;
+        }
+    };
+
+    WFireController.prototype._reStartRadarCircle = function(time){
+        var difTime = time - this.radarLastTimeStart;
+        if (difTime >= constRadarTimeReStartCircle) {
+            this.radarCircles.push({
+                start_time: time,
+                rel_radius: 0,
+                abs_radius: 0
+            });
+            this.radarLastTimeStart = time;
+        }
+    };
+
+    WFireController.prototype.changeCombatState = function(){
+        this.combatState = !this.combatState;
+        this.setVisible(this.combatState);
+    };
+
+    WFireController.prototype.changeVisible = function () {
         //console.log('WFireController.prototype.changeVisible');
-        var self = event.data.self;
-        self.fCT.slideToggle("slow", function () {
+        var self = this;
+        this.fCT.slideToggle("slow", function () {
             if (self.visible) {
                 self.visible = false;
                 self.SVG.setAttribute('display', 'none');
@@ -208,7 +283,7 @@ var WFireController = (function (_super) {
             }
         });
         document.getElementById('map').focus();
-        var is_show_central = !self.visible && (map.getZoom() >= 14);
+        var is_show_central = !this.visible && (map.getZoom() >= 14);
         if (mapManager.widget_fire_radial_grid)
             mapManager.widget_fire_radial_grid.setVisible(is_show_central);
         if (mapManager.widget_fire_sectors)
@@ -216,9 +291,7 @@ var WFireController = (function (_super) {
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
-        if (this.visible !== aVisible) {
-            this.changeVisible({data: {self: this}})
-        }
+        if (this.visible !== aVisible) this.changeVisible()
     };
 
     WFireController.prototype.getVisible = function () {
@@ -251,7 +324,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {
         var tempWidth = this.halfSectorWidth;
-        var radiusOut = this.radiusIn + (this._difOutIn * radiusPath);
+        var radiusOut = this.radiusIn + (this._difRadius * radiusPath);
         var vertVOut = new Point(radiusOut, 0);
         var vertVIn = new Point(this.radiusIn, 0);
         var rightVOut = rotateVector(vertVOut, tempWidth);
@@ -331,46 +404,35 @@ var WFireController = (function (_super) {
                                               this.center.x + ', ' + this.center.y + ')');
     };
 
-    WFireController.prototype._addCarPoint = function(side, car) {
-        //console.log('WFireController.prototype._addCarPoint');
-        car._wfc_side = side;
-        // Вычислить точку для отрисовки
-        var relativeRadius = car.distance / side.side.sideRadius;
-        var relativeAngle = - car.fi;
-        var radius = this.radiusIn + (this._difOutIn * relativeRadius);
-        var p = rotateVector(new Point(radius, 0), ((2 * relativeAngle * this.halfSectorWidth) / side.side.sideWidth));
-        // Нарисовать точку
-        car.svg = document.createElementNS(this.NS, 'circle');
-        // Добавить точку в сектор
-        car.svg.setAttribute('class', 'fire-control-radar-point sublayers-unclickable');
-        car.svg.setAttribute('cx', p.x);
-        car.svg.setAttribute('cy', p.y);
-        var temp = this._radarPointOpacityByRadarCircle(radius);
-        car.svg.setAttribute('stroke-opacity', temp);
-        car.svg.setAttribute('r', 1 + 2 * temp);
-        side.SVGGroup.appendChild(car.svg);
+    WFireController.prototype._calculatePoint = function (side, car, userCarDirection, relativeRadius) {
+        var relativeAngle = - 2 * this.halfSectorWidth * car.fi / side.side.sideWidth;
+        relativeAngle = normalizeAngleRad(userCarDirection + side.side.direction + relativeAngle);
+        var radius = this.radiusIn + (this._difRadius * relativeRadius);
+        var p = rotateVector(new Point(radius, 0), relativeAngle);
+        return summVector(p, new Point(constRadarRadiusOut, constRadarRadiusOut));
     };
 
-    WFireController.prototype._updateCarPoint = function(side, car) {
+    WFireController.prototype._updateCarPoint = function(side, car, userCarDirection) {
         //console.log('WFireController.prototype._updateCarPoint');
-        // Вычислить точку для отрисовки
+        car._wfc_side = side;
+
         var relativeRadius = car.distance / side.side.sideRadius;
-        var relativeAngle = - car.fi;
-        var radius = this.radiusIn + (this._difOutIn * relativeRadius);
-        var p = rotateVector(new Point(radius, 0), ((2 * relativeAngle * this.halfSectorWidth) / side.side.sideWidth));
-        // Обновить центр точки точку
-        car.svg.setAttribute('cx', p.x);
-        car.svg.setAttribute('cy', p.y);
-        var temp = this._radarPointOpacityByRadarCircle(radius);
-        car.svg.setAttribute('stroke-opacity', temp);
-        car.svg.setAttribute('r', 1 + 2 * temp);
+
+        // Вычислить точку для отрисовки
+        var p = this._calculatePoint(side, car, userCarDirection, relativeRadius);
+        var temp = this._radarPointOpacityByRadarCircle(relativeRadius);
+
+        // Отрисовка
+        this.radarCTX.fillStyle = 'rgba(0, 255, 0, ' + temp + ')';
+        this.radarCTX.beginPath();
+        this.radarCTX.arc(p.x, p.y, 3, Math.PI * 2, 0, false);
+        this.radarCTX.closePath();
+        this.radarCTX.fill();
     };
 
     WFireController.prototype._deleteCarPoint = function(car) {
         //console.log('WFireController.prototype._deleteCarPoint');
-        if (car.svg)
-            $(car.svg).remove();
-        car.svg = null;
+        car._wfc_side = null;
     };
 
     WFireController.prototype._carInSide = function(car, side, uCarPos, uCarDir) {
@@ -384,29 +446,23 @@ var WFireController = (function (_super) {
         return inSide;
     };
 
-    WFireController.prototype._radarPointOpacityByRadarCircle = function(pointRadius) {
-        if (pointRadius > this._radarCircleAbsRadius) return (pointRadius - this._radarCircleAbsRadius) / this._difOutIn;
-        return ((pointRadius - this.radiusIn) / this._difOutIn) +
-                ((this.radiusOut - this._radarCircleAbsRadius) / this._difOutIn);
-    };
-
-    WFireController.prototype._updateRadarCircle = function(time) {
-        //console.log('WFireController.prototype._updateRadarCircle');
-        if (! this.radar_circle_enable) return;
-        var difTime = time - this._radarCircleLastTime;
-        var newRelRadius = this._radarCircleRelRadius + (difTime / ConstFireControllerRadarCircleSpeed) * 1.0
-        var newAbsRadius = this.radiusIn + this._difOutIn * newRelRadius;
-        // Обновить круг если радиус изменился больше чем на 1px
-        if (Math.abs(newAbsRadius - this._radarCircleAbsRadius) > 1) {
-            if (newRelRadius > 1) {
-                newRelRadius = 0;
-                newAbsRadius = this.radiusIn;
+    WFireController.prototype._radarPointOpacityByRadarCircle = function(relativeRadius) {
+        var temp_rel_radius = ((this.radiusIn + this._difRadius * relativeRadius) - constRadarRadiusIn) / this._difRadarRadius;
+        var dif_rel_radius = 1;
+        var index = -1;
+        for (var i = 0; i < this.radarCircles.length; i++) {
+            var temp_radius = Math.abs(this.radarCircles[i].rel_radius - temp_rel_radius);
+            if (temp_radius < dif_rel_radius) {
+                dif_rel_radius = temp_radius;
+                index = i;
             }
-            this._radarCircleAbsRadius = newAbsRadius;
-            this._radarCircleRelRadius = newRelRadius;
-            this._radarCircleLastTime = time;
-            this.SVGRadarCirle.setAttribute('r', this._radarCircleAbsRadius);
         }
+        if (index >= 0)
+            if (this.radarCircles[index].rel_radius > temp_rel_radius) dif_rel_radius = 1 - dif_rel_radius;
+        var max_radius = constRadarTimeReStartCircle / constRadarCircleSpeed;
+        var result = dif_rel_radius / max_radius;
+        result = result < 0 ? 0 : ( result > 1 ? 1 : result );
+        return result;
     };
 
     WFireController.prototype.change = function () {
@@ -434,26 +490,27 @@ var WFireController = (function (_super) {
         }
 
         // Анимация круга радара
-        this._updateRadarCircle(time);
+        this._reStartRadarCircle(time);
+        this._updateRadarCircles(time);
 
         // Анимация точек радара
         var userCarPosition = this.car.getCurrentCoord(time);
         for (var i = 0; i < this.cars.length; i++) {
             var car = this.cars[i];
             var carPosition = car.mobj.getCurrentCoord(time);
-            var distance = distancePoints(userCarPosition, carPosition);
-            var angle = angleVectorRadCCW(subVector(carPosition, userCarPosition));
-            car.angle = angle;
-            car.distance = distance;
-            if (car.svg)
+            car.distance = distancePoints(userCarPosition, carPosition);
+            car.angle = angleVectorRadCCW(subVector(carPosition, userCarPosition));
+
+            if (car._wfc_side)
                 if (this._carInSide(car, car._wfc_side, userCarPosition, userCarDirection))
-                    this._updateCarPoint(car._wfc_side, car);
+                    this._updateCarPoint(car._wfc_side, car, userCarDirection);
                 else
                     this._deleteCarPoint(car);
-            for (var j = 0; (j < this.sides.length) && (!car.svg); j++) {
+
+            for (var j = 0; (j < this.sides.length) && (!car._wfc_side); j++) {
                 var side = this.sides[j];
                 if (this._carInSide(car, side, userCarPosition, userCarDirection))
-                    this._addCarPoint(side, car);
+                    this._updateCarPoint(side, car);
             }
         }
     };
