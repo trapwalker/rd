@@ -950,7 +950,7 @@ var ClientManager = (function () {
 
     // Стратегический режим
     ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
-        console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage');
+        console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
     };
 
@@ -1722,7 +1722,7 @@ var ClientManager = (function () {
 
     // Запросы стратегического режима
     ClientManager.prototype.sendGetStrategyModeObjects = function() {
-        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        console.log('ClientManager.prototype.sendGetStrategyModeObjects');
         var mes = {
             call: "get_strategy_mode_info_objects",
             rpc_call_id: rpcCallList.getID(),

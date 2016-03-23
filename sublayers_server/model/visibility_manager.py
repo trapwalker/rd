@@ -133,11 +133,14 @@ class VisibilityManager(object):
         #     tid_necessary = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
         #     for t_orig in tid.get_around_tiles():
         #     result = []
+        return result
 
     def get_global_around_objects(self, pos, limit=10):
         # todo: добавить min_zoom вместо 9
+        result = []
         for zoom in range(self.z, 9, -1):
-            objects = self._get_around_objects_by_z(pos=pos, zoom=zoom)
+            result = self._get_around_objects_by_z(pos=pos, z=zoom)
             # todo: добавить выкусывание 16 зума
-            if len(objects) >= limit:
-                return objects
+            if len(result) >= limit:
+                return result
+        return result

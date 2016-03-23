@@ -429,7 +429,7 @@ var MapManager = (function(_super){
                 if (mapManager.widget_fire_sectors)
                     mapManager.widget_fire_sectors.setVisible(false);
                 // todo: сделать это не через таймер !!!
-                mapManager.strategy_mode_timer = setInterval(function(){model_manager.sendGetStrategyModeObjects();}, 5000);
+                mapManager.strategy_mode_timer = setInterval(function(){clientManager.sendGetStrategyModeObjects();}, 5000);
             }
             else {
                 // показать сетку и сектора, если боевой режим

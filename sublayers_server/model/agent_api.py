@@ -745,5 +745,6 @@ class AgentAPI(API):
         QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
 
     # Запрос объектов в стратегическом режиме
+    @public_method
     def get_strategy_mode_info_objects(self):
         StrategyModeInfoObjectsEvent(agent=self.agent, time=self.agent.server.get_time()).post()

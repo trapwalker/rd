@@ -517,4 +517,4 @@ class StrategyModeInfoObjectsEvent(Event):
     def on_perform(self):
         super(StrategyModeInfoObjectsEvent, self).on_perform()
         objects = self.server.visibility_mng.get_global_around_objects(pos=self.agent.car.position(time=self.time))
-        StrategyModeInfoObjectsMessage(objects=objects, time=self.time).post()
+        StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
