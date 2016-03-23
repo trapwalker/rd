@@ -21,10 +21,10 @@ var WStrategyModeManager = (function () {
 
         var map_top_left = mapCanvasManager.map_tl;
 
-        ctx.fillStyle = '#FF0000';
+        ctx.fillStyle = '#00ff00';
         // Отрисовка точек
-        for (var i = 0; i < this.targets; i++){
-            var p = subVector(this.targets[i], map_top_left);
+        for (var i = 0; i < this.targets.length; i++){
+            var p = mulScalVector(subVector(this.targets[i], map_top_left), 1.0 / mapCanvasManager.zoom_koeff);
             // todo: не рисовать точки, которые заведомо никак не попадут на канвас
             ctx.beginPath();
             ctx.arc(p.x, p.y, 3, 2 * Math.PI, 0, false);
