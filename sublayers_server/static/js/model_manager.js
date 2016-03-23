@@ -948,6 +948,13 @@ var ClientManager = (function () {
         window.open(window.location.protocol + "//" + location.host + '/static/temp_archive.zip', '_self');
     };
 
+    // Стратегический режим
+    ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
+        console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage');
+        wStrategyModeManager.update(event.objects);
+    };
+
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1706,6 +1713,18 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendActivateQuickItem');
         var mes = {
             call: "get_quick_item_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Запросы стратегического режима
+    ClientManager.prototype.sendGetStrategyModeObjects = function() {
+        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        var mes = {
+            call: "get_strategy_mode_info_objects",
             rpc_call_id: rpcCallList.getID(),
             params: {}
         };

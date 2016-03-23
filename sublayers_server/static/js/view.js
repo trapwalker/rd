@@ -7,6 +7,7 @@ $(document).ready(function () {
     mapManager._init();
 
     mapCanvasManager = new MapCanvasManager();
+    wStrategyModeManager = new WStrategyModeManager();
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
