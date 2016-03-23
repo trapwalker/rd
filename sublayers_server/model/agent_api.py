@@ -14,7 +14,8 @@ from sublayers_server.model.api_tools import API, public_method
 from sublayers_server.model.party import Party
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
+    StrategyModeInfoObjectsEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarChoice, TransactionParkingLeaveCar, TransactionParkingSelectCar,
     TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply, TransactionTraderApply,
@@ -743,4 +744,6 @@ class AgentAPI(API):
         from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
         QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
 
-
+    # Запрос объектов в стратегическом режиме
+    def get_strategy_mode_info_objects(self):
+        StrategyModeInfoObjectsEvent(agent=self.agent, time=self.agent.server.get_time()).post()

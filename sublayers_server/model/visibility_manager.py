@@ -29,7 +29,7 @@ class TileContactSearchEvent(Event):
 
 
 class VisibilityManager(object):
-    def __init__(self, server, z=12, max_z=26, interval=BALANCE.interval_refresh):
+    def __init__(self, server, z=14, max_z=26, interval=BALANCE.interval_refresh):
         self.server = server
         self.tiles = dict()
         self.z = z
@@ -114,3 +114,30 @@ class VisibilityManager(object):
             if t in self.tiles.keys():
                 result += self.tiles[t][1]
         return result
+
+    def _get_around_objects_by_z(self, pos, z):
+        result = []
+        if z <= self.z:
+            tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
+            tid_around_z_necessary = tid.get_around_tiles()
+            for t_nec in tid_around_z_necessary:
+                for t_orig in t_nec.childs(level=(self.z - z)):
+                    if t_orig in self.tiles.keys():
+                        result += self.tiles[t_orig][1]
+        # else:
+        #     all_objects = []
+        #     tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
+        #     for t_orig in tid.get_around_tiles():
+        #         if t_orig in self.tiles.keys():
+        #             all_objects += self.tiles[t_orig][1]
+        #     tid_necessary = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
+        #     for t_orig in tid.get_around_tiles():
+        #     result = []
+
+    def get_global_around_objects(self, pos, limit=10):
+        # todo: добавить min_zoom вместо 9
+        for zoom in range(self.z, 9, -1):
+            objects = self._get_around_objects_by_z(pos=pos, zoom=zoom)
+            # todo: добавить выкусывание 16 зума
+            if len(objects) >= limit:
+                return objects
