@@ -45,7 +45,7 @@ var ECanvasAnimationPNG = (function () {
     };
 
     ECanvasAnimationPNG.prototype.redraw = function (ctx, time) {
-        if (time >= this.start_time + this.duration) return;
+        if (time >= this.start_time + this.duration / 1000.) return;
         ctx.save();
         var img_obj = this.effect_image_obj;
         var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
