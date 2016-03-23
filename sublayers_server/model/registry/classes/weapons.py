@@ -19,6 +19,7 @@ class Weapon(ArmorerItem):
 class Cannon(Weapon):
     is_auto = False
     dmg = FloatAttribute(caption=u'Урон за выстрел')
+    area_dmg = FloatAttribute(caption=u'Урон за выстрел', default=10)
     time_recharge = FloatAttribute(caption=u'Время перезарядки (с)')
 
 

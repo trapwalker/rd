@@ -17,7 +17,7 @@ class RegistryLink(TextAttribute):
         if self.name in obj.values:
             raw = obj.values.get(self.name)
         elif obj.parent and hasattr(obj.parent, self.name):
-            raw = self.get_ex(obj.parent, obj.parent.__class__)  # todo check it (class)
+            raw = self.get_ex(obj.parent, obj.parent.__class__)  # todo: check it (class)
         else:
             raw = self.default
 

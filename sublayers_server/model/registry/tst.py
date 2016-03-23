@@ -73,5 +73,5 @@ if __name__ == '__main__':
     #tr = reg['/institutions/trader/buhman']
     #pp(tr.as_client_dict(items=car.inventory))
 
-    e = reg['/effects/zonal/water']
-    print repr(e)
+    d = reg['/mobiles/cars/middle/sports/delorean_dmc12']
+    print repr(d)

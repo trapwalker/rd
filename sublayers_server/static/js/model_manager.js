@@ -326,9 +326,11 @@ var ClientManager = (function () {
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
 
             user.userCar = mcar;
+            mapCanvasManager.on_new_map_size();
 
             // Виджеты:
-            new WCarMarker(mcar);    // виджет маркера
+            //new WCarMarker(mcar);    // виджет маркера
+            new WCanvasUserCarMarker(mcar);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз
@@ -341,15 +343,13 @@ var ClientManager = (function () {
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
-            //new WViewRadius(mcar); // виджет радиуса видимости
-            mapManager.widget_target_point = new WTargetPointMarker(mcar); // виджет пункта назначения
+            wFireController.updateQuickConsumerPanel(event.car.quick_consumer_panel);
+            mapManager.widget_target_point = new WCanvasTargetPoint(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
-            if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {  // если есть хоть один сектор
-                //mapManager.widget_fire_radial_grid = new WRadialGridScaled(mcar); // масштабирующаяся сетка
-                mapManager.widget_fire_radial_grid = new WFireRadialGrid(mcar); // не масштабирующаяся сетка
-                mapManager.widget_fire_sectors = new WFireSectorsScaled(mcar); // масштабирующиеся сектора
-                //mapManager.widget_fire_sectors = new WFireSectors(mcar); // не масштабирующиеся сектора
+            if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
+                mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
+                mapManager.widget_fire_radial_grid = new WFCanvasireRadialGrid(mcar);
             }
 
             // Инициализация виджетов работы с канвасом
@@ -588,8 +588,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.FireDischargeEffect', event);
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
-            pos_obj: new Point(event.pos_obj.x, event.pos_obj.y),
-            is_fake: event.is_fake
+            targets: event.targets,
+            fake_position: event.fake_position
         });
     };
 
@@ -910,6 +910,11 @@ var ClientManager = (function () {
     ClientManager.prototype.StartBarterTimerMessage = function (event) {
         //console.log('ClientManager.prototype.StartBarterTimerMessage', event);
         barterManager.StartBarterTimer(event.barter_id, event.success_delay);
+    };
+
+    ClientManager.prototype.QuickConsumerPanelInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.QuickConsumerPanelInfoMessage', event);
+        wFireController.updateQuickConsumerPanel(event.quick_panel);
     };
 
     // Фраг
@@ -1389,7 +1394,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
     // Тюнер
 
     ClientManager.prototype.sendTunerApply = function () {
@@ -1643,7 +1647,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
     // Административные сообщения
     ClientManager.prototype.sendTileCoord = function (x, y) {
         console.log('ClientManager.prototype.sendTileCoord', x, y);
@@ -1656,6 +1659,59 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    //Активация через панель быстрого доступа
+    ClientManager.prototype.sendSetQuickItem = function(index, position) {
+        //console.log('ClientManager.prototype.sendSetQuickItem');
+        var mes = {
+            call: "set_quick_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                index: index,
+                position: position
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendSwapQuickItems = function(index1, index2) {
+        //console.log('ClientManager.prototype.sendSetQuickItem');
+        var mes = {
+            call: "swap_quick_items",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                index1: index1,
+                index2: index2
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendActivateQuickItem = function(index, target_id) {
+        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        var mes = {
+            call: "activate_quick_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                index: index,
+                target_id: target_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetQuickItemInfo = function() {
+        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        var mes = {
+            call: "get_quick_item_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

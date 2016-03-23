@@ -243,19 +243,15 @@ class FireDischargeEffectEvent(Objective):
                 max_radius = max(max_radius, sector.radius)
                 for target in sector.target_list:
                     targets.append(target.position(time=self.time))
+                for target in sector.area_target_list:
+                    targets.append(target.position(time=self.time))
 
         # todo: добавить гео-позиционный фильтр агентов
         subj_position = self.obj.position(time=self.time)
-        fake_position = None
-        if len(targets) == 0:
-            fake_position = Point.polar(max_radius, self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
+        fake_position = Point.polar(max_radius, self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
-            if len(targets) > 0:
-                for target in targets:
-                    FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=target, time=self.time).post()
-            else:
-                FireDischargeEffect(agent=agent, pos_subj=subj_position, pos_obj=fake_position, is_fake=True,
-                                    time=self.time).post()
+            FireDischargeEffect(agent=agent, pos_subj=subj_position, targets=targets, fake_position=fake_position,
+                                time=self.time).post()
 
 
 class FireAutoEnableEvent(Objective):
@@ -272,8 +268,12 @@ class FireAutoTestEvent(Objective):
     def on_perform(self):
         super(FireAutoTestEvent, self).on_perform()
         obj = self.obj
-        for target in obj.visible_objects:
-            obj.on_auto_fire_test(obj=target, time=self.time)
+        target_list = None
+        if obj.main_agent is not None:
+            target_list = set(obj.main_agent.get_all_visible_objects())
+        else:
+            target_list = set(obj.visible_objects)
+        obj.on_auto_fire_test(target_list=target_list, time=self.time)
         FireAutoTestEvent(obj=obj, time=self.time + obj.check_auto_fire_interval).post()
 
 
@@ -507,5 +507,3 @@ class ItemActivationEvent(Event):
         event_cls = item.example.activate()
         if event_cls:
             event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
-
-

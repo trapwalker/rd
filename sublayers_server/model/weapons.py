@@ -12,8 +12,10 @@ from random import random
 
 
 class Weapon(Consumer):
-    def __init__(self, owner, sector, example, **kw):
+    def __init__(self, owner, sector, example, items_cls_list, swap=False, **kw):
         super(Weapon, self).__init__(server=owner.server, **kw)
+        self.items_cls_list = items_cls_list
+        self.swap = swap
         self.owner = owner
         self.sector = sector
         self.example = example
@@ -29,6 +31,18 @@ class Weapon(Consumer):
             radius=self.sector.radius,
             width=self.sector.width,
         )
+
+    def can_set(self, item):
+        return item.example.parent in self.items_cls_list
+
+    def on_empty_item(self, item, time, action):
+        balance_cls_list = []
+        if self.swap:
+            balance_cls_list = self.items_cls_list
+        else:
+            balance_cls_list = [item.example.parent]
+        new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
+        self.set_item(time=time, item=new_item, action=action)
 
     def add_car(self, car, time):
         pass
@@ -104,9 +118,10 @@ class WeaponAuto(Weapon):
 
 
 class WeaponDischarge(Weapon):
-    def __init__(self, dmg, time_recharge, **kw):
+    def __init__(self, dmg, area_dmg, time_recharge, **kw):
         super(WeaponDischarge, self).__init__(**kw)
         self.dmg = dmg
+        self.area_dmg = area_dmg
         self.last_shoot = None
         self.t_rch = time_recharge
 
@@ -143,6 +158,9 @@ class WeaponDischarge(Weapon):
         dmg, is_crit = self.calc_dmg()
         for car in self.sector.target_list:
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+
+        for car in self.sector.area_target_list:
+            car.set_hp(dhp=self.area_dmg, shooter=self.owner, time=time)
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел

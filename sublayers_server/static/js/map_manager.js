@@ -169,25 +169,23 @@ function onKeyDownMap(event) {
                 map.dragging.disable();
             else
                 map.dragging.enable();
+            mapCanvasManager.on_new_map_size();
             break;
         case 90:  // Z
             //console.log('Was pressed: Z');
             break;
         case 49:  // 1
-            //console.log('Was pressed: 1');
-            clientManager.sendSlowMine();
+            clientManager.sendActivateQuickItem(1, user.userCar.ID);
             break;
         case 50:  // 2
-            //console.log('Was pressed: 2');
-            clientManager.sendStationaryTurret();
+            clientManager.sendActivateQuickItem(2, user.userCar.ID);
             break;
         case 51:  // 3
-            //console.log('Was pressed: 3');
+            clientManager.sendActivateQuickItem(3, user.userCar.ID);
             break;
         case 52:  // 4
-            //console.log('Was pressed: 4');
+            clientManager.sendActivateQuickItem(4, user.userCar.ID);
             break;
-
         //LM=77 N O=79 P=80   Q=81
     }
 }
@@ -334,6 +332,8 @@ var MapManager = (function(_super){
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item'))
                     clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
                                                           null, null);
+                if (ui.draggable.hasClass('fire-controll-quick-btn-block'))
+                    clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
             }
         });
 
@@ -369,9 +369,14 @@ var MapManager = (function(_super){
         return new Point(c.x, c.y);
     };
 
+    MapManager.prototype.getMapSize = function() {
+        var s = map.getSize();
+        return new Point(s.x, s.y);
+    };
+
     MapManager.prototype.getTopLeftCoords = function(zoom) {
         var c = this.getMapCenter();
-        var map_size = mulScalVector(map.getSize(), 0.5);
+        var map_size = mulScalVector(this.getMapSize(), 0.5);
         var koeff = Math.pow(2., (ConstMaxMapZoom - zoom));
         return subVector(c, mulScalVector(map_size, koeff));
     };

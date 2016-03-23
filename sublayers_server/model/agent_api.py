@@ -717,3 +717,30 @@ class AgentAPI(API):
         from sublayers_server.model.tile_archive import get_tiles_admin
         get_tiles_admin(x, y)
         messages.AdminArchiveCompleteMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    # Панель быстрого доступа
+
+    @public_method
+    def set_quick_item(self, index, position):
+        self.agent.car.quick_consumer_panel.set_item(index=index, position=position, time=self.agent.server.get_time())
+
+    @public_method
+    def activate_quick_item(self, index, target_id):
+        self.agent.car.quick_consumer_panel.activate_item(index=index, target_id=target_id,
+                                                          time=self.agent.server.get_time())
+
+    @public_method
+    def swap_quick_items(self, index1, index2):
+        self.agent.car.quick_consumer_panel.swap_items(index1=index1, index2=index2, time=self.agent.server.get_time())
+
+    @public_method
+    def get_quick_item_info(self):
+        from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
+        QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def get_quick_item_info(self):
+        from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
+        QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
+
+

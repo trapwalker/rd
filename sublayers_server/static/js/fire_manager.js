@@ -10,6 +10,64 @@ var ConstCountFireDischargeFlashlight = 3;   // Количество вспыш�
 var ConstDelayFireDischargeFlashlight = 300; // Задержка между дульным пламенем и вспышкой взрыва при залповой стрельбе (ms);
 var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки взрыва при залповой стрельбе (px);
 
+
+
+
+
+// Список Иконок для всех видов маркеров леафлета
+
+var EffectPNGLoader = (function(){
+    function EffectPNGLoader(){
+        this.effects = {};
+        this.count_loading_img = 0;
+        resourceLoadManager.add(this);
+
+        this.load_new_image('effect-fire-discharge-png-1', '/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png', [40, 40], 5);
+        this.load_new_image('effect-fire-discharge-png-2', '/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png', [57, 75], 12);
+        this.load_new_image('effect-fire-auto-png', '/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png', [32, 20], 2);
+        this.load_new_image('effect-heavy-bang-png-1', '/static/img/fire_effects/bangs/heavy_damage_1000_2_res_stripe.png', [115, 115], 12);
+        this.load_new_image('effect-heavy-bang-png-2', '/static/img/fire_effects/bangs/heavy_damage_wave_1000_2_res_stripe.png', [115, 115], 12);
+        this.load_new_image('effect-light-bang-png-1', '/static/img/fire_effects/bangs/light_damage_ground_stripe_3frames.png', [22, 22], 3);
+        this.load_new_image('effect-light-bang-png-2', '/static/img/fire_effects/bangs/light_damage_right_stripe_3frames.png', [22, 22], 3);
+        this.load_new_image('effect-heavy-bang-oriented-png-1', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png', [107, 107], 12);
+        this.load_new_image('effect-heavy-bang-oriented-png-2', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png', [107, 107], 12);
+        this.load_new_image('effect-tracer-png', '/static/img/fire_effects/shoots/light_tracer.png', [7, 14], 1);
+    }
+
+    EffectPNGLoader.prototype.getImage = function(name){
+        return this.effects[name];
+    };
+
+    EffectPNGLoader.prototype.load_complete = function () {
+        if (this.count_loading_img == 0) {
+            resourceLoadManager.del(this);
+        }
+    };
+
+    EffectPNGLoader.prototype.load_new_image = function(name, url, size, frames){
+        var img = new Image();
+        this.count_loading_img++;
+        img.onload = function() {
+            effectPNGLoader.effects[name] = {
+                img: img,
+                size: size,
+                frames: frames
+            };
+            effectPNGLoader.count_loading_img--;
+            effectPNGLoader.load_complete();
+        };
+        img.onerror = function() {
+            console.warn('EffectPNGLoader: Content dont load: ', url);
+            effectPNGLoader.count_loading_img--;
+            effectPNGLoader.load_complete();
+        };
+        img.src = url;
+    };
+
+    return EffectPNGLoader;
+})();
+
+
 var FireEffectManager = (function () {
     function FireEffectManager() {
         this.controllers_list = []; // хранятся объекты {ctrl: FireAutoEffectController, count: int}
@@ -68,29 +126,29 @@ var FireEffectManager = (function () {
     };
 
     FireEffectManager.prototype.fireDischargeEffect = function (options) {
-        var vekt = subVector(options.pos_obj, options.pos_subj);
+        var vekt = subVector(options.fake_position, options.pos_subj);
         var direction = angleVectorRadCCW(vekt);
-        if (!options.is_fake) {
-            new EDischargeFirePNG_1(options.pos_subj, direction).start();
-            //for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
-            var pos = getRadialRandomPoint(options.pos_obj, ConstRangeFireDischargeFlashlight);
-            if (distancePoints(options.pos_obj, pos) > ConstFlashlightOrientedRadius)
-                new EHeavyBangPNG_2(pos).start(ConstDelayFireDischargeFlashlight);
+
+        for (var i = 0; i < options.targets.length; i++) {
+            var pos_obj = new Point(options.targets[i].x, options.targets[i].y);
+            var pos = getRadialRandomPoint(pos_obj, ConstRangeFireDischargeFlashlight);
+            if (distancePoints(pos_obj, pos) > ConstFlashlightOrientedRadius)
+                new ECanvasHeavyBangPNG_2(pos).start(ConstDelayFireDischargeFlashlight);
             else if (Math.random() > 0.5)
-                new EHeavyBangOrientedPNG_1(options.pos_obj, direction).start();
+                new ECanvasHeavyBangOrientedPNG_1(pos_obj, direction).start();
             else
-                new EHeavyBangOrientedPNG_2(options.pos_obj, direction).start();
+                new ECanvasHeavyBangOrientedPNG_2(pos_obj, direction).start();
         }
-        else {
-            //new EDischargeFire(options.pos_subj, direction).start();
-            new EDischargeFirePNG_2(options.pos_subj, direction).start();
-            var temp = 1 / ConstCountFireDischargeFlashlight;
-            var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
-            for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
-                new EHeavyBangPNG_1(getRadialRandomPoint(summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
-                                                         ConstRangeFireDischargeFlashlight))
-                    .start(i * tempDuration + tempDuration * Math.random());
-        }
+
+        new ECanvasDischargeFirePNG_1(options.pos_subj, direction).start();
+        //new ECanvasDischargeFirePNG_2(options.pos_subj, direction).start();
+
+        var temp = 1 / ConstCountFireDischargeFlashlight;
+        var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;
+        for (var i = 0; i < ConstCountFireDischargeFlashlight; i++)
+            new ECanvasHeavyBangPNG_1(getRadialRandomPoint(summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
+                ConstRangeFireDischargeFlashlight))
+                .start(i * tempDuration + tempDuration * Math.random());
     };
 
     FireEffectManager.prototype.perform = function () {
@@ -130,13 +188,13 @@ var FireAutoEffectController = (function () {
                 var p2 = obj.getCurrentCoord(time);
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
                 if (distancePoints(p2, p_obj) > ConstFlashlightOrientedRadius)
-                    new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
-                        new ELightBangPNG_1(pos).start();
+                    new ECanvasPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
+                        new ECanvasLightBangPNG_1(pos).start();
                     }).start();
                 else {
                     var dir = angleVectorRadCCW(subVector(p_subj, p_obj)) + Math.PI;
-                    new EPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
-                        new ELightBangPNG_2(pos, dir).start();
+                    new ECanvasPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
+                        new ECanvasLightBangPNG_2(pos, dir).start();
                     }).start();
                 }
             }
@@ -146,7 +204,7 @@ var FireAutoEffectController = (function () {
                 this.last_time = time;
                 var p2 = obj.getCurrentCoord(time);
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
-                new ELightBangPNG_1(p_obj).start();
+                new ECanvasLightBangPNG_1(p_obj).start();
             }
     };
 
@@ -174,8 +232,9 @@ var FireAutoMuzzleFlashController = (function () {
 
     FireAutoMuzzleFlashController.prototype.start = function () {
         var subj = visualManager.getModelObject(this.subj);
-        if (subj && !this.muzzle_flash && this.side)
-            this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
+        if (subj && !this.muzzle_flash && this.side){
+            this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
+        }
     };
 
     FireAutoMuzzleFlashController.prototype.finish = function (options) {
@@ -195,4 +254,5 @@ var FireAutoMuzzleFlashController = (function () {
 })();
 
 
+var effectPNGLoader = new EffectPNGLoader();
 var fireEffectManager = new FireEffectManager();
