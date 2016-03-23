@@ -21,7 +21,7 @@ var ECanvasAnimationPNG = (function () {
     ECanvasAnimationPNG.prototype._get_frame_num = function (time) {
         var time_off = time - this.start_time; // время, прошедшее сначала анимации
         time_off = time_off < 0 ? 0 : time_off;
-        return ((time_off * 1000 / this.time_of_frame).toFixed(0)) % this.frame_count;
+        return Math.floor(time_off * 1000 / this.time_of_frame) % this.frame_count;
     };
 
     ECanvasAnimationPNG.prototype._start = function () {
