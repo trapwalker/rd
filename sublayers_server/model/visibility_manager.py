@@ -29,11 +29,13 @@ class TileContactSearchEvent(Event):
 
 
 class VisibilityManager(object):
-    def __init__(self, server, z=14, max_z=26, interval=BALANCE.interval_refresh):
+    def __init__(self, server, z=14, max_z=26, min_z=10, interval=BALANCE.interval_refresh):
         self.server = server
         self.tiles = dict()
         self.z = z
-        self.max_z = max_z  # todo: должно браться централизованно
+        # todo: должно браться централизованно
+        self.max_z = max_z
+        self.min_z = min_z
         self.interval = interval
 
     def _obj_in_tile(self, obj, tid):
@@ -115,32 +117,34 @@ class VisibilityManager(object):
                 result += self.tiles[t][1]
         return result
 
-    def _get_around_objects_by_z(self, pos, z):
+    def _get_around_objects_by_z(self, pos, time, z):
         result = []
+        tid_nec = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
         if z <= self.z:
-            tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
-            tid_around_z_necessary = tid.get_around_tiles()
-            for t_nec in tid_around_z_necessary:
+            for t_nec in tid_nec.get_around_tiles():
                 for t_orig in t_nec.childs(level=(self.z - z)):
                     if t_orig in self.tiles.keys():
                         result += self.tiles[t_orig][1]
-        # else:
-        #     all_objects = []
-        #     tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
-        #     for t_orig in tid.get_around_tiles():
-        #         if t_orig in self.tiles.keys():
-        #             all_objects += self.tiles[t_orig][1]
-        #     tid_necessary = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
-        #     for t_orig in tid.get_around_tiles():
-        #     result = []
+        else:
+            all_objects = []
+            tid_def = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
+            for tid in tid_def.get_around_tiles():
+                if tid in self.tiles.keys():
+                    all_objects += self.tiles[tid][1]
+            for obj in all_objects:
+                for tid in tid_nec.get_around_tiles():
+                    obj_pos = obj.position(time=time)
+                    tid_obj = Tileid2(long(obj_pos.x), long(obj_pos.y), self.max_z)
+                    if tid_obj.in_tile(tile=tid):
+                        result.append(obj)
+                        break
         return result
 
-    def get_global_around_objects(self, pos, limit=10):
-        # todo: добавить min_zoom вместо 9
-        result = []
-        for zoom in range(self.z, 9, -1):
-            result = self._get_around_objects_by_z(pos=pos, z=zoom)
-            # todo: добавить выкусывание 16 зума
-            if len(result) >= limit:
-                return result
-        return result
+    def get_global_around_objects(self, pos, time, limit=10):
+        result_in = []
+        result_out = self._get_around_objects_by_z(pos=pos, time=time, z=16)
+        for zoom in range(self.z, self.min_z - 1, -1):
+            result_in = self._get_around_objects_by_z(pos=pos, time=time, z=zoom)
+            if len(result_in) - len(result_out) >= limit:
+                break
+        return list(set(result_in) - set(result_out))
