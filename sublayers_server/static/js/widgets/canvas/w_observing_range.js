@@ -16,8 +16,13 @@ var WObservingRange = (function (_super) {
     WObservingRange.prototype.redraw = function(ctx, time){
         //console.log('WObservingRange.prototype.change');
         var zoom_koeff = mapCanvasManager.zoom_koeff;
+        var real_zoom = mapCanvasManager.real_zoom;
         var map_tl = mapCanvasManager.map_tl;
-        //if (real_zoom <= 14) return;
+        ctx.save();
+
+        if (real_zoom <= 14) return;
+        if (real_zoom < 15) ctx.globalAlpha = 1 - (15.0 - mapCanvasManager.real_zoom);
+
         for (var i = 0; i < this._model_objects.length; i++) {
             var car = this._model_objects[i];
             var car_pos = car.getCurrentCoord(time);  // положение машинки
@@ -45,7 +50,7 @@ var WObservingRange = (function (_super) {
         ctx.globalCompositeOperation = "xor";
         ctx.fillStyle = "rgba(0,0,0,0.85)";
         ctx.fillRect(0, 0, 1920, 1080);
-        ctx.globalCompositeOperation = "source-over";
+        ctx.restore();
     };
 
     WObservingRange.prototype.delFromVisualManager = function () {

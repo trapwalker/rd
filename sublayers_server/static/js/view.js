@@ -97,10 +97,10 @@ $(document).ready(function () {
     img.push(new Image());
     img.push(new Image());
 
-    img[0].src = '/static/img/n1.png';
-    img[1].src = '/static/img/n2.png';
-    img[2].src = '/static/img/n3.png';
-    img[3].src = '/static/img/n4.png';
+    img[0].src = '/static/img/2n1.png';
+    img[1].src = '/static/img/2n2.png';
+    img[2].src = '/static/img/2n3.png';
+    img[3].src = '/static/img/2n4.png';
 
     //ws_connector.connect(); // вызывается лишь тогда, когда всё будет загружено и проинициализировано
 

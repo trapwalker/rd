@@ -92,6 +92,12 @@ function normalizeAngleRad(angle) {
     return angle;
 }
 
+// Нормализованый угол ( 0 <= angle <= (2 * pi) )
+function normalizeAngleRad2(angle) {
+    return ((angle * 10000) % 62830) / 10000.
+
+}
+
 // Кротчайший угол от первого вектора до второго (знак определяет направление)
 function getDiffAngle(angle1, angle2) {
     var res = normalizeAngleRad(angle1) - normalizeAngleRad(angle2);
