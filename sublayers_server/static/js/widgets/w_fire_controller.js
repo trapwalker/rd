@@ -5,13 +5,13 @@ var ConstFireControllerSectorWidth = 70;         // Ширина сектора,
 
 var constFireControllerSectorDiameter = 150;    // диаметр для svg секторов (px)
 var constRadarCircleSpeed = 6;                  // время за которое радиус радарного круга меняется от 0% до 100% (сек)
-var constRadarTimeReStartCircle = 5;            // период запуска радарных круга (сек)
+var constRadarTimeReStartCircle = 3;            // период запуска радарных круга (сек)
 var constRadarRadiusIn = 15;                    // мимнимальный радиус радарного круга (px)
 var constRadarRadiusOut = 95;                   // максимальный радиус радарного круга (px)
-var constRadarMaxOpacity = 0.6;                 // начальная прозрачность радарного круга
+var constRadarMaxOpacity = 0.9;                 // начальная прозрачность радарного круга
 var constRadarMinOpacity = 0;                   // конечная прозрачность радарного круга
-var constRadarMaxWidth = 0.3;                   // начальная ширина радарного круга (в частях от всей ширины радара)
-var constRadarMinWidth = 0.1;                   // конечная ширина радарного круга (в частях от всей ширины радара)
+var constRadarMaxWidth = 1;                     // начальная ширина радарного круга (в частях от всей ширины радара)
+var constRadarMinWidth = 0.2;                   // конечная ширина радарного круга (в частях от всей ширины радара)
 
 var WFireController = (function (_super) {
     __extends(WFireController, _super);
@@ -41,7 +41,10 @@ var WFireController = (function (_super) {
             '<div id="fireControlAreaRumble">' +
                 '<div id="fireControlTop">' +
                     '<div id="divForSVG"></div>' +
-                    '<div id="divForCanvas"><canvas id="fireControlRadarCanvas"></canvas></div>' +
+                    '<div id="divForCanvas">' +
+                        '<canvas id="fireControlRadarCanvas" class="fire-controll-canvas"></canvas>' +
+                        '<canvas id="fireControlRadarPointCanvas" class="fire-controll-canvas"></canvas>' +
+                    '</div>' +
                 '</div>' +
                 '<div id="fireControlBottom">' +
                     '<div id="fireControlSlideButton" class="fire-control-slide-button-show sublayers-clickable" onclick="wFireController.changeCombatState()"></div>' +
@@ -181,10 +184,14 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.initRadarCircles = function() {
         //console.log('WFireController.prototype.initRadarCircle');
-        var canvas = document.getElementById("fireControlRadarCanvas");
-        canvas.width = 174;
-        canvas.height = 174;
-        this.radarCTX = canvas.getContext("2d");
+        this.canvas_radar = document.getElementById("fireControlRadarCanvas");
+        this.canvas_radar_point = document.getElementById("fireControlRadarPointCanvas");
+        this.canvas_radar.width = 190;
+        this.canvas_radar.height = 190;
+        this.canvas_radar_point.width = 190;
+        this.canvas_radar_point.height = 190;
+        this.radarCTX = this.canvas_radar.getContext("2d");
+        this.radarPointCTX = this.canvas_radar_point.getContext("2d");
         this._difRadarRadius = constRadarRadiusOut - constRadarRadiusIn;
         this._difRadarWidth = constRadarMaxWidth - constRadarMinWidth;
         this._difRadarOpacity = constRadarMaxOpacity - constRadarMinOpacity;
@@ -198,36 +205,47 @@ var WFireController = (function (_super) {
         // Сбрасываем кадр
         this.radarCTX.clearRect(0, 0, constRadarRadiusOut * 2, constRadarRadiusOut * 2);
 
-        // Создаем общий градиент
-        var grd = this.radarCTX.createRadialGradient(constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusIn,
-                                                     constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusOut);
+
         for (var i = 0; i < this.radarCircles.length; i++) {
+            // Создаем общий градиент
             var circle = this.radarCircles[i];
             var difTime = time - circle.start_time;
             var newRelRadius = difTime / constRadarCircleSpeed;
             var newAbsRadius = constRadarRadiusIn + this._difRadarRadius * newRelRadius;
             if ((newRelRadius <= 1) || (newRelRadius >= constRadarMinWidth)) {
+                var grd = this.radarCTX.createRadialGradient(constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusIn,
+                                                             constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusOut);
+
                 var tempWidth = constRadarMinWidth + this._difRadarWidth * newRelRadius;
                 var tempOpacity = constRadarMaxOpacity - this._difRadarOpacity * newRelRadius;
 
-                var startGradient = newRelRadius - 0.5 * tempWidth;
+                var startGradient2 = newRelRadius - 0.9 * tempWidth;
+                var startGradient1 = newRelRadius - 0.2 * tempWidth;
                 var midleGradient = newRelRadius;
-                var endGradient = newRelRadius + 0.5 * tempWidth;
+                var endGradient1 = newRelRadius + 0.1 * tempWidth;
 
-                startGradient = startGradient < 0 ? 0 : ( startGradient > 1 ? 1 : startGradient );
+                startGradient1 = startGradient1 < 0 ? 0 : ( startGradient1 > 1 ? 1 : startGradient1 );
+                startGradient2 = startGradient2 < 0 ? 0 : ( startGradient2 > 1 ? 1 : startGradient2 );
                 midleGradient = midleGradient < 0 ? 0 : ( midleGradient > 1 ? 1 : midleGradient );
-                endGradient = endGradient < 0 ? 0 : ( endGradient > 1 ? 1 : endGradient );
+                endGradient1 = endGradient1 < 0 ? 0 : ( endGradient1 > 1 ? 1 : endGradient1 );
 
-                grd.addColorStop(startGradient, "rgba(0, 255, 0, 0)");
-                grd.addColorStop(midleGradient, "rgba(0, 200, 0, " + tempOpacity + ")");
-                grd.addColorStop(endGradient, "rgba(0, 255, 0, 0)");
+                grd.addColorStop(startGradient2, "rgba(0, 255, 0, 0)");
+                grd.addColorStop(startGradient1, "rgba(0, 255, 0, " + tempOpacity * 0.3 + ")");
+                grd.addColorStop(midleGradient, "rgba(100, 255, 100, " + tempOpacity + ")");
+                grd.addColorStop(endGradient1, "rgba(0, 255, 0, 0)");
 
                 circle.abs_radius = newAbsRadius;
+
+                this.radarCTX.fillStyle = grd;
+                this.radarCTX.beginPath();
+                //this.radarCTX.arc(constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusOut - 3, 2 * Math.PI, 0, false);
+                this.radarCTX.arc(constRadarRadiusOut, constRadarRadiusOut, constRadarRadiusOut - 14, 2 * Math.PI, 0, false);
+                this.radarCTX.closePath();
+                this.radarCTX.fill();
+                //this.radarCTX.fillRect(0, 0, 174, 174);
             }
             circle.rel_radius = newRelRadius;
         }
-        this.radarCTX.fillStyle = grd;
-        this.radarCTX.fillRect(0, 0, 174, 174);
 
         // Вырезать прозрачную дырку в центре
         this.radarCTX.globalCompositeOperation = "destination-out";
@@ -412,6 +430,17 @@ var WFireController = (function (_super) {
         return summVector(p, new Point(constRadarRadiusOut, constRadarRadiusOut));
     };
 
+    WFireController.prototype._updateCarPointCanvas = function () {
+        this.radarPointCTX.save();
+        this.radarPointCTX.globalCompositeOperation = "copy";
+        this.radarPointCTX.globalAlpha = 0.97;
+        this.radarPointCTX.drawImage(this.canvas_radar_point, 0, 0);
+        //this.radarPointCTX.globalCompositeOperation = "source-over";
+        //this.radarPointCTX.globalAlpha = 1;
+        this.radarPointCTX.restore();
+        //stackBlurCanvasRGBA('fireControlRadarPointCanvas', 0, 0, 190, 190, 1);
+    };
+
     WFireController.prototype._updateCarPoint = function(side, car, userCarDirection) {
         //console.log('WFireController.prototype._updateCarPoint');
         car._wfc_side = side;
@@ -423,11 +452,11 @@ var WFireController = (function (_super) {
         var temp = this._radarPointOpacityByRadarCircle(relativeRadius);
 
         // Отрисовка
-        this.radarCTX.fillStyle = 'rgba(0, 255, 0, ' + temp + ')';
-        this.radarCTX.beginPath();
-        this.radarCTX.arc(p.x, p.y, 3, Math.PI * 2, 0, false);
-        this.radarCTX.closePath();
-        this.radarCTX.fill();
+        this.radarPointCTX.fillStyle = 'rgba(50, 255, 50, ' + temp * 0.7 + ')';
+        this.radarPointCTX.beginPath();
+        this.radarPointCTX.arc(p.x, p.y, 1.7 + temp * 0.5, Math.PI * 2, 0, false);
+        this.radarPointCTX.closePath();
+        this.radarPointCTX.fill();
     };
 
     WFireController.prototype._deleteCarPoint = function(car) {
@@ -458,7 +487,10 @@ var WFireController = (function (_super) {
             }
         }
         if (index >= 0)
-            if (this.radarCircles[index].rel_radius > temp_rel_radius) dif_rel_radius = 1 - dif_rel_radius;
+            if (this.radarCircles[index].rel_radius > temp_rel_radius)
+                dif_rel_radius = (constRadarTimeReStartCircle / constRadarCircleSpeed) - dif_rel_radius;
+        if (dif_rel_radius < 0)
+            console.log('error');
         var max_radius = constRadarTimeReStartCircle / constRadarCircleSpeed;
         var result = dif_rel_radius / max_radius;
         result = result < 0 ? 0 : ( result > 1 ? 1 : result );
@@ -494,6 +526,7 @@ var WFireController = (function (_super) {
         this._updateRadarCircles(time);
 
         // Анимация точек радара
+        this._updateCarPointCanvas();
         var userCarPosition = this.car.getCurrentCoord(time);
         for (var i = 0; i < this.cars.length; i++) {
             var car = this.cars[i];
