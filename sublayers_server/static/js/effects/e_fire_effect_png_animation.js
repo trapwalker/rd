@@ -16,6 +16,7 @@ var ECanvasAnimationPNG = (function () {
         this.start_time = 0;
         this.offset_x = 0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = 0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.infinity_animation = false;
     }
 
     ECanvasAnimationPNG.prototype._get_frame_num = function (time) {
@@ -45,7 +46,7 @@ var ECanvasAnimationPNG = (function () {
     };
 
     ECanvasAnimationPNG.prototype.redraw = function (ctx, time) {
-        if (time >= this.start_time + this.duration / 1000.) return;
+        if (! this.infinity_animation && time >= this.start_time + this.duration / 1000.) return;
         ctx.save();
         var img_obj = this.effect_image_obj;
         var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
@@ -117,6 +118,7 @@ var ECanvasAutoFirePNG = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.infinity_animation = true;
 
         if (side == 'front')
             this.offset_x = 0.8;
