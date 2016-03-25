@@ -250,6 +250,8 @@ var MapManager = (function(_super){
         this.widget_fire_radial_grid = null; // инициализируется при получении своей машинки
         this.widget_fire_sectors = null; // инициализируется при получении своей машинки
         this.zoomSlider = null; // инициализируется после карты
+
+        this.strategy_mode_timer = null;
     }
 
     MapManager.prototype._init = function () {
@@ -426,6 +428,13 @@ var MapManager = (function(_super){
                     mapManager.widget_fire_radial_grid.setVisible(false);
                 if (mapManager.widget_fire_sectors)
                     mapManager.widget_fire_sectors.setVisible(false);
+
+                // todo: сделать это не через таймер !!!
+                if (! mapManager.strategy_mode_timer) {
+                    mapManager.strategy_mode_timer = setInterval(function () {
+                        clientManager.sendGetStrategyModeObjects();
+                    }, 5000);
+                }
             }
             else {
                 // показать сетку и сектора, если боевой режим
@@ -433,6 +442,10 @@ var MapManager = (function(_super){
                     mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
                 if ((mapManager.widget_fire_sectors) && (wFireController))
                     mapManager.widget_fire_sectors.setVisible(wFireController.visible);
+                 if (mapManager.strategy_mode_timer) {
+                     clearInterval(mapManager.strategy_mode_timer);
+                     mapManager.strategy_mode_timer = null;
+                 }
             }
         }
     };

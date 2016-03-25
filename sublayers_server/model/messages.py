@@ -831,3 +831,17 @@ class JournalParkingInfoMessage(Message):
 
 class AdminArchiveCompleteMessage(Message):
     pass
+
+
+class StrategyModeInfoObjectsMessage(Message):
+    def __init__(self, objects, **kw):
+        super(StrategyModeInfoObjectsMessage, self).__init__(**kw)
+        self.objects = objects
+
+    def as_dict(self):
+        d = super(StrategyModeInfoObjectsMessage, self).as_dict()
+        d.update(
+            objects=[obj.position(time=self.time) for obj in self.objects]
+        )
+        return d
+

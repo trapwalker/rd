@@ -183,6 +183,7 @@ class Mobile(Root):
                 agent_effect += getattr(perk, param_name, 0.0)
 
         # todo: проверить допустимость значения
+        assert original_value is not None, '{} is not allowed {}'.format(param_name, original_value)
         return original_value + mechanic_slots_effect + agent_effect
 
 
@@ -337,5 +338,16 @@ class Drone(Mobile):
     pass
 
 
-class MapWeaponEffectMine(Mobile):
+class MobileWeapon(Mobile):
+    pass
+
+class MapWeaponEffectMine(MobileWeapon):
     effects = Attribute(default=(), caption=u'Список эффектов (URI) накладываемых миной')
+
+
+class MapWeaponRocket(MobileWeapon):
+    radius_damage = FloatAttribute(default=30.0, caption=u"Радиус взрыва ракеты")
+    damage = FloatAttribute(default=30.0, caption=u"Дамаг в радиусе взрыва")
+    life_time = FloatAttribute(default=10.0, caption=u"Время жизни ракеты")
+
+

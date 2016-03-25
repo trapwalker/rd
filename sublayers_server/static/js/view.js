@@ -7,6 +7,7 @@ $(document).ready(function () {
     mapManager._init();
 
     mapCanvasManager = new MapCanvasManager();
+    wStrategyModeManager = new WStrategyModeManager();
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -96,10 +97,29 @@ $(document).ready(function () {
     img.push(new Image());
     img.push(new Image());
 
-    img[0].src = '/static/img/n1.png';
-    img[1].src = '/static/img/n2.png';
-    img[2].src = '/static/img/n3.png';
-    img[3].src = '/static/img/n4.png';
+    // старый шум
+    //img[0].src = '/static/img/2n1.png';
+    //img[1].src = '/static/img/2n2.png';
+    //img[2].src = '/static/img/2n3.png';
+    //img[3].src = '/static/img/2n4.png';
+
+    // шум тест 1
+    //img[0].src = '/static/img/noise/1_noise.png';
+    //img[1].src = '/static/img/noise/2_noise.png';
+    //img[2].src = '/static/img/noise/3_noise.png';
+    //img[3].src = '/static/img/noise/4_noise.png';
+
+    // шум тест 2   _inv
+    //img[0].src = '/static/img/noise/1_noise_inv.png';
+    //img[1].src = '/static/img/noise/2_noise_inv.png';
+    //img[2].src = '/static/img/noise/3_noise_inv.png';
+    //img[3].src = '/static/img/noise/4_noise_inv.png';
+
+    // шум тест 3   60
+    img[0].src = '/static/img/noise/1_noise60.png';
+    img[1].src = '/static/img/noise/2_noise60.png';
+    img[2].src = '/static/img/noise/3_noise60.png';
+    img[3].src = '/static/img/noise/4_noise60.png';
 
     //ws_connector.connect(); // вызывается лишь тогда, когда всё будет загружено и проинициализировано
 

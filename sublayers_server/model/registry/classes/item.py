@@ -9,7 +9,7 @@ from sublayers_server.model.registry.attr import Attribute, FloatAttribute, Text
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.transaction_events import (
     TransactionActivateTank, TransactionActivateAmmoBullets,
-    TransactionActivateMine, TransactionActivateRebuildSet,
+    TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
 )
 
 
@@ -82,6 +82,12 @@ class MapWeaponMineItem(MapWeaponItem):
     @classmethod
     def activate(cls):
         return TransactionActivateMine
+
+
+class MapWeaponRocketItem(MapWeaponItem):
+    @classmethod
+    def activate(cls):
+        return TransactionActivateRocket
 
 
 class MechanicItem(SlotItem):

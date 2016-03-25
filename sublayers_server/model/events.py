@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 log.info('\n\n\n')
 
 from sublayers_server.model.utils import time_log_format
-from sublayers_server.model.messages import FireDischargeEffect
+from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage
 
 from functools import total_ordering, wraps, partial
 
@@ -291,7 +291,8 @@ class BangEvent(Event):
         from sublayers_server.model.messages import Bang
         from sublayers_server.model.units import Unit
 
-        for obj in self.server.geo_objects:  # todo: GEO-index clipping
+        objects = self.server.visibility_mng.get_around_objects(pos=self.center, time=self.time)
+        for obj in objects:
             if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if isinstance(obj, Unit):
                     if abs(self.center - obj.position(time=self.time)) < self.radius:
@@ -507,3 +508,15 @@ class ItemActivationEvent(Event):
         event_cls = item.example.activate()
         if event_cls:
             event_cls(server=self.server, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
+
+
+class StrategyModeInfoObjectsEvent(Event):
+    def __init__(self, agent, **kw):
+        super(StrategyModeInfoObjectsEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(StrategyModeInfoObjectsEvent, self).on_perform()
+        objects = self.server.visibility_mng.get_global_around_objects(pos=self.agent.car.position(time=self.time),
+                                                                       time=self.time)
+        StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()

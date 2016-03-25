@@ -361,6 +361,9 @@ var ClientManager = (function () {
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
+
+            // Инициализация мап-зума
+            mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати
@@ -521,9 +524,10 @@ var ClientManager = (function () {
 
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
-        //console.log('ClientManager.prototype.Bang ');
-        new Bang(new Point(event.position.x, event.position.y),
-                 event.bang_power, event.duration, event.end_duration).start();
+        //console.log('ClientManager.prototype.Bang', event);
+        new ECanvasHeavyBangPNG_2(new Point(event.position.x, event.position.y)).start();
+        //new Bang(new Point(event.position.x, event.position.y),
+        //         event.bang_power, event.duration, event.end_duration).start();
     };
 
     ClientManager.prototype.ChangeAltitude = function(event){
@@ -947,6 +951,13 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.AdminArchiveCompleteMessage  Start Download temp_archive');
         window.open(window.location.protocol + "//" + location.host + '/static/temp_archive.zip', '_self');
     };
+
+    // Стратегический режим
+    ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
+        console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
+        wStrategyModeManager.update(event.objects);
+    };
+
 
     // Исходящие сообщения
 
@@ -1706,6 +1717,18 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendActivateQuickItem');
         var mes = {
             call: "get_quick_item_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Запросы стратегического режима
+    ClientManager.prototype.sendGetStrategyModeObjects = function() {
+        console.log('ClientManager.prototype.sendGetStrategyModeObjects');
+        var mes = {
+            call: "get_strategy_mode_info_objects",
             rpc_call_id: rpcCallList.getID(),
             params: {}
         };
