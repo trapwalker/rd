@@ -361,6 +361,9 @@ var ClientManager = (function () {
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
+
+            // Инициализация мап-зума
+            mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
         }
 
         // Установка текста в верху страницы - вывод своего ника и своей пати

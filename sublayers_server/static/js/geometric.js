@@ -83,6 +83,13 @@ function angleVectorRadCCW(aPoint) {
     return normalizeAngleRad(angle);
 }
 
+function angleVectorRadCCW2(aPoint) {
+    var angle = angleVectorRad(aPoint, new Point(1, 0));
+    if (aPoint.y < 0)
+        angle = 2 * Math.PI - angle;
+    return normalizeAngleRad2(angle);
+}
+
 // Нормализованый угол ( 0 <= angle <= (2 * pi) )
 function normalizeAngleRad(angle) {
     var pi2 = Math.PI * 2;
@@ -92,8 +99,11 @@ function normalizeAngleRad(angle) {
     return angle;
 }
 
-// Нормализованый угол ( 0 <= angle <= (2 * pi) )
+// Нормализованый угол 2 ( 0 <= angle <= (2 * pi) )
 function normalizeAngleRad2(angle) {
+    if (angle < 0.0) {
+        return 2 * Math.PI - normalizeAngleRad2(-angle);
+    }
     return ((angle * 10000) % 62830) / 10000.
 
 }
@@ -101,6 +111,15 @@ function normalizeAngleRad2(angle) {
 // Кротчайший угол от первого вектора до второго (знак определяет направление)
 function getDiffAngle(angle1, angle2) {
     var res = normalizeAngleRad(angle1) - normalizeAngleRad(angle2);
+    if (Math.abs(res) <= Math.PI)
+        return res;
+    else
+        return (2 * Math.PI - Math.abs(res)) * (res > 0 ? -1 : 1);
+}
+
+// Кротчайший угол от первого вектора до второго (знак определяет направление)
+function getDiffAngle2(angle1, angle2) {
+    var res = normalizeAngleRad2(angle1) - normalizeAngleRad2(angle2);
     if (Math.abs(res) <= Math.PI)
         return res;
     else

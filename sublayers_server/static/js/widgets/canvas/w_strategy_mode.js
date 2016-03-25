@@ -1,5 +1,5 @@
 var ConstPeriodOfPhase = 10; // Время полного оборота линии радара
-var ConstLineRadarLength = 50000; // Длинна линии радара на 14 зуме // todo: прислать с сервера
+var ConstLineRadarLength = 150000; // Длинна линии радара на 14 зуме // todo: прислать с сервера
 
 
 var WStrategyModeManager = (function () {
@@ -9,6 +9,9 @@ var WStrategyModeManager = (function () {
         this.start_time = 0;
         this._radial_speed = 2 * Math.PI / ConstPeriodOfPhase;
         this.radar_radius = ConstLineRadarLength;
+        this.radar_width = 0.8;  // половина ширины радара
+
+        this.radar_width_point_opacity = 1.75 * Math.PI;
     }
 
     WStrategyModeManager.prototype.update = function (targets) {
@@ -32,7 +35,9 @@ var WStrategyModeManager = (function () {
             ctx.globalAlpha = 15.0 - mapCanvasManager.real_zoom;
         }
         var map_top_left = mapCanvasManager.map_tl;
-
+        var radar_direction = this.getRadarLineDirection(time);
+        var radar_fake_dir = radar_direction + this.radar_width;
+        var car_pos = user.userCar.getCurrentCoord(time);
 
         // вырезать круг обзора
         ctx.save();
@@ -50,34 +55,50 @@ var WStrategyModeManager = (function () {
         ctx.restore();
 
 
-        // Шум и чёрное полотно
+        // Чёрное полотно для вырезания круга обзора
         ctx.save();
         ctx.globalCompositeOperation = "xor";
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, 1920, 1080);
-        ctx.globalCompositeOperation = "source-over";
+        ctx.restore();
+
+        // Шум
+        ctx.save();
+        ctx.globalAlpha = 0.5;
         ctx.fillStyle = ctx.createPattern(img[Math.round(Math.random() * 3)], "repeat");
         ctx.fillRect(0, 0, 1920, 1080);
         ctx.restore();
 
 
-
-        ctx.fillStyle = '#00ff00';
         // Отрисовка точек
-        for (var i = 0; i < this.targets.length; i++){
-            var p = mulScalVector(subVector(this.targets[i], map_top_left), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.save();
+        ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+        ctx.fillStyle = 'rgba(255, 255, 0, 1)';
+        for (var i = 0; i < this.targets.length; i++) {
+            var p = mulScalVector(subVector(this.targets[i], car_pos), 1.0 / mapCanvasManager.zoom_koeff);
             // todo: не рисовать точки, которые заведомо никак не попадут на канвас
+            var angle_p = angleVectorRadCCW2(p);
+            var angle_diff = normalizeAngleRad2(radar_fake_dir - angle_p);
+            var opacity = 0;
+            if (angle_diff < this.radar_width_point_opacity){
+                opacity = Math.abs(1.0 - angle_diff / this.radar_width_point_opacity);
+            }
+
+            if (opacity > 1.0 || opacity < 0.0) console.log('что-то не то');
+            ctx.fillStyle = 'rgba(0, 255, 0, ' + opacity + ')';
             ctx.beginPath();
             ctx.arc(p.x, p.y, 3, 2 * Math.PI, 0, false);
             ctx.closePath();
             ctx.fill();
         }
 
+        ctx.restore();
+
         // Отрисовка линии радара
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
         ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
-        ctx.rotate(this.getRadarLineDirection(time));
+        ctx.rotate(radar_direction);
         var grad = ctx.createLinearGradient( 500, 500, 500, 0 );  // todo: должен зависеть от радиуса
         grad.addColorStop(0, "rgba(0, 255, 0, 0.4)");
         grad.addColorStop(1, "rgba(0, 255, 0, 0)");
@@ -86,12 +107,21 @@ var WStrategyModeManager = (function () {
 
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -0.8, 0.8, false);
+        ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
         ctx.closePath();
         ctx.fill();
+
+        // Радарная линия !!!
+        //ctx.rotate(this.radar_width);
+        //ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
+        //ctx.fillRect(0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, 5);
+
         ctx.restore();
 
-        // Затемняющий круг
+
+
+
+        // Затемняющая зона
         var grad2 = ctx.createRadialGradient(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y, 0,
             mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y, 2 * this.radar_radius / mapCanvasManager.zoom_koeff);
         grad2.addColorStop(0, "rgba(0,0,0,0)");
@@ -99,15 +129,7 @@ var WStrategyModeManager = (function () {
         grad2.addColorStop(0.5, "rgba(0,0,0,1)");
         grad2.addColorStop(1, "rgba(0,0,0,1)");
         ctx.fillStyle = grad2;
-        //ctx.beginPath();
-        //ctx.moveTo(0, 0);
-        //ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, 2 * Math.PI, 0, false);
-        //ctx.closePath();
-        //ctx.fill();
         ctx.fillRect(0, 0, 1920, 1080);
-
-
-
 
 
         ctx.restore();  // Возврат транслейта
