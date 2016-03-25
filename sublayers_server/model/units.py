@@ -45,7 +45,7 @@ class Unit(Observer):
                                 max_hp=self.example.get_modify_value(param_name='max_hp', 
                                                                      example_agent=self.owner_example),
                                 hp=self.example.hp)
-        self._direction = self.example.direction or direction
+        self._direction = direction or self.example.direction
         self.altitude = 0.0
         self.check_zone_interval = None
         self.zones = []

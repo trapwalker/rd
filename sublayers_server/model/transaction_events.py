@@ -9,6 +9,7 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import GasStation, Town
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory, InventoryPerksAttribute
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
+from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 
 import sublayers_server.model.messages as messages
 
@@ -94,6 +95,28 @@ class TransactionActivateMine(TransactionActivateItem):
 
         # Поставить мину на карту
         SlowMineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
+
+
+class TransactionActivateRocket(TransactionActivateItem):
+    def on_perform(self):
+        super(TransactionActivateRocket, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.target)
+        inventory = self.inventory
+        item = self.item
+
+        # проверка входных параметров
+        if not isinstance(obj, Mobile):
+            log.warning('Target obj is not Mobile')
+            return
+
+        # Убрать ракету из инвентаря
+        #  todo: да, нельзя юзать внутренний метод! Но значит его нужно сделать открытым!
+        item._div_item(count=1, time=self.time)
+
+        # запуск
+        RocketStartEvent(starter=obj, time=self.time, example_rocket=item.example.generate_obj).post()
 
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):

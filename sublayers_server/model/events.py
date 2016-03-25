@@ -291,7 +291,8 @@ class BangEvent(Event):
         from sublayers_server.model.messages import Bang
         from sublayers_server.model.units import Unit
 
-        for obj in self.server.geo_objects:  # todo: GEO-index clipping
+        objects = self.server.visibility_mng.get_around_objects(pos=self.center, time=self.time)
+        for obj in objects:
             if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if isinstance(obj, Unit):
                     if abs(self.center - obj.position(time=self.time)) < self.radius:
