@@ -57,5 +57,3 @@ class BarterInventoryHandler(BaseHandler):
         barter_name = '{!r} <=> {!r}'.format(barter.initiator.login, barter.recipient.login)  # todo: use unicode
         self.render("inventory_barter_window.html", agent=agent, car_id=agent.api.car.uid, barter=barter,
                     my_table_id=my_table_id, other_table_id=other_table_id, barter_name=barter_name)
-
-

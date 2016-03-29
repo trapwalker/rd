@@ -45,12 +45,9 @@ class User(object):
         self.email = email
         self.auth = auth
 
-
-
     @classmethod
     def load_by_name(cls, collection, name):
         pass
-
 
 
 class BaseHandler(tornado.web.RequestHandler):

@@ -34,5 +34,3 @@ class ContextPanelBarterInfoHandler(BaseHandler):
             self.send_error(status_code=404)
             return
         self.render("context_panel/context_panel_barter_info_window.html", agent=agent)
-
-

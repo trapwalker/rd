@@ -8,6 +8,7 @@ from tornado.options import options
 
 from .base import BaseHandler
 
+
 class PlayHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
