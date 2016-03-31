@@ -4,7 +4,7 @@
 </style>
 
 <div id="myInviteRecord{{ invite.id }}" class="myInviteRecord-main sublayers-clickable">
-    <span class="myInviteRecord-infoPlayer">Игрок: {{ invite.sender.login }}</span>
+    <span class="myInviteRecord-infoPlayer">Игрок: {{ invite.sender.user.name }}</span>
     <span class="myInviteRecord-infoParty">Группа: {{ invite.party.name }}</span>
     <div class="myInviteRecord-Btn sublayers-clickable">Отменить</div>
 </div>

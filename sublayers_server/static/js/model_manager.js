@@ -618,7 +618,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
-        //console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+        console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
         // изменить настройки своей пати для своего клиента
         if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
         user.party = new OwnerParty(event.party.id, event.party.name);
