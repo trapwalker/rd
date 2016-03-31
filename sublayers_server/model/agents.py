@@ -38,6 +38,7 @@ class Agent(Object):
         self.connection = None
         self.user = user
         self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
+        self.server.agents_by_name[user.name] = self
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""

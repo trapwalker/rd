@@ -146,13 +146,14 @@ class AgentConsoleNamespace(Namespace):
 
     def reset(self, *names):
         names = names or [self.agent.user.name]
-        agents = self.agent.server.agents
-        if '*' not in names:
-            agents = filter(None, (agents.get(str(user._id)) for username in names))
+        if '*' in names:
+            names = agents_by_name.keys()
 
-        for agent_to_reset in agents:
-            self.api.send_kick(username=agent_to_reset.user.name)
-            agent_to_reset.example.reset()
+        for name_to_reset in names:
+            agent = agents_by_name.get(name_to_reset, None)
+            if agent:
+                self.api.send_kick(username=name_to_reset)
+                agent.example.reset()
 
     def quest(self, *args):
         if not args:
@@ -229,8 +230,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        assert False, '# todo: Get agent by user._id'
-        user = self.agent.server.agents.get(self.username)
+        user = self.agent.server.agents_by_name.get(self.username)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
             return
@@ -265,8 +265,8 @@ class SendKickEvent(Event):
             # todo: assert', warning'и -- ок. Зачем сообщения клиенту?
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
-        assert False, '# todo: Get agent by user._id'
-        user = self.agent.server.agents.get(self.username)
+
+        user = self.agent.server.agents_by_name.get(self.username)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
             return
@@ -291,8 +291,8 @@ class SendSetCategoryEvent(Event):
         if party.owner is not self.agent:
             messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
             return
-        assert False, '# todo: Get agent by user._id'
-        user = self.agent.server.agents.get(self.username)
+
+        user = self.agent.server.agents_by_name.get(self.username)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()

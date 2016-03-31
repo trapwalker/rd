@@ -15,7 +15,7 @@ class ServerAPI(API):
         """
         self.server = server
 
-    def get_agent(self, user=None, make=False, do_disconnect=False):
+    def get_agent(self, user, make=False, do_disconnect=False):
         """
         @rtype sublayers_server.model.agents.Agent
         """
