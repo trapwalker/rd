@@ -9,6 +9,7 @@ from sublayers_server.model.registry.uri import URI
 from collections import deque
 from uuid import uuid4 as uid_func
 import pickle
+import time
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
@@ -56,6 +57,7 @@ class Root(Node):
 class AbstractStorage(object):
 
     def __init__(self, name=None, dispatcher=None):
+        self.nodes_count = 0
         self.name = name
         self.dispatcher = dispatcher
         if dispatcher:
@@ -117,7 +119,7 @@ class AbstractStorage(object):
         raise NotImplementedError('Unimplemented abstract method')
 
     def put(self, node):
-        raise NotImplementedError('Unimplemented abstract method')
+        self.nodes_count += 1
 
     def get_path_tuple(self, node):
         raise NotImplementedError('Unimplemented abstract method')
@@ -187,6 +189,7 @@ class Collection(AbstractStorage):
         return pickle.dumps(node)
 
     def put(self, node):
+        super(Collection, self).put(node)
         key = self.make_key(node.uri.path)
         doc = dict(name=key, data=self._serialize(node))
         self.dataset.update({'name': key}, doc, upsert=True)  # todo: db index
@@ -207,7 +210,11 @@ class Registry(AbstractStorage):
     def __init__(self, path=None, **kw):
         super(Registry, self).__init__(dispatcher=Node.DISPATCHER, **kw)
         self.path = path
+        log.info('Registry loading...')
+        t = time.time()
         self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
+        t = time.time() - t
+        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, t))
 
     def get_local(self, path):
         path = list(path)
@@ -223,6 +230,7 @@ class Registry(AbstractStorage):
         return node
 
     def put(self, node):
+        super(Registry, self).put(node)
         if not hasattr(node, '_subnodes'):
             node._subnodes = {}
 
