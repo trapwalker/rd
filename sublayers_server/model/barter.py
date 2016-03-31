@@ -146,7 +146,7 @@ class InviteBarterMessage(Message):
         d = super(InviteBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.login,
+            initiator=self.barter.initiator.user.name,
         )
         return d
 
@@ -160,8 +160,8 @@ class ActivateBarterMessage(Message):
         d = super(ActivateBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.login,
-            recipient=self.barter.recipient.login,
+            initiator=self.barter.initiator.user.name,
+            recipient=self.barter.recipient.user.name,
         )
         return d
 
