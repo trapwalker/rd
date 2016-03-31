@@ -59,6 +59,7 @@ class ChatRoomPrivateCreateEvent(Event):
 
     def on_perform(self):
         super(ChatRoomPrivateCreateEvent, self).on_perform()
+        assert False, '# todo: Get agent by user._id'
         recipient = self.server.agents.get(self.recipient_login, None)
         if not recipient:
             log.warning('Agent with login %r not found', self.recipient_login)
@@ -150,6 +151,7 @@ class ChatRoom(object):
     def __contains__(self, agent):
         if agent is None:
             return False
+        # todo: ##optimize
         for member in self.members:
             if member == agent:
                 return True
@@ -186,8 +188,8 @@ class ChatRoom(object):
 
     def on_message(self, agent, msg_text, time):
         # формирование мессаджа
-        msg = ChatMessage(time=time, text=msg_text, sender_login=agent.login,
-                          recipients_login=[member.login for member in self.members], chat_name=self.name)
+        msg = ChatMessage(time=time, text=msg_text, sender_login=agent.user.name,
+                          recipients_login=[member.user.name for member in self.members], chat_name=self.name)
         # добавление в историю
         self.history.append(msg)
         if len(self.history) > self.history_len:
@@ -197,7 +199,7 @@ class ChatRoom(object):
 
     def send_history(self, recipient, time):
         for msg in self.history:
-            if recipient.login in msg.recipients_login:
+            if recipient.user.name in msg.recipients_login:
                 ChatRoomMessage(agent=recipient, msg=msg, time=time).post()
 
 
@@ -234,7 +236,7 @@ class PrivateChatRoom(ChatRoom):
                     chat.exclude(agent=agent, time=time)
 
     def __init__(self, agent, recipient, time):
-        super(PrivateChatRoom, self).__init__(time=time, name=(agent.login + '->' + recipient.login))  # todo: use unicode
+        super(PrivateChatRoom, self).__init__(time=time, name=(agent.user.name + '->' + recipient.user.name))  # todo: use unicode
         self.include(agent=agent, time=time)
         self.include(agent=recipient, time=time)
 

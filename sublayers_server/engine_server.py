@@ -41,7 +41,7 @@ from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
-from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
+from sublayers_server.handlers.site.site_auth import SiteLoginHandler, LogoutHandler, GoogleLoginHandler, \
     StandardLoginHandler, OKLoginHandler, VKLoginHandler
 from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
     ContextPanelLocationsHandler
@@ -87,7 +87,7 @@ class Application(tornado.web.Application):
             (r"/play", PlayHandler),
 
             (r"/login", SiteLoginHandler),
-            (r"/logout", SiteLogoutHandler),
+            (r"/logout", LogoutHandler),
             (r"/login/standard", StandardLoginHandler),
             (r"/login/google", GoogleLoginHandler),
             (r"/login/ok", OKLoginHandler),

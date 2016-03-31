@@ -15,31 +15,28 @@ class ServerAPI(API):
         """
         self.server = server
 
-    def get_agent(self, agent_id=None, make=False, do_disconnect=False):
+    def get_agent(self, user=None, make=False, do_disconnect=False):
         """
         @rtype sublayers_server.model.agents.Agent
         """
-        db_res = self.server.app.db.profiles.find({'_id': ObjectId(agent_id)})
-        if db_res.count() == 0:
-            return None
-        login = db_res[0]['name']
-        agent = self.server.agents.get(login, None)  # todo: raise exceptions if absent but not make
+        agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
-            agent_exemplar = self.server.reg_agents.get([login])  # todo: fix it
+            agent_exemplar = self.server.reg_agents.get([str(user._id)])  # todo: fix it
             if agent_exemplar is None:
                 agent_exemplar = self.server.reg['/agents/user'].instantiate(
-                    storage=self.server.reg_agents, name=login, login=login,
+                    storage=self.server.reg_agents, name=str(user._id), login=user.name,
                 )
             log.debug('Use agent exemplar: %r', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
+            # todo: rename User to UserAgent
             agent = User(
                 server=self.server,
-                login=agent_exemplar.login,
+                user=user,
                 time=self.server.get_time(),
                 example=agent_exemplar,
             )
-            log.info('Server API: New Agent is created: %s', agent_id)  # todo: fix text
+            log.info('Server API: New Agent is created: %r', agent)  # todo: fix text
         else:
             if agent and do_disconnect:
                 if agent.connection:

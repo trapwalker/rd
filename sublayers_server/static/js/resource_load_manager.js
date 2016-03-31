@@ -30,7 +30,7 @@ var ResourceLoadManager = (function () {
     };
 
     ResourceLoadManager.prototype.load_complete = function () {
-        ws_connector.connect();
+        setTimeout(function(){ws_connector.connect();}, 2000); // todo: fix this f*cking bug !
     };
 
     return ResourceLoadManager;

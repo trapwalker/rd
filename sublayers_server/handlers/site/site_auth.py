@@ -3,16 +3,23 @@
 import logging
 log = logging.getLogger(__name__)
 
-from handlers.base import BaseHandler
+from sublayers_server.handlers.base import BaseHandler
+from sublayers_server.user_profile import User
 
-import tornado.web
-from tornado.web import RequestHandler
+import tornado.gen
+from tornado.web import RequestHandler, HTTPError
 from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin
 from tornado.httputil import url_concat
+from tornado.httpclient import HTTPClient
 import json
 import hashlib
 import urllib
-from tornado.httpclient import HTTPClient
+
+
+class LogoutHandler(BaseHandler):
+    def get(self):
+        self.clear_cookie("user")
+        self.redirect("/")
 
 
 class SiteLoginHandler(BaseHandler):
@@ -21,78 +28,63 @@ class SiteLoginHandler(BaseHandler):
         self.render("site/login.html", msg=msg)
 
 
-class SiteLogoutHandler(BaseHandler):
-    def get(self):
-        self.clear_cookie("user")
-        self.redirect("/")
+class BaseLoginHandler(BaseHandler):
+    def login_error_redirect(self, doseq=0, **kw):
+        url = urllib.urlencode([
+            (k, v.encode('utf-8') if isinstance(v, unicode) else str(v))
+            for k, v in kw.items()
+        ], doseq)
+        self.redirect("/login?{}".format(url))  # todo: use reverse resolver
 
 
-class StandardLoginHandler(BaseHandler):
+class StandardLoginHandler(BaseLoginHandler):
     def post(self):
         action = self.get_argument('action', None)
-        if action == '1':
-            self._registration()
-        elif action == '2':
-            self._authorisation()
+        if action == 'reg':
+            return self._registration()
+        elif action == 'auth':
+            return self._authorisation()
         else:
-            self.redirect("/login?msg=Ошибка%20авторизации")
-
-    def _db_request(self, email, name=None, password=None):
-        db = self.application.db
-        db_res = None
-        if name is not None:
-            db_res = db.profiles.find({'name': name})
-            cnt = db_res.count()
-            if cnt > 0:
-                return db_res[0]
-        if password is None:
-            db_res = db.profiles.find({'auth.standard.email': email})
-        else:
-            db_res = db.profiles.find({'auth': {'standard': {'email': email, 'password': password}}})
-        user_ids = []
-        for db_rec in db_res:
-            user_ids.append(db_rec)
-        user_id = None
-        if len(user_ids) == 1:
-            user_id = user_ids[0]
-        return user_id
+            raise HTTPError(405, log_message='Wrong action {}.'.format(action))
 
     def _registration(self):
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
         username = self.get_argument('username', None)
-        if (email is None) or (password is None) or (username is None):
-            self.redirect("/login?msg=Ошибка%20авторизации")
-            return
-        username = username[0:20]  # todo: Странная обрезка длины. Выяснить, устранить.
-        user_id = self._db_request(email=email, name=username)
-        if user_id is None:
-            user_db_uid = str(self.application.db.profiles.insert({
-                'name': username,
-                'auth': {
-                    'standard': {
-                        'email': email,
-                        'password': hashlib.md5(password.encode('utf-8')).hexdigest()
-                    }
-                }
-            }))
-            self.set_secure_cookie("user", user_db_uid)
-            self.redirect("/")
-        else:
-            self.redirect("/login?msg=Ошибка%20авторизации")
+        if (
+            not email
+            or not password
+            or len(email) > 100  # todo: Вынести лимиты в константы
+            or username and len(username) > 100
+            or email.count('@') != 1
+        ):
+            raise HTTPError(400, log_message='Wrong auth data.')
+
+        user = User.get_by_email(db=self.db, email=email)
+        if user:
+            return self.login_error_redirect(msg=u"Пользователь с таким email уже зарегистрирован.")
+        # todo: check username unical
+        user = User(name=username, auth_standard=dict(email=email, password=password), db=self.db)
+        result = user.save()
+        self.set_secure_cookie("user", str(user._id))
+        log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
+        return self.redirect("/")
 
     def _authorisation(self):
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
-        if (email is None) or (password is None):
-            self.redirect("/login?msg=Ошибка%20авторизации")
-            return
-        user_id = self._db_request(email=email, password=hashlib.md5(password).hexdigest())
-        if user_id is not None:
-            self.set_secure_cookie("user", str(user_id[u'_id']))
-            self.redirect("/")
-        else:
-            self.redirect("/login?msg=Ошибка%20авторизации")
+        if not email or not password:
+            raise HTTPError(400, log_message='Wrong auth data.')
+
+        user = User.get_by_email(db=self.db, email=email)
+        if not user:
+            return self.login_error_redirect(msg=u"Пользователь с таким email не найден.")
+
+        if not user.check_password(password):
+            return self.login_error_redirect(msg=u"Неверный email или пароль.")
+
+        self.set_secure_cookie("user", str(user._id))
+        return self.redirect("/")
 
 
 class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
@@ -100,6 +92,7 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
     def get(self):
         if self.get_argument('action', False):
             self.set_cookie("action", self.get_argument("action"))
+
         if self.get_argument('code', False):
             user = yield self.get_authenticated_user(
                 redirect_uri='http://localhost/login/google',

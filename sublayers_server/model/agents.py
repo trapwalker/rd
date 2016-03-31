@@ -21,9 +21,11 @@ from tornado.options import options
 
 # todo: make agent offline status possible
 class Agent(Object):
-    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.user.name!r}>'
 
-    def __init__(self, login, time, example, party=None, **kw):
+    # todo: Перенести аргумент user  в конструктор UserAgent
+    # todo: Делать сохранение неюзер-агентов в особую коллекцию без идентификации по профилю
+    def __init__(self, user, time, example, party=None, **kw):
         """
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
@@ -34,9 +36,8 @@ class Agent(Object):
         self.observers = CounterSet()
         self.api = None
         self.connection = None
-        self.login = login
-        # todo: normalize and check login
-        self.server.agents[login] = self
+        self.user = user
+        self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -143,7 +144,7 @@ class Agent(Object):
         return None
 
     def save(self, time):
-        self.example.login = self.login
+        self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
         if self.car:
             self.car.save(time)
             self.example.car = self.car.example
@@ -183,7 +184,7 @@ class Agent(Object):
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
         d.update(
-            login=self.login,
+            login=self.user.name,  # todo: Переименовать login
             party=self.party.as_dict() if self.party else None,
             balance=self.example.balance,
         )
@@ -360,7 +361,6 @@ class Agent(Object):
 
     def on_see(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
-        # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
             return
@@ -377,7 +377,6 @@ class Agent(Object):
 
     def on_out(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
-        # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_last = obj.subscribed_agents.dec(self) == 0
         if not is_last:
             return
@@ -450,11 +449,13 @@ class Agent(Object):
             time=time, is_init=is_init)
 
 
+# todo: Переименовать в UserAgent
 class User(Agent):
     # todo: realize
     pass
 
 
+# todo: Переиеновать в AIAgent
 class AI(Agent):
     # todo: realize in future
     pass

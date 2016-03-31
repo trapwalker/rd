@@ -16,6 +16,7 @@ class InitBarterEvent(Event):
 
     def on_perform(self):
         super(InitBarterEvent, self).on_perform()
+        assert False, '# todo: Get agent by user._id'
         recipient = self.server.agents.get(self.recipient_login, None)
 
         for barter in self.initiator.barters:

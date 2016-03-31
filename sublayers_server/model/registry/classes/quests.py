@@ -276,7 +276,7 @@ class Quest(Item):
         if npc is None:
             npc = getattr(self, 'npc', None)
 
-        return self.id, tuple([agent.login for agent in agents]), npc.id
+        return self.id, tuple([agent.user.name for agent in agents]), npc.id
 
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()
@@ -423,6 +423,6 @@ class QMortalCurse(Quest):
         def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
             State.on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init)
             if agent in self.quest.agents and contragent not in self.quest.agents and sale and not buy and cost == 0:
-                self.tramps.add(contragent.login)
+                self.tramps.add(contragent.user.name)
                 if len(self.tramps) >= self.magic_count:
                     self.quest.set_state(self.quest.Win, time=time)
