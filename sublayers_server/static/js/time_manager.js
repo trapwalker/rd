@@ -94,10 +94,11 @@ var TimeManager = (function () {
         this._timer = null;
         this._interval = ConstTimerInterval;
         this._timer_list = [];
+        this.is_started = false;
 
         // todo: очень спорный момент запуска при старте
-        this.timerStart();
-        this.autoFPSStart();
+        //this.timerStart();
+        //this.autoFPSStart();
 
         this.render_time = 0;
 
@@ -114,8 +115,9 @@ var TimeManager = (function () {
     TimeManager.prototype.timerStart = function () {
         //console.log('TimeManager.prototype.timerStart');
         var self = this;
-
-        setTimeout(function() { timeManager._timer = timeManager._interval_perform(); }, 1000);
+        if (this.is_started) return;
+        this.is_started = true;
+        setTimeout(function() { timeManager._timer = timeManager._interval_perform(); }, 10);
 
         //this._timer = setInterval(function () {
         //    self._interval_perform();
@@ -125,7 +127,8 @@ var TimeManager = (function () {
     // Остановка таймера
     TimeManager.prototype.timerStop = function () {
         //console.log('TimeManager.prototype.timerStop');
-
+        if (! this.is_started) return;
+        this.is_started = false;
         window.cancelAnimationFrame(this._timer);
          //clearInterval(this._timer);
     };

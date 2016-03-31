@@ -289,6 +289,7 @@ var ClientManager = (function () {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 chat.page_party.buttons.create.text('Отряд');
             }
+            timeManager.timerStart();
         }
     };
 
