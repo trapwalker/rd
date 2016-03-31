@@ -20,7 +20,6 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
             return
 
         user = User.get_by_id(self.db, user_id)
-        log.debug('AuthHandlerMixin.get_current_user({!r}): {}'.format(self, user))
         return user
 
 

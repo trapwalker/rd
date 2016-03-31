@@ -9,7 +9,7 @@ import tornado.websocket
 from sublayers_server.handlers.base import AuthHandlerMixin
 
 
-class AgentSocketHandler(tornado.websocket.WebSocketHandler, AuthHandlerMixin):  #, AuthHandlerMixin
+class AgentSocketHandler(tornado.websocket.WebSocketHandler, AuthHandlerMixin):
 
     def allow_draft76(self):
         # for iOS 5.0 Safari
