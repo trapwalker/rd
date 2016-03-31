@@ -175,7 +175,7 @@ class PartyMember(object):
 
     def as_dict(self):
         return dict(
-            agent_name=self.agent.login,
+            agent_name=self.agent.user.name,
             agent_uid=self.agent.uid,
             description=self.description,
             category=self.category,

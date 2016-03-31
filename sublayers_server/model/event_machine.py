@@ -39,6 +39,7 @@ class Server(object):
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
         self.message_queue = deque()
         self.agents = {}  # Agents dictionary
+        self.agents_by_name = {}  # Agents index by name
         """:type : dict[unicode, sublayers_server.model.event_machine.model.agents.Agent]"""
         # todo: Typehinting
         self.start_time = None
@@ -239,32 +240,3 @@ class LocalServer(Server):
     def reset_user(self, user=None):
         if user is None:
             pass
-
-
-def main():
-    pass
-    # log.info('==== Start logging ' + '=' * 50)
-    #
-    # from sublayers_server.model.units import Station, Bot
-    # from sublayers_server.model.agents import User
-    # from sublayers_server.model.vectors import Point
-    #
-    # def inspect(event=None):
-    #     events.Event(time=srv.get_time() + 1, callback_before=inspect).post()
-    #     if event:
-    #         log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
-    #
-    # srv = LocalServer()
-    # inspect()
-    # user = User(login='user1', server=srv)
-    # station = Station(server=srv, position=Point(0, 0))
-    # user.subscribe_to__Observer(station)
-    #
-    # bot = Bot(server=srv, position=Point(-600, -10))
-    # user.subscribe_to__Observer(bot)
-    #
-    # bot.set_motion(position=Point(800, 10))
-    #
-    # pp(srv.timeline, width=1)
-    #
-    # return locals()

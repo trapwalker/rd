@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from handlers.base import BaseHandler
+from sublayers_server.handlers.base import BaseHandler
 
 
 class SiteHandler(BaseHandler):

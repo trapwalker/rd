@@ -4,7 +4,7 @@
 </style>
 
 <div id="partyRecordDivForAgent{{ member.agent.uid }}" class="partyMemberRecord-main">
-    <span class="partyMemberRecord-name">Игрок: {{ member.agent.login }}</span>
+    <span class="partyMemberRecord-name">Игрок: {{ member.agent.user.name }}</span>
     <span class=".partyMemberRecord-desr">Звание: {{ member.description }}</span>
     <span class=".partyMemberRecord-desr">Полномочия: {{ member.category }}</span>
 
@@ -30,15 +30,15 @@
 
     if (btn_up)
         btn_up.click(function (event) {
-            clientManager.sendSetPartyCategory('{{ member.agent.login }}', 1);
+            clientManager.sendSetPartyCategory('{{ member.agent.user.name }}', 1);
         });
     if (btn_down)
         btn_down.click(function (event) {
-            clientManager.sendSetPartyCategory('{{ member.agent.login }}', 2);
+            clientManager.sendSetPartyCategory('{{ member.agent.user.name }}', 2);
         });
     if (btn_kick)
         btn_kick.click(function (event) {
-            clientManager.sendKickPartyFromTemplate('{{ member.agent.login }}');
+            clientManager.sendKickPartyFromTemplate('{{ member.agent.user.name }}');
         });
 
 </script>

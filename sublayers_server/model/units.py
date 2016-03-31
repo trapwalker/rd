@@ -521,7 +521,7 @@ class ExtraMobile(Mobile):
 
     def as_dict(self, time):
         d = super(ExtraMobile, self).as_dict(time=time)
-        login = None if self.main_unit is None else self.main_agent.login
+        login = None if self.main_unit is None else self.main_agent.user.name
         d.update(
             main_agent_login=login,
         )

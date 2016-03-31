@@ -4,8 +4,8 @@
 </style>
 
 <div class="partyInviteRecord-main">
-    <span class="partyInviteRecord-infoSender">Отправитель: {{ party_invite.sender.login }}</span>
-    <span class="partyInviteRecord-infoRecipient">Получатель: {{ party_invite.recipient.login }}</span>
+    <span class="partyInviteRecord-infoSender">Отправитель: {{ party_invite.sender.user.name }}</span>
+    <span class="partyInviteRecord-infoRecipient">Получатель: {{ party_invite.recipient.user.name }}</span>
     {% if party_invite.can_delete_by_agent(agent) %}
         <div class="partyInviteRecord-Btn sublayers-clickable"
              onclick="clientManager.sendPartyDeleteInvite({{ party_invite.id }})">Отменить</div>

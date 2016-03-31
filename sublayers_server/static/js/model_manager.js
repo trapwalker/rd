@@ -289,6 +289,7 @@ var ClientManager = (function () {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 chat.page_party.buttons.create.text('Отряд');
             }
+            timeManager.timerStart();
         }
     };
 
@@ -617,7 +618,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
-        //console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+        console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
         // изменить настройки своей пати для своего клиента
         if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
         user.party = new OwnerParty(event.party.id, event.party.name);

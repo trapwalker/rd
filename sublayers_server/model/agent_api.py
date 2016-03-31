@@ -145,14 +145,15 @@ class AgentConsoleNamespace(Namespace):
         self.write('Server saved.')
 
     def reset(self, *names):
-        names = names or [self.agent.login]
-        agents = self.agent.server.agents
-        if '*' not in names:
-            agents = filter(None, (agents.get(username) for username in names))
+        names = names or [self.agent.user.name]
+        if '*' in names:
+            names = agents_by_name.keys()
 
-        for agent_to_reset in agents:
-            self.api.send_kick(username=agent_to_reset.login)
-            agent_to_reset.example.reset()
+        for name_to_reset in names:
+            agent = agents_by_name.get(name_to_reset, None)
+            if agent:
+                self.api.send_kick(username=name_to_reset)
+                agent.example.reset()
 
     def quest(self, *args):
         if not args:
@@ -206,7 +207,7 @@ class SetPartyEvent(Event):
 
     def on_perform(self):
         super(SetPartyEvent, self).on_perform()
-        log.info('%r try to set or create party %s', self.agent.login, self.name)
+        log.info('%r try to set or create party %r', self.agent.user.name, self.name)
         if self.name is None:
             if self.agent.party:
                 self.agent.party.exclude(self.agent, time=self.time)
@@ -229,8 +230,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%r invite %s to party %r', self.agent.login, username, self.agent.party)
-        user = self.agent.server.agents.get(self.username)
+        user = self.agent.server.agents_by_name.get(self.username)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
             return
@@ -260,13 +260,13 @@ class SendKickEvent(Event):
     def on_perform(self):
         super(SendKickEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%r invite %s to party %r', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             # todo: assert', warning'и -- ок. Зачем сообщения клиенту?
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
-        user = self.agent.server.agents.get(self.username)
+
+        user = self.agent.server.agents_by_name.get(self.username)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
             return
@@ -283,7 +283,6 @@ class SendSetCategoryEvent(Event):
     def on_perform(self):
         super(SendSetCategoryEvent, self).on_perform()
         # todo: проблемы с русским языком
-        # log.info('%r invite %r to party %s', self.agent.login, username, self.agent.party)
         party = self.agent.party
         if party is None:
             # todo: Зачем все эти сообщения клиенту?!
@@ -292,7 +291,8 @@ class SendSetCategoryEvent(Event):
         if party.owner is not self.agent:
             messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
             return
-        user = self.agent.server.agents.get(self.username)
+
+        user = self.agent.server.agents_by_name.get(self.username)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
@@ -518,7 +518,7 @@ class AgentAPI(API):
 
     @public_method
     def console_cmd(self, cmd):
-        log.debug('Agent %r cmd: %r', self.agent.login, cmd)
+        log.debug('Agent %r cmd: %r', self.agent.user.name, cmd)
         self.console.on_cmd(cmd.lstrip('/'))
 
     @public_method

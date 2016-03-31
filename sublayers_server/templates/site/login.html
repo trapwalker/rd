@@ -18,17 +18,17 @@
                             <input type="email" name="email" placeholder="Email" required/>
                             <input type="password" name="password" placeholder="Password" required/>
                             <input type="text" name="username" placeholder="Имя пользователя" required/>
-                            <input type="hidden" name="action" value="1">
+                            <input type="hidden" name="action" value="reg">
                             <input type="submit" value="Зарегистрироваться"/>
                             {% raw xsrf_form_html() %}
                         </form>
                         <p>Войти через:
                             <button type="button" class="btn btn-primary btn-lg "
-                                    onClick="window.location.href='/login/google?action=1'">G+</button>
+                                    onClick="window.location.href='/login/google?action=reg'">G+</button>
                             <button type="button" class="btn btn-primary btn-lg "
-                                    onClick="window.location.href='/login/ok?action=1'">OK</button>
+                                    onClick="window.location.href='/login/ok?action=reg'">OK</button>
                             <button type="button" class="btn btn-primary btn-lg "
-                                    onClick="window.location.href='/login/vk?action=1'">VK</button>
+                                    onClick="window.location.href='/login/vk?action=reg'">VK</button>
                         </p>
                         <a href="#" class="flipper">Войти.</a>
                     </fieldset>
@@ -39,17 +39,17 @@
                         <form action="/login/standard" method="post">
                             <input type="email" name="email" placeholder="Email" required/>
                             <input type="password" name="password" placeholder="Password" required/>
-                            <input type="hidden" name="action" value="2">
+                            <input type="hidden" name="action" value="auth">
                             <input type="submit" value="Войти"/>
                             {% raw xsrf_form_html() %}
                         </form>
                         <p>Войти через:
                             <button type="button" class="btn btn-primary btn-lg "
-                                    onClick="window.location.href='/login/google?action=2'">G+</button>
+                                    onClick="window.location.href='/login/google?action=auth'">G+</button>
                             <button type="button" class="btn btn-primary btn-lg "
-                                    onClick="window.location.href='/login/ok?action=2'">OK</button>
+                                    onClick="window.location.href='/login/ok?action=auth'">OK</button>
                             <button type="button" class="btn btn-primary btn-lg "
-                                    onClick="window.location.href='/login/vk?action=2'">VK</button>
+                                    onClick="window.location.href='/login/vk?action=auth'">VK</button>
                         </p>
                         <p><a href="#" class="flipper">Регистрация.</a></p>
                     </fieldset>
