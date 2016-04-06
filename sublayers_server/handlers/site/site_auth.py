@@ -60,13 +60,16 @@ class StandardLoginHandler(BaseLoginHandler):
         ):
             raise HTTPError(400, log_message='Wrong auth data.')
 
-        user = User.get_by_email(db=self.db, email=email)
-        if user:
+        if User.get_by_email(db=self.db, email=email):
             return self.login_error_redirect(msg=u"Пользователь с таким email уже зарегистрирован.")
+
+        if User.get_by_name(db=self.db, name=username):
+            return self.login_error_redirect(msg=u"Пользователь с таким именем уже зарегистрирован.")
+
         # todo: check username unical
         user = User(name=username, auth_standard=dict(email=email, password=password), db=self.db)
         result = user.save()
-        self.set_secure_cookie("user", str(user._id))
+        self.set_secure_cookie("user", str(user.id))
         log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         return self.redirect("/")
 
@@ -83,7 +86,7 @@ class StandardLoginHandler(BaseLoginHandler):
         if not user.check_password(password):
             return self.login_error_redirect(msg=u"Неверный email или пароль.")
 
-        self.set_secure_cookie("user", str(user._id))
+        self.set_secure_cookie("user", str(user.id))
         return self.redirect("/")
 
 

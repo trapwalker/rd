@@ -30,6 +30,10 @@ class User(object):
         if auth_standard:
             self.set_auth_data('standard', auth_standard)
 
+    @property
+    def id(self):
+        return self._id
+
     def set_auth_data(self, kind, data):
         if kind == 'standard':
             data['password'] = hash_pass(data['password'])
@@ -138,7 +142,8 @@ if __name__ == '__main__':
     
     db = pymongo.MongoClient('mongodb://localhost/rd').rd
     c = db.rofiles
-    for u in User.find(db):
+    fltr = None
+    fltr = {'$or': [{'name': 'svp21'}, {'auth.standard.email': 'svp@intbel.ru1'}]}
+    print bool(User.find(db, filter=fltr))
+    for u in User.find(db, filter=fltr):
         print repr(u)
-    
-
