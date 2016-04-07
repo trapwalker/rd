@@ -1,3 +1,57 @@
+<!-- Этот шаблон нужен для того, чтобы, когда мы захотим, отображать внешний вид машинки на любом сайте оно вдруг заработало
+ здесь прописан минимальный набор css, который необходим, чтобы вёрстка слотов не поплыла относительно друг друга
+
+ Сейчас данный шаблон не используется !
+ -->
+
+<style>
+    .car-info-block-picture-main {
+        position: relative;
+        width: 492px;
+        height: 170px;
+    }
+
+    .car-info-block-picture {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    .armorer-slot {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+    }
+        
+    .armorer_top_F, .armorer_top_B {
+        position: absolute;
+        pointer-events: none;
+        top: -32px;
+        left: -82px;
+    }
+
+    .armorer_top_L, .armorer_top_R {
+        position: absolute;
+        pointer-events: none;
+        top: -82px;
+        left: -32px;
+    }
+
+    .armorer_side_F, .armorer_side_B {
+        position: absolute;
+        pointer-events: none;
+        top: -65px;
+        left: -82px;
+    }
+
+    .armorer_side_L, .armorer_side_R {
+        position: absolute;
+        pointer-events: none;
+        top: -65px;
+        left: -32px;
+    }
+</style>
+
 <div class="car-info-block-picture-main">
     {% import tornado as tornado %}
     {% raw tornado.template.Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True) %}

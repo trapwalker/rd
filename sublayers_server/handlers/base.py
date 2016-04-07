@@ -8,6 +8,14 @@ from sublayers_server.user_profile import User
 import tornado.web
 
 
+def static_world_link_repr(link):
+    search_str = 'static/'
+    a = link.find(search_str)
+    if a >= 0:
+        return link[len(search_str): len(link)]
+    return link
+
+
 class AuthHandlerMixin(tornado.web.RequestHandler):
     @property
     def db(self):
@@ -28,5 +36,8 @@ class BaseHandler(AuthHandlerMixin):
         namespace = super(BaseHandler, self).get_template_namespace()
         namespace.update(
             revision=self.application.revision,
+            static_world_link_repr=static_world_link_repr,
         )
         return namespace
+
+
