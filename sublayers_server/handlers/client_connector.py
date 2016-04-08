@@ -6,10 +6,10 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 
-from sublayers_server.handlers.base import AuthHandlerMixin
+from sublayers_server.handlers.base import BaseHandler
 
 
-class AgentSocketHandler(tornado.websocket.WebSocketHandler, AuthHandlerMixin):
+class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def allow_draft76(self):
         # for iOS 5.0 Safari

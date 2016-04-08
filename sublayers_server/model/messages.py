@@ -812,8 +812,16 @@ class RPGStateMessage(Message):
 class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
-        template_table = tornado.template.Loader("templates/location").load("car_info_table.html")
-        template_img = tornado.template.Loader("templates/location").load("car_info_img_ext.html")
+
+        template_table = tornado.template.Loader(
+            "templates/location",
+            namespace=self.agent.connection.get_template_namespace()
+        ).load("car_info_table.html")
+
+        template_img = tornado.template.Loader(
+            "templates/location",
+            namespace=self.agent.connection.get_template_namespace()
+        ).load("car_info_img_ext.html")
 
         d.update(cars=[dict(
             car_info=dict(
