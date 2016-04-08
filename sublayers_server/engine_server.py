@@ -50,7 +50,7 @@ from sublayers_server.handlers.statistics import (ServerStatisticsHandler, Serve
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
-from sublayers_server.handlers.site_api import APIGetCarInfoHandler
+from sublayers_server.handlers.site_api import APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2
 
 from pymongo import MongoClient
 
@@ -113,7 +113,10 @@ class Application(tornado.web.Application):
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
             (r"/api/context_panel/barter_info", ContextPanelBarterInfoHandler),
 
+            # Site API
             (r"/api/get_car_info", APIGetCarInfoHandler),
+            (r"/api/get_user_info", APIGetUserInfoHandler),
+            (r"/api/get_user_info2", APIGetUserInfoHandler2),
 
             (r"/interlacing", TestInterlacingHandler)
         ]
