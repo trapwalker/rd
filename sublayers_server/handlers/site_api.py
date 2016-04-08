@@ -3,8 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado.web
-from tornado.options import options
+import tornado
+import tornado.template
 
 from sublayers_server.user_profile import User
 
@@ -46,3 +46,68 @@ class APIGetCarInfoHandler2(BaseHandler):
             self.send_error(404)
             return
         self.render('location/car_info_img_ext_for_clear_web.html', car=ex_car)
+
+
+class APIGetUserInfoHandler(BaseHandler):
+    u'''Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой'''
+    def get(self):
+        username = self.get_argument('username', None)
+        user = User.get_by_name(self.db, username)
+
+        if not user:
+            self.send_error(404)
+            return
+        user_info = dict(name=username)
+        html_car_img = None
+        name_car = None
+        html_agent = None
+
+        agent = self.application.srv.api.get_agent(user)
+        if agent:
+            user_info['driving'] = agent.example.driving
+            user_info['shooting'] = agent.example.shooting
+            user_info['masking'] = agent.example.masking
+            user_info['engineering'] = agent.example.engineering
+            user_info['trading'] = agent.example.trading
+            user_info['leading'] = agent.example.leading
+            user_info['about_self'] = agent.example.about_self  # Досье
+            # todo: сделать пересылку правильных параметров
+            user_info['lvl'] = '5'
+            user_info['class'] = u'Избранный'
+            user_info['karma'] = '138'
+
+            template_agent_info = tornado.template.Loader(
+                    "templates/person",
+                    namespace=self.get_template_namespace()
+            ).load("person_site_info.html")
+            html_agent = template_agent_info.generate(agent=agent, with_css=False)
+
+            ex_car = agent.example.car
+            if ex_car:
+                template_img = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.get_template_namespace()
+                ).load("car_info_img_ext.html")
+                html_car_img = template_img.generate(car=ex_car)
+                name_car = ex_car.name_car
+
+        self.finish(dict(
+            user_info=user_info,
+            html_car_img=html_car_img,
+            name_car=name_car,
+            html_agent=html_agent
+        ))
+
+class APIGetUserInfoHandler2(BaseHandler):
+    def get(self):
+        username = self.get_argument('username', None)
+        user = User.get_by_name(self.db, username)
+        if not user:
+            self.send_error(404)
+            return
+        agent = self.application.srv.api.get_agent(user)
+        if not agent:
+            self.send_error(404)
+            return
+        self.render('person/person_site_info.html', agent=agent, with_css=False)
+
