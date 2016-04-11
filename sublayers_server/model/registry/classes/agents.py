@@ -17,6 +17,7 @@ import random
 class Agent(Root):
     login = TextAttribute(caption=u'Уникальное имя пользователя')
     about_self = TextAttribute(default=u'', caption=u'Уникальное имя пользователя')
+    avatar_170_146 = TextAttribute(default=u'', caption=u'Ссылка на аватар разрешения 170x146 px')
 
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
     car_list = InventoryAttribute(caption=u"Список всех машин, кроме активной")
