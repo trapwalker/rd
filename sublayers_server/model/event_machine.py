@@ -14,6 +14,7 @@ from sublayers_server.model.events import LoadWorldEvent
 from sublayers_server.model.registry.storage import Registry, Collection
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
+from sublayers_server.model.vectors import Point
 
 import os
 import sys
@@ -51,8 +52,10 @@ class Server(object):
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
 
-        # todo: fix it
+        # todo: QuickGame settings fix it
         self.quick_game_cars_examples = []
+        self.quick_game_cars_proto = []
+        self.quick_game_start_pos = Point(12512034.49999, 27170315.5)
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -105,10 +108,11 @@ class Server(object):
             GasStation(time=event.time, server=self, example=gs_exm)
 
         # Создание экземпляров машинок для быстрой игры
-        car_proto_list = []
-        car_proto_list.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
-        car_proto_list.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
-        for car_proto in car_proto_list:
+        self.quick_game_cars_proto = []
+        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
+        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
+        for car_proto in self.quick_game_cars_proto:
+            # todo: Здесь не должны инстанцироваться машинки
             car_example = car_proto.instantiate()
             # car_example.position = None
             # car_example.last_location = None

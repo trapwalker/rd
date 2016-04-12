@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.agents import User
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
+from sublayers_server.model.vectors import Point
 
 
 class ServerAPI(API):
@@ -30,7 +31,11 @@ class ServerAPI(API):
                     log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
                     print user.name, user.car_index
                     # Создание "быстрой" машинки... записать в agent_exemplar
-                    # todo: Не забыть быстрой машинке установить позицию
+                    if user.car_index < 0 or user.car_index >= len(self.server.quick_game_cars_proto):
+                        log.warning('Unknown QuickGame car index %s', user.car_index)
+                        user.car_index = 0
+                    agent_exemplar.car = self.server.quick_game_cars_proto[user.car_index].instantiate()
+                    agent_exemplar.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
                     # todo: Не забыть на быструю машинку повесить пулемёты !
 
             log.debug('Use agent exemplar: %r', agent_exemplar)
