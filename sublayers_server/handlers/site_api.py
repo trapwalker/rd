@@ -115,3 +115,15 @@ class APIGetUserInfoHandler2(BaseHandler):
             return
         self.render('person/person_site_info.html', agent_example=agent.example, with_css=True)
 
+
+class APIGetQuickGameCarsHandler(BaseHandler):
+    def get(self):
+        car_examples = self.application.srv.quick_game_cars_examples
+        self.render('site/quick_game_cars.html', car_examples=car_examples, with_css=True)
+
+
+class APIGetQuickGameCarsHandler2(BaseHandler):
+    def get(self):
+        car_examples = self.application.srv.quick_game_cars_examples
+        self.render('site/quick_game_cars.html', car_examples=car_examples, with_css=True)
+

@@ -51,6 +51,9 @@ class Server(object):
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
 
+        # todo: fix it
+        self.quick_game_cars_examples = []
+
     def __getstate__(self):
         d = self.__dict__.copy()
         del d['reg_agents']
@@ -100,6 +103,17 @@ class Server(object):
         gs_root = self.reg['/poi/locations/gas_stations']
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
+
+        # Создание экземпляров машинок для быстрой игры
+        car_proto_list = []
+        car_proto_list.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
+        car_proto_list.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
+        for car_proto in car_proto_list:
+            car_example = car_proto.instantiate()
+            # car_example.position = None
+            # car_example.last_location = None
+            self.quick_game_cars_examples.append(car_example)
+
 
     def post_message(self, message):
         """

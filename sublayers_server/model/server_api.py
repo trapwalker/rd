@@ -26,6 +26,13 @@ class ServerAPI(API):
                 agent_exemplar = self.server.reg['/agents/user'].instantiate(
                     storage=self.server.reg_agents, name=str(user._id), login=user.name,
                 )
+                if user.get('type', '') == 'quick_user':
+                    log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
+                    print user.name, user.car_index
+                    # Создание "быстрой" машинки... записать в agent_exemplar
+                    # todo: Не забыть быстрой машинке установить позицию
+                    # todo: Не забыть на быструю машинку повесить пулемёты !
+
             log.debug('Use agent exemplar: %r', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
