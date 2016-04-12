@@ -1,5 +1,5 @@
 virtualenv
-tornado==3.2
+tornado
 debug
 pymongo
 jsonpickle
@@ -7,3 +7,4 @@ jsonpickle
 cachetools
 PyYAML
 cmd2
+motorengine
