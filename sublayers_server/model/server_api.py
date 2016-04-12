@@ -36,6 +36,7 @@ class ServerAPI(API):
                         user.car_index = 0
                     agent_exemplar.car = self.server.quick_game_cars_proto[user.car_index].instantiate()
                     agent_exemplar.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
+                    agent_exemplar.current_location = None
                     # todo: Не забыть на быструю машинку повесить пулемёты !
 
             log.debug('Use agent exemplar: %r', agent_exemplar)
