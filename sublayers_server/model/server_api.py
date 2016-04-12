@@ -26,7 +26,7 @@ class ServerAPI(API):
                 agent_exemplar = self.server.reg['/agents/user'].instantiate(
                     storage=self.server.reg_agents, name=str(user._id), login=user.name,
                 )
-                if user.get('type', '') == 'quick_user':
+                if getattr(user, 'type', '') == 'quick_user':
                     log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
                     print user.name, user.car_index
                     # Создание "быстрой" машинки... записать в agent_exemplar
