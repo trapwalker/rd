@@ -29,8 +29,7 @@ class ServerAPI(API):
                 )
                 if getattr(user, 'type', '') == 'quick_user':
                     log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
-                    print user.name, user.car_index
-                    # Создание "быстрой" машинки... записать в agent_exemplar
+                    # Создание "быстрой" машинки
                     if user.car_index < 0 or user.car_index >= len(self.server.quick_game_cars_proto):
                         log.warning('Unknown QuickGame car index %s', user.car_index)
                         user.car_index = 0

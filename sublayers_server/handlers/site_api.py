@@ -119,7 +119,17 @@ class APIGetUserInfoHandler2(BaseHandler):
 class APIGetQuickGameCarsHandler(BaseHandler):
     def get(self):
         car_examples = self.application.srv.quick_game_cars_examples
-        self.render('site/quick_game_cars.html', car_examples=car_examples, with_css=True)
+        car_templates_list = []
+
+        template_car = tornado.template.Loader(
+            "templates/location",
+            namespace=self.get_template_namespace()
+        ).load("car_info_img_ext.html")
+
+        for car_ex in car_examples:
+            html_car_img = template_car.generate(car=car_ex)
+            car_templates_list.append(html_car_img)
+        self.finish({'quick_cars': car_templates_list})
 
 
 class APIGetQuickGameCarsHandler2(BaseHandler):
