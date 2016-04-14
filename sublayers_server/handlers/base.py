@@ -10,10 +10,8 @@ import tornado.web
 
 def static_world_link_repr(link):
     search_str = 'static/'
-    a = link.find(search_str)
-    if a >= 0:
-        return link[len(search_str): len(link)]
-    return link
+    assert link.startswith(search_str)
+    return link[len(search_str):]
 
 
 class AuthHandlerMixin(tornado.web.RequestHandler):
