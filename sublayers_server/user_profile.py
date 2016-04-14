@@ -65,28 +65,16 @@ class User(Document):
             return self.auth.standard.email
 
     @classmethod
-    def find(cls, db, filter=None, **kw):
-        for doc in db[cls.collection_name].find(filter, **kw):
-            yield User(db=db, **doc)
+    @tornado.gen.coroutine
+    def get_by_name(cls, name):
+        users = yield cls.objects.filter({'name': name})
+        raise tornado.gen.Return(users and users[0] or None)
 
     @classmethod
-    def find_one(cls, db, filter, **kw):
-        doc = db[cls.collection_name].find_one(filter=filter, **kw)
-        return doc and User(db=db, **doc)
-
-    @classmethod
-    def get_by_id(cls, db, id):
-        if isinstance(id, basestring):
-            id = ObjectId(id)
-        return cls.find_one(db=db, filter={'_id': id})
-
-    @classmethod
-    def get_by_name(cls, db, name):
-        return cls.find_one(db=db, filter={'name': name})
-
-    @classmethod
-    def get_by_email(cls, db, email):
-        return cls.find_one(db=db, filter={'auth.standard.email': email})
+    @tornado.gen.coroutine
+    def get_by_email(cls, email):
+        users = yield cls.objects.filter({'auth.standard.email': email})
+        raise tornado.gen.Return(users and users[0] or None)
 
     def as_document(self):
         d = self.__dict__.copy()

@@ -173,7 +173,7 @@ class Collection(AbstractStorage):
 
     def get_local(self, path):
         key = self.make_key(path)
-        rec = self.dataset.find_one({'name': key})
+        rec = self.dataset.find_one({'name': key})  # todo: migrate to async ODM
         if rec is None:
             raise ObjectNotFound('Object not found by key={!r}'.format(key))
 
