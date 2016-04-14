@@ -45,17 +45,22 @@ from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
-from sublayers_server.handlers.site.site_auth import SiteLoginHandler, LogoutHandler, GoogleLoginHandler, \
-    StandardLoginHandler, OKLoginHandler, VKLoginHandler
-from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
-    ContextPanelLocationsHandler
-from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatisticsRefreshHandler,
-                                                  ServerStatForSite)
+from sublayers_server.handlers.site.site_auth import (
+    SiteLoginHandler, LogoutHandler, StandardLoginHandler,
+    # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
+)
+from sublayers_server.handlers.context_panel import (
+    ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, ContextPanelLocationsHandler,
+)
+from sublayers_server.handlers.statistics import (
+    ServerStatisticsHandler, ServerStatisticsRefreshHandler, ServerStatForSite,
+)
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
-from sublayers_server.handlers.site_api import (APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2,
-                                                APIGetQuickGameCarsHandler)
+from sublayers_server.handlers.site_api import (
+    APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
+)
 
 
 class DBError(Exception):
@@ -101,9 +106,9 @@ class Application(tornado.web.Application):
             (r"/login", SiteLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/login/standard", StandardLoginHandler),
-            (r"/login/google", GoogleLoginHandler),
-            (r"/login/ok", OKLoginHandler),
-            (r"/login/vk", VKLoginHandler),
+            # (r"/login/google", GoogleLoginHandler),  # todo: social auth
+            # (r"/login/ok", OKLoginHandler),
+            # (r"/login/vk", VKLoginHandler),
 
             (r"/stat", ServerStatisticsHandler),
             (r"/site_stat", ServerStatForSite),

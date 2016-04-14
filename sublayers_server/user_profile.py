@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 import hashlib
 import random
 import re
+import tornado.gen
 from motorengine import Document, StringField, EmbeddedDocumentField, EmailField
 
 
