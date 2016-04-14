@@ -12,6 +12,7 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
+import logging
 import logging.config
 
 logging.config.fileConfig("logging.conf")
@@ -24,6 +25,9 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
+from urlparse import urlparse
+from pymongo import MongoClient
+from motorengine import connect as db_connect
 
 from sublayers_server import settings
 from sublayers_server import service_tools
@@ -53,8 +57,6 @@ from sublayers_server.model.event_machine import LocalServer
 from sublayers_server.handlers.site_api import (APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2,
                                                 APIGetQuickGameCarsHandler)
 
-from pymongo import MongoClient
-
 
 class DBError(Exception):
     pass
@@ -68,7 +70,14 @@ class Application(tornado.web.Application):
             self.revision = None
             log.warning("Can't get HG revision info: %s", e)
 
-        self.db = MongoClient(options.db)[options.db_name]
+        dsn = urlparse(options.db)
+        self.dba = db_connect(
+            db=dsn.path.lstrip('/'),
+            host=dsn.hostname,
+            port=dsn.port,
+            io_loop=tornado.ioloop.IOLoop.instance(),
+        )
+        self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 
         log.info('\n' + '=-' * 70)
         log.info('GAME ENGINE SERVICE STARTING %s\n' + '--' * 70, self.revision)

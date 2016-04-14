@@ -1,10 +1,12 @@
 virtualenv
 tornado
 debug
-pymongo
 jsonpickle
 #PIL
+#bson
 cachetools
 PyYAML
 cmd2
+motor
 motorengine
+pymongo

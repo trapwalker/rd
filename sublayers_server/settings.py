@@ -48,4 +48,3 @@ define("world_path", default='./world', help="Path to world data", type=str)
 
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)
-define("db_name", default='rd', help='Database name ("rd" by default)', type=str)

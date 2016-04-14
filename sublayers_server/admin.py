@@ -91,7 +91,8 @@ class AdmCmd(cmd2.Cmd):
 
 def main():
     with MongoClient(options.db) as mdb:
-        db = mdb[options.db_name]
+        dsn = urlparse(options.db)
+        db = mdb[dsn.path.lstrip('/')]
         cmd = AdmCmd(db=db)
         cmd.prompt = '--> '
         cmd.cmdloop()

@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_server.user_profile import User
 
 import tornado.web
+import tornado.gen
+from bson.objectid import ObjectId, InvalidId
 
 
 def static_world_link_repr(link):
@@ -17,18 +19,17 @@ def static_world_link_repr(link):
 
 
 class AuthHandlerMixin(tornado.web.RequestHandler):
-    @property
-    def db(self):
-        return self.application.db
-
-    def get_current_user(self):
-        '''Use `current_user` property in handlers'''
+    @tornado.gen.coroutine
+    def prepare(self):
+        user = None
         user_id = self.get_secure_cookie("user")
-        if not user_id:
-            return
+        if user_id:
+            try:
+                user = yield User.objects.get(ObjectId(user_id))
+            except InvalidId as e:
+                log.warning('User resolve error: %r', e)
 
-        user = User.get_by_id(self.db, user_id)
-        return user
+        self.current_user = user
 
 
 class BaseHandler(AuthHandlerMixin):
