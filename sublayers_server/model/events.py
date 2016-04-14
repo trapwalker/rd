@@ -347,7 +347,7 @@ class ExitFromMapLocation(Event):
         if obj:
             obj.on_exit(agent=self.agent, time=self.time)
         else:
-            log.warning('agent %s try to exit from location %s, but location not find', self.agent, obj)
+            log.warning('agent %s try to exit from location %s, but location is not found', self.agent, obj)
 
 
 class EnterToNPCEvent(Event):
