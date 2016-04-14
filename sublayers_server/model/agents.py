@@ -463,7 +463,6 @@ class QuickUser(User):
         self.time_quick_game_start = None
 
     def _quick_profile_save(self, time):
-        print '_quick_profile_save !!!!!'
         self.user.time_quick_game = time - self.time_quick_game_start
         self.user.car_die = True
         self.user.save()

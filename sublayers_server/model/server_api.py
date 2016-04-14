@@ -65,6 +65,8 @@ class ServerAPI(API):
                 time=self.server.get_time(),
                 example=agent_exemplar,
             )
+        else:
+            agent.user = user  # Обновить юзера
 
         log.info('QuickGameUser INFO: %s    [car_index=%s, car_die=%s, car=%s]', user.name, user.car_index, user.car_die, agent.example.car)
 
