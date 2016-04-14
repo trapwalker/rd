@@ -94,6 +94,25 @@ class Die(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
 
+class QuickGameDie(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, obj, **kw):
+        """
+        @param sublayers_server.model.agents.Agent author: Sender of message
+        @param unicode text: message text
+        """
+        super(QuickGameDie, self).__init__(**kw)
+        self.obj = obj
+
+    def as_dict(self):
+        d = super(QuickGameDie, self).as_dict()
+        d.update(
+            object=self.obj.as_dict(time=self.time),
+        )
+        return d
+
+
 class Chat(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text">'
 

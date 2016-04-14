@@ -10,6 +10,13 @@ from sublayers_server.handlers.base import BaseHandler
 
 
 class PlayHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self):
-        self.render("play.html", ws_port=options.ws_port, map_link=options.map_link)
+        user = self.current_user
+        if user:
+            log.info(user.car_die)
+            if user.is_quick_user and user.car_die:
+                self.redirect('/#quick')
+            else:
+                self.render("play.html", ws_port=options.ws_port, map_link=options.map_link)
+        else:
+            self.redirect(self.get_login_url())

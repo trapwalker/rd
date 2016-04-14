@@ -23,12 +23,19 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
     def open(self):
         # todo: make agent_init event
         self.agent = None
-        assert self.current_user
-        log.info('!!! Open User connection: %s', self.current_user)
+        user = self.current_user
+        assert user
+        log.info('!!! Open User connection: %s%s', self.current_user, user.quick)
         self.application.clients.append(self)
         # log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
-        agent = srv.api.get_agent(self.current_user, make=True, do_disconnect=True)  # todo: Change to make=False
+
+        agent = None
+        if user.is_quick_user:
+            agent = srv.api.get_agent_quick_game(user, do_disconnect=True)  # todo: Change to make=False
+        else:
+            agent = srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit
             return

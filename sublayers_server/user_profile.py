@@ -11,7 +11,7 @@ import re
 
 class User(object):
     collection_name = 'profiles'
-    def __init__(self, name=None, auth=None, _id=None, db=None, auth_standard=None, **kw):
+    def __init__(self, name=None, auth=None, _id=None, db=None, auth_standard=None, quick=False, car_die=False, **kw):
         """
         User docu,emt structure
         {
@@ -26,6 +26,13 @@ class User(object):
         self.name = name
         self.auth = auth or {}
         self.db = db
+
+        # Параметры для быстрого юзера
+        self.quick = quick
+        self.car_index = None
+        self.quick_game_time = None
+        self.car_die = car_die
+
         self.__dict__.update(kw)
         if auth_standard:
             self.set_auth_data('standard', auth_standard)
@@ -33,6 +40,10 @@ class User(object):
     @property
     def id(self):
         return self._id
+
+    @property
+    def is_quick_user(self):
+        return self.quick
 
     def set_auth_data(self, kind, data):
         if kind == 'standard':
