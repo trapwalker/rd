@@ -8,7 +8,7 @@ import hashlib
 import random
 import re
 import tornado.gen
-from motorengine import Document, StringField, EmbeddedDocumentField, EmailField
+from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField
 
 
 class User(Document):
@@ -41,6 +41,11 @@ class User(Document):
     name = StringField(max_length=64)
     auth = EmbeddedDocumentField(AuthData, default=AuthData)
 
+    quick = BooleanField(default=False)
+    car_index = IntField(default=None)
+    quick_game_time = IntField(default=None)
+    car_die = BooleanField(default=None)
+
     def __init__(self, raw_password=None, email=None, **kw):
         super(User, self).__init__(**kw)
         if raw_password:
@@ -48,6 +53,11 @@ class User(Document):
 
         if email:
             self.auth.standard.email = email
+
+    @property
+    def is_quick_user(self):
+        # todo: ##refactoring Убрать это свойство
+        return self.quick
 
     @property
     def id(self):

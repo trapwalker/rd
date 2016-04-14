@@ -12,7 +12,7 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out,
-                                             SetObserverForClient)
+                                             SetObserverForClient, Die, QuickGameDie)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 
@@ -431,10 +431,11 @@ class Agent(Object):
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_exit_npc(%s)', self, npc)
 
-    def on_die(self):
+    def on_die(self, object, time):
         # todo: csll it ##quest
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_die()', self)
+        Die(agent=self, time=time).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -454,6 +455,33 @@ class Agent(Object):
 class User(Agent):
     # todo: realize
     pass
+
+
+class QuickUser(User):
+    def __init__(self, **kw):
+        super(QuickUser, self).__init__(**kw)
+        self.time_quick_game_start = None
+
+    def _quick_profile_save(self, time):
+        self.user.time_quick_game = time - self.time_quick_game_start
+        self.user.car_die = True
+        self.user.save()
+
+    def append_car(self, time, **kw):
+        super(QuickUser, self).append_car(time=time, **kw)
+        # Запомнить время старта
+        self.time_quick_game_start = self.server.get_time()
+        self.user.car_index = None
+        self.user.save()
+
+    def drop_car(self, car, time, **kw):
+        if car is self.car:
+            # Если удаляется своя машинка, то сохранить профиль
+            self._quick_profile_save(time=time)
+        super(QuickUser, self).drop_car(car=car, time=time, **kw)
+
+    def on_die(self, object, time):
+        QuickGameDie(agent=self, obj=object, time=time).post()
 
 
 # todo: Переиеновать в AIAgent

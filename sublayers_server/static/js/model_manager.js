@@ -281,7 +281,7 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
@@ -506,6 +506,12 @@ var ClientManager = (function () {
     ClientManager.prototype.Die = function (event) {
         // console.log('ClientManager.prototype.Die');
         modalWindow.modalDeathShow();
+    };
+
+    ClientManager.prototype.QuickGameDie = function (event) {
+        // console.log('ClientManager.prototype.QuickGameDie');
+        alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        window.location = '/#quick';
     };
 
     ClientManager.prototype.Chat = function (event){

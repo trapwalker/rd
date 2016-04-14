@@ -210,7 +210,7 @@ class Unit(Observer):
         super(Unit, self).on_die(event)
         # Отправка сообщения owner'у о гибели машинки
         if self.owner:
-            messages.Die(agent=self.owner, time=event.time).post()
+            self.owner.on_die(object=self, time=event.time)
         # todo: удалить себя и на этом месте создать обломки
         self.delete(time=event.time)
 
@@ -481,7 +481,7 @@ class Bot(Mobile):
 
     def on_die(self, event):
         super(Bot, self).on_die(event)
-        self.main_agent.on_die()
+        # self.main_agent.on_die(object=self, time=event.time)
 
     def on_init(self, event):
         super(Bot, self).on_init(event=event)
