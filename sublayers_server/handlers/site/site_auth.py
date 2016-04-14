@@ -124,7 +124,7 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)[u'id']
             db = self.application.db
-            db_res = db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})
+            db_res = db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})  # todo: migrate to async ODM
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -197,7 +197,7 @@ class OKLoginHandler(RequestHandler, OAuth2Mixin):
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)['uid']
             db = self.application.db
-            db_res = db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})
+            db_res = db.profiles.find({'auth': {'ok': {'id': body_id}}}, {'id': 1})  # todo: migrate to async ODM
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
@@ -264,7 +264,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
             body_id = json.loads(response.body)['response'][0]['uid']
             db = self.application.db
-            db_res = db.profiles.find({'auth': {'vk': {'id': body_id}}}, {'id': 1})
+            db_res = db.profiles.find({'auth': {'vk': {'id': body_id}}}, {'id': 1})  # todo: migrate to async ODM
             user_ids = []
             for db_rec in db_res:
                 user_ids.append(db_rec)
