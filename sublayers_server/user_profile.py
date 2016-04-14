@@ -78,13 +78,13 @@ class User(Document):
     @classmethod
     @tornado.gen.coroutine
     def get_by_name(cls, name):
-        users = yield cls.objects.filter({'name': name})
+        users = yield cls.objects.filter({'name': name}).find_all()
         raise tornado.gen.Return(users and users[0] or None)
 
     @classmethod
     @tornado.gen.coroutine
     def get_by_email(cls, email):
-        users = yield cls.objects.filter({'auth.standard.email': email})
+        users = yield cls.objects.filter({'auth.standard.email': email}).find_all()
         raise tornado.gen.Return(users and users[0] or None)
 
     def as_document(self):
