@@ -86,13 +86,15 @@ class APIGetUserInfoHandler(BaseHandler):
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent.example.car
             if ex_car:
-                template_img = tornado.template.Loader(
-                    "templates/location",
-                    namespace=self.get_template_namespace()
-                ).load("car_info_img_ext.html")
-                html_car_img = template_img.generate(car=ex_car)
                 name_car = ex_car.name_car
                 user_info['position'] = ex_car.position.as_tuple()
+
+            template_img = tornado.template.Loader(
+                "templates/site",
+                namespace=self.get_template_namespace()
+            ).load("car_info_ext_wrap.html")
+            html_car_img = template_img.generate(car=ex_car)
+
 
         self.finish(dict(
             user_info=user_info,
@@ -122,9 +124,9 @@ class APIGetQuickGameCarsHandler(BaseHandler):
         car_templates_list = []
 
         template_car = tornado.template.Loader(
-            "templates/location",
+            "templates/site",
             namespace=self.get_template_namespace()
-        ).load("car_info_img_ext.html")
+        ).load("car_info_ext_wrap.html")
 
         for car_ex in car_examples:
             html_car_img = template_car.generate(car=car_ex)

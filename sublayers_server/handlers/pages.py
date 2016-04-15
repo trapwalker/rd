@@ -13,7 +13,6 @@ class PlayHandler(BaseHandler):
     def get(self):
         user = self.current_user
         if user:
-            log.info(user.car_die)
             if user.is_quick_user and user.car_die:
                 self.redirect('/#quick')
             else:
