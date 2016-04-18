@@ -2,11 +2,13 @@ virtualenv
 tornado
 debug
 jsonpickle
-#PIL
-#bson
 cachetools
 PyYAML
 cmd2
+
+git+https://github.com/py-bson/bson
 motor
 motorengine
-pymongo
+pymongo==2.8
+
+#Pillow
