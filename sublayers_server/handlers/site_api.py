@@ -4,6 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado
+import tornado.web
+import tornado.gen
 import tornado.template
 
 from sublayers_server.user_profile import User
@@ -13,50 +15,59 @@ from sublayers_server.model.registry.classes.mobiles import Car as RegCar
 
 
 class APIGetCarInfoHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self):
-        username = self.get_argument('username', None)
-        user = User.get_by_name(self.db, username)
+        username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
+        user = yield User.get_by_name(username)
+
         if not user:
             self.send_error(404)
-            return
-        agent = self.application.srv.api.get_agent(user)
+            raise tornado.gen.Return()
+
+        agent = self.application.srv.api.get_agent(user)  # todo: ##fix get offline (unloaded) agent
         if not agent:
             self.send_error(404)
-            return
+            raise tornado.gen.Return()
+
         ex_car = agent.example.car
         if not ex_car:
             self.send_error(404)
-            return
+            raise tornado.gen.Return()
+
         self.render('location/car_info_img_ext.html', car=ex_car)
 
 
 class APIGetCarInfoHandler2(BaseHandler):
     def get(self):
-        uri = self.get_argument('uri', None)
-        uri = 'reg://registry/mobiles/cars/middle/sports/delorean_dmc12'
+        #uri = self.get_argument('uri', None)
+        uri = 'reg://registry/mobiles/cars/middle/sports/delorean_dmc12'  # todo: ##fix
         if not uri:
             self.send_error(404)
             return
+
         ex_car = None
         try:
             ex_car = self.application.srv.reg[uri]
-        except:
-            ex_car = None
-        if not ex_car or not isinstance(ex_car, RegCar):
+        except:  # todo: catch specify exception ##refactor
+            pass
+
+        if not ex_car or not isinstance(ex_car, RegCar):  # todo: log warning if uri link is not car
             self.send_error(404)
             return
         self.render('location/car_info_img_ext_for_clear_web.html', car=ex_car)
 
 
 class APIGetUserInfoHandler(BaseHandler):
-    u'''Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой'''
+    u"""Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой"""
+    @tornado.gen.coroutine
     def get(self):
-        username = self.get_argument('username', None)
-        user = User.get_by_name(self.db, username)
+        username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
+        user = yield User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            return
+            raise tornado.gen.Return()
+
         user_info = dict(name=username)
         html_car_img = None
         name_car = None
@@ -105,16 +116,20 @@ class APIGetUserInfoHandler(BaseHandler):
 
 
 class APIGetUserInfoHandler2(BaseHandler):
+    @tornado.gen.coroutine
     def get(self):
-        username = self.get_argument('username', None)
-        user = User.get_by_name(self.db, username)
+        username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
+        user = yield User.get_by_name(username)
+
         if not user:
             self.send_error(404)
-            return
+            raise tornado.gen.Return()
+
         agent = self.application.srv.api.get_agent(user, make=True)
         if not agent:
             self.send_error(404)
-            return
+            raise tornado.gen.Return()
+
         self.render('person/person_site_info.html', agent_example=agent.example, with_css=True)
 
 
@@ -138,4 +153,3 @@ class APIGetQuickGameCarsHandler2(BaseHandler):
     def get(self):
         car_examples = self.application.srv.quick_game_cars_examples
         self.render('site/quick_game_cars.html', car_examples=car_examples, with_css=True)
-

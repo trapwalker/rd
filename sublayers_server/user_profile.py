@@ -7,110 +7,97 @@ from bson.objectid import ObjectId
 import hashlib
 import random
 import re
+import tornado.gen
+from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField
 
 
-class User(object):
-    collection_name = 'profiles'
-    def __init__(self, name=None, auth=None, _id=None, db=None, auth_standard=None, quick=False, car_die=False, **kw):
-        """
-        User docu,emt structure
-        {
-          "_id" : ObjectId("56e019f47ee5fe0a54b36d6b"),
-          "name" : "username",
-          "auth" : {
-            "standard" : { "password" : "md5$0123456789abcdef$salt", "email" : "user@example.com" }
-          }
-        }
-        """
-        self._id = _id or ObjectId()
-        self.name = name
-        self.auth = auth or {}
-        self.db = db
+class User(Document):
+    """
+    :type name: unicode
+    :type auth: AuthData
+    """
 
-        # Параметры для быстрого юзера
-        self.quick = quick
-        self.car_index = None
-        self.quick_game_time = None
-        self.car_die = car_die
+    class AuthData(Document):
 
-        self.__dict__.update(kw)
-        if auth_standard:
-            self.set_auth_data('standard', auth_standard)
+        class AuthStandard(Document):
+            email = StringField()
+            password = StringField()
+
+            def __init__(self, raw_password=None, **kw):
+                Document.__init__(self, **kw)
+                if raw_password:
+                    self.set_password(raw_password)
+
+            def __nonzero__(self):
+                return bool(self.email)
+
+            def set_password(self, new_password):
+                self.password = hash_pass(new_password)
+
+        standard = EmbeddedDocumentField(AuthStandard, default=AuthStandard)
+        # todo: add social auth attributes
+
+    __collection__ = 'profiles'
+    name = StringField(max_length=64)
+    auth = EmbeddedDocumentField(AuthData, default=AuthData)
+
+    quick = BooleanField(default=False)
+    car_index = IntField(default=None)
+    quick_game_time = IntField(default=None)
+    car_die = BooleanField(default=None)
+
+    def __init__(self, raw_password=None, email=None, **kw):
+        super(User, self).__init__(**kw)
+        if raw_password:
+            self.auth.standard.set_password(raw_password)
+
+        if email:
+            self.auth.standard.email = email
+
+    @property
+    def is_quick_user(self):
+        # todo: ##refactoring Убрать это свойство
+        return self.quick
 
     @property
     def id(self):
         return self._id
 
-    @property
-    def is_quick_user(self):
-        return self.quick
-
-    def set_auth_data(self, kind, data):
-        if kind == 'standard':
-            data['password'] = hash_pass(data['password'])
-        self.auth[kind] = data
-
     def check_password(self, password):
         if not self.auth:
             return
 
-        std = self.auth.get('standard')
-        pass_data = std.get('password')
+        pass_data = self.auth.standard.password
         return test_pass(password, pass_data)
 
     @property
     def email(self):
-        if not self.auth:
-            return
-
-        std = self.auth.get('standard')
-        return std.get('email')
+        if self.auth and self.auth.standard:
+            return self.auth.standard.email
 
     @classmethod
-    def find(cls, db, filter=None, **kw):
-        for doc in db[cls.collection_name].find(filter, **kw):
-            yield User(db=db, **doc)
+    @tornado.gen.coroutine
+    def get_by_name(cls, name):
+        users = yield cls.objects.filter({'name': name}).find_all()
+        raise tornado.gen.Return(users and users[0] or None)
 
     @classmethod
-    def find_one(cls, db, filter, **kw):
-        doc = db[cls.collection_name].find_one(filter=filter, **kw)
-        return doc and User(db=db, **doc)
-
-    @classmethod
-    def get_by_id(cls, db, id):
-        if isinstance(id, basestring):
-            id = ObjectId(id)
-        return cls.find_one(db=db, filter={'_id': id})
-
-    @classmethod
-    def get_by_name(cls, db, name):
-        return cls.find_one(db=db, filter={'name': name})
-
-    @classmethod
-    def get_by_email(cls, db, email):
-        return cls.find_one(db=db, filter={'auth.standard.email': email})
+    @tornado.gen.coroutine
+    def get_by_email(cls, email):
+        users = yield cls.objects.filter({'auth.standard.email': email}).find_all()
+        raise tornado.gen.Return(users and users[0] or None)
 
     def as_document(self):
         d = self.__dict__.copy()
         d.pop('db', None)
         return d
 
-    def save(self, db=None):
-        """
-            returns: pymongo.results.UpdateResult
-        """
-        db = self.db or db
-        assert db
-        doc = self.as_document()
-        collection = db[self.collection_name]
-        result = collection.replace_one({'_id': self._id}, doc, upsert=True)
-        self.db = db
-        return result
-
     def __repr__(self):
+        args = self.to_son()
+        args['_id'] = self._id
         return '{self.__class__.__name__}({args})'.format(
             self=self,
-            args=', '.join(('{}={!r}'.format(k, v) for k, v in self.as_document().items())),
+            args=', '.join(('{}={!r}'.format(k, v) for k, v in args.items())),
         )
 
     def __str__(self):
@@ -147,14 +134,37 @@ def test_pass(password, verification_data, encoding='utf-8'):
 
 
 if __name__ == '__main__':
-    import pymongo
-    import bson
-    from pprint import pprint as pp
+    import tornado.ioloop
+    import tornado.gen
+    from motorengine import connect
+    import sys
+
+    log.addHandler(logging.StreamHandler(sys.stderr))
+    log.setLevel(logging.DEBUG)
+
+    io_loop = tornado.ioloop.IOLoop.instance()
+    connect("rd", host="localhost", port=27017, io_loop=io_loop)
+
+    @tornado.gen.coroutine
+    def get_user(id):
+        user = yield User.objects.get(id)
+        raise tornado.gen.Return(user)
     
-    db = pymongo.MongoClient('mongodb://localhost/rd').rd
-    c = db.rofiles
-    fltr = None
-    fltr = {'$or': [{'name': 'svp21'}, {'auth.standard.email': 'svp@intbel.ru1'}]}
-    print bool(User.find(db, filter=fltr))
-    for u in User.find(db, filter=fltr):
-        print repr(u)
+    
+    @tornado.gen.coroutine
+    def test():
+        log.debug('user profile test start')
+        users = yield User.objects.find_all()
+        for user in users:
+            print repr(user)
+            print
+
+        oid = ObjectId('56fd3f497ee5fe16d83121df')
+        u = yield get_user(oid)
+
+        globals().update(locals())
+
+    test()
+
+    tornado.ioloop.PeriodicCallback(lambda: io_loop._timeouts or io_loop.stop(), 500).start()
+    io_loop.start()

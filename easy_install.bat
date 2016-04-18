@@ -1,2 +1,2 @@
 
-env\Scripts\easy_install.exe %*
+.\env\Scripts\easy_install.exe %*

@@ -1,0 +1,2 @@
+﻿
+put file to C:\Python27\Lib\distutils\distutils.cfg

@@ -12,6 +12,7 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
+import logging
 import logging.config
 
 logging.config.fileConfig("logging.conf")
@@ -24,6 +25,9 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
+from urlparse import urlparse
+from pymongo import MongoClient
+from motorengine import connect as db_connect
 
 from sublayers_server import settings
 from sublayers_server import service_tools
@@ -41,19 +45,22 @@ from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_handler import SiteHandler
-from sublayers_server.handlers.site.site_auth import SiteLoginHandler, LogoutHandler, GoogleLoginHandler, \
-    StandardLoginHandler, OKLoginHandler, VKLoginHandler
-from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
-    ContextPanelLocationsHandler
-from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatisticsRefreshHandler,
-                                                  ServerStatForSite)
+from sublayers_server.handlers.site.site_auth import (
+    SiteLoginHandler, LogoutHandler, StandardLoginHandler,
+    # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
+)
+from sublayers_server.handlers.context_panel import (
+    ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, ContextPanelLocationsHandler,
+)
+from sublayers_server.handlers.statistics import (
+    ServerStatisticsHandler, ServerStatisticsRefreshHandler, ServerStatForSite,
+)
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
-from sublayers_server.handlers.site_api import (APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2,
-                                                APIGetQuickGameCarsHandler)
-
-from pymongo import MongoClient
+from sublayers_server.handlers.site_api import (
+    APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
+)
 
 
 class DBError(Exception):
@@ -68,7 +75,14 @@ class Application(tornado.web.Application):
             self.revision = None
             log.warning("Can't get HG revision info: %s", e)
 
-        self.db = MongoClient(options.db)[options.db_name]
+        dsn = urlparse(options.db)
+        self.dba = db_connect(
+            db=dsn.path.lstrip('/'),
+            host=dsn.hostname,
+            port=dsn.port,
+            io_loop=tornado.ioloop.IOLoop.instance(),
+        )
+        self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 
         log.info('\n' + '=-' * 70)
         log.info('GAME ENGINE SERVICE STARTING %s\n' + '--' * 70, self.revision)
@@ -92,9 +106,9 @@ class Application(tornado.web.Application):
             (r"/login", SiteLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/login/standard", StandardLoginHandler),
-            (r"/login/google", GoogleLoginHandler),
-            (r"/login/ok", OKLoginHandler),
-            (r"/login/vk", VKLoginHandler),
+            # (r"/login/google", GoogleLoginHandler),  # todo: social auth
+            # (r"/login/ok", OKLoginHandler),
+            # (r"/login/vk", VKLoginHandler),
 
             (r"/stat", ServerStatisticsHandler),
             (r"/site_stat", ServerStatForSite),
