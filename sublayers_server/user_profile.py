@@ -20,7 +20,7 @@ class User(Document):
     class AuthData(Document):
 
         class AuthStandard(Document):
-            email = EmailField()
+            email = StringField()
             password = StringField()
 
             def __init__(self, raw_password=None, **kw):

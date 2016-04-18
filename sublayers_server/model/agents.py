@@ -17,6 +17,7 @@ from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 
 from tornado.options import options
+import tornado.gen
 
 
 # todo: make agent offline status possible
@@ -457,6 +458,9 @@ class User(Agent):
     pass
 
 
+def test_cb(f):
+    pass
+
 class QuickUser(User):
     def __init__(self, **kw):
         super(QuickUser, self).__init__(**kw)
@@ -465,14 +469,16 @@ class QuickUser(User):
     def _quick_profile_save(self, time):
         self.user.time_quick_game = time - self.time_quick_game_start
         self.user.car_die = True
-        self.user.save()
+        # todo: refactor callback - must be callable
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb)
 
     def append_car(self, time, **kw):
         super(QuickUser, self).append_car(time=time, **kw)
         # Запомнить время старта
         self.time_quick_game_start = self.server.get_time()
         self.user.car_index = None
-        self.user.save()
+        # todo: refactor callback - must be callable
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=lambda x: None)
 
     def drop_car(self, car, time, **kw):
         if car is self.car:
