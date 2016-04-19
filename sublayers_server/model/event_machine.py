@@ -191,14 +191,23 @@ class LocalServer(Server):
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
         message_queue = self.message_queue
+        # Выйти, если завершён поток
+        if self.is_terminated:
+            return
         while message_queue:
             message_queue.popleft().send()
             # todo: mass sending optimizations over separated chat server
 
         if not timeline:
+            # Добавление коллбека с максимальной задержкой
+            self.ioloop.call_later(delay=MAX_SERVER_SLEEP_TIME, callback=self.event_loop)
             return
 
+
         if not timeline.head.actual:
+            # Удаление неактуального эвента и добавление коллбека с минимальной задержкой
+            # self.ioloop.call_later(delay=0.001, callback=self.event_loop)
+            self.ioloop.add_callback(callback=self.event_loop)  # todo: возможно так правильнее
             event = timeline.get()
             del event
             return
@@ -207,6 +216,8 @@ class LocalServer(Server):
         t1 = timeline.head.time
 
         if t1 > t:
+            # Добавление коллбека с задержкой min(t1 - t, timeout)
+            self.ioloop.call_later(delay=max(0.0001, min(t1 - t, timeout)), callback=self.event_loop)
             return
 
         event = timeline.get()
@@ -215,15 +226,21 @@ class LocalServer(Server):
         except:
             log.exception('Event performing error %s', event)
 
+        # Добавление коллбека с минимальной задержкой
+        # self.ioloop.call_later(delay=0.001, callback=self.event_loop)
+        self.ioloop.add_callback(callback=self.event_loop)  # todo: возможно так правильнее
+
     def start(self):
         import tornado.ioloop
-        self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
-        self.periodic.start()
+        self.ioloop = tornado.ioloop.IOLoop.instance()
+        # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
+        # self.periodic.start()
+        self.ioloop.add_callback(callback=self.event_loop)
         self.is_terminated = False
         log.info('---- Event loop Started ' + '-' * 50 + '\n')
 
     def stop(self, timeout=None):
-        self.periodic.stop()
+        # self.periodic.stop()
         log.info('---- Event loop finished ' + '-' * 50 + '\n')
         self.is_terminated = True
         # if self.app:
