@@ -1,2 +1,2 @@
 
-python deploy.py | tee deploy.log
+python.exe deploy.py | tee deploy.log
