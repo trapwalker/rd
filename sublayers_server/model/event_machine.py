@@ -178,7 +178,8 @@ class LocalServer(Server):
         self.is_terminated = False
         self.app = app
         self.reg_agents = Collection(name='agents', db=app.db)
-
+        self.ioloop = None
+        self.periodic = None
 
     def __getstate__(self):
         d = super(LocalServer, self).__getstate__()
@@ -187,54 +188,44 @@ class LocalServer(Server):
         return d
 
     def event_loop(self):
-        log.info('---- Event loop start')
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
         message_queue = self.message_queue
+        while message_queue:
+            message_queue.popleft().send()
+            # todo: mass sending optimizations over separated chat server
 
-        while not self.is_terminated:
-            while message_queue:
-                message_queue.popleft().send()
-                # todo: mass sending optimizations over separated chat server
+        if not timeline:
+            return
 
-            if not timeline:
-                sleep(timeout)
-                continue
-            
-            if not timeline.head.actual:
-                event = timeline.get()
-                del event
-                continue
-
-            t = self.get_time()
-            t1 = timeline.head.time
-
-            if t1 > t:
-                sleep(min(t1 - t, timeout))
-                continue
-
+        if not timeline.head.actual:
             event = timeline.get()
-            try:
-                event.perform()
-            except:
-                log.exception('Event performing error %s', event)
+            del event
+            return
 
-        log.info('---- Event loop finished ' + '-' * 50 + '\n')
+        t = self.get_time()
+        t1 = timeline.head.time
+
+        if t1 > t:
+            return
+
+        event = timeline.get()
+        try:
+            event.perform()
+        except:
+            log.exception('Event performing error %s', event)
 
     def start(self):
-        if self.thread:
-            raise EServerAlreadyStarted()
-        self.start_time = self.get_time()
-        self.thread = Thread(target=self.event_loop)
-        self.thread.start()
+        import tornado.ioloop
+        self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
+        self.periodic.start()
+        self.is_terminated = False
+        log.info('---- Event loop Started ' + '-' * 50 + '\n')
 
     def stop(self, timeout=None):
-        if not self.is_active:
-            raise EServerIsNotStarted()
+        self.periodic.stop()
+        log.info('---- Event loop finished ' + '-' * 50 + '\n')
         self.is_terminated = True
-        self.thread.join(timeout)
-        self.thread = None
-        self.is_terminated = False
         # if self.app:
         #     self.app.stop()  # todo: checkit
 
