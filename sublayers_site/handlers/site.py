@@ -9,12 +9,8 @@ import yaml
 import tornado
 
 
-class SiteMainHandlerOld(BaseHandler):
-    def get(self):
-        self.render('site_main_old.html')
-
-
 class SiteMainHandler(BaseHandler):
+    # todo: снести и изменить в шаблоне!
     @classmethod
     def new_site_angle_type(cls):
         return 1
@@ -44,19 +40,3 @@ class SiteMainHandler(BaseHandler):
                     is_authorize=is_authorize_str, quick_game_cars=quick_game_info.get('quick_cars', []))
 
 
-class SiteMainHandler1(SiteMainHandler):
-    @classmethod
-    def new_site_angle_type(cls):
-        return 2
-
-
-class SiteMainHandler2(SiteMainHandler):
-    @classmethod
-    def new_site_angle_type(cls):
-        return 3
-
-
-class SiteMainHandler3(SiteMainHandler):
-    @classmethod
-    def new_site_angle_type(cls):
-        return 4

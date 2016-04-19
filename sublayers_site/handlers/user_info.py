@@ -7,12 +7,13 @@ from base import BaseHandler
 import tornado
 
 from user_profile import User
+from bson.objectid import ObjectId, InvalidId
 
 
 class GetUserInfoHandler(BaseHandler):
     @tornado.gen.coroutine
     def post(self):
-        user = self.get_current_user()
+        user = self.current_user
         user_info = dict()
         if user:
             user_info = yield self._get_car(username=user.name)
@@ -33,7 +34,11 @@ class GetUserInfoByIDHandler(BaseHandler):
     def post(self):
         user_id = self.get_argument('user_id', None)
         if user_id:
-            user = User.get_by_id(db=self.db, id=user_id)
+            user = None
+            try:
+                user = yield User.objects.get(ObjectId(user_id))
+            except InvalidId as e:
+                log.warning('User resolve error: %r', e)
             if user:
                 user_info = yield self._get_car(username=user.name)
                 self.finish({

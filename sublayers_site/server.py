@@ -27,10 +27,11 @@ import tornado.options
 import tornado.web
 from tornado.options import define, options
 import settings
-
+from urlparse import urlparse
+from motorengine import connect as db_connect
 
 from handlers.site_auth import StandardLoginHandler, LogoutHandler
-from handlers.site import SiteMainHandler, SiteMainHandler1, SiteMainHandler2, SiteMainHandler3
+from handlers.site import SiteMainHandler
 from handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 
@@ -51,15 +52,21 @@ class Application(tornado.web.Application):
     def __init__(self):
         log.info('Road Dogs Site')
 
-        self.db = MongoClient(options.db)[options.db_name]
+
+        dsn = urlparse(options.db)
+        self.dba = db_connect(
+            db=dsn.path.lstrip('/'),
+            host=dsn.hostname,
+            port=dsn.port,
+            io_loop=tornado.ioloop.IOLoop.instance(),
+        )
+
+        self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 
         handlers = [
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
-            (r"/other1", SiteMainHandler1),
-            (r"/other2", SiteMainHandler2),
-            (r"/other3", SiteMainHandler3),
             (r"/get_user_info", GetUserInfoHandler),
             (r"/site_api/get_quick_game_records", GetQuickGameRecords),
             (r"/site_api/get_rating_info", GetRatingInfo),

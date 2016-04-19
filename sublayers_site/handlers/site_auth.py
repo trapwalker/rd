@@ -29,16 +29,16 @@ class LogoutHandler(BaseHandler):
         clear_all_cookie(self)
 
 
-class BaseLoginHandler(BaseHandler):
-    def login_error_redirect(self, doseq=0, **kw):
-        url = urllib.urlencode([
-            (k, v.encode('utf-8') if isinstance(v, unicode) else str(v))
-            for k, v in kw.items()
-        ], doseq)
-        self.redirect("/login?{}".format(url))  # todo: use reverse resolver
+# class BaseLoginHandler(BaseHandler):
+#     def login_error_redirect(self, doseq=0, **kw):
+#         url = urllib.urlencode([
+#             (k, v.encode('utf-8') if isinstance(v, unicode) else str(v))
+#             for k, v in kw.items()
+#         ], doseq)
+#         self.redirect("/login?{}".format(url))  # todo: use reverse resolver
 
 
-class StandardLoginHandler(BaseLoginHandler):
+class StandardLoginHandler(BaseHandler):
     def get(self):
         self.redirect('/#start')
 
@@ -47,13 +47,10 @@ class StandardLoginHandler(BaseLoginHandler):
         action = self.get_argument('action', None)
         if action == 'reg':
             yield self._registration()
-            return
         elif action == 'quick_reg':
             yield self._quick_registration()
-            return
         elif action == 'auth':
             yield self._authorisation()
-            return
         else:
             raise HTTPError(405, log_message='Wrong action {}.'.format(action))
 
@@ -72,10 +69,10 @@ class StandardLoginHandler(BaseLoginHandler):
         ):
             self.finish({'status': 'Некорректные входные данные'})
             return
-        if User.get_by_email(db=self.db, email=email):
+        if (yield User.get_by_email(email=email)):
             self.finish({'status': 'Пользователь с таким email уже зарегистрирован.'})
             return
-        if User.get_by_name(db=self.db, name=username):
+        if (yield User.get_by_name(name=username)):
             self.finish({'status': 'Пользователь с таким именем уже зарегистрирован.'})
             return
         # регистрация на форуме
@@ -88,12 +85,12 @@ class StandardLoginHandler(BaseLoginHandler):
         #     self.finish({'status': 'Ошибка регистрации на форуме.'})
         #     log.info('User <{}> not registered on forum!'.format(username))
         #     return
-        user = User(name=username, auth_standard=dict(email=email, password=password), db=self.db)
-        result = user.save()
+        user = User(name=username, email=email, raw_password=password)
+        result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
         self.set_cookie("forum_user", self._forum_cookie_setup(username))
-        log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
+        # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         self.finish({'status': 'Вы зарегистрированы'})
 
     @tornado.gen.coroutine
@@ -101,11 +98,11 @@ class StandardLoginHandler(BaseLoginHandler):
         qg_car_index = self.get_argument('qg_car_index', 0)
         nickname = self.get_argument('username', None)
         if self.current_user:
-            quick_user = self.current_user if self.current_user.is_quick_user else None
+            quick_user = self.current_user if self.current_user.quick else None
             if quick_user and quick_user.name == nickname:
                 quick_user.car_index = qg_car_index
                 quick_user.car_die = False
-                quick_user.save()
+                yield quick_user.save()
                 log.info('Save quick_user.car_die = False')
                 self.finish({'status': 'Такой пользователь существует'})
                 return
@@ -120,17 +117,16 @@ class StandardLoginHandler(BaseLoginHandler):
         username = nickname + str(randint(0,999999))
         while not login_free:
             email = username + '@' + username
-            login_free = (User.get_by_email(db=self.db, email=email) is None) and \
-                         (User.get_by_name(db=self.db, name=username) is None)
+            login_free = ((yield User.get_by_email(email=email)) is None) and \
+                         ((yield User.get_by_name(name=username)) is None)
             if not login_free:
                 username = nickname + str(randint(0,999999))
 
-        user = User(name=username, auth_standard=dict(email=email, password=password), db=self.db,
-                         car_index=qg_car_index, quick=True)
-        result = user.save()
+        user = User(name=username, email=email, raw_password=password, car_index=qg_car_index, quick=True)
+        result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
-        log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
+        # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         self.finish({'status': 'Временный пользователь создан'})
 
     @tornado.gen.coroutine
@@ -169,7 +165,7 @@ class StandardLoginHandler(BaseLoginHandler):
             self.finish({'status': 'Некорректные входные данные'})
             return
 
-        user = User.get_by_email(db=self.db, email=email)
+        user = yield User.get_by_email(email=email)
         if not user:
             self.finish({'status': 'Пользователь с таким email не найден.'})
             return
