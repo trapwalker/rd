@@ -43,7 +43,7 @@ class User(Document):
 
     quick = BooleanField(default=False)
     car_index = IntField(default=None)
-    quick_game_time = IntField(default=None)
+    time_quick_game = IntField(default=0)
     car_die = BooleanField(default=None)
 
     def __init__(self, raw_password=None, email=None, **kw):

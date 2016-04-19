@@ -459,7 +459,12 @@ class User(Agent):
 
 
 def test_cb(f):
-    pass
+    print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
+
+
+def test_cb2(f):
+    print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
+
 
 class QuickUser(User):
     def __init__(self, **kw):
@@ -478,7 +483,7 @@ class QuickUser(User):
         self.time_quick_game_start = self.server.get_time()
         self.user.car_index = None
         # todo: refactor callback - must be callable
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=lambda x: None)
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb2)
 
     def drop_car(self, car, time, **kw):
         if car is self.car:
