@@ -1,0 +1,185 @@
+.window-qg-content {
+    position: relative;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px - 27px);
+    border: 2px solid #02ff54;
+    box-sizing: border-box;
+    margin: 0 auto;
+    font-size: 12pt;
+}
+
+.window-qg-content-block {
+    position: relative;
+    float: left;
+    width: calc(50% - 6px);
+    height: calc(100% - 26px);
+    border: 2px solid #007700;
+    box-sizing: border-box;
+    margin: 24px 0px 0px 4px;
+}
+.window-qg-content-block.not-first { margin-left: 6px; }
+
+.window-qg-content-header-block {
+    position: relative;
+    top: -12px;
+    width: 100%;
+    height: 32px;
+    border-width: 0 0 2px 0;
+    box-sizing: border-box;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+.window-qg-content-back {
+    position: relative;
+    width: 138px;
+    height: 23px;
+    margin: 0px auto 0px auto;
+    background-color: black;
+}
+
+.window-qg-content-header {
+    position: relative;
+    width: 134px;
+    height: 23px;
+    margin: 0px auto 0px auto;
+    background-color: #01610a;
+    text-align: center;
+    line-height: 23px;
+}
+
+.window-qg-content-nickname-block {
+    position: relative;
+    width: calc(100% - 40px);
+    height: 23px;
+    margin: 5px auto 5px auto;
+}
+
+.window-qg-content-nickname-label {
+    position: relative;
+    height: 100%;
+    width: 85px;
+    float: left;
+    line-height: 23px;
+}
+
+.window-qg-content-nickname-input {
+    width: calc(100% - 85px);
+    border-width: 0px;
+    background-color: #061205;
+    font-size: 14pt;
+}
+
+.window-qg-content-car-block {
+    position: relative;
+    width: calc(100% - 6px);
+    height: 40%;
+    margin: 0 auto;
+    border: 2px solid #007700;
+    box-sizing: border-box;
+}
+
+.window-qg-content-car-wrap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.window-qg-content-car-wrap .car-info-block-picture-main { margin-left: -45px; }
+
+.window-qg-content-car-slide-arrow {
+    position: absolute;
+    cursor: pointer;
+    width: 17px;
+    height: 24px;
+    top: 80px;
+    z-index: 1000;
+}
+.window-qg-content-car-slide-arrow.left {
+    background: transparent url(/static_site/img/btn_slide_left.png) no-repeat 100% 100%;
+    left: 10px;
+}
+.window-qg-content-car-slide-arrow.left:hover {
+    background: transparent url(/static_site/img/btn_slide_left_over.png) no-repeat 100% 100%;
+}
+.window-qg-content-car-slide-arrow.left:active {background: none;}
+
+.window-qg-content-car-slide-arrow.right {
+    background: transparent url(/static_site/img/btn_slide_right.png) no-repeat 100% 100%;
+    right: 10px;
+}
+.window-qg-content-car-slide-arrow.right:hover {
+    background: transparent url(/static_site/img/btn_slide_right_over.png) no-repeat 100% 100%;
+}
+.window-qg-content-car-slide-arrow.right:active {background: none;}
+
+.window-qg-btn {
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid #209509;
+    background-color: #0d3207;
+    border-radius: 1px;
+}
+.window-qg-btn:hover { background-color: #16560c; border: 2px solid #37ff10; color: #51ff00; }
+.window-qg-btn:active { background-color: #000000; border: 2px solid #008000; color: #00ff00; }
+
+.window-qg-content-play-btn {
+    position: relative;
+    width: 161px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    margin: 40px auto 0 auto;
+    font-size: 16pt;
+}
+
+.window-qg-content-rating-line-block {
+    position: relative;
+    width: calc(100% - 16px);
+    height: 20px;
+    margin: 0 auto 0 auto;
+}
+.window-qg-content-rating-line-block.header { margin: 0 auto 10px auto; }
+.window-qg-content-rating-line-block.odd { background-color: #041105; }
+
+.window-qg-content-rating-column {
+    position: relative;
+    float: left;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+}
+.window-qg-content-rating-column.col-number { width: 15%; }
+.window-qg-content-rating-column.col-points { width: 25%; }
+.window-qg-content-rating-column.col-time { width: 20%; }
+.window-qg-content-rating-column.col-nick { width: 40%; }
+
+@media screen and (max-width: 1366px) {
+    .window-qg-content {
+        font-size: 10pt;
+    }
+
+    .window-qg-content-block {
+        margin-top: 14px;
+        height: calc(100% - 15px);
+    }
+
+    .window-qg-content-car-wrap .car-info-block-picture-main {
+        transform: scale(0.71);
+        margin-left: -85px;
+        margin-top: -20px;
+    }
+
+    .window-qg-content-car-slide-arrow {
+        top: 56px;
+    }
+
+    .window-qg-content-nickname-input { font-size: 12pt; }
+
+    .window-qg-content-nickname-label { line-height: 20px; }
+
+
+}
+

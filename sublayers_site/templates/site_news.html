@@ -1,0 +1,42 @@
+<div id="RDSiteNews" class="page-wrapper">
+    <div class="window-header buttons-and-headers">Nuke Commander v5.51</div>
+    <div class="window-news-content">
+        <div class="window-news-content-block first">
+            <div class="window-qg-content-header-block">
+                <div class=" window-qg-content-back">
+                    <div class="window-qg-content-header buttons-and-headers">Лог</div>
+                </div>
+            </div>
+            <div class="window-news-log-list-block">
+                {% set news_id = 0 %}
+                {% for news in news_list %}
+                    <div class="window-news-log-news-header box-shadow" data-news_id="news_content_{{ news_id }}">
+                        <div class="window-news-log-news-date">{% raw news['date'] %}</div>   {% raw news['header'] %}</div>
+                    {% set news_id = news_id + 1 %}
+                {% end %}
+            </div>
+        </div>
+        <div class="window-news-content-block second">
+            <div class="window-qg-content-header-block">
+                <div class=" window-qg-content-back">
+                    <div class="window-qg-content-header buttons-and-headers">Новости</div>
+                </div>
+            </div>
+            {% set news_id = 0 %}
+            {% for news in news_list %}
+                <div id="news_content_{{ news_id }}" class="window-news-news-content-block">{% raw news['content'] %}</div>
+                {% set news_id = news_id + 1 %}
+            {% end %}
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.window-news-log-news-header').click(function(event) {
+        $('.window-news-news-content-block').css('display', 'none');
+        $('#' + $(this).data('news_id')).css('display', 'block');
+        $('.window-news-log-news-header').removeClass('active');
+        $(this).addClass('active');
+    })
+    $('.window-news-log-news-header').first().click();
+</script>

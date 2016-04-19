@@ -1,0 +1,167 @@
+<div id="RDSiteWRatings"  class="page-wrapper">
+    <div class="window-header buttons-and-headers">Nuke Commander v5.51</div>
+    <div class="window-ratings-main">
+        <div class="window-ratings-header">
+            <div class="window-ratings-header-path middle" data-rating="Traders">
+                <div class="window-ratings-header-path-content buttons-and-headers">Торговцы</div>
+            </div>
+            <div class="window-ratings-header-path middle" data-rating="Looters">
+                <div class="window-ratings-header-path-content buttons-and-headers">Грабители</div>
+            </div>
+            <div class="window-ratings-header-path small" data-rating="Heroes">
+                <div class="window-ratings-header-path-content buttons-and-headers">Герои</div>
+            </div>
+            <div class="window-ratings-header-path" data-rating="Villain">
+                <div class="window-ratings-header-path-content buttons-and-headers">Злодеи</div>
+            </div>
+            <div class="window-ratings-header-path" data-rating="Leaders">
+                <div class="window-ratings-header-path-content buttons-and-headers">Лидеры</div>
+            </div>
+            <div class="window-ratings-header-path small" data-rating="Warriors">
+                <div class="window-ratings-header-path-content buttons-and-headers">Войны</div>
+            </div>
+            <div class="window-ratings-header-path long" data-rating="Adventurers">
+                <div class="window-ratings-header-path-content buttons-and-headers">Авантюристы</div>
+            </div>
+        </div>
+
+        <div class="window-ratings-left-path">
+
+            <div class="window-ratings-line first-line">
+                <div class="window-ratings-line-path rate-number">#</div>
+                <div class="window-ratings-line-path nickname">Имя</div>
+                <div class="window-ratings-line-path numbers">Очки</div>
+            </div>
+
+            <div id="RDSiteRating_Traders" class="window-ratings-board"></div>
+
+            <div id="RDSiteRating_Looters" class="window-ratings-board"></div>
+
+            <div id="RDSiteRating_Heroes" class="window-ratings-board"></div>
+
+            <div id="RDSiteRating_Villain" class="window-ratings-board"></div>
+
+            <div id="RDSiteRating_Leaders" class="window-ratings-board"></div>
+
+            <div id="RDSiteRating_Warriors" class="window-ratings-board"></div>
+
+            <div id="RDSiteRating_Adventurers" class="window-ratings-board"></div>
+        </div>
+
+
+        <div class="window-ratings-right-path">
+            <div class="window-ratings-right-path-top">
+                <div class="window-ratings-right-path-top-header">Описание рейтинга</div>
+                <div id="RDSiteRatingNotes_Traders" class="window-ratings-right-path-top-content">
+                    Расчитывается из количества нукойнов, заработанных навыком торговли, а так же из количества купленного экспортного товара и проданного импортного.
+                </div>
+                <div id="RDSiteRatingNotes_Looters" class="window-ratings-right-path-top-content">
+                    Расчитывается из разницы рыночной суммы лута выбитого из других игроков и лута выбитого из данного игрока.
+                </div>
+                <div id="RDSiteRatingNotes_Heroes" class="window-ratings-right-path-top-content">
+                    Расчитывается из наибольшей кармы за всю историю персонажа и из актуальной пложительной кармы.
+                </div>
+                <div id="RDSiteRatingNotes_Villain" class="window-ratings-right-path-top-content">
+                    Расчитывается из наименьшей кармы за всю историю персонажа и из актуальной отрицатеной кармы.
+                </div>
+                <div id="RDSiteRatingNotes_Leaders" class="window-ratings-right-path-top-content">
+                    Расчитывается из опыта и лута выбитого участниками пати, управляемых данным персонажем.
+                </div>
+                <div id="RDSiteRatingNotes_Warriors" class="window-ratings-right-path-top-content">
+                    PVP-рейтинг, расчитывается из убитых игроков, близких к уровню персонажа, чем выше - тем больше очков. Значительно ниже своего уровня - очки не даются.
+                </div>
+                <div id="RDSiteRatingNotes_Adventurers" class="window-ratings-right-path-top-content">
+                    Расчитывается из кол-ва успешно выполненных заданий, проваленных заданий, выполненных заданий васокого уровня, а так же разнообразия квестодателей.
+                </div>
+            </div>
+            <div class="window-ratings-right-path-bottom">
+                <div class="window-ratings-right-path-header-block-header-block">
+                    <div class="window-ratings-right-path-header-block-back">
+                        <div id="RDSiteRatingUserName" class="window-ratings-right-path-header-block-header buttons-and-headers">Новость</div>
+                    </div>
+                </div>
+                <div class="window-ratings-right-path-content-block">
+                    <div id="RDSiteRatingUserInfo" class="window-pi-user-info-table"></div>
+                    <div id="RDSiteRatingUserCar" class="window-pi-user-car"></div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.window-ratings-header-path').click(function() {
+            // Проверить если вкладка уже активна, то ничего не делать
+            if ($(this).hasClass('active')) return;
+            var rating_name = $(this).data('rating');
+
+            $('.window-ratings-header-path').removeClass('active');
+            $(this).addClass('active');
+
+            $('.window-ratings-board').removeClass('active');
+            $('#RDSiteRating_' + rating_name).addClass('active');
+
+            $('.window-ratings-right-path-top-content').css({display: 'none'});
+            $('#RDSiteRatingNotes_' + rating_name).css({display: 'block'});
+
+            // Принудительно выделять первого пользователя, если другой не выделен
+            var current_elem_in_rating = $('#RDSiteRating_' + rating_name).find('.window-ratings-line.active');
+            if(current_elem_in_rating.length <= 0) {
+                $('#RDSiteRating_' + rating_name).find('.window-ratings-line').first().click();
+            } else {
+                clickRatingsLine(current_elem_in_rating.first());
+            }
+        });
+
+//        $('.window-ratings-header-path').first().click();
+    });
+
+    function clickRatingsLine(self) {
+        $(self).parent().find('.window-ratings-line').removeClass('active');
+        $(self).addClass('active');
+
+        var user_id = $(self).data('user_id');
+        getRatingsUserInfo(user_id);
+    }
+
+    function getRatingsUserInfo(user_id) {
+
+        function updateRatingUserInfo(user_info) {
+            $('#RDSiteRatingUserName').text(user_info.user_name);
+            $("#RDSiteRatingUserInfo").empty();
+            $("#RDSiteRatingUserCar").empty();
+            $('#RDSiteRatingUserInfo').append(user_info.user_info_html);
+            $('#RDSiteRatingUserCar').append(user_info.user_car_html);
+        }
+
+        if (rating_users_info_list.hasOwnProperty(user_id) &&
+                (timeManager.getTime() - rating_users_info_list[user_id].time < 300000)) {
+            updateRatingUserInfo(rating_users_info_list[user_id].user_info);
+            return;
+        }
+
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/site_api/get_user_info_by_id',
+            method: 'POST',
+            data: {user_id: user_id},
+            success: function (data) {
+                updateRatingUserInfo(data);
+                // Записать в кеш
+                rating_users_info_list[user_id] = {
+                    time: timeManager.getTime(),
+                    user_info: data
+                }
+
+            },
+            error: function () {
+                console.log('Error!!!!!')
+            }
+        });
+    }
+
+
+</script>

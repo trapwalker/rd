@@ -1,0 +1,139 @@
+.window-pi-content {
+    position: relative;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px - 27px);
+    border: 2px solid #02ff54;
+    box-sizing: border-box;
+    margin: 0 auto;
+    font-size: 12pt;
+}
+
+.window-pi-content-block {
+    position: relative;
+    float: left;
+    width: calc(50% - 4px);
+    border: 2px solid #007700;
+    box-sizing: border-box;
+    margin: 3px 0px 0px 3px;
+}
+
+.window-pi-console-block-wrap {
+    position: relative;
+    height: 30%;
+    overflow: hidden;
+}
+
+.window-pi-content-block.btn-block { height: 30%; font-size: 16pt; }
+.window-pi-content-block.game-info { height: calc(70% - 8px); }
+.window-pi-content-block.insurance {
+    height: calc(70% - 8px);
+    height: calc(70% - 8px);
+    background: transparent url(/static_site/img/temp_insurance.png) no-repeat;
+    /*background-size: 100% 100%;*/
+}
+
+.window-pi-btn {
+    position: relative;
+    line-height: 30px;
+    width: 300px;
+    height: 30px;
+    margin: 20px auto 0px auto;
+}
+
+.window-pi-user-info-table {
+    position: relative;
+    width: 100%;
+    height: 151px;  /* Так как есть паддинг сверху, а нужно вместить аватарку */
+    padding: 5px 5px 0 10px;
+    box-sizing: border-box;
+}
+
+.window-pi-user-car {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 151px);
+}
+
+.window-pi-user-car .car-info-block-picture-main-site {
+    position: relative;
+    top: 0;
+    overflow: hidden;
+}
+
+.window-pi-user-car .car-info-block-picture-main {
+    margin-left: -35px;
+}
+
+.window-pi-user-car .car-info-block-picture-main.default-car {
+    overflow-y: hidden;
+    top: 15px;
+}
+
+.window-pi-user-car .car-info-block-picture.default-car {
+    margin-top: -19px;
+}
+
+.window-pi-user-info-table .person-info-chat-person-up-left .site-avatar {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+@media screen and (max-width: 1366px) {
+    .window-pi-user-info-table {
+        padding-left: 8px;
+        padding-right: 0px;
+        height: 110px;
+    }
+
+    .window-pi-content-block.insurance {
+        background-size: 100% 100%;
+    }
+
+    .window-pi-user-info-table .person-info-chat-person-up-left {
+        margin-top: 3px;  /*Ну никак иначе не получалось! */
+    }
+
+    .window-pi-user-info-table .person-info-chat-person-up-right {
+        width: calc(100% - 120px);
+    }
+
+    .window-pi-user-info-table .person-info-chat-person-up-left {
+        height: 104px;
+        width: 120px;
+    }
+
+    .window-pi-user-info-table .person-info-chat-person-string-item {
+        height: 12px;
+        font-size: 10pt;
+    }
+
+    .window-pi-user-car .car-info-block-picture-main-site {
+        top: 0;
+    }
+
+    .window-pi-user-car .car-info-block-picture-main {
+        transform: scale(0.71);
+        margin-top: -10px;
+        margin-left: -86px;
+    }
+
+    .window-pi-user-car .car-info-block-picture-main.default-car {
+        overflow-y: hidden;
+        top: 2px;
+    }
+
+    .window-pi-user-car .car-info-block-picture.default-car {
+        margin-top: 0;
+    }
+
+    .window-pi-btn {
+        position: relative;
+        line-height: 25px;
+        width: 215px;
+        height: 25px;
+        margin: 11px auto 0 auto;
+        font-size: 12pt;
+    }
+
+}

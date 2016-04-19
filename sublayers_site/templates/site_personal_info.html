@@ -1,0 +1,32 @@
+<div id="RDSitePersonalInfo" class="page-wrapper">
+    <div class="window-header buttons-and-headers">Nuke Commander v5.51</div>
+    <div class="window-pi-content">
+        <div class="window-pi-content-block window-pi-console-block-wrap">
+            <div id="RDSitePIConsole" class="console-block"></div>
+        </div>
+        <div class="window-pi-content-block btn-block">
+            <div class="window-qg-btn window-pi-btn window-pi-start-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="window.location = '/play';">Войти в игру</div>
+            <div class="window-qg-btn window-pi-btn window-pi-logout-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="Logout()">Покинуть систему</div>
+        </div>
+        <div class="window-pi-content-block game-info">
+            <div id="RDSitePersonalInfoUserInfo" class="window-pi-user-info-table"></div>
+            <div id="RDSitePersonalInfoUserCar" class="window-pi-user-car"></div>
+        </div>
+        <div class="window-pi-content-block insurance"></div>
+    </div>
+</div>
+
+<script>
+    function Logout() {
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/logout',
+            method: 'POST',
+            data: {},
+            success: function() {
+                is_authorize = false;
+                $('#RDbtn_start').click();
+                $('#RDSAuthFieldNote').text('');
+            }
+        });
+    }
+</script>

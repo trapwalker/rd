@@ -1,0 +1,141 @@
+<div id="RDSiteWReg" class="page-wrapper">
+    <div class="window-header interlacing buttons-and-headers">Nuke Commander v5.51</div>
+    <div class="window-reg-main">
+        <div class="window-reg-path">
+            <div class="reg-path-up-header-block-header-block">
+                <div class="reg-path-up-header-block-back interlacing">
+                    <div class="reg-path-up-header-block-header buttons-and-headers">Регистрация</div>
+                </div>
+            </div>
+            <div class="reg-path-up-text-input-block">
+                <div class="reg-path-label">E-MAIL></div>
+                <input type="email" id="reg_email" autocomplete="off">
+            </div>
+            <div class="reg-path-up-text-input-block">
+                <div class="reg-path-label">NICKNAME></div>
+                <input type="text" id="reg_username" autocomplete="off">
+            </div>
+            <div class="reg-path-up-text-input-block">
+                <div class="reg-path-label">ПАРОЛЬ></div>
+                <input type="password" id="reg_password" name="password">
+            </div>
+            <div class="window-reg-up-btn-block">
+                <div class="reg-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RegisterBtnClick();">Зарегистрироваться</div>
+            </div>
+        </div>
+        <div class="window-reg-path right">
+            <div class="reg-path-up-header-block-header-block">
+                <div class="reg-path-up-header-block-back interlacing">
+                    <div class="reg-path-up-header-block-header buttons-and-headers">Авторизация</div>
+                </div>
+            </div>
+            <div class="reg-path-up-text-input-block">
+                <div class="reg-path-label">E-MAIL></div>
+                <input type="email" id="auth_email" autocomplete="off">
+            </div>
+            <div class="reg-path-up-text-input-block">
+                <div class="reg-path-label">ПАРОЛЬ></div>
+                <input type="password" id="auth_password" autocomplete="off">
+            </div>
+            <div class="window-reg-up-btn-block">
+                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="AuthorisationBtnClick()"><span>Войти</span><span>в систему</span></div>
+                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RestorePasswordBtnClick()">Восстановить пароль</div>
+            </div>
+        </div>
+        <div class="window-reg-console-wrap">
+            <div id="RDSiteWRegConsole" class="console-block"></div>
+        </div>
+        <div class="window-reg-footer">
+            <div class="reg-btn buttons-and-headers">Вход через VK</div>
+            <div class="reg-btn buttons-and-headers">Вход через FB</div>
+            <div class="reg-btn buttons-and-headers">Вход через OK</div>
+            <div class="reg-btn buttons-and-headers">Вход через G+</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function GetUserInfo() {
+         $.ajax({
+            url: location.protocol + '//' + location.host + '/get_user_info',
+            method: 'POST',
+            data: {},
+            success: function(data) {
+                if (data.is_authorize) {
+                    is_authorize = data.is_authorize;
+                    var pos_x = '';
+                    var pos_y = '';
+                    if (data.hasOwnProperty('position') && data.position && (data.position.length == 2)) {
+                        pos_x = data.position[0].toFixed(0);
+                        pos_y = data.position[1].toFixed(0);
+                    }
+
+                    consoleWPI.clear();
+                    consoleWPI.add_message('system', 'Добро пожаловать, ' + data.user_name + '!');
+                    consoleWPI.add_message('system', 'Вы вошли в систему Nuke Commander.');
+                    consoleWPI.add_message('system', 'Баланс счета: ' + data.user_balance + 'NC;');
+                    consoleWPI.add_message('system', 'Координаты: (' + pos_x + ' : ' + pos_y + ');');
+                    consoleWPI.add_message('system', 'Страховка: _;');
+                    consoleWPI.add_message('system', 'Активные задания: _.');
+                    
+                    $('#RDSitePersonalInfoUserInfo').empty();
+                    $('#RDSitePersonalInfoUserCar').empty();
+                    $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
+                    $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
+
+                }
+                if (window.location.hash == '#start')
+                    $('#RDbtn_start').click();
+            }
+        });
+    }
+
+    function RegisterBtnClick() {
+        var email = document.getElementById('reg_email').value;
+        var username = document.getElementById('reg_username').value;
+        var password = document.getElementById('reg_password').value;
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: {
+                email: email,
+                username: username,
+                password: password,
+                action: 'reg'
+            },
+            success: function(data) {
+                consoleWReg.add_message('system', data.status);
+                GetUserInfo();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                 console.log(jqXHR, textStatus, errorThrown)
+            }
+        });
+    }
+
+    function AuthorisationBtnClick() {
+        var email = document.getElementById('auth_email').value;
+        var password = document.getElementById('auth_password').value;
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: {
+                email: email,
+                password: password,
+                action: 'auth'
+            },
+            success: function(data) {
+                consoleWReg.add_message('system', data.status);
+                GetUserInfo();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                 console.log(jqXHR, textStatus, errorThrown)
+            }
+        });
+    }
+
+    function RestorePasswordBtnClick() {
+        // console.log('Функция недоступна !!');
+        $('#RDSAuthFieldNote').text('Функция недоступна!');
+    }
+</script>

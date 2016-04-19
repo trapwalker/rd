@@ -1,0 +1,384 @@
+html, body { height: 100%; }
+html { height: 100%; }
+
+.text-blur {
+    text-shadow: 0px 0px 0px #00ff00;
+}
+
+#content-canvas {
+    position: absolute;
+    pointer-events: none;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+    background: transparent url(/static_site/img/1366/768_all_bg.jpg) no-repeat center center;
+    background-size: cover;
+    font-family: Nouveau_IBM;
+    color: #2afd0a;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    cursor: default;
+    text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
+    box-shadow: 2px 2px 10px #00ff00;
+}
+
+input[type="text"], input[type='email'], input[type='password'] {
+    color: #2afd0a;
+    font-family: Nouveau_IBM;
+    appearance: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+input[type="text"]:focus, input[type='email']:focus, input[type='password']:focus{
+    outline: none;
+}
+
+
+.site-main-block {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    /*background: transparent url();*/
+}
+
+.site-main-all-block {
+    position: relative;
+    width: 1366px;
+    height: 768px;
+    margin: 20px auto 0 auto;
+}
+
+.site-main-all-block .microwawe {
+    position: relative;
+    margin: auto;
+    width: 845px;
+    height: 588px;
+    top: 0;
+    left: 0;
+    background: transparent url(/static_site/img/angles_3_4/a2_768.png) no-repeat 100% 100%;
+    pointer-events: none;
+}
+
+.content-block {
+    position: absolute;
+    width: 585px;
+    height: 394px;
+    top: 118px;
+    left: 291px;
+    perspective: 481px;
+    -webkit-perspective: 481px;
+    perspective-origin: 51% 46%;
+    /*display: none;*/
+}
+
+.content-block .content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*background: rgba(203, 59, 2, 0.55);*/
+    transform: rotateY(-10deg);
+    Transform-origin: 49%;
+    background-color: black;
+    box-sizing: border-box;
+    padding: 2px;
+}
+
+
+.content-start-back {
+    position: absolute;
+    width: 1301px;
+    height: 768px;
+    top: -85px;
+    left: -698px;
+    /*display: none;*/
+    background: transparent url(/static_site/img/1366/768_1-st_screen.png) no-repeat 100% 100%;
+}
+
+
+/*ќбщие классы дл€ всех окон*/
+.page-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 2px solid #02ff54;
+    overflow: hidden;
+    display: none;
+}
+
+
+.interlacing_2::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.0));
+    /*background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 50%,*/
+    /*rgba(0, 0, 0, 0.0) 51%, rgba(0, 0, 0, 0.0) 100%);*/
+    z-index: 2;
+    background-size: 100% 2px;
+    pointer-events: none;
+}
+
+
+
+.window-header {
+    position: relative;
+    width: 100%;
+    height: 27px;
+    color: #00ff00;
+    border-bottom: 2px solid #02ff54;
+    background-color: #01610a;
+    box-sizing: border-box;
+    margin-bottom: 3px;
+    text-align: center;
+    line-height: 24px;
+    cursor: default;
+}
+
+
+.btn-block {
+    position: absolute;
+    top: 45px;
+    right: -44px;;
+    width: 250px;
+    height: 100%;
+    pointer-events: auto;
+}
+
+
+
+
+/*  нопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текуща€ страничка !!!!*/
+.btn {
+    position: absolute;
+    cursor: pointer;
+    right: 90px;
+}
+
+.btn-1 {
+    width: 151px;
+    height: 60px;
+    top: 35px;
+    background: transparent url(/static_site/img/1366_2/1_768_btn1.png) no-repeat 100% 100%;
+}
+.btn-1:hover {background: transparent url(/static_site/img/1366_2/1_768_btn1_over.png) no-repeat 100% 100%;}
+.btn-1:active {background: transparent url(/static_site/img/1366_2/1_768_btn1_press.png) no-repeat 100% 100%;}
+.btn-1.active {background: transparent url(/static_site/img/1366_2/1_768_btn1_press.png) no-repeat 100% 100%;}
+
+.btn-2 {
+    width: 151px;
+    height: 55px;
+    top: 90px;
+    background: transparent url(/static_site/img/1366_2/1_768_btn2.png) no-repeat 100% 100%;
+}
+.btn-2:hover {background: transparent url(/static_site/img/1366_2/1_768_btn2_over.png) no-repeat 100% 100%;}
+.btn-2:active {background: transparent url(/static_site/img/1366_2/1_768_btn2_press.png) no-repeat 100% 100%;}
+.btn-2.active {background: transparent url(/static_site/img/1366_2/1_768_btn2_press.png) no-repeat 100% 100%;}
+
+.btn-3 {
+    width: 151px;
+    height: 52px;
+    top: 142px;
+    background: transparent url(/static_site/img/1366_2/1_768_btn3.png) no-repeat 100% 100%;
+}
+.btn-3:hover {background: transparent url(/static_site/img/1366_2/1_768_btn3_over.png) no-repeat 100% 100%;}
+.btn-3:active {background: transparent url(/static_site/img/1366_2/1_768_btn3_press.png) no-repeat 100% 100%;}
+.btn-3.active {background: transparent url(/static_site/img/1366_2/1_768_btn3_press.png) no-repeat 100% 100%;}
+
+.btn-4 {
+    width: 151px;
+    height: 48px;
+    top: 199px;
+    background: transparent url(/static_site/img/1366_2/1_768_btn4.png) no-repeat 100% 100%;
+}
+.btn-4:hover {background: transparent url(/static_site/img/1366_2/1_768_btn4_over.png) no-repeat 100% 100%;}
+.btn-4:active {background: transparent url(/static_site/img/1366_2/1_768_btn4_press.png) no-repeat 100% 100%;}
+.btn-4.active {background: transparent url(/static_site/img/1366_2/1_768_btn4_press.png) no-repeat 100% 100%;}
+
+.btn-5 {
+    width: 151px;
+    height: 45px;
+    top: 248px;
+    background: transparent url(/static_site/img/1366_2/1_768_btn5.png) no-repeat 100% 100%;
+}
+.btn-5:hover {background: transparent url(/static_site/img/1366_2/1_768_btn5_over.png) no-repeat 100% 100%;}
+.btn-5:active {background: transparent url(/static_site/img/1366_2/1_768_btn5_press.png) no-repeat 100% 100%;}
+.btn-5.active {background: transparent url(/static_site/img/1366_2/1_768_btn5_press.png) no-repeat 100% 100%;}
+
+.btn-6 {
+    width: 151px;
+    height: 48px;
+    top: 296px;
+    background: transparent url(/static_site/img/1366_2/1_768_btn6.png) no-repeat 100% 100%;
+}
+.btn-6:hover {background: transparent url(/static_site/img/1366_2/1_768_btn6_over.png) no-repeat 100% 100%;}
+.btn-6:active {background: transparent url(/static_site/img/1366_2/1_768_btn6_press.png) no-repeat 100% 100%;}
+.btn-6.active {background: transparent url(/static_site/img/1366_2/1_768_btn6_press.png) no-repeat 100% 100%;}
+
+
+.btn-fake-radio {
+    position: absolute;
+    cursor: default;
+    width: 110px;
+    height: 40px;
+    top: 477px;
+    right: 102px;
+    background: transparent url(/static_site/img/1366/768_fake_radiobuttons.png) no-repeat 100% 100%;
+}
+
+.light-indicator {
+    position: absolute;
+    cursor: default;
+    width: 29px;
+    height: 28px;
+    top: 450px;
+    right: 180px;
+    background: transparent url(/static_site/img/1366/768_light_indicator.png) no-repeat 100% 100%;
+}
+
+
+
+@media screen and (min-width: 1367px) {
+    body {
+        background: transparent url(/static_site/img/1366/1080_all_bg.jpg) no-repeat center center;
+        background-size: cover;
+    }
+
+    .site-main-all-block {
+        width: 1189px;
+        height: 821px;
+    }
+
+    .site-main-all-block .microwawe {
+        width: 1189px;
+        height: 821px;
+        background: transparent url(/static_site/img/angles_3_4/a2_1080.png) no-repeat 100% 100%;
+    }
+
+    .content-block {
+        width: 819px;
+        height: 551px;
+        top: 158px;
+        left: 44px;
+        perspective: 678px;
+        -webkit-perspective: 678px;
+        perspective-origin: 51% 46%;
+    }
+
+    .content-block .content {
+        transform: rotateY(-10deg);
+    }
+
+    .content-start-back {
+        width: 1831px;
+        height: 1080px;
+        top: -119px;
+        left: -984px;
+        background: transparent url(/static_site/img/1366/1080_1-st_screen.png) no-repeat 100% 100%;
+    }
+
+    .btn-block {
+        width: 300px;
+        top: 48px;
+        right: -60px;
+    }
+
+
+
+    .btn {
+        right: 125px;
+    }
+
+    /*  нопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текуща€ страничка !!!!*/
+    .btn-1 {
+        width: 211px;
+        height: 83px;
+        top: 60px;
+        right: 125px;
+        background: transparent url(/static_site/img/1366_2/1_1080_btn1.png) no-repeat 100% 100%;
+    }
+    .btn-1:hover {background: transparent url(/static_site/img/1366_2/1_1080_btn1_over.png) no-repeat 100% 100%;}
+    .btn-1:active {background: transparent url(/static_site/img/1366_2/1_1080_btn1_press.png) no-repeat 100% 100%;}
+    .btn-1.active {background: transparent url(/static_site/img/1366_2/1_1080_btn1_press.png) no-repeat 100% 100%;}
+
+    .btn-2 {
+        width: 211px;
+        height: 77px;
+        top: 136px;
+        background: transparent url(/static_site/img/1366_2/1_1080_btn2.png) no-repeat 100% 100%;
+    }
+    .btn-2:hover {background: transparent url(/static_site/img/1366_2/1_1080_btn2_over.png) no-repeat 100% 100%;}
+    .btn-2:active {background: transparent url(/static_site/img/1366_2/1_1080_btn2_press.png) no-repeat 100% 100%;}
+    .btn-2.active {background: transparent url(/static_site/img/1366_2/1_1080_btn2_press.png) no-repeat 100% 100%;}
+
+    .btn-3 {
+        width: 211px;
+        height: 73px;
+        top: 207px;
+        background: transparent url(/static_site/img/1366_2/1_1080_btn3.png) no-repeat 100% 100%;
+    }
+    .btn-3:hover {background: transparent url(/static_site/img/1366_2/1_1080_btn3_over.png) no-repeat 100% 100%;}
+    .btn-3:active {background: transparent url(/static_site/img/1366_2/1_1080_btn3_press.png) no-repeat 100% 100%;}
+    .btn-3.active {background: transparent url(/static_site/img/1366_2/1_1080_btn3_press.png) no-repeat 100% 100%;}
+
+    .btn-4 {
+        width: 211px;
+        height: 67px;
+        top: 285px;
+        background: transparent url(/static_site/img/1366_2/1_1080_btn4.png) no-repeat 100% 100%;
+    }
+    .btn-4:hover {background: transparent url(/static_site/img/1366_2/1_1080_btn4_over.png) no-repeat 100% 100%;}
+    .btn-4:active {background: transparent url(/static_site/img/1366_2/1_1080_btn4_press.png) no-repeat 100% 100%;}
+    .btn-4.active {background: transparent url(/static_site/img/1366_2/1_1080_btn4_press.png) no-repeat 100% 100%;}
+
+    .btn-5 {
+        width: 211px;
+        height: 65px;
+        top: 358px;
+        background: transparent url(/static_site/img/1366_2/1_1080_btn5.png) no-repeat 100% 100%;
+    }
+    .btn-5:hover {background: transparent url(/static_site/img/1366_2/1_1080_btn5_over.png) no-repeat 100% 100%;}
+    .btn-5:active {background: transparent url(/static_site/img/1366_2/1_1080_btn5_press.png) no-repeat 100% 100%;}
+    .btn-5.active {background: transparent url(/static_site/img/1366_2/1_1080_btn5_press.png) no-repeat 100% 100%;}
+
+    .btn-6 {
+        width: 211px;
+        height: 66px;
+        top: 426px;
+        background: transparent url(/static_site/img/1366_2/1_1080_btn6.png) no-repeat 100% 100%;
+    }
+    .btn-6:hover {background: transparent url(/static_site/img/1366_2/1_1080_btn6_over.png) no-repeat 100% 100%;}
+    .btn-6:active {background: transparent url(/static_site/img/1366_2/1_1080_btn6_press.png) no-repeat 100% 100%;}
+    .btn-6.active {background: transparent url(/static_site/img/1366_2/1_1080_btn6_press.png) no-repeat 100% 100%;}
+
+    .btn-fake-radio {
+        width: 153px;
+        height: 55px;
+        top: 681px;
+        right: 142px;
+        background: transparent url(/static_site/img/1366/1080_fake_radiobuttons.png) no-repeat 100% 100%;
+    }
+
+    .light-indicator {
+        width: 39px;
+        height: 38px;
+        top: 639px;
+        right: 250px;
+        background: transparent url(/static_site/img/1366/768_light_indicator.png) no-repeat 100% 100%;
+    }
+
+
+}

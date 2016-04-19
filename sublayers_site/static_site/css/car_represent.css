@@ -1,0 +1,121 @@
+.car-info-block-picture-main {
+    position: relative;
+    width: 492px;
+    height: 170px;
+}
+
+.car-info-block-picture {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.armorer-slot {
+    position: absolute;
+    height: 35px;
+    width: 35px;
+}
+
+.armorer_top_F, .armorer_top_B {
+   position: absolute;
+   pointer-events: none;
+   top: -32px;
+   left: -82px;
+}
+
+.armorer_top_L, .armorer_top_R {
+   position: absolute;
+   pointer-events: none;
+   top: -82px;
+   left: -32px;
+}
+
+.armorer_side_F, .armorer_side_B {
+   position: absolute;
+   pointer-events: none;
+   top: -65px;
+   left: -82px;
+}
+
+.armorer_side_L, .armorer_side_R {
+   position: absolute;
+   pointer-events: none;
+   top: -65px;
+   left: -32px;
+}
+
+.person-info-chat-body-page {
+    position: relative;
+    height: 146px;
+    width: 100%;
+}
+
+.person-info-chat-person-up {
+    position: relative;
+    width: 100%;
+    height: 146px;
+    overflow: hidden;
+}
+
+.person-info-chat-person-up-left {
+    position: relative;
+    float: left;
+    height: 146px;
+    width: 170px;
+}
+
+.person-info-chat-person-up-right {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: calc(100% - 170px);
+}
+
+.person-info-chat-person-up-right-info {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.person-info-chat-person-string-item {
+    position: relative;
+    width: 100%;
+    height: 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+    line-height: 0.9;
+}
+
+.person-info-chat-person-string-item-part {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.person-info-chat-person-string-item-part.left {
+    text-align: left;
+    padding: 0 0 0 10px;
+}
+
+.person-info-chat-person-string-item-part.right {
+    text-align: right;
+    padding: 0 10px 0 0;
+}
+
+
+.car-info-block-picture-main-site .car-info-name-block {
+    position: absolute;
+    top: 25px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+
+
+@media screen and (max-width: 1366px) {
+    .car-info-block-picture-main-site .car-info-name-block {
+        top: 20px;
+    }
+}
