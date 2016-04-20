@@ -1,11 +1,11 @@
 
 {% for i in range(0, len(quick_users)) %}
-{% set rec = quick_users[i] %}
+{% set user = quick_users[i] %}
 
 <div class="window-qg-content-rating-line-block {% if i % 2 == 0 %} odd {% end %}">
     <div class="window-qg-content-rating-column col-number">{{i}}</div>
     <div class="window-qg-content-rating-column col-points">-=-</div>
-    <div class="window-qg-content-rating-column col-time">{{ round(rec['time_quick_game'], 2) }}</div>
-    <div class="window-qg-content-rating-column col-nick">{{ rec['name'] }}</div>
+    <div class="window-qg-content-rating-column col-time">{{ round(user.time_quick_game, 2) }}</div>
+    <div class="window-qg-content-rating-column col-nick">{{ user.name }}</div>
 </div>
 {% end %}
