@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>NUKE Navigator {% if revision %}v.{{ revision }}{% end %}</title>
+    <title>NUKE Navigator {% if version %}v:{{ version }}{% end %}{% if revision %} rev:{{ revision }}{% end %}</title>
 
     <style>
         @font-face {
