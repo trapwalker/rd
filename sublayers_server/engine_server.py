@@ -75,6 +75,12 @@ class Application(tornado.web.Application):
             self.revision = None
             log.warning("Can't get HG revision info: %s", e)
 
+        try:
+            self.version = service_tools.HGVersion()
+        except Exception as e:
+            self.version = None
+            log.warning("Can't get project verion info: %s", e)
+
         dsn = urlparse(options.db)
         self.dba = db_connect(
             db=dsn.path.lstrip('/'),
@@ -85,7 +91,7 @@ class Application(tornado.web.Application):
         self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 
         log.info('\n' + '=-' * 70)
-        log.info('GAME ENGINE SERVICE STARTING %s\n' + '--' * 70, self.revision)
+        log.info('GAME ENGINE SERVICE STARTING v: %s [%s]\n' + '--' * 70, self.version, self.revision)
         self.srv = LocalServer(app=self)
         log.debug('server instance init')
         self.srv.start()

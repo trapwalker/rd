@@ -35,6 +35,7 @@ class BaseHandler(AuthHandlerMixin):
         namespace = super(BaseHandler, self).get_template_namespace()
         namespace.update(
             revision=self.application.revision,
+            version=self.application.version,
             static_world_link_repr=static_world_link_repr,
         )
         return namespace

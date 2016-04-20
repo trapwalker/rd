@@ -89,7 +89,7 @@ class User(Document):
 
     def as_document(self):
         d = self.__dict__.copy()
-        d.pop('db', None)
+        d.pop('db', None)  # todo: remove obsolete code
         return d
 
     def __repr__(self):
