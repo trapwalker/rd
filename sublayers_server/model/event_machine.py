@@ -216,10 +216,15 @@ class LocalServer(Server):
             return
 
         event = timeline.get()
+        t = self.get_time()
         try:
             event.perform()
         except:
             log.exception('Event performing error %s', event)
+        finally:
+            t = self.get_time() - t
+            
+
 
         self.ioloop.add_callback(callback=self.event_loop)
 
