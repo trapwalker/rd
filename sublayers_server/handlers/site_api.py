@@ -8,9 +8,8 @@ import tornado.web
 import tornado.gen
 import tornado.template
 
-from sublayers_server.user_profile import User
-
-from sublayers_server.handlers.base import BaseHandler
+from sublayers_common.user_profile import User
+from sublayers_common.handlers.base import BaseHandler
 from sublayers_server.model.registry.classes.mobiles import Car as RegCar
 
 

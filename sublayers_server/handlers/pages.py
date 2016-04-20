@@ -4,9 +4,9 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.web
-from tornado.options import options
+from tornado.options import options  # todo: (!) use application.options
 
-from sublayers_server.handlers.base import BaseHandler
+from sublayers_common.handlers.base import BaseHandler
 
 
 class PlayHandler(BaseHandler):

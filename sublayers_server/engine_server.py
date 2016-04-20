@@ -44,7 +44,6 @@ from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
-from sublayers_server.handlers.site.site_handler import SiteHandler
 from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
     # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
@@ -103,8 +102,8 @@ class Application(tornado.web.Application):
         self.srv.load_world()
 
         handlers = [
-            (r"/", SiteHandler),
-            (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
+            (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект на случай запуска без сайта
+            (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", PlayHandler),

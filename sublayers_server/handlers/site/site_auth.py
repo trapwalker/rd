@@ -3,8 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.handlers.base import BaseHandler
-from sublayers_server.user_profile import User
+from sublayers_common.handlers.base import BaseHandler
+from sublayers_common.user_profile import User
 
 import tornado.gen
 from tornado.web import RequestHandler, HTTPError
