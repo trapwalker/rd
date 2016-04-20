@@ -47,3 +47,22 @@ class HGRevision(object):
 
     def __str__(self):
         return '{self.branch}:{self.num} [{self.hash}{cf}]'.format(self=self, cf='+' if self.is_changed else '')
+
+
+class HGVersion(object):
+    @staticmethod
+    def get_branche_size(branche):
+        with os.popen('hg log -b {} | grep changeset | wc -l'.format(branche)) as f:
+            return f.read().rstrip('\n')
+    
+    def __init__(self):
+        self.main = '0'
+        self.release = self.get_branche_size('release')
+        self.default = self.get_branche_size('default')
+
+    def __str__(self):
+        return '{self.main}.{self.release}.{self.default}'.format(self=self)
+
+if __name__ == '__main__':
+    print 'version =', HGVersion()
+    print 'revision = ', HGRevision()
