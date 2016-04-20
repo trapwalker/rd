@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.user_profile import User
+from sublayers_common.user_profile import User
 
 import tornado.web
 import tornado.gen

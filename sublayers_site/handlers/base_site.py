@@ -3,30 +3,17 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_common.user_profile import User
-from bson.objectid import ObjectId, InvalidId
-from tornado.httpclient import AsyncHTTPClient
-import json
-import tornado
+from sublayers_common.handlers.base import BaseHandler
+
 import tornado.web
+import tornado.gen
 from tornado.options import options
+from tornado.httpclient import AsyncHTTPClient
+from bson.objectid import ObjectId, InvalidId
+import json
 
 
-class AuthHandlerMixin(tornado.web.RequestHandler):
-    @tornado.gen.coroutine
-    def prepare(self):
-        user = None
-        user_id = self.get_secure_cookie("user")
-        if user_id:
-            try:
-                user = yield User.objects.get(ObjectId(user_id))
-            except InvalidId as e:
-                log.warning('User resolve error: %r', e)
-
-        self.current_user = user
-
-
-class BaseHandler(AuthHandlerMixin):
+class BaseSiteHandler(BaseHandler):
     @tornado.gen.coroutine
     def _get_car(self, username):
         http = AsyncHTTPClient()

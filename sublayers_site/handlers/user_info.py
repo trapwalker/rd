@@ -4,10 +4,10 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import BaseHandler
-import tornado
+from sublayers_common.user_profile import User
 
-from user_profile import User
 from bson.objectid import ObjectId, InvalidId
+import tornado
 
 
 class GetUserInfoHandler(BaseHandler):

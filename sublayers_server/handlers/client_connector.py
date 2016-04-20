@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 
-from sublayers_server.handlers.base import BaseHandler
+from sublayers_common.handlers.base import BaseHandler
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
