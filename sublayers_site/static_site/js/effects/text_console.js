@@ -1,5 +1,5 @@
-var constConsoleUserPrintSpeed = 100;        // Время на печать одного символа сообщения пользователя (мс)
-var constConsoleSystemPrintSpeed = 10;      // Время на печать одного символа сообщения системы (мс)
+var constConsoleUserPrintSpeed = 5;        // Время на печать одного символа сообщения пользователя (мс)
+var constConsoleSystemPrintSpeed = 5;      // Время на печать одного символа сообщения системы (мс)
 var constConsoleDelayIndicator = 300;       // Частота моргания каретки (мс)
 
 var constConsolePrintSpeed = 10;        // Время на печать одного символа (мс)
@@ -168,6 +168,8 @@ var TextConsole = (function(){
         this._current_symbol = 0;
 
         this._final_indicator_state = false;
+        this._final_indicator_placeholder = '';
+
         this._interval = null;
     }
 
@@ -199,7 +201,7 @@ var TextConsole = (function(){
         }
         else {
             self._text += '\n';
-            self.target_div.text(self._text);
+            self.target_div.text(self._text + ' ');
             self.target_div.scrollTop(self.target_div.get(0).scrollHeight);
             clearInterval(self._interval);
             self._state_selector(self);
@@ -209,9 +211,9 @@ var TextConsole = (function(){
     TextConsole.prototype._state_print_final_indicator = function(self) {
         // Мигание каретки
         if (self._final_indicator_state)
-            self.target_div.text(self._text + '_');
+            self.target_div.text(self._text + self._final_indicator_placeholder + '_');
         else
-            self.target_div.text(self._text + ' ');
+            self.target_div.text(self._text + self._final_indicator_placeholder + ' ');
         self._final_indicator_state = !self._final_indicator_state;
 
         // проверка на возможность пролдолжения печати
@@ -247,7 +249,9 @@ var TextConsole = (function(){
         }
 
         // Если строк нет, то печатать мигающий финальный символ
-         self._interval = setInterval(self._state_print_final_indicator, constConsoleDelayIndicator, self);
+        self.target_div.text(self._text + ' ');
+        self.target_div.scrollTop(self.target_div.get(0).scrollHeight);
+        self._interval = setInterval(self._state_print_final_indicator, constConsoleDelayIndicator, self);
     };
 
     TextConsole.prototype.start = function() {
@@ -284,11 +288,13 @@ var ConsoleWReg = (function (_super) {
         _super.call(this);
         this.target_div = $('#RDSiteWRegConsole');
         this.page_id = 'RDSiteWReg';
-
+        this._u_m_counter = 0;
         this._console_blocks = [
             {
                 sender:     'system',
-                message:    'Корпораця Нукойл. вер.5.06'
+                message:    '=== Нюк Коммандер вер. 5.51 ===\n' +
+                            'Корпораця Нукойл. 2039\n' +
+                            '________________________________________________\n'
             },
             {
                 sender:     'user',
@@ -296,29 +302,38 @@ var ConsoleWReg = (function (_super) {
             },
             {
                 sender:     'system',
-                message:    'Ошибка доступа'
+                message:    'Ошибка доступа.'
             },
             {
                 sender:     'user',
-                message:    'Загрузка протокола регистрации новых водителей.'
+                message:    'Загрузка протокола учета водителей.'
             },
             {
                 sender:     'system',
                 message:    'Загружено.\n\n' +
-                            'Для регистрации нового водителя в системе введите свою электронную почту и пароль или подключитесь через одну из внешних сетей:\n\n' +
+                            '================================================\n' +
+                            'Для регистрации нового водителя в системе введите свою электронную почту и пароль или подключитесь через одну из внешних сетей.\n' +
+                            'Если вы зарегистированный водитель, войдите в систему через меню авторизации или подключитесь через одну из внешних сетей.\n\n' +
                             'Нажмите 1 для vk.com\n' +
                             'Нажмите 2 для facebook.com\n' +
                             'Нажмите 3 для ok.ru\n' +
-                            'Нажмите 4 для plus.google.com'
+                            'Нажмите 4 для plus.google.com\n' +
+                            '================================================\n'
             }
         ];
         this.init();
     }
 
-    ConsoleWReg.prototype._system_placeholder = function() {
+    ConsoleWReg.prototype._user_placeholder = function() {
         var data = new Date();
-        var time_str = data.getHours() + ':' + data.getMinutes();
-        return '>0x001 (' + time_str + ') ';
+        var hh_str = data.getHours().toString();
+        var mm_str = data.getMinutes().toString();
+        var u_m_c_str = this._u_m_counter.toString();
+        hh_str = hh_str.length == 2 ? hh_str : '0' + hh_str;
+        mm_str = mm_str.length == 2 ? mm_str : '0' + mm_str;
+        u_m_c_str = u_m_c_str.length == 3 ? u_m_c_str : ( u_m_c_str.length == 2 ? '0' + u_m_c_str : '00' + u_m_c_str);
+        this._u_m_counter++;
+        return '>0x0' + u_m_c_str + ' (' + hh_str + ':' + mm_str + '): ';
     };
 
     return ConsoleWReg;
@@ -342,15 +357,54 @@ var ConsoleWPI = (function (_super) {
     return ConsoleWPI;
 })(TextConsole);
 
+var ConsoleWStart = (function (_super) {
+    __extends(ConsoleWStart, _super);
+
+    function ConsoleWStart() {
+        _super.call(this);
+        this.target_div = $('#RDSiteStartPageConsole');
+        this.page_id = 'RDSiteStartPage';
+
+        this._console_blocks = [
+            {
+                sender:     'system',
+                message:    'Корпораця Нукойл. вер.5.06'
+            },
+            {
+                sender:     'system',
+                message:    'Ошибка доступа'
+            },
+            {
+                sender:     'system',
+                message:    'Загружено.\n\n' +
+                            'Для регистрации нового водителя в системе введите свою электронную почту и пароль или подключитесь через одну из внешних сетей:\n\n' +
+                            'Нажмите 1 для vk.com\n' +
+                            'Нажмите 2 для facebook.com\n' +
+                            'Нажмите 3 для ok.ru\n' +
+                            'Нажмите 4 для plus.google.com'
+            }
+        ];
+        this.init();
+    }
+
+    ConsoleWStart.prototype._system_placeholder = function() {
+        return '> ';
+    };
+
+    return ConsoleWStart;
+})(TextConsole);
+
 var textConsoleManager;
 
 var consoleWReg;
 var consoleWPI;
+var consoleWStart;
 
 function initConsoles() {
     textConsoleManager = new TextConsoleEffectManager();
     consoleWReg = new ConsoleWReg();
     consoleWPI = new ConsoleWPI();
+    consoleWStart = new ConsoleWStart();
 }
 
 

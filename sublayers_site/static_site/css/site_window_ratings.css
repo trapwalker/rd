@@ -255,7 +255,7 @@
 
 .window-ratings-right-path-header-block-back {
     position: relative;
-    width: 138px;
+    width: 60%;  /*138px;*/
     height: 23px;
     margin: 0 auto 0 auto;
     background-color: black;
@@ -263,7 +263,7 @@
 
 .window-ratings-right-path-header-block-header {
     position: relative;
-    width: 134px;
+    width: calc(100% - 4px);
     height: 23px;
     margin: 0 auto 0 auto;
     background-color: #01610a;
