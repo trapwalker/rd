@@ -9,7 +9,7 @@ var __extends = this.__extends || function (d, b) {
 
 var rating_users_info_list = {}; // Список пользователей в рейтингах, чтобы каждого запрашивать только по 1 разу в 5-10 минут
 
-// �?нициализация всего и вся
+// Инициализация всего и вся
 function main() {
     canvasManager = new CanvasManager();
     canvasNoise = new CanvasNoise();
@@ -21,7 +21,7 @@ function main() {
 
     initConsoles();
 
-    // ������� �� ����� (���)
+
     var hash_url = window.location.hash;
     if (hash_url && hash_url.length) {
         hash_url = hash_url.split('#')[1];
@@ -35,7 +35,7 @@ function main() {
         GetRatingInfo(ratings_name[i]);
     }
 
-
+    consoleWStart.start();
 }
 
 function GetQuickGameRecords() {
