@@ -281,13 +281,36 @@
     /* padding: 5px; */
 }
 
+.window-ratings-right-path-content-block .delimiter {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    margin-top: 9px;
+    border-width: 0 0 2px 0;
+    box-sizing: border-box;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+.window-ratings-right-path-content-block .car-info-name-block {
+    top: 20px;
+}
 
 /* Информация о машинках */
 
 .window-ratings-right-path-content-block .window-pi-user-car {
-    top: 16px;
+    top: 0;
 }
 
+.window-ratings-right-path-content-block .person-info-chat-person-string-item {
+    font-size: 10pt;
+    line-height: 1.2;
+}
+
+.window-ratings-right-path-content-block .person-info-chat-person-string-item.odd {
+    background-color: #041105;
+}
 
 /* Медиа Запросы для разрешения 1366 */
 
@@ -342,7 +365,7 @@
     }
 
     .window-ratings-right-path-content-block .window-pi-user-car {
-        top: -26px;
+        top: -30px;
     }
 
     .window-ratings-right-path-content-block .car-info-name-block{
@@ -358,6 +381,19 @@
         margin-top: -29px;
     }
 
+    .window-ratings-right-path-content-block .delimiter {
+        height: 1px;
+        margin-top: 2px;
+    }
+
+    .window-ratings-right-path-content-block .car-info-name-block {
+        top: 32px;
+    }
+
+    .window-ratings-right-path-content-block .person-info-chat-person-string-item {
+        font-size: 9pt;
+        line-height: 1.2;
+    }
 
 
 }

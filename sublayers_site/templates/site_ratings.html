@@ -2,25 +2,25 @@
     <div class="window-header buttons-and-headers">Nuke Commander v5.51</div>
     <div class="window-ratings-main">
         <div class="window-ratings-header">
-            <div class="window-ratings-header-path middle" data-rating="Traders">
+            <div class="window-ratings-header-path middle" data-rating="Traders" data-rating_note="Рейтинг торговцев">
                 <div class="window-ratings-header-path-content buttons-and-headers">Торговцы</div>
             </div>
-            <div class="window-ratings-header-path middle" data-rating="Looters">
+            <div class="window-ratings-header-path middle" data-rating="Looters" data-rating_note="Рейтинг грабителей">
                 <div class="window-ratings-header-path-content buttons-and-headers">Грабители</div>
             </div>
-            <div class="window-ratings-header-path small" data-rating="Heroes">
+            <div class="window-ratings-header-path small" data-rating="Heroes" data-rating_note="Рейтинг героев">
                 <div class="window-ratings-header-path-content buttons-and-headers">Герои</div>
             </div>
-            <div class="window-ratings-header-path" data-rating="Villain">
+            <div class="window-ratings-header-path" data-rating="Villain" data-rating_note="Рейтинг злодеев">
                 <div class="window-ratings-header-path-content buttons-and-headers">Злодеи</div>
             </div>
-            <div class="window-ratings-header-path" data-rating="Leaders">
+            <div class="window-ratings-header-path" data-rating="Leaders" data-rating_note="Рейтинг лидеров">
                 <div class="window-ratings-header-path-content buttons-and-headers">Лидеры</div>
             </div>
-            <div class="window-ratings-header-path small" data-rating="Warriors">
+            <div class="window-ratings-header-path small" data-rating="Warriors" data-rating_note="Рейтинг войнов">
                 <div class="window-ratings-header-path-content buttons-and-headers">Войны</div>
             </div>
-            <div class="window-ratings-header-path long" data-rating="Adventurers">
+            <div class="window-ratings-header-path long" data-rating="Adventurers" data-rating_note="Рейтинг авантюристов">
                 <div class="window-ratings-header-path-content buttons-and-headers">Авантюристы</div>
             </div>
         </div>
@@ -51,7 +51,7 @@
 
         <div class="window-ratings-right-path">
             <div class="window-ratings-right-path-top">
-                <div class="window-ratings-right-path-top-header">Описание рейтинга</div>
+                <div id="RDSiteRatingNotesName" class="window-ratings-right-path-top-header">Описание рейтинга</div>
                 <div id="RDSiteRatingNotes_Traders" class="window-ratings-right-path-top-content">
                     Расчитывается из количества нукойнов, заработанных навыком торговли, а так же из количества купленного экспортного товара и проданного импортного.
                 </div>
@@ -82,6 +82,7 @@
                 </div>
                 <div class="window-ratings-right-path-content-block">
                     <div id="RDSiteRatingUserInfo" class="window-pi-user-info-table"></div>
+                    <div class="delimiter"></div>
                     <div id="RDSiteRatingUserCar" class="window-pi-user-car"></div>
                 </div>
             </div>
@@ -107,6 +108,9 @@
 
             $('.window-ratings-right-path-top-content').css({display: 'none'});
             $('#RDSiteRatingNotes_' + rating_name).css({display: 'block'});
+
+            // Замена надписи в заголовке описания рейтингов
+            $('#RDSiteRatingNotesName').text($(this).data('rating_note'));
 
             // Принудительно выделять первого пользователя, если другой не выделен
             var current_elem_in_rating = $('#RDSiteRating_' + rating_name).find('.window-ratings-line.active');
