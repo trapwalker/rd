@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from base import BaseHandler
-from user_profile import User
+from sublayers_common.user_profile import User
 
 from tornado.web import HTTPError
 from tornado.httpclient import AsyncHTTPClient
