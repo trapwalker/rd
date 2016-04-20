@@ -67,13 +67,13 @@ class StandardLoginHandler(BaseHandler):
             or username and len(username) > 100
             or email.count('@') != 1
         ):
-            self.finish({'status': 'Некорректные входные данные'})
+            self.finish({'status': 'fail_wrong_input'})
             return
         if (yield User.get_by_email(email=email)):
-            self.finish({'status': 'Пользователь с таким email уже зарегистрирован.'})
+            self.finish({'status': 'fail_exist_email'})
             return
         if (yield User.get_by_name(name=username)):
-            self.finish({'status': 'Пользователь с таким именем уже зарегистрирован.'})
+            self.finish({'status': 'fail_exist_nickname'})
             return
         # регистрация на форуме
         # forum_id = yield self._forum_setup({
@@ -91,7 +91,7 @@ class StandardLoginHandler(BaseHandler):
         self.set_secure_cookie("user", str(user.id))
         self.set_cookie("forum_user", self._forum_cookie_setup(username))
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
-        self.finish({'status': 'Вы зарегистрированы'})
+        self.finish({'status': 'success'})
 
     @tornado.gen.coroutine
     def _quick_registration(self):
@@ -162,19 +162,19 @@ class StandardLoginHandler(BaseHandler):
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
         if not email or not password:
-            self.finish({'status': 'Некорректные входные данные'})
+            self.finish({'status': 'fail'})
             return
 
         user = yield User.get_by_email(email=email)
         if not user:
-            self.finish({'status': 'Пользователь с таким email не найден.'})
+            self.finish({'status': 'fail'})
             return
 
         if not user.check_password(password):
-            self.finish({'status': 'Неверный пароль.'})  # todo: fix it - security
+            self.finish({'status': 'fail'})
             return
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
         self.set_cookie("forum_user", self._forum_cookie_setup(user.name))
         # return self.redirect("/")
-        self.finish({'status': 'Вы авторизованы'})       
+        self.finish({'status': 'success'})

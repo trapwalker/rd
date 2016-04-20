@@ -10,11 +10,6 @@ import tornado
 
 
 class SiteMainHandler(BaseHandler):
-    # todo: снести и изменить в шаблоне!
-    @classmethod
-    def new_site_angle_type(cls):
-        return 1
-
     @tornado.gen.coroutine
     def get(self):
 
@@ -36,7 +31,7 @@ class SiteMainHandler(BaseHandler):
         # Загружаем информацию о быстрой игре
         quick_game_info = yield self._get_quick_game()
 
-        self.render('site_main.html', news_list=news_list, site_angle_number=self.new_site_angle_type(),
-                    is_authorize=is_authorize_str, quick_game_cars=quick_game_info.get('quick_cars', []))
+        self.render('site_main.html', news_list=news_list, is_authorize=is_authorize_str,
+                    quick_game_cars=quick_game_info.get('quick_cars', []))
 
 
