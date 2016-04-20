@@ -132,6 +132,9 @@
 
         function updateRatingUserInfo(user_info) {
             $('#RDSiteRatingUserName').text(user_info.user_name);
+            var procent_length = 20 + 2 * user_info.user_name.length;
+            procent_length = procent_length > 80 ? 80 : procent_length;
+            $('#RDSiteRatingUserName').parent().width(procent_length + '%');
             $("#RDSiteRatingUserInfo").empty();
             $("#RDSiteRatingUserCar").empty();
             $('#RDSiteRatingUserInfo').append(user_info.user_info_html);

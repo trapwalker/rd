@@ -53,7 +53,7 @@
     position: relative;
     width: calc(100% - 40px);
     height: 23px;
-    margin: 5px auto 5px auto;
+    margin: 5px auto 30px auto;
 }
 
 .window-qg-content-nickname-label {
@@ -76,7 +76,7 @@
     width: calc(100% - 6px);
     height: 40%;
     margin: 0 auto;
-    border: 2px solid #007700;
+    /*border: 2px solid #007700;*/
     box-sizing: border-box;
 }
 
@@ -131,7 +131,7 @@
     height: 30px;
     text-align: center;
     line-height: 30px;
-    margin: 40px auto 0 auto;
+    margin: 60px auto 0 auto;
     font-size: 16pt;
 }
 
@@ -180,6 +180,13 @@
 
     .window-qg-content-nickname-label { line-height: 20px; }
 
+    .window-qg-content-nickname-block {
+        margin: 5px auto 10px auto;
+    }
+
+    .window-qg-content-play-btn {
+        margin-top: 40px;
+    }
 
 }
 
