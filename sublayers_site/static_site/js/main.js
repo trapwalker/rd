@@ -52,7 +52,22 @@ function init_site_sound() {
     audioManager.load('dev_gl_0', {url: '/audio/device_noise/178306__glitchedtones__glitchedtones-apc-66.wav'});
     audioManager.load('dev_gl_1', {url: '/audio/device_noise/178308__glitchedtones__glitchedtones-apc-79.wav'});
 
-    
+    // Кнопки клавиатуры
+    audioManager.load('key_cl_0', {url: '/audio/print_keyboard/194797__jim-ph__vintage-keyboard-3.wav'});
+    audioManager.load('key_cl_1', {url: '/audio/print_keyboard/332671__reitanna__some-sort-of-click.wav'});
+    audioManager.load('key_cl_2', {url: '/audio/print_keyboard/181000__ueffects__r-key.wav'});
+    audioManager.load('key_cl_3', {url: '/audio/print_keyboard/323717__reitanna__button.wav'});
+    audioManager.load('key_cl_4', {url: '/audio/print_keyboard/333047__christopherderp__videogame-menu-button-clicking-sound-18.wav'});
+
+
+    audioKeyboard = new AudioKeyboard([
+        audioManager.get('key_cl_0'),
+        audioManager.get('key_cl_1'),
+        audioManager.get('key_cl_2'),
+        audioManager.get('key_cl_3'),
+        audioManager.get('key_cl_4')
+    ]);
+
 
 }
 
