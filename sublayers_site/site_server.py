@@ -24,6 +24,7 @@ from sublayers_common.base_application import BaseApplication
 
 class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
+        settings.setdefault('xsrf_cookies', False)  # todo: (!) Починить и убрать эту строчку! По умолчанию True
         settings.setdefault('static_path', options.static_path)
         settings.setdefault('static_url_prefix', '/static_site/')
         settings.setdefault('login_url', '/login')
