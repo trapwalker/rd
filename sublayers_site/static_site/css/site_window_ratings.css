@@ -326,12 +326,11 @@
     }
 
     .window-ratings-right-path-top {
-        height: 30%;
+        height: 25%;
     }
 
     .window-ratings-right-path-bottom {
-        height: calc(100% - 30% - 4px);
-
+        height: calc(100% - 25% - 4px);
     }
 
     .window-ratings-line {
