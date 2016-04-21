@@ -37,6 +37,7 @@ class DBError(Exception):
 
 class BaseApplication(tornado.web.Application):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
+        self.name = os.path.basename(sys.argv[0])  # todo: add service name attribute to Application class
         try:
             self.revision = service_tools.HGRevision()
         except Exception as e:
@@ -58,12 +59,9 @@ class BaseApplication(tornado.web.Application):
         )
         self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 
-        log.info('\n' + '=-' * 70)
-        log.info('SERVICE INIT: {svc_name} v={self.version}; rev={self.revision}\n{delimit}'.format(
-            self=self, 
-            svc_name=os.path.basename(sys.argv[0]),  # todo: add service name attribute to Application class
-            delimit='--' * 70,
-        ))
+        log.info('=-' * 25)
+        log.info('SERVICE INIT: {self.name} v={self.version}'.format(self=self))
+        log.info('--' * 25)
 
         settings.setdefault('xsrf_cookies', True)
         settings.setdefault('autoreload', False)
