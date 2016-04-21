@@ -80,7 +80,8 @@ class Application(BaseApplication):
             "secret": "4gyveXhKv5aVNCor5bkB",
         })
 
-        super(Application, self).__init__(handlers=None, default_host="", transforms=None, **settings)
+        super(Application, self).__init__(
+            handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
         self.srv = LocalServer(app=self)
         log.debug('server instance init')
