@@ -61,6 +61,7 @@ class BaseApplication(tornado.web.Application):
 
         log.info('=-' * 25)
         log.info('SERVICE INIT: {self.name} v={self.version}'.format(self=self))
+        log.info('REVISION {self.revision}'.format(self=self))
         log.info('--' * 25)
 
         settings.setdefault('xsrf_cookies', True)
