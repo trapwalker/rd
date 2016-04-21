@@ -17,7 +17,7 @@
             </div>
             <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">ПАРОЛЬ></div>
-                <input type="password" id="reg_password" name="password" onclick="RegPasswordClick()">
+                <input type="password" id="reg_password" autocomplete="off" name="password" onclick="RegPasswordClick()">
             </div>
             <div class="window-reg-up-btn-block">
                 <div class="reg-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RegisterBtnClick();">Зарегистрироваться</div>
@@ -166,7 +166,7 @@
                         'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
                         'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
                         'Ваша страховка: _\n' +
-                        'Активные задания: _\n' +
+                        'Активных заданий: _\n' +
                         '-----------------------------'
                     );
                     
