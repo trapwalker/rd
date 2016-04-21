@@ -25,9 +25,6 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
-from urlparse import urlparse
-from pymongo import MongoClient
-from motorengine import connect as db_connect
 
 from sublayers_server import settings
 from sublayers_server import uimodules
@@ -64,47 +61,38 @@ from sublayers_server.handlers.site_api import (
 )
 
 
-class DBError(Exception):
-    pass
+class Application(BaseApplication):
+    def __init__(self, handlers=None, default_host="", transforms=None, **settings):
+        settings.setdefault('static_path', options.static_path)
+        settings.setdefault('ui_modules', uimodules)
+        settings.setdefault('login_url', "/login")
+        settings.setdefault('google_oauth', {
+            "key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
+            "secret": "JOXGxpPxKGqr_9TYW9oYT8g_",
+        })
+        settings.setdefault('ok_oauth', {
+            "key": "1137609984",
+            "secret": "BB413D7F8E6B685D19AE3FE0",
+            "public_key": "CBAOIPMEEBABABABA",
+        })
+        settings.setdefault('vk_oauth', {
+            "key": "4926489",
+            "secret": "4gyveXhKv5aVNCor5bkB",
+        })
 
+        super(Application, self).__init__(handlers=None, default_host="", transforms=None, **settings)
 
-class Application(tornado.web.Application):
-    def __init__(self):
-        try:
-            self.revision = service_tools.HGRevision()
-        except Exception as e:
-            self.revision = None
-            log.warning("Can't get HG revision info: %s", e)
-
-        try:
-            self.version = service_tools.HGVersion()
-        except Exception as e:
-            self.version = None
-            log.warning("Can't get project verion info: %s", e)
-
-        dsn = urlparse(options.db)
-        self.dba = db_connect(
-            db=dsn.path.lstrip('/'),
-            host=dsn.hostname,
-            port=dsn.port,
-            io_loop=tornado.ioloop.IOLoop.instance(),
-        )
-        self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
-
-        log.info('\n' + '=-' * 70)
-        log.info('GAME ENGINE SERVICE STARTING v: %s [%s]\n' + '--' * 70, self.version, self.revision)
         self.srv = LocalServer(app=self)
         log.debug('server instance init')
         self.srv.start()
         log.info('ENGINE LOOP STARTED' + '-' * 50)
         self.clients = []
         self.chat = []
-        # todo: tuncate chat history
-
+        # todo: truncate chat history
         self.srv.load_world()
 
-        handlers = [
-            (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект на случай запуска без сайта
+        self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
+            (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта
             (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),
             (r"/ws", AgentSocketHandler),
             (r"/static/(.*)", StaticFileHandlerPub),
@@ -141,26 +129,8 @@ class Application(tornado.web.Application):
             (r"/api/get_user_info2", APIGetUserInfoHandler2),
             (r"/api/get_quick_game_cars", APIGetQuickGameCarsHandler),
 
-            (r"/interlacing", TestInterlacingHandler)
-        ]
-        app_settings = dict(
-            cookie_secret=options.cookie_secret,
-            template_path=options.template_path,
-            static_path=options.static_path,
-            xsrf_cookies=True,
-            ui_modules=uimodules,
-            login_url="/login",
-            debug=True,
-            autoreload=False,
-            google_oauth={"key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
-                          "secret": "JOXGxpPxKGqr_9TYW9oYT8g_"},
-            ok_oauth={"key": "1137609984",
-                      "secret": "BB413D7F8E6B685D19AE3FE0",
-                      "public_key": "CBAOIPMEEBABABABA"},
-            vk_oauth={"key": "4926489",
-                      "secret": "4gyveXhKv5aVNCor5bkB"},
-        )
-        tornado.web.Application.__init__(self, handlers, **app_settings)
+            (r"/interlacing", TestInterlacingHandler),
+        ])
 
     def stop(self):
         log.debug('====== ioloop before stop')
