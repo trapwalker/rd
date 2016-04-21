@@ -3,12 +3,13 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import BaseHandler
+from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 
 import tornado.gen
 
-class GetRatingInfo(BaseHandler):
+
+class GetRatingInfo(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
         # todo: принять в аргументе имя рейтинга и как-то обработтать это в поиске
@@ -17,7 +18,7 @@ class GetRatingInfo(BaseHandler):
         self.render('table_ratings.html', rate_users=rate_users)
 
 
-class GetQuickGameRecords(BaseHandler):
+class GetQuickGameRecords(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
         # todo: Сделать метод в классе User для этого действия

@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import BaseHandler
+from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 
 from tornado.web import HTTPError
@@ -24,12 +24,12 @@ def clear_all_cookie(handler):
     handler.clear_cookie("user")
 
 
-class LogoutHandler(BaseHandler):
+class LogoutHandler(BaseSiteHandler):
     def post(self):
         clear_all_cookie(self)
 
 
-# class BaseLoginHandler(BaseHandler):
+# class BaseLoginHandler(BaseSiteHandler):
 #     def login_error_redirect(self, doseq=0, **kw):
 #         url = urllib.urlencode([
 #             (k, v.encode('utf-8') if isinstance(v, unicode) else str(v))
@@ -38,7 +38,7 @@ class LogoutHandler(BaseHandler):
 #         self.redirect("/login?{}".format(url))  # todo: use reverse resolver
 
 
-class StandardLoginHandler(BaseHandler):
+class StandardLoginHandler(BaseSiteHandler):
     def get(self):
         self.redirect('/#start')
 

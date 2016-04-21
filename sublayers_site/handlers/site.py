@@ -3,13 +3,14 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import BaseHandler
+from sublayers_site.handlers.base_site import BaseSiteHandler
+
 import os
 import yaml
 import tornado
 
 
-class SiteMainHandler(BaseHandler):
+class SiteMainHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def get(self):
 
@@ -33,5 +34,3 @@ class SiteMainHandler(BaseHandler):
 
         self.render('site_main.html', news_list=news_list, is_authorize=is_authorize_str,
                     quick_game_cars=quick_game_info.get('quick_cars', []))
-
-

@@ -32,6 +32,7 @@ def _rel(*folders):
 
 # Options definintion block:
 
+define("debug", default=False, help="Debug mode flag", type=bool)
 define("cookie_secret", help="cookie secret key", type=str)
 define("forum_cookie_secret", help="cookie secret key", type=str)
 define("static_path", default=_rel("static_site"), help="path to static files", type=str)
