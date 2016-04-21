@@ -46,10 +46,10 @@
             <div id="RDSiteWRegConsole" class="console-block"></div>
         </div>
         <div class="window-reg-footer">
-            <div class="reg-btn buttons-and-headers" onclick="VKClick()">Вход через VK</div>
-            <div class="reg-btn buttons-and-headers" onclick="FBClick()">Вход через FB</div>
-            <div class="reg-btn buttons-and-headers" onclick="OKClick()">Вход через OK</div>
-            <div class="reg-btn buttons-and-headers" onclick="GClick()">Вход через G+</div>
+            <div class="reg-btn buttons-and-headers" onclick="VKClick()">1. Вход через VK</div>
+            <div class="reg-btn buttons-and-headers" onclick="FBClick()">2. Вход через FB</div>
+            <div class="reg-btn buttons-and-headers" onclick="OKClick()">3. Вход через OK</div>
+            <div class="reg-btn buttons-and-headers" onclick="GClick()">4. Вход через G+</div>
         </div>
     </div>
 </div>
@@ -94,9 +94,9 @@
             consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
-                    '================================================\n' +
+                    '--------------------------------------------------------------\n' +
                     'Введите адрес своей электронной почты.\n' +
-                    '================================================\n');
+                    '--------------------------------------------------------------');
             reg_last_input_click = 'RegEmailClick';
         }
     }
@@ -106,9 +106,9 @@
             consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
-                    '================================================\n' +
+                    '--------------------------------------------------------------\n' +
                     'Введите адрес своей электронной почты.\n' +
-                    '================================================\n');
+                    '--------------------------------------------------------------');
             reg_last_input_click = 'AuthEmailClick';
         }
     }
@@ -118,9 +118,9 @@
             consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
-                    '================================================\n' +
+                    '--------------------------------------------------------------\n' +
                     'Создайте новый пароль.\n' +
-                    '================================================\n');
+                    '--------------------------------------------------------------');
             reg_last_input_click = 'RegPasswordClick';
         }
     }
@@ -130,9 +130,9 @@
             consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
-                    '================================================\n' +
+                    '--------------------------------------------------------------\n' +
                     'Введите свой пароль.\n' +
-                    '================================================\n');
+                    '--------------------------------------------------------------');
             reg_last_input_click = 'AuthPasswordClick';
         }
     }
@@ -153,18 +153,23 @@
                     }
 
                     consoleWPI.clear();
-                    consoleWPI.add_message('system', 'Добро пожаловать, ' + data.user_name + '!');
-                    consoleWPI.add_message('system', 'Вы вошли в систему Nuke Commander.');
-                    consoleWPI.add_message('system', 'Баланс счета: ' + data.user_balance + 'NC;');
-                    consoleWPI.add_message('system', 'Координаты: (' + pos_x + ' : ' + pos_y + ');');
-                    consoleWPI.add_message('system', 'Страховка: _;');
-                    consoleWPI.add_message('system', 'Активные задания: _.');
+                    consoleWPI.add_message('user', 'Загрузка системы навигации.');
+                    consoleWPI.add_message(
+                        'system',
+                        'Успешно.\n' +
+                        '-----------------------------\n' +
+                        'Добро пожаловать, ' + data.user_name + '!\n' +
+                        'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
+                        'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
+                        'Ваша страховка: _\n' +
+                        'Активные задания: _\n' +
+                        '-----------------------------'
+                    );
                     
                     $('#RDSitePersonalInfoUserInfo').empty();
                     $('#RDSitePersonalInfoUserCar').empty();
                     $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
                     $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
-
                 }
                 if (window.location.hash == '#start')
                     $('#RDbtn_start').click();
@@ -195,10 +200,10 @@
                     consoleWReg.add_message('system',
                             'Ошибка приема данных.\n\n' +
                             'Введена некорректная электронная почта или некорректный пароль.\n\n' +
-                            '================================================\n' +
+                            '--------------------------------------------------------------\n' +
                             'Введите адрес действительной электронной почты.\n' +
                             'Введите пароль, соответствующий формату ввода системы.\n' +
-                            '================================================\n');
+                            '--------------------------------------------------------------');
                 }
                 if (data.status == 'fail_exist_email') {
                     consoleWReg.add_message('system',
@@ -238,9 +243,9 @@
                 else
                     consoleWReg.add_message('system',
                             'Доступ запрещен. Логин или пароль введены неверно.\n\n' +
-                            '================================================\n' +
+                            '--------------------------------------------------------------\n' +
                             'Проверьте правильность ввода логина и пароля, учитывайте регистр и язык ввода.\n' +
-                            '================================================\n');
+                            '--------------------------------------------------------------');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg.add_message('user', 'Активация процедуры авторизации.');

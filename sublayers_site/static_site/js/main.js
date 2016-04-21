@@ -35,7 +35,7 @@ function main() {
         GetRatingInfo(ratings_name[i]);
     }
 
-    consoleWStart.start();
+    //consoleWStart.start();
 }
 
 function GetQuickGameRecords() {
