@@ -223,6 +223,31 @@ var TextConsole = (function(){
     return TextConsole;
 })();
 
+var TextConsoleAudio = (function (_super) {
+    __extends(TextConsoleAudio, _super);
+
+    function TextConsoleAudio() {
+        _super.call(this);
+        this.start_audio = false;
+    }
+
+    TextConsoleAudio.prototype._state_print_text = function(self) {
+        if (! this.start_audio) {
+            this.start_audio = true;
+            audioKeyboard.play();
+        }
+        _super.prototype._state_print_text.call(this, self);
+    };
+
+    TextConsoleAudio.prototype._state_after_print_delay = function(self) {
+        this.start_audio = false;
+        audioKeyboard.stop();
+        _super.prototype._state_after_print_delay.call(this, self);
+    };
+
+    return TextConsoleAudio;
+})(TextConsole);
+
 var ConsoleWReg = (function (_super) {
     __extends(ConsoleWReg, _super);
 
@@ -281,7 +306,7 @@ var ConsoleWReg = (function (_super) {
     }
 
     return ConsoleWReg;
-})(TextConsole);
+})(TextConsoleAudio);
 
 var ConsoleWPI = (function (_super) {
     __extends(ConsoleWPI, _super);
