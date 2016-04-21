@@ -27,6 +27,8 @@
     <script src="{{ static_url('js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
     <script src="{{ static_url('js/main.js') }}"></script>
+    <script src="{{ static_url('js/audio_object.js') }}"></script>
+    <script src="{{ static_url('js/audio_manager.js') }}"></script>
     <script src="{{ static_url('js/effects/text_console.js') }}"></script>
     <script src="{{ static_url('js/time_manager.js') }}"></script>
     <script src="{{ static_url('js/canvas/canvas_manager.js') }}"></script>
@@ -130,6 +132,10 @@
 
             // Мерцание шума
             if (canvasNoise) canvasNoise.flashNoise();
+
+            // Проигрывание звуков
+            audioManager.play('click_' + Math.floor(Math.random() * 3.99));
+            // audioManager.play('dev_gl_' + Math.floor(Math.random() * 1.99), 0.2 * Math.random(), 0.4 * Math.random());
 
             // Изменение хеша в адресной строке (хеш возьмётся из data-url_hash самой кнопки
             var url_hash = $(this).attr('id');

@@ -21,6 +21,8 @@ function main() {
 
     initConsoles();
 
+    init_site_sound();
+
 
     var hash_url = window.location.hash;
     if (hash_url && hash_url.length) {
@@ -35,7 +37,23 @@ function main() {
         GetRatingInfo(ratings_name[i]);
     }
 
-    consoleWStart.start();
+    //consoleWStart.start();
+}
+
+function init_site_sound() {
+    audioManager.load('click_0', {url: '/audio/button_click/2023__edwin-p-manchester__tapeplayer04.wav'});
+    audioManager.load('click_1', {url: '/audio/button_click/275152__bird-man__click.wav'});
+    audioManager.load('click_2', {url: '/audio/button_click/290442__littlerobotsoundfactory__mouth-09.wav'});
+    audioManager.load('click_3', {url: '/audio/button_click/278967__sfstorm__sfx-clicking.wav'});
+
+    audioManager.load('error_0', {url: '/audio/error_signal/151309__tcpp__beep1-resonant-error-beep.wav'});
+    audioManager.load('error_1', {url: '/audio/error_signal/142608__autistic-lucario__error.wav'});
+
+    audioManager.load('dev_gl_0', {url: '/audio/device_noise/178306__glitchedtones__glitchedtones-apc-66.wav'});
+    audioManager.load('dev_gl_1', {url: '/audio/device_noise/178308__glitchedtones__glitchedtones-apc-79.wav'});
+
+    
+
 }
 
 function GetQuickGameRecords() {

@@ -74,6 +74,16 @@
     display: none;
 }
 
+
+.window-news-content .window-qg-content-header {
+    width: calc(100% - 4px);
+    text-overflow: ellipsis; /* Многоточие */
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
 @media screen and (max-width: 1366px) {
     .window-news-content {
         font-size: 10pt;
