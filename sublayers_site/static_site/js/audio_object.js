@@ -13,7 +13,7 @@ var AudioObject = (function () {
     }
 
     // Воспроизведение
-    AudioObject.prototype.play = function (time) {
+    AudioObject.prototype.play = function (time, gain) {
         if (this.current_source) {
             console.warn('Вызов play, без предварительного вызова stop ');
         }
@@ -23,12 +23,11 @@ var AudioObject = (function () {
             return false;
         }
         if (this.is_playing) {
-            console.warn('Нельзя вызывать play, пока не закончился предыдущий');
-            return false;
+            console.warn('Нехорошо (!!!) вызывать play, пока не закончился предыдущий');
+            //return false;
         }
 
-
-
+        this.gain(gain);
         var context = audioManager.get_ctx();
         this.current_source = context.createBufferSource();
         this.current_source.buffer = this.audio_buffer;
@@ -51,8 +50,10 @@ var AudioObject = (function () {
     };
 
     AudioObject.prototype.ended = function (event) {
-        this.current_source = null;
-        this.is_playing = false;
+        if (event.target === this.current_source) {
+            this.current_source = null;
+            this.is_playing = false;
+        }
     };
 
     // Загрузка
@@ -83,6 +84,7 @@ var AudioObject = (function () {
 
     // Установка громкости
     AudioObject.prototype.gain = function (value) {
+        value = value === undefined ? 1.0 : value;
         value = value > 1.0 ? 1.0 : value;
         value = value < 0.0 ? 0.0 : value;
         this.gainNode.gain.value = value;

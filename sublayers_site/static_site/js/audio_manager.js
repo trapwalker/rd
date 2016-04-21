@@ -5,10 +5,13 @@ var AudioManager = (function () {
     }
 
     // Воспроизведение
-    AudioManager.prototype.play = function (name, time) {
+    AudioManager.prototype.play = function (name, time, gain) {
         var audio_obj = this.get(name);
-        if (! audio_obj) return false;
-        return audio_obj.play(time);
+        if (! audio_obj) {
+            console.warn('AudioManager not found melody name:', name);
+            return false;
+        }
+        return audio_obj.play(time, gain);
     };
 
     AudioManager.prototype.stop = function (name, time) {
