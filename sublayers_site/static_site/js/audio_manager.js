@@ -17,6 +17,12 @@ var AudioManager = (function () {
         return audio_obj.stop(time);
     };
 
+    AudioManager.prototype.gain = function (name, value) {
+        var audio_obj = this.get(name);
+        if (! audio_obj) return false;
+        return audio_obj.gain(value);
+    };
+
     // Загрузка
     AudioManager.prototype.load = function (name, source, autoplay, class_name) {
         if (this.get(name)) {

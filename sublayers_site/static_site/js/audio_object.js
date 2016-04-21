@@ -6,6 +6,8 @@ var AudioObject = (function () {
         this.audio_buffer = null;
         this.is_playing = false;
         this.time = null;
+        this.gainNode = audioManager.get_ctx().createGain();
+        this.gainNode.gain.value = 1;
 
         this.load(source);
     }
@@ -25,10 +27,13 @@ var AudioObject = (function () {
             return false;
         }
 
+
+
         var context = audioManager.get_ctx();
         this.current_source = context.createBufferSource();
         this.current_source.buffer = this.audio_buffer;
-        this.current_source.connect(context.destination);
+        this.current_source.connect(this.gainNode);
+        this.gainNode.connect(context.destination);
         this.current_source.onended = AudioObject.prototype.ended.bind(this);  // Правильный callback с учётом объекта
         this.current_source.start(context.currentTime + (time == undefined ? 0 : time));
         this.is_playing = true; // Даже если оно ещё не играет, а только ждёт старта
@@ -40,7 +45,9 @@ var AudioObject = (function () {
             this.current_source.stop(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
             this.current_source = null;
             this.is_playing = false;
+            return true;
         }
+        return false;
     };
 
     AudioObject.prototype.ended = function (event) {
@@ -72,6 +79,14 @@ var AudioObject = (function () {
                 });
         };
         xhr.send();
+    };
+
+    // Установка громкости
+    AudioObject.prototype.gain = function (value) {
+        value = value > 1.0 ? 1.0 : value;
+        value = value < 0.0 ? 0.0 : value;
+        this.gainNode.gain.value = value;
+        return true;
     };
 
 
