@@ -30,9 +30,11 @@ from pymongo import MongoClient
 from motorengine import connect as db_connect
 
 from sublayers_server import settings
-from sublayers_server import service_tools
-
 from sublayers_server import uimodules
+
+from sublayers_common import service_tools
+from sublayers_common.base_application import BaseApplication
+
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
