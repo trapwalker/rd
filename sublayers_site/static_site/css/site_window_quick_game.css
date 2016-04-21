@@ -94,7 +94,7 @@
     cursor: pointer;
     width: 17px;
     height: 24px;
-    top: 80px;
+    top: 98px;
     z-index: 1000;
 }
 .window-qg-content-car-slide-arrow.left {
@@ -173,7 +173,7 @@
     }
 
     .window-qg-content-car-slide-arrow {
-        top: 56px;
+        top: 70px;
     }
 
     .window-qg-content-nickname-input { font-size: 12pt; }
