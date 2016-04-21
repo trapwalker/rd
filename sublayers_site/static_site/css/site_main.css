@@ -173,12 +173,12 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .console-block {
     position: absolute;
     white-space: pre-wrap;
-    padding: 5px;
+    padding: 5px 55px 5px 5px;
     box-sizing: border-box;
     top: 0;
     bottom: 0;
     left: 0;
-    right: 0;
+    right: -50px;
     overflow-y: scroll;
 }
 

@@ -1,8 +1,3 @@
-var constConsoleDelayIndicator = 300;       // Частота моргания каретки (мс)
-
-var constConsolePrintSpeed = 10;        // Время на печать одного символа (мс)
-var constConsoleDelayBlock = 10;        // Задержка после печати строки (блока) (мс)
-
 var TextConsoleEffectManager = (function(){
     function TextConsoleEffect() {
         this.all_consoles = {
@@ -48,7 +43,6 @@ var TextConsoleEffectManager = (function(){
 
     return TextConsoleEffect;
 })();
-
 
 var TextConsole = (function(){
     function TextConsole() {
@@ -205,8 +199,6 @@ var TextConsole = (function(){
             console.warn('Не задан контейнер консоли!');
             return;
         }
-        var dom_console = this.target_div.get(0);
-        this.target_div.css('right', dom_console.clientWidth - dom_console.offsetWidth);
         if (!this._is_started) {
             this._is_started = true;
             this._state_selector(this);
@@ -230,7 +222,6 @@ var TextConsole = (function(){
 
     return TextConsole;
 })();
-
 
 var ConsoleWReg = (function (_super) {
     __extends(ConsoleWReg, _super);
@@ -300,6 +291,8 @@ var ConsoleWPI = (function (_super) {
         this.target_div = $('#RDSitePIConsole');
         this.page_id = 'RDSiteWReg';
         this._message_info.system.placeholder = function() { return '> '  };
+        this._message_info.system.after_print_delay = 5;
+        this._message_info.system.before_print_delay = 5;
         this._message_info.user.placeholder = function() {
             var data = new Date();
             var hh_str = data.getHours().toString();
@@ -341,7 +334,7 @@ var ConsoleWStart = (function (_super) {
                             'Нажмите 4 для plus.google.com'
             }
         ];
-        this.init();
+        textConsoleManager.add(this);
     }
 
     ConsoleWStart.prototype._system_placeholder = function() {
@@ -361,7 +354,7 @@ function initConsoles() {
     textConsoleManager = new TextConsoleEffectManager();
     consoleWReg = new ConsoleWReg();
     consoleWPI = new ConsoleWPI();
-    //consoleWStart = new ConsoleWStart();
+    consoleWStart = new ConsoleWStart();
 }
 
 

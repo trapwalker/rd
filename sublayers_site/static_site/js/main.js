@@ -37,7 +37,7 @@ function main() {
         GetRatingInfo(ratings_name[i]);
     }
 
-    //consoleWStart.start();
+    consoleWStart.start();
 }
 
 function init_site_sound() {
