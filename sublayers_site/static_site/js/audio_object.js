@@ -25,7 +25,6 @@ var AudioObject = (function () {
         }
         if (this.is_playing) {
             console.warn('Нехорошо (!!!) вызывать play, пока не закончился предыдущий');
-            //return false;
         }
 
         this.gain(gain);
@@ -101,4 +100,42 @@ var AudioObject = (function () {
 
 
     return AudioObject;
+})();
+
+
+
+var TagAudioObject = (function () {
+    function TagAudioObject(source) {
+        this.audio = new Audio([source.url]);
+        this.crossOrigin = 'anonymous';
+    }
+
+    // Воспроизведение
+    TagAudioObject.prototype.play = function () {
+        if (! this.audio.paused) {
+            console.warn('Вызов play у уже играющего объекта ');
+        }
+        this.audio.play();
+        return true;
+    };
+
+    TagAudioObject.prototype.stop = function () {
+        if (! this.audio.paused) {
+            this.audio.pause();
+            return true;
+        }
+        return false;
+    };
+
+    // Установка громкости
+    TagAudioObject.prototype.gain = function (value) {
+        value = value === undefined ? 1.0 : value;
+        value = value > 1.0 ? 1.0 : value;
+        value = value < 0.0 ? 0.0 : value;
+        this.audio.volume = value;
+        return true;
+    };
+
+
+    return TagAudioObject;
 })();

@@ -11,9 +11,26 @@
     <script src="{{ static_url('js/audio_manager.js') }}"></script>
     <script src="{{ static_url('js/audio_test.js') }}"></script>
 
+    <style>
+
+
+
+
+    </style>
+
 </head>
 <body>
+    <div id="loadDiv">Загружается</div>
 
+    <div id="Play" style="border: 1px solid black;" onclick="radioPlayerPlay();">Play</div>
+    <div id="Stop" style="border: 1px solid black;" onclick="radioPlayerPause();">Stop</div>
+
+{#    <div id="audioDiv">#}
+{#        autoplay="autoplay"#}
+{#        <audio controls="controls" id="radioPlayer">#}
+{#            <source src="http://listen.radiotower.su:8000/vigilante_2084_128" type="audio/mpeg"/>#}
+{#        </audio>#}
+{#    </div>#}
 
 
 <script>
