@@ -131,22 +131,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     display: none;
 }
 
-.interlacing_2::before {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: linear-gradient(rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.0));
-    /*background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 50%,*/
-    /*rgba(0, 0, 0, 0.0) 51%, rgba(0, 0, 0, 0.0) 100%);*/
-    z-index: 2;
-    background-size: 100% 2px;
-    pointer-events: none;
-}
-
 .window-header {
     position: relative;
     width: 100%;
