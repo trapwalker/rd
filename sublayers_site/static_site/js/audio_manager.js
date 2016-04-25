@@ -7,13 +7,16 @@ var AudioManager = (function () {
     }
 
     // Воспроизведение
-    AudioManager.prototype.play = function (name, time, gain) {
+    AudioManager.prototype.play = function (name, time, gain, callback, loop) {
         var audio_obj = this.get(name);
         if (! audio_obj) {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
-        return audio_obj.play(time, gain ? gain : this.general_gain);
+        if (loop && audio_obj.is_playing && audio_obj.play_loop) { // В случае лупа повторный запуск невозможен!
+            return true; // Значит уже луп запущен и второй нет смысла запускать
+        }
+        return audio_obj.play(time, gain ? gain : this.general_gain, callback, loop);
     };
 
     AudioManager.prototype.stop = function (name, time) {
@@ -53,40 +56,6 @@ var AudioManager = (function () {
     AudioManager.prototype.get_ctx = function (name) {
         return this.audio_context;
     };
-
-    //
-    //// ------- Работа с <audio> объектами ------- //
-    //AudioManager.prototype.get_audio = function (name) {
-    //    if (this.tag_audio_objects.hasOwnProperty(name))
-    //        return this.tag_audio_objects[name];
-    //    return null;
-    //};
-    //
-    //AudioManager.prototype.load_audio = function (name, source) {
-    //    if (this.get_audio(name)) {
-    //        console.warn('Аудио Объект с таким именем уже был загружен. Замена.');
-    //    }
-    //    this.tag_audio_objects[name] = new TagAudioObject(source);
-    //};
-    //
-    //AudioManager.prototype.play_audio = function (name) {
-    //    var audio_obj = this.get_audio(name);
-    //    if (! audio_obj) {
-    //        console.warn('AudioManager not found melody name:', name);
-    //        return false;
-    //    }
-    //    audio_obj.play();
-    //};
-    //
-    //AudioManager.prototype.stop_audio = function (name) {
-    //    var audio_obj = this.get_audio(name);
-    //    if (! audio_obj) {
-    //        console.warn('AudioManager not found melody name:', name);
-    //        return false;
-    //    }
-    //    audio_obj.stop();
-    //};
-
 
 
     return AudioManager;
