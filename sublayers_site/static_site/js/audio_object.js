@@ -105,23 +105,42 @@ var AudioObject = (function () {
 
 
 var TagAudioObject = (function () {
-    function TagAudioObject(source) {
+    function TagAudioObject(source, autoplay) {
         this.audio = new Audio([source.url]);
-        this.crossOrigin = 'anonymous';
+        if (autoplay) {
+            this.play();
+        }
     }
 
     // Воспроизведение
-    TagAudioObject.prototype.play = function () {
-        if (! this.audio.paused) {
+    TagAudioObject.prototype.play = function (time, gain, callback) {
+        // time - delay in seconds before start
+        // callback --- not supported in this class
+        if (!this.audio.paused) {
             console.warn('Вызов play у уже играющего объекта ');
         }
-        this.audio.play();
+
+        var self = this;
+        this.gain(gain);
+
+        if (time && time > 0.0) {
+            setTimeout(function() {self.audio.play();}, time * 1000);
+        }
+        else {
+            this.audio.play();
+        }
         return true;
     };
 
-    TagAudioObject.prototype.stop = function () {
+    TagAudioObject.prototype.stop = function (time) {
         if (! this.audio.paused) {
-            this.audio.pause();
+            var self = this;
+            if (time && time > 0.0) {
+                setTimeout(function () {self.audio.pause();}, time * 1000);
+            }
+            else {
+                this.audio.pause();
+            }
             return true;
         }
         return false;
@@ -135,7 +154,6 @@ var TagAudioObject = (function () {
         this.audio.volume = value;
         return true;
     };
-
 
     return TagAudioObject;
 })();

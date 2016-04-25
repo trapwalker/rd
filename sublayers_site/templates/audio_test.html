@@ -9,6 +9,7 @@
 
     <script src="{{ static_url('js/audio_object.js') }}"></script>
     <script src="{{ static_url('js/audio_manager.js') }}"></script>
+    <script src="{{ static_url('js/html_audio_player.js') }}"></script>
     <script src="{{ static_url('js/audio_test.js') }}"></script>
 
     <style>
@@ -25,13 +26,10 @@
     <div id="Play" style="border: 1px solid black;" onclick="radioPlayerPlay();">Play</div>
     <div id="Stop" style="border: 1px solid black;" onclick="radioPlayerPause();">Stop</div>
 
-{#    <div id="audioDiv">#}
-{#        autoplay="autoplay"#}
-{#        <audio controls="controls" id="radioPlayer">#}
-{#            <source src="http://listen.radiotower.su:8000/vigilante_2084_128" type="audio/mpeg"/>#}
-{#        </audio>#}
-{#    </div>#}
-
+    <div style="width: 300px; height: 200px;">
+        {% set radioPlayerName = 'p1' %}
+        {% include 'html_radio_player.html' %}
+    </div>
 
 <script>
 

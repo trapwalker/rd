@@ -19,6 +19,8 @@ from handlers.site import SiteMainHandler
 from handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 
+from handlers.audio_test import GetAudioTest
+
 from sublayers_common.base_application import BaseApplication
 
 
@@ -40,7 +42,10 @@ class Application(BaseApplication):
             (r"/site_api/get_quick_game_records", GetQuickGameRecords),
             (r"/site_api/get_rating_info", GetRatingInfo),
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),
+            (r"/site_api/audio1", GetAudioTest),
         ])
+
+        print 'Road Dogs Site load !'
 
 
 def main():
