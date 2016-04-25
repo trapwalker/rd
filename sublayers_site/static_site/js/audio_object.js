@@ -9,12 +9,14 @@ var AudioObject = (function () {
         this.gainNode = audioManager.get_ctx().createGain();
         this.gainNode.gain.value = 1;
         this.ended_callback = null;   // callback на завершение проигрывания
+        this.play_loop = false;
+
 
         this.load(source);
     }
 
     // Воспроизведение
-    AudioObject.prototype.play = function (time, gain, callback) {
+    AudioObject.prototype.play = function (time, gain, callback, loop) {
         if (this.current_source) {
             console.warn('Вызов play, без предварительного вызова stop ');
         }
@@ -39,11 +41,14 @@ var AudioObject = (function () {
 
         if (typeof(callback) === 'function') {this.ended_callback = callback; }
 
+        if (loop) this.play_loop = loop;
+
         return true;
     };
 
     AudioObject.prototype.stop = function (time) {
         if (this.current_source) {
+            this.play_loop = false;
             this.current_source.stop(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
             this.current_source = null;
             this.is_playing = false;
@@ -57,9 +62,15 @@ var AudioObject = (function () {
             this.current_source = null;
             this.is_playing = false;
 
+            if (this.play_loop) {
+                this.play();
+                return;
+            }
+
             if (typeof(this.ended_callback) === 'function') {
                 this.ended_callback()
             }
+
         }
     };
 
@@ -107,6 +118,7 @@ var AudioObject = (function () {
 var TagAudioObject = (function () {
     function TagAudioObject(source, autoplay) {
         this.audio = new Audio([source.url]);
+        //this.audio = document.getElementById(source.id);
         if (autoplay) {
             this.play();
         }
