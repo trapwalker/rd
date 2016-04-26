@@ -34,7 +34,7 @@
                 <div class="context_panel_barter_info_user_info"
                      onClick="contextPanel.activate_barter_manager.activate_barter('{{ barter.id }}');
                              windowTemplateManager.closeUniqueWindow('cp_barter_info')">
-                    {{ barter.initiator.login }}  < > {{ barter.recipient.login }}
+                    {{ barter.initiator.user.name }}  < > {{ barter.recipient.user.name }}
                 </div>
             {% end %}
         {% end %}

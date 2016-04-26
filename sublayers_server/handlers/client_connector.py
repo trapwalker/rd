@@ -6,10 +6,10 @@ log = logging.getLogger(__name__)
 
 import tornado.websocket
 
-from sublayers_server.model import messages
+from sublayers_common.handlers.base import BaseHandler
 
 
-class AgentSocketHandler(tornado.websocket.WebSocketHandler):
+class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def allow_draft76(self):
         # for iOS 5.0 Safari
@@ -22,13 +22,20 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         # todo: make agent_init event
-        self.user_id = self.get_secure_cookie("user")
         self.agent = None
-        log.info('!!! Open User connection: %s', self.user_id)
+        user = self.current_user
+        assert user
+        log.info('!!! Open User connection: %s%s', self.current_user, user.quick)
         self.application.clients.append(self)
         # log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
-        agent = srv.api.get_agent(self.user_id, make=True, do_disconnect=True)  # todo: Change to make=False
+
+        agent = None
+        if user.is_quick_user:
+            agent = srv.api.get_agent_quick_game(user, do_disconnect=True)  # todo: Change to make=False
+        else:
+            agent = srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit
             return

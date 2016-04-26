@@ -1,0 +1,1 @@
+python.bat site_server.py %*

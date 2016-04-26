@@ -1,0 +1,8 @@
+{% for i in range(0, len(rate_users)) %}
+{% set user = rate_users[i] %}
+<div class="window-ratings-line box-shadow {% if i % 2 == 0 %} odd {% end %}" data-user_id="{{str(user.id)}}" onclick="clickRatingsLine(this);">
+    <div class="window-ratings-line-path rate-number">{{i}}</div>
+    <div class="window-ratings-line-path nickname">{{ user.name }}</div>
+    <div class="window-ratings-line-path numbers">-=-</div>
+</div>
+{% end %}

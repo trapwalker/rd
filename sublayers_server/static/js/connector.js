@@ -29,7 +29,7 @@ var WSConnector = (function(_super){
     function WSConnector(options){
         _super.call(this);
         this.options = {
-            url: "ws://" + location.host.split(':')[0] + ":" + $('#settings_ws_port').text() + "/ws"
+            url: "ws://" + location.host + "/ws"
         };
         if (options) setOptions(options, this.options);
 
@@ -40,6 +40,7 @@ var WSConnector = (function(_super){
         this.decode_time = 0;
         this.count = 0;
 
+        console.info('connector testing constructor');
 
         var self = this;
         setInterval(function () {

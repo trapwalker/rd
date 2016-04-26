@@ -16,7 +16,7 @@ class InitBarterEvent(Event):
 
     def on_perform(self):
         super(InitBarterEvent, self).on_perform()
-        recipient = self.server.agents.get(self.recipient_login, None)
+        recipient = self.server.agents_by_name.get(self.recipient_login, None)
 
         for barter in self.initiator.barters:
             # Проверить нет ли уже приглашения для этого пользователя и если есть то новое не создавать
@@ -146,7 +146,7 @@ class InviteBarterMessage(Message):
         d = super(InviteBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.login,
+            initiator=self.barter.initiator.user.name,
         )
         return d
 
@@ -160,8 +160,8 @@ class ActivateBarterMessage(Message):
         d = super(ActivateBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.login,
-            recipient=self.barter.recipient.login,
+            initiator=self.barter.initiator.user.name,
+            recipient=self.barter.recipient.user.name,
         )
         return d
 

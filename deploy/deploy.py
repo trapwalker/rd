@@ -3,8 +3,11 @@
 
 if __name__ == '__main__':
     import os, sys
+    import patch_distutils
     ptoject_root = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..'))
-    print ptoject_root
+    print >>sys.stderr, 'DEPLOY:', ptoject_root
+    
+    patch_distutils.patch()
 
     rel = lambda *args: os.path.join(ptoject_root, *args)
 
@@ -14,7 +17,10 @@ if __name__ == '__main__':
     from ve_setup import use_virtualenv
     ve = use_virtualenv(
         [rel('env')], 
-        requirements=requirements
+        #requirements=requirements
     )
-             
+
+    os.system(r'easy_install.bat greenlet')
+    os.system(r'easy_install.bat Pillow')
+
     ve.install_requirements(requirements)

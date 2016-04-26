@@ -80,8 +80,8 @@ class MapLocation(Observer):
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
         for visitor in self.visitors:
-            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=True, time=time).post()
-            ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
+            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=time).post()
+            ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
         agent.current_location = self
         self.visitors.append(agent)
 
@@ -104,7 +104,7 @@ class MapLocation(Observer):
             EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
             for visitor in self.visitors:
                 if not visitor is agent:
-                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.login, action=True, time=time).post()
+                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
         else:
             self.on_enter(agent=agent, time=time)
 
@@ -118,7 +118,7 @@ class MapLocation(Observer):
         ExitFromLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
         agent.api.update_agent_api(time=time + 0.1)
         for visitor in self.visitors:
-            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.login, action=False, time=time).post()
+            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=time).post()
         InventoryHideMessage(agent=agent, time=time, inventory_id=agent.uid).post()
 
     def add_to_chat(self, chat, time):

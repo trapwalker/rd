@@ -69,7 +69,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User") {
+            if (data.cls === "User" || data.cls === "QuickUser") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
@@ -281,7 +281,7 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
@@ -289,6 +289,7 @@ var ClientManager = (function () {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 chat.page_party.buttons.create.text('Отряд');
             }
+            timeManager.timerStart();
         }
     };
 
@@ -507,6 +508,12 @@ var ClientManager = (function () {
         modalWindow.modalDeathShow();
     };
 
+    ClientManager.prototype.QuickGameDie = function (event) {
+        // console.log('ClientManager.prototype.QuickGameDie');
+        alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        window.location = '/#quick';
+    };
+
     ClientManager.prototype.Chat = function (event){
         //console.log('ClientManager.prototype.Chat', event);
         //chat.addMessageByID(-1, getOwner(event.author), event.text);
@@ -617,7 +624,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
-        //console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+        console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
         // изменить настройки своей пати для своего клиента
         if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
         user.party = new OwnerParty(event.party.id, event.party.name);

@@ -12,6 +12,7 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
+import logging
 import logging.config
 
 logging.config.fileConfig("logging.conf")
@@ -26,9 +27,11 @@ from tornado.options import options
 import socket
 
 from sublayers_server import settings
-from sublayers_server import service_tools
-
 from sublayers_server import uimodules
+
+from sublayers_common import service_tools
+from sublayers_common.base_application import BaseApplication
+
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
@@ -40,58 +43,68 @@ from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.main_menu_journal import MainJournalHandler
 from sublayers_server.handlers.party_handler import PartyHandler
 from sublayers_server.handlers.map_location import MapLocationHandler
-from sublayers_server.handlers.site.site_handler import SiteHandler
-from sublayers_server.handlers.site.site_auth import SiteLoginHandler, SiteLogoutHandler, GoogleLoginHandler, \
-    StandardLoginHandler, OKLoginHandler, VKLoginHandler
-from sublayers_server.handlers.context_panel import ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, \
-    ContextPanelLocationsHandler
-from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatisticsRefreshHandler,
-                                                  ServerStatForSite)
+from sublayers_server.handlers.site.site_auth import (
+    SiteLoginHandler, LogoutHandler, StandardLoginHandler,
+    # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
+)
+from sublayers_server.handlers.context_panel import (
+    ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, ContextPanelLocationsHandler,
+)
+from sublayers_server.handlers.statistics import (
+    ServerStatisticsHandler, ServerStatisticsRefreshHandler, ServerStatForSite,
+)
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
-from pymongo import MongoClient
+from sublayers_server.handlers.site_api import (
+    APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
+)
 
 
-class DBError(Exception):
-    pass
+class Application(BaseApplication):
+    def __init__(self, handlers=None, default_host="", transforms=None, **settings):
+        settings.setdefault('static_path', options.static_path)
+        settings.setdefault('ui_modules', uimodules)
+        settings.setdefault('login_url', "/login")
+        settings.setdefault('google_oauth', {
+            "key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
+            "secret": "JOXGxpPxKGqr_9TYW9oYT8g_",
+        })
+        settings.setdefault('ok_oauth', {
+            "key": "1137609984",
+            "secret": "BB413D7F8E6B685D19AE3FE0",
+            "public_key": "CBAOIPMEEBABABABA",
+        })
+        settings.setdefault('vk_oauth', {
+            "key": "4926489",
+            "secret": "4gyveXhKv5aVNCor5bkB",
+        })
 
+        super(Application, self).__init__(
+            handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
-class Application(tornado.web.Application):
-    def __init__(self):
-        try:
-            self.revision = service_tools.HGRevision()
-        except Exception as e:
-            self.revision = None
-            log.warning("Can't get HG revision info: %s", e)
-
-        self.db = MongoClient(options.db)[options.db_name]
-
-        log.info('\n' + '=-' * 70)
-        log.info('GAME ENGINE SERVICE STARTING %s\n' + '--' * 70, self.revision)
         self.srv = LocalServer(app=self)
         log.debug('server instance init')
         self.srv.start()
         log.info('ENGINE LOOP STARTED' + '-' * 50)
         self.clients = []
         self.chat = []
-        # todo: tuncate chat history
-
+        # todo: truncate chat history
         self.srv.load_world()
 
-        handlers = [
-            (r"/", SiteHandler),
-            (r"/edit", tornado.web.RedirectHandler, {"url": "/static/editor.html", "permanent": False}),
+        self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
+            (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта
+            (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),
             (r"/ws", AgentSocketHandler),
-            (r"/static/(.*)", StaticFileHandlerPub),
+            #(r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", PlayHandler),
 
             (r"/login", SiteLoginHandler),
-            (r"/logout", SiteLogoutHandler),
+            (r"/logout", LogoutHandler),
             (r"/login/standard", StandardLoginHandler),
-            (r"/login/google", GoogleLoginHandler),
-            (r"/login/ok", OKLoginHandler),
-            (r"/login/vk", VKLoginHandler),
+            # (r"/login/google", GoogleLoginHandler),  # todo: social auth
+            # (r"/login/ok", OKLoginHandler),
+            # (r"/login/vk", VKLoginHandler),
 
             (r"/stat", ServerStatisticsHandler),
             (r"/site_stat", ServerStatForSite),
@@ -111,26 +124,14 @@ class Application(tornado.web.Application):
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
             (r"/api/context_panel/barter_info", ContextPanelBarterInfoHandler),
 
-            (r"/interlacing", TestInterlacingHandler)
-        ]
-        app_settings = dict(
-            cookie_secret=options.cookie_secret,
-            template_path=options.template_path,
-            static_path=options.static_path,
-            xsrf_cookies=True,
-            ui_modules=uimodules,
-            login_url="/login",
-            debug=True,
-            autoreload=False,
-            google_oauth={"key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
-                          "secret": "JOXGxpPxKGqr_9TYW9oYT8g_"},
-            ok_oauth={"key": "1137609984",
-                      "secret": "BB413D7F8E6B685D19AE3FE0",
-                      "public_key": "CBAOIPMEEBABABABA"},
-            vk_oauth={"key": "4926489",
-                      "secret": "4gyveXhKv5aVNCor5bkB"},
-        )
-        tornado.web.Application.__init__(self, handlers, **app_settings)
+            # Site API
+            (r"/api/get_car_info", APIGetCarInfoHandler),
+            (r"/api/get_user_info", APIGetUserInfoHandler),
+            (r"/api/get_user_info2", APIGetUserInfoHandler2),
+            (r"/api/get_quick_game_cars", APIGetQuickGameCarsHandler),
+
+            (r"/interlacing", TestInterlacingHandler),
+        ])
 
     def stop(self):
         log.debug('====== ioloop before stop')

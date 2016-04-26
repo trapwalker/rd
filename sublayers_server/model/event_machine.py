@@ -14,6 +14,7 @@ from sublayers_server.model.events import LoadWorldEvent
 from sublayers_server.model.registry.storage import Registry, Collection
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
+from sublayers_server.model.vectors import Point
 
 import os
 import sys
@@ -39,6 +40,7 @@ class Server(object):
         self.timeline = TimelineQueue()  # todo: make remote timeline for remote servers
         self.message_queue = deque()
         self.agents = {}  # Agents dictionary
+        self.agents_by_name = {}  # Agents index by name
         """:type : dict[unicode, sublayers_server.model.event_machine.model.agents.Agent]"""
         # todo: Typehinting
         self.start_time = None
@@ -49,6 +51,11 @@ class Server(object):
 
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
+
+        # todo: QuickGame settings fix it
+        self.quick_game_cars_examples = []
+        self.quick_game_cars_proto = []
+        self.quick_game_start_pos = Point(12512034.49999, 27170315.5)
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -99,6 +106,18 @@ class Server(object):
         gs_root = self.reg['/poi/locations/gas_stations']
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
+
+        # Создание экземпляров машинок для быстрой игры
+        self.quick_game_cars_proto = []
+        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
+        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
+        for car_proto in self.quick_game_cars_proto:
+            # todo: Здесь не должны инстанцироваться машинки
+            car_example = car_proto.instantiate()
+            # car_example.position = None
+            # car_example.last_location = None
+            self.quick_game_cars_examples.append(car_example)
+
 
     def post_message(self, message):
         """
@@ -239,32 +258,3 @@ class LocalServer(Server):
     def reset_user(self, user=None):
         if user is None:
             pass
-
-
-def main():
-    pass
-    # log.info('==== Start logging ' + '=' * 50)
-    #
-    # from sublayers_server.model.units import Station, Bot
-    # from sublayers_server.model.agents import User
-    # from sublayers_server.model.vectors import Point
-    #
-    # def inspect(event=None):
-    #     events.Event(time=srv.get_time() + 1, callback_before=inspect).post()
-    #     if event:
-    #         log.info('INSPECT[%s] - %s', time_log_format(event.time), bot)
-    #
-    # srv = LocalServer()
-    # inspect()
-    # user = User(login='user1', server=srv)
-    # station = Station(server=srv, position=Point(0, 0))
-    # user.subscribe_to__Observer(station)
-    #
-    # bot = Bot(server=srv, position=Point(-600, -10))
-    # user.subscribe_to__Observer(bot)
-    #
-    # bot.set_motion(position=Point(800, 10))
-    #
-    # pp(srv.timeline, width=1)
-    #
-    # return locals()

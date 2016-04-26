@@ -39,7 +39,7 @@ class Message(object):
     def send(self):
         # todo: online status optimization
         connection = self.agent.connection
-        # log.debug('Send message: %s to %r', self, self.agent.login)
+        # log.debug('Send message: %s to %r', self, self.agent.user.name)
         if connection.ws_connection:
             connection.send(serialize(make_push_package([self])))
 
@@ -92,6 +92,25 @@ class InitCar(Message):
 
 class Die(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+
+class QuickGameDie(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, obj, **kw):
+        """
+        @param sublayers_server.model.agents.Agent author: Sender of message
+        @param unicode text: message text
+        """
+        super(QuickGameDie, self).__init__(**kw)
+        self.obj = obj
+
+    def as_dict(self):
+        d = super(QuickGameDie, self).as_dict()
+        d.update(
+            object=self.obj.as_dict(time=self.time),
+        )
+        return d
 
 
 class Chat(Message):
@@ -812,8 +831,16 @@ class RPGStateMessage(Message):
 class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
-        template_table = tornado.template.Loader("templates/location").load("car_info_table.html")
-        template_img = tornado.template.Loader("templates/location").load("car_info_img_ext.html")
+
+        template_table = tornado.template.Loader(
+            "templates/location",
+            namespace=self.agent.connection.get_template_namespace()
+        ).load("car_info_table.html")
+
+        template_img = tornado.template.Loader(
+            "templates/location",
+            namespace=self.agent.connection.get_template_namespace()
+        ).load("car_info_img_ext.html")
 
         d.update(cars=[dict(
             car_info=dict(

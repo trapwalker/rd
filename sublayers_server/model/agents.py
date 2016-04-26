@@ -12,18 +12,21 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out,
-                                             SetObserverForClient)
+                                             SetObserverForClient, Die, QuickGameDie)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 
 from tornado.options import options
+import tornado.gen
 
 
 # todo: make agent offline status possible
 class Agent(Object):
-    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.login!r}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.user.name!r}>'
 
-    def __init__(self, login, time, example, party=None, **kw):
+    # todo: Перенести аргумент user  в конструктор UserAgent
+    # todo: Делать сохранение неюзер-агентов в особую коллекцию без идентификации по профилю
+    def __init__(self, user, time, example, party=None, **kw):
         """
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
@@ -34,9 +37,9 @@ class Agent(Object):
         self.observers = CounterSet()
         self.api = None
         self.connection = None
-        self.login = login
-        # todo: normalize and check login
-        self.server.agents[login] = self
+        self.user = user
+        self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
+        self.server.agents_by_name[user.name] = self
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -143,7 +146,7 @@ class Agent(Object):
         return None
 
     def save(self, time):
-        self.example.login = self.login
+        self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
         if self.car:
             self.car.save(time)
             self.example.car = self.car.example
@@ -183,7 +186,7 @@ class Agent(Object):
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
         d.update(
-            login=self.login,
+            login=self.user.name,  # todo: Переименовать login
             party=self.party.as_dict() if self.party else None,
             balance=self.example.balance,
         )
@@ -360,7 +363,6 @@ class Agent(Object):
 
     def on_see(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
-        # log.info('on_see %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_first = obj.subscribed_agents.inc(self) == 1
         if not is_first:
             return
@@ -377,7 +379,6 @@ class Agent(Object):
 
     def on_out(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
-        # log.info('on_out %s viditsya  %s      raz:  %s', obj.owner.login, self.login, obj.subscribed_agents[self])
         is_last = obj.subscribed_agents.dec(self) == 0
         if not is_last:
             return
@@ -431,10 +432,11 @@ class Agent(Object):
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_exit_npc(%s)', self, npc)
 
-    def on_die(self):
+    def on_die(self, object, time):
         # todo: csll it ##quest
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_die()', self)
+        Die(agent=self, time=time).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -450,11 +452,50 @@ class Agent(Object):
             time=time, is_init=is_init)
 
 
+# todo: Переименовать в UserAgent
 class User(Agent):
     # todo: realize
     pass
 
 
+def test_cb(f):
+    print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
+
+
+def test_cb2(f):
+    print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
+
+
+class QuickUser(User):
+    def __init__(self, **kw):
+        super(QuickUser, self).__init__(**kw)
+        self.time_quick_game_start = None
+
+    def _quick_profile_save(self, time):
+        self.user.time_quick_game = time - self.time_quick_game_start
+        self.user.car_die = True
+        # todo: refactor callback - must be callable
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb)
+
+    def append_car(self, time, **kw):
+        super(QuickUser, self).append_car(time=time, **kw)
+        # Запомнить время старта
+        self.time_quick_game_start = self.server.get_time()
+        self.user.car_index = None
+        # todo: refactor callback - must be callable
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb2)
+
+    def drop_car(self, car, time, **kw):
+        if car is self.car:
+            # Если удаляется своя машинка, то сохранить профиль
+            self._quick_profile_save(time=time)
+        super(QuickUser, self).drop_car(car=car, time=time, **kw)
+
+    def on_die(self, object, time):
+        QuickGameDie(agent=self, obj=object, time=time).post()
+
+
+# todo: Переиеновать в AIAgent
 class AI(Agent):
     # todo: realize in future
     pass

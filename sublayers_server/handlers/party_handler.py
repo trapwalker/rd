@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from .base import BaseHandler
 from sublayers_server.model.party import Party
 
+
 class PartyHandler(BaseHandler):
     def get(self):
         agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)

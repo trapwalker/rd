@@ -1,0 +1,32 @@
+{% if with_css is True %}
+<style>
+    .quick-game-cars-body-page {
+        position: relative;
+        height: 180px;
+        width: 300px;
+    }
+
+    .quick-game-cars-body-page .car-info-block-picture-main {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .quick-game-cars-body-page .car-info-block-picture {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+
+</style>
+{% end %}
+
+<div class="quick-game-cars-body-page">
+    {% for car_ex in car_examples %}
+        {% set car = car_ex %}
+        {% include '../site/car_info_ext_wrap.html' %}
+    {% end %}
+</div>
+
+
