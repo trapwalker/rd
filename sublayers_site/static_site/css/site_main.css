@@ -181,6 +181,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     cursor: pointer;
     width: 24px;
     height: 17px;
+    bottom: 10px;
 }
 
 .scroll-btn.up { background: transparent url(/static_site/img/btn_slide_up.png) no-repeat 100% 100%; }

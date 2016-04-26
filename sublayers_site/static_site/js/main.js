@@ -89,13 +89,17 @@ function GetQuickGameRecords() {
 }
 
 function GetRatingInfo(rating_name) {
-    var jq_elem = $('#RDSiteRating_' + rating_name);
+    var jq_elem = $('#RDSiteRating_' + rating_name).find('.scroll-block').first();
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rating_info',
         method: 'POST',
         data: {rating_name: rating_name},
         success: function (data) {
             jq_elem.empty();
+            jq_elem.append(data);
+            jq_elem.append(data);
+            jq_elem.append(data);
+            jq_elem.append(data);
             jq_elem.append(data);
             if (rating_name == 'Traders') { // Если это первый рейтинг загрузился, то кликнуть на него
                 $('.window-ratings-header-path').first().click();

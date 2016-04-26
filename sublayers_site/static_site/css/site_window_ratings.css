@@ -101,10 +101,10 @@
 
 .window-ratings-line {
     position: relative;
-    width: calc(100% - 4px);
+    width: 100%;
     height: 25px;
     font-size: 12pt;
-    margin: 0 auto 4px auto;
+    margin-bottom: 4px;
     line-height: 1.7;
     cursor: pointer;
     border: 2px solid rgba(0, 0, 0, 0);
@@ -170,23 +170,19 @@
     max-width: 80px;
 }
 
-
-
 .window-ratings-board {
     position: absolute;
     display: none;
     width: 100%;
     height: calc(100% - 30px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 5px;
+    overflow: hidden;
     box-sizing: border-box;
 }
+.window-ratings-board.active { display: block; }
 
-.window-ratings-board.active {
-    display: block;
-}
-
+.window-ratings-board .scroll-block { padding-right: 45px; }
+.window-ratings-board .scroll-btn.up { left: 156px; }
+.window-ratings-board .scroll-btn.down { left: 228px; }
 
 /*Настройка правой части */
 
@@ -355,7 +351,6 @@
         font-size: 9pt;
     }
 
-
     /* Настройка отображения машинки */
     .window-ratings-right-path-content-block .window-pi-user-info-table {
         padding-left: 8px;
@@ -394,5 +389,6 @@
         line-height: 1.2;
     }
 
-
+    .window-ratings-board .scroll-btn.up { left: 100px; }
+    .window-ratings-board .scroll-btn.down { left: 172px; }
 }
