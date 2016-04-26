@@ -1,1 +1,1 @@
-python.bat server.py %*
+python.bat site_server.py %*

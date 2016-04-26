@@ -150,8 +150,8 @@ class Agent(Object):
         if self.car:
             self.car.save(time)
             self.example.car = self.car.example
-        elif self.current_location is None:
-            self.example.car = None
+        # elif self.current_location is None:  # todo: wtf ?!
+        #     self.example.car = None
         # todo: save chats, party...
         self.example.save()
         log.debug('Agent %s saved', self)

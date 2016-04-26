@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.user_profile import User
+from sublayers_common.user_profile import User
 
 import tornado.web
 import tornado.gen
@@ -12,8 +12,11 @@ from bson.objectid import ObjectId, InvalidId
 
 def static_world_link_repr(link):
     search_str = 'static/'
-    assert link.startswith(search_str)
-    return link[len(search_str):]
+    if link.startswith(search_str):
+        return link[len(search_str):]
+    else:
+        log.warn('World link incorrect')
+        return ''
 
 
 class AuthHandlerMixin(tornado.web.RequestHandler):

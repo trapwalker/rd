@@ -26,7 +26,7 @@
     margin: 0 auto;
     padding: 6px 5px 5px 5px;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .window-news-log-news-date {
@@ -38,7 +38,7 @@
 .window-news-log-news-header {
     position: relative;
     cursor: pointer;
-    width: calc(100% - 10px);
+    width: 100%;
     margin: 0px 0px 4px 10px;
     padding-left: 110px;
     box-sizing: border-box;
@@ -51,7 +51,6 @@
     text-shadow: none;
     border-radius: 1px;
 }
-
 .window-news-log-news-header:before {
     content: ' ';
     position: absolute;
@@ -66,13 +65,27 @@
 
 .window-news-news-content-block {
     position: absolute;
-    left: 7px;
-    width: calc(100% - 14px);
+    width: 100%;
     height: calc(100% - 35px);
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     display: none;
 }
+
+.window-news-content .window-qg-content-header {
+    width: calc(100% - 4px);
+    text-overflow: ellipsis; /* Многоточие */
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
+
+.window-news-log-list-block .scroll-btn.up { left: 115px; }
+.window-news-log-list-block .scroll-btn.down { left: 187px; }
+
+.window-news-news-content-block .scroll-btn.up { left: 193px; }
+.window-news-news-content-block .scroll-btn.down { left: 265px; }
 
 @media screen and (max-width: 1366px) {
     .window-news-content {
@@ -87,4 +100,10 @@
     .window-news-log-news-header {
         padding-left: 95px;
     }
+
+    .window-news-log-list-block .scroll-btn.up { left: 77px; }
+    .window-news-log-list-block .scroll-btn.down { left: 149px; }
+
+    .window-news-news-content-block .scroll-btn.up { left: 142px; }
+    .window-news-news-content-block .scroll-btn.down { left: 215px; }
 }

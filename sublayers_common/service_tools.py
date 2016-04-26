@@ -63,6 +63,7 @@ class HGVersion(object):
     def __str__(self):
         return '{self.main}.{self.release}.{self.default}'.format(self=self)
 
+
 if __name__ == '__main__':
     print 'version =', HGVersion()
     print 'revision = ', HGRevision()

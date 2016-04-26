@@ -1,26 +1,26 @@
-<div id="RDSiteWRatings"  class="page-wrapper">
-    <div class="window-header buttons-and-headers">Nuke Commander v5.51</div>
+<div id="RDSiteWRatings"  class="page-wrapper switch-page">
+    <div class="window-header buttons-and-headers">Nuke Commander v{{ version }}</div>
     <div class="window-ratings-main">
         <div class="window-ratings-header">
-            <div class="window-ratings-header-path middle" data-rating="Traders">
+            <div class="window-ratings-header-path middle" data-rating="Traders" data-rating_note="Рейтинг торговцев">
                 <div class="window-ratings-header-path-content buttons-and-headers">Торговцы</div>
             </div>
-            <div class="window-ratings-header-path middle" data-rating="Looters">
+            <div class="window-ratings-header-path middle" data-rating="Looters" data-rating_note="Рейтинг грабителей">
                 <div class="window-ratings-header-path-content buttons-and-headers">Грабители</div>
             </div>
-            <div class="window-ratings-header-path small" data-rating="Heroes">
+            <div class="window-ratings-header-path small" data-rating="Heroes" data-rating_note="Рейтинг героев">
                 <div class="window-ratings-header-path-content buttons-and-headers">Герои</div>
             </div>
-            <div class="window-ratings-header-path" data-rating="Villain">
+            <div class="window-ratings-header-path" data-rating="Villain" data-rating_note="Рейтинг злодеев">
                 <div class="window-ratings-header-path-content buttons-and-headers">Злодеи</div>
             </div>
-            <div class="window-ratings-header-path" data-rating="Leaders">
+            <div class="window-ratings-header-path" data-rating="Leaders" data-rating_note="Рейтинг лидеров">
                 <div class="window-ratings-header-path-content buttons-and-headers">Лидеры</div>
             </div>
-            <div class="window-ratings-header-path small" data-rating="Warriors">
+            <div class="window-ratings-header-path small" data-rating="Warriors" data-rating_note="Рейтинг войнов">
                 <div class="window-ratings-header-path-content buttons-and-headers">Войны</div>
             </div>
-            <div class="window-ratings-header-path long" data-rating="Adventurers">
+            <div class="window-ratings-header-path long" data-rating="Adventurers" data-rating_note="Рейтинг авантюристов">
                 <div class="window-ratings-header-path-content buttons-and-headers">Авантюристы</div>
             </div>
         </div>
@@ -33,45 +33,72 @@
                 <div class="window-ratings-line-path numbers">Очки</div>
             </div>
 
-            <div id="RDSiteRating_Traders" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Traders" class="window-ratings-board">
+                <div id="RDSiteRating_traders_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_traders_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_traders_block"></div>
+            </div>
 
-            <div id="RDSiteRating_Looters" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Looters" class="window-ratings-board">
+                <div id="RDSiteRating_looters_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_looters_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_looters_block"></div>
+            </div>
 
-            <div id="RDSiteRating_Heroes" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Heroes" class="window-ratings-board">
+                <div id="RDSiteRating_heroes_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_heroes_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_heroes_block"></div>
+            </div>
 
-            <div id="RDSiteRating_Villain" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Villain" class="window-ratings-board">
+                <div id="RDSiteRating_villain_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_villain_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_villain_block"></div>
+            </div>
 
-            <div id="RDSiteRating_Leaders" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Leaders" class="window-ratings-board">
+                <div id="RDSiteRating_leaders_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_leaders_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_leaders_block"></div>
+            </div>
 
-            <div id="RDSiteRating_Warriors" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Warriors" class="window-ratings-board">
+                <div id="RDSiteRating_warriors_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_warriors_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_warriors_block"></div>
+            </div>
 
-            <div id="RDSiteRating_Adventurers" class="window-ratings-board"></div>
+            <div id="RDSiteRating_Adventurers" class="window-ratings-board">
+                <div id="RDSiteRating_adventurers_block" class="scroll-block"></div>
+                <div class="scroll-btn up" data-block_id="RDSiteRating_adventurers_block"></div>
+                <div class="scroll-btn down" data-block_id="RDSiteRating_adventurers_block"></div>
+            </div>
         </div>
-
 
         <div class="window-ratings-right-path">
             <div class="window-ratings-right-path-top">
-                <div class="window-ratings-right-path-top-header">Описание рейтинга</div>
+                <div id="RDSiteRatingNotesName" class="window-ratings-right-path-top-header">Описание рейтинга</div>
                 <div id="RDSiteRatingNotes_Traders" class="window-ratings-right-path-top-content">
-                    Расчитывается из количества нукойнов, заработанных навыком торговли, а так же из количества купленного экспортного товара и проданного импортного.
+                    Сумма нукойнов, заработанных с помощью навыка торговли, а так же количество купленного экспортного товара и проданного импортного.
                 </div>
                 <div id="RDSiteRatingNotes_Looters" class="window-ratings-right-path-top-content">
-                    Расчитывается из разницы рыночной суммы лута выбитого из других игроков и лута выбитого из данного игрока.
+                    Соотношение стоимости лута, выбитого из других персонажей и потерянного данным персонажем.
                 </div>
                 <div id="RDSiteRatingNotes_Heroes" class="window-ratings-right-path-top-content">
-                    Расчитывается из наибольшей кармы за всю историю персонажа и из актуальной пложительной кармы.
+                    Соотношение наивысшей кармы за всю историю персонажа и актуальной на данный момент.
                 </div>
                 <div id="RDSiteRatingNotes_Villain" class="window-ratings-right-path-top-content">
-                    Расчитывается из наименьшей кармы за всю историю персонажа и из актуальной отрицатеной кармы.
+                    Соотношение наинизшей кармы за всю историю персонажа и актуальной на данный момент.
                 </div>
                 <div id="RDSiteRatingNotes_Leaders" class="window-ratings-right-path-top-content">
-                    Расчитывается из опыта и лута выбитого участниками пати, управляемых данным персонажем.
+                    Количество опыта и лута, выбитого участниками пати, управляемых данным персонажем.
                 </div>
                 <div id="RDSiteRatingNotes_Warriors" class="window-ratings-right-path-top-content">
-                    PVP-рейтинг, расчитывается из убитых игроков, близких к уровню персонажа, чем выше - тем больше очков. Значительно ниже своего уровня - очки не даются.
+                    Количество боевого опыта и уничтоженного транспорта под управлением персонажей, близких к уровню данного персонажа.
                 </div>
                 <div id="RDSiteRatingNotes_Adventurers" class="window-ratings-right-path-top-content">
-                    Расчитывается из кол-ва успешно выполненных заданий, проваленных заданий, выполненных заданий васокого уровня, а так же разнообразия квестодателей.
+                    Соотношение выполненных и проваленных заданий, их уровня, а так же разнообразия квестодателей.
                 </div>
             </div>
             <div class="window-ratings-right-path-bottom">
@@ -82,15 +109,13 @@
                 </div>
                 <div class="window-ratings-right-path-content-block">
                     <div id="RDSiteRatingUserInfo" class="window-pi-user-info-table"></div>
+                    <div class="delimiter"></div>
                     <div id="RDSiteRatingUserCar" class="window-pi-user-car"></div>
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
-
 
 <script>
     $(document).ready(function () {
@@ -107,6 +132,9 @@
 
             $('.window-ratings-right-path-top-content').css({display: 'none'});
             $('#RDSiteRatingNotes_' + rating_name).css({display: 'block'});
+
+            // Замена надписи в заголовке описания рейтингов
+            $('#RDSiteRatingNotesName').text($(this).data('rating_note'));
 
             // Принудительно выделять первого пользователя, если другой не выделен
             var current_elem_in_rating = $('#RDSiteRating_' + rating_name).find('.window-ratings-line.active');
@@ -132,6 +160,9 @@
 
         function updateRatingUserInfo(user_info) {
             $('#RDSiteRatingUserName').text(user_info.user_name);
+            var procent_length = 20 + 2 * user_info.user_name.length;
+            procent_length = procent_length > 80 ? 80 : procent_length;
+            $('#RDSiteRatingUserName').parent().width(procent_length + '%');
             $("#RDSiteRatingUserInfo").empty();
             $("#RDSiteRatingUserCar").empty();
             $('#RDSiteRatingUserInfo').append(user_info.user_info_html);
@@ -162,6 +193,4 @@
             }
         });
     }
-
-
 </script>

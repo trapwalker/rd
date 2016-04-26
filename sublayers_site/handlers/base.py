@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from user_profile import User
+from sublayers_common.user_profile import User
 from bson.objectid import ObjectId, InvalidId
 from tornado.httpclient import AsyncHTTPClient
 import json

@@ -1,5 +1,5 @@
-<div id="RDSiteWReg" class="page-wrapper">
-    <div class="window-header interlacing buttons-and-headers">Nuke Commander v5.51</div>
+<div id="RDSiteWReg" class="page-wrapper switch-page">
+    <div class="window-header interlacing buttons-and-headers">Nuke Commander v{{ version }}</div>
     <div class="window-reg-main">
         <div class="window-reg-path">
             <div class="reg-path-up-header-block-header-block">
@@ -9,7 +9,7 @@
             </div>
             <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">E-MAIL></div>
-                <input type="email" id="reg_email" autocomplete="off">
+                <input type="email" id="reg_email" autocomplete="off" onclick="RegEmailClick()">
             </div>
             <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">NICKNAME></div>
@@ -17,7 +17,7 @@
             </div>
             <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">ПАРОЛЬ></div>
-                <input type="password" id="reg_password" name="password">
+                <input type="password" id="reg_password" autocomplete="off" name="password" onclick="RegPasswordClick()">
             </div>
             <div class="window-reg-up-btn-block">
                 <div class="reg-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RegisterBtnClick();">Зарегистрироваться</div>
@@ -31,11 +31,11 @@
             </div>
             <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">E-MAIL></div>
-                <input type="email" id="auth_email" autocomplete="off">
+                <input type="email" id="auth_email" autocomplete="off" onclick="AuthEmailClick()">
             </div>
             <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">ПАРОЛЬ></div>
-                <input type="password" id="auth_password" autocomplete="off">
+                <input type="password" id="auth_password" autocomplete="off" onclick="AuthPasswordClick()">
             </div>
             <div class="window-reg-up-btn-block">
                 <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="AuthorisationBtnClick()"><span>Войти</span><span>в систему</span></div>
@@ -46,15 +46,101 @@
             <div id="RDSiteWRegConsole" class="console-block"></div>
         </div>
         <div class="window-reg-footer">
-            <div class="reg-btn buttons-and-headers">Вход через VK</div>
-            <div class="reg-btn buttons-and-headers">Вход через FB</div>
-            <div class="reg-btn buttons-and-headers">Вход через OK</div>
-            <div class="reg-btn buttons-and-headers">Вход через G+</div>
+            <div class="reg-btn buttons-and-headers" onclick="VKClick()">1. Вход через VK</div>
+            <div class="reg-btn buttons-and-headers" onclick="FBClick()">2. Вход через FB</div>
+            <div class="reg-btn buttons-and-headers" onclick="OKClick()">3. Вход через OK</div>
+            <div class="reg-btn buttons-and-headers" onclick="GClick()">4. Вход через G+</div>
         </div>
     </div>
 </div>
 
 <script>
+    var reg_last_input_click;
+
+    function VKClick() {
+        if ((reg_last_input_click != 'VKClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Подключение через vk.com');
+            consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
+            reg_last_input_click = 'VKClick';
+        }
+        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+    }
+
+    function FBClick() {
+        if ((reg_last_input_click != 'FBClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Подключение через facebook.com');
+            consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
+            reg_last_input_click = 'FBClick';
+        }
+        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+    }
+
+    function OKClick() {
+        if ((reg_last_input_click != 'OKClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Подключение через ok.ru');
+            consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
+            reg_last_input_click = 'OKClick';
+        }
+        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+    }
+
+    function GClick() {
+        if ((reg_last_input_click != 'GClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Подключение через plus.google.com');
+            consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
+            reg_last_input_click = 'GClick';
+        }
+        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+    }
+
+    function RegEmailClick() {
+        if ((reg_last_input_click != 'RegEmailClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Введите адрес своей электронной почты.\n' +
+                    '--------------------------------------------------------------');
+            reg_last_input_click = 'RegEmailClick';
+        }
+    }
+
+    function AuthEmailClick() {
+        if ((reg_last_input_click != 'AuthEmailClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Введите адрес своей электронной почты.\n' +
+                    '--------------------------------------------------------------');
+            reg_last_input_click = 'AuthEmailClick';
+        }
+    }
+
+    function RegPasswordClick() {
+        if ((reg_last_input_click != 'RegPasswordClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Создайте новый пароль.\n' +
+                    '--------------------------------------------------------------');
+            reg_last_input_click = 'RegPasswordClick';
+        }
+    }
+
+    function AuthPasswordClick() {
+        if ((reg_last_input_click != 'AuthPasswordClick') && (consoleWReg)) {
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Введите свой пароль.\n' +
+                    '--------------------------------------------------------------');
+            reg_last_input_click = 'AuthPasswordClick';
+        }
+    }
+
     function GetUserInfo() {
          $.ajax({
             url: location.protocol + '//' + location.host + '/get_user_info',
@@ -71,18 +157,23 @@
                     }
 
                     consoleWPI.clear();
-                    consoleWPI.add_message('system', 'Добро пожаловать, ' + data.user_name + '!');
-                    consoleWPI.add_message('system', 'Вы вошли в систему Nuke Commander.');
-                    consoleWPI.add_message('system', 'Баланс счета: ' + data.user_balance + 'NC;');
-                    consoleWPI.add_message('system', 'Координаты: (' + pos_x + ' : ' + pos_y + ');');
-                    consoleWPI.add_message('system', 'Страховка: _;');
-                    consoleWPI.add_message('system', 'Активные задания: _.');
+                    consoleWPI.add_message('user', 'Загрузка системы навигации.');
+                    consoleWPI.add_message(
+                        'system',
+                        'Успешно.\n' +
+                        '-----------------------------\n' +
+                        'Добро пожаловать, ' + data.user_name + '!\n' +
+                        'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
+                        'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
+                        'Ваша страховка: _\n' +
+                        'Активных заданий: _\n' +
+                        '-----------------------------'
+                    );
                     
                     $('#RDSitePersonalInfoUserInfo').empty();
                     $('#RDSitePersonalInfoUserCar').empty();
                     $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
                     $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
-
                 }
                 if (window.location.hash == '#start')
                     $('#RDbtn_start').click();
@@ -104,11 +195,37 @@
                 action: 'reg'
             },
             success: function(data) {
-                consoleWReg.add_message('system', data.status);
-                GetUserInfo();
+                consoleWReg.add_message('user', ' Активация процедуры регистрации.');
+                if (data.status == 'success') {
+                    consoleWReg.add_message('system', 'Успешно.');
+                    GetUserInfo();
+                    return;
+                }
+                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                if (data.status == 'fail_wrong_input') {
+                    consoleWReg.add_message('system',
+                            'Ошибка приема данных.\n\n' +
+                            'Введена некорректная электронная почта или некорректный пароль.\n\n' +
+                            '--------------------------------------------------------------\n' +
+                            'Введите адрес действительной электронной почты.\n' +
+                            'Введите пароль, соответствующий формату ввода системы.\n' +
+                            '--------------------------------------------------------------');
+                }
+                if (data.status == 'fail_exist_email') {
+                    consoleWReg.add_message('system',
+                            'Ошибка приема данных.\n\n' +
+                            'Пользователь с таким email уже зарегистрирован.');
+                }
+                if (data.status == 'fail_exist_nickname') {
+                    consoleWReg.add_message('system',
+                            'Ошибка приема данных.\n\n' +
+                            'Пользователь с таким nickname уже зарегистрирован.');
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                 console.log(jqXHR, textStatus, errorThrown)
+                consoleWReg.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
             }
         });
     }
@@ -125,17 +242,31 @@
                 action: 'auth'
             },
             success: function(data) {
-                consoleWReg.add_message('system', data.status);
-                GetUserInfo();
+                consoleWReg.add_message('user', 'Активация процедуры авторизации.');
+                if (data.status == 'success') {
+                    consoleWReg.add_message('system', 'Успешно.');
+                    GetUserInfo();
+                }
+                else {
+                    consoleWReg.add_message('system',
+                            'Доступ запрещен. Логин или пароль введены неверно.\n\n' +
+                            '--------------------------------------------------------------\n' +
+                            'Проверьте правильность ввода логина и пароля, учитывайте регистр и язык ввода.\n' +
+                            '--------------------------------------------------------------');
+                    audioManager.play('error_1');
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                 console.log(jqXHR, textStatus, errorThrown)
+                consoleWReg.add_message('user', 'Активация процедуры авторизации.');
+                consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                audioManager.play('error_0');
             }
         });
     }
 
     function RestorePasswordBtnClick() {
-        // console.log('Функция недоступна !!');
-        $('#RDSAuthFieldNote').text('Функция недоступна!');
+        consoleWReg.add_message('user', 'Активация процедуры восстановления доступа.');
+        consoleWReg.add_message('system', 'Функция недоступна.');
+        audioManager.play('error_0');
     }
 </script>

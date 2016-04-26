@@ -3,14 +3,14 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import BaseHandler
+from sublayers_site.handlers.base_site import BaseSiteHandler
+from sublayers_common.user_profile import User
+
+from bson.objectid import ObjectId, InvalidId
 import tornado
 
-from user_profile import User
-from bson.objectid import ObjectId, InvalidId
 
-
-class GetUserInfoHandler(BaseHandler):
+class GetUserInfoHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
         user = self.current_user
@@ -29,7 +29,7 @@ class GetUserInfoHandler(BaseHandler):
         })
 
 
-class GetUserInfoByIDHandler(BaseHandler):
+class GetUserInfoByIDHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
         user_id = self.get_argument('user_id', None)

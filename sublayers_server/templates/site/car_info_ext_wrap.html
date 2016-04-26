@@ -1,7 +1,7 @@
 <div class="car-info-block-picture-main-site">
     {% if car is not None %}
-        {% include '../location/car_info_img_ext.html' %}
-        <div class="car-info-name-block">{{ car.title }}</div>
+        {% include '../site/car_info_img_ext_site.html' %}
+        <div class="car-info-name-block"><span>{{ car.title }}</span></div>
     {% else %}
     <div class="car-info-block-picture-main default-car">
         <div class="car-info-block-picture default-car" style="background: url({{ static_url('img/cars/car_default.png') }}) no-repeat center; z-index: 1"></div>

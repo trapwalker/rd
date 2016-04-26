@@ -16,15 +16,7 @@
         }
     </style>
 
-    {% if site_angle_number == 1 %}
     <link rel="stylesheet" href="{{ static_url('css/site_main.css') }}"/>
-    {% elif site_angle_number == 2 %}
-    <link rel="stylesheet" href="{{ static_url('css/site_main_2.css') }}"/>
-    {% elif site_angle_number == 3 %}
-    <link rel="stylesheet" href="{{ static_url('css/site_main_3.css') }}"/>
-    {% elif site_angle_number == 4 %}
-    <link rel="stylesheet" href="{{ static_url('css/site_main_4.css') }}"/>
-    {% end %}
     <link rel="stylesheet" href="{{ static_url('css/car_represent.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_reg.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_personal_info.css') }}"/>
@@ -35,6 +27,9 @@
     <script src="{{ static_url('js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
     <script src="{{ static_url('js/main.js') }}"></script>
+    <script src="{{ static_url('js/audio_object.js') }}"></script>
+    <script src="{{ static_url('js/audio_manager.js') }}"></script>
+    <script src="{{ static_url('js/audio_keyboard_emulate.js') }}"></script>
     <script src="{{ static_url('js/effects/text_console.js') }}"></script>
     <script src="{{ static_url('js/time_manager.js') }}"></script>
     <script src="{{ static_url('js/canvas/canvas_manager.js') }}"></script>
@@ -51,7 +46,7 @@
             <!--Сюда вверстать весь сайт!-->
             <!-- Контент - окна -->
             <div class="content-block">
-                <div class="content">
+                <div class="content black">
                     <!--Окно регистрации-->
                     {% include 'site_window_reg.html' %}
                     <!--Личный кабинет-->
@@ -81,7 +76,15 @@
                     <div class="light-indicator"></div>
                 </div>
                 <!--Машинка-фон при старте сайте-->
-                <div class="content-start-back"></div>
+                <div class="content-start-back content-start"></div>
+            </div>
+            <!--Консоль на главной странице -->
+            <div id="RDSiteStartPage" class="content-block content-start switch-page">
+                <div class="content">
+                    <div class="content-start-console-wrap">
+                        <div id="RDSiteStartPageConsole" class="console-block"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -89,6 +92,7 @@
 
 <script>
     var is_authorize = {{ is_authorize }};
+    var version = '{{ version }}';
     $(document).ready(function () {
         var content_start_back_visible = true;
 
@@ -100,13 +104,13 @@
             // скрыть сетку, машинку и тд
             if (content_start_back_visible) {
                 content_start_back_visible = false;
-                $('.content-start-back').animate({opacity: 0}, function () {
-                    $('.content-start-back').first().css({display: 'none'});
+                $('.content-start').animate({opacity: 0}, function () {
+                    $('.content-start').first().css({display: 'none'});
                 });
             }
 
             // Скрыть все окна
-            $('.page-wrapper').css({display: 'none'});
+            $('.switch-page').css({display: 'none'});
 
             // Показать своё окно
             var data = $(this).data('window_id');
@@ -131,6 +135,10 @@
             // Мерцание шума
             if (canvasNoise) canvasNoise.flashNoise();
 
+            // Проигрывание звуков
+            audioManager.play('click_' + Math.floor(Math.random() * 3.99));
+            // audioManager.play('dev_gl_' + Math.floor(Math.random() * 1.99), 0.2 * Math.random(), 0.4 * Math.random());
+
             // Изменение хеша в адресной строке (хеш возьмётся из data-url_hash самой кнопки
             var url_hash = $(this).attr('id');
             if (url_hash && url_hash.length) {
@@ -141,18 +149,26 @@
         main();
 
         if (is_authorize) GetUserInfo();
-    });
 
-    $(window).load(function() {
-        // Смещение всех консолей вправо (прячем скролл)
-//        var jq_console = $('.console-block').first();
-//        var right_shift = 0;
-//        if (jq_console) {
-//            var dom_console = jq_console.get(0);
-//            right_shift = dom_console.clientWidth - dom_console.offsetWidth;
-//        }
-//        $('.console-block').css('right', right_shift);
-//        $('.console-block').css('opacity', '1');
+        // Активация скролов
+        var scroll_interval = null;
+        var d_scroll = 0;
+        var scroll_block = null;
+        function makeScroll() {
+            var scroll_pos = scroll_block.scrollTop();
+            scroll_block.scrollTop(scroll_pos + d_scroll);
+        }
+        $('.scroll-btn').mousedown(function(event) {
+            var jq_this = $(this);
+            scroll_block = $('#' + jq_this.data('block_id'));
+            if (jq_this.hasClass('up')) d_scroll = -10;
+            if (jq_this.hasClass('down')) d_scroll = 10;
+            scroll_interval = setInterval(makeScroll, 50);
+        });
+        $('.scroll-btn').mouseup(function(event) {
+            d_scroll = 0;
+            clearInterval(scroll_interval);
+        });
     });
 </script>
 </html>

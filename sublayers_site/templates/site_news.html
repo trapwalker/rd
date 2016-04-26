@@ -1,30 +1,40 @@
-<div id="RDSiteNews" class="page-wrapper">
-    <div class="window-header buttons-and-headers">Nuke Commander v5.51</div>
+<div id="RDSiteNews" class="page-wrapper switch-page">
+    <div class="window-header buttons-and-headers">Nuke Commander v{{ version }}</div>
     <div class="window-news-content">
         <div class="window-news-content-block first">
-            <div class="window-qg-content-header-block">
-                <div class=" window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Лог</div>
-                </div>
-            </div>
-            <div class="window-news-log-list-block">
-                {% set news_id = 0 %}
-                {% for news in news_list %}
-                    <div class="window-news-log-news-header box-shadow" data-news_id="news_content_{{ news_id }}">
-                        <div class="window-news-log-news-date">{% raw news['date'] %}</div>   {% raw news['header'] %}</div>
-                    {% set news_id = news_id + 1 %}
-                {% end %}
-            </div>
-        </div>
-        <div class="window-news-content-block second">
             <div class="window-qg-content-header-block">
                 <div class=" window-qg-content-back">
                     <div class="window-qg-content-header buttons-and-headers">Новости</div>
                 </div>
             </div>
+            <div class="window-news-log-list-block">
+                <div id="newsHeaderList" class="scroll-block">
+                    {% set news_id = 0 %}
+                        {% for news in news_list %}
+                        <div class="window-news-log-news-header box-shadow" data-news_id="news_content_{{ news_id }}_block">
+                            <div class="window-news-log-news-date">{% raw news['date'] %}</div>
+                            <div class="window-news-log-news-header-content">{% raw news['header'] %}</div>
+                        </div>
+                        {% set news_id = news_id + 1 %}
+                    {% end %}
+                </div>
+                <div class="scroll-btn up" data-block_id="newsHeaderList"></div>
+                <div class="scroll-btn down" data-block_id="newsHeaderList"></div>
+            </div>
+        </div>
+        <div class="window-news-content-block second">
+            <div class="window-qg-content-header-block">
+                <div class=" window-qg-content-back">
+                    <div id="RDSiteNewsRightHeader" class="window-qg-content-header buttons-and-headers">Новости</div>
+                </div>
+            </div>
             {% set news_id = 0 %}
             {% for news in news_list %}
-                <div id="news_content_{{ news_id }}" class="window-news-news-content-block">{% raw news['content'] %}</div>
+                <div id="news_content_{{ news_id }}_block" class="window-news-news-content-block">
+                    <div id="news_content_{{ news_id }}" class="scroll-block">{% raw news['content'] %}</div>
+                    <div class="scroll-btn up" data-block_id="news_content_{{ news_id }}"></div>
+                    <div class="scroll-btn down" data-block_id="news_content_{{ news_id }}"></div>
+                </div>
                 {% set news_id = news_id + 1 %}
             {% end %}
         </div>
@@ -35,8 +45,15 @@
     $('.window-news-log-news-header').click(function(event) {
         $('.window-news-news-content-block').css('display', 'none');
         $('#' + $(this).data('news_id')).css('display', 'block');
+        var header_text = $(this).find('.window-news-log-news-header-content').first().text();
+
+        var procent_length = 10 + 2 * header_text.length;
+        procent_length = procent_length > 90 ? 90 : procent_length;
+        $('#RDSiteNewsRightHeader').parent().width(procent_length + '%');
+
+        $('#RDSiteNewsRightHeader').text(header_text);
         $('.window-news-log-news-header').removeClass('active');
         $(this).addClass('active');
-    })
+    });
     $('.window-news-log-news-header').first().click();
 </script>

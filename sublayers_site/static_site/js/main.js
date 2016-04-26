@@ -9,7 +9,7 @@ var __extends = this.__extends || function (d, b) {
 
 var rating_users_info_list = {}; // Список пользователей в рейтингах, чтобы каждого запрашивать только по 1 разу в 5-10 минут
 
-// �?нициализация всего и вся
+// Инициализация всего и вся
 function main() {
     canvasManager = new CanvasManager();
     canvasNoise = new CanvasNoise();
@@ -21,7 +21,9 @@ function main() {
 
     initConsoles();
 
-    // ������� �� ����� (���)
+    init_site_sound();
+
+
     var hash_url = window.location.hash;
     if (hash_url && hash_url.length) {
         hash_url = hash_url.split('#')[1];
@@ -34,6 +36,37 @@ function main() {
     for (var i = 0; i < ratings_name.length; i++) {
         GetRatingInfo(ratings_name[i]);
     }
+
+    consoleWStart.start();
+}
+
+function init_site_sound() {
+    audioManager.load('click_0', {url: '/audio/button_click/2023__edwin-p-manchester__tapeplayer04.wav'});
+    audioManager.load('click_1', {url: '/audio/button_click/275152__bird-man__click.wav'});
+    audioManager.load('click_2', {url: '/audio/button_click/290442__littlerobotsoundfactory__mouth-09.wav'});
+    audioManager.load('click_3', {url: '/audio/button_click/278967__sfstorm__sfx-clicking.wav'});
+
+    audioManager.load('error_0', {url: '/audio/error_signal/151309__tcpp__beep1-resonant-error-beep.wav'});
+    audioManager.load('error_1', {url: '/audio/error_signal/142608__autistic-lucario__error.wav'});
+
+    audioManager.load('dev_gl_0', {url: '/audio/device_noise/178306__glitchedtones__glitchedtones-apc-66.wav'});
+    audioManager.load('dev_gl_1', {url: '/audio/device_noise/178308__glitchedtones__glitchedtones-apc-79.wav'});
+
+    // Кнопки клавиатуры
+    audioManager.load('key_cl_0', {url: '/audio/print_keyboard/194797__jim-ph__vintage-keyboard-3.wav'});
+    audioManager.load('key_cl_1', {url: '/audio/print_keyboard/332671__reitanna__some-sort-of-click.wav'});
+    audioManager.load('key_cl_2', {url: '/audio/print_keyboard/181000__ueffects__r-key.wav'});
+    audioManager.load('key_cl_3', {url: '/audio/print_keyboard/323717__reitanna__button.wav'});
+    audioManager.load('key_cl_4', {url: '/audio/print_keyboard/333047__christopherderp__videogame-menu-button-clicking-sound-18.wav'});
+
+
+    audioKeyboard = new AudioKeyboard([
+        audioManager.get('key_cl_0'),
+        audioManager.get('key_cl_1'),
+        audioManager.get('key_cl_2'),
+        audioManager.get('key_cl_3'),
+        audioManager.get('key_cl_4')
+    ]);
 
 
 }
@@ -56,7 +89,7 @@ function GetQuickGameRecords() {
 }
 
 function GetRatingInfo(rating_name) {
-    var jq_elem = $('#RDSiteRating_' + rating_name);
+    var jq_elem = $('#RDSiteRating_' + rating_name).find('.scroll-block').first();
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rating_info',
         method: 'POST',

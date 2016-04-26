@@ -32,6 +32,7 @@ def _rel(*folders):
 
 # Options definintion block:
 
+define("debug", default=False, help="Debug mode flag", type=bool)
 define("service_name", default="sl", help="Game server service name", type=str)
 
 define("cookie_secret", help="cookie secret key", type=str)
