@@ -149,18 +149,26 @@
         main();
 
         if (is_authorize) GetUserInfo();
-    });
 
-    $(window).load(function() {
-        // Смещение всех консолей вправо (прячем скролл)
-{#        var jq_console = $('.console-block').first();#}
-{#        var right_shift = 0;#}
-{#        if (jq_console) {#}
-{#            var dom_console = jq_console.get(0);#}
-{#            right_shift = dom_console.clientWidth - dom_console.offsetWidth;#}
-{#        }#}
-{#        $('.console-block').css('right', right_shift);#}
-{#        $('.console-block').css('opacity', '1');#}
+        // Активация скролов
+        var scroll_interval = null;
+        var d_scroll = 0;
+        var scroll_block = null;
+        function makeScroll() {
+            var scroll_pos = scroll_block.scrollTop();
+            scroll_block.scrollTop(scroll_pos + d_scroll);
+        }
+        $('.scroll-btn').mousedown(function(event) {
+            var jq_this = $(this);
+            scroll_block = $('#' + jq_this.data('block_id'));
+            if (jq_this.hasClass('up')) d_scroll = -10;
+            if (jq_this.hasClass('down')) d_scroll = 10;
+            scroll_interval = setInterval(makeScroll, 50);
+        });
+        $('.scroll-btn').mouseup(function(event) {
+            d_scroll = 0;
+            clearInterval(scroll_interval);
+        });
     });
 </script>
 </html>
