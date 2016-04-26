@@ -97,10 +97,6 @@ function GetRatingInfo(rating_name) {
         success: function (data) {
             jq_elem.empty();
             jq_elem.append(data);
-            jq_elem.append(data);
-            jq_elem.append(data);
-            jq_elem.append(data);
-            jq_elem.append(data);
             if (rating_name == 'Traders') { // Если это первый рейтинг загрузился, то кликнуть на него
                 $('.window-ratings-header-path').first().click();
             }
