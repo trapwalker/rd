@@ -15,7 +15,7 @@ def static_world_link_repr(link):
     if link.startswith(search_str):
         return link[len(search_str):]
     else:
-        log.warn('World link incorrect')
+        log.warn('World link incorrect: %r', link)
         return ''
 
 
