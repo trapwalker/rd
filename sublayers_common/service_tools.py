@@ -3,7 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
+from collections import namedtuple
+import subprocess
 import signal
+import sys
 import os
 import re
 
@@ -31,34 +34,74 @@ def pidfile_save(filename):
             log.info("[DONE] PID stored into the file '%s'", filename)
 
 
-class HGRevision(object):
-    # todo: exceptions
-    rev_parser = re.compile("([0-9a-f]+)(\+?)\s(\d+)(\+?)\s(.*)")
-    # 7f9c68086b3e+ 1815+ website
-    def __init__(self):
-        with os.popen('hg id -ibn') as f:
-            raw = f.read().rstrip('\n')
+class RevisionGettingError(Exception):
+    pass
 
-        h, hp, n, np, b = self.rev_parser.match(raw).groups()
-        self.hash = h
-        self.num = int(n)
-        self.branch = b
-        self.is_changed = bool(hp or np)
+
+HGRevisionCls = namedtuple('HGRevisionCls', 'hash num branch is_changed')
+
+class HGRevision(HGRevisionCls):
+    # todo: exceptions
+    _rev_parser = re.compile("([0-9a-f]+)(\+?)\s(\d+)(\+?)\s(.*)")
+    # 7f9c68086b3e+ 1815+ website
+    def __new__(cls, path=None):
+        encoding = sys.getfilesystemencoding()
+        if isinstance(path, unicode):
+            path = path.encode(encoding)
+        cmd = ['hg', 'id', '-ibn']
+        if path:
+            cmd += ['-R', '"{}"'.format(path)]
+
+        try:
+            raw = subprocess.check_output(cmd, shell=True).decode(encoding)
+        except subprocess.CalledProcessError as e:
+            raise RevisionGettingError(e)
+
+        m = cls._rev_parser.match(raw)
+        if m is None:
+            RevisionGettingError('Wrong revision format: {!r}'.format(raw))
+
+        h, hp, n, np, b = m.groups()
+        return HGRevisionCls.__new__(cls, h, int(n), b, bool(hp or np))
+
+    def __repr__(self):
+        return (
+            '{self.__class__.__name__}('
+            'hash={self.hash!r}, '
+            'num={self.num!r}, '
+            'branch={self.branch!r}, '
+            'is_changed={self.is_changed!r})'
+        ).format(self=self)
 
     def __str__(self):
         return '{self.branch}:{self.num} [{self.hash}{cf}]'.format(self=self, cf='+' if self.is_changed else '')
 
 
-class HGVersion(object):
+HGVersionCls = namedtuple('HGVersionCls', 'main release default')
+
+
+class HGVersion(HGVersionCls):
     @staticmethod
-    def get_branche_size(branche):
-        with os.popen('hg log -b {} | grep changeset | wc -l'.format(branche)) as f:
-            return f.read().rstrip('\n')
-    
-    def __init__(self):
-        self.main = '0'
-        self.release = self.get_branche_size('release')
-        self.default = self.get_branche_size('default')
+    def get_branche_size(branche, path=None):
+        encoding = sys.getfilesystemencoding()
+        if isinstance(path, unicode):
+            path = path.encode(encoding)
+
+        repo = '-R "{}"'.format(path) if path else ''
+
+        cmd = 'hg log {repo} -b {branche} | grep changeset | wc -l'.format(repo=repo, branche=branche)
+        try:
+            return subprocess.check_output(cmd, shell=True).decode(encoding).strip()
+        except subprocess.CalledProcessError as e:
+            raise RevisionGettingError(e)
+
+    def __new__(cls, path=None):
+        return HGVersionCls.__new__(
+            cls,
+            '0',
+            cls.get_branche_size('release', path=path),
+            cls.get_branche_size('default', path=path),
+        )
 
     def __str__(self):
         return '{self.main}.{self.release}.{self.default}'.format(self=self)
@@ -66,4 +109,6 @@ class HGVersion(object):
 
 if __name__ == '__main__':
     print 'version =', HGVersion()
-    print 'revision = ', HGRevision()
+    print 'revision =',
+    r = HGRevision()
+    print r

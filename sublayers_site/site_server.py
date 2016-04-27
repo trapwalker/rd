@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+import sys
+import os
+
+
+def parent_folder(fn):
+    return os.path.abspath(os.path.join(os.path.dirname(fn), '..'))
+
+
+sys.path.append(parent_folder(__file__))
 
 import logging
 import logging.config
@@ -14,12 +25,13 @@ import tornado.web
 from tornado.options import options
 
 import settings
-from handlers.site_auth import StandardLoginHandler, LogoutHandler
-from handlers.site import SiteMainHandler
-from handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
-from handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 
-from handlers.audio_test import GetAudioTest
+import sublayers_site.handlers.site_auth
+from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler
+from sublayers_site.handlers.site import SiteMainHandler
+from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
+from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
+from sublayers_site.handlers.audio_test import GetAudioTest
 
 from sublayers_common.base_application import BaseApplication
 
