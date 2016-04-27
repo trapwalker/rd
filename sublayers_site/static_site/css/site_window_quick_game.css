@@ -79,6 +79,7 @@
     /*border: 2px solid #007700;*/
     box-sizing: border-box;
 }
+.window-qg-content-car-block .slide-arrow { top: 98px; z-index: 1000; }
 
 .window-qg-content-car-wrap {
     position: absolute;
@@ -88,32 +89,6 @@
     left: 0;
 }
 .window-qg-content-car-wrap .car-info-block-picture-main { margin-left: -45px; }
-
-.window-qg-content-car-slide-arrow {
-    position: absolute;
-    cursor: pointer;
-    width: 17px;
-    height: 24px;
-    top: 98px;
-    z-index: 1000;
-}
-.window-qg-content-car-slide-arrow.left {
-    background: transparent url(/static_site/img/btn_slide_left.png) no-repeat 100% 100%;
-    left: 10px;
-}
-.window-qg-content-car-slide-arrow.left:hover {
-    background: transparent url(/static_site/img/btn_slide_left_over.png) no-repeat 100% 100%;
-}
-.window-qg-content-car-slide-arrow.left:active {background: none;}
-
-.window-qg-content-car-slide-arrow.right {
-    background: transparent url(/static_site/img/btn_slide_right.png) no-repeat 100% 100%;
-    right: 10px;
-}
-.window-qg-content-car-slide-arrow.right:hover {
-    background: transparent url(/static_site/img/btn_slide_right_over.png) no-repeat 100% 100%;
-}
-.window-qg-content-car-slide-arrow.right:active {background: none;}
 
 .window-qg-btn {
     cursor: pointer;

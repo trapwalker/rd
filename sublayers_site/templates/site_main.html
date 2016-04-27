@@ -19,10 +19,12 @@
     <link rel="stylesheet" href="{{ static_url('css/site_main.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/car_represent.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_reg.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/site_window_reg_1.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_personal_info.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_quick_game.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_news.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/site_window_ratings.css') }}"/>
+
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
@@ -49,6 +51,7 @@
                 <div class="content black">
                     <!--Окно регистрации-->
                     {% include 'site_window_reg.html' %}
+                    {% include 'site_window_reg_1.html' %}
                     <!--Личный кабинет-->
                     {% include 'site_personal_info.html' %}
                     <!--Окно быстрой игры-->
@@ -68,7 +71,7 @@
                 <div class="btn-block">
                     <a id="RDbtn_start" class="btn-page btn btn-1" href="/#start" data-window_id="RDSiteWReg"></a>
                     <a id="RDbtn_quick" class="btn-page btn btn-2" href="/#quick" data-window_id="RDSiteQuickGame"></a>
-                    <a id="RDbtn_about" class="btn-page btn btn-3" href="/#about" data-window_id="RDSiteGameInfo"></a>
+                    <a id="RDbtn_about" class="btn-page btn btn-3" href="/#about" data-window_id="RDSiteWReg1"></a>
                     <a id="RDbtn_news" class="btn-page btn btn-4" href="/#news" data-window_id="RDSiteNews"></a>
                     <a id="RDbtn_ratings" class="btn-page btn btn-5" href="/#ratings" data-window_id="RDSiteWRatings"></a>
                     <a class="btn btn-6" href="/forum" target="_blank"></a>
