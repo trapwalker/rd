@@ -96,7 +96,7 @@ class Application(BaseApplication):
             (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта
             (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),
             (r"/ws", AgentSocketHandler),
-            (r"/static/(.*)", StaticFileHandlerPub),
+            #(r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", PlayHandler),
 
             (r"/login", SiteLoginHandler),
