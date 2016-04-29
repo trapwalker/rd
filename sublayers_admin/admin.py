@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import urlparse
 import sys
 import os
 
@@ -23,6 +24,7 @@ from pymongo import MongoClient
 from tornado.options import options
 
 from sublayers_server import settings
+from sublayers_common.service_tools import HGRevision
 
 
 def clean_collection(db, collection):
@@ -59,7 +61,7 @@ class AdmCmd(cmd2.Cmd):
         print '{:20}: {:6}'.format('Agents count', self.db.agents.count())
         print '{:20}: {:6}'.format('Profiles count', self.db.profiles.count())
     
-    def do_reset(self, arg):
+    def do_reset(self, arg=None):
         '''
             Reset server DB by collection name
         '''
@@ -74,24 +76,24 @@ class AdmCmd(cmd2.Cmd):
     def do_update(self, arg):
         r1p = os.path.join(PROJECT_PATH, '..')
         r2p = options.world_path if os.path.isabs(options.world_path) else os.path.join(PROJECT_PATH, options.world_path)
-        r1 = get_revision(r1p)
-        r2 = get_revision(r2p)
+        r1 = HGRevision(r1p)
+        r2 = HGRevision(r2p)
         call('hg pull -u -R {}'.format(r1p))
         call('hg pull -u -R {}'.format(r2p))
-        r1_ = get_revision(r1p)
-        r2_ = get_revision(r2p)
-        if r1 != r1_: print 'Server repo updated'
-        if r2 != r2_: print 'World repo updated'
-        if (r1 != r1_) or (r2 != r2_):
+        r1_ = HGRevision(r1p)
+        r2_ = HGRevision(r2p)
+        if r1.hash != r1_.hash: print 'Server repo updated'
+        if r2.hash != r2_.hash: print 'World repo updated'
+        if (r1.hash != r1_.hash) or (r2.hash != r2_.hash):
             self.do_restart()
 
-    def do_restart(self, arg):
+    def do_restart(self, arg=None):
         call('service {} restart'.format(options.service_name))
         
 
 def main():
     with MongoClient(options.db) as mdb:
-        dsn = urlparse(options.db)
+        dsn = urlparse.urlparse(options.db)
         db = mdb[dsn.path.lstrip('/')]
         cmd = AdmCmd(db=db)
         cmd.prompt = '--> '

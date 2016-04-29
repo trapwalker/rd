@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from base import BaseHandler
+from sublayers_site.handlers.base_site import BaseHandler
 
 
 class GetAudioTest(BaseHandler):
