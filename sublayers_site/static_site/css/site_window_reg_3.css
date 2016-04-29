@@ -1,3 +1,9 @@
+#RDSiteWReg3 {
+    border: 2px solid transparent;
+    background: transparent url('/static_site/img/back_chip.png') 100% 100% no-repeat;
+    background-size: contain;
+}
+
 .site-chip-content {
     position: absolute;
     top: 125px;
@@ -44,7 +50,7 @@
     width: 85%;
     margin: 0 auto 0 auto;
     box-sizing: border-box;
-    top: -30px;
+    top: -18px;
     background-color: #01380b;
     border-radius: 3px;
 }
@@ -68,7 +74,7 @@
 }
 
 .site-chip-content-line.shift {
-    margin-left: 10px;
+    margin-left: 30px;
 }
 
 .site-chip-content-line-text {
@@ -83,6 +89,9 @@
     float: right;
 }
 
+.site-chip-content-line-text.bold {
+    font-family: Nouveau_IBM;
+}
 
 @media screen and (max-width: 1366px) {
     .site-chip-content {
