@@ -108,7 +108,8 @@ class StandardLoginHandler(BaseSiteHandler):
                 return
 
         if not nickname or (len(nickname) > 100):  # todo: Вынести лимиты в константы
-            self.finish({'status': 'Некорректные входные данные'})
+            # self.finish({'status': 'Некорректные входные данные'})
+            self.send_error(403)
             return
 
         login_free = False
