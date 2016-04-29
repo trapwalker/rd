@@ -51,6 +51,10 @@ class StandardLoginHandler(BaseSiteHandler):
             yield self._quick_registration()
         elif action == 'auth':
             yield self._authorisation()
+        elif action == 'next':
+            yield self._next_reg_step()
+        elif action == 'back':
+            yield self._back_reg_step()
         else:
             raise HTTPError(405, log_message='Wrong action {}.'.format(action))
 
@@ -86,6 +90,7 @@ class StandardLoginHandler(BaseSiteHandler):
         #     log.info('User <{}> not registered on forum!'.format(username))
         #     return
         user = User(name=username, email=email, raw_password=password)
+        user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -179,3 +184,32 @@ class StandardLoginHandler(BaseSiteHandler):
         self.set_cookie("forum_user", self._forum_cookie_setup(user.name))
         # return self.redirect("/")
         self.finish({'status': 'success'})
+
+    @tornado.gen.coroutine
+    def _next_reg_step(self):
+        user = self.current_user
+        # todo: смотреть на статус пользователя, понять что делать и как это обработать
+        if user.registration_status == 'nickname':
+            username = self.get_argument('nickname')
+            # todo: проверить свободен ли ник, считать другие параметры, записать, обновить статус, отправить на клиент инструкции "что делать дальше"
+        elif user.registration_status == 'settings':
+            pass
+        elif user.registration_status == 'chip':
+            # todo: изменить статус на register и наконец-то зарегать юзера на форуме!
+            pass
+
+    @tornado.gen.coroutine
+    def _back_reg_step(self):
+        user = self.current_user
+        # todo: смотреть на статус пользователя, понять что делать и как это обработать
+        if user.registration_status == 'nickname':
+            # todo: с таким статусом нельзя нажать назад!
+            pass
+        elif user.registration_status == 'settings':
+            # todo: просто изменить статус и отправить на клиент инструкции по тому, какое окно открыть
+            user.registration_status = 'nickname'
+            yield user.save()
+        elif user.registration_status == 'chip':
+            # todo: просто изменить статус и отправить на клиент инструкции по тому, какое окно открыть
+            user.registration_status = 'settings'
+            yield user.save()

@@ -8,6 +8,7 @@ var __extends = this.__extends || function (d, b) {
 
 
 var rating_users_info_list = {}; // Список пользователей в рейтингах, чтобы каждого запрашивать только по 1 разу в 5-10 минут
+var registration_status;
 
 // Инициализация всего и вся
 function main() {
@@ -29,8 +30,6 @@ function main() {
         console.warn('eCanvasChipAnimation: Content dont load');
     };
     plate_img.src = '/static_site/img/chip_anim_all.png';
-
-
 
     initConsoles();
 
@@ -59,6 +58,8 @@ function main() {
 }
 
 function init_site_sound() {
+    audioManager.gain_all(0.01);
+
     audioManager.load('click_0', {url: '/audio/button_click/2023__edwin-p-manchester__tapeplayer04.wav'});
     audioManager.load('click_1', {url: '/audio/button_click/275152__bird-man__click.wav'});
     audioManager.load('click_2', {url: '/audio/button_click/290442__littlerobotsoundfactory__mouth-09.wav'});
@@ -85,7 +86,6 @@ function init_site_sound() {
         audioManager.get('key_cl_3'),
         audioManager.get('key_cl_4')
     ]);
-
 
 }
 
@@ -125,6 +125,26 @@ function GetRatingInfo(rating_name) {
         }
     });
 }
+
+
+function GetIDForStartRegistrationPage(){
+    // Функция-контроллер, которая возвращает ID для клика на кнопку Начать Игру в зависимости от Статуса регистрации пользователя
+    var map = {
+        'not_register': 'RDSiteWReg', // Показывать нулевое окно регистрации или авторизации
+        'nickname': 'RDSiteWReg1', // Показывать окно ввода ника и выбора класса
+        'settings': 'RDSiteWReg2', // Показывать окно ввода навыков и перков
+        'chip': 'RDSiteWReg3', // Показывать окно-чипа, предложенеи завершить регистрацию
+        'register': 'RDSitePersonalInfo' // Показывать окно личного кабинета
+    };
+
+    if (! registration_status) registration_status = $('#registration_status').text();
+    console.log(registration_status);
+
+    if (map.hasOwnProperty(registration_status)) return map[registration_status];
+    return map['not_register'];
+}
+
+
 
 //function start_site() {
 //    console.log('Start site ! ');

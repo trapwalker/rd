@@ -97,6 +97,9 @@
             </div>
         </div>
     </div>
+    <div style="display: none">
+        <div id="registration_status">{{ 'not_register' if not current_user or current_user.quick else current_user.registration_status }}</div>
+    </div>
 </body>
 
 <script>
@@ -121,8 +124,16 @@
             // Скрыть все окна
             $('.switch-page').css({display: 'none'});
 
+            // Получить id-шник страницы, которую нужно отобразить
+            var data;
+            if (this.id == 'RDbtn_start') {
+                data = GetIDForStartRegistrationPage();
+            }
+            else {
+                data = $(this).data('window_id');
+            }
+
             // Показать своё окно
-            var data = $(this).data('window_id');
             if ((data == 'RDSiteWReg') && is_authorize)
                 $('#RDSitePersonalInfo').css({display: 'block'});
             else
