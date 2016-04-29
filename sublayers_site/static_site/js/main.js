@@ -24,6 +24,11 @@ function main() {
     init_site_sound();
 
 
+    window.onresize = function() {
+        canvasManager.resize_window();
+    };
+
+
     var hash_url = window.location.hash;
     if (hash_url && hash_url.length) {
         hash_url = hash_url.split('#')[1];

@@ -41,6 +41,11 @@ var CanvasDisplayRippling = (function(){
         this.is_paused = false;
     };
 
+    CanvasDisplayRippling.prototype.resize_window = function () {
+        this._height = canvasManager.height + constDisplayRipplingWidth;
+        this._line_step = constDisplayRipplingWidth / this._height;
+    };
+
     return CanvasDisplayRippling;
 })();
 
