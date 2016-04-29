@@ -1,0 +1,148 @@
+<div id="RDSiteWReg2" class="page-wrapper switch-page">
+    <div class="window-header interlacing buttons-and-headers">Nuke Commander v{{ version }}</div>
+    <div class="window-reg2-main">
+        <div class="window-reg2-path">
+            <div class="window-qg-content-header-block">
+                <div class=" window-qg-content-back">
+                    <div class="window-qg-content-header buttons-and-headers">Навыки</div>
+                </div>
+            </div>
+            <div class="reg2-skill-table">
+                <div class="reg2-skill-table-line odd">
+                    <div class="reg2-skill-table-label">Вождение:</div>
+                    <div class="reg2-skill-table-counter-block">
+                        <div class="reg2-skill-table-counter-btn dec"></div>
+                        <div class="reg2-skill-table-counter">0</div>
+                        <div class="reg2-skill-table-counter-btn inc"></div>
+                    </div>
+                </div>
+                <div class="reg2-skill-table-line">
+                    <div class="reg2-skill-table-label">Стрельба:</div>
+                    <div class="reg2-skill-table-counter-block">
+                        <div class="reg2-skill-table-counter-btn dec"></div>
+                        <div class="reg2-skill-table-counter">0</div>
+                        <div class="reg2-skill-table-counter-btn inc"></div>
+                    </div>
+                </div>
+                <div class="reg2-skill-table-line odd">
+                    <div class="reg2-skill-table-label">Скрытность:</div>
+                    <div class="reg2-skill-table-counter-block">
+                        <div class="reg2-skill-table-counter-btn dec"></div>
+                        <div class="reg2-skill-table-counter">0</div>
+                        <div class="reg2-skill-table-counter-btn inc"></div>
+                    </div>
+                </div>
+                <div class="reg2-skill-table-line">
+                    <div class="reg2-skill-table-label">Механик:</div>
+                    <div class="reg2-skill-table-counter-block">
+                        <div class="reg2-skill-table-counter-btn dec"></div>
+                        <div class="reg2-skill-table-counter">0</div>
+                        <div class="reg2-skill-table-counter-btn inc"></div>
+                    </div>
+                </div>
+                <div class="reg2-skill-table-line odd">
+                    <div class="reg2-skill-table-label">Торговля:</div>
+                    <div class="reg2-skill-table-counter-block">
+                        <div class="reg2-skill-table-counter-btn dec"></div>
+                        <div class="reg2-skill-table-counter">0</div>
+                        <div class="reg2-skill-table-counter-btn inc"></div>
+                    </div>
+                </div>
+                <div class="reg2-skill-table-line">
+                    <div class="reg2-skill-table-label">Лидерство:</div>
+                    <div class="reg2-skill-table-counter-block">
+                        <div class="reg2-skill-table-counter-btn dec"></div>
+                        <div class="reg2-skill-table-counter">0</div>
+                        <div class="reg2-skill-table-counter-btn inc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="reg2-path-footer">
+                <div class="reg2-skill-table-label">Свободные очки:</div>
+                <div id="reg2_free_skils" class="reg2-skill-table-counter-block">0</div>
+            </div>
+        </div>
+        <div class="window-reg2-path right">
+            <div class="window-qg-content-header-block">
+                <div class="window-qg-content-back">
+                    <div class="window-qg-content-header buttons-and-headers">Перки</div>
+                </div>
+            </div>
+            <div class="reg2-perk-table">
+                <div class="reg2-perk-table-line odd">
+                    <div class="reg2-perk-table-label">Название перка 1</div>
+                    <div class="reg2-perk-table-checkbox-block">[ ]</div>
+                </div>
+                <div class="reg2-perk-table-line">
+                    <div class="reg2-perk-table-label">Название перка 2</div>
+                    <div class="reg2-perk-table-checkbox-block">[●]</div>
+                </div>
+                <div class="reg2-perk-table-line odd">
+                    <div class="reg2-perk-table-label">Название перка 3</div>
+                    <div class="reg2-perk-table-checkbox-block">[●]</div>
+                </div>
+                <div class="reg2-perk-table-line">
+                    <div class="reg2-perk-table-label">Название перка 4</div>
+                    <div class="reg2-perk-table-checkbox-block">[■]</div>
+                </div>
+            </div>
+            <div class="reg2-path-footer">
+                <div class="reg2-perk-table-label">Свободные очки:</div>
+                <div id="reg2_free_perks" class="reg2-perk-table-checkbox-block">0</div>
+            </div>
+        </div>
+        <div class="window-reg2-console-wrap">
+            <div id="RDSiteWReg2Console" class="console-block"></div>
+        </div>
+
+        <div class="reg2-btn buttons-and-headers reg2-btn-back">Назад</div>
+        <div class="reg2-btn buttons-and-headers reg2-btn-next">Далее</div>
+    </div>
+</div>
+
+<script>
+    // Настройка листалки аватаров
+    var reg1_avatar_count = 3;
+    var reg1_current_avatar = 0;
+    SetCurrentAvatar();
+
+    function SlideLeftAvatarList() {
+        reg1_current_avatar--;
+        if (reg1_current_avatar < 0) { reg1_current_avatar += reg1_avatar_count }
+        SetCurrentAvatar();
+    }
+
+    function SlideRightAvatarList() {
+        reg1_current_avatar++;
+        if (reg1_current_avatar > reg1_avatar_count - 1) { reg1_current_avatar -= reg1_avatar_count }
+        SetCurrentAvatar();
+    }
+
+    function SetCurrentAvatar() {
+        $('.reg1-path-avatar-item').css('display', 'none');
+        $('#reg1_avatar_' + reg1_current_avatar).css('display', 'block');
+    }
+
+
+    // Настройка листалки классов
+    var reg1_class_count = 3;
+    var reg1_current_class = 0;
+    SetCurrentClass();
+
+    function SlideLeftClassList() {
+        reg1_current_class--;
+        if (reg1_current_class < 0) { reg1_current_class += reg1_class_count }
+        SetCurrentClass();
+    }
+
+    function SlideRightClassList() {
+        reg1_current_class++;
+        if (reg1_current_class > reg1_class_count - 1) { reg1_current_class -= reg1_class_count }
+        SetCurrentClass();
+    }
+
+    function SetCurrentClass() {
+        $('.reg1-path-class-item').css('display', 'none');
+        $('#reg1_class_' + reg1_current_class).css('display', 'block');
+    }
+</script>
