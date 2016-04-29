@@ -19,6 +19,19 @@ function main() {
     indicatorBlink = new IndicatorBlink();
     //textBlurBlink = new TextBlurBlink();
 
+
+    // Инициализация анимации платы
+    var plate_img = new Image();
+    plate_img.onload = function() {
+        eCanvasChipAnimation = new ECanvasChipAnimation(this);
+    };
+    plate_img.onerror = function() {
+        console.warn('eCanvasChipAnimation: Content dont load');
+    };
+    plate_img.src = '/static_site/img/chip_anim_all.png';
+
+
+
     initConsoles();
 
     init_site_sound();

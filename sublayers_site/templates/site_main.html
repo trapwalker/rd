@@ -40,8 +40,10 @@
     <script src="{{ static_url('js/canvas/canvas_line.js') }}"></script>
     <script src="{{ static_url('js/canvas/canvas_rippling.js') }}"></script>
     <script src="{{ static_url('js/canvas/canvas_blackout.js') }}"></script>
+    <script src="{{ static_url('js/canvas/canvas_png_animation.js') }}"></script>
     <script src="{{ static_url('js/effects/indicator_blink.js') }}"></script>
     <script src="{{ static_url('js/effects/text_blur_blink.js') }}"></script>
+
 </head>
 <body>
     <div class="site-main-block">
@@ -54,6 +56,7 @@
                     {% include 'site_window_reg.html' %}
                     {% include 'site_window_reg_1.html' %}
                     {% include 'site_window_reg_2.html' %}
+                    {% include 'site_window_reg_3.html' %}
                     <!--Личный кабинет-->
                     {% include 'site_personal_info.html' %}
                     <!--Окно быстрой игры-->
@@ -73,7 +76,7 @@
                 <div class="btn-block">
                     <a id="RDbtn_start" class="btn-page btn btn-1" href="/#start" data-window_id="RDSiteWReg"></a>
                     <a id="RDbtn_quick" class="btn-page btn btn-2" href="/#quick" data-window_id="RDSiteQuickGame"></a>
-                    <a id="RDbtn_about" class="btn-page btn btn-3" href="/#about" data-window_id="RDSiteWReg2"></a>
+                    <a id="RDbtn_about" class="btn-page btn btn-3" href="/#about" data-window_id="RDSiteWReg3"></a>
                     <a id="RDbtn_news" class="btn-page btn btn-4" href="/#news" data-window_id="RDSiteNews"></a>
                     <a id="RDbtn_ratings" class="btn-page btn btn-5" href="/#ratings" data-window_id="RDSiteWRatings"></a>
                     <a class="btn btn-6" href="/forum" target="_blank"></a>
@@ -132,6 +135,18 @@
             else {
                 canvasDisplayLine.play();
                 canvasDisplayRippling.play();
+            }
+
+            if (data == 'RDSiteWReg3') {
+                // Включить рисование анимации платы завершения регистрации на канвасе
+                var start_animation_func = function () {
+                    if (eCanvasChipAnimation) eCanvasChipAnimation.start();
+                    else setTimeout(start_animation_func, 300)
+                };
+                start_animation_func();
+            }
+            else {
+                if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
             }
 
             // Работа с консолями
