@@ -63,7 +63,6 @@ class StandardLoginHandler(BaseSiteHandler):
         clear_all_cookie(self)
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
-        # username = self.get_argument('username', None)
         if (
             not email
             or not password
@@ -76,10 +75,6 @@ class StandardLoginHandler(BaseSiteHandler):
         if (yield User.get_by_email(email=email)):
             self.finish({'status': 'fail_exist_email'})
             return
-
-        # if (yield User.get_by_name(name=username)):
-        #     self.finish({'status': 'fail_exist_nickname'})
-        #     return
 
         #todo: регистрировать пользователя на форуме на последнем шаге
         # регистрация на форуме
@@ -104,7 +99,7 @@ class StandardLoginHandler(BaseSiteHandler):
         #todo: регистрировать пользователя на форуме на последнем шаге
         # self.set_cookie("forum_user", self._forum_cookie_setup(username))
 
-        # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
+        log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         self.finish({'status': 'success'})
 
     @tornado.gen.coroutine
@@ -197,9 +192,31 @@ class StandardLoginHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def _next_reg_step(self):
         user = self.current_user
+
+        # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
-            username = self.get_argument('nickname')
-            # todo: проверить свободен ли ник, считать другие параметры, записать, обновить статус, отправить на клиент инструкции "что делать дальше"
+            username = self.get_argument('username', None)
+            avatar_index = self.get_argument('avatar_index', None)
+            class_index = self.get_argument('class_index', None)
+
+            #todo: проверить ник на допустимые символы, аватар и класс на допустимые значения
+            if ((avatar_index is None) or (class_index is None) or
+                (username is None) or (not isinstance(username, basestring)) or (len(username) > 100)):
+                self.finish({'status': 'fail_wrong_input'})
+                return
+
+            # Проверяем свободен ли ник
+            if (yield User.get_by_name(name=username)):
+                self.finish({'status': 'fail_exist_nickname'})
+                return
+
+            user.name = username
+            user.registration_status = 'settings'
+            #todo: внести информацию об аватаре и классе
+
+            result = yield user.save()
+            log.debug('User {} register step 1: {}'.format(user, result.raw_result))
+            return
         elif user.registration_status == 'settings':
             pass
         elif user.registration_status == 'chip':
@@ -209,15 +226,17 @@ class StandardLoginHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def _back_reg_step(self):
         user = self.current_user
-        # todo: смотреть на статус пользователя, понять что делать и как это обработать
+
+        # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
-            # todo: с таким статусом нельзя нажать назад!
-            pass
+            # todo: Вариант1: с таким статусом нельзя нажать назад.
+
+            # todo: Вариант2: удалить пользователя.
+            clear_all_cookie(self)
+            return
         elif user.registration_status == 'settings':
-            # todo: просто изменить статус и отправить на клиент инструкции по тому, какое окно открыть
             user.registration_status = 'nickname'
             yield user.save()
         elif user.registration_status == 'chip':
-            # todo: просто изменить статус и отправить на клиент инструкции по тому, какое окно открыть
             user.registration_status = 'settings'
             yield user.save()

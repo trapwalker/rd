@@ -147,13 +147,13 @@
     text-align: center;
     bottom: 7px;
     border-radius: 2px;
-    line-height: 1.25;
+    line-height: 1.35;
 }
 .reg2-btn:hover { background-color: #01550b; }
 .reg2-btn:active { background-color: #000000; }
 
-.reg2-btn-back { left: 9px; }
-.reg2-btn-next { right: 9px; }
+.reg2-btn-back { left: 8px; }
+.reg2-btn-next { right: 9px; width: calc(23% - 1px); }
 
 /* Медиа Запросы для разрешения 1366 */
 
@@ -164,8 +164,12 @@
 
     .window-reg2-path {
         margin-top: 14px;
-        height: calc(58% - 24px - 12px);
+        height: calc(58% - 24px - 9px);
     }
 
     .window-reg2-console-wrap { height: calc(38% + 3px); }
+
+    .reg2-btn { bottom: 4px; }
+    .reg2-btn-back { left: 7px; width: calc(23% - 1px); }
+    .reg2-btn-next { right: 7px; }
 }

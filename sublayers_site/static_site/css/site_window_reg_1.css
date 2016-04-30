@@ -83,30 +83,21 @@
 
 .reg1-btn {
     position: absolute;
-    bottom: 3px;
-    width: 110px;
-    height: 25px;
+    float: left;
     cursor: pointer;
-    border: 2px solid #209509;
-    background-color: #0d3207;
-    border-radius: 1px;
-    box-sizing: border-box;
+    width: 23%;
+    height: 18px;
+    background-color: #01380b;
     text-align: center;
-    line-height: 1.5;
+    bottom: 7px;
+    border-radius: 2px;
+    line-height: 1.35;
 }
-.reg1-btn:hover {
-    background-color: #16560c;
-    color: #51ff00;
-    border-color: #37ff10;
-}
-.reg1-btn:active {
-    background-color: #000000;
-    color: #00ff00;
-    border-color: #008000;
-}
+.reg1-btn:hover { background-color: #01550b; }
+.reg1-btn:active { background-color: #000000; }
 
-.reg1-btn-back { left: 160px; }
-.reg1-btn-next { right: 160px; }
+.reg1-btn-back { left: 8px; }
+.reg1-btn-next { right: 9px; width: calc(23% - 1px); }
 
 /* Медиа Запросы для разрешения 1366 */
 
@@ -117,7 +108,7 @@
 
     .window-reg1-path {
         margin-top: 14px;
-        height: calc(58% - 24px - 12px);
+        height: calc(58% - 24px - 9px);
     }
     .window-reg1-path .slide-arrow { top: 100px; }
 
@@ -132,4 +123,8 @@
     .reg1-path-avatar-list { transform: scale(0.71); margin: -10px auto; }
 
     .reg1-path-class-list { transform: scale(0.71); margin: -10px auto; }
+
+    .reg1-btn { bottom: 4px; }
+    .reg1-btn-back { left: 7px; width: calc(23% - 1px); }
+    .reg1-btn-next { right: 7px; }
 }
