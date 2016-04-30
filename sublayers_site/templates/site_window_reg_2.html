@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="reg2-skill-table">
-                <div class="reg2-skill-table-line odd">
+                <div class="reg2-table-line odd">
                     <div class="reg2-skill-table-label">Вождение:</div>
                     <div class="reg2-skill-table-counter-block">
                         <div class="reg2-skill-table-counter-btn dec"></div>
@@ -16,7 +16,7 @@
                         <div class="reg2-skill-table-counter-btn inc"></div>
                     </div>
                 </div>
-                <div class="reg2-skill-table-line">
+                <div class="reg2-table-line">
                     <div class="reg2-skill-table-label">Стрельба:</div>
                     <div class="reg2-skill-table-counter-block">
                         <div class="reg2-skill-table-counter-btn dec"></div>
@@ -24,7 +24,7 @@
                         <div class="reg2-skill-table-counter-btn inc"></div>
                     </div>
                 </div>
-                <div class="reg2-skill-table-line odd">
+                <div class="reg2-table-line odd">
                     <div class="reg2-skill-table-label">Скрытность:</div>
                     <div class="reg2-skill-table-counter-block">
                         <div class="reg2-skill-table-counter-btn dec"></div>
@@ -32,7 +32,7 @@
                         <div class="reg2-skill-table-counter-btn inc"></div>
                     </div>
                 </div>
-                <div class="reg2-skill-table-line">
+                <div class="reg2-table-line">
                     <div class="reg2-skill-table-label">Механик:</div>
                     <div class="reg2-skill-table-counter-block">
                         <div class="reg2-skill-table-counter-btn dec"></div>
@@ -40,7 +40,7 @@
                         <div class="reg2-skill-table-counter-btn inc"></div>
                     </div>
                 </div>
-                <div class="reg2-skill-table-line odd">
+                <div class="reg2-table-line odd">
                     <div class="reg2-skill-table-label">Торговля:</div>
                     <div class="reg2-skill-table-counter-block">
                         <div class="reg2-skill-table-counter-btn dec"></div>
@@ -48,7 +48,7 @@
                         <div class="reg2-skill-table-counter-btn inc"></div>
                     </div>
                 </div>
-                <div class="reg2-skill-table-line">
+                <div class="reg2-table-line">
                     <div class="reg2-skill-table-label">Лидерство:</div>
                     <div class="reg2-skill-table-counter-block">
                         <div class="reg2-skill-table-counter-btn dec"></div>
@@ -69,21 +69,21 @@
                 </div>
             </div>
             <div class="reg2-perk-table">
-                <div class="reg2-perk-table-line odd">
+                <div class="reg2-table-line odd">
                     <div class="reg2-perk-table-label">Название перка 1</div>
                     <div class="reg2-perk-table-checkbox-block">[ ]</div>
                 </div>
-                <div class="reg2-perk-table-line">
+                <div class="reg2-table-line">
                     <div class="reg2-perk-table-label">Название перка 2</div>
                     <div class="reg2-perk-table-checkbox-block">[●]</div>
                 </div>
-                <div class="reg2-perk-table-line odd">
+                <div class="reg2-table-line odd">
                     <div class="reg2-perk-table-label">Название перка 3</div>
-                    <div class="reg2-perk-table-checkbox-block">[●]</div>
+                    <div class="reg2-perk-table-checkbox-block">[ ]</div>
                 </div>
-                <div class="reg2-perk-table-line">
+                <div class="reg2-table-line">
                     <div class="reg2-perk-table-label">Название перка 4</div>
-                    <div class="reg2-perk-table-checkbox-block">[■]</div>
+                    <div class="reg2-perk-table-checkbox-block">[ ]</div>
                 </div>
             </div>
             <div class="reg2-path-footer">
@@ -95,54 +95,47 @@
             <div id="RDSiteWReg2Console" class="console-block"></div>
         </div>
 
-        <div class="reg2-btn buttons-and-headers reg2-btn-back">Назад</div>
-        <div class="reg2-btn buttons-and-headers reg2-btn-next">Далее</div>
+        <div class="reg2-btn buttons-and-headers reg2-btn-back" onclick="Reg2BackBtnClick()">Назад</div>
+        <div class="reg2-btn buttons-and-headers reg2-btn-next" onclick="Reg2NextBtnClick()">Далее</div>
     </div>
 </div>
 
-<script>
-    // Настройка листалки аватаров
-    var reg1_avatar_count = 3;
-    var reg1_current_avatar = 0;
-    SetCurrentAvatar();
+<script>              
+     // Кнопки Вперед/Назад
 
-    function SlideLeftAvatarList() {
-        reg1_current_avatar--;
-        if (reg1_current_avatar < 0) { reg1_current_avatar += reg1_avatar_count }
-        SetCurrentAvatar();
+    function Reg2NextBtnClick() {
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: {
+                action: 'next'
+            },
+            success: function(data) {
+                consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
+                if (data.status == 'success') {
+                    consoleWReg2.add_message('system', 'Успешно.');
+                    GetUserInfo();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg2.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+            }
+        });
     }
 
-    function SlideRightAvatarList() {
-        reg1_current_avatar++;
-        if (reg1_current_avatar > reg1_avatar_count - 1) { reg1_current_avatar -= reg1_avatar_count }
-        SetCurrentAvatar();
-    }
-
-    function SetCurrentAvatar() {
-        $('.reg1-path-avatar-item').css('display', 'none');
-        $('#reg1_avatar_' + reg1_current_avatar).css('display', 'block');
-    }
-
-
-    // Настройка листалки классов
-    var reg1_class_count = 3;
-    var reg1_current_class = 0;
-    SetCurrentClass();
-
-    function SlideLeftClassList() {
-        reg1_current_class--;
-        if (reg1_current_class < 0) { reg1_current_class += reg1_class_count }
-        SetCurrentClass();
-    }
-
-    function SlideRightClassList() {
-        reg1_current_class++;
-        if (reg1_current_class > reg1_class_count - 1) { reg1_current_class -= reg1_class_count }
-        SetCurrentClass();
-    }
-
-    function SetCurrentClass() {
-        $('.reg1-path-class-item').css('display', 'none');
-        $('#reg1_class_' + reg1_current_class).css('display', 'block');
+    function Reg2BackBtnClick() {
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: { action: 'back' },
+            success: function(data) { GetUserInfo(); },
+            error: function (jqXHR, textStatus, errorThrown) {
+                consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg2.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+            }
+        });
     }
 </script>

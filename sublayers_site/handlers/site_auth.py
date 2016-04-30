@@ -67,7 +67,6 @@ class StandardLoginHandler(BaseSiteHandler):
             not email
             or not password
             or len(email) > 100  # todo: Вынести лимиты в константы
-            # or username and len(username) > 100
             or email.count('@') != 1
         ):
             self.finish({'status': 'fail_wrong_input'})
@@ -76,30 +75,14 @@ class StandardLoginHandler(BaseSiteHandler):
             self.finish({'status': 'fail_exist_email'})
             return
 
-        #todo: регистрировать пользователя на форуме на последнем шаге
-        # регистрация на форуме
-        # forum_id = yield self._forum_setup({
-        #     'user_email': email,
-        #     'username': username,
-        #     'user_password': password,
-        # })
-        # if not forum_id:
-        #     self.finish({'status': 'Ошибка регистрации на форуме.'})
-        #     log.info('User <{}> not registered on forum!'.format(username))
-        #     return
-
-        # user = User(name=username, email=email, raw_password=password)
         user = User(email=email, raw_password=password)
-
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
 
-        #todo: регистрировать пользователя на форуме на последнем шаге
-        # self.set_cookie("forum_user", self._forum_cookie_setup(username))
+        # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
 
-        log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         self.finish({'status': 'success'})
 
     @tornado.gen.coroutine
@@ -201,27 +184,46 @@ class StandardLoginHandler(BaseSiteHandler):
 
             #todo: проверить ник на допустимые символы, аватар и класс на допустимые значения
             if ((avatar_index is None) or (class_index is None) or
-                (username is None) or (not isinstance(username, basestring)) or (len(username) > 100)):
+                (username is None) or (not isinstance(username, basestring)) or
+                (username == '') or (len(username) > 100)):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
             # Проверяем свободен ли ник
-            if (yield User.get_by_name(name=username)):
+            if (user.name != username) and (yield User.get_by_name(name=username)):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
             user.name = username
             user.registration_status = 'settings'
             #todo: внести информацию об аватаре и классе
+            yield user.save()
+            self.finish({'status': 'success'})
 
-            result = yield user.save()
-            log.debug('User {} register step 1: {}'.format(user, result.raw_result))
-            return
         elif user.registration_status == 'settings':
-            pass
+            # todo: обработать скилы и перки
+            user.registration_status = 'chip'
+            yield user.save()
+            self.finish({'status': 'success'})
+
         elif user.registration_status == 'chip':
             # todo: изменить статус на register и наконец-то зарегать юзера на форуме!
-            pass
+            user.registration_status = 'register'
+
+            # регистрация на форуме
+            # forum_id = yield self._forum_setup({
+            #     'user_email': email,
+            #     'username': username,
+            #     'user_password': password,
+            # })
+            # if not forum_id:
+            #     self.finish({'status': 'Ошибка регистрации на форуме.'})
+            #     log.info('User <{}> not registered on forum!'.format(username))
+            #     return
+            # self.set_cookie("forum_user", self._forum_cookie_setup(username))
+
+            yield user.save()
+            self.finish({'status': 'success'})
 
     @tornado.gen.coroutine
     def _back_reg_step(self):
@@ -230,10 +232,8 @@ class StandardLoginHandler(BaseSiteHandler):
         # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
             # todo: Вариант1: с таким статусом нельзя нажать назад.
-
             # todo: Вариант2: удалить пользователя.
             clear_all_cookie(self)
-            return
         elif user.registration_status == 'settings':
             user.registration_status = 'nickname'
             yield user.save()

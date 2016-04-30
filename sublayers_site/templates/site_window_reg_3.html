@@ -72,8 +72,40 @@
 
         </div>
     </div>
+    <div class="reg2-btn buttons-and-headers reg2-btn-back" onclick="Reg3BackBtnClick()">Назад</div>
+    <div class="reg2-btn buttons-and-headers reg2-btn-next" onclick="Reg3NextBtnClick()">Далее</div>
 </div>
 
 <script>
+    // Кнопки Вперед/Назад
 
+    function Reg3NextBtnClick() {
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: {
+                action: 'next'
+            },
+            success: function(data) {
+                if (data.status == 'success')
+                    GetUserInfo();
+                console.warn('Reg3NextBtnClick ajax error: data.status=', data.status);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.warn('Reg3NextBtnClick ajax error');
+            }
+        });
+    }
+
+    function Reg3BackBtnClick() {
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: { action: 'back' },
+            success: function(data) { GetUserInfo(); },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.warn('Reg3BackBtnClick ajax error');
+            }
+        });
+    }
 </script>

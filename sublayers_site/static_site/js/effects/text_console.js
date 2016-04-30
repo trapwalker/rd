@@ -334,12 +334,46 @@ var ConsoleWReg1 = (function (_super) {
             placeholder: function() { return ''; }
         };
 
-        this.add_message('system', 'Корпораця Нукойл. вер.5.06');
+        this.add_message('system', 'Корпораця Нукойл. вер.' + version);
 
         textConsoleManager.add(this);
     }
 
     return ConsoleWReg1;
+})(TextConsoleAudio);
+
+var ConsoleWReg2 = (function (_super) {
+    __extends(ConsoleWReg2, _super);
+
+    function ConsoleWReg2() {
+        _super.call(this);
+        this.target_div = $('#RDSiteWReg2Console');
+        this.page_id = 'RDSiteWReg';
+
+        this._message_info.user.placeholder = function() {
+            var data = new Date();
+            var hh_str = data.getHours().toString();
+            var mm_str = data.getMinutes().toString();
+            hh_str = hh_str.length == 2 ? hh_str : '0' + hh_str;
+            mm_str = mm_str.length == 2 ? mm_str : '0' + mm_str;
+            return '\n[' + hh_str + ':' + mm_str + ']: ';
+        };
+        this._message_info.system.placeholder = function() { return '> '  };
+        this._message_info.system.after_print_delay = 5;
+        this._message_info.system.before_print_delay = 5;
+        this._message_info.welcome = {
+            print_speed_ms: 5,
+            after_print_delay: 0,
+            before_print_delay: 0,
+            placeholder: function() { return ''; }
+        };
+
+        this.add_message('system', 'Корпораця Нукойл. вер.' + version);
+
+        textConsoleManager.add(this);
+    }
+
+    return ConsoleWReg2;
 })(TextConsoleAudio);
 
 var ConsoleWPI = (function (_super) {
@@ -407,6 +441,7 @@ var textConsoleManager;
 
 var consoleWReg;
 var consoleWReg1;
+var consoleWReg2;
 var consoleWPI;
 var consoleWStart;
 
@@ -415,6 +450,7 @@ function initConsoles() {
 
     consoleWReg = new ConsoleWReg();
     consoleWReg1 = new ConsoleWReg1();
+    consoleWReg2 = new ConsoleWReg2();
 
     consoleWPI = new ConsoleWPI();
     consoleWStart = new ConsoleWStart();
