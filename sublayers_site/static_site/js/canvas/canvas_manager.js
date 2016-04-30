@@ -18,14 +18,10 @@ var CanvasManager = (function(){
 
     CanvasManager.prototype.resize_window = function () {
         var old_size = this.screen_size;
-        var width = $('.content-block').width();
-        var height = $('.content-block').height();
-        var screen_size = width > 800 ? 'big' : 'small';
-        if (old_size == screen_size) return;
-
-        this.width = width;
-        this.height = height;
-        this.screen_size = screen_size;
+        this.width = $('.content-block').width();
+        this.height = $('.content-block').height();
+        this.screen_size = this.width > 800 ? 'big' : 'small';
+        if (old_size == this.screen_size) return;
 
         // пересобрание canvas как элемента
         this.canvas.width = this.width;

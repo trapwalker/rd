@@ -8,7 +8,7 @@ var __extends = this.__extends || function (d, b) {
 
 
 var rating_users_info_list = {}; // Список пользователей в рейтингах, чтобы каждого запрашивать только по 1 разу в 5-10 минут
-var registration_status;
+var registration_status = 'not_register';
 
 // Инициализация всего и вся
 function main() {
@@ -20,6 +20,8 @@ function main() {
     indicatorBlink = new IndicatorBlink();
     //textBlurBlink = new TextBlurBlink();
 
+    // Получить текущего пользователя
+    GetUserInfo();
 
     // Инициализация анимации платы
     var plate_img = new Image();
@@ -34,7 +36,6 @@ function main() {
     initConsoles();
 
     init_site_sound();
-
 
     window.onresize = function() {
         canvasManager.resize_window();
@@ -136,9 +137,6 @@ function GetIDForStartRegistrationPage(){
         'chip': 'RDSiteWReg3', // Показывать окно-чипа, предложенеи завершить регистрацию
         'register': 'RDSitePersonalInfo' // Показывать окно личного кабинета
     };
-
-    if (! registration_status) registration_status = $('#registration_status').text();
-    console.log(registration_status);
 
     if (map.hasOwnProperty(registration_status)) return map[registration_status];
     return map['not_register'];

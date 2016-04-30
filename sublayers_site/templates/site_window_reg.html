@@ -12,10 +12,6 @@
                 <input type="email" id="reg_email" autocomplete="off" onclick="RegEmailClick()">
             </div>
             <div class="reg-path-up-text-input-block">
-                <div class="reg-path-label">NICKNAME></div>
-                <input type="text" id="reg_username" autocomplete="off">
-            </div>
-            <div class="reg-path-up-text-input-block">
                 <div class="reg-path-label">ПАРОЛЬ></div>
                 <input type="password" id="reg_password" autocomplete="off" name="password" onclick="RegPasswordClick()">
             </div>
@@ -147,8 +143,9 @@
             method: 'POST',
             data: {},
             success: function(data) {
-                if (data.is_authorize) {
-                    is_authorize = data.is_authorize;
+                registration_status = data.user_status;
+
+                if (registration_status == 'register') {
                     var pos_x = '';
                     var pos_y = '';
                     if (data.hasOwnProperty('position') && data.position && (data.position.length == 2)) {
@@ -169,12 +166,14 @@
                         'Активных заданий: _\n' +
                         '-----------------------------'
                     );
-                    
+
                     $('#RDSitePersonalInfoUserInfo').empty();
                     $('#RDSitePersonalInfoUserCar').empty();
                     $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
                     $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
                 }
+
+                 // Переход на следующую страницу
                 if (window.location.hash == '#start')
                     $('#RDbtn_start').click();
             }
@@ -183,14 +182,12 @@
 
     function RegisterBtnClick() {
         var email = document.getElementById('reg_email').value;
-        var username = document.getElementById('reg_username').value;
         var password = document.getElementById('reg_password').value;
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: {
                 email: email,
-                username: username,
                 password: password,
                 action: 'reg'
             },
@@ -215,11 +212,6 @@
                     consoleWReg.add_message('system',
                             'Ошибка приема данных.\n\n' +
                             'Пользователь с таким email уже зарегистрирован.');
-                }
-                if (data.status == 'fail_exist_nickname') {
-                    consoleWReg.add_message('system',
-                            'Ошибка приема данных.\n\n' +
-                            'Пользователь с таким nickname уже зарегистрирован.');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

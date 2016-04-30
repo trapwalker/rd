@@ -97,13 +97,9 @@
             </div>
         </div>
     </div>
-    <div style="display: none">
-        <div id="registration_status">{{ 'not_register' if not current_user or current_user.quick else current_user.registration_status }}</div>
-    </div>
 </body>
 
 <script>
-    var is_authorize = {{ is_authorize }};
     var version = '{{ version }}';
     $(document).ready(function () {
         var content_start_back_visible = true;
@@ -133,11 +129,8 @@
                 data = $(this).data('window_id');
             }
 
-            // Показать своё окно
-            if ((data == 'RDSiteWReg') && is_authorize)
-                $('#RDSitePersonalInfo').css({display: 'block'});
-            else
-                $('#' + data).css({display: 'block'});
+            // Показать окно
+            $('#' + data).css({display: 'block'});
 
             // Отключить мерцание и линию на "Об игре"
             if (data == 'RDSiteGameInfo') {
@@ -179,8 +172,6 @@
         });
 
         main();
-
-        if (is_authorize) GetUserInfo();
 
         // Активация скролов
         var scroll_interval = null;

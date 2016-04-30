@@ -1,5 +1,5 @@
 var ECanvasChipAnimation = (function () {
-    function ECanvasChipAnimation(image_obj){
+    function ECanvasChipAnimation(image_obj) {
         this.duration = 750;
         this.img = image_obj;
         this.frame_count = 16;
@@ -65,7 +65,5 @@ var ECanvasChipAnimation = (function () {
 
     return ECanvasChipAnimation
 })();
-
-
 
 var eCanvasChipAnimation;

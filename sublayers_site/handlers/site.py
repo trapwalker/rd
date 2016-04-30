@@ -25,12 +25,7 @@ class SiteMainHandler(BaseSiteHandler):
             news_file.close()
         os.chdir(serv_dir)
 
-        # Определяем, авторизованы ли мы
-        is_authorize = True if self.current_user and not self.current_user.is_quick_user else False
-        is_authorize_str = 'true' if is_authorize else 'false'
-
         # Загружаем информацию о быстрой игре
         quick_game_info = yield self._get_quick_game()
 
-        self.render('site_main.html', news_list=news_list, is_authorize=is_authorize_str,
-                    quick_game_cars=quick_game_info.get('quick_cars', []))
+        self.render('site_main.html', news_list=news_list, quick_game_cars=quick_game_info.get('quick_cars', []))

@@ -63,12 +63,12 @@ class StandardLoginHandler(BaseSiteHandler):
         clear_all_cookie(self)
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
-        username = self.get_argument('username', None)
+        # username = self.get_argument('username', None)
         if (
             not email
             or not password
             or len(email) > 100  # todo: Вынести лимиты в константы
-            or username and len(username) > 100
+            # or username and len(username) > 100
             or email.count('@') != 1
         ):
             self.finish({'status': 'fail_wrong_input'})
@@ -76,9 +76,12 @@ class StandardLoginHandler(BaseSiteHandler):
         if (yield User.get_by_email(email=email)):
             self.finish({'status': 'fail_exist_email'})
             return
-        if (yield User.get_by_name(name=username)):
-            self.finish({'status': 'fail_exist_nickname'})
-            return
+
+        # if (yield User.get_by_name(name=username)):
+        #     self.finish({'status': 'fail_exist_nickname'})
+        #     return
+
+        #todo: регистрировать пользователя на форуме на последнем шаге
         # регистрация на форуме
         # forum_id = yield self._forum_setup({
         #     'user_email': email,
@@ -89,12 +92,18 @@ class StandardLoginHandler(BaseSiteHandler):
         #     self.finish({'status': 'Ошибка регистрации на форуме.'})
         #     log.info('User <{}> not registered on forum!'.format(username))
         #     return
-        user = User(name=username, email=email, raw_password=password)
+
+        # user = User(name=username, email=email, raw_password=password)
+        user = User(email=email, raw_password=password)
+
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
-        self.set_cookie("forum_user", self._forum_cookie_setup(username))
+
+        #todo: регистрировать пользователя на форуме на последнем шаге
+        # self.set_cookie("forum_user", self._forum_cookie_setup(username))
+
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         self.finish({'status': 'success'})
 
@@ -188,7 +197,6 @@ class StandardLoginHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def _next_reg_step(self):
         user = self.current_user
-        # todo: смотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
             username = self.get_argument('nickname')
             # todo: проверить свободен ли ник, считать другие параметры, записать, обновить статус, отправить на клиент инструкции "что делать дальше"
