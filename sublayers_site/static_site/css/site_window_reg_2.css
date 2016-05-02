@@ -1,4 +1,5 @@
 #RDSiteWReg2 .odd { background-color: #041105; }
+#RDSiteWReg2 .window-qg-content-header { cursor: pointer; }
 
 .window-reg2-main {
     position: relative;
@@ -50,6 +51,7 @@
 
 .reg2-skill-table-label {
     position: relative;
+    cursor: pointer;
     padding-left: 10px;
     box-sizing: border-box;
     float: left;
