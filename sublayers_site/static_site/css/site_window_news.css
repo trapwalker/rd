@@ -46,7 +46,7 @@
 }
 .window-news-log-news-header:hover { border-color: #00ff00; }
 .window-news-log-news-header.active {
-    color: black;
+    color: #030f00;
     background-color: #00ff00;
     text-shadow: none;
     border-radius: 1px;

@@ -5,10 +5,11 @@ log = logging.getLogger(__name__)
 
 from bson.objectid import ObjectId
 import hashlib
+import datetime
 import random
 import re
 import tornado.gen
-from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField
+from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
 
 
 class User(Document):
@@ -46,6 +47,8 @@ class User(Document):
     car_index = IntField(default=None)
     time_quick_game = IntField(default=0)
     car_die = BooleanField(default=None)
+    ordinal_number = IntField(default=None)
+    date_created = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)
 
     def __init__(self, raw_password=None, email=None, **kw):
         super(User, self).__init__(**kw)
@@ -103,6 +106,22 @@ class User(Document):
 
     def __str__(self):
         return '<{self.__class__.__name__}({self.name})>'.format(self=self)
+
+    @tornado.gen.coroutine
+    def assign_ordinal_number(self):
+        if self.ordinal_number is None:
+            # Получить всех пользователей, отсортировать по self.ordinal_number и получить максимальное число
+            users = yield User.objects.filter(
+                {'ordinal_number': {'$exists': True, '$ne': None},}
+            ).order_by('ordinal_number', -1).limit(3).find_all()
+
+            if len(users):
+                self.ordinal_number = users[0].ordinal_number + 1
+            else:
+                self.ordinal_number = 1
+            yield self.save()
+            raise tornado.gen.Return(self.ordinal_number)
+        raise tornado.gen.Return(self.ordinal_number)
 
 
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):
