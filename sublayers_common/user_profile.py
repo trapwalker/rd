@@ -39,6 +39,7 @@ class User(Document):
 
     __collection__ = 'profiles'
     name = StringField(max_length=64)
+    registration_status = StringField(max_length=64)
     auth = EmbeddedDocumentField(AuthData, default=AuthData)
 
     quick = BooleanField(default=False)

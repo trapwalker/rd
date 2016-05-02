@@ -1,5 +1,5 @@
 var AudioObject = (function () {
-    function AudioObject(source, autoplay) {
+    function AudioObject(source, autoplay, gain) {
         this.current_source = null;
         this.ready_to_play = false;
         this.play_on_load = autoplay ? true : false;
@@ -7,7 +7,7 @@ var AudioObject = (function () {
         this.is_playing = false;
         this.time = null;
         this.gainNode = audioManager.get_ctx().createGain();
-        this.gainNode.gain.value = 1;
+        this.gainNode.gain.value = gain == undefined ? gain : 1.0;
         this.ended_callback = null;   // callback на завершение проигрывания
         this.play_loop = false;
 

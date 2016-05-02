@@ -1,7 +1,7 @@
 var AudioKeyboard = (function () {
     function AudioKeyboard(audio_list) {
         this.audio_list = audio_list;
-        this.gain = 1.0;
+        this.gain = null;
         this.need_stop = false;
     }
 
@@ -12,7 +12,7 @@ var AudioKeyboard = (function () {
             return;
         }
         var audio_obj = this.audio_list[Math.floor(Math.random() * 0.99 * this.audio_list.length)];
-        audio_obj.play(0, this.gain, AudioKeyboard.prototype.play.bind(this));
+        audio_obj.play(0, this.gain ? this.gain : audioManager.general_gain, AudioKeyboard.prototype.play.bind(this));
     };
 
     AudioKeyboard.prototype.stop = function () {

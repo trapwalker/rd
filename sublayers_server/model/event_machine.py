@@ -178,7 +178,8 @@ class LocalServer(Server):
         self.is_terminated = False
         self.app = app
         self.reg_agents = Collection(name='agents', db=app.db)
-
+        self.ioloop = None
+        self.periodic = None
 
     def __getstate__(self):
         d = super(LocalServer, self).__getstate__()
@@ -187,54 +188,59 @@ class LocalServer(Server):
         return d
 
     def event_loop(self):
-        log.info('---- Event loop start')
         timeout = MAX_SERVER_SLEEP_TIME
         timeline = self.timeline
         message_queue = self.message_queue
+        # Выйти, если завершён поток
+        if self.is_terminated:
+            return
 
-        while not self.is_terminated:
-            while message_queue:
-                message_queue.popleft().send()
-                # todo: mass sending optimizations over separated chat server
+        while message_queue:
+            message_queue.popleft().send()  # todo: async sending by ioloop
+            # todo: mass sending optimizations over separated chat server
 
-            if not timeline:
-                sleep(timeout)
-                continue
+        while timeline and not timeline.head.actual:
+            timeline.get()
+
+        if not timeline:
+            # Добавление коллбека с максимальной задержкой
+            self.ioloop.call_later(delay=MAX_SERVER_SLEEP_TIME, callback=self.event_loop)
+            return
+
+        # Если мы здесь, значит все сообщения разосланы, очередь событий не пуста и ближайшее актуально
+        t = self.get_time()
+        t1 = timeline.head.time
+
+        if t1 > t:
+            self.ioloop.call_later(delay=min(t1 - t, timeout), callback=self.event_loop)
+            return
+
+        event = timeline.get()
+        t = self.get_time()
+        try:
+            event.perform()
+        except:
+            log.exception('Event performing error %s', event)
+        finally:
+            t = self.get_time() - t
             
-            if not timeline.head.actual:
-                event = timeline.get()
-                del event
-                continue
 
-            t = self.get_time()
-            t1 = timeline.head.time
 
-            if t1 > t:
-                sleep(min(t1 - t, timeout))
-                continue
-
-            event = timeline.get()
-            try:
-                event.perform()
-            except:
-                log.exception('Event performing error %s', event)
-
-        log.info('---- Event loop finished ' + '-' * 50 + '\n')
+        self.ioloop.add_callback(callback=self.event_loop)
 
     def start(self):
-        if self.thread:
-            raise EServerAlreadyStarted()
-        self.start_time = self.get_time()
-        self.thread = Thread(target=self.event_loop)
-        self.thread.start()
+        import tornado.ioloop
+        self.ioloop = tornado.ioloop.IOLoop.instance()
+        # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
+        # self.periodic.start()
+        self.ioloop.add_callback(callback=self.event_loop)
+        self.is_terminated = False
+        log.info('---- Game server Started ' + '-' * 50 + '\n')
 
     def stop(self, timeout=None):
-        if not self.is_active:
-            raise EServerIsNotStarted()
+        # self.periodic.stop()
+        log.info('---- Game server finished ' + '-' * 50 + '\n')
         self.is_terminated = True
-        self.thread.join(timeout)
-        self.thread = None
-        self.is_terminated = False
         # if self.app:
         #     self.app.stop()  # todo: checkit
 

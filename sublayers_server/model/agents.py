@@ -459,11 +459,13 @@ class User(Agent):
 
 
 def test_cb(f):
-    print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
+    pass
+    # print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
 
 
 def test_cb2(f):
-    print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
+    pass
+    # print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
 
 
 class QuickUser(User):
