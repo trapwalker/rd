@@ -51,11 +51,41 @@ def call(cmd):
     return ''.join(res)
 
 
+class Operations(object):
+    @staticmethod
+    def update_repo(path, branche=None):
+        rev0 = HGRevision(path)
+        call('hg pull -R {}'.format(path))
+        call('hg update -R {} {}'.format(path, branche or ''))
+        rev1 = HGRevision(path)
+
+        if rev0.hash != rev1.hash:
+            print 'Repo {} updated to {}'.format(path, rev1.branch)
+            return True
+
+    @staticmethod
+    def service_restart(name):
+        raise NotImplementedError('service_restart is not implemented')
+
+
+class OperationsNix(Operations):
+    @staticmethod
+    def service_restart(name):
+        call('service {} restart'.format(name))
+
+
+class OperationsWin(Operations):
+    @staticmethod
+    def service_restart(name):
+        raise NotImplementedError('todo: service_restart for win')
+
+
 class AdmCmd(cmd2.Cmd):
 
     def __init__(self, db, **kw):
         cmd2.Cmd.__init__(self, **kw)
         self.db = db
+        self.operations = Operations
 
     def do_stat(self, arg):
         print '{:20}: {:6}'.format('Agents count', self.db.agents.count())
@@ -76,19 +106,11 @@ class AdmCmd(cmd2.Cmd):
     def do_update(self, arg):
         r1p = os.path.join(PROJECT_PATH, '..')
         r2p = options.world_path if os.path.isabs(options.world_path) else os.path.join(PROJECT_PATH, options.world_path)
-        r1 = HGRevision(r1p)
-        r2 = HGRevision(r2p)
-        call('hg pull -u -R {}'.format(r1p))
-        call('hg pull -u -R {}'.format(r2p))
-        r1_ = HGRevision(r1p)
-        r2_ = HGRevision(r2p)
-        if r1.hash != r1_.hash: print 'Server repo updated'
-        if r2.hash != r2_.hash: print 'World repo updated'
-        if (r1.hash != r1_.hash) or (r2.hash != r2_.hash):
+        if self.operations.update_repo(r1p) or self.operations.update_repo(r2p):
             self.do_restart()
 
     def do_restart(self, arg=None):
-        call('service {} restart'.format(options.service_name))
+        self.operations.service_restart(options.service_name)
         
 
 def main():
