@@ -45,7 +45,7 @@ define("map_link", default='http://localhost/map/{z}/{x}/{y}.jpg', help="map lin
 
 define("disconnect_timeout", default=60, help="Timeout of displacing by disconnect.", type=int)
 
-define("world_path", default='./world', help="Path to world data", type=str)
+define("world_path", default='../sublayers_world', help="Path to world data", type=str)
 
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)
