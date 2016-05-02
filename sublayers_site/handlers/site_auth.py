@@ -204,6 +204,12 @@ class StandardLoginHandler(BaseSiteHandler):
             # todo: обработать скилы и перки
             user.registration_status = 'chip'
             yield user.save()
+
+            # Устанавливаем порядковый номер пользователя
+            ordinal_number = yield user.assign_ordinal_number()
+            if ordinal_number is None:
+                log.warning('Dont set Ordinal_number for user')
+
             self.finish({'status': 'success'})
 
         elif user.registration_status == 'chip':

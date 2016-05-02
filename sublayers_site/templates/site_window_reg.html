@@ -173,9 +173,35 @@
                     $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
                 }
 
+
+                if (registration_status == 'chip') {
+                    var ordinal_number = 1000000000 + data.ordinal_number;
+                    ordinal_number = ordinal_number.toString();
+                    ordinal_number = ordinal_number.substr(1, ordinal_number.length);
+
+                    var d = new Date(data.created);
+                    d.setFullYear(d.getFullYear() + 100);
+
+                    $('#RDSiteWReg3_OrdinalNumber').text(ordinal_number);
+                    $('#RDSiteWReg3_Created').text(d.toLocaleDateString());
+
+                    $('#RDSiteWReg3_Nickname').text(data.user_name);
+
+                    var procent_length = 20 + 2 * data.user_name.length;
+                    procent_length = procent_length > 80 ? 80 : procent_length;
+                    $('#RDSiteWReg3_Nickname').parent().width(procent_length + '%');
+
+                    $('#RDSiteWReg3_UserBalance').text(data.user_balance);
+
+                    // todo: считать перки и навыки
+                }
+
                  // Переход на следующую страницу
                 if (window.location.hash == '#start')
                     $('#RDbtn_start').click();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error GetUserInfo');
             }
         });
     }
