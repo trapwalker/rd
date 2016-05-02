@@ -268,7 +268,7 @@ var MapManager = (function(_super){
                 dragging: false,
                 zoomAnimationThreshold: 8,
                 doubleClickZoom: false
-            }).setView([50.595, 36.59], cookieStorage.zoom);
+            }).setView([32.3730296265, -112.87993632], cookieStorage.zoom);
 
         myMap = map;
         this.anim_zoom = map.getZoom();
@@ -348,14 +348,14 @@ var MapManager = (function(_super){
                 maxZoom: ConstMaxMapZoom,
                 continuousWorld: true,
                 opacity: 1.0,
-                errorTileUrl: 'http://185.58.206.115/map/404.jpg',
+                errorTileUrl: '/static/img/map_404.jpg',
                 storage: storage});
         }
         else {
             mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
                 continuousWorld: true,
                 opacity: 1.0,
-                errorTileUrl: 'http://185.58.206.115/map/404.jpg',
+                errorTileUrl: '/static/img/map_404.jpg',
                 maxZoom: ConstMaxMapZoom});
         }
         if(cookieStorage.optionsMapTileVisible)

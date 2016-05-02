@@ -181,6 +181,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     cursor: pointer;
     width: 24px;
     height: 17px;
+    bottom: 10px;
 }
 
 .scroll-btn.up { background: transparent url(/static_site/img/btn_slide_up.png) no-repeat 100% 100%; }
@@ -190,6 +191,30 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .scroll-btn.down { background: transparent url(/static_site/img/btn_slide_down.png) no-repeat 100% 100%; }
 .scroll-btn.down:hover { background: transparent url(/static_site/img/btn_slide_down_over.png) no-repeat 100% 100%; }
 .scroll-btn.down:active { background: none; }
+
+.slide-arrow {
+    position: absolute;
+    cursor: pointer;
+    width: 17px;
+    height: 24px;
+}
+.slide-arrow.left {
+    background: transparent url(/static_site/img/btn_slide_left.png) no-repeat 100% 100%;
+    left: 10px;
+}
+.slide-arrow.left:hover {
+    background: transparent url(/static_site/img/btn_slide_left_over.png) no-repeat 100% 100%;
+}
+.slide-arrow.left:active {background: none;}
+
+.slide-arrow.right {
+    background: transparent url(/static_site/img/btn_slide_right.png) no-repeat 100% 100%;
+    right: 10px;
+}
+.slide-arrow.right:hover {
+    background: transparent url(/static_site/img/btn_slide_right_over.png) no-repeat 100% 100%;
+}
+.slide-arrow.right:active {background: none;}
 
 /*  нопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текуща€ страничка !!!!*/
 .btn {

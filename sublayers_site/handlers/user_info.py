@@ -20,7 +20,7 @@ class GetUserInfoHandler(BaseSiteHandler):
         agent_info = user_info.get('user_info', dict())
 
         self.finish({
-            'is_authorize': user is not None,
+            'user_status': 'not_register' if user is None else user.registration_status,
             'user_name': '' if user is None else user.name,
             'user_car_html': user_info.get('html_car_img', ''),
             'user_info_html': user_info.get('html_agent', ''),

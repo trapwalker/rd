@@ -44,7 +44,7 @@ var AudioManager = (function () {
             console.warn('Аудио Объект с таким именем уже был загружен. Замена.');
         }
         class_name = class_name ? class_name : AudioObject;
-        this.audio_objects[name] = new class_name(source, autoplay);
+        this.audio_objects[name] = new class_name(source, autoplay, this.general_gain);
     };
 
     AudioManager.prototype.get = function (name) {

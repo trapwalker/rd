@@ -150,8 +150,8 @@ class Agent(Object):
         if self.car:
             self.car.save(time)
             self.example.car = self.car.example
-        elif self.current_location is None:
-            self.example.car = None
+        # elif self.current_location is None:  # todo: wtf ?!
+        #     self.example.car = None
         # todo: save chats, party...
         self.example.save()
         log.debug('Agent %s saved', self)
@@ -459,11 +459,13 @@ class User(Agent):
 
 
 def test_cb(f):
-    print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
+    pass
+    # print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
 
 
 def test_cb2(f):
-    print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
+    pass
+    # print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
 
 
 class QuickUser(User):

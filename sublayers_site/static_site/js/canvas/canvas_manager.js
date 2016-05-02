@@ -1,8 +1,10 @@
 var CanvasManager = (function(){
     function CanvasManager(){
         // todo: определять по размеру монитора
-        this.width = 613;
-        this.height = 368;
+        // Большой монитор 860x518   Маленький монитор  667x407
+        this.width = $('.content-block').width();
+        this.height = $('.content-block').height();
+        this.screen_size = this.width > 800 ? 'big' : 'small';
 
         this.canvas = document.getElementById("content-canvas");
         this.context = this.canvas.getContext("2d");
@@ -13,6 +15,25 @@ var CanvasManager = (function(){
 
         if (timeManager) timeManager.addTimerEvent(this, 'redraw');
     }
+
+    CanvasManager.prototype.resize_window = function () {
+        var old_size = this.screen_size;
+        this.width = $('.content-block').width();
+        this.height = $('.content-block').height();
+        this.screen_size = this.width > 800 ? 'big' : 'small';
+        if (old_size == this.screen_size) return;
+
+        // пересобрание canvas как элемента
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+
+        for (var i = 0; i < this.obj_list.length; i++) {
+            var obj = this.obj_list[i].obj;
+            if (typeof (obj.resize_window) === 'function') {
+                obj.resize_window();
+            }
+        }
+    };
 
     CanvasManager.prototype.add_obj = function(obj, priority) {
         //console.log('CanvasManager.prototype.add_vobj');

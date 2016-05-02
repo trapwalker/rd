@@ -50,17 +50,17 @@ var LeafletIconManager = (function(){
         };
 
         // Создание иконки убитой машинки V 2
-        icons['icon_killed_V2'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v2_killed.png',
-                iconSize: [51, 28]
-            }),
-            canvas_icon: {
-                img: new Image('/static/img/map_icons/map_icon_player_v2_killed.png'),
-                iconSize: [51, 28]
-            },
-            id: this.max_id++
-        };
+        //icons['icon_killed_V2'] = {
+        //    icon: new L.icon({
+        //        iconUrl: '/static/img/map_icons/map_icon_player_v2_killed.png',
+        //        iconSize: [51, 28]
+        //    }),
+        //    canvas_icon: {
+        //        img: new Image('/static/img/map_icons/map_icon_player_v2_killed.png'),
+        //        iconSize: [51, 28]
+        //    },
+        //    id: this.max_id++
+        //};
 
         // Создание иконки движущейся машинки V 3
         icons['icon_moving_V3'] = {
@@ -77,10 +77,10 @@ var LeafletIconManager = (function(){
                 iconUrl: '/static/img/map_icons/map_icon_player_v3_stopped.png',
                 iconSize: [51, 28]
             }),
-            canvas_icon: {
-                img: new Image('/static/img/map_icons/map_icon_player_v3_stopped.png'),
-                iconSize: [51, 28]
-            },
+            //canvas_icon: {
+            //    img: new Image('/static/img/map_icons/map_icon_player_v3_stopped.png'),
+            //    iconSize: [51, 28]
+            //},
             id: this.max_id++
         };
 
@@ -90,10 +90,10 @@ var LeafletIconManager = (function(){
                 iconUrl: '/static/img/map_icons/map_icon_rocket.png',
                 iconSize: [40, 18]
             }),
-            canvas_icon: {
-                img: new Image('/static/img/map_icons/map_icon_rocket.png'),
-                iconSize: [51, 28]
-            },
+            //canvas_icon: {
+            //    img: new Image('/static/img/map_icons/map_icon_rocket.png'),
+            //    iconSize: [51, 28]
+            //},
             id: this.max_id++
         };
 

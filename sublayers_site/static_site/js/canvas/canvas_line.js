@@ -45,6 +45,10 @@ var CanvasDisplayLine = (function(){
         this.is_paused = false;
     };
 
+    CanvasDisplayLine.prototype.resize_window = function() {
+        this._height = canvasManager.height + constDisplayLineWidth;
+    };
+
     return CanvasDisplayLine;
 })();
 
