@@ -189,4 +189,35 @@
     .car-info-block-picture-main-site .car-info-name-block {
         top: 20px;
     }
+
+    .site-avatar::before {
+        filter: blur(1px) brightness(200%);
+        -webkit-filter: blur(1px) brightness(200%);
+    }
+
+    .site-avatar::after {
+        filter: blur(2px) brightness(200%);
+        -webkit-filter: blur(2px) brightness(200%);
+    }
+
+    .armorer-car-slot-picture::before {
+        filter: blur(1px) brightness(200%);
+        -webkit-filter: blur(1px) brightness(200%);
+    }
+
+    .armorer-car-slot-picture::after {
+        filter: blur(2px) brightness(200%);
+        -webkit-filter: blur(2px) brightness(200%);
+    }
+
+    .car-info-block-picture::before {
+        filter: blur(1px) brightness(200%);
+        -webkit-filter: blur(1px) brightness(200%);
+    }
+
+    .car-info-block-picture::after {
+        filter: blur(2px) brightness(200%);
+        -webkit-filter: blur(2px) brightness(200%);
+    }
+
 }
