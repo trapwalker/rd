@@ -1,3 +1,5 @@
 
 cd nginx
-nginx -s quit
+nginx -s stop
+
+tasklist /fi "imagename eq nginx.exe"
