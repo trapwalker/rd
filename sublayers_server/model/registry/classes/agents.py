@@ -8,6 +8,7 @@ from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
+from sublayers_server.model.registry.classes.skills import Skill
 
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 
@@ -42,12 +43,12 @@ class Agent(Root):
     # Механизм скилов
     experience_table = RegistryLink(caption=u"Таблица опыта")
 
-    driving = FloatAttribute(default=0, caption=u"Навык вождения", tags="skill")
-    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы", tags="skill")
-    masking = FloatAttribute(default=0, caption=u"Навык маскировки", tags="skill")
-    leading = FloatAttribute(default=0, caption=u"Навык лидерства", tags="skill")
-    trading = FloatAttribute(default=0, caption=u"Навык торговли", tags="skill")
-    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга", tags="skill")
+    driving = Skill(default=0, caption=u"Навык вождения", tags="skill")
+    shooting = Skill(default=0, caption=u"Навык стрельбы", tags="skill")
+    masking = Skill(default=0, caption=u"Навык маскировки", tags="skill")
+    leading = Skill(default=0, caption=u"Навык лидерства", tags="skill")
+    trading = Skill(default=0, caption=u"Навык торговли", tags="skill")
+    engineering = Skill(default=0, caption=u"Навык инженеринга", tags="skill")
 
     def iter_skills(self):
         for attr, getter in self.iter_attrs(tags='skill'):

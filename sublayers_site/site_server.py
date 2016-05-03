@@ -35,6 +35,9 @@ from sublayers_site.handlers.audio_test import GetAudioTest
 
 from sublayers_common.base_application import BaseApplication
 
+import sublayers_server.model.registry.classes  #autoregistry classes
+from sublayers_server.model.registry.storage import Registry
+
 
 class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
@@ -42,6 +45,8 @@ class Application(BaseApplication):
         settings.setdefault('static_path', options.static_path)
         settings.setdefault('static_url_prefix', '/static_site/')
         settings.setdefault('login_url', '/login')
+
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
