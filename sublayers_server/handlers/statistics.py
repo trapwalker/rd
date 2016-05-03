@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 import tornado.web
 
-from .base import BaseHandler
+from sublayers_common.handlers.base import BaseHandler
 
 
 class ServerStatisticsHandler(BaseHandler):

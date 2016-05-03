@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from .base import BaseHandler
+from sublayers_common.handlers.base import BaseHandler
 from sublayers_server.model.party import Party
 
 
