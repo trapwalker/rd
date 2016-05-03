@@ -110,7 +110,7 @@ def setup():
 
     log.debug('Try to clean nginx foldser: %r...', INSTALLATION_FOLDER)
     if os.system('rd /S /Q "{}"'.format(INSTALLATION_FOLDER)):
-        log.error("Can't remove old nginx folder %r", INSTALLATION_FOLDER)
+        log.warning("Can't remove old nginx folder %r", INSTALLATION_FOLDER)
         
     log.debug('Extracting zip file...')
     arch_root_name = os.path.commonprefix(dist.namelist())
@@ -118,7 +118,7 @@ def setup():
     for member in dist.infolist():
         fn = member.filename[len(arch_root_name):]        
         if fn:
-            log.debug('Extracting: %r to %r', member.filename, fn)
+            # log.debug('Extracting: %r to %r', member.filename, fn)
             member.filename = fn
             dist.extract(member, path=INSTALLATION_FOLDER)
 

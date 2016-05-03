@@ -24,3 +24,6 @@ if __name__ == '__main__':
     os.system(r'easy_install.bat Pillow')
 
     ve.install_requirements(requirements)
+
+    os.system(r'get_nginx.py 2>&1')
+    os.system(r'hg clone https://bitbucket.org/ANTiPodec/sublayers_world ../sublayers_world  2>&1')
