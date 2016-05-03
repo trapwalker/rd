@@ -100,6 +100,14 @@ def setup():
     log.debug('Loading zip file...')
     dist = zipfile.ZipFile(dist_stream)
 
+    nginx_bin_fn = os.path.join(INSTALLATION_FOLDER, 'nginx.exe')
+    if os.path.isfile(nginx_bin_fn):
+        log.debug('Try to quit Nginx (nginx -s quit)')
+        if os.system(nginx_bin_fn + ' -s quit'):
+            log.debug('Nginx quit FAIL')
+        else:
+            log.debug('Nginx quit DONE')
+
     log.debug('Try to clean nginx foldser: %r...', INSTALLATION_FOLDER)
     if os.system('rd /S /Q "{}"'.format(INSTALLATION_FOLDER)):
         log.error("Can't remove old nginx folder %r", INSTALLATION_FOLDER)
