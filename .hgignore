@@ -48,3 +48,5 @@ sublayers_site/static_site/img/1366_2/*
 sublayers_site/static_site/img/angles_3_4/*
 nginx/
 audio_static/audio
+nginx_conf/sites-enabled/
+nginx_conf/rd_project_path.conf
