@@ -73,6 +73,7 @@
     height: 13px;
 }
 
+
 .site-chip-content-line.shift {
     margin-left: 30px;
 }
@@ -92,6 +93,17 @@
 .site-chip-content-line-text.bold {
     font-family: Nouveau_IBM;
 }
+
+.site-chip-content-line-text.user-ordinal-number {
+    position: absolute;
+    top: 104px;
+    left: -225px;
+    font-size: 12pt;
+    color: #31c811;
+    text-shadow: -2px 2px 0px #082801;
+    transform: rotateZ(-90deg);
+}
+
 
 
 /* Кнопки */
@@ -132,6 +144,14 @@
         left: 120px;
     }
 
+    .site-chip-content-path.right {
+        padding-top: 2px;
+    }
+
     .reg3-btn.reg3-top {top: 2px;}
     .reg3-btn.reg3-bottom {bottom: 2px;}
+
+    .site-chip-content-line-text.user-ordinal-number {
+        left: -224px;
+    }
 }
