@@ -4,68 +4,68 @@
         <div class="window-reg2-path">
             <div class="window-qg-content-header-block">
                 <div class=" window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Навыки</div>
+                    <div class="window-qg-content-header buttons-and-headers" data-block_name="skills">Навыки</div>
                 </div>
             </div>
             <div class="reg2-skill-table">
                 <div class="reg2-table-line odd">
-                    <div class="reg2-skill-table-label">Вождение:</div>
+                    <div class="reg2-skill-table-label" data-skill_name="driving">Вождение:</div>
                     <div class="reg2-skill-table-counter-block">
-                        <div class="reg2-skill-table-counter-btn dec"></div>
-                        <div class="reg2-skill-table-counter">0</div>
-                        <div class="reg2-skill-table-counter-btn inc"></div>
+                        <div class="reg2-skill-table-counter-btn dec" data-skill_name="driving" onclick="Reg2DecSkill(this)"></div>
+                        <div id="reg2_driving" class="reg2-skill-table-counter"></div>
+                        <div class="reg2-skill-table-counter-btn inc" data-skill_name="driving" onclick="Reg2IncSkill(this)"></div>
                     </div>
                 </div>
                 <div class="reg2-table-line">
-                    <div class="reg2-skill-table-label">Стрельба:</div>
+                    <div class="reg2-skill-table-label" data-skill_name="shooting">Стрельба:</div>
                     <div class="reg2-skill-table-counter-block">
-                        <div class="reg2-skill-table-counter-btn dec"></div>
-                        <div class="reg2-skill-table-counter">0</div>
-                        <div class="reg2-skill-table-counter-btn inc"></div>
+                        <div class="reg2-skill-table-counter-btn dec" data-skill_name="shooting" onclick="Reg2DecSkill(this)"></div>
+                        <div id="reg2_shooting" class="reg2-skill-table-counter"></div>
+                        <div class="reg2-skill-table-counter-btn inc" data-skill_name="shooting" onclick="Reg2IncSkill(this)"></div>
                     </div>
                 </div>
                 <div class="reg2-table-line odd">
-                    <div class="reg2-skill-table-label">Скрытность:</div>
+                    <div class="reg2-skill-table-label" data-skill_name="masking">Скрытность:</div>
                     <div class="reg2-skill-table-counter-block">
-                        <div class="reg2-skill-table-counter-btn dec"></div>
-                        <div class="reg2-skill-table-counter">0</div>
-                        <div class="reg2-skill-table-counter-btn inc"></div>
+                        <div class="reg2-skill-table-counter-btn dec" data-skill_name="masking" onclick="Reg2DecSkill(this)"></div>
+                        <div id="reg2_masking" class="reg2-skill-table-counter"></div>
+                        <div class="reg2-skill-table-counter-btn inc" data-skill_name="masking" onclick="Reg2IncSkill(this)"></div>
                     </div>
                 </div>
                 <div class="reg2-table-line">
-                    <div class="reg2-skill-table-label">Механик:</div>
+                    <div class="reg2-skill-table-label" data-skill_name="engineering">Механик:</div>
                     <div class="reg2-skill-table-counter-block">
-                        <div class="reg2-skill-table-counter-btn dec"></div>
-                        <div class="reg2-skill-table-counter">0</div>
-                        <div class="reg2-skill-table-counter-btn inc"></div>
+                        <div class="reg2-skill-table-counter-btn dec" data-skill_name="engineering" onclick="Reg2DecSkill(this)"></div>
+                        <div id="reg2_engineering" class="reg2-skill-table-counter"></div>
+                        <div class="reg2-skill-table-counter-btn inc" data-skill_name="engineering" onclick="Reg2IncSkill(this)"></div>
                     </div>
                 </div>
                 <div class="reg2-table-line odd">
-                    <div class="reg2-skill-table-label">Торговля:</div>
+                    <div class="reg2-skill-table-label" data-skill_name="trading">Торговля:</div>
                     <div class="reg2-skill-table-counter-block">
-                        <div class="reg2-skill-table-counter-btn dec"></div>
-                        <div class="reg2-skill-table-counter">0</div>
-                        <div class="reg2-skill-table-counter-btn inc"></div>
+                        <div class="reg2-skill-table-counter-btn dec" data-skill_name="trading" onclick="Reg2DecSkill(this)"></div>
+                        <div id="reg2_trading" class="reg2-skill-table-counter"></div>
+                        <div class="reg2-skill-table-counter-btn inc" data-skill_name="trading" onclick="Reg2IncSkill(this)"></div>
                     </div>
                 </div>
                 <div class="reg2-table-line">
-                    <div class="reg2-skill-table-label">Лидерство:</div>
+                    <div class="reg2-skill-table-label" data-skill_name="leading">Лидерство:</div>
                     <div class="reg2-skill-table-counter-block">
-                        <div class="reg2-skill-table-counter-btn dec"></div>
-                        <div class="reg2-skill-table-counter">0</div>
-                        <div class="reg2-skill-table-counter-btn inc"></div>
+                        <div class="reg2-skill-table-counter-btn dec" data-skill_name="leading" onclick="Reg2DecSkill(this)"></div>
+                        <div id="reg2_leading" class="reg2-skill-table-counter"></div>
+                        <div class="reg2-skill-table-counter-btn inc" data-skill_name="leading" onclick="Reg2IncSkill(this)"></div>
                     </div>
                 </div>
             </div>
             <div class="reg2-path-footer">
                 <div class="reg2-skill-table-label">Свободные очки:</div>
-                <div id="reg2_free_skils" class="reg2-skill-table-counter-block">0</div>
+                <div id="reg2_free_skils" class="reg2-skill-table-counter-block"></div>
             </div>
         </div>
         <div class="window-reg2-path right">
             <div class="window-qg-content-header-block">
                 <div class="window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Перки</div>
+                    <div class="window-qg-content-header buttons-and-headers" data-block_name="perks">Способности</div>
                 </div>
             </div>
             <div class="reg2-perk-table">
@@ -100,15 +100,72 @@
     </div>
 </div>
 
-<script>              
-     // Кнопки Вперед/Назад
+<script>
+    // Механизм настройки скилов
+    var reg2_skills = {
+        all: 10,
+        cur: 10,
+        driving: 0,
+        shooting: 0,
+        masking: 0,
+        engineering: 0,
+        trading: 0,
+        leading: 0
+    };
 
+    function Reg2SetCurrentSkills() {
+        $('#reg2_free_skils').text(reg2_skills.cur);
+        $('#reg2_driving').text(reg2_skills.driving);
+        $('#reg2_shooting').text(reg2_skills.shooting);
+        $('#reg2_masking').text(reg2_skills.masking);
+        $('#reg2_engineering').text(reg2_skills.engineering);
+        $('#reg2_trading').text(reg2_skills.trading);
+        $('#reg2_leading').text(reg2_skills.leading);
+    }
+    Reg2SetCurrentSkills();
+
+    function Reg2IncSkill(btn) {
+        var skill_name = $(btn).data('skill_name');
+        if ((skill_name == 'all') || (skill_name == 'cur')) return;
+        if (reg2_skills.hasOwnProperty(skill_name) && (reg2_skills.cur > 0)) {
+            reg2_skills[skill_name]++;
+            reg2_skills.cur--;
+            Reg2SetCurrentSkills();
+        }
+    }
+
+    function Reg2DecSkill(btn) {
+        var skill_name = $(btn).data('skill_name');
+        if ((skill_name == 'all') || (skill_name == 'cur')) return;
+        if (reg2_skills.hasOwnProperty(skill_name) && (reg2_skills[skill_name] > 0)) {
+            reg2_skills[skill_name]--;
+            reg2_skills.cur++;
+            Reg2SetCurrentSkills();
+        }
+    }
+
+    // Кнопки Вперед/Назад
     function Reg2NextBtnClick() {
+        if (reg2_skills.cur != 0) {
+            consoleWReg2.add_message('user', 'Создание образа карточки Нукойл.');
+            consoleWReg2.add_message('system',
+                    '> Ошибка. Обнаружены нераспределенные очки.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Распределите все свободные очки.\n' +
+                    '--------------------------------------------------------------');
+            return;
+        }
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: {
-                action: 'next'
+                action: 'next',
+                driving: reg2_skills.driving,
+                shooting: reg2_skills.shooting,
+                masking: reg2_skills.masking,
+                engineering: reg2_skills.engineering,
+                trading: reg2_skills.trading,
+                leading:reg2_skills.leading
             },
             success: function(data) {
                 consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
@@ -138,4 +195,84 @@
             }
         });
     }
+
+    // Подсказки на клики по шапкам блоков
+    $('.reg2-skill-table-label').click(function() {
+        var skill_name = $(this).data('skill_name');
+        consoleWReg2.add_message('user', 'Загрузка навыка:');
+        switch (skill_name) {
+            case 'driving':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Вождение.\n' +
+                    'Увеличивает максимальную скорость и маневренность управляемого транспорта. Сложный в управлении транспорт имеет свои требования к навыку вождения.\n' +
+                    '--------------------------------------------------------------');
+                break;
+            case 'shooting':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Стрельба.\n' +
+                    'Увеличивает повреждения в секунду, наносимые автоматическими орудиями и повреждения от залповых. Сложные оружейные системы имеют свои требования к навыку стрельбы.\n' +
+                    '--------------------------------------------------------------');
+                break;
+            case 'masking':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Скрытность.\n' +
+                    'Уменьшает дистанцию обнаружения транспорта персонажа другими игроками и защитными системами поселений. От навыка скрытности зависит заметность оборудованных персонажем схронов.\n' +
+                    '--------------------------------------------------------------');
+                break;
+            case 'engineering':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Механика.\n' +
+                    'Снижает скорость износа транспорта персонажа, увеличивает эффективность полевого ремонта. От навыка механки зависит скорость установки схронов и опасность защитных ловушек.\n' +
+                    '--------------------------------------------------------------');
+                break;
+            case 'trading':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Торговля.\n' +
+                    'Уменьшает цену товаров и услуг, оказываемых игровыми персонажами. Увеличивает награды за задания.\n' +
+                    '--------------------------------------------------------------');
+                break;
+            case 'leading':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Лидерство.\n' +
+                    'Определяет максимальное количество игроков, которые могут присоединиться к пати персонажа. У игровых персонажей, дающих групповые задания, есть свои требования к навыку лидерства.\n' +
+                    '--------------------------------------------------------------');
+                break;
+        }
+    });
+
+    // Подсказки на клики по скилам
+    $('#RDSiteWReg2').find('.window-qg-content-header').click(function() {
+        var block_name = $(this).data('block_name');
+        consoleWReg2.add_message('user', 'Загрузка характеристик:');
+        switch (block_name) {
+            case 'skills':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Навыки.\n' +
+                    'Свободные очки навыков появляются с опытом персонажа. Игрок может распределять их по своему желанию. Каждые 10 очков навыка увеличивают уровень персонажа.\n' +
+                    '--------------------------------------------------------------');
+                break;
+            case 'perks':
+                consoleWReg2.add_message('system',
+                    'Успешно.\n\n' +
+                    '--------------------------------------------------------------\n' +
+                    'Способности.\n' +
+                    'Каждый новый уровень персонажа дает одно очко способностей. Способности появляются в зависимости от игрового класса, навыков и уже имеющихся способностей персонажа.\n' +
+                    '--------------------------------------------------------------');
+                break;
+        }
+    })
 </script>
