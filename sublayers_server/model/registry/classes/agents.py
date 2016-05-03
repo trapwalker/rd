@@ -43,16 +43,16 @@ class Agent(Root):
     # Механизм скилов
     experience_table = RegistryLink(caption=u"Таблица опыта")
 
-    driving = Skill(default=0, caption=u"Навык вождения", tags="skill")
-    shooting = Skill(default=0, caption=u"Навык стрельбы", tags="skill")
-    masking = Skill(default=0, caption=u"Навык маскировки", tags="skill")
-    leading = Skill(default=0, caption=u"Навык лидерства", tags="skill")
-    trading = Skill(default=0, caption=u"Навык торговли", tags="skill")
-    engineering = Skill(default=0, caption=u"Навык инженеринга", tags="skill")
+    driving = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык вождения", tags='skill')
+    shooting = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык стрельбы", tags='skill')
+    masking = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык маскировки", tags='skill')
+    leading = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык лидерства", tags='skill')
+    trading = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык торговли", tags='skill')
+    engineering = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык инженеринга", tags='skill')
 
     def iter_skills(self):
         for attr, getter in self.iter_attrs(tags='skill'):
-            yield attr.name, getter()
+            yield attr.name, getter().calc_value()
 
     def iter_perks(self):
         for perk in self.perks:

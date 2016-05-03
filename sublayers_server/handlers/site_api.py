@@ -72,14 +72,20 @@ class APIGetUserInfoHandler(BaseHandler):
         name_car = None
         html_agent = None
 
-        agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example
+        log.info('APIGetUserInfoHandler: %r', username)
+        agent = None
+        if user.quick:
+            agent = self.application.srv.api.get_agent_quick_game(user)
+        else:
+            agent = self.application.srv.api.get_agent(user, make=True)
+        # agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example
         if agent:
-            user_info['driving'] = agent.example.driving
-            user_info['shooting'] = agent.example.shooting
-            user_info['masking'] = agent.example.masking
-            user_info['engineering'] = agent.example.engineering
-            user_info['trading'] = agent.example.trading
-            user_info['leading'] = agent.example.leading
+            user_info['driving'] = agent.example.driving.value
+            user_info['shooting'] = agent.example.shooting.value
+            user_info['masking'] = agent.example.masking.value
+            user_info['engineering'] = agent.example.engineering.value
+            user_info['trading'] = agent.example.trading.value
+            user_info['leading'] = agent.example.leading.value
             user_info['about_self'] = agent.example.about_self  # Досье
             user_info['balance'] = agent.example.balance
             # todo: сделать пересылку правильных параметров

@@ -627,16 +627,16 @@ class TransactionSkillApply(TransactionEvent):
             exp=self.agent.stat_log.get_metric('exp'))
         rqst_skill_pnt = self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
 
-        if (rqst_skill_pnt <= cur_lvl) and (self.agent.example.driving <= self.driving) and \
-                (self.agent.example.shooting <= self.shooting) and (self.agent.example.masking <= self.masking) and \
-                (self.agent.example.leading <= self.leading) and (self.agent.example.trading <= self.trading) and \
-                (self.agent.example.engineering <= self.engineering):
-            self.agent.example.driving = self.driving
-            self.agent.example.shooting = self.shooting
-            self.agent.example.masking = self.masking
-            self.agent.example.leading = self.leading
-            self.agent.example.trading = self.trading
-            self.agent.example.engineering = self.engineering
+        if (rqst_skill_pnt <= cur_lvl) and (self.agent.example.driving.value <= self.driving) and \
+                (self.agent.example.shooting.value <= self.shooting) and (self.agent.example.masking.value <= self.masking) and \
+                (self.agent.example.leading.value <= self.leading) and (self.agent.example.trading.value <= self.trading) and \
+                (self.agent.example.engineering.value <= self.engineering):
+            self.agent.example.driving.value = self.driving
+            self.agent.example.shooting.value = self.shooting
+            self.agent.example.masking.value = self.masking
+            self.agent.example.leading.value = self.leading
+            self.agent.example.trading.value = self.trading
+            self.agent.example.engineering.value = self.engineering
 
         messages.RPGStateMessage(agent=self.agent, time=self.time).post()
 
@@ -661,10 +661,10 @@ class TransactionActivatePerk(TransactionEvent):
             return
         cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = ex_agent.experience_table.by_exp(
             exp=self.agent.stat_log.get_metric('exp'))
-        if (activate_perk.driving_req <= ex_agent.driving) and (activate_perk.masking_req <= ex_agent.masking) and \
-           (activate_perk.shooting_req <= ex_agent.shooting) and (activate_perk.leading_req <= ex_agent.leading) and \
-           (activate_perk.trading_req <= ex_agent.trading) and \
-           (activate_perk.engineering_req <= ex_agent.engineering) and (activate_perk.level_req <= cur_lvl):
+        if (activate_perk.driving_req <= ex_agent.driving.calc_value()) and (activate_perk.masking_req <= ex_agent.masking.calc_value()) and \
+           (activate_perk.shooting_req <= ex_agent.shooting.calc_value()) and (activate_perk.leading_req <= ex_agent.leading.calc_value()) and \
+           (activate_perk.trading_req <= ex_agent.trading.calc_value()) and \
+           (activate_perk.engineering_req <= ex_agent.engineering.calc_value()) and (activate_perk.level_req <= cur_lvl):
             for perk in activate_perk.perks_req:
                 if self.agent.server.reg[perk] not in ex_agent.perks:
                     return
@@ -684,12 +684,12 @@ class TransactionResetSkills(TransactionEvent):
 
         # todo: списать деньги
 
-        ex_agent.driving = 0
-        ex_agent.shooting = 0
-        ex_agent.masking = 0
-        ex_agent.leading = 0
-        ex_agent.trading = 0
-        ex_agent.engineering = 0
+        ex_agent.driving.value = 0
+        ex_agent.shooting.value = 0
+        ex_agent.masking.value = 0
+        ex_agent.leading.value = 0
+        ex_agent.trading.value = 0
+        ex_agent.engineering.value = 0
 
         # todo: сделать правильно удаление перков из массива перков
         # ex_agent.perks = InventoryPerksAttribute()

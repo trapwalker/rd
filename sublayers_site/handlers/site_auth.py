@@ -78,6 +78,14 @@ class StandardLoginHandler(BaseSiteHandler):
         user = User(email=email, raw_password=password)
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
+
+        agent_exemple = self.application.reg_agents.get([str(user._id)])
+        if agent_exemple is None:
+            agent_exemple = self.application.reg['/agents/user'].instantiate(
+                storage=self.application.reg_agents, name=str(user._id),
+            )
+        self.application.reg_agents.save_node(agent_exemple)
+
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
 

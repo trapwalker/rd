@@ -36,7 +36,7 @@ from sublayers_site.handlers.audio_test import GetAudioTest
 from sublayers_common.base_application import BaseApplication
 
 import sublayers_server.model.registry.classes  #autoregistry classes
-from sublayers_server.model.registry.storage import Registry
+from sublayers_server.model.registry.storage import Registry, Collection
 
 
 class Application(BaseApplication):
@@ -46,10 +46,10 @@ class Application(BaseApplication):
         settings.setdefault('static_url_prefix', '/static_site/')
         settings.setdefault('login_url', '/login')
 
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
-
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
+        self.reg_agents = Collection(name='agents', db=self.db)
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/login", StandardLoginHandler),
