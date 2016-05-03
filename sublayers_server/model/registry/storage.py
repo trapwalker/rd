@@ -279,7 +279,7 @@ class Registry(AbstractStorage):
         if cls is None:
             raise NodeClassError('Node class unspecified on path: {!r}'.format(path))
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
-        abstract = attrs.pop('abstract', True)
+        abstract = attrs.pop('abstract', True)  # todo: Вынести это умолчание на видное место
         return cls(name=name, parent=parent, owner=owner, storage=self, abstract=abstract, values=attrs)
 
     def load(self, path):
