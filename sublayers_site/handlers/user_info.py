@@ -9,6 +9,9 @@ from sublayers_common.user_profile import User
 from bson.objectid import ObjectId, InvalidId
 import tornado
 
+from time import mktime
+import datetime
+
 
 class GetUserInfoHandler(BaseSiteHandler):
     @tornado.gen.coroutine
@@ -19,6 +22,16 @@ class GetUserInfoHandler(BaseSiteHandler):
             user_info = yield self._get_car(username=user.name)
         agent_info = user_info.get('user_info', dict())
 
+        created = None
+        if user:
+            if user.date_created is not None:
+                created = mktime(user.date_created.timetuple()) * 1000
+            else:
+                user.date_created = datetime.datetime.now()
+                yield user.save()
+                created = 0
+                log.warn('User dont have date_created. Setup now Date')
+
         self.finish({
             'user_status': 'not_register' if user is None else user.registration_status,
             'user_name': '' if user is None else user.name,
@@ -26,6 +39,8 @@ class GetUserInfoHandler(BaseSiteHandler):
             'user_info_html': user_info.get('html_agent', ''),
             'user_balance': agent_info.get('balance', 0),
             'position': agent_info.get('position', 0),
+            'ordinal_number': None if user is None else user.ordinal_number,
+            'created': created,
         })
 
 

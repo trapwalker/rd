@@ -23,7 +23,7 @@ if __name__ == '__main__':
     import yaml
 
     log.debug('Registry loading start')
-    reg = storage.Registry(name='registry', path=ur'D:\Home\svp\projects\sublayers\sublayers_server\world\registry')
+    reg = storage.Registry(name='registry', path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     log.debug('Registry loading done')
     # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
     # sedan = reg['/mobiles/cars/sedan']

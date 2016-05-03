@@ -3,10 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_common.handlers.base import BaseHandler
+
 import tornado.web
 from tornado.options import options  # todo: (!) use application.options
-
-from sublayers_common.handlers.base import BaseHandler
 
 
 class PlayHandler(BaseHandler):

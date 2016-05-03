@@ -10,6 +10,7 @@ import os
 import shutil
 import urllib
 import zipfile
+from glob import glob
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -22,7 +23,7 @@ INDEX_URL = '{SITE_ROOT}/ru/download.html'.format(**locals())
 
 APP_ROOT = '..'
 CONF_FOLDER = os.path.join(APP_ROOT, 'nginx_conf')
-VERSION_FILE_PATH = os.path.join(CONF_FOLDER, '__version__')
+PROJECT_ROOT_CONF_FN = os.path.join(CONF_FOLDER, 'rd_project_path.conf')
 INSTALLATION_FOLDER = os.path.join(APP_ROOT, 'nginx')
 INSTALLATION_CONFIG_FOLDER = os.path.join(INSTALLATION_FOLDER, 'conf')
 
@@ -47,39 +48,69 @@ def get_versions():
     return versions
 
 
-def get_current_version():
-    try:
-        with open(VERSION_FILE_PATH, 'r') as f:
-            return version_from_str(f.read())
-    except:
-        return None
-
-
-def set_current_version(v):
-    with open(VERSION_FILE_PATH, 'w') as f:
-        f.write(varsion_to_str(v))
-
-
 def get_last_version():
     return get_versions()[0]
+
+
+def link(src, dest, replace=False):
+    if not os.path.basename(dest):
+        dest = os.path.join(dest, os.path.basename(src))
+        log.debug('Destination is a folder. Replce to %r', dest)
+
+    if os.path.isdir(src):
+        src_type = 'folder'
+        link_key = '/J'
+    else:
+        src_type = 'file'
+        link_key = '/H'
+    
+    if os.path.exists(dest):
+        dest_is_folder = os.path.isdir(dest)
+        dest_type = 'folder' if dest_is_folder else 'file'
+        if not replace:
+            raise IOError("Linking impossible: {} {!r} already exists.".format(dest_type, dest))
+        log.debug('Try to delete existing %s %r', dest_type, dest)
+        if dest_is_folder:
+            cmd = 'rd /Q /S "{}"'.format(dest)
+        else:
+            cmd = 'del "{}"'.format(dest)
+            
+        if os.system(cmd):
+            raise IOError("Can't delete existing {} {!r}".format(dest_type, dest))
+        else:
+            log.info('Existed %s %r deleted sucessfully', dest_type, dest)
+
+    cmd = 'mklink {} "{}" "{}"'.format(link_key, dest, src)
+    log.debug('Try to linking by command: %r', cmd)
+    if os.system(cmd):
+        raise IOError("Can't link {} {!r} to {!r}".format(src_type, src, dest))
+    log.debug("Link %s %r to %r DONE", src_type, src, dest)
 
 
 def setup():
     log.debug('Try to get last version...')
     v, url = get_last_version()
-    log.debug('Last version {}: {}'.format(v, url))
+    log.debug('Last version %s: %s', v, url)
 
     log.debug('Loading dist...')
     dist_stream = StringIO(urllib.urlopen(url).read())
-    log.info('Dist loaded: {} bytes'.format(len(dist_stream.getvalue())))
+    log.info('Dist loaded: %s bytes', len(dist_stream.getvalue()))
     #dist_stream = open(r'..\temp\nginx-1.9.14.zip', 'rb')
 
     log.debug('Loading zip file...')
     dist = zipfile.ZipFile(dist_stream)
 
-    log.debug('Try to clean nginx folser: "{}"...'.format(INSTALLATION_FOLDER))
+    nginx_bin_fn = os.path.join(INSTALLATION_FOLDER, 'nginx.exe')
+    if os.path.isfile(nginx_bin_fn):
+        log.debug('Try to quit Nginx (nginx -s quit)')
+        if os.system(nginx_bin_fn + ' -s quit'):
+            log.debug('Nginx quit FAIL')
+        else:
+            log.debug('Nginx quit DONE')
+
+    log.debug('Try to clean nginx foldser: %r...', INSTALLATION_FOLDER)
     if os.system('rd /S /Q "{}"'.format(INSTALLATION_FOLDER)):
-        log.error("Can't remove old nginx folder {}".format(INSTALLATION_FOLDER))
+        log.warning("Can't remove old nginx folder %r", INSTALLATION_FOLDER)
         
     log.debug('Extracting zip file...')
     arch_root_name = os.path.commonprefix(dist.namelist())
@@ -87,30 +118,33 @@ def setup():
     for member in dist.infolist():
         fn = member.filename[len(arch_root_name):]        
         if fn:
-            log.debug('Extracting: {} to {}'.format(member.filename, fn))
+            # log.debug('Extracting: %r to %r', member.filename, fn)
             member.filename = fn
             dist.extract(member, path=INSTALLATION_FOLDER)
 
+    # Linking available to enabled
+    for fn in glob(os.path.join(CONF_FOLDER, 'sites-available', '*.conf')):
+        link(fn, os.path.join(CONF_FOLDER, 'sites-enabled', ''), replace=True)
+
+    app_root_abs_path = os.path.abspath(APP_ROOT)
+    log.debug('Making application root path inclusion: %r', app_root_abs_path)
+    with open(PROJECT_ROOT_CONF_FN, 'w') as f:
+        f.write('set $rd_main_folder {};\n'.format(app_root_abs_path))
+
     log.debug('Linking configurations...')
     for fn in os.listdir(CONF_FOLDER):
-        fp = os.path.join(CONF_FOLDER, fn)
-        link_key = '/J' if os.path.isdir(fp) else '/H'        
-        ftype = 'folder' if os.path.isdir(fp) else 'file'
-        dest_link_name = os.path.join(INSTALLATION_CONFIG_FOLDER, fn)
-        cmd = 'mklink {} "{}" "{}"'.format(link_key, dest_link_name, fp)
-        print cmd
-        if os.path.isfile(dest_link_name):
-            log.debug('Try to delete existing file {}'.format(dest_link_name))
-            if os.system('del {}'.format(dest_link_name)):
-                log.error('can\'t delete existing file {}'.format(dest_link_name))
-            else:
-                log.info('Existed file {} deleted sucessfully'.format(dest_link_name))
-            
-        if os.system(cmd):
-            log.error("Can't link {} {} to {}".format(ftype, fp, INSTALLATION_CONFIG_FOLDER))
+        try:
+            link(
+                os.path.join(CONF_FOLDER, fn),
+                os.path.join(INSTALLATION_CONFIG_FOLDER, ''),
+                replace=True,
+            )
+        except IOError as e:
+            log.error(e)
 
     globals().update(locals())
     
 
 if __name__ == '__main__':
+    pass
     setup()

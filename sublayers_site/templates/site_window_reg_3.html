@@ -3,21 +3,22 @@
         <div class="site-chip-content-path left">
             <div class="site-chip-content-avatar-block"></div>
             <div class="site-chip-content-nickname-block">
-                <div class="site-chip-content-nickname">text-text text</div>
+                <div id="RDSiteWReg3_Nickname" class="site-chip-content-nickname">text-text text</div>
             </div>
         </div>
         <div class="site-chip-content-path right">
+            <div id="RDSiteWReg3_OrdinalNumber" class="site-chip-content-line-text user-ordinal-number">0038552911</div>
             <div class="site-chip-content-line">
-                <div class="site-chip-content-line-text left bold">ID Игрока:</div>
-                <div class="site-chip-content-line-text right">0038552911</div>
+                <div class="site-chip-content-line-text left bold">Класс игрока:</div>
+                <div id="RDSiteWReg3_RoleClass" class="site-chip-content-line-text right">Выживший</div>
             </div>
             <div class="site-chip-content-line">
                 <div class="site-chip-content-line-text left bold">Дата выдачи:</div>
-                <div class="site-chip-content-line-text right">29.04.2116</div>
+                <div id="RDSiteWReg3_Created" class="site-chip-content-line-text right">29.04.2116</div>
             </div>
             <div class="site-chip-content-line">
                 <div class="site-chip-content-line-text left bold">Баланс:</div>
-                <div class="site-chip-content-line-text right">1999</div>
+                <div id="RDSiteWReg3_UserBalance" class="site-chip-content-line-text right">1999</div>
             </div>
 
             <div class="site-chip-content-line">
@@ -72,8 +73,12 @@
 
         </div>
     </div>
-    <div class="reg2-btn buttons-and-headers reg2-btn-back" onclick="Reg3BackBtnClick()">Назад</div>
-    <div class="reg2-btn buttons-and-headers reg2-btn-next" onclick="Reg3NextBtnClick()">Далее</div>
+
+    <div class="reg3-btn buttons-and-headers reg3-school reg3-top reg3-left" onclick=""></div>
+    <div class="reg3-btn buttons-and-headers reg3-novice reg3-top reg3-right" onclick=""></div>
+
+    <div class="reg3-btn buttons-and-headers reg3-back reg3-bottom reg3-left" onclick="Reg3BackBtnClick()"></div>
+    <div class="reg3-btn buttons-and-headers reg3-finish reg3-bottom reg3-right" onclick="Reg3NextBtnClick()"></div>
 </div>
 
 <script>
@@ -89,7 +94,6 @@
             success: function(data) {
                 if (data.status == 'success')
                     GetUserInfo();
-                console.warn('Reg3NextBtnClick ajax error: data.status=', data.status);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.warn('Reg3NextBtnClick ajax error');

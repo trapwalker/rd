@@ -1,0 +1,3 @@
+
+cd nginx
+nginx -t

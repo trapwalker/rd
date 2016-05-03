@@ -36,7 +36,7 @@
     width: 138px;
     height: 23px;
     margin: 0px auto 0px auto;
-    background-color: black;
+    background-color: #030f00;
 }
 
 .window-qg-content-header {
@@ -67,7 +67,7 @@
 .window-qg-content-nickname-input {
     width: calc(100% - 85px);
     border-width: 0px;
-    background-color: #061205;
+    background-color: #082308;
     font-size: 14pt;
 }
 
@@ -117,7 +117,7 @@
     margin: 0 auto 0 auto;
 }
 .window-qg-content-rating-line-block.header { margin: 0 auto 10px auto; }
-.window-qg-content-rating-line-block.odd { background-color: #041105; }
+.window-qg-content-rating-line-block.odd { background-color: #082801;}
 
 .window-qg-content-rating-column {
     position: relative;

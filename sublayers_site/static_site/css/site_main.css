@@ -100,7 +100,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 }
 .content.black {
-    background-color: black;
+    background-color: #030f00;
 }
 
 .content-start-back {
