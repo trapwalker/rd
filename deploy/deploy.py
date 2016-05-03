@@ -24,3 +24,5 @@ if __name__ == '__main__':
     os.system(r'easy_install.bat Pillow')
 
     ve.install_requirements(requirements)
+
+    os.system(r'get_nginx.py 2>&1')
