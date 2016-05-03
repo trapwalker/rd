@@ -13,7 +13,6 @@ import tornado
 class SiteMainHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def get(self):
-
         # Подготовка списка новостей
         news_list = []
         serv_dir = os.getcwd()

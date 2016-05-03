@@ -23,6 +23,9 @@ function main() {
     // Получить текущего пользователя
     GetUserInfo();
 
+    // Получить стартовые ролевые классы и аватарки
+    GetRPGInfo();
+
     // Инициализация анимации платы
     var plate_img = new Image();
     plate_img.onload = function() {

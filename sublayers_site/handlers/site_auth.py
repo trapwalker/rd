@@ -79,12 +79,12 @@ class StandardLoginHandler(BaseSiteHandler):
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
 
-        agent_exemple = self.application.reg_agents.get([str(user._id)])
-        if agent_exemple is None:
-            agent_exemple = self.application.reg['/agents/user'].instantiate(
+        agent_example = self.application.reg_agents.get([str(user._id)])
+        if agent_example is None:
+            agent_example = self.application.reg['/agents/user'].instantiate(
                 storage=self.application.reg_agents, name=str(user._id),
             )
-        self.application.reg_agents.save_node(agent_exemple)
+        self.application.reg_agents.save_node(agent_example)
 
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -189,6 +189,7 @@ class StandardLoginHandler(BaseSiteHandler):
             username = self.get_argument('username', None)
             avatar_index = self.get_argument('avatar_index', None)
             class_index = self.get_argument('class_index', None)
+
 
             #todo: проверить ник на допустимые символы, аватар и класс на допустимые значения
             if ((avatar_index is None) or (class_index is None) or

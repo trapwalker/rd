@@ -139,7 +139,7 @@
 
     function GetUserInfo() {
          $.ajax({
-            url: location.protocol + '//' + location.host + '/get_user_info',
+            url: location.protocol + '//' + location.host + '/site_api/get_user_info',
             method: 'POST',
             data: {},
             success: function(data) {
@@ -176,6 +176,17 @@
                  // Переход на следующую страницу
                 if (window.location.hash == '#start')
                     $('#RDbtn_start').click();
+            }
+        });
+    }
+
+    function GetRPGInfo() {
+         $.ajax({
+            url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
+            method: 'POST',
+            data: {},
+            success: function(data) {
+                console.log(data)
             }
         });
     }

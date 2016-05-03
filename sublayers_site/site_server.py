@@ -30,6 +30,7 @@ import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler
 from sublayers_site.handlers.site import SiteMainHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
+from sublayers_site.handlers.rpg_info import GetRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 from sublayers_site.handlers.audio_test import GetAudioTest
 
@@ -55,7 +56,8 @@ class Application(BaseApplication):
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
-            (r"/get_user_info", GetUserInfoHandler),
+            (r"/site_api/get_user_info", GetUserInfoHandler),
+            (r"/site_api/get_rpg_info", GetRPGInfoHandler),
             (r"/site_api/get_quick_game_records", GetQuickGameRecords),
             (r"/site_api/get_rating_info", GetRatingInfo),
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),
