@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
 
-import tornado
+import tornado.web
 
 
 class GetRPGInfoHandler(BaseSiteHandler):
@@ -39,3 +39,68 @@ class GetRPGInfoHandler(BaseSiteHandler):
         })
 
 
+class GetUserRPGInfoHandler(BaseSiteHandler):
+    def get_full_site_rpg_settings(self, agent_ex):
+        d = dict()
+        # Отправить скилы для расчётов
+        d['pure_skills'] = dict(
+            driving=agent_ex.driving.value,
+            shooting=agent_ex.shooting.value,
+            masking=agent_ex.masking.value,
+            leading=agent_ex.leading.value,
+            trading=agent_ex.trading.value,
+            engineering=agent_ex.engineering.value,
+        )
+
+        # Отправить скилы для отображения
+        d['show_skills'] = dict(
+            driving=agent_ex.driving.calc_value(),
+            shooting=agent_ex.shooting.calc_value(),
+            masking=agent_ex.masking.calc_value(),
+            leading=agent_ex.leading.calc_value(),
+            trading=agent_ex.trading.calc_value(),
+            engineering=agent_ex.engineering.calc_value(),
+        )
+
+        # Отправить доступные на данный момент навыки
+        # todo: разобраться со свободными очками, как они вычисляются или где храняться
+        return d
+    
+    @tornado.web.authenticated
+    def post(self):
+        action = self.get_argument('action', None)
+        user = self.current_user
+        agent_ex = self.application.reg_agents.get([str(user._id)])
+        if agent_ex is None:
+            self.send_error(status_code=404)
+            return         
+
+        if action == 'set_skills':
+            driving = self.get_argument('driving', None)
+            shooting = self.get_argument('shooting', None)
+            masking = self.get_argument('masking', None)
+            leading = self.get_argument('leading', None)
+            trading = self.get_argument('trading', None)
+            engineering = self.get_argument('engineering', None)
+            # todo: Проверить их на None
+
+            rqst_skill_pnt = driving + shooting + masking + leading + trading + engineering
+            role_class_points_available = 10  # todo: забрать из агента
+
+            if (rqst_skill_pnt <= role_class_points_available and driving >= 0 and shooting >= 0 and
+                        masking >= 0 and leading >= 0 and trading >= 0 and engineering >= 0):
+                agent_ex.driving.value = driving
+                agent_ex.shooting.value = shooting
+                agent_ex.masking.value = masking
+                agent_ex.leading.value = leading
+                agent_ex.trading.value = trading
+                agent_ex.engineering.value = engineering
+
+        elif action == 'set_perk':
+            # todo: установить перки, если возможно
+            pass
+        else:
+            pass
+
+        self.application.reg_agents.save_node(agent_ex)
+        self.finish(self.get_full_site_rpg_settings(agent_ex))

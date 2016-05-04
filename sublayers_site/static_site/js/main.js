@@ -205,6 +205,11 @@ function GetUserInfo() {
                 // todo: считать перки и навыки
             }
 
+            if (registration_status == 'settings') {
+                console.log('registration_status == settings');
+                GetUserRPGInfo();
+            }
+
             // Переход на следующую страницу
             if (window.location.hash == '#start')
                 $('#RDbtn_start').click();
@@ -246,11 +251,34 @@ function GetRPGInfo() {
                 role_class_container.append(d);
                 d.css('background-image', 'url(' + role_class_list_info[i].icon + ')');
             }
-
-
             SetCurrentClass();
+        }
+    });
+}
 
 
+function GetUserRPGInfo(action) {
+    // todo: разобраться с arguments, тогда сможем формировать легко и красиво data: {action: action + arguments}, и устанавливать скилы, перки, что угодно!!!!
+
+    $.ajax({
+        url: location.protocol + '//' + location.host + '/site_api/get_user_rpg_info',
+        method: 'POST',
+        data: {action: action},
+        success: function (data) {
+            console.log(data);
+
+            // Записать pure_skills в "модель",  - то, что будем отправлять на сервер, например
+            for (var key in data.pure_skills)
+                if (data.pure_skills.hasOwnProperty(key)) {
+                    reg2_skills[key] = data.pure_skills[key];
+                }
+
+
+            // Отобразить show_skills в вёрстку
+            for(var key in data.show_skills)
+                if (data.show_skills.hasOwnProperty(key)){
+                    $('#reg2_' + key).text(data.show_skills[key]);
+                }
         }
     });
 }
