@@ -25,6 +25,7 @@
                     <div class="window-qg-content-header buttons-and-headers">Класс</div>
                 </div>
             </div>
+            <div id="reg1_class_name_text" class="window-reg1-class-name"></div>
             <div class="reg1-path-class-list">
                 <div id="reg1_class_0" class="reg1-path-class-item" style="background: transparent url(/static_site/img/temp/class_1.png) no-repeat 100% 100%;"></div>
                 <div id="reg1_class_1" class="reg1-path-class-item" style="background: transparent url(/static_site/img/temp/class_2.png) no-repeat 100% 100%;"></div>
@@ -66,6 +67,7 @@
     // Настройка листалки классов
     var reg1_class_count = 3;
     var reg1_current_class = 0;
+    var role_class_list_info = [];
     SetCurrentClass();
 
     function SlideLeftClassList() {
@@ -83,6 +85,9 @@
     function SetCurrentClass() {
         $('.reg1-path-class-item').css('display', 'none');
         $('#reg1_class_' + reg1_current_class).css('display', 'block');
+
+        var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].title : '';
+        $('#reg1_class_name_text').text(name);
     }
 
     // Подсказка на клик по никнейму
@@ -114,7 +119,8 @@
                 action: 'next',
                 username: username,
                 avatar_index: reg1_current_avatar,
-                class_index: reg1_current_class
+                class_index: reg1_current_class,
+                class_node_hash: role_class_list_info[reg1_current_class].node_hash
             },
             success: function(data) {
                 reg1_last_input_click = null;

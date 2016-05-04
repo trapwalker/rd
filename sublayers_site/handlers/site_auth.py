@@ -189,12 +189,13 @@ class StandardLoginHandler(BaseSiteHandler):
             username = self.get_argument('username', None)
             avatar_index = self.get_argument('avatar_index', None)
             class_index = self.get_argument('class_index', None)
+            class_node_hash = self.get_argument('class_node_hash', None)
 
 
             #todo: проверить ник на допустимые символы, аватар и класс на допустимые значения
-            if ((avatar_index is None) or (class_index is None) or
-                (username is None) or (not isinstance(username, basestring)) or
-                (username == '') or (len(username) > 100)):
+            if ((avatar_index is None) or (class_index is None) or (class_node_hash is None) or
+                    (username is None) or (not isinstance(username, basestring)) or
+                    (username == '') or (len(username) > 100)):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
@@ -202,6 +203,18 @@ class StandardLoginHandler(BaseSiteHandler):
             if (user.name != username) and (yield User.get_by_name(name=username)):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
+
+            # Получаем ссылку на аватар
+            avatar_link = ''
+            role_class_ex = None
+            try:
+                avatar_index = int(avatar_index)
+                avatar_link = self.application.reg['/world_settings'].values.get('avatar_list')[avatar_index]
+                role_class_ex = self.application.reg[class_node_hash]
+            except:
+                self.finish({'status': 'fail_wrong_input'})
+                return
+            # todo: Где хранить аватарку и role_class_ex ?! Решить!
 
             user.name = username
             user.registration_status = 'settings'

@@ -21,6 +21,12 @@
 .window-reg1-path.right {margin-left: 6px;}
 .window-reg1-path .slide-arrow { top: 120px; z-index: 1000; }
 
+.window-reg1-class-name {
+    position: relative;
+    margin: auto;
+    text-align: center;
+}
+
 .window-reg1-console-wrap {
     position: relative;
     float: left;
@@ -71,7 +77,7 @@
     position: relative;
     width: 280px;
     height: 170px;
-    margin: 20px auto;
+    margin: 0 auto;
 }
 
 .reg1-path-class-item {

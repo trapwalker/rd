@@ -146,6 +146,116 @@ function GetIDForStartRegistrationPage(){
 }
 
 
+function GetUserInfo() {
+    $.ajax({
+        url: location.protocol + '//' + location.host + '/site_api/get_user_info',
+        method: 'POST',
+        data: {},
+        success: function (data) {
+            registration_status = data.user_status;
+
+            if (registration_status == 'register') {
+                var pos_x = '';
+                var pos_y = '';
+                if (data.hasOwnProperty('position') && data.position && (data.position.length == 2)) {
+                    pos_x = data.position[0].toFixed(0);
+                    pos_y = data.position[1].toFixed(0);
+                }
+
+                consoleWPI.clear();
+                consoleWPI.add_message('user', 'Загрузка системы навигации.');
+                consoleWPI.add_message(
+                    'system',
+                    'Успешно.\n' +
+                    '-----------------------------\n' +
+                    'Добро пожаловать, ' + data.user_name + '!\n' +
+                    'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
+                    'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
+                    'Ваша страховка: _\n' +
+                    'Активных заданий: _\n' +
+                    '-----------------------------'
+                );
+
+                $('#RDSitePersonalInfoUserInfo').empty();
+                $('#RDSitePersonalInfoUserCar').empty();
+                $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
+                $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
+            }
+
+
+            if (registration_status == 'chip') {
+                var ordinal_number = 1000000000 + data.ordinal_number;
+                ordinal_number = ordinal_number.toString();
+                ordinal_number = ordinal_number.substr(1, ordinal_number.length);
+
+                var d = new Date(data.created);
+                d.setFullYear(d.getFullYear() + 100);
+
+                $('#RDSiteWReg3_OrdinalNumber').text(ordinal_number);
+                $('#RDSiteWReg3_Created').text(d.toLocaleDateString());
+
+                $('#RDSiteWReg3_Nickname').text(data.user_name);
+
+                var procent_length = 20 + 2 * data.user_name.length;
+                procent_length = procent_length > 80 ? 80 : procent_length;
+                $('#RDSiteWReg3_Nickname').parent().width(procent_length + '%');
+
+                $('#RDSiteWReg3_UserBalance').text(data.user_balance);
+
+                // todo: считать перки и навыки
+            }
+
+            // Переход на следующую страницу
+            if (window.location.hash == '#start')
+                $('#RDbtn_start').click();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Error GetUserInfo');
+        }
+    });
+}
+
+function GetRPGInfo() {
+    $.ajax({
+        url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
+        method: 'POST',
+        data: {},
+        success: function (data) {
+            console.log(data);
+
+
+            // Установка аватаров:
+            var avatar_container = $('.reg1-path-avatar-list').first();
+            avatar_container.empty();
+            reg1_avatar_count =  data.avatar_list.length;
+            for (var i = 0; i < data.avatar_list.length; i++) {
+                var d = $('<div id="reg1_avatar_' + i +'" class="reg1-path-avatar-item"></div>');
+                avatar_container.append(d);
+                d.css('background-image', 'url(' + data.avatar_list[i] + ')');
+            }
+            SetCurrentAvatar();
+
+
+            // Установка классов
+            var role_class_container = $('.reg1-path-class-list').first();
+            role_class_container.empty();
+            reg1_class_count =  data.class_list.length;
+            role_class_list_info = data.class_list;
+            for (var i = 0; i < data.class_list.length; i++) {
+                var d = $('<div id="reg1_class_' + i +'" class="reg1-path-class-item"></div>');
+                role_class_container.append(d);
+                d.css('background-image', 'url(' + role_class_list_info[i].icon + ')');
+            }
+
+
+            SetCurrentClass();
+
+
+        }
+    });
+}
+
+
 
 //function start_site() {
 //    console.log('Start site ! ');
