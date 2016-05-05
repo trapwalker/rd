@@ -42,33 +42,35 @@ class GetRPGInfoHandler(BaseSiteHandler):
 class GetUserRPGInfoHandler(BaseSiteHandler):
     def get_full_site_rpg_settings(self, agent_ex):
         d = dict()
+        if agent_ex.role_class:
+            d['role_class_title'] = agent_ex.role_class.title
+            # Отправить скилы для отображения
+            d['show_skills'] = dict(
+                driving=agent_ex.driving.calc_value(),
+                shooting=agent_ex.shooting.calc_value(),
+                masking=agent_ex.masking.calc_value(),
+                leading=agent_ex.leading.calc_value(),
+                trading=agent_ex.trading.calc_value(),
+                engineering=agent_ex.engineering.calc_value(),
+            )
 
-        d['role_class_title'] = agent_ex.role_class.title
-        # Отправить скилы для отображения
-        d['show_skills'] = dict(
-            driving=agent_ex.driving.calc_value(),
-            shooting=agent_ex.shooting.calc_value(),
-            masking=agent_ex.masking.calc_value(),
-            leading=agent_ex.leading.calc_value(),
-            trading=agent_ex.trading.calc_value(),
-            engineering=agent_ex.engineering.calc_value(),
-        )
+            skill_pnt_summ = agent_ex.driving.value + agent_ex.shooting.value + agent_ex.masking.value + \
+                                 agent_ex.leading.value + agent_ex.trading.value + agent_ex.engineering.value
+            d['free_point_skills'] = agent_ex.role_class.start_free_point_skills - skill_pnt_summ
 
-        skill_pnt_summ = agent_ex.driving.value + agent_ex.shooting.value + agent_ex.masking.value + \
-                             agent_ex.leading.value + agent_ex.trading.value + agent_ex.engineering.value
-        d['free_point_skills'] = agent_ex.role_class.start_free_point_skills - skill_pnt_summ
+            # todo: Отправить доступные на данный момент перки
+            d['free_point_perks'] = agent_ex.role_class.start_free_point_perks - len(agent_ex.perks)
+            # print len(agent_ex.perks), agent_ex.perks
+            # d['perks'] = []
+            # for perk in self.application.reg['/rpg_settings/perks'].deep_iter():
+            #     if perk.can_apply(agent_ex):
+            #         d['perks'].append(
+            #             dict(
+            #                 perk=perk.as_client_dict(),
+            #                 active=perk in agent_ex.perks,
+            #             ))
 
-        # todo: Отправить доступные на данный момент перки
-        d['free_point_perks'] = agent_ex.role_class.start_free_point_perks - len(agent_ex.perks)
-        # print len(agent_ex.perks), agent_ex.perks
-        d['perks'] = []
-        for perk in self.application.reg['/rpg_settings/perks'].deep_iter():
-            if perk.can_apply(agent_ex):
-                d['perks'].append(
-                    dict(
-                        perk=perk.as_client_dict(),
-                        active=perk in agent_ex.perks,
-                    ))
+            # d['role_class_target_0'] = # todo: Для подсветки ролевого класса и навыка
         return d
 
     def _inc_skill(self, agent_ex):
@@ -87,13 +89,13 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
                 getattr(agent_ex, skill_name).value -= 1
 
         # Пройти по перкам агента и те, которые больше не подходят, выключить
-        del_list = []
-        for perk_node in agent_ex.perks:
-            perk = self.application.reg[perk_node]
-            if not perk.can_apply(agent_ex):
-                del_list.append(perk_node)
-        for perk_node in agent_ex.perks:
-            agent_ex.perks.remove(perk_node)
+        # del_list = []
+        # for perk_node in agent_ex.perks:
+        #     perk = self.application.reg[perk_node]
+        #     if not perk.can_apply(agent_ex):
+        #         del_list.append(perk_node)
+        # for perk_node in agent_ex.perks:
+        #     agent_ex.perks.remove(perk_node)
 
     def _set_perk(self, agent_ex):
         perk_node = self.get_argument('perk_node', None)
@@ -125,7 +127,8 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         if action == 'dec_skill':
             self._dec_skill(agent_ex)
         elif action == 'set_perk':
-            self._set_perk(agent_ex)
+            pass
+            # self._set_perk(agent_ex)
         else:
             pass
 

@@ -3,6 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
+import math
+
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr import TextAttribute, IntAttribute
@@ -20,4 +22,8 @@ class Skill(Root):
     mod = RegistryLink(default='reg://registry/rpg_settings/class_skill/empty_0', caption=u"Модификатор навыка", tags='client')
 
     def calc_value(self):
-        return self.value
+        # limit = self.mod.limit if self.mod.limit > 0 else self.limit
+        if self.mod.bonus_step > 0:
+            return self.value + math.floor(self.value / self.mod.bonus_step)
+        else:
+            return self.value

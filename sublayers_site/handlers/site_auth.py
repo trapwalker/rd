@@ -220,6 +220,18 @@ class StandardLoginHandler(BaseSiteHandler):
                 return
 
             agent_ex.role_class = role_class_ex
+            # Установка классового навыка
+            empty_skill_mod = self.application.reg['reg://registry/rpg_settings/class_skill/empty_0']
+            for skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                skill = getattr(agent_ex, skill_name)
+                skill.mod = empty_skill_mod
+
+            for class_skill_uri in role_class_ex.class_skills:
+                class_skill = self.application.reg[class_skill_uri]
+                if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                    skill = getattr(agent_ex, class_skill.target)
+                    skill.mod = class_skill
+
             user.avatar_link = avatar_link
             user.name = username
             user.registration_status = 'settings'
