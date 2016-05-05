@@ -42,16 +42,6 @@ class GetRPGInfoHandler(BaseSiteHandler):
 class GetUserRPGInfoHandler(BaseSiteHandler):
     def get_full_site_rpg_settings(self, agent_ex):
         d = dict()
-        # Отправить скилы для расчётов
-        d['pure_skills'] = dict(
-            driving=agent_ex.driving.value,
-            shooting=agent_ex.shooting.value,
-            masking=agent_ex.masking.value,
-            leading=agent_ex.leading.value,
-            trading=agent_ex.trading.value,
-            engineering=agent_ex.engineering.value,
-        )
-
         # Отправить скилы для отображения
         d['show_skills'] = dict(
             driving=agent_ex.driving.calc_value(),
@@ -62,10 +52,28 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             engineering=agent_ex.engineering.calc_value(),
         )
 
-        # Отправить доступные на данный момент навыки
-        # todo: разобраться со свободными очками, как они вычисляются или где храняться
+        skill_pnt_summ = agent_ex.driving.value + agent_ex.shooting.value + agent_ex.masking.value + \
+                             agent_ex.leading.value + agent_ex.trading.value + agent_ex.engineering.value
+        d['free_point_skills'] = agent_ex.role_class.start_free_point_skills - skill_pnt_summ
+
+        # todo: Отправить доступные на данный момент перки
         return d
-    
+
+    def _inc_skill(self, agent_ex):
+        skill_name = self.get_argument('skill_name', None)
+        if skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+            skill_pnt_summ = agent_ex.driving.value + agent_ex.shooting.value + agent_ex.masking.value + \
+                             agent_ex.leading.value + agent_ex.trading.value + agent_ex.engineering.value
+            role_class_points_available = agent_ex.role_class.start_free_point_skills
+            if role_class_points_available >= skill_pnt_summ + 1:
+                agent_ex[skill_name].value += 1
+
+    def _dec_skill(self, agent_ex):
+        skill_name = self.get_argument('skill_name', None)
+        if skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+            if agent_ex[skill_name].value >= 1:
+                agent_ex[skill_name].value -= 1
+
     @tornado.web.authenticated
     def post(self):
         action = self.get_argument('action', None)
@@ -75,27 +83,10 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             self.send_error(status_code=404)
             return         
 
-        if action == 'set_skills':
-            driving = self.get_argument('driving', None)
-            shooting = self.get_argument('shooting', None)
-            masking = self.get_argument('masking', None)
-            leading = self.get_argument('leading', None)
-            trading = self.get_argument('trading', None)
-            engineering = self.get_argument('engineering', None)
-            # todo: Проверить их на None
-
-            rqst_skill_pnt = driving + shooting + masking + leading + trading + engineering
-            role_class_points_available = 10  # todo: забрать из агента
-
-            if (rqst_skill_pnt <= role_class_points_available and driving >= 0 and shooting >= 0 and
-                        masking >= 0 and leading >= 0 and trading >= 0 and engineering >= 0):
-                agent_ex.driving.value = driving
-                agent_ex.shooting.value = shooting
-                agent_ex.masking.value = masking
-                agent_ex.leading.value = leading
-                agent_ex.trading.value = trading
-                agent_ex.engineering.value = engineering
-
+        if action == 'inc_skill':
+            self._inc_skill(agent_ex)
+        if action == 'dec_skill':
+            self._dec_skill(agent_ex)
         elif action == 'set_perk':
             # todo: установить перки, если возможно
             pass

@@ -257,57 +257,33 @@ function GetRPGInfo() {
 }
 
 
-function GetUserRPGInfo(action) {
+function GetUserRPGInfo(action, skill_name, perk_node) {
     // todo: разобраться с arguments, тогда сможем формировать легко и красиво data: {action: action + arguments}, и устанавливать скилы, перки, что угодно!!!!
 
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_user_rpg_info',
         method: 'POST',
-        data: {action: action},
+        data: {
+            action: action,
+            skill_name: skill_name,
+            perl_node: perk_node
+        },
         success: function (data) {
             console.log(data);
-
-            // Записать pure_skills в "модель",  - то, что будем отправлять на сервер, например
-            for (var key in data.pure_skills)
-                if (data.pure_skills.hasOwnProperty(key)) {
-                    reg2_skills[key] = data.pure_skills[key];
-                }
-
 
             // Отобразить show_skills в вёрстку
             for(var key in data.show_skills)
                 if (data.show_skills.hasOwnProperty(key)){
                     $('#reg2_' + key).text(data.show_skills[key]);
                 }
+
+            // Записываем свободные очки
+            reg2_skill_point = data.free_point_skills;
+            $('#reg2_free_skils').text(reg2_skill_point);
+
         }
     });
 }
 
-
-
-//function start_site() {
-//    console.log('Start site ! ');
-//    setInterval(refresh_server_stat_request, 3000)
-//}
-//
-//function refresh_server_stat_request() {
-//    $.ajax({
-//            url: window.location.protocol + "//" + location.hostname + '/site_stat',
-//            success: refresh_server_stat_answer,
-//            error: refresh_server_stat_error
-//        });
-//}
-//
-//function refresh_server_stat_answer(data) {
-//    console.log(data);
-//    $('#srvStatAgents').text(data.s_agents_on);
-//    $('#srvStatUnits').text(data.s_units_on);
-//}
-//
-//function refresh_server_stat_error(data) {
-//    console.log(data);
-//    $('#srvStatAgents').text('-');
-//    $('#srvStatUnits').text('-');
-//}
 
 

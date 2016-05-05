@@ -191,8 +191,7 @@ class StandardLoginHandler(BaseSiteHandler):
             class_index = self.get_argument('class_index', None)
             class_node_hash = self.get_argument('class_node_hash', None)
 
-
-            #todo: проверить ник на допустимые символы, аватар и класс на допустимые значения
+            # todo: проверить ник на допустимые символы
             if ((avatar_index is None) or (class_index is None) or (class_node_hash is None) or
                     (username is None) or (not isinstance(username, basestring)) or
                     (username == '') or (len(username) > 100)):
@@ -202,6 +201,11 @@ class StandardLoginHandler(BaseSiteHandler):
             # Проверяем свободен ли ник
             if (user.name != username) and (yield User.get_by_name(name=username)):
                 self.finish({'status': 'fail_exist_nickname'})
+                return
+
+            agent_ex = self.application.reg_agents.get([str(user._id)])
+            if agent_ex is None:
+                self.send_error(status_code=404)
                 return
 
             # Получаем ссылку на аватар
@@ -214,11 +218,12 @@ class StandardLoginHandler(BaseSiteHandler):
             except:
                 self.finish({'status': 'fail_wrong_input'})
                 return
-            # todo: Где хранить аватарку и role_class_ex ?! Решить!
 
+            agent_ex.role_class = role_class_ex
+            user.avatar_link = avatar_link
             user.name = username
             user.registration_status = 'settings'
-            #todo: внести информацию об аватаре и классе
+            self.application.reg_agents.save_node(agent_ex)
             yield user.save()
             self.finish({'status': 'success'})
 

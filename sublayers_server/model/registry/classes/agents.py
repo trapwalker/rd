@@ -42,6 +42,7 @@ class Agent(Root):
 
     # Механизм скилов
     experience_table = RegistryLink(caption=u"Таблица опыта")
+    role_class = RegistryLink(caption=u"Ролевой класс")
 
     driving = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык вождения", tags='skill')
     shooting = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык стрельбы", tags='skill')

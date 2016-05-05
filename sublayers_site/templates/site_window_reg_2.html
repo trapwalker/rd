@@ -102,47 +102,20 @@
 
 <script>
     // Механизм настройки скилов
-    var reg2_skills = {
-        all: 10,
-        cur: 10,
-        driving: 0,
-        shooting: 0,
-        masking: 0,
-        engineering: 0,
-        trading: 0,
-        leading: 0
-    };
+    var reg2_skill_point = 0;
 
-    function Reg2SetCurrentSkills() {
-        // $('#reg2_free_skils').text(reg2_skills.cur);
-        // $('#reg2_driving').text(reg2_skills.driving);
-        // $('#reg2_shooting').text(reg2_skills.shooting);
-        // $('#reg2_masking').text(reg2_skills.masking);
-        // $('#reg2_engineering').text(reg2_skills.engineering);
-        // $('#reg2_trading').text(reg2_skills.trading);
-        // $('#reg2_leading').text(reg2_skills.leading);
-        GetUserRPGInfo('set_skills')
-    }
-    Reg2SetCurrentSkills();
+    GetUserRPGInfo();
 
     function Reg2IncSkill(btn) {
         var skill_name = $(btn).data('skill_name');
-        if ((skill_name == 'all') || (skill_name == 'cur')) return;
-        if (reg2_skills.hasOwnProperty(skill_name) && (reg2_skills.cur > 0)) {
-            reg2_skills[skill_name]++;
-            reg2_skills.cur--;
-            Reg2SetCurrentSkills();
+        if (reg2_skill_point > 0) {
+           GetUserRPGInfo('inc_skill', skill_name)
         }
     }
 
     function Reg2DecSkill(btn) {
         var skill_name = $(btn).data('skill_name');
-        if ((skill_name == 'all') || (skill_name == 'cur')) return;
-        if (reg2_skills.hasOwnProperty(skill_name) && (reg2_skills[skill_name] > 0)) {
-            reg2_skills[skill_name]--;
-            reg2_skills.cur++;
-            Reg2SetCurrentSkills();
-        }
+        GetUserRPGInfo('dec_skill', skill_name);
     }
 
     // Кнопки Вперед/Назад
