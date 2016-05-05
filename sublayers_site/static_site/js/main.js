@@ -196,7 +196,7 @@ function GetUserInfo() {
 
                 $('#RDSiteWReg3_Nickname').text(data.user_name);
 
-                var procent_length = 20 + 2 * data.user_name.length;
+                var procent_length = 20 + 4 * data.user_name.length;
                 procent_length = procent_length > 80 ? 80 : procent_length;
                 $('#RDSiteWReg3_Nickname').parent().width(procent_length + '%');
 
@@ -275,6 +275,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             for(var key in data.show_skills)
                 if (data.show_skills.hasOwnProperty(key)){
                     $('#reg2_' + key).text(data.show_skills[key]);
+                    $('#reg3_' + key).text(data.show_skills[key]);
                 }
 
             // Записываем свободные очки
@@ -284,7 +285,9 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             // Перки
             $('#reg2_free_perks').text(data.free_point_perks);
             var jq_perk_table = $('#re2_perk_table');
+            var jq_perk_chip_perk_list = $('#RDSiteWReg3_PerkList');
             jq_perk_table.empty();
+            jq_perk_chip_perk_list.empty();
 
             for (var i = 0; i < data.perks.length; i++) {
                 var perk_rec = data.perks[i];
@@ -294,7 +297,20 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                     '<div class="reg2-perk-table-checkbox-block">[' + (perk_rec.active ? '●' : ' ') +']</div>' +
                     '</div>');
                 jq_perk_table.append(jq_perk);
+
+                if (perk_rec.active) {
+                    var jq_perk_chip = $(
+                        '<div class="site-chip-content-line shift">' +
+                        '<div class="site-chip-content-line-text left">' + perk_rec.perk.title + '</div>' +
+                        '</div>'
+                    );
+                    jq_perk_chip_perk_list.append(jq_perk_chip);
+                }
             }
+
+            // Обновление чипа
+            $('#RDSiteWReg3_RoleClass').text(data.role_class_title);
+
 
         }
     });

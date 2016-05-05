@@ -123,13 +123,7 @@
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: {
-                action: 'next',
-                driving: reg2_skills.driving,
-                shooting: reg2_skills.shooting,
-                masking: reg2_skills.masking,
-                engineering: reg2_skills.engineering,
-                trading: reg2_skills.trading,
-                leading:reg2_skills.leading
+                action: 'next'
             },
             success: function(data) {
                 consoleWReg2.add_message('user', ' Активация процедуры регистрации.');

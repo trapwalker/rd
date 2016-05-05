@@ -42,6 +42,8 @@ class GetRPGInfoHandler(BaseSiteHandler):
 class GetUserRPGInfoHandler(BaseSiteHandler):
     def get_full_site_rpg_settings(self, agent_ex):
         d = dict()
+
+        d['role_class_title'] = agent_ex.role_class.title
         # Отправить скилы для отображения
         d['show_skills'] = dict(
             driving=agent_ex.driving.calc_value(),
@@ -58,11 +60,10 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
 
         # todo: Отправить доступные на данный момент перки
         d['free_point_perks'] = agent_ex.role_class.start_free_point_perks - len(agent_ex.perks)
-        print len(agent_ex.perks), agent_ex.perks
+        # print len(agent_ex.perks), agent_ex.perks
         d['perks'] = []
         for perk in self.application.reg['/rpg_settings/perks'].deep_iter():
             if perk.can_apply(agent_ex):
-                print perk.title
                 d['perks'].append(
                     dict(
                         perk=perk.as_client_dict(),
@@ -99,15 +100,15 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         if not perk_node:
             return
         perk = self.application.reg[perk_node]
-        print perk
+        # todo: Проверить работу включения и отключения перков
         if perk in agent_ex.perks:
             # Значит просто выключить
-            print 'delete perk !!!', perk
+            # print 'delete perk !!!', perk
             agent_ex.perks.remove(perk)
         else:
-            print 'Try to append perk', perk
+            # print 'Try to append perk', perk
             if (agent_ex.role_class.start_free_point_perks - len(agent_ex.perks) > 0) and perk.can_apply(agent_ex):
-                print 'Add perk', perk
+                # print 'Add perk', perk
                 agent_ex.perks.append(perk_node)
 
     @tornado.web.authenticated
