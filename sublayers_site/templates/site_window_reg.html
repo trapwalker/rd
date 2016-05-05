@@ -137,8 +137,6 @@
         }
     }
 
-
-
     function RegisterBtnClick() {
         var email = document.getElementById('reg_email').value;
         var password = document.getElementById('reg_password').value;
@@ -151,7 +149,7 @@
                 action: 'reg'
             },
             success: function(data) {
-                consoleWReg.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg.add_message('user', 'Активация процедуры регистрации.');
                 if (data.status == 'success') {
                     consoleWReg.add_message('system', 'Успешно.');
                     GetUserInfo();

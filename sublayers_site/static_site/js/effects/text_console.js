@@ -49,13 +49,13 @@ var TextConsole = (function(){
 
         this._message_info = {
             user: {
-                print_speed_ms: 5,
+                print_speed_ms: 10,
                 after_print_delay: 0,
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
             },
             system: {
-                print_speed_ms: 5,
+                print_speed_ms: 10,
                 after_print_delay: 0,
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
@@ -282,7 +282,7 @@ var ConsoleWReg = (function (_super) {
             '       >                                              <\n' +
             '       >        Нюк Коммандер вер. ' + version + '         <\n' +
             '       >                                              <\n' +
-            '       >         Корпораця (К) Нукойл 2084 г.         <\n' +
+            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
             '       >                                              <\n' +
             '       ================================================'
         );
@@ -334,7 +334,7 @@ var ConsoleWReg1 = (function (_super) {
             placeholder: function() { return ''; }
         };
 
-        this.add_message('system', 'Корпораця Нукойл. вер.' + version);
+        this.add_message('system', 'Корпорация Нукойл. вер.' + version);
 
         textConsoleManager.add(this);
     }
@@ -368,7 +368,7 @@ var ConsoleWReg2 = (function (_super) {
             placeholder: function() { return ''; }
         };
 
-        this.add_message('system', 'Корпораця Нукойл. вер.' + version);
+        this.add_message('system', 'Корпорация Нукойл. вер.' + version);
 
         textConsoleManager.add(this);
     }
@@ -411,7 +411,7 @@ var ConsoleWStart = (function (_super) {
         this._messages = [
             {
                 sender:     'system',
-                message:    'Корпораця Нукойл. вер.5.06'
+                message:    'Корпорация Нукойл. вер.5.06'
             },
             {
                 sender:     'system',
