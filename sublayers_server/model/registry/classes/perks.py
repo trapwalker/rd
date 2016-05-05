@@ -37,8 +37,9 @@ class Perk(Root):
             for perk in self.perks_req:
                 if self.storage[perk] not in agent_ex.perks:
                     return False
-            # todo: Здесь проверка по role_class
-
+                # todo: Здесь проверка по role_class
+                if self.role_class_req and agent_ex.role_class.node_hash() != self.role_class_req.node_hash():
+                    return False
             return True
         return False
         
