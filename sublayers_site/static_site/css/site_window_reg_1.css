@@ -46,14 +46,14 @@
 }
 .reg1-path-up-text-input-block .reg1-path-label {
     position: relative;
-    width: 90px;
+    width: 50px;
     float: left;
     text-align: left;
     line-height: 24px;
     top: -2px;
 }
 .reg1-path-up-text-input-block input {
-    width: calc(100% - 90px);
+    width: calc(100% - 50px);
     border-width: 0;
     background-color: #082308;
     font-size: 12pt;

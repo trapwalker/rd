@@ -71,7 +71,7 @@
 <div class="person-info-chat-body-page">
     <div class="person-info-chat-person-up">
         <div class="person-info-chat-person-up-left">
-            <div class="site-avatar" style="background-image: url('{{ static_url(static_world_link_repr(agent_example.avatar_170_146)) }}');
+            <div class="site-avatar" style="background-image: url('{{ static_url(static_world_link_repr(curr_user.avatar_link)) }}');
                     background-size: contain;"></div>
         </div>
         <div class="person-info-chat-person-up-right">
@@ -82,7 +82,7 @@
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">Класс:</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">Избранный</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.role_class.description }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">Карма:</div>

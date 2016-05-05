@@ -24,6 +24,6 @@ class Skill(Root):
     def calc_value(self):
         # limit = self.mod.limit if self.mod.limit > 0 else self.limit
         if self.mod.bonus_step > 0:
-            return self.value + math.floor(self.value / self.mod.bonus_step)
+            return self.value + int(math.floor(self.value / self.mod.bonus_step))
         else:
             return self.value

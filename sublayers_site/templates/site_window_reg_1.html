@@ -4,11 +4,11 @@
         <div class="window-reg1-path">
             <div class="window-qg-content-header-block">
                 <div class=" window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Имя и фото</div>
+                    <div class="window-qg-content-header buttons-and-headers">Ник и аватар</div>
                 </div>
             </div>
             <div class="reg1-path-up-text-input-block">
-                <div class="reg1-path-label">NICKNAME></div>
+                <div class="reg1-path-label">НИК></div>
                 <input type="text" id="reg1_username" autocomplete="off" onclick="Reg1NicknameClick()">
             </div>
             <div class="reg1-path-avatar-list">
@@ -86,7 +86,7 @@
         $('.reg1-path-class-item').css('display', 'none');
         $('#reg1_class_' + reg1_current_class).css('display', 'block');
 
-        var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].title : '';
+        var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].description : '';
         $('#reg1_class_name_text').text(name);
     }
 

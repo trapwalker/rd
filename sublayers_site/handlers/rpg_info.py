@@ -26,6 +26,8 @@ class GetRPGInfoHandler(BaseSiteHandler):
         class_list = []
         for role_class in self.application.reg['/rpg_settings/role_class'].deep_iter():
             class_list.append(dict(
+                description=role_class.description,
+                console_description=role_class.console_description,
                 title=role_class.title,
                 fp_skills=role_class.start_free_point_skills,
                 fp_perks=role_class.start_free_point_perks,

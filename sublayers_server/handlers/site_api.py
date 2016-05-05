@@ -90,14 +90,14 @@ class APIGetUserInfoHandler(BaseHandler):
             user_info['balance'] = agent.example.balance
             # todo: сделать пересылку правильных параметров
             user_info['lvl'] = '5'
-            user_info['class'] = u'Избранный'
+            user_info['class'] = agent.example.role_class.description
             user_info['karma'] = '138'
 
             template_agent_info = tornado.template.Loader(
                     "templates/person",
                     namespace=self.get_template_namespace()
             ).load("person_site_info.html")
-            html_agent = template_agent_info.generate(agent_example=agent.example, with_css=False)
+            html_agent = template_agent_info.generate(agent_example=agent.example, with_css=False, curr_user=user)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent.example.car

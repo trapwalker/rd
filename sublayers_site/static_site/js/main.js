@@ -222,6 +222,8 @@ function GetUserInfo() {
     });
 }
 
+var getRPGInfo_last = null;
+
 function GetRPGInfo() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
@@ -229,7 +231,7 @@ function GetRPGInfo() {
         data: {},
         success: function (data) {
             console.log(data);
-
+            getRPGInfo_last = data;
 
             // Установка аватаров:
             var avatar_container = $('.reg1-path-avatar-list').first();
