@@ -41,6 +41,7 @@ class GetUserInfoHandler(BaseSiteHandler):
             'position': agent_info.get('position', 0),
             'ordinal_number': None if user is None else user.ordinal_number,
             'created': created,
+            'avatar_link': user.avatar_link,
         })
 
 

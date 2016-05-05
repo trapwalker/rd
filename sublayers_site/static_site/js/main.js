@@ -202,6 +202,8 @@ function GetUserInfo() {
 
                 $('#RDSiteWReg3_UserBalance').text(data.user_balance);
 
+                $('#RDSiteWReg3_AvatarBlock').css('background-image', 'url(' + data.avatar_link + ')');
+
                 // todo: считать перки и навыки
             }
 
