@@ -291,22 +291,24 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             jq_perk_table.empty();
             jq_perk_chip_perk_list.empty();
 
-            for (var i = 0; i < data.perks.length; i++) {
-                var perk_rec = data.perks[i];
-                var jq_perk = $(
-                    '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '" onclick="Reg2PerkClick(`' + perk_rec.perk.node_hash + '`)">' +
-                    '<div class="reg2-perk-table-label">' + perk_rec.perk.title + '</div>' +
-                    '<div class="reg2-perk-table-checkbox-block">[' + (perk_rec.active ? '●' : ' ') +']</div>' +
-                    '</div>');
-                jq_perk_table.append(jq_perk);
+            if (data.perks) {
+                for (var i = 0; i < data.perks.length; i++) {
+                    var perk_rec = data.perks[i];
+                    var jq_perk = $(
+                        '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '" onclick="Reg2PerkClick(`' + perk_rec.perk.node_hash + '`)">' +
+                        '<div class="reg2-perk-table-label">' + perk_rec.perk.title + '</div>' +
+                        '<div class="reg2-perk-table-checkbox-block">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
+                        '</div>');
+                    jq_perk_table.append(jq_perk);
 
-                if (perk_rec.active) {
-                    var jq_perk_chip = $(
-                        '<div class="site-chip-content-line shift">' +
-                        '<div class="site-chip-content-line-text left">' + perk_rec.perk.title + '</div>' +
-                        '</div>'
-                    );
-                    jq_perk_chip_perk_list.append(jq_perk_chip);
+                    if (perk_rec.active) {
+                        var jq_perk_chip = $(
+                            '<div class="site-chip-content-line shift">' +
+                            '<div class="site-chip-content-line-text left">' + perk_rec.perk.title + '</div>' +
+                            '</div>'
+                        );
+                        jq_perk_chip_perk_list.append(jq_perk_chip);
+                    }
                 }
             }
 
