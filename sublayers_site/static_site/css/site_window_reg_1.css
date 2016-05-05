@@ -23,7 +23,7 @@
 
 .window-reg1-class-name {
     position: relative;
-    margin: auto;
+    margin: -8px auto 0 auto;
     text-align: center;
 }
 
@@ -77,7 +77,7 @@
     position: relative;
     width: 280px;
     height: 170px;
-    margin: 0 auto;
+    margin: 5px auto;
 }
 
 .reg1-path-class-item {
@@ -126,9 +126,11 @@
     }
     .reg1-path-up-text-input-block .reg1-path-label { line-height: 20px; top: 0; }
 
+    .window-reg1-class-name { margin: -8px auto 0 auto; }
+
     .reg1-path-avatar-list { transform: scale(0.71); margin: -10px auto; }
 
-    .reg1-path-class-list { transform: scale(0.71); margin: -10px auto; }
+    .reg1-path-class-list { transform: scale(0.71); margin: -17px auto; }
 
     .reg1-btn { bottom: 4px; }
     .reg1-btn-back { left: 7px; width: calc(23% - 1px); }
