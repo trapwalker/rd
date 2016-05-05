@@ -281,6 +281,21 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             reg2_skill_point = data.free_point_skills;
             $('#reg2_free_skils').text(reg2_skill_point);
 
+            // Перки
+            $('reg2_free_perks').text(data.free_point_perks);
+            var jq_perk_table = $('#re2_perk_table');
+            jq_perk_table.empty();
+
+            for (var i = 0; i < data.perks.length; i++) {
+                var perk_rec = data.perks[i];
+                var jq_perk = $(
+                    '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '" onclick="Reg2PerkClick(`' + perk_rec.perk.node_hash + '`)">' +
+                    '<div class="reg2-perk-table-label">' + perk_rec.perk.title + '</div>' +
+                    '<div class="reg2-perk-table-checkbox-block">[' + (perk_rec.active ? '●' : ' ') +']</div>' +
+                    '</div>');
+                jq_perk_table.append(jq_perk);
+            }
+
         }
     });
 }

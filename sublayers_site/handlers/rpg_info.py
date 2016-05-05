@@ -57,6 +57,17 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         d['free_point_skills'] = agent_ex.role_class.start_free_point_skills - skill_pnt_summ
 
         # todo: Отправить доступные на данный момент перки
+        d['free_point_perks'] = agent_ex.role_class.start_free_point_perks - len(agent_ex.perks)
+
+        d['perks'] = []
+        for perk in self.application.reg['/rpg_settings/perks'].deep_iter():
+            if perk.can_apply(agent_ex):
+                print perk.title
+                d['perks'].append(
+                    dict(
+                        perk=perk.as_client_dict(),
+                        active=perk in agent_ex.perks,
+                    ))
         return d
 
     def _inc_skill(self, agent_ex):
@@ -74,6 +85,27 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             if getattr(agent_ex, skill_name).value >= 1:
                 getattr(agent_ex, skill_name).value -= 1
 
+        # Пройти по перкам агента и те, которые больше не подходят, выключить
+        del_list = []
+        for perk_node in agent_ex.perks:
+            perk = self.application.reg[perk_node]
+            if not perk.can_apply(agent_ex):
+                del_list.append(perk_node)
+        for perk_node in agent_ex.perks:
+            agent_ex.perks.remove(perk_node)
+
+    def _set_perk(self, agent_ex):
+        perk_node = self.get_argument('perk_node', None)
+        if not perk_node:
+            return
+        perk = self.application.reg[perk_node]
+        if perk in agent_ex.perks:
+            # Значит просто выключить
+            agent_ex.perks.remove(perk)
+        else:
+            if (agent_ex.role_class.start_free_point_perks - len(agent_ex.perks) > 0) and perk.can_apply(agent_ex):
+                agent_ex.perks.append(perk_node)
+
     @tornado.web.authenticated
     def post(self):
         action = self.get_argument('action', None)
@@ -88,8 +120,7 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         if action == 'dec_skill':
             self._dec_skill(agent_ex)
         elif action == 'set_perk':
-            # todo: установить перки, если возможно
-            pass
+            self._set_perk(agent_ex)
         else:
             pass
 

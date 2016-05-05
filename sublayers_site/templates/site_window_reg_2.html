@@ -68,23 +68,8 @@
                     <div class="window-qg-content-header buttons-and-headers" data-block_name="perks">Способности</div>
                 </div>
             </div>
-            <div class="reg2-perk-table">
-                <div class="reg2-table-line odd">
-                    <div class="reg2-perk-table-label">Название перка 1</div>
-                    <div class="reg2-perk-table-checkbox-block">[ ]</div>
-                </div>
-                <div class="reg2-table-line">
-                    <div class="reg2-perk-table-label">Название перка 2</div>
-                    <div class="reg2-perk-table-checkbox-block">[●]</div>
-                </div>
-                <div class="reg2-table-line odd">
-                    <div class="reg2-perk-table-label">Название перка 3</div>
-                    <div class="reg2-perk-table-checkbox-block">[ ]</div>
-                </div>
-                <div class="reg2-table-line">
-                    <div class="reg2-perk-table-label">Название перка 4</div>
-                    <div class="reg2-perk-table-checkbox-block">[ ]</div>
-                </div>
+            <div id="re2_perk_table" class="reg2-perk-table">
+
             </div>
             <div class="reg2-path-footer">
                 <div class="reg2-perk-table-label">Свободные очки:</div>
@@ -118,9 +103,14 @@
         GetUserRPGInfo('dec_skill', skill_name);
     }
 
+    function Reg2PerkClick(node_hash) {
+        console.log(node_hash);
+        GetUserRPGInfo('set_perk', null, node_hash);
+    }
+
     // Кнопки Вперед/Назад
     function Reg2NextBtnClick() {
-        if (reg2_skills.cur != 0) {
+        if (reg2_skill_point != 0) {
             consoleWReg2.add_message('user', 'Создание образа карточки Нукойл.');
             consoleWReg2.add_message('system',
                     '> Ошибка. Обнаружены нераспределенные очки.\n\n' +

@@ -84,6 +84,8 @@
     box-sizing: border-box;
 }
 
+.reg2-perk-table .reg2-table-line { cursor: pointer; }
+
 .reg2-perk-table-label {
     position: relative;
     padding-left: 10px;
