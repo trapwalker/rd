@@ -66,13 +66,13 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
                              agent_ex.leading.value + agent_ex.trading.value + agent_ex.engineering.value
             role_class_points_available = agent_ex.role_class.start_free_point_skills
             if role_class_points_available >= skill_pnt_summ + 1:
-                agent_ex[skill_name].value += 1
+                getattr(agent_ex, skill_name).value += 1
 
     def _dec_skill(self, agent_ex):
         skill_name = self.get_argument('skill_name', None)
         if skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-            if agent_ex[skill_name].value >= 1:
-                agent_ex[skill_name].value -= 1
+            if getattr(agent_ex, skill_name).value >= 1:
+                getattr(agent_ex, skill_name).value -= 1
 
     @tornado.web.authenticated
     def post(self):
