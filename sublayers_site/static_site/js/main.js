@@ -269,9 +269,11 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
 
                         if (key == data.role_class_target_0) {
                             $('#reg2_' + key).parent().parent().find('.reg2-skill-table-label span').addClass('decorator');
+                            $('#reg2_' + key).addClass('decorator')
                         }
                         else {
                             $('#reg2_' + key).parent().parent().find('.reg2-skill-table-label span').removeClass('decorator');
+                            $('#reg2_' + key).removeClass('decorator');
                         }
                     }
 

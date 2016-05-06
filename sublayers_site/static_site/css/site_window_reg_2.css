@@ -86,6 +86,8 @@
 
 .reg2-perk-table .reg2-table-line { cursor: pointer; }
 
+.reg2-table-line .decorator {text-decoration: underline;}
+
 .reg2-perk-table-label {
     position: relative;
     padding-left: 10px;
@@ -94,8 +96,6 @@
     width: 85%;
     height: 100%;
 }
-
-.reg2-skill-table-label span.decorator {text-decoration: underline;}
 
 .reg2-perk-table-checkbox-block {
     position: relative;
