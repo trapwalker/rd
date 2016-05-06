@@ -156,7 +156,7 @@
     // Подсказки на клики по шапкам блоков
     $('.reg2-skill-table-label').click(function() {
         var skill_name = $(this).data('skill_name');
-        consoleWReg2.add_message('user', 'Загрузка навыка:');
+        consoleWReg2.add_message('user', 'Загрузка навыка:', true);
         switch (skill_name) {
             case 'driving':
                 consoleWReg2.add_message('system',
@@ -212,7 +212,7 @@
     // Подсказки на клики по скилам
     $('#RDSiteWReg2').find('.window-qg-content-header').click(function() {
         var block_name = $(this).data('block_name');
-        consoleWReg2.add_message('user', 'Загрузка характеристик:');
+        consoleWReg2.add_message('user', 'Загрузка характеристик:', true);
         switch (block_name) {
             case 'skills':
                 consoleWReg2.add_message('system',

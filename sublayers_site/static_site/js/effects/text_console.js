@@ -49,13 +49,13 @@ var TextConsole = (function(){
 
         this._message_info = {
             user: {
-                print_speed_ms: 10,
+                print_speed_ms: 2.5,
                 after_print_delay: 0,
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
             },
             system: {
-                print_speed_ms: 10,
+                print_speed_ms: 1,
                 after_print_delay: 0,
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
@@ -82,11 +82,31 @@ var TextConsole = (function(){
         this._interval = null;
     }
 
-    TextConsole.prototype.add_message = function(sender, message) {
+    TextConsole.prototype._replaceAt=function(str, index, character) {
+        return str.substr(0, index) + character + str.substr(index + character.length);
+    };
+
+    TextConsole.prototype.add_message = function(sender, message, interrupt) {
+        if (interrupt) this.interrupt();
         if (this._message_info.hasOwnProperty(sender))
             this._messages.push({ sender: sender, message: message});
         else
             console.warn('Неизвестный тип отправителя sender=', sender);
+    };
+
+    TextConsole.prototype.interrupt = function() {
+        this._messages = [];
+
+        if (((this._cur_message_len - this._cur_symbol) > 3) && (this._cur_message) && (this._cur_message.message)) {
+            this._cur_message_len = this._cur_symbol + 3;
+            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 0, '.');
+            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 1, '.');
+            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 2, '.');
+            this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
+        }
+
+        if ((this._cur_message) && (this._cur_message.message))
+            this._messages.push({ sender: 'system', message: 'Прервано.'});
     };
 
     TextConsole.prototype._state_print_text = function(self) {
@@ -95,7 +115,6 @@ var TextConsole = (function(){
         if (self._cur_symbol == 0) {
             if (!self._is_first) self._text += '\n';
             self._text += self._cur_message.message_type.placeholder();
-            self._cur_message_len = self._cur_message.message.length;
             self.target_div.text(self._text + '█');
             self.target_div.scrollTop(self.target_div.get(0).scrollHeight);
         }
@@ -122,6 +141,7 @@ var TextConsole = (function(){
         // Сообщение выведено
         self._cur_delay = 0;
         self._final_indicator_state = false;
+        self._cur_message.message = '';
         self._state_after_print_delay(self);
     };
 
@@ -158,7 +178,6 @@ var TextConsole = (function(){
         }
 
         // Перейти в состояния печати сообщения
-        self._cur_symbol = 0;
         self._state_print_text(self)
     };
 
@@ -186,9 +205,13 @@ var TextConsole = (function(){
             self._cur_message = self._messages.shift();
             self._cur_message.message_type = self._message_info[self._cur_message.sender];
             self._cur_delay = 0;
+            self._cur_symbol = 0;
+            self._cur_message_len = self._cur_message.message.length;
             self._state_before_print_delay(self);
             return;
         }
+        else
+            self._cur_message = null;
 
         // Если строк нет, то печатать мигающий финальный символ
         self._state_print_final_indicator(self);
@@ -266,10 +289,10 @@ var ConsoleWReg = (function (_super) {
             return '\n[' + hh_str + ':' + mm_str + ']: ';
         };
         this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
+        this._message_info.system.after_print_delay = 2.5;
+        this._message_info.system.before_print_delay = 2.5;
         this._message_info.welcome = {
-            print_speed_ms: 5,
+            print_speed_ms: 1,
             after_print_delay: 0,
             before_print_delay: 0,
             placeholder: function() { return ''; }
@@ -325,10 +348,10 @@ var ConsoleWReg1 = (function (_super) {
             return '\n[' + hh_str + ':' + mm_str + ']: ';
         };
         this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
+        this._message_info.system.after_print_delay = 2.5;
+        this._message_info.system.before_print_delay = 2.5;
         this._message_info.welcome = {
-            print_speed_ms: 5,
+            print_speed_ms: 1,
             after_print_delay: 0,
             before_print_delay: 0,
             placeholder: function() { return ''; }
@@ -359,10 +382,10 @@ var ConsoleWReg2 = (function (_super) {
             return '\n[' + hh_str + ':' + mm_str + ']: ';
         };
         this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
+        this._message_info.system.after_print_delay = 2.5;
+        this._message_info.system.before_print_delay = 2.5;
         this._message_info.welcome = {
-            print_speed_ms: 5,
+            print_speed_ms: 1,
             after_print_delay: 0,
             before_print_delay: 0,
             placeholder: function() { return ''; }
@@ -384,8 +407,8 @@ var ConsoleWPI = (function (_super) {
         this.target_div = $('#RDSitePIConsole');
         this.page_id = 'RDSiteWReg';
         this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
+        this._message_info.system.after_print_delay = 2.5;
+        this._message_info.system.before_print_delay = 2.5;
         this._message_info.user.placeholder = function() {
             var data = new Date();
             var hh_str = data.getHours().toString();

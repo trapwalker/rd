@@ -69,6 +69,7 @@
     var reg1_class_count = 0;
     var reg1_current_class = 0;
     var role_class_list_info = [];
+    var reg1_first_interrupt = false;
     SetCurrentClass();
 
     function SlideLeftClassList() {
@@ -92,19 +93,20 @@
         var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].description : '';
         $('#reg1_class_name_text').text(name);
 
-        var ll = role_class_list_info[reg1_current_class].console_description.split('\\n');
-        var sss = '';
-        for (var i = 0; i < ll.length; i++) {
-            sss = sss + ll[i] + '\n';
-        }
+        var line_list = role_class_list_info[reg1_current_class].console_description.split('\\n');
+        var multi_line = '';
+        for (var i = 0; i < line_list.length; i++)
+            multi_line = multi_line + line_list[i] + '\n';
 
-        consoleWReg1.add_message('user', 'Загрузка класса.');
+        consoleWReg1.add_message('user', 'Загрузка класса.', reg1_first_interrupt);
         consoleWReg1.add_message('system',
             'Успешно.\n\n' +
             '--------------------------------------------------------------\n' +
-            sss +
+            multi_line +
             '--------------------------------------------------------------'
         );
+
+        reg1_first_interrupt = true;
     }
 
     // Подсказка на клик по никнейму
@@ -112,7 +114,7 @@
 
     function Reg1NicknameClick() {
         if ((reg1_last_input_click != 'Reg1NicknameClick') && (consoleWReg1)) {
-            consoleWReg1.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg1.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
             consoleWReg1.add_message('system',
                 'Успешно.\n\n' +
                 '--------------------------------------------------------------\n' +
@@ -141,7 +143,7 @@
             },
             success: function(data) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 if (data.status == 'success') {
                     consoleWReg1.add_message('system', 'Успешно.');
                     GetUserInfo();
@@ -166,7 +168,7 @@
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_' + Math.floor(Math.random() * 1.99));
             }
@@ -184,7 +186,7 @@
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_' + Math.floor(Math.random() * 1.99));
             }

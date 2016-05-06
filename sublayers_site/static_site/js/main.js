@@ -225,8 +225,6 @@ function GetRPGInfo() {
         method: 'POST',
         data: {},
         success: function (data) {
-            console.log(data);
-
             // Установка аватаров:
             var avatar_container = $('.reg1-path-avatar-list').first();
             avatar_container.empty();

@@ -55,7 +55,7 @@
 
     function VKClick() {
         if ((reg_last_input_click != 'VKClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Подключение через vk.com');
+            consoleWReg.add_message('user', 'Подключение через vk.com', true);
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'VKClick';
         }
@@ -64,7 +64,7 @@
 
     function FBClick() {
         if ((reg_last_input_click != 'FBClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Подключение через facebook.com');
+            consoleWReg.add_message('user', 'Подключение через facebook.com', true);
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'FBClick';
         }
@@ -73,7 +73,7 @@
 
     function OKClick() {
         if ((reg_last_input_click != 'OKClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Подключение через ok.ru');
+            consoleWReg.add_message('user', 'Подключение через ok.ru', true);
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'OKClick';
         }
@@ -82,7 +82,7 @@
 
     function GClick() {
         if ((reg_last_input_click != 'GClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Подключение через plus.google.com');
+            consoleWReg.add_message('user', 'Подключение через plus.google.com', true);
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'GClick';
         }
@@ -91,7 +91,7 @@
 
     function RegEmailClick() {
         if ((reg_last_input_click != 'RegEmailClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
                     '--------------------------------------------------------------\n' +
@@ -103,7 +103,7 @@
 
     function AuthEmailClick() {
         if ((reg_last_input_click != 'AuthEmailClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
                     '--------------------------------------------------------------\n' +
@@ -115,7 +115,7 @@
 
     function RegPasswordClick() {
         if ((reg_last_input_click != 'RegPasswordClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
                     '--------------------------------------------------------------\n' +
@@ -127,7 +127,7 @@
 
     function AuthPasswordClick() {
         if ((reg_last_input_click != 'AuthPasswordClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
             consoleWReg.add_message('system',
                     'Успешно.\n\n' +
                     '--------------------------------------------------------------\n' +
@@ -149,7 +149,7 @@
                 action: 'reg'
             },
             success: function(data) {
-                consoleWReg.add_message('user', 'Активация процедуры регистрации.');
+                consoleWReg.add_message('user', 'Активация процедуры регистрации.', true);
                 if (data.status == 'success') {
                     consoleWReg.add_message('system', 'Успешно.');
                     GetUserInfo();
@@ -172,7 +172,7 @@
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                consoleWReg.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_' + Math.floor(Math.random() * 1.99));
             }
@@ -191,7 +191,7 @@
                 action: 'auth'
             },
             success: function(data) {
-                consoleWReg.add_message('user', 'Активация процедуры авторизации.');
+                consoleWReg.add_message('user', 'Активация процедуры авторизации.', true);
                 if (data.status == 'success') {
                     consoleWReg.add_message('system', 'Успешно.');
                     GetUserInfo();
@@ -206,7 +206,7 @@
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                consoleWReg.add_message('user', 'Активация процедуры авторизации.');
+                consoleWReg.add_message('user', 'Активация процедуры авторизации.', true);
                 consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_0');
             }
@@ -214,7 +214,7 @@
     }
 
     function RestorePasswordBtnClick() {
-        consoleWReg.add_message('user', 'Активация процедуры восстановления доступа.');
+        consoleWReg.add_message('user', 'Активация процедуры восстановления доступа.', true);
         consoleWReg.add_message('system', 'Функция недоступна.');
         audioManager.play('error_0');
     }
