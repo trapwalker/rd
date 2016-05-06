@@ -35,7 +35,7 @@
             <div class="slide-arrow right" onclick="SlideRightClassList()"></div>
         </div>
         <div class="window-reg1-console-wrap">
-            <div id="RDSiteWReg1Console" class="console-block"></div>
+            <div id="RDSiteWReg1Console" class="console-block reg-main-console"></div>
         </div>
         <div class="reg1-btn buttons-and-headers reg1-btn-back" onclick="Reg1BackBtnClick()">Назад</div>
         <div class="reg1-btn buttons-and-headers reg1-btn-next" onclick="Reg1NextBtnClick()">Далее</div>
@@ -70,7 +70,6 @@
     var reg1_current_class = 0;
     var role_class_list_info = [];
     var reg1_first_interrupt = false;
-    SetCurrentClass();
 
     function SlideLeftClassList() {
         reg1_current_class--;
@@ -153,17 +152,17 @@
                 if (data.status == 'fail_wrong_input') {
                     consoleWReg1.add_message('system',
                             'Ошибка приема данных.\n\n' +
-                            'Введен некорректный NICKNAME, класс или фото персонажа.\n\n' +
+                            'Введен некорректный ник, класс или фото персонажа.\n\n' +
                             '--------------------------------------------------------------\n' +
-                            'Введите корректный NICKNAME.\n' +
-                            'Выберите фото персонажа.\n' +
+                            'Введите корректный ник.\n' +
+                            'Выберите аватар персонажа.\n' +
                             'Выберите класс персонажа.\n' +
                             '--------------------------------------------------------------');
                 }
                 if (data.status == 'fail_exist_nickname') {
                     consoleWReg1.add_message('system',
                             'Ошибка приема данных.\n\n' +
-                            'Пользователь с таким NICKNAME уже существует.');
+                            'Пользователь с таким ником уже существует.');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

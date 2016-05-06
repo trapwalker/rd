@@ -20,11 +20,11 @@ function main() {
     indicatorBlink = new IndicatorBlink();
     //textBlurBlink = new TextBlurBlink();
 
-    // Получить текущего пользователя
-    GetUserInfo();
-
     // Получить стартовые ролевые классы и аватарки
     GetRPGInfo();
+
+    // Получить текущего пользователя
+    GetUserInfo();
 
     // Инициализация анимации платы
     var plate_img = new Image();
@@ -151,7 +151,6 @@ function GetUserInfo() {
         data: {},
         success: function (data) {
             registration_status = data.user_status;
-
             if (registration_status == 'register') {
                 var pos_x = '';
                 var pos_y = '';
@@ -179,8 +178,6 @@ function GetUserInfo() {
                 $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
                 $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
             }
-
-
             if (registration_status == 'chip') {
                 var ordinal_number = 1000000000 + data.ordinal_number;
                 ordinal_number = ordinal_number.toString();
@@ -204,9 +201,12 @@ function GetUserInfo() {
 
                 // todo: считать перки и навыки
             }
-
             if (registration_status == 'settings') {
                 GetUserRPGInfo();
+            }
+            if (registration_status == 'nickname') {
+                SetCurrentAvatar();
+                SetCurrentClass();
             }
 
             // Переход на следующую страницу
@@ -234,7 +234,6 @@ function GetRPGInfo() {
                 avatar_container.append(d);
                 d.css('background-image', 'url(' + data.avatar_list[i] + ')');
             }
-            SetCurrentAvatar();
 
             // Установка классов
             var role_class_container = $('.reg1-path-class-list').first();
@@ -246,7 +245,6 @@ function GetRPGInfo() {
                 role_class_container.append(d);
                 d.css('background-image', 'url(' + role_class_list_info[i].icon + ')');
             }
-            SetCurrentClass();
         }
     });
 }
@@ -310,6 +308,11 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                 }
                 // Обновление чипа
                 $('#RDSiteWReg3_RoleClass').text(data.role_class_title);
+
+                if (registration_status == 'nickname') {
+                    SetCurrentAvatar();
+                    SetCurrentClass();
+                }
             }
         }
     });
