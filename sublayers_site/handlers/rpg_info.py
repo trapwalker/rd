@@ -45,6 +45,7 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
     def get_full_site_rpg_settings(self, agent_ex):
         d = dict()
         if agent_ex.role_class:
+            d['status'] = 'success'
             d['role_class_title'] = agent_ex.role_class.title
             # Отправить скилы для отображения
             d['show_skills'] = dict(
@@ -73,6 +74,8 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             #             ))
 
             # d['role_class_target_0'] = # todo: Для подсветки ролевого класса и навыка
+        else:
+             d['status'] = 'Agent Role class not found'
         return d
 
     def _inc_skill(self, agent_ex):
@@ -121,7 +124,7 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         user = self.current_user
         agent_ex = self.application.reg_agents.get([str(user._id)])
         if agent_ex is None:
-            self.send_error(status_code=404)
+            self.finish({'status': 'Agent not found'})
             return         
 
         if action == 'inc_skill':

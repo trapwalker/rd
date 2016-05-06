@@ -88,6 +88,9 @@
 
         var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].description : '';
         $('#reg1_class_name_text').text(name);
+        if (getRPGInfo_last) {
+            console.log(getRPGInfo_last['class_list'][reg1_current_class].console_description)
+        }
     }
 
     // Подсказка на клик по никнейму
