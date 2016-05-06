@@ -268,6 +268,13 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                     if (data.show_skills.hasOwnProperty(key)) {
                         $('#reg2_' + key).text(data.show_skills[key]);
                         $('#reg3_' + key).text(data.show_skills[key]);
+
+                        if (key == data.role_class_target_0) {
+                            $('#reg2_' + key).parent().parent().find('.reg2-skill-table-label span').addClass('decorator');
+                        }
+                        else {
+                            $('#reg2_' + key).parent().parent().find('.reg2-skill-table-label span').removeClass('decorator');
+                        }
                     }
 
                 // Записываем свободные очки

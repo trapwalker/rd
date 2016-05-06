@@ -13,7 +13,7 @@ class GetRatingInfo(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
         # todo: принять в аргументе имя рейтинга и как-то обработтать это в поиске
-        rate_users = yield User.objects.filter({'quick': False}).limit(10).find_all()
+        rate_users = yield User.objects.filter({'quick': False, 'registration_status': 'register'}).limit(10).find_all()
         # # todo: Вывод их через шаблон, + отправка их количества, чтобы можно было как-то обработать на клиенте
         self.render('table_ratings.html', rate_users=rate_users)
 

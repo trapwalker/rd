@@ -95,6 +95,8 @@
     height: 100%;
 }
 
+.reg2-skill-table-label span.decorator {text-decoration: underline;}
+
 .reg2-perk-table-checkbox-block {
     position: relative;
     text-align: center;
