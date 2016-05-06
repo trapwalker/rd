@@ -18,15 +18,15 @@ var AudioObject = (function () {
     // Воспроизведение
     AudioObject.prototype.play = function (time, gain, callback, loop) {
         if (this.current_source) {
-            console.warn('Вызов play, без предварительного вызова stop ');
+            //console.warn('Вызов play, без предварительного вызова stop ');
         }
         if (! this.ready_to_play  || ! this.audio_buffer) {
-            console.warn('Вызов play до загрузки    audio_buffer not ready');
+            //console.warn('Вызов play до загрузки    audio_buffer not ready');
             this.play_on_load = true;
             return false;
         }
         if (this.is_playing) {
-            console.warn('Нехорошо (!!!) вызывать play, пока не закончился предыдущий');
+            //console.warn('Нехорошо (!!!) вызывать play, пока не закончился предыдущий');
         }
 
         this.gain(gain);

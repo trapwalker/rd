@@ -118,10 +118,12 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
                 # print 'Add perk', perk
                 agent_ex.perks.append(perk_node)
 
-    @tornado.web.authenticated
     def post(self):
         action = self.get_argument('action', None)
         user = self.current_user
+        if user is None:
+            self.finish({'status': 'User not auth'})
+            return
         agent_ex = self.application.reg_agents.get([str(user._id)])
         if agent_ex is None:
             self.finish({'status': 'Agent not found'})
