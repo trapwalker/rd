@@ -24,7 +24,8 @@ class GetRPGInfoHandler(BaseSiteHandler):
 
     def post(self):
         class_list = []
-        for role_class in self.application.reg['/rpg_settings/role_class'].deep_iter():
+        for role_class_link in self.application.reg['/world_settings'].values.get('role_class_order'):
+            role_class = self.application.reg[role_class_link]
             class_list.append(dict(
                 description=role_class.description,
                 console_description=role_class.console_description,
