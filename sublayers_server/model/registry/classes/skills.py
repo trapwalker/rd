@@ -21,9 +21,15 @@ class Skill(Root):
     limit = IntAttribute(default=100, caption=u"Предел прокачки навыка", tags='client')
     mod = RegistryLink(default='reg://registry/rpg_settings/class_skill/empty_0', caption=u"Модификатор навыка", tags='client')
 
+    def get_bonuses(self, v):
+        if v >= self.mod.bonus_step:
+            return v + self.get_bonuses(int(math.floor(v / self.mod.bonus_step)))
+        return v
+
     def calc_value(self):
         # limit = self.mod.limit if self.mod.limit > 0 else self.limit
         if self.mod.bonus_step > 0:
-            return self.value + int(math.floor(self.value / self.mod.bonus_step))
+            # return self.value + int(math.floor(self.value / self.mod.bonus_step))  # Классический рассчёт
+            return self.value + self.get_bonuses(int(math.floor(self.value / self.mod.bonus_step)))  # Расчёт бонусов на бонусы
         else:
             return self.value

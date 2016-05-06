@@ -208,7 +208,6 @@ function GetUserInfo() {
             }
 
             if (registration_status == 'settings') {
-                console.log('registration_status == settings');
                 GetUserRPGInfo();
             }
 
@@ -262,8 +261,6 @@ function GetRPGInfo() {
 
 
 function GetUserRPGInfo(action, skill_name, perk_node) {
-    // todo: разобраться с arguments, тогда сможем формировать легко и красиво data: {action: action + arguments}, и устанавливать скилы, перки, что угодно!!!!
-
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_user_rpg_info',
         method: 'POST',
@@ -273,7 +270,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             perk_node: perk_node
         },
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             if (data.status == 'success') {
                 // Отобразить show_skills в вёрстку
                 for (var key in data.show_skills)
