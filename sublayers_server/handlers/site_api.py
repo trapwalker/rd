@@ -90,7 +90,10 @@ class APIGetUserInfoHandler(BaseHandler):
             user_info['balance'] = agent.example.balance
             # todo: сделать пересылку правильных параметров
             user_info['lvl'] = '5'
-            user_info['class'] = agent.example.role_class.description
+
+            user_info['class'] = ''
+            if agent.example.role_class:
+                user_info['class'] = agent.example.role_class.description
             user_info['karma'] = '138'
 
             template_agent_info = tornado.template.Loader(
