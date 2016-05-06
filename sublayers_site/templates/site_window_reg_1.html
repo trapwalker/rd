@@ -41,9 +41,10 @@
         <div class="reg1-btn buttons-and-headers reg1-btn-next" onclick="Reg1NextBtnClick()">Далее</div>
     </div>
 </div>
+
 <script>
     // Настройка листалки аватаров
-    var reg1_avatar_count = 3;
+    var reg1_avatar_count = 0;
     var reg1_current_avatar = 0;
     SetCurrentAvatar();
 
@@ -65,7 +66,7 @@
     }
 
     // Настройка листалки классов
-    var reg1_class_count = 3;
+    var reg1_class_count = 0;
     var reg1_current_class = 0;
     var role_class_list_info = [];
     SetCurrentClass();
@@ -88,9 +89,14 @@
 
         var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].description : '';
         $('#reg1_class_name_text').text(name);
-        if (getRPGInfo_last) {
-            console.log(getRPGInfo_last['class_list'][reg1_current_class].console_description)
-        }
+
+        consoleWReg1.add_message('user', 'Загрузка класса.');
+        consoleWReg1.add_message('system',
+            'Успешно.\n\n' +
+            '--------------------------------------------------------------\n' +
+            String(role_class_list_info[reg1_current_class].console_description) +
+            '--------------------------------------------------------------'
+        );
     }
 
     // Подсказка на клик по никнейму

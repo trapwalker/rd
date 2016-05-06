@@ -130,7 +130,6 @@ function GetRatingInfo(rating_name) {
     });
 }
 
-
 function GetIDForStartRegistrationPage(){
     // Функция-контроллер, которая возвращает ID для клика на кнопку Начать Игру в зависимости от Статуса регистрации пользователя
     var map = {
@@ -144,7 +143,6 @@ function GetIDForStartRegistrationPage(){
     if (map.hasOwnProperty(registration_status)) return map[registration_status];
     return map['not_register'];
 }
-
 
 function GetUserInfo() {
     $.ajax({
@@ -222,8 +220,6 @@ function GetUserInfo() {
     });
 }
 
-var getRPGInfo_last = null;
-
 function GetRPGInfo() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
@@ -231,7 +227,6 @@ function GetRPGInfo() {
         data: {},
         success: function (data) {
             console.log(data);
-            getRPGInfo_last = data;
 
             // Установка аватаров:
             var avatar_container = $('.reg1-path-avatar-list').first();
@@ -243,7 +238,6 @@ function GetRPGInfo() {
                 d.css('background-image', 'url(' + data.avatar_list[i] + ')');
             }
             SetCurrentAvatar();
-
 
             // Установка классов
             var role_class_container = $('.reg1-path-class-list').first();
@@ -260,10 +254,8 @@ function GetRPGInfo() {
     });
 }
 
-
 function GetUserRPGInfo(action, skill_name, perk_node) {
     // todo: разобраться с arguments, тогда сможем формировать легко и красиво data: {action: action + arguments}, и устанавливать скилы, перки, что угодно!!!!
-
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_user_rpg_info',
         method: 'POST',
