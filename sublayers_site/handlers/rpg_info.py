@@ -72,10 +72,9 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             #                 perk=perk.as_client_dict(),
             #                 active=perk in agent_ex.perks,
             #             ))
-
-            # d['role_class_target_0'] = # todo: Для подсветки ролевого класса и навыка
+            d['role_class_target_0'] = self.application.reg[agent_ex.role_class.class_skills[0]].target  # todo: Для подсветки ролевого класса и навыка
         else:
-             d['status'] = 'Agent Role class not found'
+            d['status'] = 'Agent Role class not found'
         return d
 
     def _inc_skill(self, agent_ex):
