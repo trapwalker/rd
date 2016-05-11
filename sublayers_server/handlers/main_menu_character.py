@@ -14,7 +14,7 @@ class MainMenuCharacterHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.experience_table.by_exp(
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(
             exp=agent.stat_log.get_metric('exp'))
 
         skill_free_point = lvl - agent.example.driving.value - agent.example.shooting.value - \

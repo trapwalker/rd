@@ -623,7 +623,7 @@ class TransactionSkillApply(TransactionEvent):
 
         # todo: добавить проверку - находится ли агент в городе где есть Бордель (skill home)
 
-        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
+        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
             exp=self.agent.stat_log.get_metric('exp'))
         rqst_skill_pnt = self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
 
@@ -659,7 +659,7 @@ class TransactionActivatePerk(TransactionEvent):
 
         if (activate_perk is None) or (activate_perk in ex_agent.perks):
             return
-        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = ex_agent.experience_table.by_exp(
+        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = ex_agent.exp_table.by_exp(
             exp=self.agent.stat_log.get_metric('exp'))
         if (activate_perk.driving_req <= ex_agent.driving.calc_value()) and (activate_perk.masking_req <= ex_agent.masking.calc_value()) and \
            (activate_perk.shooting_req <= ex_agent.shooting.calc_value()) and (activate_perk.leading_req <= ex_agent.leading.calc_value()) and \

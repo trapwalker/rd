@@ -8,13 +8,16 @@ from sublayers_server.model.registry.attr import Attribute
 
 
 class ExpTable(Root):
-    table = Attribute(caption=u'Узловые точки', doc=u'Таблица узловых точек шкалы опыта')
+    user_exp_table = Attribute(caption=u'Таблица опыта пользователя')
+    car_exp_table = Attribute(caption=u'Таблица опыта машинки')
+    car_exp_price = Attribute(caption=u'Таблица ценности машинки')
+    car_m_exp = Attribute(caption=u'Таблица модификатора опыта получаемого на машинке')
 
     def by_exp(self, exp):
         """
         Returns: (current_level, (next_level, next_level_exp), rest_exp)
         """
-        table = self.table or {}
+        table = self.user_exp_table or {}
         pairs = sorted(table.items(), key=lambda (k, v): v)
         intervals = zip(
             [(None, None)] + pairs,
@@ -23,3 +26,24 @@ class ExpTable(Root):
         for a, b in intervals:
             if exp >= a[1] and (exp < b[1] or b[1] is None):
                 return a[0], b, (b[1] - exp) if b[1] is not None else None
+
+    def car_lvl_by_exp(self, exp):
+        table = self.car_exp_table or {}
+        sorted_list = sorted(table.items(), key=lambda (k, v): v)
+        for index in range(0, len(sorted_list)):
+            rec = sorted_list[index]
+            if exp < rec[1]:
+                return sorted_list[index - 1 if index > 0 else 0][0]
+
+        # Если мы вылезли за пределы таблицы
+        return sorted_list[len(sorted_list) - 1][0]
+
+    def car_exp_price_by_exp(self, exp):
+        table = self.car_exp_price or {}
+        lvl = self.car_lvl_by_exp(exp=exp)
+        return table[lvl]
+
+    def car_m_exp_by_exp(self, exp):
+        table = self.car_m_exp or {}
+        lvl = self.car_lvl_by_exp(exp=exp)
+        return table[lvl]

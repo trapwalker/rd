@@ -40,8 +40,11 @@ class Message(object):
         # todo: online status optimization
         connection = self.agent.connection
         # log.debug('Send message: %s to %r', self, self.agent.user.name)
-        if connection.ws_connection:
-            connection.send(serialize(make_push_package([self])))
+        if connection:
+            if connection.ws_connection:
+                connection.send(serialize(make_push_package([self])))
+        else:
+            log.debug('Connection not found for agent %s', self.agent.user.name)
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -794,7 +797,6 @@ class AddExperienceMessage(Message):
         d.update(
             exp_agent=self.agent.stat_log.get_metric('exp'),
             exp_car=self.agent.car.stat_log.get_metric('exp'),
-            price_car=self.agent.car.example.exp_price,
             frag_agent=self.agent.stat_log.get_metric('frag'),
             frag_car=self.agent.car.stat_log.get_metric('frag'),
         )
@@ -804,7 +806,7 @@ class AddExperienceMessage(Message):
 class RPGStateMessage(Message):
     def as_dict(self):
         d = super(RPGStateMessage, self).as_dict()
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
             exp=self.agent.stat_log.get_metric('exp'))
         d.update(
             driving=self.agent.example.driving.value,

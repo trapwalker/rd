@@ -399,12 +399,12 @@ class Agent(Object):
 
     def on_kill(self, time, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
-        # todo: party
 
+        # todo: party
         self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        # self.stat_log.exp(time=time, delta=obj.example.exp_price)   # начисляем опыт агенту
-        self.stat_log.exp(time=time, delta=150)   # начисляем опыт агенту
-        self.car.example.exp_price += 1  # увеличиваем "опытную" стоимость своего автомобиля
+        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp')) * \
+                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.stat_log.get_metric('exp'))
+        self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
 
         # Отправить сообщение на клиент о начисленной экспе
         AddExperienceMessage(agent=self, time=time,).post()

@@ -118,9 +118,7 @@ class Mobile(Root):
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
-
     price = Attribute(default=0, caption=u"Цена")
-    exp_price = FloatAttribute(default=1.0, caption=u"Ценность машинки в очках опыта")
 
     # Косметика
     title = Attribute(default="", caption=u"Модель автомобиля", tags='client')
@@ -143,6 +141,8 @@ class Mobile(Root):
     shooting_radius_rate = FloatAttribute(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации дальности стрельбы")
 
     masking_p_visibility = FloatAttribute(default=0.0, caption=u"Влияние Маскировки на Коэффициент заметности")
+
+    exp_table = RegistryLink(caption=u"Таблица опыта")
 
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots(tags='armorer') if isinstance(v, Weapon))
@@ -340,6 +340,7 @@ class Drone(Mobile):
 
 class MobileWeapon(Mobile):
     pass
+
 
 class MapWeaponEffectMine(MobileWeapon):
     effects = Attribute(default=(), caption=u'Список эффектов (URI) накладываемых миной')
