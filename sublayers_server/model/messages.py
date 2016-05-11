@@ -807,12 +807,12 @@ class RPGStateMessage(Message):
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.experience_table.by_exp(
             exp=self.agent.stat_log.get_metric('exp'))
         d.update(
-            driving=self.agent.example.driving,
-            shooting=self.agent.example.shooting,
-            masking=self.agent.example.masking,
-            leading=self.agent.example.leading,
-            trading=self.agent.example.trading,
-            engineering=self.agent.example.engineering,
+            driving=self.agent.example.driving.value,
+            shooting=self.agent.example.shooting.value,
+            masking=self.agent.example.masking.value,
+            leading=self.agent.example.leading.value,
+            trading=self.agent.example.trading.value,
+            engineering=self.agent.example.engineering.value,
             current_level=lvl,
             current_exp=self.agent.stat_log.get_metric('exp'),
             next_level=nxt_lvl,

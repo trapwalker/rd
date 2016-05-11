@@ -8,6 +8,7 @@ from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
+from sublayers_server.model.registry.classes.skills import Skill
 
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 
@@ -41,17 +42,18 @@ class Agent(Root):
 
     # Механизм скилов
     experience_table = RegistryLink(caption=u"Таблица опыта")
+    role_class = RegistryLink(caption=u"Ролевой класс")
 
-    driving = FloatAttribute(default=0, caption=u"Навык вождения", tags="skill")
-    shooting = FloatAttribute(default=0, caption=u"Навык стрельбы", tags="skill")
-    masking = FloatAttribute(default=0, caption=u"Навык маскировки", tags="skill")
-    leading = FloatAttribute(default=0, caption=u"Навык лидерства", tags="skill")
-    trading = FloatAttribute(default=0, caption=u"Навык торговли", tags="skill")
-    engineering = FloatAttribute(default=0, caption=u"Навык инженеринга", tags="skill")
+    driving = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык вождения", tags='skill')
+    shooting = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык стрельбы", tags='skill')
+    masking = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык маскировки", tags='skill')
+    leading = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык лидерства", tags='skill')
+    trading = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык торговли", tags='skill')
+    engineering = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык инженеринга", tags='skill')
 
     def iter_skills(self):
         for attr, getter in self.iter_attrs(tags='skill'):
-            yield attr.name, getter()
+            yield attr.name, getter().calc_value()
 
     def iter_perks(self):
         for perk in self.perks:

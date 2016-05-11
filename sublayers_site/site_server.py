@@ -30,10 +30,14 @@ import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler
 from sublayers_site.handlers.site import SiteMainHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
+from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 from sublayers_site.handlers.audio_test import GetAudioTest
 
 from sublayers_common.base_application import BaseApplication
+
+import sublayers_server.model.registry.classes  #autoregistry classes
+from sublayers_server.model.registry.storage import Registry, Collection
 
 
 class Application(BaseApplication):
@@ -45,12 +49,16 @@ class Application(BaseApplication):
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
+        self.reg_agents = Collection(name='agents', db=self.db)
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
-            (r"/get_user_info", GetUserInfoHandler),
+            (r"/site_api/get_user_info", GetUserInfoHandler),
+            (r"/site_api/get_rpg_info", GetRPGInfoHandler),
+            (r"/site_api/get_user_rpg_info", GetUserRPGInfoHandler),
             (r"/site_api/get_quick_game_records", GetQuickGameRecords),
             (r"/site_api/get_rating_info", GetRatingInfo),
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),

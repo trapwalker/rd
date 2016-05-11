@@ -15,6 +15,7 @@ class RoleClass(Root):
     icon = Attribute(caption=u'Пиктограмма класса', tags='client')
     emblem = Attribute(caption=u'Эмблема класса', tags='client')
     description = TextAttribute(caption=u'Расширенное описание класса', tags='client')
+    console_description = TextAttribute(caption=u'Расширенное описание класса', tags='client')
 
     class_skills = Attribute(caption=u"Список классовых навыков", tags='client')
     money = IntAttribute(caption=u'Стартовое количество денег', tags='client')

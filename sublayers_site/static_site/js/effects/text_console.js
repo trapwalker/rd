@@ -49,13 +49,13 @@ var TextConsole = (function(){
 
         this._message_info = {
             user: {
-                print_speed_ms: 5,
+                print_speed_ms: 2.5,
                 after_print_delay: 0,
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
             },
             system: {
-                print_speed_ms: 5,
+                print_speed_ms: 1,
                 after_print_delay: 0,
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
@@ -82,11 +82,37 @@ var TextConsole = (function(){
         this._interval = null;
     }
 
-    TextConsole.prototype.add_message = function(sender, message) {
+    TextConsole.prototype._replaceAt=function(str, index, character) {
+        return str.substr(0, index) + character + str.substr(index + character.length);
+    };
+
+    TextConsole.prototype.add_message = function(sender, message, interrupt) {
+        if (interrupt) this.interrupt();
         if (this._message_info.hasOwnProperty(sender))
             this._messages.push({ sender: sender, message: message});
         else
             console.warn('Неизвестный тип отправителя sender=', sender);
+    };
+
+    TextConsole.prototype.interrupt = function() {
+        this._messages = [];
+
+        if (((this._cur_message_len - this._cur_symbol) > 3) && (this._cur_message) && (this._cur_message.message)) {
+            this._cur_message_len = this._cur_symbol + 3;
+            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 0, '.');
+            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 1, '.');
+            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 2, '.');
+            this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
+        }
+
+        if ((this._cur_message) && (this._cur_message.message))
+            this._messages.push({ sender: 'system', message: 'Прервано.'});
+    };
+
+    TextConsole.prototype._scroll_top = function() {
+        this.target_div.each(function(index, element) {
+            $(element).scrollTop(element.scrollHeight);
+        });
     };
 
     TextConsole.prototype._state_print_text = function(self) {
@@ -95,26 +121,26 @@ var TextConsole = (function(){
         if (self._cur_symbol == 0) {
             if (!self._is_first) self._text += '\n';
             self._text += self._cur_message.message_type.placeholder();
-            self._cur_message_len = self._cur_message.message.length;
-            self.target_div.text(self._text + '█');
-            self.target_div.scrollTop(self.target_div.get(0).scrollHeight);
+            self.target_div.find('.console-new-text').text(self._text + '█');
+            self._scroll_top();
         }
         self._is_first = false;
 
         // Если сообщение мгновенное
         if (self._cur_message.message_type.print_speed_ms == 0) {
             self._text += self._cur_message.message;
-            self.target_div.text(self._text + '█');
-            self.target_div.scrollTop(self.target_div.get(0).scrollHeight);
+            self.target_div.find('.console-new-text').text(self._text + '█');
+            self._scroll_top();
+
             self._cur_symbol = self._cur_message_len;
         }
 
         // Если сообщение не выведено до конца
         if (self._cur_symbol < self._cur_message_len) {
             self._text += self._cur_message.message[self._cur_symbol];
-            self.target_div.text(self._text + '█');
+            self.target_div.find('.console-new-text').text(self._text + '█');
             self._cur_symbol++;
-            self.target_div.scrollTop(self.target_div.get(0).scrollHeight);
+            self._scroll_top();
             self._timeout = setTimeout(self._state_print_text, self._cur_message.message_type.print_speed_ms, self);
             return;
         }
@@ -122,6 +148,7 @@ var TextConsole = (function(){
         // Сообщение выведено
         self._cur_delay = 0;
         self._final_indicator_state = false;
+        self._cur_message.message = '';
         self._state_after_print_delay(self);
     };
 
@@ -130,9 +157,9 @@ var TextConsole = (function(){
         // Проверяем завершилась ли задержка после печати
         if (self._cur_delay < self._cur_message.message_type.after_print_delay) {
             if (self._final_indicator_state)
-                self.target_div.text(self._text + '█');
+                self.target_div.find('.console-new-text').text(self._text + '█');
             else
-                self.target_div.text(self._text + ' ');
+                self.target_div.find('.console-new-text').text(self._text + ' ');
             self._final_indicator_state = !self._final_indicator_state;
             self._cur_delay++;
             self._timeout = setTimeout(self._state_after_print_delay, self.final_indicator_frequency, self);
@@ -148,9 +175,9 @@ var TextConsole = (function(){
         // Проверяем завершилась ли задержка перед печатью
         if (self._cur_delay < self._cur_message.message_type.before_print_delay) {
             if (self._final_indicator_state)
-                self.target_div.text(self._text + '█');
+                self.target_div.find('.console-new-text').text(self._text + '█');
             else
-                self.target_div.text(self._text + ' ');
+                self.target_div.find('.console-new-text').text(self._text + ' ');
             self._final_indicator_state = !self._final_indicator_state;
             self._cur_delay++;
             self._timeout = setTimeout(self._state_before_print_delay, self.final_indicator_frequency, self);
@@ -158,16 +185,15 @@ var TextConsole = (function(){
         }
 
         // Перейти в состояния печати сообщения
-        self._cur_symbol = 0;
         self._state_print_text(self)
     };
 
     TextConsole.prototype._state_print_final_indicator = function(self) {
         // Мигание каретки
         if (self._final_indicator_state)
-            self.target_div.text(self._text + '█');
+            self.target_div.find('.console-new-text').text(self._text + '█');
         else
-            self.target_div.text(self._text + ' ');
+            self.target_div.find('.console-new-text').text(self._text + ' ');
         self._final_indicator_state = !self._final_indicator_state;
 
         // Проверка на наличие новых сообщений
@@ -184,14 +210,34 @@ var TextConsole = (function(){
         // Если есть строки, то выбрать следующую
         if (self._messages.length > 0) {
             self._cur_message = self._messages.shift();
+
+            self.target_div.find('.console-new-text').text(self._text);
+            var old_text = self.target_div.find('.console-old-text').first().text();
+            var new_text = self.target_div.find('.console-new-text').first().text();
+
+            self.target_div.find('.console-old-text').text(old_text + new_text);
+            self.target_div.find('.console-new-text').text('');
+            self._text = '';
+
             self._cur_message.message_type = self._message_info[self._cur_message.sender];
             self._cur_delay = 0;
+            self._cur_symbol = 0;
+            self._cur_message_len = self._cur_message.message.length;
             self._state_before_print_delay(self);
             return;
         }
+        else
+            self._cur_message = null;
 
         // Если строк нет, то печатать мигающий финальный символ
         self._state_print_final_indicator(self);
+    };
+
+    TextConsole.prototype.init = function() {
+        this.target_div.each(function(index, element) {
+            $(element).append('<span class="console-old-text"></span>');
+            $(element).append('<span class="console-new-text"></span>')
+        })
     };
 
     TextConsole.prototype.start = function() {
@@ -216,8 +262,9 @@ var TextConsole = (function(){
         }
         this._text = '';
         this._is_first = true;
-        this.target_div.text(this._text);
-        this.target_div.scrollTop(this.target_div.get(0).scrollHeight);
+        this.target_div.find('.console-old-text').text(this._text);
+        this.target_div.find('.console-new-text').text(this._text);
+        this._scroll_top();
     };
 
     return TextConsole;
@@ -253,9 +300,11 @@ var ConsoleWReg = (function (_super) {
 
     function ConsoleWReg() {
         _super.call(this);
-        this.target_div = $('#RDSiteWRegConsole');
-        this.page_id = 'RDSiteWReg';
 
+        this.target_div = $('.reg-main-console');
+        this.init();
+
+        this.page_id = 'RDSiteWReg';
 
         this._message_info.user.placeholder = function() {
             var data = new Date();
@@ -266,10 +315,10 @@ var ConsoleWReg = (function (_super) {
             return '\n[' + hh_str + ':' + mm_str + ']: ';
         };
         this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
+        this._message_info.system.after_print_delay = 2.5;
+        this._message_info.system.before_print_delay = 2.5;
         this._message_info.welcome = {
-            print_speed_ms: 5,
+            print_speed_ms: 1,
             after_print_delay: 0,
             before_print_delay: 0,
             placeholder: function() { return ''; }
@@ -282,7 +331,7 @@ var ConsoleWReg = (function (_super) {
             '       >                                              <\n' +
             '       >        Нюк Коммандер вер. ' + version + '         <\n' +
             '       >                                              <\n' +
-            '       >         Корпораця (К) Нукойл 2084 г.         <\n' +
+            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
             '       >                                              <\n' +
             '       ================================================'
         );
@@ -303,77 +352,11 @@ var ConsoleWReg = (function (_super) {
         );
 
         textConsoleManager.add(this);
+
+
     }
 
     return ConsoleWReg;
-})(TextConsoleAudio);
-
-var ConsoleWReg1 = (function (_super) {
-    __extends(ConsoleWReg1, _super);
-
-    function ConsoleWReg1() {
-        _super.call(this);
-        this.target_div = $('#RDSiteWReg1Console');
-        this.page_id = 'RDSiteWReg';
-
-        this._message_info.user.placeholder = function() {
-            var data = new Date();
-            var hh_str = data.getHours().toString();
-            var mm_str = data.getMinutes().toString();
-            hh_str = hh_str.length == 2 ? hh_str : '0' + hh_str;
-            mm_str = mm_str.length == 2 ? mm_str : '0' + mm_str;
-            return '\n[' + hh_str + ':' + mm_str + ']: ';
-        };
-        this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
-        this._message_info.welcome = {
-            print_speed_ms: 5,
-            after_print_delay: 0,
-            before_print_delay: 0,
-            placeholder: function() { return ''; }
-        };
-
-        this.add_message('system', 'Корпораця Нукойл. вер.' + version);
-
-        textConsoleManager.add(this);
-    }
-
-    return ConsoleWReg1;
-})(TextConsoleAudio);
-
-var ConsoleWReg2 = (function (_super) {
-    __extends(ConsoleWReg2, _super);
-
-    function ConsoleWReg2() {
-        _super.call(this);
-        this.target_div = $('#RDSiteWReg2Console');
-        this.page_id = 'RDSiteWReg';
-
-        this._message_info.user.placeholder = function() {
-            var data = new Date();
-            var hh_str = data.getHours().toString();
-            var mm_str = data.getMinutes().toString();
-            hh_str = hh_str.length == 2 ? hh_str : '0' + hh_str;
-            mm_str = mm_str.length == 2 ? mm_str : '0' + mm_str;
-            return '\n[' + hh_str + ':' + mm_str + ']: ';
-        };
-        this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
-        this._message_info.welcome = {
-            print_speed_ms: 5,
-            after_print_delay: 0,
-            before_print_delay: 0,
-            placeholder: function() { return ''; }
-        };
-
-        this.add_message('system', 'Корпораця Нукойл. вер.' + version);
-
-        textConsoleManager.add(this);
-    }
-
-    return ConsoleWReg2;
 })(TextConsoleAudio);
 
 var ConsoleWPI = (function (_super) {
@@ -384,8 +367,8 @@ var ConsoleWPI = (function (_super) {
         this.target_div = $('#RDSitePIConsole');
         this.page_id = 'RDSiteWReg';
         this._message_info.system.placeholder = function() { return '> '  };
-        this._message_info.system.after_print_delay = 5;
-        this._message_info.system.before_print_delay = 5;
+        this._message_info.system.after_print_delay = 2.5;
+        this._message_info.system.before_print_delay = 2.5;
         this._message_info.user.placeholder = function() {
             var data = new Date();
             var hh_str = data.getHours().toString();
@@ -411,7 +394,7 @@ var ConsoleWStart = (function (_super) {
         this._messages = [
             {
                 sender:     'system',
-                message:    'Корпораця Нукойл. вер.5.06'
+                message:    'Корпорация Нукойл. вер.5.06'
             },
             {
                 sender:     'system',
@@ -449,8 +432,9 @@ function initConsoles() {
     textConsoleManager = new TextConsoleEffectManager();
 
     consoleWReg = new ConsoleWReg();
-    consoleWReg1 = new ConsoleWReg1();
-    consoleWReg2 = new ConsoleWReg2();
+
+    consoleWReg1 = consoleWReg;
+    consoleWReg2 = consoleWReg;
 
     consoleWPI = new ConsoleWPI();
     consoleWStart = new ConsoleWStart();

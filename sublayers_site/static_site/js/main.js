@@ -20,6 +20,9 @@ function main() {
     indicatorBlink = new IndicatorBlink();
     //textBlurBlink = new TextBlurBlink();
 
+    // Получить стартовые ролевые классы и аватарки
+    GetRPGInfo();
+
     // Получить текущего пользователя
     GetUserInfo();
 
@@ -127,7 +130,6 @@ function GetRatingInfo(rating_name) {
     });
 }
 
-
 function GetIDForStartRegistrationPage(){
     // Функция-контроллер, которая возвращает ID для клика на кнопку Начать Игру в зависимости от Статуса регистрации пользователя
     var map = {
@@ -142,31 +144,181 @@ function GetIDForStartRegistrationPage(){
     return map['not_register'];
 }
 
+function GetUserInfo() {
+    $.ajax({
+        url: location.protocol + '//' + location.host + '/site_api/get_user_info',
+        method: 'POST',
+        data: {},
+        success: function (data) {
+            registration_status = data.user_status;
+            if (registration_status == 'register') {
+                var pos_x = '';
+                var pos_y = '';
+                if (data.hasOwnProperty('position') && data.position && (data.position.length == 2)) {
+                    pos_x = data.position[0].toFixed(0);
+                    pos_y = data.position[1].toFixed(0);
+                }
 
+                consoleWPI.clear();
+                consoleWPI.add_message('user', 'Загрузка системы навигации.');
+                consoleWPI.add_message(
+                    'system',
+                    'Успешно.\n' +
+                    '-----------------------------\n' +
+                    'Добро пожаловать, ' + data.user_name + '!\n' +
+                    'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
+                    'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
+                    'Ваша страховка: _\n' +
+                    'Активных заданий: _\n' +
+                    '-----------------------------'
+                );
 
-//function start_site() {
-//    console.log('Start site ! ');
-//    setInterval(refresh_server_stat_request, 3000)
-//}
-//
-//function refresh_server_stat_request() {
-//    $.ajax({
-//            url: window.location.protocol + "//" + location.hostname + '/site_stat',
-//            success: refresh_server_stat_answer,
-//            error: refresh_server_stat_error
-//        });
-//}
-//
-//function refresh_server_stat_answer(data) {
-//    console.log(data);
-//    $('#srvStatAgents').text(data.s_agents_on);
-//    $('#srvStatUnits').text(data.s_units_on);
-//}
-//
-//function refresh_server_stat_error(data) {
-//    console.log(data);
-//    $('#srvStatAgents').text('-');
-//    $('#srvStatUnits').text('-');
-//}
+                $('#RDSitePersonalInfoUserInfo').empty();
+                $('#RDSitePersonalInfoUserCar').empty();
+                $('#RDSitePersonalInfoUserInfo').append(data.user_info_html);
+                $('#RDSitePersonalInfoUserCar').append(data.user_car_html);
+            }
+            if (registration_status == 'chip') {
+                var ordinal_number = 1000000000 + data.ordinal_number;
+                ordinal_number = ordinal_number.toString();
+                ordinal_number = ordinal_number.substr(1, ordinal_number.length);
+
+                var d = new Date(data.created);
+                d.setFullYear(d.getFullYear() + 100);
+
+                $('#RDSiteWReg3_OrdinalNumber').text(ordinal_number);
+                $('#RDSiteWReg3_Created').text(d.toLocaleDateString());
+
+                $('#RDSiteWReg3_Nickname').text(data.user_name);
+
+                var procent_length = 20 + 4 * data.user_name.length;
+                procent_length = procent_length > 80 ? 80 : procent_length;
+                $('#RDSiteWReg3_Nickname').parent().width(procent_length + '%');
+
+                $('#RDSiteWReg3_UserBalance').text(data.user_balance);
+
+                $('#RDSiteWReg3_AvatarBlock').css('background-image', 'url(' + data.avatar_link + ')');
+
+                // todo: считать перки и навыки
+            }
+            if (registration_status == 'settings') {
+                GetUserRPGInfo();
+            }
+            if (registration_status == 'nickname') {
+                SetCurrentAvatar();
+                SetCurrentClass();
+            }
+
+            // Переход на следующую страницу
+            if (window.location.hash == '#start')
+                $('#RDbtn_start').click();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Error GetUserInfo');
+        }
+    });
+}
+
+function GetRPGInfo() {
+    $.ajax({
+        url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
+        method: 'POST',
+        data: {},
+        success: function (data) {
+            // Установка аватаров:
+            var avatar_container = $('.reg1-path-avatar-list').first();
+            avatar_container.empty();
+            reg1_avatar_count =  data.avatar_list.length;
+            for (var i = 0; i < data.avatar_list.length; i++) {
+                var d = $('<div id="reg1_avatar_' + i +'" class="reg1-path-avatar-item"></div>');
+                avatar_container.append(d);
+                d.css('background-image', 'url(' + data.avatar_list[i] + ')');
+            }
+
+            // Установка классов
+            var role_class_container = $('.reg1-path-class-list').first();
+            role_class_container.empty();
+            reg1_class_count =  data.class_list.length;
+            role_class_list_info = data.class_list;
+            for (var i = 0; i < data.class_list.length; i++) {
+                var d = $('<div id="reg1_class_' + i +'" class="reg1-path-class-item"></div>');
+                role_class_container.append(d);
+                d.css('background-image', 'url(' + role_class_list_info[i].icon + ')');
+            }
+        }
+    });
+}
+
+function GetUserRPGInfo(action, skill_name, perk_node) {
+    $.ajax({
+        url: location.protocol + '//' + location.host + '/site_api/get_user_rpg_info',
+        method: 'POST',
+        data: {
+            action: action,
+            skill_name: skill_name,
+            perk_node: perk_node
+        },
+        success: function (data) {
+            //console.log(data);
+            if (data.status == 'success') {
+                // Отобразить show_skills в вёрстку
+                for (var key in data.show_skills)
+                    if (data.show_skills.hasOwnProperty(key)) {
+                        $('#reg2_' + key).text(data.show_skills[key]);
+                        $('#reg3_' + key).text(data.show_skills[key]);
+
+                        if (key == data.role_class_target_0) {
+                            $('#reg2_' + key).parent().parent().find('.reg2-skill-table-label span').addClass('decorator');
+                            $('#reg2_' + key).addClass('decorator')
+                        }
+                        else {
+                            $('#reg2_' + key).parent().parent().find('.reg2-skill-table-label span').removeClass('decorator');
+                            $('#reg2_' + key).removeClass('decorator');
+                        }
+                    }
+
+                // Записываем свободные очки
+                reg2_skill_point = data.free_point_skills;
+                $('#reg2_free_skils').text(reg2_skill_point);
+
+                // Перки
+                $('#reg2_free_perks').text(data.free_point_perks);
+                var jq_perk_table = $('#re2_perk_table');
+                var jq_perk_chip_perk_list = $('#RDSiteWReg3_PerkList');
+                jq_perk_table.empty();
+                jq_perk_chip_perk_list.empty();
+
+                if (data.perks) {
+                    for (var i = 0; i < data.perks.length; i++) {
+                        var perk_rec = data.perks[i];
+                        var jq_perk = $(
+                            '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '" onclick="Reg2PerkClick(`' + perk_rec.perk.node_hash + '`)">' +
+                            '<div class="reg2-perk-table-label">' + perk_rec.perk.title + '</div>' +
+                            '<div class="reg2-perk-table-checkbox-block">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
+                            '</div>');
+                        jq_perk_table.append(jq_perk);
+
+                        if (perk_rec.active) {
+                            var jq_perk_chip = $(
+                                '<div class="site-chip-content-line shift">' +
+                                '<div class="site-chip-content-line-text left">' + perk_rec.perk.title + '</div>' +
+                                '</div>'
+                            );
+                            jq_perk_chip_perk_list.append(jq_perk_chip);
+                        }
+                    }
+                }
+                // Обновление чипа
+                $('#RDSiteWReg3_RoleClass').text(data.role_class_title);
+
+                if (registration_status == 'nickname') {
+                    SetCurrentAvatar();
+                    SetCurrentClass();
+                }
+            }
+        }
+    });
+}
+
 
 

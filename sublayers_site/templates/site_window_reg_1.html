@@ -4,11 +4,11 @@
         <div class="window-reg1-path">
             <div class="window-qg-content-header-block">
                 <div class=" window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Имя и фото</div>
+                    <div class="window-qg-content-header buttons-and-headers">Ник и аватар</div>
                 </div>
             </div>
             <div class="reg1-path-up-text-input-block">
-                <div class="reg1-path-label">NICKNAME></div>
+                <div class="reg1-path-label">НИК></div>
                 <input type="text" id="reg1_username" autocomplete="off" onclick="Reg1NicknameClick()">
             </div>
             <div class="reg1-path-avatar-list">
@@ -25,6 +25,7 @@
                     <div class="window-qg-content-header buttons-and-headers">Класс</div>
                 </div>
             </div>
+            <div id="reg1_class_name_text" class="window-reg1-class-name"></div>
             <div class="reg1-path-class-list">
                 <div id="reg1_class_0" class="reg1-path-class-item" style="background: transparent url(/static_site/img/temp/class_1.png) no-repeat 100% 100%;"></div>
                 <div id="reg1_class_1" class="reg1-path-class-item" style="background: transparent url(/static_site/img/temp/class_2.png) no-repeat 100% 100%;"></div>
@@ -34,15 +35,16 @@
             <div class="slide-arrow right" onclick="SlideRightClassList()"></div>
         </div>
         <div class="window-reg1-console-wrap">
-            <div id="RDSiteWReg1Console" class="console-block"></div>
+            <div id="RDSiteWReg1Console" class="console-block reg-main-console"></div>
         </div>
         <div class="reg1-btn buttons-and-headers reg1-btn-back" onclick="Reg1BackBtnClick()">Назад</div>
         <div class="reg1-btn buttons-and-headers reg1-btn-next" onclick="Reg1NextBtnClick()">Далее</div>
     </div>
 </div>
+
 <script>
     // Настройка листалки аватаров
-    var reg1_avatar_count = 3;
+    var reg1_avatar_count = 0;
     var reg1_current_avatar = 0;
     SetCurrentAvatar();
 
@@ -64,9 +66,10 @@
     }
 
     // Настройка листалки классов
-    var reg1_class_count = 3;
+    var reg1_class_count = 0;
     var reg1_current_class = 0;
-    SetCurrentClass();
+    var role_class_list_info = [];
+    var reg1_first_interrupt = false;
 
     function SlideLeftClassList() {
         reg1_current_class--;
@@ -83,6 +86,26 @@
     function SetCurrentClass() {
         $('.reg1-path-class-item').css('display', 'none');
         $('#reg1_class_' + reg1_current_class).css('display', 'block');
+
+        if (!role_class_list_info.length) return;
+
+        var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].description : '';
+        $('#reg1_class_name_text').text(name);
+
+        var line_list = role_class_list_info[reg1_current_class].console_description.split('\\n');
+        var multi_line = '';
+        for (var i = 0; i < line_list.length; i++)
+            multi_line = multi_line + line_list[i] + '\n';
+
+        consoleWReg1.add_message('user', 'Загрузка класса.', reg1_first_interrupt);
+        consoleWReg1.add_message('system',
+            'Успешно.\n\n' +
+            '--------------------------------------------------------------\n' +
+            multi_line +
+            '--------------------------------------------------------------'
+        );
+
+        reg1_first_interrupt = true;
     }
 
     // Подсказка на клик по никнейму
@@ -90,7 +113,7 @@
 
     function Reg1NicknameClick() {
         if ((reg1_last_input_click != 'Reg1NicknameClick') && (consoleWReg1)) {
-            consoleWReg1.add_message('user', 'Запрос на ввод данных в базу системы навигации.');
+            consoleWReg1.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
             consoleWReg1.add_message('system',
                 'Успешно.\n\n' +
                 '--------------------------------------------------------------\n' +
@@ -114,11 +137,12 @@
                 action: 'next',
                 username: username,
                 avatar_index: reg1_current_avatar,
-                class_index: reg1_current_class
+                class_index: reg1_current_class,
+                class_node_hash: role_class_list_info[reg1_current_class].node_hash
             },
             success: function(data) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 if (data.status == 'success') {
                     consoleWReg1.add_message('system', 'Успешно.');
                     GetUserInfo();
@@ -128,22 +152,22 @@
                 if (data.status == 'fail_wrong_input') {
                     consoleWReg1.add_message('system',
                             'Ошибка приема данных.\n\n' +
-                            'Введен некорректный NICKNAME, класс или фото персонажа.\n\n' +
+                            'Введен некорректный ник, класс или фото персонажа.\n\n' +
                             '--------------------------------------------------------------\n' +
-                            'Введите корректный NICKNAME.\n' +
-                            'Выберите фото персонажа.\n' +
+                            'Введите корректный ник.\n' +
+                            'Выберите аватар персонажа.\n' +
                             'Выберите класс персонажа.\n' +
                             '--------------------------------------------------------------');
                 }
                 if (data.status == 'fail_exist_nickname') {
                     consoleWReg1.add_message('system',
                             'Ошибка приема данных.\n\n' +
-                            'Пользователь с таким NICKNAME уже существует.');
+                            'Пользователь с таким ником уже существует.');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_' + Math.floor(Math.random() * 1.99));
             }
@@ -161,7 +185,7 @@
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_' + Math.floor(Math.random() * 1.99));
             }
