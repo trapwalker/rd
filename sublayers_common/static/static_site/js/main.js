@@ -10,6 +10,18 @@ var __extends = this.__extends || function (d, b) {
 var rating_users_info_list = {}; // Список пользователей в рейтингах, чтобы каждого запрашивать только по 1 разу в 5-10 минут
 var registration_status = 'not_register';
 
+
+function SetImageOnLoad(img, onLoadHandler) {
+    if (img.complete) {
+        onLoadHandler(img);
+        return;
+    }
+    img.addEventListener('load', function () {
+        onLoadHandler(img);
+    }, false);
+}
+
+
 // Инициализация всего и вся
 function main() {
     canvasManager = new CanvasManager();
@@ -28,13 +40,15 @@ function main() {
 
     // Инициализация анимации платы
     var plate_img = new Image();
-    plate_img.onload = function() {
-        eCanvasChipAnimation = new ECanvasChipAnimation(this);
-    };
-    plate_img.onerror = function() {
-        console.warn('eCanvasChipAnimation: Content dont load');
-    };
     plate_img.src = '/static/static_site/img/chip_anim_all.png';
+
+
+    SetImageOnLoad(plate_img, function (img) {
+            console.info('Event!!! haha!!! Event on load!!!!');
+            eCanvasChipAnimation = new ECanvasChipAnimation(img);
+        }
+    );
+
 
     initConsoles();
 
