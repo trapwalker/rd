@@ -1,6 +1,6 @@
 #RDSiteWReg3 {
     border: 2px solid transparent;
-    background: transparent url('/static_site/img/back_chip.png') 100% 100% no-repeat;
+    background: transparent url('/static/static_site/img/back_chip.png') 100% 100% no-repeat;
     background-size: contain;
 }
 
@@ -120,21 +120,21 @@
 .reg3-btn.reg3-left {left: 20px;}
 .reg3-btn.reg3-right {right: 20px;}
 
-.reg3-btn.reg3-school { background: transparent url('/static_site/img/chip_buttons/school.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-school:hover {background: transparent url('/static_site/img/chip_buttons/school_over.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-school:active {background: transparent url('/static_site/img/chip_buttons/school_press.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school { background: transparent url('/static/static_site/img/chip_buttons/school.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school:hover {background: transparent url('/static/static_site/img/chip_buttons/school_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school:active {background: transparent url('/static/static_site/img/chip_buttons/school_press.png') 100% 100% no-repeat;}
 
-.reg3-btn.reg3-novice {background: transparent url('/static_site/img/chip_buttons/noob.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-novice:hover {background: transparent url('/static_site/img/chip_buttons/noob_over.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-novice:active {background: transparent url('/static_site/img/chip_buttons/noob_press.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice {background: transparent url('/static/static_site/img/chip_buttons/noob.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice:hover {background: transparent url('/static/static_site/img/chip_buttons/noob_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice:active {background: transparent url('/static/static_site/img/chip_buttons/noob_press.png') 100% 100% no-repeat;}
 
-.reg3-btn.reg3-back { background: transparent url('/static_site/img/chip_buttons/back.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-back:hover {background: transparent url('/static_site/img/chip_buttons/back_over.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-back:active {background: transparent url('/static_site/img/chip_buttons/back_press.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back { background: transparent url('/static/static_site/img/chip_buttons/back.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back:hover {background: transparent url('/static/static_site/img/chip_buttons/back_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back:active {background: transparent url('/static/static_site/img/chip_buttons/back_press.png') 100% 100% no-repeat;}
 
-.reg3-btn.reg3-finish { background: transparent url('/static_site/img/chip_buttons/start.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-finish:hover {background: transparent url('/static_site/img/chip_buttons/start_over.png') 100% 100% no-repeat;}
-.reg3-btn.reg3-finish:active {background: transparent url('/static_site/img/chip_buttons/start_press.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish { background: transparent url('/static/static_site/img/chip_buttons/start.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish:hover {background: transparent url('/static/static_site/img/chip_buttons/start_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish:active {background: transparent url('/static/static_site/img/chip_buttons/start_press.png') 100% 100% no-repeat;}
 
 
 
