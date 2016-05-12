@@ -9,20 +9,24 @@ import os
 import yaml
 import tornado
 
+from tornado.options import options
+
 
 class SiteMainHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def get(self):
         # Подготовка списка новостей
         news_list = []
-        # serv_dir = os.getcwd()
-        # os.chdir('static_site')
-        # os.chdir('news')
-        # for news_file_name in filter(lambda x: x.endswith('.yaml'), os.listdir('.')):
-        #     news_file = open(news_file_name, 'r')
-        #     news_list.append(yaml.load(news_file))
-        #     news_file.close()
-        # os.chdir(serv_dir)
+        serv_dir = os.getcwd()
+
+        os.chdir(options.static_path)
+        os.chdir('static_site')
+        os.chdir('news')
+        for news_file_name in filter(lambda x: x.endswith('.yaml'), os.listdir('.')):
+            news_file = open(news_file_name, 'r')
+            news_list.append(yaml.load(news_file))
+            news_file.close()
+        os.chdir(serv_dir)
 
         # Загружаем информацию о быстрой игре
         quick_game_info = self._get_quick_game()
