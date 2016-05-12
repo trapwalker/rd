@@ -365,6 +365,7 @@ var ConsoleWPI = (function (_super) {
     function ConsoleWPI() {
         _super.call(this);
         this.target_div = $('#RDSitePIConsole');
+        this.init();
         this.page_id = 'RDSiteWReg';
         this._message_info.system.placeholder = function() { return '> '  };
         this._message_info.system.after_print_delay = 2.5;
@@ -383,61 +384,21 @@ var ConsoleWPI = (function (_super) {
     return ConsoleWPI;
 })(TextConsole);
 
-var ConsoleWStart = (function (_super) {
-    __extends(ConsoleWStart, _super);
-
-    function ConsoleWStart() {
-        _super.call(this);
-        this.target_div = $('#RDSiteStartPageConsole');
-        this.page_id = 'RDSiteStartPage';
-
-        this._messages = [
-            {
-                sender:     'system',
-                message:    'Корпорация Нукойл. вер.5.06'
-            },
-            {
-                sender:     'system',
-                message:    'Ошибка доступа'
-            },
-            {
-                sender:     'system',
-                message:    'Загружено.\n\n' +
-                            'Для регистрации нового водителя в системе введите свою электронную почту и пароль или подключитесь через одну из внешних сетей:\n\n' +
-                            'Нажмите 1 для vk.com\n' +
-                            'Нажмите 2 для facebook.com\n' +
-                            'Нажмите 3 для ok.ru\n' +
-                            'Нажмите 4 для plus.google.com'
-            }
-        ];
-        textConsoleManager.add(this);
-    }
-
-    ConsoleWStart.prototype._system_placeholder = function() {
-        return '> ';
-    };
-
-    return ConsoleWStart;
-})(TextConsole);
-
 var textConsoleManager;
 
 var consoleWReg;
 var consoleWReg1;
 var consoleWReg2;
 var consoleWPI;
-var consoleWStart;
 
 function initConsoles() {
     textConsoleManager = new TextConsoleEffectManager();
 
     consoleWReg = new ConsoleWReg();
-
     consoleWReg1 = consoleWReg;
     consoleWReg2 = consoleWReg;
 
     consoleWPI = new ConsoleWPI();
-    consoleWStart = new ConsoleWStart();
 }
 
 
