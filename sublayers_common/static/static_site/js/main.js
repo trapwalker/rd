@@ -156,7 +156,6 @@ function GetUserInfo() {
                     pos_x = data.position[0].toFixed(0);
                     pos_y = data.position[1].toFixed(0);
                 }
-
                 consoleWPI.clear();
                 consoleWPI.add_message('user', 'Загрузка системы навигации.');
                 consoleWPI.add_message(
