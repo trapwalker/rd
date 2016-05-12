@@ -34,7 +34,7 @@ function main() {
     plate_img.onerror = function() {
         console.warn('eCanvasChipAnimation: Content dont load');
     };
-    plate_img.src = '/static_site/img/chip_anim_all.png';
+    plate_img.src = '/static/static_site/img/chip_anim_all.png';
 
     initConsoles();
 

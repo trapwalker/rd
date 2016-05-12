@@ -22,11 +22,11 @@ var CanvasNoise = (function(){
         //this.img[2].src = '/static/img/noise/3_noise60.png';
         //this.img[3].src = '/static/img/noise/4_noise60.png';
 
-        this.img[0].src = '/static_site/img/noise/n_noise_001.png';
-        this.img[1].src = '/static_site/img/noise/n_noise_002.png';
-        this.img[2].src = '/static_site/img/noise/n_noise_003.png';
-        this.img[3].src = '/static_site/img/noise/n_noise_004.png';
-        this.img[4].src = '/static_site/img/noise/n_noise_005.png';
+        this.img[0].src = '/static/static_site/img/noise/n_noise_001.png';
+        this.img[1].src = '/static/static_site/img/noise/n_noise_002.png';
+        this.img[2].src = '/static/static_site/img/noise/n_noise_003.png';
+        this.img[3].src = '/static/static_site/img/noise/n_noise_004.png';
+        this.img[4].src = '/static/static_site/img/noise/n_noise_005.png';
 
         if (canvasManager) canvasManager.add_obj(this, 0);
     }
