@@ -52,6 +52,16 @@ class Application(BaseApplication):
         self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
         self.reg_agents = Collection(name='agents', db=self.db)
 
+        # Создание экземпляров машинок для быстрой игры
+        self.quick_game_cars_proto = []
+        self.quick_game_cars_examples = []
+        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
+        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
+        for car_proto in self.quick_game_cars_proto:
+            # todo: Здесь не должны инстанцироваться машинки
+            car_example = car_proto.instantiate()
+            self.quick_game_cars_examples.append(car_example)
+
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
