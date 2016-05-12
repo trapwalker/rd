@@ -34,18 +34,18 @@ class BaseSiteHandler(BaseHandler):
             user_info['leading'] = agent_example.leading.value
             user_info['about_self'] = agent_example.about_self  # Досье
             user_info['balance'] = agent_example.balance
-            user_info['class'] = agent_example.role_class.description
+            user_info['class'] = '' if agent_example.role_class is None else agent_example.role_class.description
 
             # todo: научиться получать эти параметры
             user_info['lvl'] = '0'
             user_info['karma'] = '0'
-
-            template_agent_info = tornado.template.Loader(
-                "../sublayers_server/templates/person",
-                namespace=self.get_template_namespace()
-            ).load("person_site_info.html")
-
-            html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user)
+            # Не формировать темплейт пользователя, пока не установлен ролевой класс
+            if agent_example.role_class:
+                template_agent_info = tornado.template.Loader(
+                    "../sublayers_server/templates/person",
+                    namespace=self.get_template_namespace()
+                ).load("person_site_info.html")
+                html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent_example.car
