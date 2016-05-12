@@ -208,6 +208,10 @@ function GetUserInfo() {
                 SetCurrentAvatar();
                 SetCurrentClass();
             }
+            if (registration_status == 'quick_user') {
+                console.log('Произошёл запрос информации для QuickGameUser');
+                return;
+            }
 
             // Переход на следующую страницу
             if (window.location.hash == '#start')
