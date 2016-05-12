@@ -25,6 +25,6 @@ class SiteMainHandler(BaseSiteHandler):
         # os.chdir(serv_dir)
 
         # Загружаем информацию о быстрой игре
-        quick_game_info = yield self._get_quick_game()
+        quick_game_info = self._get_quick_game()
 
         self.render('site_main.html', news_list=news_list, quick_game_cars=quick_game_info.get('quick_cars', []))

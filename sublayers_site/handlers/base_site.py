@@ -40,23 +40,23 @@ class BaseSiteHandler(BaseHandler):
             user_info['lvl'] = '0'
             user_info['karma'] = '0'
 
-            # template_agent_info = tornado.template.Loader(
-            #     "templates/person",
-            #     namespace=self.get_template_namespace()
-            # ).load("person_site_info.html")
+            template_agent_info = tornado.template.Loader(
+                "../sublayers_server/templates/person",
+                namespace=self.get_template_namespace()
+            ).load("person_site_info.html")
 
-            # html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user)
+            html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent_example.car
             if ex_car:
                 user_info['position'] = ex_car.position.as_tuple()
 
-            # template_img = tornado.template.Loader(
-            #     "templates/site",
-            #     namespace=self.get_template_namespace()
-            # ).load("car_info_ext_wrap.html")
-            # html_car_img = template_img.generate(car=ex_car)
+            template_img = tornado.template.Loader(
+                "../sublayers_server/templates/site",
+                namespace=self.get_template_namespace()
+            ).load("car_info_ext_wrap.html")
+            html_car_img = template_img.generate(car=ex_car)
 
         return dict(
             user_info=user_info,
@@ -65,17 +65,16 @@ class BaseSiteHandler(BaseHandler):
             html_agent=html_agent
         )
 
-    @tornado.gen.coroutine
     def _get_quick_game(self):
         car_examples = self.application.quick_game_cars_examples
         car_templates_list = []
 
-        # template_car = tornado.template.Loader(
-        #     "../sublayers_server/templates/site",
-        #     namespace=self.get_template_namespace()
-        # ).load("car_info_ext_wrap.html")
-        #
-        # for car_ex in car_examples:
-        #     html_car_img = template_car.generate(car=car_ex)
-        #     car_templates_list.append(html_car_img)
+        template_car = tornado.template.Loader(
+            "../sublayers_server/templates/site",
+            namespace=self.get_template_namespace()
+        ).load("car_info_ext_wrap.html")
+
+        for car_ex in car_examples:
+            html_car_img = template_car.generate(car=car_ex)
+            car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)

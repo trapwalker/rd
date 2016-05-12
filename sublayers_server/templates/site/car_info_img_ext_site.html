@@ -1,6 +1,6 @@
 <div class="car-info-block-picture-main">
     {% import tornado as tornado %}
-    {% raw tornado.template.Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True) %}
+    {% raw tornado.template.Loader('../sublayers_common/').load(car.armorer_car).generate(car=car, need_css_only=True) %}
     <div class="car-info-block-picture" style="background: url({{ static_url(static_world_link_repr(car.hangar_car)) }}) no-repeat center; z-index: 1"></div>
     {% set scale = getattr(car, 'image_scale') %}
     {% for k, v in car.iter_slots(tags='tuner') %}
