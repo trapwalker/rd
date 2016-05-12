@@ -40,8 +40,6 @@ define("template_path", default=_rel("templates"), help="path to static files", 
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
 define("forum_auth_script", default="http://192.168.1.202/forum/phpbb/auth/register_simple.php", help="address to forum auth script", type=str)
-define("get_user_info", default="http://127.0.0.1/api/get_user_info", help="", type=str)
-define("get_quick_game", default="http://127.0.0.1/api/get_quick_game_cars", help="", type=str)
 define("world_path", default='../sublayers_world', help="Path to world data", type=str)
 
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
