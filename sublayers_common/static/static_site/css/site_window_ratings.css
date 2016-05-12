@@ -1,0 +1,393 @@
+.window-ratings-main {
+    position: relative;
+    border: 2px solid #02ff54;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px - 27px);
+    box-sizing: border-box;
+    margin: 0 auto;
+    font-size: 12pt;
+}
+
+/*Настройка заголовка*/
+
+.window-ratings-header {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 20px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.window-ratings-header-path {
+    position: relative;
+    float: left;
+    cursor: pointer;
+    text-align: center;
+    width: 13%;
+    overflow: hidden;
+}
+
+.window-ratings-header-path.small {
+    width: 12%;
+}
+
+.window-ratings-header-path.middle {
+    width: 15%;
+}
+
+.window-ratings-header-path.long {
+    width: 20%;
+}
+
+/*.window-ratings-header-path:first-child {*/
+    /*margin-left: 4px;*/
+/*}*/
+
+.window-ratings-header-path:last-child {
+    margin-right: 0;
+}
+
+.window-ratings-header-path.active {
+    background-color: #01610a;
+}
+
+.window-ratings-header-path-content {
+    position: relative;
+    margin: 0 auto;
+}
+
+.window-ratings-header-path.active .window-ratings-header-path-content {
+
+}
+
+.window-ratings-header-path.active:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 3px;
+    top: 2px;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #00ff00;
+    border-bottom: 5px solid transparent;
+}
+
+.window-ratings-header-path.active:after {
+    content: ' ';
+    position: absolute;
+    right: 3px;
+    top: 2px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #00ff00;
+    border-bottom: 5px solid transparent;
+}
+
+/*Настройка левой части */
+
+.window-ratings-left-path {
+    position: relative;
+    float: left;
+    width: calc(50% - 10px);
+    height: calc(100% - 24px - 10px);
+    box-sizing: border-box;
+    border: 2px solid #007700;
+    margin: 0 6px 0 2px;
+}
+
+.window-ratings-line {
+    position: relative;
+    width: 100%;
+    height: 25px;
+    font-size: 12pt;
+    margin-bottom: 4px;
+    line-height: 1.7;
+    cursor: pointer;
+    border: 2px solid rgba(0, 0, 0, 0);
+}
+
+.window-ratings-line.odd {
+    background-color: #082801;
+}
+
+.window-ratings-line.first-line {
+    pointer-events: none;
+    margin-bottom: 7px;
+    height: 25px;
+    border-width: 0 0 2px 0;
+    box-sizing: border-box;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #00ff00, transparent);
+    border-image-slice: 1;
+    border: none;
+    padding: 0 4px;
+}
+
+.window-ratings-line:hover {
+    /*background-color: #00ff00;*/
+    /*/!*background-image: linear-gradient(45deg, #00ff00 25%, transparent 25%, transparent 74%, #00ff00 75%, #00ff00 ), linear-gradient(45deg, #00ff00 25%, transparent 25%, transparent 74%, #00ff00 75%, #00ff00 );*!/*/
+    /*background-size: 2px 2px;*/
+    /*background-position: 0 0, 1px 1px;*/
+    /*color: #000000;*/
+    /*text-shadow: none;*/
+    border: 2px solid #00ff00;
+}
+
+.window-ratings-line.active {
+    background-color: #00ff00;
+    /*background-image: linear-gradient(45deg, #00ff00 25%, transparent 25%, transparent 74%, #00ff00 75%, #00ff00 ), linear-gradient(45deg, #00ff00 25%, transparent 25%, transparent 74%, #00ff00 75%, #00ff00 );*/
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+    color: #030f00;
+    text-shadow: none;
+}
+
+.window-ratings-line-path {
+    position: relative;
+    float: left;
+    width: 20%;
+    height: 100%;
+    overflow: hidden;
+    text-align: center;
+}
+
+.window-ratings-line-path.rate-number {
+    width: 10%;
+    min-width: 20px;
+}
+
+.window-ratings-line-path.nickname{
+    width: 70%;
+    min-width: 50px;
+}
+
+.window-ratings-line-path.numbers {
+    max-width: 80px;
+}
+
+.window-ratings-board {
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: calc(100% - 30px);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.window-ratings-board.active { display: block; }
+
+.window-ratings-board .scroll-block { padding-right: 45px; }
+.window-ratings-board .scroll-btn.up { left: 156px; }
+.window-ratings-board .scroll-btn.down { left: 228px; }
+
+/*Настройка правой части */
+
+.window-ratings-right-path {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: calc(100% - 24px - 10px);
+    box-sizing: border-box;
+    /*border: 2px solid #0AB83E;*/
+    margin: 0 0 0 0;
+}
+
+
+.window-ratings-right-path-top {
+    position: relative;
+    width: 100%;
+    height: 20%;
+    box-sizing: border-box;
+    border: 2px solid #007700;
+    cursor: default;
+}
+
+.window-ratings-right-path-top-header {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    text-align: center;
+
+    line-height: 1.5;
+}
+
+.window-ratings-right-path-top-content {
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 24px);
+    text-align: center;
+    display: none;
+    font-size: 10pt;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+    padding: 0 3px;
+}
+
+
+.window-ratings-right-path-bottom {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 20% - 4px);
+    box-sizing: border-box;
+    border: 2px solid #007700;
+    margin-top: 4px;
+}
+
+.window-ratings-right-path-header-block-header-block {
+    position: relative;
+    top: -16px;
+    width: 100%;
+    height: 25px;
+    /*border-width: 0 0 2px 0;*/
+    box-sizing: border-box;
+    /*border-style: solid;*/
+    /*border-image: linear-gradient(to right, transparent, #00ff00, transparent);*/
+    /*border-image-slice: 1;*/
+}
+
+.window-ratings-right-path-header-block-back {
+    position: relative;
+    width: 60%;  /*138px;*/
+    height: 23px;
+    margin: 0 auto 0 auto;
+    background-color: #030f00;
+}
+
+.window-ratings-right-path-header-block-header {
+    position: relative;
+    width: calc(100% - 4px);
+    height: 23px;
+    margin: 0 auto 0 auto;
+    background-color: #01610a;
+    text-align: center;
+    line-height: 23px;
+}
+
+.window-ratings-right-path-content-block {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 32px);
+    /*background-color: white;*/
+    top: -15px;
+    box-sizing: border-box;
+    /* padding: 5px; */
+}
+
+.window-ratings-right-path-content-block .delimiter {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    margin-top: 9px;
+    border-width: 0 0 2px 0;
+    box-sizing: border-box;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+.window-ratings-right-path-content-block .car-info-name-block {
+    top: 20px;
+}
+
+/* Информация о машинках */
+
+.window-ratings-right-path-content-block .window-pi-user-car {
+    top: 0;
+}
+
+.window-ratings-right-path-content-block .person-info-chat-person-string-item {
+    font-size: 10pt;
+    line-height: 1.2;
+}
+
+.window-ratings-right-path-content-block .person-info-chat-person-string-item.odd {
+    background-color: #082801;
+}
+
+/* Медиа Запросы для разрешения 1366 */
+
+@media screen and (max-width: 1366px) {
+
+    .window-ratings-main {
+        font-size: 12pt;
+    }
+
+    .window-ratings-header {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .window-ratings-right-path-top {
+        height: 25%;
+    }
+
+    .window-ratings-right-path-bottom {
+        height: calc(100% - 25% - 4px);
+    }
+
+    .window-ratings-line {
+        height: 22px;
+    }
+
+    .window-ratings-line-path {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .window-ratings-line-path.numbers {
+        width: 25%;
+    }
+
+    .window-ratings-line-path.nickname {
+        width: 65%;
+    }
+
+    .window-ratings-right-path-top-content {
+        position: absolute;
+        font-size: 9pt;
+    }
+
+    /* Настройка отображения машинки */
+    .window-ratings-right-path-content-block .window-pi-user-info-table {
+        padding-left: 8px;
+        padding-right: 0px;
+        top: -4px;
+    }
+
+    .window-ratings-right-path-content-block .window-pi-user-car {
+        top: -30px;
+    }
+
+    .window-ratings-right-path-content-block .car-info-name-block{
+        top: 30px;
+    }
+
+    .window-ratings-right-path-content-block .car-info-block-picture-main.default-car {
+        overflow-y: hidden;
+        top: 15px;
+    }
+
+    .window-ratings-right-path-content-block .car-info-block-picture.default-car {
+        margin-top: -29px;
+    }
+
+    .window-ratings-right-path-content-block .delimiter {
+        height: 1px;
+        margin-top: 2px;
+    }
+
+    .window-ratings-right-path-content-block .car-info-name-block {
+        top: 32px;
+    }
+
+    .window-ratings-right-path-content-block .person-info-chat-person-string-item {
+        font-size: 9pt;
+        line-height: 1.2;
+    }
+
+    .window-ratings-board .scroll-btn.up { left: 100px; }
+    .window-ratings-board .scroll-btn.down { left: 172px; }
+}

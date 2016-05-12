@@ -1,0 +1,485 @@
+/*Здесь совершенно все стили для пати, разделённые коментариями*/
+/*Если будет тяжело, то разбить на файлы*/
+
+/*Окно создания пати*/
+.partyCreateWindow-main {
+    position: relative;
+    height: 100%;
+    width: 500px;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.partyCreateWindow-header {
+    position: relative;
+    height: 30px;
+    width: 100%;
+}
+
+.partyCreateWindow-comment {
+    position: relative;
+    float: left;
+    height: 200px;
+    width: 50%;
+}
+
+.partyCreateWindow-rules {
+    position: relative;
+    float: left;
+    height: 200px;
+    width: 50%;
+    background-color: transparent;
+}
+
+.partyCreateWindow-footer {
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 100%;
+}
+
+.partyCreateWindow-buttonCreate {
+    position: absolute;
+    pointer-events: auto;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    right: 0;
+    left: 0;
+    height: 30px;
+    width: 180px;
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding-top: 4px;
+    background-color: rgba(0, 255, 85, 0.29);
+    color: #2afd0a;
+    text-align: center;
+    font: 12pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.partyCreateWindow-buttonCreate:hover {
+    background-color: rgba(0, 255, 85, 0.5);
+}
+
+.partyCreateWindow-buttonCreate:active {
+    background-color: rgba(0, 255, 85, 0.1);
+    border: 1px solid rgba(0, 255, 85, 0.3);
+}
+
+/*Поле для ввода имени пати*/
+.partyCreateWindow-nameDiv {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    height: 17px;
+    width: 500px;
+}
+
+.partyCreateWindow-nameInput {
+    border: 0px solid #000000;
+    background: transparent;
+    color: #2afd0a;
+    width: 500px;
+    text-align: center;
+    font: 10pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.partyCreateWindow-nameInput:focus {
+    color: #ffffff;
+}
+
+/*Один инвайт*/
+.myInviteRecord-main {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+    padding-left: 8px;
+}
+
+.myInviteRecord-infoPlayer {
+    position: absolute;
+    top: 8px;
+}
+
+.myInviteRecord-infoParty {
+    position: absolute;
+    top: 28px;
+}
+
+.myInviteRecord-Btn {
+    position: absolute;
+    height: 25px;
+    right: 5px;
+    border: 1px solid rgba(0, 255, 85, 0.51);
+    background-color: rgba(0, 255, 85, 0.20);
+    border-radius: 2px;
+    box-sizing: border-box;
+    pointer-events: auto;
+    padding: 5px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.myInviteRecord-Btn:hover {
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    background-color: rgba(0, 255, 85, 0.50);
+}
+
+/*Окно инвайтов, которые ришли пользователю*/
+.partyMyInvitesWindow-main {
+    position: relative;
+    height: 100%;
+    width: 500px;
+    background-color: rgba(0, 0, 0, 0.75);
+
+}
+
+.partyInvitesWindowSpan {
+    color: #2afd0a;
+    text-align: center;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.partyMyInvitesWindow-invitesList {
+    position: relative;
+    border: 1px solid rgba(0, 255, 85, 0.5);
+    height: 230px;
+    width: 470px;
+    margin: 5px;
+    box-sizing: border-box;
+    padding: 3px;
+    overflow-y: auto;
+}
+
+.partyMyInvitesWindowPartyInviteArea {
+    position: relative;
+    border: 1px solid rgba(0, 255, 85, 0.5);
+    height: 270px;
+    width: 490px;
+    margin: 5px;
+    box-sizing: border-box;
+    padding: 3px;
+}
+
+/*todo: один класс остался в файле my_invites_window, так как он зависит от значения шаблона - переделать логику*/
+
+.partyMyInvitesWindow_sendInviteArea {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+/*Окно информации о пати*/
+.partyInfoWindow-main {
+    position: relative;
+    height: 100%;
+    width: 500px;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.partyInfoWindow-header {
+    position: relative;
+    height: 30px;
+    width: 100%;
+}
+
+.partyInfoWindow-comment {
+    position: relative;
+    float: left;
+    height: 150px;
+    width: 50%;
+}
+
+.partyInfoWindow-rules {
+    position: relative;
+    float: left;
+    height: 150px;
+    width: 50%;
+    background-color: transparent;
+}
+
+.partyInfoWindow-footer {
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 100%;
+}
+
+.partyInfoWindow-buttonJoin {
+    position: absolute;
+    pointer-events: auto;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    right: 0;
+    left: 0;
+    height: 30px;
+    width: 180px;
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding-top: 4px;
+    background-color: rgba(0, 255, 85, 0.29);
+    color: #2afd0a;
+    text-align: center;
+    font: 12pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.partyInfoWindow-buttonJoin:hover {
+    background-color: rgba(0, 255, 85, 0.5);
+}
+
+.partyInfoWindow-buttonJoin:active {
+    background-color: rgba(0, 255, 85, 0.1);
+    border: 1px solid rgba(0, 255, 85, 0.3);
+}
+
+/*Окно инвайтов для данной пати*/
+.partyInviteRecord-main {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+    padding-left: 8px;
+}
+
+.partyInviteRecord-infoSender {
+    position: absolute;
+    top: 8px;
+}
+
+.partyInviteRecord-infoRecipient {
+    position: absolute;
+    top: 28px;
+}
+
+.partyInviteRecord-Btn {
+    position: absolute;
+    height: 25px;
+    right: 5px;
+    border: 1px solid rgba(0, 255, 85, 0.51);
+    background-color: rgba(0, 255, 85, 0.20);
+    border-radius: 2px;
+    box-sizing: border-box;
+    pointer-events: auto;
+    padding: 5px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.partyInviteRecord-Btn:hover {
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    background-color: rgba(0, 255, 85, 0.50);
+}
+
+/*Запись об участнике пати*/
+.partyMemberRecord-main {
+    pointer-events: none;
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+    padding-left: 8px;
+    overflow: hidden;
+}
+
+.partyMemberRecord-name {
+    position: relative;
+}
+
+.partyMemberRecord-desr {
+    position: relative;
+}
+
+.partyMemberRecord-category {
+    position: relative;
+}
+
+.partyMemberRecord-Btn {
+    position: relative;
+    float: left;
+    border: 1px solid rgba(0, 255, 85, 0.81);
+    border-radius: 2px;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    pointer-events: auto;
+    padding: 5px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.partyMemberRecord-doCategoryUPBtn {
+
+}
+
+.partyMemberRecord-doCategoryDownBtn {
+
+}
+
+.partyMemberRecord-kickBtn {
+
+}
+
+/*Окно пати (для учатсников пати)*/
+.partyWindow-main {
+    position: relative;
+    height: 100%;
+    width: 500px;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.partyWindow-header {
+    position: relative;
+    height: 30px;
+    width: 100%;
+}
+
+.partyWindow-comment {
+    position: relative;
+    float: left;
+    height: 200px;
+    width: 50%;
+}
+
+.partyWindow-rules {
+    position: relative;
+    float: left;
+    height: 200px;
+    width: 50%;
+    background-color: transparent;
+}
+
+.partyWindow-membersArea {
+    position: relative;
+    border: 1px solid rgba(0, 255, 85, 0.5);
+    height: 200px;
+    width: 490px;
+    margin: 5px;
+    box-sizing: border-box;
+    padding: 3px;
+    overflow-y: auto;
+}
+
+.partyWindowMainWindowText-span {
+    position: relative;
+    left: 10px;
+    color: #2afd0a;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+}
+
+/*Отправка инвайта*/
+.partySendInvite-mainDiv {
+    position: relative;
+    box-sizing: border-box;
+    border: 1px solid rgba(85, 255, 85, 0.6);
+    width: 470px;
+    height: 27px;
+    margin: auto;
+    padding: 4px;
+}
+
+.partySendInviteInput {
+    border: 0 solid #000000;
+    position: relative;
+    float: left;
+    background: transparent;
+    color: #2afd0a;
+    width: 300px;
+    font: 10pt MICRADI;
+    letter-spacing: 1px;
+}
+
+.partySendInviteInput:focus {
+    color: #ffffff;
+}
+
+.partySendInviteBtn {
+    text-align: center;
+    position: relative;
+    float: right;
+    font: 10pt MICRADI;
+
+    letter-spacing: 1px;
+    border: 1px solid rgba(85, 255, 85, 0.6);
+    color: #2afd0a;
+    background-color: rgba(85, 255, 85, 0.20);
+}
+
+.partySendInviteBtn:hover {
+    background-color: rgba(85, 255, 85, 0.4);
+}
+
+.partySendInviteBtn:active {
+    background-color: rgba(85, 255, 85, 0.1);
+}
+
+/*Комментарий к участнику пати*/
+.partyTextComment-mainDiv {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 200px;
+    height: 141px;
+}
+
+.partyTextComment-titleDiv {
+    position: relative;
+    width: 100%;
+    color: #2afd0a;
+    text-align: center;
+    font: 13pt MICRADI;
+    letter-spacing: 1px;
+    padding-bottom: 3px;
+    pointer-events: none;
+}
+
+.partyTextComment-textarea {
+    border: 1px solid #2afd0a;
+    position: relative;
+    background: transparent;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    color: #2afd0a;
+    width: 200px;
+    height: 120px;
+    text-align: center;
+    resize: none;
+    font: 8pt MICRADI;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+}
+
+.partyTextComment-textarea:focus {
+    color: #ffffff;
+}

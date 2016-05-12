@@ -1,0 +1,41 @@
+.journal-page-parking-car-info-block {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.journal-page-parking-picture {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    padding-top: 15px;
+    box-sizing: border-box;
+}
+.journal-page-parking-picture .car-info-block-picture-main { margin-left: -17px; }
+#journal_page_parking .journal-page-parking-picture { z-index: 1 }
+
+.journal-page-parking-info {
+    position: relative;
+    margin: auto;
+    width: 97%;
+    height: calc(100% - 200px);
+}
+
+.journal-parking-menu-city-car-list {
+    position: relative;
+    padding-left: 17px;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+    display: none;
+}
+.journal-parking-menu-city-car-list.active { display: block; }
+
+.journal-parking-menu-city-car {
+    position: relative;
+    cursor: pointer;
+    opacity: 0.6;
+}
+.journal-parking-menu-city-car:hover { opacity: 1; }
+.journal-parking-menu-city-car.active { opacity: 1; }

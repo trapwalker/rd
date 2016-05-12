@@ -1,0 +1,138 @@
+.window-reg1-main {
+    position: relative;
+    border: 2px solid #02ff45;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px - 27px);
+    box-sizing: border-box;
+    margin: 0 auto;
+    font-size: 12pt;
+    cursor: default;
+}
+
+.window-reg1-path {
+    position: relative;
+    float: left;
+    width: calc(50% - 6px);
+    height: calc(58% - 25px - 24px);
+    box-sizing: border-box;
+    border: 2px solid #007700;
+    margin: 24px 0 0 4px;
+}
+.window-reg1-path.right {margin-left: 6px;}
+.window-reg1-path .slide-arrow { top: 120px; z-index: 1000; }
+
+.window-reg1-class-name {
+    position: relative;
+    margin: -8px auto 0 auto;
+    text-align: center;
+}
+
+.window-reg1-console-wrap {
+    position: relative;
+    float: left;
+    width: calc(100% - 6px);
+    height: 40%;
+    border: 2px solid #007700;
+    box-sizing: border-box;
+    margin: 3px 4px;
+    overflow: hidden;
+}
+
+.reg1-path-up-text-input-block {
+    position: relative;
+    width: 86%;
+    height: 23px;
+    margin: 0 auto;
+}
+.reg1-path-up-text-input-block .reg1-path-label {
+    position: relative;
+    width: 50px;
+    float: left;
+    text-align: left;
+    line-height: 24px;
+    top: -2px;
+}
+.reg1-path-up-text-input-block input {
+    width: calc(100% - 50px);
+    border-width: 0;
+    background-color: #082308;
+    font-size: 12pt;
+}
+
+.reg1-path-avatar-list {
+    position: relative;
+    width: 170px;
+    height: 146px;
+    margin: 10px auto;
+}
+
+.reg1-path-avatar-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.reg1-path-class-list {
+    position: relative;
+    width: 280px;
+    height: 170px;
+    margin: 5px auto;
+}
+
+.reg1-path-class-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.reg1-btn {
+    position: absolute;
+    float: left;
+    cursor: pointer;
+    width: 23%;
+    height: 18px;
+    background-color: #01380b;
+    text-align: center;
+    bottom: 7px;
+    border-radius: 2px;
+    line-height: 1.35;
+}
+.reg1-btn:hover { background-color: #01550b; }
+.reg1-btn:active { background-color: #000000; }
+
+.reg1-btn-back { left: 8px; }
+.reg1-btn-next { right: 9px; width: calc(23% - 1px); }
+
+/* Медиа Запросы для разрешения 1366 */
+
+@media screen and (max-width: 1366px) {
+    .window-reg1-main {
+        font-size: 10pt;
+    }
+
+    .window-reg1-path {
+        margin-top: 14px;
+        height: calc(58% - 24px - 9px);
+    }
+    .window-reg1-path .slide-arrow { top: 100px; }
+
+    .window-reg1-console-wrap { height: calc(38% + 3px); }
+
+    .reg1-path-up-text-input-block {
+        width: 90%;
+        height: 20px;
+    }
+    .reg1-path-up-text-input-block .reg1-path-label { line-height: 20px; top: 0; }
+
+    .window-reg1-class-name { margin: -8px auto 0 auto; }
+
+    .reg1-path-avatar-list { transform: scale(0.71); margin: -10px auto; }
+
+    .reg1-path-class-list { transform: scale(0.71); margin: -17px auto; }
+
+    .reg1-btn { bottom: 4px; }
+    .reg1-btn-back { left: 7px; width: calc(23% - 1px); }
+    .reg1-btn-next { right: 7px; }
+}

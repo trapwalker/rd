@@ -1,0 +1,91 @@
+.hangarWindow-main {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: default;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.hangar-center {
+    position: relative;
+    margin: 0 auto 0 auto;
+    width: 734px;
+    height: 392px;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+}
+
+.hangar-center-info-car-wrap {
+    position: relative;
+    height: 100%;
+    display: none;
+}
+
+.hangar-car-list {
+    position: relative;
+    margin-right: auto;
+    margin-left: auto;
+    width: 635px;
+    height: 113px;
+}
+
+.hangar-car-list-label {
+    box-sizing: border-box;
+    height: 20px;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+    padding-top: 3px;
+    margin-left: 20px;
+}
+
+.hangar-car-list-wrap {
+    width: 100%;
+    height: 90px;
+    overflow-x: scroll;
+    float: left;
+}
+
+.hangar-car-list-itemWrap {
+    box-sizing: border-box;
+    margin-right: 10px;
+    width: 130px;
+    height: 70px;
+    float: left;
+    background-color: #021503;
+    opacity: 0.6;
+}
+.hangar-car-list-itemWrap:hover {
+    opacity: 1;
+    background-color: #073D06;
+}
+
+.hangar-car-list-itemWrap-active {
+    opacity: 1;
+    background-color: #073D06;
+}
+
+.hangar-car-list-item {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    float: left;
+}
+
+.hangar-car-list-name {
+    position: absolute;
+    padding: 2px 2px 2px 2px;
+    font: 10pt Nouveau_IBM;
+    color: #29F200;
+    margin-left: 3px;
+}
+
+.hangar-car-list-pictureWrap {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}

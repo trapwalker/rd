@@ -1,0 +1,71 @@
+
+
+.effect-fire-discharge-png-1 {
+    height: 40px;
+    width: 40px;
+    background-image: url('/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-fire-discharge-png-2 {
+    height: 57px;
+    width: 75px;
+    background-image: url('/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-fire-auto-png {
+    height: 32px;
+    width: 20px;
+    background-image: url('/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-heavy-bang-png-1 {
+    height: 115px;
+    width: 115px;
+    background-image: url('/static/img/fire_effects/bangs/heavy_damage_1000_2_res_stripe.png');
+    background-position: 0px 0px;
+}
+
+.effect-heavy-bang-png-2 {
+    height: 115px;
+    width: 115px;
+    background-image: url('/static/img/fire_effects/bangs/heavy_damage_wave_1000_2_res_stripe.png');
+    background-position: 0px 0px;
+}
+
+.effect-light-bang-png-1 {
+    height: 22px;
+    width: 22px;
+    background-image: url('/static/img/fire_effects/bangs/light_damage_ground_stripe_3frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-light-bang-png-2 {
+    height: 22px;
+    width: 22px;
+    background-image: url('/static/img/fire_effects/bangs/light_damage_right_stripe_3frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-heavy-bang-oriented-png-1 {
+    height: 107px;
+    width: 107px;
+    background-image: url('/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-heavy-bang-oriented-png-2 {
+    height: 107px;
+    width: 107px;
+    background-image: url('/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png');
+    background-position: 0px 0px;
+}
+
+.effect-tracer-png {
+    height: 7px;
+    width: 14px;
+    background-image: url('/static/img/fire_effects/shoots/light_tracer.png');
+    background-position: 0px 0px;
+}

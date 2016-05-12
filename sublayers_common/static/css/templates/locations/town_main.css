@@ -1,0 +1,34 @@
+.townHTMLPage {
+    position: absolute;
+    width: 896px;
+    height: 665px;
+    top: 136px;
+    left: 515px;
+}
+
+/* Это классы пока никак не присваиваются, придумать как и присвоить их */
+.townNucoilPageWrap-no_car {
+    position: absolute;
+    top: 250px;
+    left: 625px;
+}
+
+.townArmorerPageWrap-no_car {
+    position: absolute;
+    top: 140px;
+    left: 592px;
+}
+
+.townTraderPageWrap-no_car {
+    position: absolute;
+    top: 155px;
+    left: 625px;
+}
+
+.noCarMessage {
+    position: relative;
+    margin: 200px auto 0px auto;
+    color: #30fc00;
+    text-align: center;
+    font: 18pt Nouveau_IBM;
+}

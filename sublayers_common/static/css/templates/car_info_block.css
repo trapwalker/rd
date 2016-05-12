@@ -1,0 +1,166 @@
+.car-info-block-main {
+    position: relative;
+    margin:  0 auto 0 auto;
+    width: 734px;
+    height: 392px;
+}
+
+.car-info-block-picture-hangar {
+    position: relative;
+    float: left;
+    width: 408px;
+    height: 390px;
+    overflow: hidden;
+    border-right: 1px solid #30fc00;
+    box-sizing: border-box;
+}
+.car-info-block-picture-hangar .car-info-block-picture-main { margin: 110px 0  0 -42px; }
+
+.car-info-block-picture-main {
+    position: relative;
+    width: 492px;
+    height: 170px;
+}
+
+.car-info-block-picture {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.car-info-block-info-hangar {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 326px;
+}
+
+.car-info-block-info {
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+}
+
+.car-info-block-body-right-menu {
+width: 100%;
+    height: 30px;
+    font: 12pt Nouveau_IBM;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, #30fc00, transparent);
+    border-image-slice: 1;
+    padding-left: 10px;
+    box-sizing: border-box;
+}
+
+.mainCarInfoWindow-body-right-menu-button {
+    position: relative;
+    float: left;
+    margin: 6px 0 0 22px;
+    text-align: center;
+    color: #135806;
+    cursor: pointer;
+}
+
+.mainCarInfoWindow-body-right-menu-button-arrow-left {
+    width: 0px;
+    height: 0px;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #30fc00;
+    border-bottom: 5px solid transparent;
+    margin: 8px 3px 0 0;
+    float: left;
+}
+
+.mainCarInfoWindow-body-right-menu-button-arrow-right {
+    width: 0px;
+    height: 0px;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #30fc00;
+    border-bottom: 5px solid transparent;
+    margin: 8px 0 0 3px;
+    float: left;
+}
+
+.mainCarInfoWindow-body-right-menu-button:hover {
+    background-color: #061108;
+    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+    color: #30fc00;
+}
+
+.mainCarInfoWindow-body-right-menu-button-active {
+    background-color: #061108;
+    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+    color: #30fc00;
+    margin-left: 3px;
+}
+
+.car-info-block-body-right-list {
+    position: relative;
+    font: 12pt FreePixel;
+    width: 100%;
+    height: calc(100% - 30px);
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    cursor: default;
+}
+
+.car-info-block-body-right-list-name {
+    position: relative;
+    float: left;
+    width: 150px;
+    color: #1e9604;
+    margin-bottom: 2px;
+    display: inline-block;
+}
+
+.car-info-block-body-right-list-value {
+position: relative;
+    float: left;
+    width: calc(100% - 150px);
+    color: #30fc00;
+    margin-bottom: 2px;
+    padding-left: 10px;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.car-info-block-body-right-list-even {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
+    linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.car-info-block-body-right-list-uneven {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+    linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.car-info-block-body-right-list-bonuses {
+    position: relative;
+    float: left;
+    height: 30px;
+    width: calc(100% - 10px);
+    line-height: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-top: dashed 2px #135806;
+    color: #1e9604;
+}
