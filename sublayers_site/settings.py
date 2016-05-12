@@ -35,7 +35,7 @@ def _rel(*folders):
 define("debug", default=False, help="Debug mode flag", type=bool)
 define("cookie_secret", help="cookie secret key", type=str)
 define("forum_cookie_secret", help="cookie secret key", type=str)
-define("static_path", default=_rel("static_site"), help="path to static files", type=str)
+define("static_path", default=_rel("../sublayers_common/static"), help="path to static files", type=str)
 define("template_path", default=_rel("templates"), help="path to static files", type=str)
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)

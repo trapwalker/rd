@@ -53,26 +53,27 @@ class GetUserInfoHandler(BaseSiteHandler):
 class GetUserInfoByIDHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
-        user_id = self.get_argument('user_id', None)
-        if user_id:
-            user = None
-            try:
-                user = yield User.objects.get(ObjectId(user_id))
-            except InvalidId as e:
-                log.warning('User resolve error: %r', e)
-            if user:
-                if user.quick:
-                    self.finish({
-                        'user_name': user.name,
-                    })
-                else:
-                    user_info = yield self._get_car(user=user)
-                    self.finish({
-                        'user_name': user.name,
-                        'user_car_html': user_info.get('html_car_img', ''),
-                        'user_info_html': user_info.get('html_agent', ''),
-                    })
-            else:
-                self.send_error(404)
-        else:
-            self.send_error(404)
+        pass
+        # user_id = self.get_argument('user_id', None)
+        # if user_id:
+        #     user = None
+        #     try:
+        #         user = yield User.objects.get(ObjectId(user_id))
+        #     except InvalidId as e:
+        #         log.warning('User resolve error: %r', e)
+        #     if user:
+        #         if user.quick:
+        #             self.finish({
+        #                 'user_name': user.name,
+        #             })
+        #         else:
+        #             user_info = yield self._get_car(user=user)
+        #             self.finish({
+        #                 'user_name': user.name,
+        #                 'user_car_html': user_info.get('html_car_img', ''),
+        #                 'user_info_html': user_info.get('html_agent', ''),
+        #             })
+        #     else:
+        #         self.send_error(404)
+        # else:
+        #     self.send_error(404)

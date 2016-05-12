@@ -70,12 +70,12 @@ class BaseSiteHandler(BaseHandler):
         car_examples = self.application.quick_game_cars_examples
         car_templates_list = []
 
-        template_car = tornado.template.Loader(
-            "../sublayers_server/templates/site",
-            namespace=self.get_template_namespace()
-        ).load("car_info_ext_wrap.html")
-
-        for car_ex in car_examples:
-            html_car_img = template_car.generate(car=car_ex)
-            car_templates_list.append(html_car_img)
+        # template_car = tornado.template.Loader(
+        #     "../sublayers_server/templates/site",
+        #     namespace=self.get_template_namespace()
+        # ).load("car_info_ext_wrap.html")
+        #
+        # for car_ex in car_examples:
+        #     html_car_img = template_car.generate(car=car_ex)
+        #     car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
