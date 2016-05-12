@@ -57,8 +57,6 @@ function main() {
     for (var i = 0; i < ratings_name.length; i++) {
         GetRatingInfo(ratings_name[i]);
     }
-
-    consoleWStart.start();
 }
 
 function init_site_sound() {
