@@ -34,7 +34,7 @@ function main() {
     plate_img.onerror = function() {
         console.warn('eCanvasChipAnimation: Content dont load');
     };
-    plate_img.src = '/static_site/img/chip_anim_all.png';
+    plate_img.src = '/static/static_site/img/chip_anim_all.png';
 
     initConsoles();
 
@@ -57,8 +57,6 @@ function main() {
     for (var i = 0; i < ratings_name.length; i++) {
         GetRatingInfo(ratings_name[i]);
     }
-
-    consoleWStart.start();
 }
 
 function init_site_sound() {
@@ -158,7 +156,6 @@ function GetUserInfo() {
                     pos_x = data.position[0].toFixed(0);
                     pos_y = data.position[1].toFixed(0);
                 }
-
                 consoleWPI.clear();
                 consoleWPI.add_message('user', 'Загрузка системы навигации.');
                 consoleWPI.add_message(

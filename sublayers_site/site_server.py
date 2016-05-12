@@ -44,13 +44,14 @@ class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
         settings.setdefault('xsrf_cookies', False)  # todo: (!) Починить и убрать эту строчку! По умолчанию True
         settings.setdefault('static_path', options.static_path)
-        settings.setdefault('static_url_prefix', '/static_site/')
         settings.setdefault('login_url', '/login')
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
-        self.reg_agents = Collection(name='agents', db=self.db)
+
+        self.reg = None
+        self.reg_agents = None
+        self.quick_game_cars_examples = []
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/login", StandardLoginHandler),
@@ -64,6 +65,19 @@ class Application(BaseApplication):
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),
             (r"/site_api/audio1", GetAudioTest),
         ])
+
+        tornado.ioloop.IOLoop.instance().add_callback(self.on_init_site_structure)
+
+    def on_init_site_structure(self):
+        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
+        self.reg_agents = Collection(name='agents', db=self.db)
+
+        # Создание экземпляров машинок для быстрой игры
+        quick_game_cars_proto = []
+        for car_proto in self.reg['/world_settings'].values.get('quick_game_car'):
+            # todo: Здесь не должны инстанцироваться машинки
+            car_example = self.reg[car_proto].instantiate()
+            self.quick_game_cars_examples.append(car_example)
 
         print 'Road Dogs Site load !'
 

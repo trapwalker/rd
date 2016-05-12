@@ -26,7 +26,7 @@ class GetUserInfoHandler(BaseSiteHandler):
             self.finish({'user_status': 'quick_user', 'user_name': user.name})
             return
 
-        user_info = yield self._get_car(username=user.name)
+        user_info = self._get_car(user=user)
         agent_info = user_info.get('user_info', dict())
 
         created = None
@@ -53,6 +53,7 @@ class GetUserInfoHandler(BaseSiteHandler):
 class GetUserInfoByIDHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
+        pass
         user_id = self.get_argument('user_id', None)
         if user_id:
             user = None
@@ -66,7 +67,7 @@ class GetUserInfoByIDHandler(BaseSiteHandler):
                         'user_name': user.name,
                     })
                 else:
-                    user_info = yield self._get_car(username=user.name)
+                    user_info = self._get_car(user=user)
                     self.finish({
                         'user_name': user.name,
                         'user_car_html': user_info.get('html_car_img', ''),

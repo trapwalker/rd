@@ -21,6 +21,8 @@ var TextConsoleEffectManager = (function(){
     };
 
     TextConsoleEffect.prototype.start = function(page_id) {
+        //console.log('TextConsoleEffect.prototype.start', page_id);
+
         // Останавливаем все консоли
         this.stop();
 
@@ -241,6 +243,7 @@ var TextConsole = (function(){
     };
 
     TextConsole.prototype.start = function() {
+        //console.log('TextConsole.prototype.start', this);
         if (!this.target_div) {
             console.warn('Не задан контейнер консоли!');
             return;
@@ -352,8 +355,6 @@ var ConsoleWReg = (function (_super) {
         );
 
         textConsoleManager.add(this);
-
-
     }
 
     return ConsoleWReg;
@@ -366,7 +367,7 @@ var ConsoleWPI = (function (_super) {
         _super.call(this);
         this.target_div = $('#RDSitePIConsole');
         this.init();
-        this.page_id = 'RDSiteWReg';
+        this.page_id = 'RDSitePersonalInfo';
         this._message_info.system.placeholder = function() { return '> '  };
         this._message_info.system.after_print_delay = 2.5;
         this._message_info.system.before_print_delay = 2.5;
