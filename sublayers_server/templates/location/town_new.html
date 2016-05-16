@@ -1,0 +1,141 @@
+<style>
+    #btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area,
+    #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area {
+
+    }
+
+    #img_back_1, #img_back_2 {
+        pointer-events: none;
+    }
+
+    .highlight-buildings {
+        cursor: pointer;
+    }
+
+</style>
+
+<div>
+    {% raw svg_code %}
+</div>
+
+<script>
+
+    $(function () {
+        console.log('Вызов установки кликов для города!');
+        var jq_btn = $('#btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area, #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area');
+
+        var jq_towns = $('#btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area, #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area');
+
+        jq_btn
+                .mouseenter(function (event) {
+                    var id = $(this).attr('id');
+                    if (id.indexOf('_area')) {
+                        id = id.replace('_area', '');
+                        // Проверка доступности кнопок
+                        var noactive_status = $('#' + id + '_noactive').css('display');
+                        if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
+                            $('#' + id + '_hover').css('display', 'block');
+                            $('#' + id + '_active').css('display', 'none');
+                            $('#' + id).css('display', 'none');
+                        }
+                    }
+                })
+                .mouseleave(function (event) {
+                    var id = $(this).attr('id');
+                    if (id.indexOf('_area')) {
+                        id = id.replace('_area', '');
+                        // Проверка доступности кнопок
+                        var noactive_status = $('#' + id + '_noactive').css('display');
+                        if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
+                            $('#' + id + '_hover').css('display', 'none');
+                            $('#' + id + '_pressed').css('display', 'none');
+                            $('#' + id + '_active').css('display', 'block');
+                            $('#' + id).css('display', 'block');
+                        }
+                    }
+                })
+                .mousedown(function (event) {
+                    var id = $(this).attr('id');
+                    if (id.indexOf('_area')) {
+                        id = id.replace('_area', '');
+                        // Проверка доступности кнопок
+                        var noactive_status = $('#' + id + '_noactive').css('display');
+                        if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
+                            $('#' + id + '_hover').css('display', 'none');
+                            $('#' + id + '_pressed').css('display', 'block');
+                        }
+                    }
+                })
+                .mouseup(function (event) {
+                    var id = $(this).attr('id');
+                    if (id.indexOf('_area')) {
+                        id = id.replace('_area', '');
+                        // Проверка доступности кнопок
+                        var noactive_status = $('#' + id + '_noactive').css('display');
+                        if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
+                            $('#' + id + '_hover').css('display', 'block');
+                            $('#' + id + '_pressed').css('display', 'none');
+                        }
+
+                        switch (id) {
+                            case 'btn_1':
+                                console.log('click on btn1');
+                                break;
+                            case 'btn_2':
+                                console.log('click on btn2');
+                                break;
+                            case 'btn_3':
+                                console.log('click on btn3');
+                                break;
+                            case 'btn_4':
+                                console.log('click on btn4');
+                                break;
+                            case 'btn_screen_location':
+                                console.log('click on btn_screen_location');
+                                break;
+                            case 'btn_screen_chat':
+                                console.log('click on btn_screen_chat');
+                                break;
+                            case 'btn_screen_menu':
+                                console.log('click on btn_screen_menu');
+                                break;
+                        }
+                    }
+                });
+
+        // События для зданий
+        var jq_buildings = $('.highlight-buildings');
+        jq_buildings.click(function(event){
+            //console.log('Build click --- > ', this);
+            var id = $(this).attr('id');
+        });
+
+        jq_buildings.mouseenter(function(event){
+            //console.log('Build mouseenter --- > ', this);
+            var id = $(this).attr('id');
+            var index = id.split('_')[1];
+            index = index.substr(index.length - 1, 1);
+            $("#img_house"+ index +"_on").css("display", "block");
+            $("#img_house" + index + "_off").css("display", "none");
+            $("#path_h" + index).css("opacity", "0.8");
+            $("#path_text_h" + index).css("opacity", "0.8");
+
+        });
+
+        jq_buildings.mouseleave(function(event){
+            //console.log('Build mouseleave --- > ', this);
+            var id = $(this).attr('id');
+            var index = id.split('_')[1];
+            index = index.substr(index.length - 1, 1);
+            $("#img_house" + index + "_off").css("display", "block");
+            $("#img_house" + index + "_on").css("display", "none");
+            $("#path_h" + index).css("opacity", "0.2");
+            $("#path_text_h" + index).css("opacity", "0.2");
+        });
+
+
+
+    });
+
+
+</script>
