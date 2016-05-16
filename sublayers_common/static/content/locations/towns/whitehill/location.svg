@@ -26,11 +26,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="1526.4634"
-     inkscape:cy="412.40336"
+     inkscape:zoom="0.7"
+     inkscape:cx="732.45342"
+     inkscape:cy="393.5149"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -65,13 +65,187 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-2.362448)"
-     class="townPageWrap" />
+     class="townPageWrap">
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\ground+circle.png"
+       xlink:href="ground+circle.png"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="landscape"
+       x="485"
+       y="138.36244" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\nukeoil_bg.png"
+       xlink:href="nukeoil_bg.png"
+       style="display:none"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="image3396"
+       x="485"
+       y="138.36244" />
+  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="building"
      class="townPageWrap"
      transform="translate(0,2.3339844e-4)">
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\nukeoil.png"
+       xlink:href="nukeoil.png"
+       class="highlight-buildings"
+       style="display:block"
+       width="141"
+       height="81"
+       preserveAspectRatio="none"
+       id="img_house1_off"
+       x="1188.7141"
+       y="646.43982" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\nukeoil_hover.png"
+       xlink:href="nukeoil_hover.png"
+       class="highlight-buildings"
+       style="display:none"
+       width="141"
+       height="81"
+       preserveAspectRatio="none"
+       id="img_house1_on"
+       x="1188.7141"
+       y="646.43982" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\mayor.png"
+       xlink:href="mayor.png"
+       class="highlight-buildings"
+       y="430.40851"
+       x="567.68604"
+       id="img_house2_off"
+       preserveAspectRatio="none"
+       height="107"
+       width="141"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\mayor_hover.png"
+       xlink:href="mayor_hover.png"
+       class="highlight-buildings"
+       y="430.40851"
+       x="567.68604"
+       id="img_house2_on"
+       preserveAspectRatio="none"
+       height="107"
+       width="141"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\bar.png"
+       xlink:href="bar.png"
+       class="highlight-buildings"
+       style="display:block"
+       width="86"
+       height="109"
+       preserveAspectRatio="none"
+       id="img_house3_off"
+       x="1162"
+       y="503.3569" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\bar_hover.png"
+       xlink:href="bar_hover.png"
+       class="highlight-buildings"
+       style="display:none"
+       width="86"
+       height="109"
+       preserveAspectRatio="none"
+       id="img_house3_on"
+       x="1162"
+       y="503.3569" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\dealer.png"
+       xlink:href="dealer.png"
+       class="highlight-buildings"
+       style="display:block"
+       width="177"
+       height="61"
+       preserveAspectRatio="none"
+       id="img_house4_off"
+       x="698.82721"
+       y="633.30664" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\dealer_hover.png"
+       xlink:href="dealer_hover.png"
+       class="highlight-buildings"
+       style="display:none"
+       width="177"
+       height="61"
+       preserveAspectRatio="none"
+       id="img_house4_on"
+       x="698.82721"
+       y="633.30664" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\autoservice.png"
+       xlink:href="autoservice.png"
+       class="highlight-buildings"
+       y="621.75793"
+       x="995.27216"
+       id="img_house5_off"
+       preserveAspectRatio="none"
+       height="63"
+       width="154"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\autoservice_hover.png"
+       xlink:href="autoservice_hover.png"
+       class="highlight-buildings"
+       y="621.75818"
+       x="995.27216"
+       id="img_house5_on"
+       preserveAspectRatio="none"
+       height="63"
+       width="154"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\market.png"
+       xlink:href="market.png"
+       class="highlight-buildings"
+       y="463.3569"
+       x="754.64276"
+       id="img_house6_off"
+       preserveAspectRatio="none"
+       height="134"
+       width="105"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\market_hover.png"
+       xlink:href="market_hover.png"
+       class="highlight-buildings"
+       y="463.35715"
+       x="754.64276"
+       id="img_house6_on"
+       preserveAspectRatio="none"
+       height="134"
+       width="105"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\library.png"
+       xlink:href="library.png"
+       class="highlight-buildings"
+       y="538.586"
+       x="909.6145"
+       id="img_house7_off"
+       preserveAspectRatio="none"
+       height="105"
+       width="94"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\library_hover.png"
+       xlink:href="library_hover.png"
+       class="highlight-buildings"
+       y="538.58624"
+       x="909.6145"
+       id="img_house7_on"
+       preserveAspectRatio="none"
+       height="105"
+       width="94"
+       style="display:none" />
     <g
        inkscape:groupmode="layer"
        id="layer6"
@@ -174,19 +348,22 @@
        style="display:none" />
     <path
        style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1085,896.00037 15,91.14287 127.8571,0 -16.8105,-90.23301 z"
+       d="m 1086.0714,895.28608 14.6429,92.2143 140.7142,0 -22.5248,-91.30444 z"
        id="btn_screen_location_area"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
     <path
        style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1227.8571,896.78609 25.3572,89.64286 130,0 -30,-89.64286 z"
+       d="m 1223.9285,897.50038 22.5001,90.35714 141.0714,-0.35714 -32.1428,-90.35715 z"
        id="btn_screen_chat_area"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
     <path
        style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1367.5,897.14324 37.5,89.64285 130.3571,0 -45.3571,-90 z"
+       d="m 1360,897.50038 32.5,90.35714 142.5,-0.35714 -45,-89.64286 z"
        id="btn_screen_menu_area"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
   </g>
   <g
      inkscape:groupmode="layer"
