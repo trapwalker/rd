@@ -1,58 +1,22 @@
     # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 import logging
 log = logging.getLogger(__name__)
 
-
-import sys
 import six
 import yaml
+from bson import ObjectId
+from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
 from motorengine import (
-    Document, StringField, ListField, ReferenceField,
-    EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField,
+    Document, StringField, ListField, BooleanField, EmbeddedDocumentField, EmailField, IntField, DateTimeField,
+    ReferenceField,
 )
-
 
 class StorageUnspecified(Exception):
     # todo: refactor declaration of exception
     pass
 
-
-class RefField(ReferenceField):
-
-    def get_class(self, klass_path):
-        if not klass_path:
-            raise ImportError("Wrong class reference %s." % klass_path)
-
-        klass_path_parts = klass_path.split('.')
-        module_parts = klass_path_parts[:-1]
-        klass_name = klass_path_parts[-1]
-
-        if module_parts:
-            module = __import__('.'.join(module_parts))
-        else:
-            module = sys.modules[self.__module__]
-
-        if len(module_parts) > 1:
-            for part in module_parts[1:]:
-                module = getattr(module, part)
-            
-        try:
-            return getattr(module, klass_name)
-        except AttributeError:
-            err = sys.exc_info()
-            raise ImportError("Can't find class %s (%s)." % (klass_path, str(err)))
-
-    @property
-    def reference_type(self):
-        if self._resolved_reference_type is None:
-            if isinstance(self._reference_document_type, six.string_types):
-                self._resolved_reference_type = self.get_class(self._reference_document_type)
-            else:
-                self._resolved_reference_type = self._reference_document_type
-
-        return self._resolved_reference_type
-    
 
 class Node(Document):
     __lazy__ = True
@@ -61,13 +25,13 @@ class Node(Document):
     }
     # todo: override attributes in subclasses
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
-    parent = RefField('Node')
-    owner = RefField('Node')
-    can_instantiate = BooleanField( default=True)  # Инстанцируемый - Признак возможности инстанцирования'
+    parent = ReferenceField('sublayers_server.model.registry.tree.Node')
+    owner = ReferenceField('sublayers_server.model.registry.tree.Node')
+    can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'
     name = StringField()
     doc = StringField()
     tags = ListField(StringField())  # Теги
-    _subnodes = ListField(RefField('Node'))  # todo: реализовать переподчинении нода?
+    _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))  # todo: реализовать переподчинении нода?
 
     def __init__(self, storage=None, **kw):
         """
@@ -77,12 +41,58 @@ class Node(Document):
         @param Node owner: Owner of node in dhe tree
         @param bool abstract: Abstract sign of node
         """
-        super(Node, self).__init__(**kw)
-        self.storage = storage
+        super(Node, self).__init__(storage=storage, **kw)
+    
         if self.owner:
             self.owner._subnodes.append(self)  # todo: check it
+    
+        self.storage = storage
         if storage:
             storage.put(self)
+
+    def find_reference_field(self, document, results, field_name, field):
+        if self.is_reference_field(field):
+            value = document._values.get(field_name, None)
+
+            # todo: fix test value to URI format
+            if isinstance(value, six.string_types) and value.startswith('reg://'):
+                results.append([
+                    field.reference_type.get_by_uri,
+                    value,
+                    document._values,
+                    field_name,
+                    None
+                ])
+            elif value is not None:
+                results.append([
+                    field.reference_type.objects.get,
+                    value,
+                    document._values,
+                    field_name,
+                    None
+                ])
+
+    def __repr__(self):
+        return '{self.__class__.__name__}(\n{params})'.format(
+            self=self,
+            params=''.join(['\t{}={!r},\n'.format(k, v) for k, v in sorted(self.to_son().items() + [('_id', self._id)])]),
+        )
+
+    @classmethod
+    def get_by_uri(cls, uri, callback):
+        # todo: test uri to string and URI
+        pass
+
+    def validate_fields(self):
+        for name, field in self._fields.items():
+            value = self.get_field_value(name)
+            parent = self.parent
+            if field.required and field.is_empty(value) and (not parent or not hasattr(parent, name)):
+                raise InvalidDocumentError("Field '%s' is required." % name)
+            if not field.validate(value):
+                raise InvalidDocumentError("Field '%s' must be valid." % name)
+
+        return True
 
     @property
     def _field_tags(self):
@@ -93,23 +103,52 @@ class Node(Document):
         d.update(self.__field_tags__)
         return d
 
-    # @property
-    # def uri(self):
-    #     if self.storage is None:
-    #         return
-    #     return self.storage.get_uri(self)
+    def __getattribute__(self, name):
+        # required for the next test
+        if name in ['_fields']:
+            return object.__getattribute__(self, name)
 
-    # @property
-    # def id(self):
-    #     # todo: Решить проблему изменения идентификатора при помещении в хранилище
-    #     return self.uri and str(self.uri) or '{}#{}'.format(self.__class__.__name__, id(self))
+        if name in self._fields:
+            field = self._fields[name]
+            is_reference_field = self.is_reference_field(field)
+            if name in self._values:
+                value = field.get_value(self._values[name])
+            elif name == 'parent':
+                return None
+            else:
+                parent = self.parent
+                if field.required and (not parent or not hasattr(parent, name)):
+                    log.warning('Required value %s is not defined in property owner class %s', name, self.__class__)
+                value = getattr(parent, name, None)  # todo: may be exception need?
 
-    # def node_hash(self): # todo: (!) rename, make 'uri' property
-    #     if self.uri:
-    #         return str(self.uri)
-    #     elif self.parent:
-    #         return self.parent.node_hash()
-    #     raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
+            if is_reference_field and value is not None and not isinstance(value, field.reference_type):
+                message = "The property '%s' can't be accessed before calling 'load_references'" + \
+                    " on its instance first (%s) or setting __lazy__ to False in the %s class."
+
+                raise LoadReferencesRequiredError(
+                    message % (name, self.__class__.__name__, self.__class__.__name__)
+                )
+
+            return value
+
+        return object.__getattribute__(self, name)
+
+    @property
+    def id(self):
+        return str(self._id)
+
+    @property
+    def uri(self):
+        if self.storage is None:
+            return
+        return self.storage.get_uri(self)
+
+    def node_hash(self): # todo: (!) rename, make 'uri' property
+        if self.uri:
+            return str(self.uri)
+        elif self.parent:
+            return self.parent.node_hash()
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
 
     # def node_html(self):
     #     return self.node_hash().replace('://', '-').replace('/', '-')
@@ -260,13 +299,3 @@ class Node(Document):
 
     # def _has_attr_value(self, name):
     #     return name in self.values
-
-
-if __name__ == '__main__':
-    sys.path.append('../../..')
-    #from pprint import pprint as pp
-    # from pickle import dumps, loads
-    # import jsonpickle as jp
-    pass
-    a = Node(name='a', doc='aa')
-    b = Node(name='b', parent=a, doc='bb')
