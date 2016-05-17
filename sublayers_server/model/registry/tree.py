@@ -9,9 +9,12 @@ import yaml
 from bson import ObjectId
 from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
 from motorengine import (
-    Document, StringField, ListField, BooleanField, EmbeddedDocumentField, EmailField, IntField, DateTimeField,
-    ReferenceField,
+    Document, StringField, ListField, BooleanField, UUIDField, ReferenceField,
+    EmbeddedDocumentField, EmailField, IntField, DateTimeField,
 )
+
+from uuid import uuid1 as get_uuid, UUID
+
 
 class StorageUnspecified(Exception):
     # todo: refactor declaration of exception
@@ -24,6 +27,7 @@ class Node(Document):
         'client': ['tags'],
     }
     # todo: override attributes in subclasses
+    uid = UUIDField(default=get_uuid)
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
     parent = ReferenceField('sublayers_server.model.registry.tree.Node')
     owner = ReferenceField('sublayers_server.model.registry.tree.Node')
@@ -41,6 +45,7 @@ class Node(Document):
         @param Node owner: Owner of node in dhe tree
         @param bool abstract: Abstract sign of node
         """
+        #_id=kw.pop('_id', ObjectId()),
         super(Node, self).__init__(storage=storage, **kw)
     
         if self.owner:
