@@ -4,13 +4,45 @@
         cursor: pointer;
     }
 
-    #img_back_1, #img_back_2 {
-        pointer-events: none;
-    }
-
     .highlight-buildings {
         cursor: pointer;
     }
+
+    #building-content {
+        position: absolute;
+        width: 780px;
+        height: 690px;
+        background-color: red;
+        top: 138px;
+        left: 570px;
+    }
+
+    .town-img-mask {
+        position: absolute;
+        top: 0;
+        pointer-events: none;
+    }
+
+
+    #town-out-screen-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .town-panel {
+        position: absolute;
+        top: 50px;
+        width: 400px;
+        height: 400px;
+        background-color: yellow;
+    }
+
+    .town-panel.left {left: 100px;}
+    .town-panel.right {right: 100px;}
 
 </style>
 
@@ -18,13 +50,22 @@
     {% raw svg_code %}
 </div>
 
+<div id="building-content"></div>
+
+<img class="town-img-mask" src="static/content/locations/towns/city_mask_1.png"/>
+
+<div id="town-out-screen-area">
+    <div id="townLeftPanel" class="town-panel left"></div>
+    <div id="townRightPanel" class="town-panel right"></div>
+</div>
+
+<img class="town-img-mask" src="static/content/locations/towns/city_mask_2.png"/>
+
 <script>
 
     $(function () {
         console.log('Вызов установки кликов для города!');
         var jq_btn = $('#btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area, #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area');
-
-        var jq_towns = $('#btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area, #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area');
 
         jq_btn
                 .mouseenter(function (event) {
@@ -108,6 +149,8 @@
         jq_buildings.click(function(event){
             //console.log('Build click --- > ', this);
             var id = $(this).attr('id');
+            var building = $(this).data('building');
+            console.log('Open ', building);
         });
 
         jq_buildings.mouseenter(function(event){
@@ -132,6 +175,11 @@
             $("#path_h" + index).css("opacity", "0.2");
             $("#path_text_h" + index).css("opacity", "0.2");
         });
+
+
+        // Вставка вёрстки зданий
+
+        // $('#img_back_1').before('<div id="building-content"></div>');
 
 
 

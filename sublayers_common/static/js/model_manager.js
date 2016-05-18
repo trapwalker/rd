@@ -709,6 +709,7 @@ var ClientManager = (function () {
 
                 $('#activeTownDiv').append(data);
                 $('#activeTownDiv').css('display', 'block');
+                $('#activeTownDivBack').css('display', 'block');
                 locationManager.location_uid = event.location.uid;
                 windowTemplateManager.closeAllWindows();
                 locationManager.in_location = true;
@@ -740,6 +741,7 @@ var ClientManager = (function () {
         chat.showChatInMap();
         $('#activeTownDiv').empty();
         $('#activeTownDiv').css('display', 'none');
+        $('#activeTownDivBack').css('display', 'none');
         locationManager.location_uid = null;
         locationManager.visitorsManager.clear_visitors();
         locationManager.nucoil.clear();
