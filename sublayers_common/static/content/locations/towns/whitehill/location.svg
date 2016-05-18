@@ -27,10 +27,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="732.45342"
+     inkscape:cx="522.27084"
      inkscape:cy="393.5149"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -82,9 +82,69 @@
        width="943"
        height="752"
        preserveAspectRatio="none"
-       id="image3396"
+       id="nucoil-back"
        x="485"
        y="138.36244" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\mayor_bg.png"
+       xlink:href="mayor_bg.png"
+       style="display:none"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="mayor-back"
+       x="485"
+       y="138.36244" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\bar_bg.png"
+       xlink:href="bar_bg.png"
+       style="display:none"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="bar-back"
+       x="485"
+       y="138.36244" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\dealer_bg.png"
+       xlink:href="dealer_bg.png"
+       y="138.36244"
+       x="485"
+       id="dealer-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\autoservice_bg.png"
+       xlink:href="autoservice_bg.png"
+       y="138.36244"
+       x="485"
+       id="service-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\market_bg.png"
+       xlink:href="market_bg.png"
+       y="138.36244"
+       x="485"
+       id="market-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\library_bg.png"
+       xlink:href="library_bg.png"
+       y="138.36244"
+       x="485"
+       id="library-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -106,6 +166,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\nukeoil_hover.png"
        xlink:href="nukeoil_hover.png"
+       data-building="nucoil"
        class="highlight-buildings"
        style="display:none"
        width="141"
@@ -128,6 +189,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\mayor_hover.png"
        xlink:href="mayor_hover.png"
+       data-building="mayor"
        class="highlight-buildings"
        y="430.40851"
        x="567.68604"
@@ -150,6 +212,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\bar_hover.png"
        xlink:href="bar_hover.png"
+       data-building="bar"
        class="highlight-buildings"
        style="display:none"
        width="86"
@@ -172,6 +235,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\dealer_hover.png"
        xlink:href="dealer_hover.png"
+       data-building="dealer"
        class="highlight-buildings"
        style="display:none"
        width="177"
@@ -194,6 +258,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\autoservice_hover.png"
        xlink:href="autoservice_hover.png"
+       data-building="autoservice"
        class="highlight-buildings"
        y="621.75818"
        x="995.27216"
@@ -216,6 +281,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\market_hover.png"
        xlink:href="market_hover.png"
+       data-building="market"
        class="highlight-buildings"
        y="463.35715"
        x="754.64276"
@@ -238,6 +304,7 @@
     <image
        sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\library_hover.png"
        xlink:href="library_hover.png"
+       data-building="library"
        class="highlight-buildings"
        y="538.58624"
        x="909.6145"
