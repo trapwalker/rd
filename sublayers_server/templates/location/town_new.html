@@ -12,9 +12,10 @@
         position: absolute;
         width: 780px;
         height: 690px;
-        background-color: red;
+        border: 2px solid forestgreen;
         top: 138px;
         left: 570px;
+        pointer-events: none;
     }
 
     .town-img-mask {
@@ -38,7 +39,7 @@
         top: 50px;
         width: 400px;
         height: 400px;
-        background-color: yellow;
+        background-color: rgba(0,150,0,0.25);
     }
 
     .town-panel.left {left: 100px;}
@@ -50,7 +51,14 @@
     {% raw svg_code %}
 </div>
 
-<div id="building-content"></div>
+<div id="building-content">
+    {% for building in town.example.buildings %}
+        {% set cur_build = town.example.buildings[building] %}
+        <div id="building_{{ building }}" class="townPageWrap building-wrap" style="display: none">
+            {% include building_window.html %}
+        </div>
+    {% end %}
+</div>
 
 <img class="town-img-mask" src="static/content/locations/towns/city_mask_1.png"/>
 
@@ -160,8 +168,8 @@
             index = index.substr(index.length - 1, 1);
             $("#img_house"+ index +"_on").css("display", "block");
             $("#img_house" + index + "_off").css("display", "none");
-            $("#path_h" + index).css("opacity", "0.8");
-            $("#path_text_h" + index).css("opacity", "0.8");
+            $("#path_h" + index).css("opacity", "0.6");
+            $("#path_text_h" + index).css("opacity", "0.6");
 
         });
 
