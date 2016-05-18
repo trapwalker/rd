@@ -24,7 +24,6 @@
         pointer-events: none;
     }
 
-
     #town-out-screen-area {
         position: absolute;
         top: 0;
@@ -45,6 +44,41 @@
     .town-panel.left {left: 100px;}
     .town-panel.right {right: 100px;}
 
+    .town-btn-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /*pointer-events: none;*/
+    }
+
+    .town-btn-block {
+        position: absolute;
+        width: 190px;
+        height: 60px;
+        /*background-color: rgba(255, 12, 11, 0.22);*/
+        color: #2ffa00;
+        font-size: 24px;
+        z-index: 2;
+        font-family: Nouveau_IBM;
+        /*letter-spacing: normal;*/
+        text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
+        letter-spacing: 2px;
+        line-height: 20px;
+    }
+
+    .town-btn-block.btn-pressed {
+        color: #082801
+    }
+
+    .town-btn-block.right {text-align: right;}
+
+    #btn_1_text{top: 602px; left: 260px; transform: rotateZ(-23deg) skew(-7deg);}
+    #btn_2_text{top: 790px; left: 310px; transform: rotateZ(-18deg) skew(-7deg);}
+    #btn_3_text{top: 596px; right: 269px; transform: rotateZ(22deg) skew(10deg);}
+    #btn_4_text{top: 783px; right: 326px; transform: rotateZ(18deg) skew(3deg);}
+
 </style>
 
 <div>
@@ -58,6 +92,13 @@
             {% include building_window.html %}
         </div>
     {% end %}
+</div>
+
+<div class="town-btn-area">
+    <div id="btn_1_text" class="town-btn-block left">Завершить квест</div>
+    <div id="btn_2_text" class="town-btn-block left">Отказаться от квеста</div>
+    <div id="btn_3_text" class="town-btn-block right"></br>Назад</div>
+    <div id="btn_4_text" class="town-btn-block right"></br>Выход</div>
 </div>
 
 <img class="town-img-mask" src="static/content/locations/towns/city_mask_1.png"/>
