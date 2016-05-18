@@ -18,7 +18,90 @@
    inkscape:version="0.91 r13725"
    sodipodi:docname="location.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient5982-3-6-0"
+       x1="-5894.1436"
+       y1="-3752.0923"
+       x2="-6135.9136"
+       y2="-3374.2483"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(7120.6049,3905.095)" />
+    <linearGradient
+       id="linearGradient5976"
+       inkscape:collect="always">
+      <stop
+         id="stop4222"
+         offset="0"
+         style="stop-color:#00ff00;stop-opacity:1;" />
+      <stop
+         id="stop4224"
+         offset="1"
+         style="stop-color:#00ff00;stop-opacity:0;" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient5982-3"
+       x1="-714.78418"
+       y1="-899.83093"
+       x2="-1106.7233"
+       y2="-519.00336"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(2007.0346,928.69936)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient5982-3-6"
+       x1="-4573.207"
+       y1="-2738.8623"
+       x2="-4796.4512"
+       y2="-2525.7202"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(5760.1368,3014.9648)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient4284"
+       x1="-384.78592"
+       y1="-324.19156"
+       x2="-130.92856"
+       y2="-45.620132"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(1100.1734,563.86729)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient4284-7"
+       x1="-251.70833"
+       y1="-284.82895"
+       x2="-67.791321"
+       y2="-117.61546"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(1044.8261,500.611)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient4284-6"
+       x1="-1932.6431"
+       y1="-1254.9059"
+       x2="-1829.7498"
+       y2="-1008.1423"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(2706.4388,1394.1691)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="linearGradient4277"
+       x1="62.74585"
+       y1="-156.17519"
+       x2="-136.64394"
+       y2="83.004333"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(1112.7552,487.72541)" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -26,11 +109,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="522.27084"
-     inkscape:cy="393.5149"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="438.17449"
+     inkscape:cy="381.94704"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -623,22 +706,141 @@
        id="btn_2_area"
        inkscape:connector-curvature="0" />
   </g>
-  <image
-     sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\..\city_mask_1.png"
-     xlink:href="..\city_mask_1.png"
-     width="1920"
-     height="1080"
-     preserveAspectRatio="none"
-     id="img_back_1"
-     x="0"
-     y="0" />
-  <image
-     sodipodi:absref="D:\Projects\Sublayers\sublayers_common\static\content\locations\towns\whitehill\..\city_mask_2.png"
-     xlink:href="..\city_mask_2.png"
-     width="1920"
-     height="1080"
-     preserveAspectRatio="none"
-     id="img_back_2"
-     x="0"
-     y="0" />
+  <g
+     transform="translate(-3.7186214,14.031713)"
+     inkscape:groupmode="layer"
+     id="layer6-7"
+     inkscape:label="build_path">
+    <path
+       style="opacity:0.2;fill:url(#linearGradient5982-3-6-0);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       d="m 1191.404,567.17597 a 240,240 0 1 0 -471.82,-62.12 l -40,0 a 280,280 0 1 1 550.46,72.47 z"
+       id="path_h6"
+       inkscape:connector-curvature="0" />
+    <path
+       style="opacity:0.2;fill:url(#linearGradient5982-3);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       d="m 1233.6596,674.35183 a 320,320 0 1 0 -591.37002,-169.57 l -40,0 a 360,360 0 1 1 665.29002,190.77 z"
+       id="path_h5"
+       inkscape:connector-curvature="0"
+       data-building="nucoil" />
+    <path
+       style="opacity:0.2;fill:url(#linearGradient5982-3-6);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       d="m 1081.8663,590.81163 a 160,160 0 1 0 -273.13002,-113.13 l -40,0 a 200,200 0 1 1 341.42002,141.42 z"
+       id="path_h2"
+       inkscape:connector-curvature="0"
+       data-building="sto" />
+    <path
+       style="opacity:0.2;fill:url(#linearGradient4284);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 831.6158,658.50475 a 200,200 0 1 1 328.5576,-153.20889 l 40,0 A 240,240 0 1 0 805.90429,689.14653 Z"
+       id="path_h4"
+       inkscape:connector-curvature="0"
+       data-building="hangar" />
+    <path
+       style="opacity:0.2;fill:url(#linearGradient4284-7);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 789.04267,451.12739 a 119.99996,119.99996 0 1 1 239.99983,0 l 40,0 a 159.99996,159.99996 0 1 0 -319.99983,0 z"
+       id="path_h7"
+       inkscape:connector-curvature="0"
+       data-building="store" />
+    <path
+       style="opacity:0.2;fill:url(#linearGradient4284-6);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 681.039,504.494 a 280.00005,280.00005 0 1 1 560.0001,0 l 40,0 a 320.00005,320.00005 0 1 0 -640.0001,0 z"
+       id="path_h1"
+       inkscape:connector-curvature="0" />
+    <path
+       style="opacity:0.2;fill:url(#linearGradient4277);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       d="m 977.5825,569.56826 a 73,73 0 1 0 -86.96994,-79.7 l -40,0 A 117,117 0 1 1 981.0725,608.86827"
+       id="path_h77"
+       inkscape:connector-curvature="0"
+       data-building="library" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="927.38098"
+       y="174.19775"
+       id="path_text_h5"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204"
+         x="927.38098"
+         y="174.19775"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Нукойл</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="940.27606"
+       y="334.68219"
+       id="path_text_h2"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204-9"
+         x="940.27606"
+         y="334.68219"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">СТО</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="930.68018"
+       y="291.74759"
+       id="path_text_h4"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204-4"
+         x="930.68018"
+         y="291.74759"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Ангар</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="917.1911"
+       y="375.59247"
+       id="path_text_h7"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204-4-9"
+         x="917.1911"
+         y="375.59247"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Торговец</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="911.82849"
+       y="213.7708"
+       id="path_text_h1"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204-7"
+         x="911.82849"
+         y="213.7708"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="922.08417"
+       y="253.48022"
+       id="path_text_h6"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204-4-9-4"
+         x="922.08417"
+         y="253.48022"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;display:none;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="931.73828"
+       y="414.73196"
+       id="path_text_h3"
+       sodipodi:linespacing="125%"
+       class="town-build-path-text"><tspan
+         sodipodi:role="line"
+         id="tspan4204-4-2"
+         x="931.73828"
+         y="414.73196"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Салон</tspan></text>
+  </g>
 </svg>
