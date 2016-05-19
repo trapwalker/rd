@@ -188,11 +188,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="894.37243"
-     inkscape:cy="597.66101"
+     inkscape:zoom="0.7"
+     inkscape:cx="-157.46352"
+     inkscape:cy="655.23699"
      inkscape:document-units="px"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -478,7 +478,148 @@
     <g
        inkscape:groupmode="layer"
        id="layer6"
-       inkscape:label="build_path" />
+       inkscape:label="build_path">
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 l -43,0 a 374,374 0 1 1 680.363,214.518 z"
+         id="path_h1"
+         inkscape:connector-curvature="0"
+         class="highlight-buildings"
+         data-building="nucoil" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5972);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="m 670.5,518 a 288,288 0 0 1 576,0 l 43,0 a 331,331 0 0 0 -662,0 z"
+         id="path_h2"
+         inkscape:connector-curvature="0"
+         data-building="mayor"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5970);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 1203.5,518 a 245,245 0 0 0 -490,0 l -43,0 a 288,288 0 0 1 576,0 z"
+         id="path_h3"
+         inkscape:connector-curvature="0"
+         data-building="bar"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5962);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 783.563,619 A 202,202 0 1 1 1160.5,518 l 43,0 A 245,245 0 1 0 746.324,640.5 Z"
+         id="path_h4"
+         inkscape:connector-curvature="0"
+         data-building="dealer"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5954);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="M 1070.93,630.43 A 159,159 0 1 0 799.5,518 l -43,0 a 202,202 0 1 1 344.836,142.836 z"
+         id="path_h5"
+         inkscape:connector-curvature="0"
+         data-building="autoservice"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5944);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="m 841.5,518 a 117,117 0 0 1 234,0 l 42,0 a 159,159 0 0 0 -318,0 z"
+         id="path_h6"
+         inkscape:connector-curvature="0"
+         class="highlight-buildings"
+         data-building="market" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5952);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="m 958.5,592 a 74,74 0 1 0 -74,-74 l -43,0 a 117,117 0 1 1 117,117 z"
+         id="path_h7"
+         inkscape:connector-curvature="0"
+         data-building="library"
+         class="highlight-buildings" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="926.60095"
+         y="174.00693"
+         id="path_text_h1"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-9-7"
+           x="926.60095"
+           y="174.00693"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Нукойл</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="942.29639"
+         y="216.49434"
+         id="path_text_h2"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-9"
+           x="942.29639"
+           y="216.49434"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Мэр</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="943.86011"
+         y="258.15833"
+         id="path_text_h3"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4-2"
+           x="943.86011"
+           y="258.15833"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Бар</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="914.00647"
+         y="304.60474"
+         id="path_text_h4"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4"
+           x="914.00647"
+           y="304.60474"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Автодилер</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="925.1156"
+         y="348.48346"
+         id="path_text_h5"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204"
+           x="925.1156"
+           y="348.48346"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Сервис</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="932.35333"
+         y="389.87241"
+         id="path_text_h6"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4-9-0"
+           x="932.35333"
+           y="389.87241"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Рынок</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="907.24799"
+         y="435.27802"
+         id="path_text_h7"
+         sodipodi:linespacing="125%"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4-9"
+           x="907.24799"
+           y="435.27802"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Библиотека</tspan></text>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -784,148 +925,5 @@
        d="m 247.85714,736.42857 240.71429,-93.57143 32.14286,156.42857 -237.14286,81.42858 z"
        id="btn_2_area"
        inkscape:connector-curvature="0" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer6-7"
-     inkscape:label="build_path">
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 l -43,0 a 374,374 0 1 1 680.363,214.518 z"
-       id="path_h1"
-       inkscape:connector-curvature="0"
-       class="highlight-buildings" />
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5972);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-       d="m 670.5,518 a 288,288 0 0 1 576,0 l 43,0 a 331,331 0 0 0 -662,0 z"
-       id="path_h2"
-       inkscape:connector-curvature="0"
-       data-building="sto"
-       class="highlight-buildings" />
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5970);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 1203.5,518 a 245,245 0 0 0 -490,0 l -43,0 a 288,288 0 0 1 576,0 z"
-       id="path_h3"
-       inkscape:connector-curvature="0"
-       data-building="store"
-       class="highlight-buildings" />
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5962);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 783.563,619 A 202,202 0 1 1 1160.5,518 l 43,0 A 245,245 0 1 0 746.324,640.5 Z"
-       id="path_h4"
-       inkscape:connector-curvature="0"
-       data-building="hangar"
-       class="highlight-buildings" />
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5954);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-       d="M 1070.93,630.43 A 159,159 0 1 0 799.5,518 l -43,0 a 202,202 0 1 1 344.836,142.836 z"
-       id="path_h5"
-       inkscape:connector-curvature="0"
-       data-building="nucoil"
-       class="highlight-buildings" />
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5944);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-       d="m 841.5,518 a 117,117 0 0 1 234,0 l 42,0 a 159,159 0 0 0 -318,0 z"
-       id="path_h6"
-       inkscape:connector-curvature="0"
-       class="highlight-buildings" />
-    <path
-       style="opacity:0.2;fill:url(#radialGradient5952);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-       d="m 958.5,592 a 74,74 0 1 0 -74,-74 l -43,0 a 117,117 0 1 1 117,117 z"
-       id="path_h7"
-       inkscape:connector-curvature="0"
-       data-building="library"
-       class="highlight-buildings" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="926.60095"
-       y="174.00693"
-       id="path_text_h1"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204-9-7"
-         x="926.60095"
-         y="174.00693"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Нукойл</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="942.29639"
-       y="216.49434"
-       id="path_text_h2"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204-9"
-         x="942.29639"
-         y="216.49434"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Мэр</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="943.86011"
-       y="258.15833"
-       id="path_text_h3"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204-4-2"
-         x="943.86011"
-         y="258.15833"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Бар</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="914.00647"
-       y="304.60474"
-       id="path_text_h4"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204-4"
-         x="914.00647"
-         y="304.60474"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Автодилер</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="925.1156"
-       y="348.48346"
-       id="path_text_h5"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204"
-         x="925.1156"
-         y="348.48346"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Сервис</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="932.35333"
-       y="389.87241"
-       id="path_text_h6"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204-4-9-0"
-         x="932.35333"
-         y="389.87241"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Рынок</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:50px;line-height:125%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="907.24799"
-       y="435.27802"
-       id="path_text_h7"
-       sodipodi:linespacing="125%"
-       class="town-build-path-text"><tspan
-         sodipodi:role="line"
-         id="tspan4204-4-9"
-         x="907.24799"
-         y="435.27802"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Библиотека</tspan></text>
   </g>
 </svg>
