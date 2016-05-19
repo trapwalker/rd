@@ -21,6 +21,7 @@ log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry.tree import Node
 from motorengine.fields import IntField
+from bson import ObjectId
 
 
 class A(Node):
@@ -30,7 +31,6 @@ class A(Node):
 class B(A):
     __collection__ = 'test_b'
     y = IntField()
-
 
 
 if __name__ == '__main__':
@@ -55,8 +55,8 @@ if __name__ == '__main__':
     db = connect("test3", host="localhost", port=27017, io_loop=io_loop)
 
     @tornado.gen.coroutine
-    def test():
-        log.debug('test start')
+    def test_store():
+        log.debug('### test save/load consystency')
         a = A(name='a', doc='aa', x=13)
         b = B(name='b', parent=a, y=14)
 
@@ -69,15 +69,31 @@ if __name__ == '__main__':
         for i, aa in enumerate((yield A.objects.find_all())):
             print('A::', i, repr(aa))
 
-        for i, bb in enumerate((yield B.objects.find_all())):
-            print('B::', i, repr(bb))
-
-        log.debug('no more')
+        log.debug('no more ' + '#' * 20)
 
         globals().update(locals())
 
 
-    io_loop.add_callback(test)
+    @tornado.gen.coroutine
+    def test_custom_id():
+        log.debug('### test save with custom _id')
+        new_id = ObjectId()
+        log.debug('custom id = %s', new_id)
+
+        obj1 = A(name='CustomIdObject', _id=new_id)
+        log.debug('object BEFORE save[%s]: %r', id(obj1), obj1)
+
+        obj2 = yield obj1.save(upsert=True)
+        log.debug('object AFTER  save[%s]: %r', id(obj2), obj2)
+
+        obj3 = yield A.objects.get(id=new_id)
+        log.debug('object AFTER  LOAD[%s]: %r', id(obj3), obj3)
+        
+        globals().update(locals())
+        log.debug('end ' + '#' * 20)
+
+    #io_loop.add_callback(test_store)
+    io_loop.add_callback(test_custom_id)
 
     c = Cnt(21)
     

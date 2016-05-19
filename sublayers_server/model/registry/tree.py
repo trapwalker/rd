@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 
 import six
 import yaml
-from bson import ObjectId
 from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
 from motorengine import (
     Document, StringField, ListField, BooleanField, UUIDField, ReferenceField,
