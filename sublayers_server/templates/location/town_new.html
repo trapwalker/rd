@@ -50,22 +50,22 @@
         left: 0;
         width: 100%;
         height: 100%;
-        /*pointer-events: none;*/
+        pointer-events: none;
     }
 
     .town-btn-block {
         position: absolute;
         width: 190px;
-        height: 60px;
-        /*background-color: rgba(255, 12, 11, 0.22);*/
+        height: 50px;
+        /*background-color: rgb(255, 12, 11);*/
         color: #2ffa00;
         font-size: 24px;
         z-index: 2;
         font-family: Nouveau_IBM;
-        /*letter-spacing: normal;*/
         text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
         letter-spacing: 2px;
         line-height: 20px;
+        pointer-events: auto;
     }
 
     .town-btn-block.btn-pressed {
@@ -74,10 +74,10 @@
 
     .town-btn-block.right {text-align: right;}
 
-    #btn_1_text{top: 602px; left: 260px; transform: rotateZ(-23deg) skew(-7deg);}
-    #btn_2_text{top: 790px; left: 310px; transform: rotateZ(-18deg) skew(-7deg);}
-    #btn_3_text{top: 596px; right: 269px; transform: rotateZ(22deg) skew(10deg);}
-    #btn_4_text{top: 783px; right: 326px; transform: rotateZ(18deg) skew(3deg);}
+    #btn_1_text{top: 593px; left: 265px; transform: rotateZ(-23deg) skew(-9deg);}
+    #btn_2_text{top: 785px; left: 312px; transform: rotateZ(-19deg) skew(-5deg);}
+    #btn_3_text{top: 590px; right: 276px; transform: rotateZ(23deg) skew(9deg);}
+    #btn_4_text{top: 779px; right: 328px; transform: rotateZ(19deg) skew(5deg);}
 
 </style>
 
@@ -111,6 +111,40 @@
 <img class="town-img-mask" src="static/content/locations/towns/city_mask_2.png"/>
 
 <script>
+
+    var text_variants = [
+        '</br>Назад',
+        '</br>Выход',
+        '</br>Взять квест',
+        'Завершить</br>квест',
+        'Отказаться</br>от квеста',
+        '</br>Купить ТС',
+        '</br>Продать ТС',
+        '</br>Обменять ТС',
+        '</br>Взять ТС',
+        '</br>Сменить ТС',
+        'Поставить</br>ТС',
+        'Подтвердить</br>сделку',
+        '</br>Отмена',
+        '</br>Применить',
+        '</br>Оформить',
+        '</br>Продлить',
+        '</br>Залить',
+        'Залить</br>полный бак',
+        '</br>Заправить',
+        'Заправить</br>всё',
+        '</br>Создать',
+        '</br>Принять',
+        '</br>Отказаться',
+        '</br>Применить',
+        'Покинуть</br>группу',
+        '</br>Установить'
+    ];
+
+    function random_text(){
+        var index = Math.floor(Math.random() * text_variants.length);
+        return text_variants[index];
+    }
 
     $(function () {
         console.log('Вызов установки кликов для города!');
@@ -169,16 +203,20 @@
 
                         switch (id) {
                             case 'btn_1':
-                                console.log('click on btn1');
+                                console.log('click on btn1    ', '#' + id + '_text');
+                                $('#' + id + '_text').html(random_text());
                                 break;
                             case 'btn_2':
                                 console.log('click on btn2');
+                                $('#' + id + '_text').html(random_text());
                                 break;
                             case 'btn_3':
                                 console.log('click on btn3');
+                                $('#' + id + '_text').html(random_text());
                                 break;
                             case 'btn_4':
                                 console.log('click on btn4');
+                                $('#' + id + '_text').html(random_text());
                                 break;
                             case 'btn_screen_location':
                                 console.log('click on btn_screen_location');
