@@ -7,7 +7,9 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
 
+import os.path
 import tornado.template
+from tornado.options import options
 
 def make_push_package(events):
     serv_time = events[0].agent.server.get_time()
@@ -484,15 +486,47 @@ class ChangeAltitude(Message):
         return d
 
 
+def patch_svg_links(src, pth):
+    import re
+    r = re.compile(r'(xlink:href=")(.*.(jpg|png)")')  # todo: opimize
+    return r.sub(r'\1{}\2'.format(pth), src)
+
+
 class EnterToLocation(Message):
-    def __init__(self, location, **kw):
-        super(EnterToLocation, self).__init__(**kw)
+    def __init__(self, location, agent, **kw):
+        super(EnterToLocation, self).__init__(agent=agent, **kw)
         self.location = location
+        self.agent = agent
 
     def as_dict(self):
         d = super(EnterToLocation, self).as_dict()
+
+        agent = self.agent
+        location = self.location
+
+        svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
+        svg_code = ''
+        with open(os.path.join(svg_link, 'location.svg')) as f:
+            svg_code = f.read()
+            svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
+
+        from sublayers_server.model.map_location import Town, GasStation
+        location_html = None
+        if isinstance(location, Town):
+            location_html = tornado.template.Loader(
+                root_directory="templates/location",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load("town_new.html").generate(town=location, svg_code=svg_code)
+        elif isinstance(location, GasStation):
+            location_html = tornado.template.Loader(
+                root_directory="templates/location",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load("gas_station.html").generate(station=location, svg_code=svg_code, agent=agent)
+        else:
+            log.warn('Unknown type location: %s', location)
         d.update(
-            location=self.location.as_dict(time=self.time)
+            location=self.location.as_dict(time=self.time),
+            location_html=location_html,
         )
         return d
 

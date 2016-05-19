@@ -696,60 +696,12 @@ var ClientManager = (function () {
 
     ClientManager.prototype.EnterToLocation = function (event) {
         //console.log('ClientManager.prototype.EnterToLocation', event);
-        // POST запрос на получение города и вывод его на экран.
-        // К этому моменту машинка уже удаляется или вот-вот удалится
-        $.ajax({
-            url: "http://" + location.host + '/api/location',
-            data:  { location_id: event.location.uid },
-            success: function(data) {
-                //console.log('ClientManager.prototype.EnterToLocation Answer');
-
-                if (locationManager.in_location)
-                    clientManager.ExitFromLocation();
-
-                $('#activeTownDiv').append(data);
-                $('#activeTownDiv').css('display', 'block');
-                $('#activeTownDivBack').css('display', 'block');
-                locationManager.location_uid = event.location.uid;
-                windowTemplateManager.closeAllWindows();
-                locationManager.in_location = true;
-                chat.showChatInTown();
-                locationManager.visitorsManager.update_visitors();
-                locationManager.nucoil.update();
-                locationManager.armorer.update();
-                locationManager.mechanic.update();
-                locationManager.tuner.update();
-                locationManager.trader.updatePlayerInv();
-                locationManager.trader.updateTraderInv();
-                locationManager.trader.updatePrice();
-                locationManager.hangar.update();
-                locationManager.parking.update();
-
-                // Запрос RGP информации для тренера
-                clientManager.sendGetRPGInfo();
-
-                // Принудительно перерисовать все квесты
-                journalManager.quest.redraw();
-            }
-        });
+        locationManager.onEnter(event);
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
-        locationManager.in_location = false;
-        locationManager.currentNpc = null;
-        chat.showChatInMap();
-        $('#activeTownDiv').empty();
-        $('#activeTownDiv').css('display', 'none');
-        $('#activeTownDivBack').css('display', 'none');
-        locationManager.location_uid = null;
-        locationManager.visitorsManager.clear_visitors();
-        locationManager.nucoil.clear();
-        locationManager.armorer.clear();
-        locationManager.mechanic.clear();
-        locationManager.tuner.clear();
-        locationManager.trader.clear();
-        locationManager.trainer.clear();
+        locationManager.onExit();
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -774,10 +726,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
         //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
-        if (event.action)
-            locationManager.visitorsManager.add_visitor(event.visitor);
-        else
-            locationManager.visitorsManager.del_visitor(event.visitor);
+        //if (event.action)
+        //    locationManager.visitorsManager.add_visitor(event.visitor);
+        //else
+        //    locationManager.visitorsManager.del_visitor(event.visitor);
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
@@ -802,33 +754,33 @@ var ClientManager = (function () {
     ClientManager.prototype.ExamplesShowMessage = function (event) {
         //console.log('ClientManager.prototype.ExamplesShowMessage', event);
         // Обновление баланса пользователя
-        user.balance = event.agent_balance;
-        locationManager.example_car_node = event.example_car_node;
-        if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
-            var inv = this._getInventory(event.inventory);
-            if (inventoryList.getInventory(inv.owner_id))
-                inventoryList.delInventory(inv.owner_id);
-            inventoryList.addInventory(inv);
-            locationManager.nucoil.update();
-            locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags, event.example_car_image_scale);
-            locationManager.mechanic.update(event.mechanic_slots);
-            locationManager.tuner.update(event.tuner_slots);
-            locationManager.trader.updatePlayerInv();
-            locationManager.trader.updateTraderInv();
-            locationManager.hangar.update();
-            locationManager.parking.update();
-        }
+        //user.balance = event.agent_balance;
+        //locationManager.example_car_node = event.example_car_node;
+        //if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
+        //    var inv = this._getInventory(event.inventory);
+        //    if (inventoryList.getInventory(inv.owner_id))
+        //        inventoryList.delInventory(inv.owner_id);
+        //    inventoryList.addInventory(inv);
+        //    locationManager.nucoil.update();
+        //    locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags, event.example_car_image_scale);
+        //    locationManager.mechanic.update(event.mechanic_slots);
+        //    locationManager.tuner.update(event.tuner_slots);
+        //    locationManager.trader.updatePlayerInv();
+        //    locationManager.trader.updateTraderInv();
+        //    locationManager.hangar.update();
+        //    locationManager.parking.update();
+        //}
     };
 
     ClientManager.prototype.TraderInventoryShowMessage = function (event) {
         //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
-        var inv = this._getInventory(event.inventory);
-        locationManager.trader_uid = inv.owner_id;
-        if (inventoryList.getInventory(inv.owner_id))
-            inventoryList.delInventory(inv.owner_id);
-        inventoryList.addInventory(inv);
-        locationManager.trader.updateTraderInv();
-        locationManager.trader.updatePrice(event.price.price)
+        //var inv = this._getInventory(event.inventory);
+        //locationManager.trader_uid = inv.owner_id;
+        //if (inventoryList.getInventory(inv.owner_id))
+        //    inventoryList.delInventory(inv.owner_id);
+        //inventoryList.addInventory(inv);
+        //locationManager.trader.updateTraderInv();
+        //locationManager.trader.updatePrice(event.price.price)
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
@@ -865,7 +817,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.SetupTraderReplica = function (event) {
         //console.log('ClientManager.prototype.sendTraderCancel');
-        locationManager.trader.setupTraderReplica(event.replica)
+        //locationManager.trader.setupTraderReplica(event.replica)
     };
 
     //ClientManager.prototype.GetStashWindow = function (event) {
@@ -940,7 +892,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.RPGStateMessage = function (event) {
         //console.log('ClientManager.prototype.RPGStateMessage', event);
-        locationManager.trainer.update(event);
+        //locationManager.trainer.update(event);
     };
 
     // Журнал (стоянка)
@@ -1322,16 +1274,16 @@ var ClientManager = (function () {
 
     ClientManager.prototype.sendFuelStationActive = function (fuel) {
         //console.log('ClientManager.prototype.sendFuelStationActive');
-        var mes = {
-            call: "fuel_station_active",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                tank_list: locationManager.nucoil.tank_list,
-                fuel: fuel
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
+        //var mes = {
+        //    call: "fuel_station_active",
+        //    rpc_call_id: rpcCallList.getID(),
+        //    params: {
+        //        tank_list: locationManager.nucoil.tank_list,
+        //        fuel: fuel
+        //    }
+        //};
+        //rpcCallList.add(mes);
+        //this._sendMessage(mes);
     };
 
     ClientManager.prototype.sendGetLoot = function (poi_id) {

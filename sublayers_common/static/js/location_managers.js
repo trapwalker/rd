@@ -1876,4 +1876,4 @@ var TrainerManager = (function () {
 })();
 
 
-var locationManager = new LocationManager();
+//var locationManager = new LocationManager();

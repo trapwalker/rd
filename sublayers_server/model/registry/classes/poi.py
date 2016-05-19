@@ -38,7 +38,7 @@ class RadioTower(POIObserver):
 
 class MapLocation(POIObserver):
     svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
-    title = TextAttribute(caption=u"Название локации")
+    title = TextAttribute(caption=u"Название локации", tags='client')
 
 
 class GasStation(MapLocation):
@@ -64,27 +64,40 @@ class Building(object):
             self._instances_resolved = [uri.resolve() for uri in self._instances]
         return self._instances_resolved
 
+    def as_client_dict(self):
+        d = dict(
+            captiont=self.caption,
+            instances=[npc.as_client_dict() for npc in self.instances]
+        )
+        return d
+
 
 class Town(MapLocation):
-    armorer = RegistryLink(caption=u'Оружейник')
-    mechanic = RegistryLink(caption=u'Механик')
-    tuner = RegistryLink(caption=u'Тюнер')
-    trader = RegistryLink(caption=u'Торговец')
-    hangar = RegistryLink(caption=u'Ангар')
-    nucoil = RegistryLink(caption=u'Заправка')
-    trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
-    parking = RegistryLink(caption=u'Автостоянка')
-
+    # armorer = RegistryLink(caption=u'Оружейник')
+    # mechanic = RegistryLink(caption=u'Механик')
+    # tuner = RegistryLink(caption=u'Тюнер')
+    # trader = RegistryLink(caption=u'Торговец')
+    # hangar = RegistryLink(caption=u'Ангар')
+    # nucoil = RegistryLink(caption=u'Заправка')
+    # trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
+    # parking = RegistryLink(caption=u'Автостоянка')
     buildings = DictAttribute(
         default=dict, itemclass=Building,
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.')
 
+    def as_client_dict(self):
+        d = super(Town, self).as_client_dict()
+        d.update(
+            buildings=[dict(key=key, build=self.buildings[key].as_client_dict()) for key in self.buildings.keys()]
+        )
+        return d
+
 
 class Institution(Root):
-    title = TextAttribute(caption=u"Имя")
-    photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
-    text = TextAttribute(caption=u"Текст приветствия")
-    type = TextAttribute(caption=u"Специальность NPC")
+    title = TextAttribute(caption=u"Имя", tags='client')
+    photo = Attribute(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
+    text = TextAttribute(caption=u"Текст приветствия", tags='client')
+    type = TextAttribute(caption=u"Специальность NPC", tags='client')
     quests = Attribute(caption=u"Квесты")
 
     def as_dict4quest(self):
@@ -96,23 +109,23 @@ class Nucoil(Institution):
 
 
 class Armorer(Institution):
-    type = TextAttribute(default='armorer', caption=u"Специальность NPC")
+    type = TextAttribute(default='armorer', caption=u"Специальность NPC", tags='client')
 
 
 class Mechanic(Institution):
-    type = TextAttribute(default='mechanic', caption=u"Специальность NPC")
+    type = TextAttribute(default='mechanic', caption=u"Специальность NPC", tags='client')
 
 
 class Tuner(Institution):
-    type = TextAttribute(default='tuner', caption=u"Специальность NPC")
+    type = TextAttribute(default='tuner', caption=u"Специальность NPC", tags='client')
 
 
 class Trainer(Institution):
-    type = TextAttribute(default='trainer', caption=u"Специальность NPC")
+    type = TextAttribute(default='trainer', caption=u"Специальность NPC", tags='client')
 
 
 class Trader(Institution):
-    type = TextAttribute(default='trader', caption=u"Специальность NPC")
+    type = TextAttribute(default='trader', caption=u"Специальность NPC", tags='client')
 
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
@@ -128,8 +141,9 @@ class Trader(Institution):
 
 
 class Hangar(Institution):
-    type = TextAttribute(default='hangar', caption=u"Специальность NPC")
-    car_list = Attribute(caption=u"Список продаваемых машин")
+    type = TextAttribute(default='hangar', caption=u"Специальность NPC", tags='client')
+    car_list = Attribute(caption=u"Список продаваемых машин", tags='client')
+
 
 class Parking(Institution):
-    type = TextAttribute(default='parking', caption=u"Специальность NPC")
+    type = TextAttribute(default='parking', caption=u"Специальность NPC", tags='client')

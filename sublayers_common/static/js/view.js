@@ -6,6 +6,7 @@ $(document).ready(function () {
 
     mapManager._init();
 
+    locationManager = new LocationManager();
     mapCanvasManager = new MapCanvasManager();
     wStrategyModeManager = new WStrategyModeManager();
 

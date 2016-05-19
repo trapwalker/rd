@@ -75,7 +75,8 @@ class MapLocation(Observer):
         # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
         agent.on_enter_location(location=self, time=time)
 
-        self.send_inventory_info(agent=agent, time=time)
+        # todo: перенести на после входа
+        # self.send_inventory_info(agent=agent, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
@@ -99,7 +100,7 @@ class MapLocation(Observer):
             # todo: review agent.on_enter_location call
             agent.on_enter_location(location=self, time=time)
 
-            self.send_inventory_info(agent=agent, time=time)
+            # self.send_inventory_info(agent=agent, time=time)
 
             EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
             for visitor in self.visitors:
@@ -158,7 +159,7 @@ class Town(MapLocation):
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
-        d.update(town_name=self.town_name)
+        d.update(example_town=self.example.as_client_dict())
         return d
 
     @classmethod

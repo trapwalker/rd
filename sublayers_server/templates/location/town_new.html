@@ -12,7 +12,6 @@
         position: absolute;
         width: 780px;
         height: 690px;
-        border: 2px solid forestgreen;
         top: 138px;
         left: 570px;
         pointer-events: none;
@@ -61,14 +60,11 @@
         font-size: 24px;
         z-index: 2;
         font-family: Nouveau_IBM;
-        text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
         letter-spacing: 2px;
         line-height: 20px;
     }
-
-    .town-btn-block.btn-pressed {
-        color: #082801
-    }
+    .town-btn-block.hover { text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00; }
+    .town-btn-block.pressed { color: #082801; text-shadow: none; }
 
     .town-btn-block.right {text-align: right;}
 
@@ -109,7 +105,6 @@
 <img class="town-img-mask" src="static/content/locations/towns/city_mask_2.png"/>
 
 <script>
-
     var text_variants = [
         '</br>Назад',
         '</br>Выход',
@@ -158,6 +153,7 @@
                         if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
                             $('#' + id + '_hover').css('display', 'block');
                             $('#' + id + '_active').css('display', 'none');
+                            $('#' + id + '_text').addClass('hover');
                             $('#' + id).css('display', 'none');
                         }
                     }
@@ -172,6 +168,8 @@
                             $('#' + id + '_hover').css('display', 'none');
                             $('#' + id + '_pressed').css('display', 'none');
                             $('#' + id + '_active').css('display', 'block');
+                            $('#' + id + '_text').removeClass('hover');
+                            $('#' + id + '_text').removeClass('pressed');
                             $('#' + id).css('display', 'block');
                         }
                     }
@@ -185,6 +183,7 @@
                         if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
                             $('#' + id + '_hover').css('display', 'none');
                             $('#' + id + '_pressed').css('display', 'block');
+                            $('#' + id + '_text').addClass('pressed');
                         }
                     }
                 })
@@ -197,6 +196,7 @@
                         if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
                             $('#' + id + '_hover').css('display', 'block');
                             $('#' + id + '_pressed').css('display', 'none');
+                            $('#' + id + '_text').removeClass('pressed');
                         }
 
                         switch (id) {
@@ -235,7 +235,8 @@
             //console.log('Build click --- > ', this);
             var id = $(this).attr('id');
             var building = $(this).data('building');
-            console.log('Open ', building);
+            locationManager.openBuilding(building);
+{#            console.log('Open ', building);#}
         });
 
         jq_buildings.mouseenter(function(event){
@@ -247,7 +248,6 @@
             $("#img_house" + index + "_off").css("display", "none");
             $("#path_h" + index).css("opacity", "0.6");
             $("#path_text_h" + index).css("opacity", "0.6");
-
         });
 
         jq_buildings.mouseleave(function(event){
@@ -260,15 +260,5 @@
             $("#path_h" + index).css("opacity", "0.2");
             $("#path_text_h" + index).css("opacity", "0.2");
         });
-
-
-        // Вставка вёрстки зданий
-
-        // $('#img_back_1').before('<div id="building-content"></div>');
-
-
-
     });
-
-
 </script>
