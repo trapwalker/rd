@@ -147,3 +147,15 @@ class Hangar(Institution):
 
 class Parking(Institution):
     type = TextAttribute(default='parking', caption=u"Специальность NPC", tags='client')
+
+
+class Mayor(Institution):
+    type = TextAttribute(default='mayor', caption=u"Специальность NPC", tags='client')
+
+
+class Barman(Institution):
+    type = TextAttribute(default='barman', caption=u"Специальность NPC", tags='client')
+
+
+class Girl(Institution):
+    type = TextAttribute(default='girl', caption=u"Специальность NPC", tags='client')
