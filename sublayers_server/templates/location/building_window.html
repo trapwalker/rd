@@ -1,19 +1,9 @@
-{% set npc_photo = cur_build.head.photo %}
-{% set npc_title = cur_build.head.title %}
-{% set npc_text = cur_build.head.text %}
-
 <div class="building-main">
     {% include npc_header.html %}
     <div class="building-center-block">
         <div class="building-center-menu-block">
-            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks">
-                <div class="building-center-menu-item-icon"></div>
-                <div class="building-center-menu-item-caption">Доступные задания</div>
-            </div>
-            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks">
-                <div class="building-center-menu-item-icon"></div>
-                <div class="building-center-menu-item-caption">Активные задания</div>
-            </div>
+            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks">Доступные задания</div>
+            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks">Активные задания</div>
         </div>
         <div class="building-center-pages-block">
             <div id="buildingPageAvailableTasks" class="building-center-page">
@@ -73,13 +63,12 @@
         </div>
     </div>
     <div class="building-bottom-block">
-        <div class="building-bottom-caption">Выбор специалиста</div>
         <div class="building-npc-list-block">
             <div class="building-npc-list building-inventory-list">
                 {% for npc in cur_build.instances %}
                 <div class="building-npc-list-item" onclick="openNPC('{{ npc.type }}', '{{ building }}')">
                     <img class="building-npc-photo" src="{{ npc.photo }}"/>
-                    <div class="building-npc-name">{{ npc.title }}<br>({{ npc.doc }})</div>
+                    <div class="building-npc-name-block"><span class="building-npc-name"> {{ npc.title }} </span></div>
                 </div>
                 {% end %}
             </div>
