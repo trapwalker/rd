@@ -140,7 +140,7 @@
     }
 
     $(function () {
-        console.log('Вызов установки кликов для города!');
+{#        console.log('Вызов установки кликов для города!');#}
         var jq_btn = $('#btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area, #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area');
 
         jq_btn
@@ -162,14 +162,17 @@
                     var id = $(this).attr('id');
                     if (id.indexOf('_area')) {
                         id = id.replace('_area', '');
+
+                        // Это необходимо сделать вне зависимости от активности кнопки
+                        $('#' + id + '_hover').css('display', 'none');
+                        $('#' + id + '_pressed').css('display', 'none');
+                        $('#' + id + '_text').removeClass('hover');
+                        $('#' + id + '_text').removeClass('pressed');
+
                         // Проверка доступности кнопок
                         var noactive_status = $('#' + id + '_noactive').css('display');
                         if (noactive_status == undefined || noactive_status.toLowerCase() == 'none') {
-                            $('#' + id + '_hover').css('display', 'none');
-                            $('#' + id + '_pressed').css('display', 'none');
                             $('#' + id + '_active').css('display', 'block');
-                            $('#' + id + '_text').removeClass('hover');
-                            $('#' + id + '_text').removeClass('pressed');
                             $('#' + id).css('display', 'block');
                         }
                     }
@@ -201,20 +204,10 @@
 
                         switch (id) {
                             case 'btn_1':
-                                console.log('click on btn1    ', '#' + id + '_text');
-                                $('#' + id + '_text').html(random_text());
-                                break;
                             case 'btn_2':
-                                console.log('click on btn2');
-                                $('#' + id + '_text').html(random_text());
-                                break;
                             case 'btn_3':
-                                console.log('click on btn3');
-                                $('#' + id + '_text').html(random_text());
-                                break;
                             case 'btn_4':
-                                console.log('click on btn4');
-                                $('#' + id + '_text').html(random_text());
+                                locationManager.clickBtn(id.replace('btn_', ''));
                                 break;
                             case 'btn_screen_location':
                                 console.log('click on btn_screen_location');
