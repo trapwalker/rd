@@ -117,7 +117,7 @@ class MapLocation(Observer):
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
         ExitFromLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
-        agent.api.update_agent_api(time=time + 0.1)
+        agent.api.update_agent_api(time=time)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=time).post()
         InventoryHideMessage(agent=agent, time=time, inventory_id=agent.uid).post()
@@ -154,8 +154,8 @@ class Town(MapLocation):
 
     def on_exit(self, agent, time):
         super(Town, self).on_exit(agent=agent, time=time)
-        if self.example.trader:
-            InventoryHideMessage(agent=agent, time=time, inventory_id=str(self.uid) + '_trader').post()
+        # if self.example.trader:
+        #     InventoryHideMessage(agent=agent, time=time, inventory_id=str(self.uid) + '_trader').post()
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)

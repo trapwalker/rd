@@ -125,8 +125,17 @@ var LocationManager = (function () {
 
     LocationManager.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationManager.prototype.clickBtn', btnIndex);
-        if (this.screens[this.active_screen_name])
-            this.screens[this.active_screen_name].clickBtn(btnIndex);
+        if (btnIndex == 4) { // Попытка выйти из города
+            console.log('Попытка выйти из города');
+            if (user.example_car)
+                clientManager.sendExitFromLocation();
+            else
+                alert('Попытка выйти из города без машинки !');
+        }
+        else {
+            if (this.screens[this.active_screen_name])
+                this.screens[this.active_screen_name].clickBtn(btnIndex);
+        }
     };
 
     return LocationManager;

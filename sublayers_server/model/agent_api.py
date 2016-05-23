@@ -539,9 +539,9 @@ class AgentAPI(API):
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def exit_from_location(self, location_id):
+    def exit_from_location(self):
         # log.info('agent %s want exit from location is %s', self.agent, town_id)
-        ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
+        ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_npc(self, npc_type):
