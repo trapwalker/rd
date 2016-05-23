@@ -1,5 +1,8 @@
 <div class="building-main">
     {% if cur_build.head is not None %}
+        {% set npc_photo = cur_build.head.photo %}
+        {% set npc_title = cur_build.head.title %}
+        {% set npc_text = cur_build.head.text %}
         {% include npc_header.html %}
     {% end %}
     <div class="building-center-block">

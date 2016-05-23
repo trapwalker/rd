@@ -1,10 +1,9 @@
 .hangarWindow-main {
     position: relative;
+    cursor: default;
     width: 100%;
     height: 100%;
-    cursor: default;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .hangar-center {
@@ -29,8 +28,8 @@
     position: relative;
     margin-right: auto;
     margin-left: auto;
-    width: 635px;
-    height: 113px;
+    width: 572px;
+    height: 135px;
 }
 
 .hangar-car-list-label {
