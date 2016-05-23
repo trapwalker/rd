@@ -451,11 +451,24 @@ class Agent(Object):
             canceled=canceled, buy=buy, sale=sale, cost=cost,
             time=time, is_init=is_init)
 
+    @property
+    def skill_points(self):
+        return self.example.exp_table.agent_skill_points_by_exp(self.stat_log.get_metric('exp'))
+
+    @property
+    def lvl(self):
+        # todo: должно вычисляться не так
+        return self.skill_points
 
 # todo: Переименовать в UserAgent
 class User(Agent):
     # todo: realize
-    pass
+
+    def as_dict(self, **kw):
+        d = super(User, self).as_dict(**kw)
+        d['user_name'] = self.user.name
+        d['avatar_link'] = self.user.avatar_link
+        return d
 
 
 def test_cb(f):
