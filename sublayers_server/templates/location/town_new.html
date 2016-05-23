@@ -8,13 +8,20 @@
         cursor: pointer;
     }
 
-    #building-content {
+    #location-content {
         position: absolute;
         width: 780px;
         height: 690px;
         top: 138px;
         left: 570px;
         pointer-events: none;
+    }
+
+    .npc-wrap {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: red;
     }
 
     .town-img-mask {
@@ -77,12 +84,15 @@
     {% raw svg_code %}
 </div>
 
-<div id="building-content">
+<div id="location-content">
     {% for building in town.example.buildings %}
         {% set cur_build = town.example.buildings[building] %}
         <div id="building_{{ building }}" class="townPageWrap building-wrap" style="display: none">
             {% include building_window.html %}
         </div>
+        {% for npc in cur_build.instances %}
+        <div id="npc_{{ npc.node_html() }}" class="townPageWrap npc-wrap" style="display: none"></div>
+        {% end %}
     {% end %}
 </div>
 

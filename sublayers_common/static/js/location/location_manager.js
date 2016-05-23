@@ -36,15 +36,15 @@ var LocationManager = (function () {
         building.activate();
     };
 
-    LocationManager.prototype.openNPC = function (npcNodeHash) {
-        //console.log('LocationManager.prototype.openNPC', npcNodeHash);
-        if (!this.npc.hasOwnProperty(npcNodeHash)) return;
-        var npc = this.buildings[npcNodeHash];
+    LocationManager.prototype.openNPC = function (npcHTMLHash) {
+        console.log('LocationManager.prototype.openNPC', npcHTMLHash);
+        if (!this.npc.hasOwnProperty(npcHTMLHash)) return;
+        var npc = this.npc[npcHTMLHash];
         npc.activate();
     };
 
     LocationManager.prototype.onEnter = function (data) {
-        //console.log('LocationManager.prototype.onEnter', data);
+        console.log('LocationManager.prototype.onEnter', data);
         this.onExit();
 
         // Закрыть все окна
@@ -182,6 +182,7 @@ var LocationPlace = (function () {
         $('#layer2').css('display', 'none');
         $('#landscape').css('display', 'none');
         $('.building-back').css('display', 'none');
+        $('.townPageWrap').css('display', 'none');
 
         // Включить своё окно
         this.jq_main_div.css('display', 'block');
@@ -218,7 +219,7 @@ var LocationPlaceBuilding = (function (_super) {
     __extends(LocationPlaceBuilding, _super);
 
     function LocationPlaceBuilding(building_rec, jq_town_div) {
-        console.log('LocationPlaceBuilding', building_rec);
+        //console.log('LocationPlaceBuilding', building_rec);
         this.building_rec = building_rec;
         _super.call(this, jq_town_div.find('#building_' + this.building_rec.key), 'location_screen');
 
@@ -232,21 +233,15 @@ var LocationPlaceBuilding = (function (_super) {
         }
 
         // Создаем специалистов этого здания
-        var jq_npc_list = this.jq_main_div.find('.building-npc-list');
         for (var i = 0; i < this.building_rec.build.instances.length; i++) {
             var npc_rec = this.building_rec.build.instances[i];
-            //if (!locationManager.npc.hasOwnProperty(npc_rec.node_hash))
-            //    locationManager.npc[npc_rec.node_hash] = new LocationPlaceNPC(npc_rec, jq_town_div, this.building_rec.key);
-            //else
-            //    console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
-            var jq_npc_item = $(
-                '<div class="building-npc-list-item" onclick="locationManager.openNPC(`' + npc_rec.node_hash + '`)">' +
-                '<img class="building-npc-photo" src="' + npc_rec.photo + '"/>' +
-                '<div class="building-npc-name-block"><span class="building-npc-name"> ' + npc_rec.title + ' </span></div></div>'
-            );
-            jq_npc_list.append(jq_npc_item);
+            if (!locationManager.npc.hasOwnProperty(npc_rec.html_hash))
+                locationManager.npc[npc_rec.html_hash] = new LocationPlaceNPC(npc_rec, jq_town_div, this.building_rec.key);
+            else
+                console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
         }
-        this.resizeNPCList(jq_npc_list);
+
+        this.resizeNPCList(this.jq_main_div.find('.building-npc-list'));
 
         this.active_screen_name = 'location_screen';
 
@@ -308,38 +303,38 @@ var LocationPlaceNPC = (function (_super) {
     __extends(LocationPlaceNPC, _super);
 
     function LocationPlaceNPC(npc_rec, jq_town_div, building_name) {
-        console.log('LocationPlaceNPC', npc_rec);
+        //console.log('LocationPlaceNPC', npc_rec);
         this.npc_rec = npc_rec;
-        //_super.call(this, jq_town_div.find('#building_' + this.building_rec.key), 'location_screen');
+        this.owner_name = building_name;
+        _super.call(this, $('#npc_' + npc_rec.html_hash), 'location_screen');
     }
-
-    LocationPlaceNPC.prototype.activate = function () {
-        //console.log('LocationPlaceBuilding.prototype.activate');
-        _super.prototype.activate.call(this);
-        $('#' + this.building_rec.key + '-back').css('display', 'block');
-    };
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
             case '3':
-                $('#layer2').css('display', 'block');
-                $('#landscape').css('display', 'block');
-                $('.building-back').css('display', 'none');
-                this.jq_main_div.css('display', 'none');
-                if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
-                    locationManager.screens[this.screen_name] = null;
-                else // если нет, то записаться в последний активный
-                    locationManager.screens[locationManager.active_screen_name] = null;
+                if (this.owner_name)
+                    locationManager.openBuilding(this.owner_name);
+                else {
 
-                locationManager.setBtnState(1, '', false);
-                locationManager.setBtnState(2, '', false);
-                locationManager.setBtnState(3, '</br>Назад', false);
-                locationManager.setBtnState(4, '</br>Выход', true);
+                    $('#layer2').css('display', 'block');
+                    $('#landscape').css('display', 'block');
 
+                    this.jq_main_div.css('display', 'none');
+
+                    if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
+                        locationManager.screens[this.screen_name] = null;
+                    else // если нет, то записаться в последний активный
+                        locationManager.screens[locationManager.active_screen_name] = null;
+
+                    locationManager.setBtnState(1, '', false);
+                    locationManager.setBtnState(2, '', false);
+                    locationManager.setBtnState(3, '</br>Назад', false);
+                    locationManager.setBtnState(4, '</br>Выход', true);
+                }
                 break;
             case '4':
-                console.log('выход из города');
+                //console.log('выход из города');
                 break;
         }
     };

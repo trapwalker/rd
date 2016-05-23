@@ -1,5 +1,7 @@
 <div class="building-main">
-    {% include npc_header.html %}
+    {% if cur_build.head is not None %}
+        {% include npc_header.html %}
+    {% end %}
     <div class="building-center-block">
         <div class="building-center-menu-block">
             <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks">Доступные задания</div>
@@ -64,7 +66,14 @@
     </div>
     <div class="building-bottom-block">
         <div class="building-npc-list-block">
-            <div class="building-npc-list building-inventory-list"></div>
+            <div class="building-npc-list building-inventory-list">
+                {% for npc in cur_build.instances %}
+                <div class="building-npc-list-item" onclick="locationManager.openNPC('{{ npc.node_html() }}')">
+                    <img class="building-npc-photo" src="{{ npc.photo }}"/>
+                    <div class="building-npc-name-block"><span class="building-npc-name"> {{ npc.title }} </span></div>
+                </div>
+                {% end %}
+            </div>
         </div>
     </div>
 </div>
