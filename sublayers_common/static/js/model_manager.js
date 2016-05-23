@@ -920,6 +920,11 @@ var ClientManager = (function () {
             user.templates.html_car_img = event.templates.html_car_img
     };
 
+    ClientManager.prototype.HangarInfoMessage = function (event) {
+        console.log('ClientManager.prototype.HangarInfoMessage', event);
+        // todo: как-то вызвать именно для нпс ангара! подумать как! 
+    };
+
     // Журнал (стоянка)
     ClientManager.prototype.JournalParkingInfoMessage = function (event) {
         //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
@@ -1452,6 +1457,19 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 car_number: locationManager.hangar.current_car
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetHangarInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "get_hangar_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);

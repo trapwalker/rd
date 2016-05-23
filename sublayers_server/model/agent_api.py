@@ -594,6 +594,10 @@ class AgentAPI(API):
         log.info('agent %r want choice car, with number=%r', self.agent, car_number)
         TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
 
+    @public_method
+    def get_hangar_info(self, npc_node_hash):
+        messages.HangarInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+
     # Стоянка
 
     @public_method

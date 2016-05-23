@@ -220,6 +220,19 @@ var LocationPlace = (function () {
 
     LocationPlace.prototype.clickBtn = function (btnIndex) {};
 
+    LocationPlace.prototype.update = function (data) {};
+
+    LocationPlace.prototype._getNPCByType = function (type, npc_rec, jq_town_div, key) {
+        //console.log('LocationPlace.prototype._getNPCClass', type);
+        switch (type) {
+            case 'hangar':
+                return (new LocationHangarNPC(npc_rec, jq_town_div, key));
+            default:
+                return (new LocationPlaceNPC(npc_rec, jq_town_div, key));
+        }
+        console.log('Мы тут не должны быть!!!');
+    };
+
     return LocationPlace;
 })();
 
@@ -245,7 +258,8 @@ var LocationPlaceBuilding = (function (_super) {
         for (var i = 0; i < this.building_rec.build.instances.length; i++) {
             var npc_rec = this.building_rec.build.instances[i];
             if (!locationManager.npc.hasOwnProperty(npc_rec.html_hash))
-                locationManager.npc[npc_rec.html_hash] = new LocationPlaceNPC(npc_rec, jq_town_div, this.building_rec.key);
+                locationManager.npc[npc_rec.html_hash] = this._getNPCByType(npc_rec.type, npc_rec, jq_town_div, this.building_rec.key);
+                //locationManager.npc[npc_rec.html_hash] = new LocationPlaceNPC(npc_rec, jq_town_div, this.building_rec.key);
             else
                 console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
         }
@@ -315,11 +329,15 @@ var LocationPlaceNPC = (function (_super) {
         //console.log('LocationPlaceNPC', npc_rec);
         this.npc_rec = npc_rec;
         this.owner_name = building_name;
+
         _super.call(this, $('#npc_' + npc_rec.html_hash), 'location_screen');
+
+        console.log(this);
+        this.get_self_info();
     }
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
-        //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
+        console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
             case '3':
                 if (this.owner_name)
@@ -353,8 +371,39 @@ var LocationPlaceNPC = (function (_super) {
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
+    LocationPlaceNPC.prototype.get_self_info = function () { return false; };
+
     return LocationPlaceNPC;
 })(LocationPlace);
+
+
+var LocationHangarNPC = (function (_super) {
+    __extends(LocationHangarNPC, _super);
+
+    function LocationHangarNPC(npc_rec, jq_town_div, building_name) {
+        //console.log('LocationPlaceNPC', npc_rec);
+        _super.call(this, npc_rec, jq_town_div, building_name);
+    }
+
+    LocationHangarNPC.prototype.get_self_info = function () {
+        //console.log('LocationPlaceBuilding.prototype.get_self_info');
+        clientManager.sendGetHangarInfo(this);
+    };
+
+    LocationHangarNPC.prototype.update = function (data) {
+        console.log('LocationPlaceBuilding.prototype.update');
+        _super.prototype.update.call(this, data);
+
+    };
+
+    LocationHangarNPC.prototype.set_buttons = function () {
+        locationManager.setBtnState(3, '</br>Назад', true);
+        locationManager.setBtnState(4, '</br>Выход', true);
+    };
+
+    return LocationHangarNPC;
+})(LocationPlaceNPC);
+
 
 
 var locationManager;

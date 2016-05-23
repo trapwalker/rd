@@ -989,3 +989,34 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
             d['templates']['mechanic_suspension'] = mechanic_suspension
 
         return d
+
+
+class HangarInfoMessage(Message):
+    def __init__(self, npc_node_hash, **kw):
+        super(HangarInfoMessage, self).__init__(**kw)
+        self.npc_node_hash = npc_node_hash
+
+    def as_dict(self):
+        d = super(HangarInfoMessage, self).as_dict()
+        npc = self.agent.server.reg[self.npc_node_hash]
+
+        if npc and npc.type == 'hangar':
+            template_table = tornado.template.Loader(
+                "templates/location",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load("car_info_table.html")
+
+            template_img = tornado.template.Loader(
+                "templates/location",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load("car_info_img_ext.html")
+
+            prototypes = [self.agent.server.reg[car] for car in npc.car_list]
+
+            d.update(cars=[dict(
+                car=car.as_client_dict(),
+                html_car_table=template_table.generate(car=car),
+                html_car_img=template_img.generate(car=car),
+            ) for car in prototypes])
+        d['npc_node_hash'] = self.npc_node_hash
+        return d
