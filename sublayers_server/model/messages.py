@@ -908,3 +908,84 @@ class StrategyModeInfoObjectsMessage(Message):
         )
         return d
 
+
+# Вызывается тогда, когда не меняется машинка.
+class UserExampleSelfShortMessage(Message):
+    def as_dict(self):
+        d = super(UserExampleSelfShortMessage, self).as_dict()
+        agent = self.agent
+        user = agent.user
+        ex_car = agent.example.car
+        d['user_name'] = user.name
+        d['avatar_link'] = user.avatar_link
+        d['example_agent'] = agent.example.as_client_dict()
+        d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
+
+        if agent.example.role_class:
+            d['free_point_skills'] = agent.skill_points + agent.example.role_class.start_free_point_skills - \
+                                     agent.example.skill_point_summ()
+            d['free_point_perks'] = agent.lvl + agent.example.role_class.start_free_point_perks - len(agent.example.perks)
+
+
+        # Шаблоны машинки
+        templates = dict()
+        if ex_car:
+            template_car_img = tornado.template.Loader(
+                "../sublayers_server/templates/site",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load("car_info_ext_wrap.html")
+
+            templates['html_car_img'] = template_car_img.generate(car=ex_car)
+            d['templates'] = templates
+        return d
+
+
+# Вызывается при смене машинки или инициализации
+class UserExampleSelfMessage(UserExampleSelfShortMessage):
+    def as_dict(self):
+        d = super(UserExampleSelfMessage, self).as_dict()
+        ex_car = self.agent.example.car
+
+        if ex_car:
+            template_armorer_car = tornado.template.Loader(
+                "../sublayers_common/",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load(ex_car.armorer_car)
+
+            path_static = os.path.join(options.static_path, '..')
+            # todo: чтение файлов с диска - не очень хорошо! Возможно закешировать!
+            html_tuner_car = ''
+            with open(os.path.join(path_static, ex_car.tuner_car)) as f:
+                html_tuner_car = f.read()
+
+            armorer_sectors_svg = ''
+            with open(os.path.join(path_static, ex_car.armorer_sectors_svg)) as f:
+                armorer_sectors_svg = f.read()
+
+            # механик-системы
+            mechanic_engine = ''
+            with open(os.path.join(path_static, ex_car.mechanic_engine)) as f:
+                mechanic_engine = f.read()
+            mechanic_transmission = ''
+            with open(os.path.join(path_static, ex_car.mechanic_transmission)) as f:
+                mechanic_transmission = f.read()
+            mechanic_brakes = ''
+            with open(os.path.join(path_static, ex_car.mechanic_brakes)) as f:
+                mechanic_brakes = f.read()
+            mechanic_cooling = ''
+            with open(os.path.join(path_static, ex_car.mechanic_cooling)) as f:
+                mechanic_cooling = f.read()
+            mechanic_suspension = ''
+            with open(os.path.join(path_static, ex_car.mechanic_suspension)) as f:
+                mechanic_suspension = f.read()
+
+            d['templates']['html_armorer_car'] = template_armorer_car.generate(car=ex_car, need_css_only=False)
+            d['templates']['html_tuner_car'] = html_tuner_car
+            d['templates']['armorer_sectors_svg'] = armorer_sectors_svg
+            d['templates']['mechanic_engine'] = mechanic_engine
+            d['templates']['mechanic_transmission'] = mechanic_transmission
+            d['templates']['mechanic_brakes'] = mechanic_brakes
+            d['templates']['mechanic_cooling'] = mechanic_cooling
+            d['templates']['mechanic_suspension'] = mechanic_suspension
+
+        return d

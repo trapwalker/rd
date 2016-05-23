@@ -16,15 +16,15 @@ import random
 
 
 class Agent(Root):
-    login = TextAttribute(caption=u'Уникальное имя пользователя')
-    about_self = TextAttribute(default=u'', caption=u'Уникальное имя пользователя')
-    avatar_170_146 = TextAttribute(default=u'', caption=u'Ссылка на аватар разрешения 170x146 px')
+    login = TextAttribute(caption=u'Уникальное имя пользователя', tags='client')
+    about_self = TextAttribute(default=u'', caption=u'Уникальное имя пользователя', tags='client')
+    # avatar_170_146 = TextAttribute(default=u'', caption=u'Ссылка на аватар разрешения 170x146 px') # todo: не использовать; брать user.avatar_link
 
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
     car_list = InventoryAttribute(caption=u"Список всех машин, кроме активной")
 
     position = Position(caption=u"Последние координаты агента")
-    balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента")  # todo: обсудить
+    balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить
 
     last_town = RegistryLink(caption=u"Последний посещенный город")
     current_location = RegistryLink(caption=u"Текущая локация")
@@ -58,3 +58,17 @@ class Agent(Root):
     def iter_perks(self):
         for perk in self.perks:
             yield perk
+            
+    def skill_point_summ(self):
+        return self.driving.value + self.shooting.value + self.masking.value + self.leading.value + self.trading.value + self.engineering.value
+
+    def as_client_dict(self):
+        d = super(Agent, self).as_client_dict()
+        for name, calc_value in self.iter_skills():
+            d[name] = calc_value
+        d['role_class'] = '' if self.role_class is None else self.role_class.description
+
+        # todo: список перков
+        # todo: машинка
+
+        return d

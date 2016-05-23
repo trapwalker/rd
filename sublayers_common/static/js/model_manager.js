@@ -895,6 +895,31 @@ var ClientManager = (function () {
         //locationManager.trainer.update(event);
     };
 
+    // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
+    ClientManager.prototype.UserExampleSelfMessage = function(event) {
+        console.log('ClientManager.prototype.UserExampleSelfMessage', event);
+        // Эта функция заполняет только шаблоны
+        user.templates = {};
+        if (event.example_car) {
+            for (var key in event.templates)
+                if (event.templates.hasOwnProperty(key)) {
+                    user.templates[key] = event.templates[key];
+                }
+        }
+
+        this.UserExampleSelfShortMessage(event);
+    };
+
+    ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
+        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+
+        user.example_car = event.example_car;
+        user.example_agent = event.example_agent;
+        user.avatar_link = event.avatar_link;
+        if (event.example_car)
+            user.templates.html_car_img = event.templates.html_car_img
+    };
+
     // Журнал (стоянка)
     ClientManager.prototype.JournalParkingInfoMessage = function (event) {
         //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);

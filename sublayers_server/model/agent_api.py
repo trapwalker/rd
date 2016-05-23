@@ -393,6 +393,7 @@ class AgentAPI(API):
 
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
+        messages.UserExampleSelfMessage(agent=self.agent, time=time).post()
 
         # Отправка сообщений для журнала
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
