@@ -233,13 +233,13 @@ var LocationPlaceBuilding = (function (_super) {
         _super.call(this, jq_town_div.find('#building_' + this.building_rec.key), 'location_screen');
 
         // Если в здании есть глава то отрисовать его
-        if (building_rec.build.head) {
-            var jq_header = this.jq_main_div.find('.npc-header');
-            jq_header.find('.npc-photo').attr('src', building_rec.build.head.photo);
-            jq_header.find('.npc-name').text(building_rec.build.head.title + ':');
-            if (building_rec.build.head.text)
-                jq_header.find('.npc-text').text('- ' + building_rec.build.head.text);
-        }
+        //if (building_rec.build.head) {
+        //    var jq_header = this.jq_main_div.find('.npc-header');
+        //    jq_header.find('.npc-photo').attr('src', building_rec.build.head.photo);
+        //    jq_header.find('.npc-name').text(building_rec.build.head.title + ':');
+        //    if (building_rec.build.head.text)
+        //        jq_header.find('.npc-text').text('- ' + building_rec.build.head.text);
+        //}
 
         // Создаем специалистов этого здания
         for (var i = 0; i < this.building_rec.build.instances.length; i++) {
@@ -317,6 +317,13 @@ var LocationPlaceNPC = (function (_super) {
         this.owner_name = building_name;
         _super.call(this, $('#npc_' + npc_rec.html_hash), 'location_screen');
     }
+
+    LocationPlaceNPC.prototype.activate = function () {
+        //console.log('LocationPlaceBuilding.prototype.activate');
+        _super.prototype.activate.call(this);
+        if (this.owner_name)
+            $('#' + this.owner_name + '-back').css('display', 'block');
+    };
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
