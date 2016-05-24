@@ -1465,7 +1465,7 @@ var ClientManager = (function () {
             call: "sell_car_in_hangar",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                npc_node_hash: npc.npc_rec.node_hash,
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
@@ -1501,25 +1501,28 @@ var ClientManager = (function () {
 
     // Стоянка
 
-    ClientManager.prototype.sendParkingSelectCar = function () {
-//        console.log('ClientManager.prototype.sendParkingSelectCar', locationManager.parking.current_car);
+    ClientManager.prototype.sendParkingLeave = function (npc) {
+        //console.log('ClientManager.prototype.sendParkingLeave');
         var mes = {
-            call: "parking_select_car",
+            call: "parking_leave_car",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_number: locationManager.parking.current_car
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendParkingLeaveCar = function () {
-        //console.log('ClientManager.prototype.sendParkingLeaveCar');
+    ClientManager.prototype.sendParkingSelect = function (npc) {
+        //console.log('ClientManager.prototype.sendParkingSelect');
         var mes = {
-            call: "parking_leave_car",
+            call: "parking_select_car",
             rpc_call_id: rpcCallList.getID(),
-            params: {}
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash,
+                car_number: npc.current_car
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

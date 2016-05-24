@@ -22,6 +22,7 @@ class Mobile(Root):
 
     # Последняя посещенная локация
     last_location = RegistryLink(caption=u'Последняя посещенная локация')
+    last_parking_npc = RegistryLink(default=None, caption=u'Парковщик машины.')
 
     # атрибуты от ObserverObjects
     p_observing_range = Parameter(default=1000, caption=u"Радиус обзора")
