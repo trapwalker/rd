@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute
+from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute, Attribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
 from sublayers_server.model.registry.classes.skills import Skill
@@ -21,7 +21,7 @@ class Agent(Root):
     # avatar_170_146 = TextAttribute(default=u'', caption=u'Ссылка на аватар разрешения 170x146 px') # todo: не использовать; брать user.avatar_link
 
     car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
-    car_list = InventoryAttribute(caption=u"Список всех машин, кроме активной")
+    car_list = Attribute(default=[], caption=u"Список всех машин, кроме активной")
 
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить
@@ -79,6 +79,6 @@ class Agent(Root):
         res = []
         # todo: refactor to id
         for car in self.car_list:
-            if car.last_parking_npc == npc.node_hash():
+            if car.last_parking_npc.node_hash() == npc.node_hash():
                 res.append(car)
         return res

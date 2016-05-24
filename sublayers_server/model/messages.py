@@ -1048,6 +1048,7 @@ class ParkingInfoMessage(NPCInfoMessage):
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
                 # todo: use agent.example.get_car_list_by_npc(npc)
-            ) for car in agent.example.car_list])
+                # ) for car in agent.example.car_list])
+            ) for car in agent.example.get_car_list_by_npc(npc)])
         d['npc_html_hash'] = npc.node_html()
         return d
