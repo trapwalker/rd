@@ -17,9 +17,10 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
     StrategyModeInfoObjectsEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionParkingLeaveCar, TransactionParkingSelectCar,
-    TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply, TransactionTraderApply,
-    TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills, TransactionResetPerks)
+    TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeaveCar,
+    TransactionParkingSelectCar, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
+    TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills,
+    TransactionResetPerks)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -590,9 +591,14 @@ class AgentAPI(API):
     # Ангар
 
     @public_method
-    def choice_car_in_hangar(self, car_number):
-        log.info('agent %r want choice car, with number=%r', self.agent, car_number)
-        TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
+    def sell_car_in_hangar(self, npc_node_hash):
+        log.info('agent %r sell car', self.agent)
+        TransactionHangarSell(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def buy_car_in_hangar(self, car_number, npc_node_hash):
+        log.info('agent %r want buy car, with number=%r', self.agent, car_number)
+        TransactionHangarBuy(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
 
     @public_method
     def get_hangar_info(self, npc_node_hash):

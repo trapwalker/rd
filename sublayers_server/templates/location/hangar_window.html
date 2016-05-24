@@ -3,10 +3,7 @@
     {% set npc_title = cur_npc.title %}
     {% set npc_text = cur_npc.text %}
     {% include npc_header.html %}
-
-
     <div class="hangar-center"></div>
-
     <div class="hangar-car-list">
         <div class="hangar-car-list-label">Предложение:</div>
         <div class="hangar-car-list-wrap">
@@ -14,36 +11,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Функция подстраивает ширину списка под его содержимое
-{#    function resizeHangarCarList() {#}
-{#        var inventory = $('#townHangarPageWrap').find('.hangar-car-list-list').first();#}
-{#        var width = 0;#}
-{#        if (inventory) {#}
-{#            $(inventory).find('.hangar-car-list-itemWrap').each(function (index, element) {#}
-{#                if ($(element).css('display') == 'block')#}
-{#                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));#}
-{#            });#}
-{#            $(inventory).width(width);#}
-{#        }#}
-{#    }#}
-{#    resizeHangarCarList();#}
-{##}
-{#    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').click(function () {#}
-{#        // Сбросить предыдущее выделение и выджелить выбранный итем#}
-{#        $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');#}
-{#        $(this).addClass('hangar-car-list-itemWrap-active');#}
-{##}
-{#        // Установить цену#}
-{#        $('#hangar-footer-price').text($(this).data('car_price'));#}
-{##}
-{#        // Скрыть информационные окна всех машинок, показать выбранную#}
-{#        $('#townHangarPageWrap').find('.hangar-center-info-car-wrap').css('display', 'none');#}
-{#        $('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');#}
-{##}
-{#        // Установить выбранную машинку в менеджер#}
-{#        locationManager.hangar.current_car = $(this).data('car_number');#}
-{#    })#}
-{#    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').first().click();#}
-</script>

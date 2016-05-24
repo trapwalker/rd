@@ -1452,13 +1452,27 @@ var ClientManager = (function () {
 
     // Ангар
 
-    ClientManager.prototype.sendHangarCarChoice = function () {
+    ClientManager.prototype.sendHangarSell = function (npc) {
         //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
         var mes = {
-            call: "choice_car_in_hangar",
+            call: "sell_car_in_hangar",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_number: locationManager.hangar.current_car
+                npc_node_hash: npc.npc_rec.node_hash,
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHangarBuy = function (npc) {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "buy_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash,
+                car_number: npc.current_car
             }
         };
         rpcCallList.add(mes);

@@ -74,17 +74,15 @@ class Building(object):
 
 
 class Town(MapLocation):
-    # armorer = RegistryLink(caption=u'Оружейник')
-    # mechanic = RegistryLink(caption=u'Механик')
-    # tuner = RegistryLink(caption=u'Тюнер')
-    # trader = RegistryLink(caption=u'Торговец')
-    # hangar = RegistryLink(caption=u'Ангар')
-    # nucoil = RegistryLink(caption=u'Заправка')
-    # trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
-    # parking = RegistryLink(caption=u'Автостоянка')
     buildings = DictAttribute(
         default=dict, itemclass=Building,
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.')
+
+    def get_npc_list(self):
+        res = []
+        for build in self.buildings.values():
+            res.extend(build.instances)
+        return res
 
     def as_client_dict(self):
         d = super(Town, self).as_client_dict()

@@ -37,7 +37,7 @@ var LocationManager = (function () {
     };
 
     LocationManager.prototype.openNPC = function (npcHTMLHash) {
-        console.log('LocationManager.prototype.openNPC', npcHTMLHash);
+        //console.log('LocationManager.prototype.openNPC', npcHTMLHash);
         if (!this.npc.hasOwnProperty(npcHTMLHash)) return;
         var npc = this.npc[npcHTMLHash];
         npc.activate();
@@ -141,7 +141,7 @@ var LocationManager = (function () {
     LocationManager.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationManager.prototype.clickBtn', btnIndex);
         if (btnIndex == 4) { // Попытка выйти из города
-            console.log('Попытка выйти из города');
+            //console.log('Попытка выйти из города');
             if (user.example_car)
                 clientManager.sendExitFromLocation();
             else
@@ -222,6 +222,17 @@ var LocationPlace = (function () {
 
     LocationPlace.prototype.update = function (data) {};
 
+    LocationPlace.prototype.resizeNPCList = function (jq_list) {
+        var width = 0;
+        if (jq_list) {
+            jq_list.children().each(function (index, element) {
+                if ($(element).css('display') == 'block')
+                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+            });
+            jq_list.width(width);
+        }
+    };
+
     LocationPlace.prototype._getNPCByType = function (type, npc_rec, jq_town_div, key) {
         //console.log('LocationPlace.prototype._getNPCClass', type);
         switch (type) {
@@ -245,15 +256,6 @@ var LocationPlaceBuilding = (function (_super) {
         this.building_rec = building_rec;
         _super.call(this, jq_town_div.find('#building_' + this.building_rec.key), 'location_screen');
 
-        // Если в здании есть глава то отрисовать его
-        //if (building_rec.build.head) {
-        //    var jq_header = this.jq_main_div.find('.npc-header');
-        //    jq_header.find('.npc-photo').attr('src', building_rec.build.head.photo);
-        //    jq_header.find('.npc-name').text(building_rec.build.head.title + ':');
-        //    if (building_rec.build.head.text)
-        //        jq_header.find('.npc-text').text('- ' + building_rec.build.head.text);
-        //}
-
         // Создаем специалистов этого здания
         for (var i = 0; i < this.building_rec.build.instances.length; i++) {
             var npc_rec = this.building_rec.build.instances[i];
@@ -269,17 +271,6 @@ var LocationPlaceBuilding = (function (_super) {
 
         // todo: заполнить квесты
     }
-
-    LocationPlaceBuilding.prototype.resizeNPCList = function (jq_list) {
-        var width = 0;
-        if (jq_list) {
-            jq_list.children().each(function (index, element) {
-                if ($(element).css('display') == 'block')
-                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-            });
-            jq_list.width(width);
-        }
-    };
 
     LocationPlaceBuilding.prototype.activate = function () {
         //console.log('LocationPlaceBuilding.prototype.activate');
@@ -331,7 +322,6 @@ var LocationPlaceNPC = (function (_super) {
 
         _super.call(this, $('#npc_' + npc_rec.html_hash), 'location_screen');
 
-        console.log(this);
         this.get_self_info();
     }
 
@@ -349,7 +339,6 @@ var LocationPlaceNPC = (function (_super) {
                 if (this.owner_name)
                     locationManager.openBuilding(this.owner_name);
                 else {
-
                     $('#layer2').css('display', 'block');
                     $('#landscape').css('display', 'block');
 
@@ -390,6 +379,7 @@ var LocationHangarNPC = (function (_super) {
         //console.log('LocationPlaceNPC', npc_rec);
         _super.call(this, npc_rec, jq_town_div, building_name);
         this.cars_list = [];
+        this.current_car = null;
     }
 
     LocationHangarNPC.prototype.get_self_info = function () {
@@ -412,7 +402,6 @@ var LocationHangarNPC = (function (_super) {
 
             for (var i = 0; i < this.cars_list.length; i++) {
                 var car_rec = this.cars_list[i];
-                console.log(car_rec);
                 var jq_car = $('<div id="hangar-center-info-car-' + i + '" class="hangar-center-info-car-wrap"></div>');
                 var jq_car_content = $('<div class="car-info-block-main">' +
                     '<div class="car-info-block-picture-hangar">' + car_rec.html_car_img + '</div>' +
@@ -430,17 +419,60 @@ var LocationHangarNPC = (function (_super) {
                 );
                 jq_car_list_inventory.append(jq_inv_car);
             }
+            this.resizeNPCList(jq_car_list_inventory);
+
+            // Вешаем клики на машинки в инвентаре
+            var self = this;
+            this.jq_main_div.find('.hangar-car-list-itemWrap').click(function () {
+                // Сбросить предыдущее выделение и выджелить выбранный итем
+                self.jq_main_div.find('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
+                $(this).addClass('hangar-car-list-itemWrap-active');
+
+                // todo: Установить цену
+                //$('#hangar-footer-price').text($(this).data('car_price'));
+
+                // Скрыть информационные окна всех машинок, показать выбранную
+                self.jq_main_div.find('.hangar-center-info-car-wrap').css('display', 'none');
+                self.jq_main_div.find('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
+
+                // Установить выбранную машинку в менеджер
+                self.current_car = $(this).data('car_number');
+            });
+            this.jq_main_div.find('.hangar-car-list-itemWrap').first().click();
         }
+        this.set_buttons();
     };
 
     LocationHangarNPC.prototype.set_buttons = function () {
+        if (user.example_car) {
+            locationManager.setBtnState(1, '</br>Обменять ТС', true);
+            locationManager.setBtnState(2, '</br>Продать ТС', true);
+        }
+        else {
+            locationManager.setBtnState(1, '</br>Купить ТС', true);
+            locationManager.setBtnState(2, '</br>Продать ТС', false);
+        }
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
+    LocationHangarNPC.prototype.clickBtn = function (btnIndex) {
+        //console.log('LocationHangarNPC.prototype.clickBtn', btnIndex);
+        switch (btnIndex) {
+            case '1':
+                clientManager.sendHangarBuy(this);
+                break;
+            case '2':
+                if (user.example_car)
+                    clientManager.sendHangarSell(this);
+                break;
+            default:
+                _super.prototype.clickBtn.call(this, btnIndex);
+        }
+    };
+
     return LocationHangarNPC;
 })(LocationPlaceNPC);
-
 
 
 var locationManager;

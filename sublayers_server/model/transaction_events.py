@@ -191,32 +191,68 @@ class TransactionGasStation(TransactionEvent):
         messages.ExamplesShowMessage(agent=agent, time=self.time).post()
 
 
-class TransactionHangarChoice(TransactionEvent):
-    def __init__(self, agent, car_number, **kw):
-        super(TransactionHangarChoice, self).__init__(server=agent.server, **kw)
+class TransactionHangarSell(TransactionEvent):
+    def __init__(self, agent, npc_node_hash, **kw):
+        super(TransactionHangarSell, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.car_number = car_number
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
-        super(TransactionHangarChoice, self).on_perform()
-        # todo: (!) сделать проверки безопасности правильно
-        if not (self.agent.current_location and self.agent.current_location.example.hangar):
+        super(TransactionHangarSell, self).on_perform()
+
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'hangar') or (self.agent.example.car is None):
             return
 
-        if len(self.agent.current_location.example.hangar.car_list) <= self.car_number:
+        if self.agent.current_location is None or \
+           npc not in self.agent.current_location.example.get_npc_list():
             return
 
-        car_proto = self.server.reg[self.agent.current_location.example.hangar.car_list[self.car_number]]
+        self.agent.example.balance += self.agent.example.car.price
+        self.agent.example.car = None
+
+        messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+
+
+class TransactionHangarBuy(TransactionEvent):
+    def __init__(self, agent, car_number, npc_node_hash, **kw):
+        super(TransactionHangarBuy, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.car_number = car_number
+        self.npc_node_hash = npc_node_hash
+
+    def on_perform(self):
+        super(TransactionHangarBuy, self).on_perform()
+
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'hangar'):
+            return
+
+        if self.agent.current_location is None or \
+           npc not in self.agent.current_location.example.get_npc_list() or \
+           len(npc.car_list) <= self.car_number:
+            return
+
+        car_proto = self.server.reg[npc.car_list[self.car_number]]
+
+        agent_balance = self.agent.example.balance
+        agent_balance += 0 if self.agent.example.car is None else self.agent.example.car.price
+
         # todo: refactoring (use inventory to choose car)
-
-        if self.agent.example.balance >= car_proto.price:
-            # todo: message to client if not enough money
+        if agent_balance >= car_proto.price:
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-            self.agent.example.balance -= car_proto.price
-            ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
+
+            self.agent.example.balance = agent_balance - car_proto.price
+            messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+            # ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
+        else:
+            # todo: message to client if not enough money
+            pass
 
 
 class TransactionParkingSelectCar(TransactionEvent):
