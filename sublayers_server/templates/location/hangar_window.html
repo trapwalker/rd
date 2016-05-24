@@ -5,32 +5,13 @@
     {% include npc_header.html %}
 
 
-    <div class="hangar-center">
-{#        {% for car_number in range(0, len(town.example.hangar.car_list)) %}#}
-{#        {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}#}
-{#        <div id="hangar-center-info-car-{{ car_number }}" class="hangar-center-info-car-wrap">#}
-{#            {% include car_info_block.html %}#}
-{#        </div>#}
-{#        {% end %}#}
-    </div>
+    <div class="hangar-center"></div>
 
     <div class="hangar-car-list">
-{#        <div class="hangar-car-list-label">Предложение:</div>#}
-{#        <div class="hangar-car-list-wrap">#}
-{#            <div class="hangar-car-list-list">#}
-{#                {% for car_number in range(0, len(town.example.hangar.car_list)) %}#}
-{#                {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}#}
-{#                <div class="hangar-car-list-itemWrap" data-car_number="{{ car_number }}"#}
-{#                     data-car_price="{{ car.price }}">#}
-{#                    <div class="hangar-car-list-item">#}
-{#                        <div class="hangar-car-list-pictureWrap"#}
-{#                             style="background: url({{ car.inv_icon_mid }}) no-repeat center"></div>#}
-{#                        <div class="hangar-car-list-name">{{ car.title }}</div>#}
-{#                    </div>#}
-{#                </div>#}
-{#                {% end %}#}
-{#            </div>#}
-{#        </div>#}
+        <div class="hangar-car-list-label">Предложение:</div>
+        <div class="hangar-car-list-wrap">
+            <div class="hangar-car-list-list"></div>
+        </div>
     </div>
 </div>
 

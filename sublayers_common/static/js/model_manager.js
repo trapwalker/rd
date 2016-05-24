@@ -916,13 +916,15 @@ var ClientManager = (function () {
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.avatar_link = event.avatar_link;
-        if (event.example_car)
+        if (event.example_car && event.templates)
             user.templates.html_car_img = event.templates.html_car_img
     };
 
     ClientManager.prototype.HangarInfoMessage = function (event) {
-        console.log('ClientManager.prototype.HangarInfoMessage', event);
-        // todo: как-то вызвать именно для нпс ангара! подумать как! 
+        console.log('ClientManager.prototype.HangarInfoMessage', event, locationManager.npc.hasOwnProperty(event.npc_html_hash));
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
+            locationManager.npc[event.npc_html_hash].update(event);
+        }
     };
 
     // Журнал (стоянка)

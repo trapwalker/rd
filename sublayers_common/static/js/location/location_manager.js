@@ -259,7 +259,6 @@ var LocationPlaceBuilding = (function (_super) {
             var npc_rec = this.building_rec.build.instances[i];
             if (!locationManager.npc.hasOwnProperty(npc_rec.html_hash))
                 locationManager.npc[npc_rec.html_hash] = this._getNPCByType(npc_rec.type, npc_rec, jq_town_div, this.building_rec.key);
-                //locationManager.npc[npc_rec.html_hash] = new LocationPlaceNPC(npc_rec, jq_town_div, this.building_rec.key);
             else
                 console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
         }
@@ -390,6 +389,7 @@ var LocationHangarNPC = (function (_super) {
     function LocationHangarNPC(npc_rec, jq_town_div, building_name) {
         //console.log('LocationPlaceNPC', npc_rec);
         _super.call(this, npc_rec, jq_town_div, building_name);
+        this.cars_list = [];
     }
 
     LocationHangarNPC.prototype.get_self_info = function () {
@@ -398,9 +398,39 @@ var LocationHangarNPC = (function (_super) {
     };
 
     LocationHangarNPC.prototype.update = function (data) {
-        console.log('LocationPlaceBuilding.prototype.update');
+        console.log('LocationPlaceBuilding.prototype.update', data);
         _super.prototype.update.call(this, data);
 
+        if (data.cls == 'HangarInfoMessage') {
+            this.cars_list = data.cars;
+
+            var jq_car_list = this.jq_main_div.find('.hangar-center').first();
+            var jq_car_list_inventory = this.jq_main_div.find('.hangar-car-list-list').first();
+
+            jq_car_list.empty();
+            jq_car_list_inventory.empty();
+
+            for (var i = 0; i < this.cars_list.length; i++) {
+                var car_rec = this.cars_list[i];
+                console.log(car_rec);
+                var jq_car = $('<div id="hangar-center-info-car-' + i + '" class="hangar-center-info-car-wrap"></div>');
+                var jq_car_content = $('<div class="car-info-block-main">' +
+                    '<div class="car-info-block-picture-hangar">' + car_rec.html_car_img + '</div>' +
+                    '<div class="car-info-block-info-hangar">' + car_rec.html_car_table + '</div></div>');
+                jq_car.append(jq_car_content);
+                jq_car_list.append(jq_car);
+
+                var jq_inv_car = $(
+                    '<div class="hangar-car-list-itemWrap" data-car_number="' + i + '" ' +
+                    'data-car_price="' + car_rec.car.price + '">' +
+                    '<div class="hangar-car-list-item">' +
+                    '<div class="hangar-car-list-pictureWrap" ' +
+                    'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
+                    '<div class="hangar-car-list-name">' + car_rec.car.title + '</div></div></div>'
+                );
+                jq_car_list_inventory.append(jq_inv_car);
+            }
+        }
     };
 
     LocationHangarNPC.prototype.set_buttons = function () {

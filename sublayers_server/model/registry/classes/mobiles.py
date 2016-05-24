@@ -118,7 +118,7 @@ class Mobile(Root):
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
-    price = Attribute(default=0, caption=u"Цена")
+    price = Attribute(default=0, caption=u"Цена", tags='client')
 
     # Косметика
     title = Attribute(default="", caption=u"Модель автомобиля", tags='client')
@@ -200,9 +200,9 @@ class Car(Mobile):
     mechanic_cooling = Attribute(caption=u"Представление системы охлаждения у механника")
     mechanic_suspension = Attribute(caption=u"Представление подвески у механника")
 
-    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей')
-    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей')
-    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей')
+    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags="client")
+    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей', tags="client")
+    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей', tags="client")
 
     # Атрибуты - слоты механика. Скиданы в кучу, работают по тегам систем
     # Двигатель

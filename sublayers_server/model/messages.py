@@ -1018,5 +1018,5 @@ class HangarInfoMessage(Message):
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
             ) for car in prototypes])
-        d['npc_node_hash'] = self.npc_node_hash
+        d['npc_html_hash'] = npc.node_html()
         return d
