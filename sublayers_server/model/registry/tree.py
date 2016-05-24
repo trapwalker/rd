@@ -11,8 +11,12 @@ from motorengine import (
     Document, StringField, ListField, BooleanField, UUIDField, ReferenceField,
     EmbeddedDocumentField, EmailField, IntField, DateTimeField,
 )
-
 from uuid import uuid1 as get_uuid, UUID
+from bson import ObjectId
+from tornado.concurrent import return_future
+
+from sublayers_server.model.registry.uri_reference_field import UniReferenceField
+from sublayers_server.model.registry.uri import URI
 
 
 class StorageUnspecified(Exception):
@@ -21,12 +25,14 @@ class StorageUnspecified(Exception):
 
 
 class Node(Document):
-    __lazy__ = True
+    __lazy__ = False
     __field_tags__ = {
         'client': ['tags'],
     }
     # todo: override attributes in subclasses
     uid = UUIDField(default=get_uuid)
+    fixtured = BooleanField(default=False)  # Признак предопределенности объекта из файлового репозитория
+    uri = StringField()
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
     parent = ReferenceField('sublayers_server.model.registry.tree.Node')
     owner = ReferenceField('sublayers_server.model.registry.tree.Node')
@@ -54,27 +60,40 @@ class Node(Document):
         if storage:
             storage.put(self)
 
-    def find_reference_field(self, document, results, field_name, field):
-        if self.is_reference_field(field):
-            value = document._values.get(field_name, None)
+    @staticmethod
+    def _filter_args_deco(f):
+        def cover(*av, **kw):
+            if av:
+                av = list(av)
+                key = av and av.pop(0)
 
-            # todo: fix test value to URI format
-            if isinstance(value, six.string_types) and value.startswith('reg://'):
-                results.append([
-                    field.reference_type.get_by_uri,
-                    value,
-                    document._values,
-                    field_name,
-                    None
-                ])
-            elif value is not None:
-                results.append([
-                    field.reference_type.objects.get,
-                    value,
-                    document._values,
-                    field_name,
-                    None
-                ])
+                if isinstance(key, ObjectId):
+                    kw.update(id=key)
+                elif isinstance(key, URI):
+                    kw.update(uri=key)
+                elif isinstance(key, basestring):
+                    try:
+                        kw.update(uri=URI(key))
+                    except:
+                        try:
+                            kw.update(id=ObjectId(key))
+                        except:
+                            raise ValueError('Wrong registry object identify: {!r}'.format(key))
+                else:
+                    raise ValueError('Unexpected type of object identify: {!r}'.format(key))
+
+            return f(*av, **kw)
+
+        return cover
+
+    def _get_load_function(self, document, field_name, document_type):
+        """Get appropriate method to load reference field of the document"""
+        if field_name in document._reference_loaded_fields:
+            # there is a projection for this field
+            fields = document._reference_loaded_fields[field_name]
+            return document_type.objects.fields(**fields).get
+
+        return self._filter_args_deco(document_type.objects.get)
 
     def __repr__(self):
         return '{self.__class__.__name__}(\n{params})'.format(
@@ -90,9 +109,10 @@ class Node(Document):
     def validate_fields(self):
         for name, field in self._fields.items():
             value = self.get_field_value(name)
-            parent = self.parent
-            if field.required and field.is_empty(value) and (not parent or not hasattr(parent, name)):
-                raise InvalidDocumentError("Field '%s' is required." % name)
+            # todo: required fields disabled (restore it)
+            #parent = self.parent
+            #if field.required and field.is_empty(value) and (not parent or not hasattr(parent, name)):
+            #    raise InvalidDocumentError("Field '%s' is required." % name)
             if not field.validate(value):
                 raise InvalidDocumentError("Field '%s' must be valid." % name)
 
@@ -141,18 +161,7 @@ class Node(Document):
     def id(self):
         return str(self._id)
 
-    @property
-    def uri(self):
-        if self.storage is None:
-            return
-        return self.storage.get_uri(self)
-
-    def node_hash(self): # todo: (!) rename, make 'uri' property
-        if self.uri:
-            return str(self.uri)
-        elif self.parent:
-            return self.parent.node_hash()
-        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
+    # todo: (!!) remove 'node_hash' method
 
     # def node_html(self):
     #     return self.node_hash().replace('://', '-').replace('/', '-')

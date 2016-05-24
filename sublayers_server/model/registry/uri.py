@@ -44,6 +44,14 @@ class URI(tuple):
     ''', re.X)
 
     @classmethod
+    def try_or_default(cls, *av, **kw):
+        default = kw.pop('default', None)
+        try:
+            return cls(*av, **kw)
+        except URIFormatError:
+            return default
+
+    @classmethod
     def parse_uri(cls, uri):
         """Parse uri like 'scheme://path/to/the/some/object'
         and return tuple like: ('scheme', ['path', 'to', 'the', 'some', 'object'])

@@ -25,10 +25,13 @@ from bson import ObjectId
 
 
 class A(Node):
+    __lazy__ = False
     __collection__ = 'test_a'
     x = IntField()
     
+
 class B(A):
+    __lazy__ = False
     __collection__ = 'test_b'
     y = IntField()
 
@@ -57,17 +60,21 @@ if __name__ == '__main__':
     @tornado.gen.coroutine
     def test_store():
         log.debug('### test save/load consystency')
-        a = A(name='a', doc='aa', x=13)
-        b = B(name='b', parent=a, y=14)
+        print((yield A.objects.delete()))
+        print((yield B.objects.delete()))
+        uid1 = ObjectId()
+        print('uid1=', uid1)
+        
+        a = A(name='a', doc='aa', uri='reg://reg1/a13', fixtured=True, x=13, id=uid1)
+        b = B(name='b', doc='bb', uri='reg://reg1/b14', fixtured=True, y=14, parent=a)
 
-        log.debug('saved: %r', (yield a.save()))
-        log.debug('saved: %r', (yield b.save()))
+        aa = yield a.save()
+        bb = yield b.save()
+        log.debug('saved A(%s->%s): %r', id(a), id(aa), aa)
+        log.debug('saved B(%s->%s): %r', id(b), id(bb), bb)
 
-        log.debug('a: %r', a)
-        log.debug('b: %r', b)
-
-        for i, aa in enumerate((yield A.objects.find_all())):
-            print('A::', i, repr(aa))
+        bbb = yield B.objects.get(id=bb.id)
+        log.debug('loaded B(%s->%s): %r', id(b), id(bbb), bbb)
 
         log.debug('no more ' + '#' * 20)
 
@@ -93,13 +100,14 @@ if __name__ == '__main__':
         log.debug('end ' + '#' * 20)
 
     #io_loop.add_callback(test_store)
-    io_loop.add_callback(test_custom_id)
+    io_loop.add_callback(test_store)
 
-    c = Cnt(21)
+    c = Cnt(5)
     
     tornado.ioloop.PeriodicCallback(lambda: (
         print('%s,' % c.inc(-1), end='')
         or io_loop._timeouts
+        or c.c > 0
         or log.info('Stopping.')
         or io_loop.stop()
     ), 1000).start()
