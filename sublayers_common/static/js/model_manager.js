@@ -921,7 +921,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.HangarInfoMessage = function (event) {
-        console.log('ClientManager.prototype.HangarInfoMessage', event, locationManager.npc.hasOwnProperty(event.npc_html_hash));
+        console.log('ClientManager.prototype.HangarInfoMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
+            locationManager.npc[event.npc_html_hash].update(event);
+        }
+    };
+
+    ClientManager.prototype.ParkingInfoMessage = function (event) {
+        console.log('ClientManager.prototype.ParkingInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
             locationManager.npc[event.npc_html_hash].update(event);
         }
@@ -1513,6 +1520,19 @@ var ClientManager = (function () {
             call: "parking_leave_car",
             rpc_call_id: rpcCallList.getID(),
             params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetParkingInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendGetParkingInfo', npc);
+        var mes = {
+            call: "get_parking_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

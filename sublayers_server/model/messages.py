@@ -991,11 +991,15 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
         return d
 
 
-class HangarInfoMessage(Message):
+# Общее сообщение-родитель для всех видов информационных сообщений для города (для заполнения города)
+class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
-        super(HangarInfoMessage, self).__init__(**kw)
+        super(NPCInfoMessage, self).__init__(**kw)
         self.npc_node_hash = npc_node_hash
 
+
+# Сообщение-ответ для клиента - информация об нпц-ангаре
+class HangarInfoMessage(NPCInfoMessage):
     def as_dict(self):
         d = super(HangarInfoMessage, self).as_dict()
         npc = self.agent.server.reg[self.npc_node_hash]
@@ -1018,5 +1022,33 @@ class HangarInfoMessage(Message):
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
             ) for car in prototypes])
+        d['npc_html_hash'] = npc.node_html()
+        return d
+
+
+# Сообщение-ответ для клиента - информация об нпц-стоянке
+class ParkingInfoMessage(NPCInfoMessage):
+    def as_dict(self):
+        d = super(ParkingInfoMessage, self).as_dict()
+        npc = self.agent.server.reg[self.npc_node_hash]
+        agent = self.agent
+        if npc and npc.type == 'parking':
+            template_table = tornado.template.Loader(
+                "templates/location",
+                namespace=agent.connection.get_template_namespace()
+            ).load("car_info_table.html")
+
+            template_img = tornado.template.Loader(
+                "templates/location",
+                namespace=agent.connection.get_template_namespace()
+            ).load("car_info_img_ext.html")
+
+            d.update(cars=[dict(
+                car_info=dict(
+                    car=car.as_client_dict(),
+                    html_car_table=template_table.generate(car=car),
+                    html_car_img=template_img.generate(car=car),
+                )
+            ) for car in agent.example.car_list])
         d['npc_html_hash'] = npc.node_html()
         return d

@@ -1,5 +1,7 @@
 {% if cur_npc.type == 'hangar' %}
     {% include hangar_window.html %}
+{% elif cur_npc.type == 'parking' %}
+    {% include hangar_window.html %}
 {% else %}
     {% set npc_photo = cur_npc.photo %}
     {% set npc_title = cur_npc.title %}

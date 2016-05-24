@@ -616,6 +616,10 @@ class AgentAPI(API):
         # log.info('agent %r want leave car in parking', self.agent)
         TransactionParkingLeaveCar(time=self.agent.server.get_time(), agent=self.agent).post()
 
+    @public_method
+    def get_parking_info(self, npc_node_hash):
+        messages.ParkingInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+
     # Оружейник
 
     @public_method
