@@ -227,6 +227,8 @@ var LocationPlace = (function () {
         switch (type) {
             case 'hangar':
                 return (new LocationHangarNPC(npc_rec, jq_town_div, key));
+            case 'parking':
+                return (new LocationParkingNPC(npc_rec, jq_town_div, key));
             default:
                 return (new LocationPlaceNPC(npc_rec, jq_town_div, key));
         }
@@ -441,6 +443,62 @@ var LocationHangarNPC = (function (_super) {
     return LocationHangarNPC;
 })(LocationPlaceNPC);
 
+var LocationParkingNPC = (function (_super) {
+    __extends(LocationParkingNPC, _super);
+
+    function LocationParkingNPC(npc_rec, jq_town_div, building_name) {
+        //console.log('LocationPlaceNPC', npc_rec);
+        _super.call(this, npc_rec, jq_town_div, building_name);
+        this.cars_list = [];
+    }
+
+    LocationParkingNPC.prototype.get_self_info = function () {
+        clientManager.sendGetParkingInfo(this);
+    };
+
+    LocationParkingNPC.prototype.update = function (data) {
+        console.log('LocationParkingNPC.prototype.update', data);
+        _super.prototype.update.call(this, data);
+
+        if (data.cls == 'ParkingInfoMessage') {
+            this.cars_list = data.cars;
+
+            var jq_car_list = this.jq_main_div.find('.hangar-center').first();
+            var jq_car_list_inventory = this.jq_main_div.find('.hangar-car-list-list').first();
+
+            jq_car_list.empty();
+            jq_car_list_inventory.empty();
+
+            for (var i = 0; i < this.cars_list.length; i++) {
+                var car_rec = this.cars_list[i];
+                console.log(car_rec);
+                var jq_car = $('<div id="hangar-center-info-car-' + i + '" class="hangar-center-info-car-wrap"></div>');
+                var jq_car_content = $('<div class="car-info-block-main">' +
+                    '<div class="car-info-block-picture-hangar">' + car_rec.html_car_img + '</div>' +
+                    '<div class="car-info-block-info-hangar">' + car_rec.html_car_table + '</div></div>');
+                jq_car.append(jq_car_content);
+                jq_car_list.append(jq_car);
+
+                var jq_inv_car = $(
+                    '<div class="hangar-car-list-itemWrap" data-car_number="' + i + '" ' +
+                    'data-car_price="' + car_rec.car.price + '">' +
+                    '<div class="hangar-car-list-item">' +
+                    '<div class="hangar-car-list-pictureWrap" ' +
+                    'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
+                    '<div class="hangar-car-list-name">' + car_rec.car.title + '</div></div></div>'
+                );
+                jq_car_list_inventory.append(jq_inv_car);
+            }
+        }
+    };
+
+    LocationParkingNPC.prototype.set_buttons = function () {
+        locationManager.setBtnState(3, '</br>Назад', true);
+        locationManager.setBtnState(4, '</br>Выход', true);
+    };
+
+    return LocationParkingNPC;
+})(LocationPlaceNPC);
 
 
 var locationManager;
