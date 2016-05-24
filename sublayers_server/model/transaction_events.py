@@ -255,56 +255,69 @@ class TransactionHangarBuy(TransactionEvent):
             pass
 
 
-class TransactionParkingSelectCar(TransactionEvent):
-    def __init__(self, agent, car_number, **kw):
-        super(TransactionParkingSelectCar, self).__init__(server=agent.server, **kw)
+class TransactionParkingSelect(TransactionEvent):
+    def __init__(self, agent, car_number, npc_node_hash, **kw):
+        super(TransactionParkingSelect, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.car_number = car_number
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
-        super(TransactionParkingSelectCar, self).on_perform()
+        super(TransactionParkingSelect, self).on_perform()
+        agent_ex = self.agent.example
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'parking'):
+            return
+        # todo: use agent_ex.get_car_list_by_npc and car_number swap to car_id
+        car_list = [car for car in agent_ex.car_list]
 
-        if not (self.agent.current_location and self.agent.current_location.example.hangar):
+        if self.agent.current_location is None or \
+           npc not in self.agent.current_location.example.get_npc_list() or \
+           len(car_list) <= self.car_number:
             return
 
-        car_list = []
-        for car in self.agent.example.car_list:
-            car_list.append(car)
-
-        if len(car_list) <= self.car_number:
-            return
-
-        if self.agent.example.car:
-            car_list.append(self.agent.example.car)
-        self.agent.example.car = car_list[self.car_number]
+        if agent_ex.car:
+            agent_ex.car.last_parking_npc = npc.node_hash()
+            car_list.append(agent_ex.car)
+        agent_ex.car = car_list[self.car_number]
         car_list.remove(car_list[self.car_number])
 
-        self.agent.example.car_list = RegistryInventory()
+        agent_ex.car.last_parking_npc = None
+
+        agent_ex.car_list = RegistryInventory()
         for car in car_list:
-            self.agent.example.car_list.append(car)
+            agent_ex.car_list.append(car)
 
-        ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
-        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        # messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+        messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
 
 
-class TransactionParkingLeaveCar(TransactionEvent):
-    def __init__(self, agent, **kw):
-        super(TransactionParkingLeaveCar, self).__init__(server=agent.server, **kw)
+class TransactionParkingLeave(TransactionEvent):
+    def __init__(self, agent, npc_node_hash, **kw):
+        super(TransactionParkingLeave, self).__init__(server=agent.server, **kw)
         self.agent = agent
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
-        super(TransactionParkingLeaveCar, self).on_perform()
-
-        if not (self.agent.current_location and self.agent.current_location.example.parking):
+        super(TransactionParkingLeave, self).on_perform()
+        agent_ex = self.agent.example
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'parking'):
             return
 
-        if not self.agent.example.car:
+        if self.agent.current_location is None or \
+           npc not in self.agent.current_location.example.get_npc_list():
             return
+        agent_ex.car.last_parking_npc = npc.node_hash()
+        agent_ex.car_list.append(self.agent.example.car)
+        agent_ex.car = None
 
-        self.agent.example.car_list.append(self.agent.example.car)
-        self.agent.example.car = None
-        ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
-        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        # messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+        messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
 
 
 class TransactionArmorerApply(TransactionEvent):

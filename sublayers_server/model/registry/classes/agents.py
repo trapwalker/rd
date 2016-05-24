@@ -72,3 +72,13 @@ class Agent(Root):
         # todo: машинка
 
         return d
+
+    def get_car_list_by_npc(self, npc):
+        # todo: this method need to testing !
+        # type of npc = Institution
+        res = []
+        # todo: refactor to id
+        for car in self.car_list:
+            if car.last_parking_npc == npc.node_hash():
+                res.append(car)
+        return res

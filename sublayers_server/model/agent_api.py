@@ -17,8 +17,8 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
     StrategyModeInfoObjectsEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeaveCar,
-    TransactionParkingSelectCar, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
+    TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
+    TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
     TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills,
     TransactionResetPerks)
 from sublayers_server.model.units import Unit, Bot
@@ -607,14 +607,14 @@ class AgentAPI(API):
     # Стоянка
 
     @public_method
-    def parking_select_car(self, car_number):
-        # log.info('agent %r want get car from parking, with number=%r', self.agent, car_number)
-        TransactionParkingSelectCar(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
+    def parking_leave_car(self, npc_node_hash):
+        log.info('agent %r sell car', self.agent)
+        TransactionParkingLeave(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def parking_leave_car(self):
-        # log.info('agent %r want leave car in parking', self.agent)
-        TransactionParkingLeaveCar(time=self.agent.server.get_time(), agent=self.agent).post()
+    def parking_select_car(self, car_number, npc_node_hash):
+        log.info('agent %r want buy car, with number=%r', self.agent, car_number)
+        TransactionParkingSelect(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
 
     @public_method
     def get_parking_info(self, npc_node_hash):

@@ -1044,11 +1044,10 @@ class ParkingInfoMessage(NPCInfoMessage):
             ).load("car_info_img_ext.html")
 
             d.update(cars=[dict(
-                car_info=dict(
-                    car=car.as_client_dict(),
-                    html_car_table=template_table.generate(car=car),
-                    html_car_img=template_img.generate(car=car),
-                )
+                car=car.as_client_dict(),
+                html_car_table=template_table.generate(car=car),
+                html_car_img=template_img.generate(car=car),
+                # todo: use agent.example.get_car_list_by_npc(npc)
             ) for car in agent.example.car_list])
         d['npc_html_hash'] = npc.node_html()
         return d
