@@ -44,7 +44,7 @@ var LocationManager = (function () {
     };
 
     LocationManager.prototype.onEnter = function (data) {
-        console.log('LocationManager.prototype.onEnter', data);
+        //console.log('LocationManager.prototype.onEnter', data);
         this.onExit();
 
         // Закрыть все окна
@@ -174,6 +174,24 @@ var LocationPanelInfo = (function () {
         this.jq_main_div = null;
     };
 
+    LocationPanelInfo.prototype.show = function (options, window_name) {
+        //console.log('LocationPanelInfo.prototype.show', options, window_name);
+
+        // Выключить все панели в этом блоке
+        this.jq_main_div.find('.panel-info-item').css('display', 'none');
+
+        // Попытаться включить нужную
+        var window_method = 'show_' + window_name;
+        if (this[window_method])
+            this[window_method](options);
+    };
+
+    LocationPanelInfo.prototype.show_self_car_info = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_self_car_info', options);
+        var jq_panel = this.jq_main_div.find('.panel-info-car-info').first();
+        jq_panel.css('display', 'block');
+    };
+
     return LocationPanelInfo;
 })();
 
@@ -278,6 +296,10 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.activate');
         _super.prototype.activate.call(this);
         $('#' + this.building_rec.key + '-back').css('display', 'block');
+
+        // Выключить панели
+        locationManager.panel_left.show({}, '');
+        locationManager.panel_right.show({}, '');
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
@@ -335,7 +357,7 @@ var LocationPlaceNPC = (function (_super) {
     };
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
-        console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
+        //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
             case '3':
                 if (this.owner_name)
@@ -390,7 +412,7 @@ var LocationHangarNPC = (function (_super) {
     };
 
     LocationHangarNPC.prototype.update = function (data) {
-        console.log('LocationPlaceBuilding.prototype.update', data);
+        //console.log('LocationHangarNPC.prototype.update', data);
         _super.prototype.update.call(this, data);
 
         if (data.cls == 'HangarInfoMessage') {
@@ -445,6 +467,16 @@ var LocationHangarNPC = (function (_super) {
         this.set_buttons();
     };
 
+    LocationHangarNPC.prototype.activate = function () {
+        console.log('LocationHangarNPC.prototype.activate');
+        _super.prototype.activate.call(this);
+        locationManager.panel_right.show({}, 'self_car_info');
+    };
+
+
+
+
+
     LocationHangarNPC.prototype.set_buttons = function () {
         if (user.example_car) {
             locationManager.setBtnState(1, '</br>Обменять ТС', true);
@@ -476,6 +508,7 @@ var LocationHangarNPC = (function (_super) {
     return LocationHangarNPC;
 })(LocationPlaceNPC);
 
+
 var LocationParkingNPC = (function (_super) {
     __extends(LocationParkingNPC, _super);
 
@@ -490,7 +523,7 @@ var LocationParkingNPC = (function (_super) {
     };
 
     LocationParkingNPC.prototype.update = function (data) {
-        console.log('LocationParkingNPC.prototype.update', data);
+        //console.log('LocationParkingNPC.prototype.update', data);
         _super.prototype.update.call(this, data);
 
         if (data.cls == 'ParkingInfoMessage') {
@@ -532,6 +565,7 @@ var LocationParkingNPC = (function (_super) {
 
     return LocationParkingNPC;
 })(LocationPlaceNPC);
+
 
 var locationManager;
 

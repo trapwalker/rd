@@ -43,12 +43,13 @@
         position: absolute;
         top: 50px;
         width: 400px;
-        height: 400px;
-        background-color: rgba(0,150,0,0.25);
+        height: 300px;
     }
 
     .town-panel.left { left: 100px; }
     .town-panel.right { right: 100px; }
+
+    .panel-info-item { display: none; }
 
     .town-btn-area {
         position: absolute;
@@ -109,8 +110,12 @@
 <img class="town-img-mask" src="static/content/locations/towns/city_mask_1.png"/>
 
 <div id="town-out-screen-area">
-    <div id="townLeftPanel" class="town-panel left"></div>
-    <div id="townRightPanel" class="town-panel right"></div>
+    <div id="townLeftPanel" class="town-panel left">
+
+    </div>
+    <div id="townRightPanel" class="town-panel right">
+        {% include panel_info/car_info.html %}
+    </div>
 </div>
 
 <img class="town-img-mask" src="static/content/locations/towns/city_mask_2.png"/>

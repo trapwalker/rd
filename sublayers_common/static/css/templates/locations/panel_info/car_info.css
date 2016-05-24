@@ -1,0 +1,33 @@
+.panel-info-car-info {
+    position: relative;
+    width: 100%;
+    min-height: 130px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    font: 16px Nouveau_IBM;
+    color: #2ffa00;
+    box-sizing: border-box;
+}
+
+.panel-info-car-info-label {
+    position: relative;
+    text-align: left;
+    float: left;
+    width: 35%;
+}
+
+.panel-info-car-info-car-name {
+    position: relative;
+    text-align: right;
+    float: left;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    width: 65%;
+}
+
+.panel-info-car-info-car {
+    position: relative;
+    width: 100%;
+}
+

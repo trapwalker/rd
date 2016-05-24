@@ -897,7 +897,7 @@ var ClientManager = (function () {
 
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
-        console.log('ClientManager.prototype.UserExampleSelfMessage', event);
+        //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
         // Эта функция заполняет только шаблоны
         user.templates = {};
         if (event.example_car) {
@@ -911,7 +911,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
 
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
@@ -921,14 +921,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.HangarInfoMessage = function (event) {
-        console.log('ClientManager.prototype.HangarInfoMessage', event);
+        //console.log('ClientManager.prototype.HangarInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
             locationManager.npc[event.npc_html_hash].update(event);
         }
     };
 
     ClientManager.prototype.ParkingInfoMessage = function (event) {
-        console.log('ClientManager.prototype.ParkingInfoMessage', event);
+        //console.log('ClientManager.prototype.ParkingInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
             locationManager.npc[event.npc_html_hash].update(event);
         }
