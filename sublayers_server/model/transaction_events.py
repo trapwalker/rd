@@ -269,8 +269,8 @@ class TransactionParkingSelect(TransactionEvent):
         npc = self.agent.server.reg[self.npc_node_hash]
         if (npc is None) or (npc.type != 'parking'):
             return
-        # todo: use agent_ex.get_car_list_by_npc and car_number swap to car_id
-        car_list = [car for car in agent_ex.car_list]
+
+        car_list = [car for car in agent_ex.get_car_list_by_npc()]
 
         if self.agent.current_location is None or \
            npc not in self.agent.current_location.example.get_npc_list() or \
@@ -279,15 +279,11 @@ class TransactionParkingSelect(TransactionEvent):
 
         if agent_ex.car:
             agent_ex.car.last_parking_npc = npc.node_hash()
-            car_list.append(agent_ex.car)
+            agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = car_list[self.car_number]
-        car_list.remove(car_list[self.car_number])
+        agent_ex.car_list.remove(car_list[self.car_number])
 
         agent_ex.car.last_parking_npc = None
-
-        agent_ex.car_list = RegistryInventory()
-        for car in car_list:
-            agent_ex.car_list.append(car)
 
         # messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
@@ -312,7 +308,7 @@ class TransactionParkingLeave(TransactionEvent):
            npc not in self.agent.current_location.example.get_npc_list():
             return
         agent_ex.car.last_parking_npc = npc.node_hash()
-        agent_ex.car_list.append(self.agent.example.car)
+        agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
 
         # messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
