@@ -931,9 +931,9 @@ class UserExampleSelfShortMessage(Message):
         templates = dict()
         if ex_car:
             template_car_img = tornado.template.Loader(
-                "../sublayers_server/templates/site",
+                "../sublayers_server/templates/location",
                 namespace=self.agent.connection.get_template_namespace()
-            ).load("car_info_ext_wrap.html")
+            ).load("car_info_img_ext.html")
 
             templates['html_car_img'] = template_car_img.generate(car=ex_car)
             d['templates'] = templates

@@ -153,6 +153,17 @@ var LocationManager = (function () {
         }
     };
 
+    LocationManager.prototype.update = function () {
+        //console.log('LocationPanelInfo.prototype.init');
+        for (var key in this.buildings)
+            if (this.buildings.hasOwnProperty(key))
+                this.buildings[key].update();
+
+        for (var key in this.npc)
+            if (this.npc.hasOwnProperty(key))
+                this.npc[key].update();
+    };
+
     return LocationManager;
 })();
 
@@ -190,6 +201,12 @@ var LocationPanelInfo = (function () {
         //console.log('LocationPanelInfo.prototype.show_self_car_info', options);
         var jq_panel = this.jq_main_div.find('.panel-info-car-info').first();
         jq_panel.css('display', 'block');
+        jq_panel.find('.panel-info-car-info-car').empty();
+        jq_panel.find('.panel-info-car-info-car-name').text('');
+        if (user.example_car) {
+            jq_panel.find('.panel-info-car-info-car-name').text(user.example_car.name_car);
+            jq_panel.find('.panel-info-car-info-car').append(user.templates.html_car_img);
+        }
     };
 
     return LocationPanelInfo;
@@ -238,7 +255,10 @@ var LocationPlace = (function () {
 
     LocationPlace.prototype.clickBtn = function (btnIndex) {};
 
-    LocationPlace.prototype.update = function (data) {};
+    LocationPlace.prototype.update = function () {
+        if (locationManager.screens[locationManager.active_screen_name] == this)
+            this.activate();
+    };
 
     LocationPlace.prototype.resizeNPCList = function (jq_list) {
         var width = 0;
@@ -328,6 +348,8 @@ var LocationPlaceBuilding = (function (_super) {
     };
 
     LocationPlaceBuilding.prototype.set_buttons = function () {
+        locationManager.setBtnState(1, '', false);
+        locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
@@ -415,7 +437,7 @@ var LocationHangarNPC = (function (_super) {
         //console.log('LocationHangarNPC.prototype.update', data);
         _super.prototype.update.call(this, data);
 
-        if (data.hasOwnProperty('cars')) {
+        if (data && data.hasOwnProperty('cars')) {
             this.cars_list = data.cars;
 
             var jq_car_list = this.jq_main_div.find('.hangar-center').first();
@@ -464,7 +486,6 @@ var LocationHangarNPC = (function (_super) {
             });
             this.jq_main_div.find('.hangar-car-list-itemWrap').first().click();
         }
-        this.set_buttons();
     };
 
     LocationHangarNPC.prototype.activate = function () {
@@ -472,10 +493,6 @@ var LocationHangarNPC = (function (_super) {
         _super.prototype.activate.call(this);
         locationManager.panel_right.show({}, 'self_car_info');
     };
-
-
-
-
 
     LocationHangarNPC.prototype.set_buttons = function () {
         if (user.example_car) {

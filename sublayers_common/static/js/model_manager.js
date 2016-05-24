@@ -912,12 +912,12 @@ var ClientManager = (function () {
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
-
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.avatar_link = event.avatar_link;
         if (event.example_car && event.templates)
             user.templates.html_car_img = event.templates.html_car_img
+        locationManager.update();
     };
 
     ClientManager.prototype.HangarInfoMessage = function (event) {
