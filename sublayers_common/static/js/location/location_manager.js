@@ -237,6 +237,8 @@ var LocationPlace = (function () {
 
         // Настроить кнопки
         this.set_buttons();
+        // Настроить внеэкранные области
+        this.set_panels();
     };
 
     LocationPlace.prototype.set_buttons = function () {
@@ -244,6 +246,12 @@ var LocationPlace = (function () {
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '', false);
         locationManager.setBtnState(4, '', false);
+    };
+
+    LocationPlace.prototype.set_panels = function () {
+        // Выключить панели
+        locationManager.panel_left.show({}, '');
+        locationManager.panel_right.show({}, '');
     };
 
     LocationPlace.prototype.clear = function () {
@@ -256,8 +264,10 @@ var LocationPlace = (function () {
     LocationPlace.prototype.clickBtn = function (btnIndex) {};
 
     LocationPlace.prototype.update = function () {
-        if (locationManager.screens[locationManager.active_screen_name] == this)
-            this.activate();
+        if (locationManager.screens[locationManager.active_screen_name] == this) {
+            this.set_buttons();
+            this.set_panels();
+        }
     };
 
     LocationPlace.prototype.resizeNPCList = function (jq_list) {
@@ -271,6 +281,23 @@ var LocationPlace = (function () {
         }
     };
 
+    /*
+     Функция подстраивает ширину инвентаря под его содержимое. Необходимо вызывать
+     данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
+     горизонтальный слайдер будер расти вниз)
+     */
+    LocationPlace.prototype.resizeInventory = function(inventory) {
+        //var inventory = $(".npcInventory-inventory:first");
+        var width = 0;
+        if (inventory) {
+            $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
+                if ($(element).css('display') == 'block')
+                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
+            });
+            $(inventory).width(width);
+        }
+    };
+
     LocationPlace.prototype._getNPCByType = function (type, npc_rec, jq_town_div, key) {
         //console.log('LocationPlace.prototype._getNPCClass', type);
         switch (type) {
@@ -278,6 +305,8 @@ var LocationPlace = (function () {
                 return (new LocationHangarNPC(npc_rec, jq_town_div, key));
             case 'parking':
                 return (new LocationParkingNPC(npc_rec, jq_town_div, key));
+            case 'armorer':
+                return (new LocationArmorerNPC(npc_rec, jq_town_div, key));
             default:
                 return (new LocationPlaceNPC(npc_rec, jq_town_div, key));
         }
@@ -316,10 +345,6 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.activate');
         _super.prototype.activate.call(this);
         $('#' + this.building_rec.key + '-back').css('display', 'block');
-
-        // Выключить панели
-        locationManager.panel_left.show({}, '');
-        locationManager.panel_right.show({}, '');
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
@@ -491,7 +516,6 @@ var LocationHangarNPC = (function (_super) {
     LocationHangarNPC.prototype.activate = function () {
         console.log('LocationHangarNPC.prototype.activate');
         _super.prototype.activate.call(this);
-        locationManager.panel_right.show({}, 'self_car_info');
     };
 
     LocationHangarNPC.prototype.set_buttons = function () {
@@ -505,6 +529,11 @@ var LocationHangarNPC = (function (_super) {
         }
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
+    };
+
+    LocationHangarNPC.prototype.set_panels = function() {
+        locationManager.panel_right.show({}, 'self_car_info');
+        locationManager.panel_left.show({}, '');
     };
 
     LocationHangarNPC.prototype.clickBtn = function (btnIndex) {
