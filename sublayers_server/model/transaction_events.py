@@ -270,7 +270,7 @@ class TransactionParkingSelect(TransactionEvent):
         if (npc is None) or (npc.type != 'parking'):
             return
 
-        car_list = [car for car in agent_ex.get_car_list_by_npc()]
+        car_list = [car for car in agent_ex.get_car_list_by_npc(npc)]
 
         if self.agent.current_location is None or \
            npc not in self.agent.current_location.example.get_npc_list() or \
