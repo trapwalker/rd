@@ -623,12 +623,9 @@ class AgentAPI(API):
     # Оружейник
 
     @public_method
-    def armorer_apply(self, armorer_slots):
-        TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots).post()
-
-    @public_method
-    def armorer_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def armorer_apply(self, armorer_slots, npc_node_hash):
+        TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots,
+                                npc_node_hash=npc_node_hash).post()
 
     # Механик
 

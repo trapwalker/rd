@@ -911,12 +911,22 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.avatar_link = event.avatar_link;
         if (event.example_car && event.templates)
-            user.templates.html_car_img = event.templates.html_car_img
+            user.templates.html_car_img = event.templates.html_car_img;
+
+        user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
+
+        if (event.car_npc_info && event.car_npc_info) {  // инвентарь может оказаться пустым, так как нет машинки
+            var inv = this._getInventory(event.car_inventory);
+            if (inventoryList.getInventory(inv.owner_id))
+                inventoryList.delInventory(inv.owner_id);
+            inventoryList.addInventory(inv);
+        }
+
         locationManager.update();
     };
 
@@ -1355,25 +1365,16 @@ var ClientManager = (function () {
 
     // Оружейник
 
-    ClientManager.prototype.sendArmorerApply = function () {
+    ClientManager.prototype.sendArmorerApply = function (npc) {
         //console.log('ClientManager.prototype.sendArmorerApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "armorer_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                armorer_slots: locationManager.armorer.exportSlotState()
+                npc_node_hash: npc.npc_rec.node_hash,
+                armorer_slots: npc.exportSlotState()
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendArmorerCancel = function () {
-        //console.log('ClientManager.prototype.sendArmorerCancel');
-        var mes = {
-            call: "armorer_cancel",
-            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

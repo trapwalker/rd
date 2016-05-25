@@ -932,11 +932,56 @@ class UserExampleSelfShortMessage(Message):
         if ex_car:
             template_car_img = tornado.template.Loader(
                 "../sublayers_server/templates/location",
-                namespace=self.agent.connection.get_template_namespace()
+                namespace=agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
 
             templates['html_car_img'] = template_car_img.generate(car=ex_car)
             d['templates'] = templates
+
+            # Инвентарь
+            d['car_inventory'] = dict(
+                max_size=ex_car.inventory_size,
+                items=[
+                    dict(
+                        position=ex.position,
+                        item=dict(
+                            cls='ItemState',
+                            balance_cls=ex.parent.node_hash(),
+                            example=ex.as_client_dict(),
+                            max_val=ex.stack_size,
+                            t0=self.time,
+                            val0=ex.amount,
+                            dvs=0,
+                        )
+                    )
+                    for ex in ex_car.inventory
+                ],
+                owner_id=agent.uid
+            )
+
+            car_npc_info = dict()
+            # Информация для оружейника
+            car_npc_info['armorer_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots(tags='armorer')
+            ]
+            car_npc_info['armorer_slots_flags'] = [
+                dict(name=attr.name, value=getter and getter())
+                for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
+            ]
+            # Информация для механика
+            car_npc_info['mechanic_slots'] = [
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in self.agent.example.car.iter_slots2(tags='mechanic')
+            ]
+            # Информация для тюнера
+            car_npc_info['tuner_slots'] = [
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in self.agent.example.car.iter_slots2(tags='tuner')
+            ]
+
+            d['car_npc_info'] = car_npc_info
+
         return d
 
 

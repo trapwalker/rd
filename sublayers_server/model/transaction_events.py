@@ -317,21 +317,25 @@ class TransactionParkingLeave(TransactionEvent):
 
 
 class TransactionArmorerApply(TransactionEvent):
-    def __init__(self, agent, armorer_slots, **kw):
+    def __init__(self, agent, armorer_slots, npc_node_hash, **kw):
         super(TransactionArmorerApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.armorer_slots = armorer_slots
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionArmorerApply, self).on_perform()
         get_flags = '{}_f'.format
         agent = self.agent
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'armorer'):
+            return
+        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
             return
 
-        # Проверяем находится ли агент в локации с оружейником
-        if not (isinstance(agent.current_location, Town) and agent.current_location.example.armorer):
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
             return
 
         # Заполняем буфер итемов
@@ -393,7 +397,7 @@ class TransactionArmorerApply(TransactionEvent):
             item.position = position
             agent.example.car.inventory.append(item)
             position += 1
-        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
 
 class TransactionMechanicApply(TransactionEvent):
