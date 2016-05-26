@@ -72,7 +72,7 @@ var LocationHangarNPC = (function (_super) {
     };
 
     LocationHangarNPC.prototype.activate = function () {
-        console.log('LocationHangarNPC.prototype.activate');
+        //console.log('LocationHangarNPC.prototype.activate');
         _super.prototype.activate.call(this);
     };
 
@@ -91,9 +91,7 @@ var LocationHangarNPC = (function (_super) {
 
     LocationHangarNPC.prototype.set_panels = function() {
         if (locationManager.screens[locationManager.active_screen_name] != this) return;
-
         locationManager.panel_right.show({}, 'self_car_info');
-
         locationManager.panel_left.show({price: 0, transactions: this.transactions}, 'npc_transaction_info');
     };
 
@@ -156,13 +154,11 @@ var LocationParkingNPC = (function (_super) {
         }
     };
 
-    LocationParkingNPC.prototype.set_panels = function() {
-        if (locationManager.screens[locationManager.active_screen_name] != this) return;
-
-        locationManager.panel_right.show({}, 'self_car_info');
-        var temp_price = 0;
-        locationManager.panel_left.show({price: temp_price, transactions: []}, 'npc_transaction_info');
-    };
+    //LocationParkingNPC.prototype.set_panels = function() {
+    //    if (locationManager.screens[locationManager.active_screen_name] != this) return;
+    //    locationManager.panel_right.show({}, 'self_car_info');
+    //    locationManager.panel_left.show({price: temp_price, transactions: this.transactions}, 'npc_transaction_info');
+    //};
 
     return LocationParkingNPC;
 })(LocationHangarNPC);

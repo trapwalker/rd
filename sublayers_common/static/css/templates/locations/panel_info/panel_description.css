@@ -7,7 +7,6 @@
     box-sizing: border-box;
 }
 
-
 .panel-info-description .panel-info-description-label {
     position: relative;
     text-align: left;
@@ -20,7 +19,6 @@
     position: relative;
     overflow: hidden;
     height: 170px;
-    pointer-events: auto;
 }
 
 .panel-info-description .panel-info-content {

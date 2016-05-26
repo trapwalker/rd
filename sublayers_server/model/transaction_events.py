@@ -213,9 +213,15 @@ class TransactionHangarSell(TransactionEvent):
            npc not in self.agent.current_location.example.get_npc_list():
             return
 
+        # Отправка сообщения о транзакции
+        date_str = datetime.strftime(datetime.now(), "%d.%m.%Y")
+        info_string = date_str + ': Продажа ' + self.agent.example.car.title + ', ' + \
+                      str(self.agent.example.car.price) + 'NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
+
         self.agent.example.balance += self.agent.example.car.price
         self.agent.example.car = None
-
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
 
@@ -253,7 +259,7 @@ class TransactionHangarBuy(TransactionEvent):
                 info_string = date_str + ': Обмен на ' + car_proto.title + ', ' + \
                               str(self.agent.example.car.price - car_proto.price) + 'NC'
             else:
-                info_string = date_str + ': Покупка ' + car_proto.title + ', -' + str(car_proto.price)  + 'NC'
+                info_string = date_str + ': Покупка ' + car_proto.title + ', -' + str(car_proto.price) + 'NC'
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -278,15 +284,19 @@ class TransactionParkingSelect(TransactionEvent):
     def on_perform(self):
         super(TransactionParkingSelect, self).on_perform()
         agent_ex = self.agent.example
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg[self.npc_node_hash]
-        if (npc is None) or (npc.type != 'parking'):
+        if (self.car_number is None) or (npc is None) or (npc.type != 'parking'):
             return
 
         car_list = [car for car in agent_ex.get_car_list_by_npc(npc)]
 
+        print self.car_number
+
         if self.agent.current_location is None or \
            npc not in self.agent.current_location.example.get_npc_list() or \
+           (len(car_list) == 0) or \
            len(car_list) <= self.car_number:
             return
 
@@ -295,13 +305,27 @@ class TransactionParkingSelect(TransactionEvent):
         delta = car_list[self.car_number].date_setup_parking - time.mktime(datetime.now().timetuple())
         if delta < 0:
             delta = 0
+            log.warning('Time parking = 0s !!! warning!!!!')
         delta_days = math.floor(delta / (60 * 60 * 24)) + 1
         summ_for_paying = delta_days * npc.cost_for_day_parking
 
         # Процедура списывания денег и взятия машинки
         if agent_ex.balance >= summ_for_paying:
+
+            # Отправка сообщения о транзакции
+            date_str = datetime.strftime(datetime.now(), "%d.%m.%Y")
+            if agent_ex.car:
+                info_string = date_str + ': Обмен на ' + car_list[self.car_number].title + ', -' + \
+                              str(summ_for_paying) + 'NC'
+            else:
+                info_string = date_str + ': Забрал ' + car_list[self.car_number].title + ', -' + \
+                              str(summ_for_paying) + 'NC'
+            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                           info_string=info_string).post()
+
             if agent_ex.car:
                 agent_ex.car.last_parking_npc = npc.node_hash()
+                agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
             agent_ex.car_list.remove(car_list[self.car_number])
@@ -316,7 +340,6 @@ class TransactionParkingSelect(TransactionEvent):
             pass
 
 
-
 class TransactionParkingLeave(TransactionEvent):
     def __init__(self, agent, npc_node_hash, **kw):
         super(TransactionParkingLeave, self).__init__(server=agent.server, **kw)
@@ -326,16 +349,25 @@ class TransactionParkingLeave(TransactionEvent):
     def on_perform(self):
         super(TransactionParkingLeave, self).on_perform()
         agent_ex = self.agent.example
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg[self.npc_node_hash]
-        if (npc is None) or (npc.type != 'parking'):
+        if (npc is None) or (npc.type != 'parking') or (self.agent.example.car is None):
             return
 
         if self.agent.current_location is None or \
            npc not in self.agent.current_location.example.get_npc_list():
             return
+
+        # Отправка сообщения о транзакции
+        date_str = datetime.strftime(datetime.now(), "%d.%m.%Y")
+        info_string = date_str + ': Оставил ' + agent_ex.car.title + ', ' + '0NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
+
         agent_ex.car.last_parking_npc = npc.node_hash()
         # todo: сделать через обычный тип Date
+
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
