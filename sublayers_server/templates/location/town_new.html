@@ -49,7 +49,13 @@
     .town-panel.left { left: 100px; }
     .town-panel.right { right: 100px; }
 
-    .panel-info-item { display: none; }
+    .panel-info-item {
+        display: none;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+        border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+        border-image-slice: 1;
+    }
 
     .town-btn-area {
         position: absolute;
@@ -111,7 +117,7 @@
 
 <div id="town-out-screen-area">
     <div id="townLeftPanel" class="town-panel left">
-
+        {% include panel_info/npc_transaction_info.html %}
     </div>
     <div id="townRightPanel" class="town-panel right">
         {% include panel_info/car_info.html %}
