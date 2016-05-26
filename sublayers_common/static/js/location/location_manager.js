@@ -127,14 +127,15 @@ var LocationManager = (function () {
         if (active) {
             $('#btn_' + btnIndex + '_noactive').css('display', 'none');
             $('#btn_' + btnIndex + '_active').css('display', 'block');
+            $('#btn_' + btnIndex + '_text').removeClass('noactive');
         } else {
             $('#btn_' + btnIndex + '_noactive').css('display', 'block');
             $('#btn_' + btnIndex + '_active').css('display', 'none');
 
             $('#btn_' + btnIndex + '_hover').css('display', 'none');
             $('#btn_' + btnIndex + '_pressed').css('display', 'none');
-            $('#btn_' + btnIndex + '_text').removeClass('hover');
-            $('#btn_' + btnIndex + '_text').removeClass('pressed');
+            $('#btn_' + btnIndex + '_text').removeClass('hover pressed');
+            $('#btn_' + btnIndex + '_text').addClass('noactive');
         }
     };
 
