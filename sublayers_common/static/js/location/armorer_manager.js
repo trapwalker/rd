@@ -475,7 +475,7 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.clearRightPanel = function() {
         //console.log('LocationArmorerNPC.prototype.clearRightPanel');
-        locationManager.panel_right.show({}, '');
+        locationManager.panel_right.show({text: ''}, 'description');
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
