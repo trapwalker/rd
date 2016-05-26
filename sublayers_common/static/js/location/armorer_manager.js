@@ -102,115 +102,129 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.update = function(data) {
         //console.log('LocationArmorerNPC.prototype.update', data);
-        _super.prototype.update.call(this, data); // Обновятся кнопки и панели
-        if (! user.example_car || !user.car_npc_info) return;
-        var self = this;
-        this.clear_user_info();
-        this.armorer_slots = user.car_npc_info.armorer_slots;
-        if (user.car_npc_info.armorer_slots_flags) this._update_armorer_slots_flags(user.car_npc_info.armorer_slots_flags);
-        this.image_scale = user.example_car.image_scale;
+        if (user.example_car && user.car_npc_info) {
+            var self = this;
+            this.clear_user_info();
+            this.armorer_slots = user.car_npc_info.armorer_slots;
+            if (user.car_npc_info.armorer_slots_flags) this._update_armorer_slots_flags(user.car_npc_info.armorer_slots_flags);
+            this.image_scale = user.example_car.image_scale;
 
-        this.jq_car_view.empty();
-        this.jq_sectors_slot_name.empty();
-        this.jq_sectors_view.empty();
+            this.jq_car_view.empty();
+            this.jq_sectors_slot_name.empty();
+            this.jq_sectors_view.empty();
 
-        this.jq_car_view.append(user.templates.html_armorer_car);
-        this.jq_sectors_view.append(user.templates.armorer_sectors_svg);
+            this.jq_car_view.append(user.templates.html_armorer_car);
+            this.jq_sectors_view.append(user.templates.armorer_sectors_svg);
 
 
-        // Вешаем события на слоты (проход по именам слотов)
-        for (var slot_index = 0; slot_index < this.armorer_slots.length; slot_index++) {
-            var slot_name = this.armorer_slots[slot_index].name;
+            // Вешаем события на слоты (проход по именам слотов)
+            for (var slot_index = 0; slot_index < this.armorer_slots.length; slot_index++) {
+                var slot_name = this.armorer_slots[slot_index].name;
 
-            var jq_slot_top = $("#top_" + slot_name);
-            var jq_slot_side = $("#side_" + slot_name);
+                var jq_slot_top = $("#top_" + slot_name);
+                var jq_slot_side = $("#side_" + slot_name);
 
-            // События
-            jq_slot_top.mouseenter({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseenter);
-            jq_slot_side.mouseenter({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseenter);
+                // События
+                jq_slot_top.mouseenter({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseenter);
+                jq_slot_side.mouseenter({
+                    slot_name: slot_name,
+                    armorer: this
+                }, LocationArmorerNPC.slot_event_mouseenter);
 
-            jq_slot_top.mouseleave({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseleave);
-            jq_slot_side.mouseleave({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseleave);
+                jq_slot_top.mouseleave({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseleave);
+                jq_slot_side.mouseleave({
+                    slot_name: slot_name,
+                    armorer: this
+                }, LocationArmorerNPC.slot_event_mouseleave);
 
-            jq_slot_top.click({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_click);
-            jq_slot_side.click({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_click);
-        }
+                jq_slot_top.click({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_click);
+                jq_slot_side.click({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_click);
+            }
 
-        // Вешаем события на сектора
-        var sectos_named = ['F', 'B', 'L', 'R'];
-        for (var sector_name_index = 0; sector_name_index < sectos_named.length; sector_name_index ++) {
-            var sector_name = 'sector_' + sectos_named[sector_name_index];
-            var jq_sector = $('#' + sector_name);
-            jq_sector.mouseenter({sector_name: sectos_named[sector_name_index]}, LocationArmorerNPC.sector_event_mouseenter);
-            jq_sector.mouseleave({sector_name: sectos_named[sector_name_index]}, LocationArmorerNPC.sector_event_mouseleave);
-            jq_sector.click({sector_name: sectos_named[sector_name_index], armorer: this}, LocationArmorerNPC.sector_event_click);
-        }
+            // Вешаем события на сектора
+            var sectos_named = ['F', 'B', 'L', 'R'];
+            for (var sector_name_index = 0; sector_name_index < sectos_named.length; sector_name_index++) {
+                var sector_name = 'sector_' + sectos_named[sector_name_index];
+                var jq_sector = $('#' + sector_name);
+                jq_sector.mouseenter({sector_name: sectos_named[sector_name_index]}, LocationArmorerNPC.sector_event_mouseenter);
+                jq_sector.mouseleave({sector_name: sectos_named[sector_name_index]}, LocationArmorerNPC.sector_event_mouseleave);
+                jq_sector.click({
+                    sector_name: sectos_named[sector_name_index],
+                    armorer: this
+                }, LocationArmorerNPC.sector_event_click);
+            }
 
-        // Старый апдейт
+            // Старый апдейт
 
-        // Проверить если город
-        this.inv_show_div = this.jq_main_div.find('.npcInventory-inventory').first();
-        if (this.inv_show_div.length == 0) { console.warn('Div инвентаря не найден'); return; }
+            // Проверить если город
+            this.inv_show_div = this.jq_main_div.find('.npcInventory-inventory').first();
+            if (this.inv_show_div.length == 0) {
+                console.warn('Div инвентаря не найден');
+                return;
+            }
 
-        // Добавить итемы инвентаря своего агента
-        var inventory = inventoryList.getInventory(user.ID);
-        if (! inventory) {console.warn('Ивентарь агента (' + user.ID + ') не найден'); return; }
+            // Добавить итемы инвентаря своего агента
+            var inventory = inventoryList.getInventory(user.ID);
+            if (!inventory) {
+                console.warn('Ивентарь агента (' + user.ID + ') не найден');
+                return;
+            }
 
-        for (var i = 0; i < inventory.max_size; i++) {
-            var item_rec = {
-                example: null,
-                position: null,
-                direction: ''
-            };
-            item = inventory.getItem(i);
-            item_rec.position = i;
-            if (item) {
-                if (item.hasTag('armorer')) {  // фильтрация итема
+            for (var i = 0; i < inventory.max_size; i++) {
+                var item_rec = {
+                    example: null,
+                    position: null,
+                    direction: ''
+                };
+                item = inventory.getItem(i);
+                item_rec.position = i;
+                if (item) {
+                    if (item.hasTag('armorer')) {  // фильтрация итема
+                        this._addEmptyInventorySlot(i);
+                        item_rec.example = item.example;
+                        this.items[i] = item_rec;
+                    }
+                }
+                else {
                     this._addEmptyInventorySlot(i);
-                    item_rec.example = item.example;
+                    item_rec.example = null;
                     this.items[i] = item_rec;
                 }
             }
-            else {
-                this._addEmptyInventorySlot(i);
-                item_rec.example = null;
-                this.items[i] = item_rec;
+
+            this.resizeInventory(this.inv_show_div);
+
+            // Добавить итемы слотов
+            for (var i = 0; i < this.armorer_slots.length; i++) {
+                var direction = '';
+                if (this.armorer_slots[i].value)
+                    direction = this.armorer_slots[i].value.direction;
+                var item_rec = {
+                    example: this.armorer_slots[i].value,
+                    position: this.armorer_slots[i].name,
+                    direction: direction
+                };
+                this.items[item_rec.position] = item_rec;
+                $('#top_' + item_rec.position).data('pos', item_rec.position);
+                $('#side_' + item_rec.position).data('pos', item_rec.position);
             }
+
+            // Повесить дропабле на все слоты
+            this.jq_main_div.find('.armorer-slot').droppable({
+                greedy: true,
+                drop: function (event, ui) {
+                    var dragPos = ui.draggable.data('pos');
+                    var dropPos = $(event.target).data('pos');
+                    self.changeItem(dragPos, dropPos);
+                }
+            });
+
+            // Отрисовать верстку
+            for (var key in this.items)
+                if (this.items.hasOwnProperty(key))
+                    this.reDrawItem(key);
         }
-
-        this.resizeInventory(this.inv_show_div);
-
-        // Добавить итемы слотов
-        for (var i = 0; i < this.armorer_slots.length; i++) {
-            var direction = '';
-            if (this.armorer_slots[i].value)
-                direction = this.armorer_slots[i].value.direction;
-            var item_rec = {
-                example: this.armorer_slots[i].value,
-                position: this.armorer_slots[i].name,
-                direction: direction
-            };
-            this.items[item_rec.position] = item_rec;
-            $('#top_' + item_rec.position).data('pos', item_rec.position);
-            $('#side_' + item_rec.position).data('pos', item_rec.position);
-        }
-
-        // Повесить дропабле на все слоты
-        this.jq_main_div.find('.armorer-slot').droppable({
-            greedy: true,
-            drop: function(event, ui) {
-                var dragPos = ui.draggable.data('pos');
-                var dropPos = $(event.target).data('pos');
-                self.changeItem(dragPos, dropPos);
-            }
-        });
-
-        // Отрисовать верстку
-        for (var key in this.items)
-            if (this.items.hasOwnProperty(key))
-                this.reDrawItem(key);
-
-
+        _super.prototype.update.call(this, data); // Обновятся кнопки и панели
     };
 
     LocationArmorerNPC.prototype.clickBtn = function (btnIndex) {

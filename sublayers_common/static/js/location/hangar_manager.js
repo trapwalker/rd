@@ -15,8 +15,6 @@ var LocationHangarNPC = (function (_super) {
 
     LocationHangarNPC.prototype.update = function (data) {
         //console.log('LocationHangarNPC.prototype.update', data);
-        _super.prototype.update.call(this, data);
-
         if (data && data.hasOwnProperty('cars')) {
             this.cars_list = data.cars;
 
@@ -69,6 +67,7 @@ var LocationHangarNPC = (function (_super) {
             });
             this.jq_main_div.find('.hangar-car-list-itemWrap').first().click();
         }
+        _super.prototype.update.call(this, data);
     };
 
     LocationHangarNPC.prototype.activate = function () {
@@ -127,12 +126,22 @@ var LocationParkingNPC = (function (_super) {
     };
 
     LocationParkingNPC.prototype.set_buttons = function () {
+        //console.log('LocationParkingNPC.prototype.set_buttons', this.cars_list.length);
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Сменить ТС', true);
+            if (this.cars_list.length) {
+                locationManager.setBtnState(1, '</br>Сменить ТС', true);
+            } else {
+                locationManager.setBtnState(1, '', false);
+            }
             locationManager.setBtnState(2, 'Поставить</br>ТС', true);
         }
         else {
-            locationManager.setBtnState(1, '</br>Взять ТС', true);
+            if (this.cars_list.length) {
+                locationManager.setBtnState(1, '</br>Взять ТС', true);
+            }
+            else {
+                locationManager.setBtnState(1, '', false);
+            }
             locationManager.setBtnState(2, '', false);
         }
         locationManager.setBtnState(3, '</br>Назад', true);

@@ -883,7 +883,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.NPCTransactionMessage = function (event) {
-        console.log('ClientManager.prototype.NPCTransactionMessage', event);
+        //console.log('ClientManager.prototype.NPCTransactionMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
     };

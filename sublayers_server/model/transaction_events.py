@@ -292,8 +292,6 @@ class TransactionParkingSelect(TransactionEvent):
 
         car_list = [car for car in agent_ex.get_car_list_by_npc(npc)]
 
-        print self.car_number
-
         if self.agent.current_location is None or \
            npc not in self.agent.current_location.example.get_npc_list() or \
            (len(car_list) == 0) or \
