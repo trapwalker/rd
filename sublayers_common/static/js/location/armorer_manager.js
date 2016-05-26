@@ -67,6 +67,10 @@ var LocationArmorerNPC = (function (_super) {
                 self.changeItem(dragPos, dropPos);
             }
         });
+
+        itemWrapDiv.mouseenter({slot_name: position, armorer: this}, LocationArmorerNPC.inventory_slot_event_mouseenter);
+        itemWrapDiv.mouseleave({slot_name: position, armorer: this}, LocationArmorerNPC.inventory_slot_event_mouseleave);
+
         this.inv_show_div.append(itemWrapDiv);
     };
 
@@ -122,11 +126,11 @@ var LocationArmorerNPC = (function (_super) {
             var jq_slot_side = $("#side_" + slot_name);
 
             // События
-            jq_slot_top.mouseenter({slot_name: slot_name}, LocationArmorerNPC.slot_event_mouseenter);
-            jq_slot_side.mouseenter({slot_name: slot_name}, LocationArmorerNPC.slot_event_mouseenter);
+            jq_slot_top.mouseenter({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseenter);
+            jq_slot_side.mouseenter({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseenter);
 
-            jq_slot_top.mouseleave({slot_name: slot_name}, LocationArmorerNPC.slot_event_mouseleave);
-            jq_slot_side.mouseleave({slot_name: slot_name}, LocationArmorerNPC.slot_event_mouseleave);
+            jq_slot_top.mouseleave({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseleave);
+            jq_slot_side.mouseleave({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_mouseleave);
 
             jq_slot_top.click({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_click);
             jq_slot_side.click({slot_name: slot_name, armorer: this}, LocationArmorerNPC.slot_event_click);
@@ -434,6 +438,26 @@ var LocationArmorerNPC = (function (_super) {
         }
     };
 
+    LocationArmorerNPC.prototype.viewRightPanel = function(slot_name) {
+        //console.log('LocationArmorerNPC.prototype.viewRightPanel', slot_name);
+        // Получаем слот и соостветствующий итем
+        var item_rec = this.items[slot_name];
+        if (item_rec.example) {
+            // Вывод информации об итеме
+            console.log(item_rec, slot_name);
+        }
+        else {
+            if (slot_name.toString().indexOf('slot') >= 0) {
+                // Вывод информации о слоте
+                console.log('slot_info from armorer slots', slot_name);
+            }
+        }
+    };
+
+    LocationArmorerNPC.prototype.clearRightPanel = function() {
+        //console.log('LocationArmorerNPC.prototype.clearRightPanel');
+    };
+
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
 
     // Подсветка слотов при наведении указателя мыши
@@ -492,16 +516,25 @@ var LocationArmorerNPC = (function (_super) {
     // Обработка слотовых событий
     LocationArmorerNPC.slot_event_mouseenter = function (event) {
         LocationArmorerNPC.setSlotOpacity(event.data.slot_name, true);
+        event.data.armorer.viewRightPanel(event.data.slot_name);
     };
 
     LocationArmorerNPC.slot_event_mouseleave = function (event) {
         LocationArmorerNPC.setSlotOpacity(event.data.slot_name, false);
+        event.data.armorer.clearRightPanel();
+    };
+
+    LocationArmorerNPC.inventory_slot_event_mouseenter = function (event) {
+        event.data.armorer.viewRightPanel(event.data.slot_name);
+    };
+
+    LocationArmorerNPC.inventory_slot_event_mouseleave = function (event) {
+        event.data.armorer.clearRightPanel();
     };
 
     LocationArmorerNPC.slot_event_click = function (event) {
         event.data.armorer.activeSlot(event.data.slot_name);
     };
-
 
     LocationArmorerNPC.sector_event_mouseenter = function (event) {
         LocationArmorerNPC.addClassSVG($("#sector_" + event.data.sector_name), 'car_sector_hover');
