@@ -1,3 +1,10 @@
+var location_armorer_draggable_click = {
+    x: 0,
+    y: 0,
+    pos_x: 0,
+    pos_y: 0
+};
+
 var LocationArmorerNPC = (function (_super) {
     __extends(LocationArmorerNPC, _super);
 
@@ -260,11 +267,18 @@ var LocationArmorerNPC = (function (_super) {
                     start: function(event, ui) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+
+                        var pos = event.target.getBoundingClientRect();
+                        //location_armorer_draggable_click.x = event.clientX;
+                        //location_armorer_draggable_click.y = event.clientY;
+                        location_armorer_draggable_click.x = pos.left + pos.width / 4.;
+                        location_armorer_draggable_click.y = pos.top + pos.height / 4.;
                     },
                     stop: function(event, ui) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
-                    }
+                    },
+                    drag: LocationArmorerNPC.drag_handler
                 });
                 itemDivSide.draggable({
                     helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
@@ -277,11 +291,18 @@ var LocationArmorerNPC = (function (_super) {
                     start: function(event, ui) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
+
+                        var pos = event.target.getBoundingClientRect();
+                        //location_armorer_draggable_click.x = event.clientX;
+                        //location_armorer_draggable_click.y = event.clientY;
+                        location_armorer_draggable_click.x = pos.left + pos.width / 4.;
+                        location_armorer_draggable_click.y = pos.top + pos.height / 4.;
                     },
                     stop: function(event, ui) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
-                    }
+                    },
+                    drag: LocationArmorerNPC.drag_handler
                 });
 
                 top_slot.append(itemDivTop);
@@ -309,7 +330,15 @@ var LocationArmorerNPC = (function (_super) {
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
-                    appendTo: '#location-content'
+                    appendTo: '#location-content',
+                    start: function(event, ui) {
+                        var pos = event.target.getBoundingClientRect();
+                        //location_armorer_draggable_click.x = event.clientX;
+                        //location_armorer_draggable_click.y = event.clientY;
+                        location_armorer_draggable_click.x = pos.left + pos.width / 4.;
+                        location_armorer_draggable_click.y = pos.top + pos.height / 4.;
+                    },
+                    drag: LocationArmorerNPC.drag_handler
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -483,8 +512,19 @@ var LocationArmorerNPC = (function (_super) {
     };
 
     LocationArmorerNPC.sector_event_click = function (event) {
-        console.log('LocationArmorerNPC.sector_event_click');
         event.data.armorer.setActiveSector(event.data.sector_name);
+    };
+
+    LocationArmorerNPC.drag_handler = function (event, ui, inv_offset_x, inv_offset_y) {
+        inv_offset_x = inv_offset_x ? inv_offset_x : 0;
+        inv_offset_y = inv_offset_y ? inv_offset_y : 0;
+        console.log(inv_offset_x, inv_offset_y);
+        var original = ui.originalPosition;
+        // jQuery will simply use the same object we alter here
+        ui.position = {
+            left: (event.clientX - location_armorer_draggable_click.x + original.left + inv_offset_x) / window_scaled_prc,
+            top: (event.clientY - location_armorer_draggable_click.y + original.top + inv_offset_y) / window_scaled_prc
+        };
     };
 
     return LocationArmorerNPC;
