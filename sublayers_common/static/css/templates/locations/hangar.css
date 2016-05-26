@@ -27,10 +27,9 @@
 
 .hangar-car-list {
     position: relative;
-    margin-right: auto;
-    margin-left: auto;
+    margin: auto;
     width: 572px;
-    height: 135px;
+    height: 125px;
 }
 
 .hangar-car-list-label {

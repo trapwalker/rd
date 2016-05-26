@@ -1,14 +1,9 @@
-#townArmorerPageWrap {
-    position: absolute;
-    top: 140px;
-    left: 592px;
-}
-
 .armorerWindow-main {
     position: relative;
-    width: 734px;
-    height: 661px;
     cursor: default;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .armorer-center {
