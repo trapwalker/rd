@@ -11,6 +11,7 @@
     margin: 0 auto 0 auto;
     width: 734px;
     height: 392px;
+    background-color: rgba(0, 0, 0, 0.45);
     border-width: 1px 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
@@ -33,12 +34,13 @@
 }
 
 .hangar-car-list-label {
-    box-sizing: border-box;
-    height: 20px;
+    position: relative;
+    padding-top: 12px;
+    height: 35px;
     color: #29F200;
     font: 11pt Nouveau_IBM;
-    padding-top: 3px;
     margin-left: 20px;
+    box-sizing: border-box;
 }
 
 .hangar-car-list-wrap {
@@ -52,20 +54,12 @@
     box-sizing: border-box;
     margin-right: 10px;
     width: 130px;
-    height: 70px;
+    height: 71px;
     float: left;
-    background-color: #021503;
-    opacity: 0.6;
+    background-color: #082801;
 }
-.hangar-car-list-itemWrap:hover {
-    opacity: 1;
-    background-color: #073D06;
-}
-
-.hangar-car-list-itemWrap-active {
-    opacity: 1;
-    background-color: #073D06;
-}
+.hangar-car-list-itemWrap:hover { background-color: #0E4b00; }
+.hangar-car-list-itemWrap-active { background-color: #0E4b00; }
 
 .hangar-car-list-item {
     position: relative;

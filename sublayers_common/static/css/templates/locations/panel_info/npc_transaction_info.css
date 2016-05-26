@@ -1,33 +1,36 @@
-.panel-info-car-info {
+.panel-info-npc-transaction-info {
     position: relative;
     width: 100%;
     min-height: 130px;
+    max-height: 300px;
     font: 16px Nouveau_IBM;
     color: #2ffa00;
     box-sizing: border-box;
 }
 
-.panel-info-car-info-label {
+.npc-transaction-info-label {
     position: relative;
+    float: left;
     text-align: left;
-    float: left;
+    width: 50%;
     color: #135806;
-    width: 35%;
 }
 
-.panel-info-car-info-car-name {
+.npc-transaction-info-value {
     position: relative;
-    text-align: right;
     float: left;
+    text-align: right;
+    width: 50%;
     text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
-    width: 65%;
 }
 
-.panel-info-car-info-car {
-    position: relative;
+.npc-transaction-info-transaction-list {
+    postion: relative;
     width: 100%;
+    height: 150px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
-.panel-info-car-info-car .car-info-block-picture-main { transform: scale(0.813); margin: 0 0 0 -46px; }
 
 
 
