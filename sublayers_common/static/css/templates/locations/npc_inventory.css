@@ -1,50 +1,23 @@
 .npcInventory-block {
     position: relative;
-    margin-right: auto;
-    margin-left: auto;
-    width: 606px;
-    height: 126px;
-    margin-top: 3px;
+    margin: auto;
+    width: 572px;
+    height: 125px;
 }
 
 .npcInventory-label {
-    box-sizing: border-box;
-    height: 21px;
+    position: relative;
+    padding-top: 12px;
+    height: 35px;
     color: #29F200;
     font: 11pt Nouveau_IBM;
     margin-left: 20px;
-}
-
-.npcInventory-button-left {
-    background-image: url('/static/img/mechanic/btn_slide_left.png');
-    float: left;
-    height: 18px;
-    width: 11px;
-    cursor: pointer;
-    margin-top: 30px;
-    margin-right: 16px;
-}
-
-.npcInventory-button-left:hover {
-    background-image: url('/static/img/mechanic/btn_slide_left_over.png');
-}
-
-.npcInventory-button-right {
-    background-image: url('/static/img/mechanic/btn_slide_right.png');
-    height: 18px;
-    width: 11px;
-    cursor: pointer;
-    margin-top: 30px;
-    margin-left: 606px;
-}
-
-.npcInventory-button-right:hover {
-    background-image: url('/static/img/mechanic/btn_slide_right_over.png');
+    box-sizing: border-box;        
 }
 
 .npcInventory-wrap {
-    width: 563px;
-    height: 100px;
+    width: 100%;
+    height: 90px;
     overflow-x: scroll;
     float: left;
 }
@@ -52,21 +25,19 @@
 .npcInventory-itemWrap {
     box-sizing: border-box;
     margin-right: 10px;
-    width: 119px;
-    height: 85px;
+    width: 130px;
+    height: 71px;
     float: left;
-    opacity: 0.6;
+    overflow: hidden;
+    background-color: #082801;
 }
-
-.npcInventory-itemWrap:hover {
-    opacity: 1;
-}
+.npcInventory-itemWrap:hover { background-color: #0E4b00; }
 
 .npcInventory-item {
     position: relative;
     cursor: pointer;
-    width: 119px;
-    height: 85px;
+    width: 100%;
+    height: 100%;
     float: left;
 }
 
@@ -74,23 +45,19 @@
     position: absolute;
     padding: 2px 2px 2px 2px;
     font: 10pt Nouveau_IBM;
-    color: #135806;
+    color: #29F200;
+    margin-left: 3px;
 }
 
 .npcInventory-pictureWrap {
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
-    linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
 }
 
 .npcInventory-picture {
     position: relative;
     height: 33px;
     width: 62px;
-    margin: 35px auto 0px auto;
+    margin: 25px auto 0 auto;
 }
