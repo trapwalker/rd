@@ -94,13 +94,7 @@ var LocationHangarNPC = (function (_super) {
 
         locationManager.panel_right.show({}, 'self_car_info');
 
-        var temp_price = 0;
-        if (this.current_car != null) {
-            temp_price = this.cars_list[this.current_car].car.price;
-            if (user.example_car)
-                temp_price -= user.example_car.price;
-        }
-        locationManager.panel_left.show({price: temp_price, transactions: []}, 'npc_transaction_info');
+        locationManager.panel_left.show({price: 0, transactions: this.transactions}, 'npc_transaction_info');
     };
 
     LocationHangarNPC.prototype.clickBtn = function (btnIndex) {

@@ -909,6 +909,21 @@ class StrategyModeInfoObjectsMessage(Message):
         return d
 
 
+class NPCTransactionMessage(Message):
+    def __init__(self, npc_html_hash, info_string, **kw):
+        super(NPCTransactionMessage, self).__init__(**kw)
+        self.info_string = info_string
+        self.npc_html_hash = npc_html_hash
+
+    def as_dict(self):
+        d = super(NPCTransactionMessage, self).as_dict()
+        d.update(
+            info_string=self.info_string,
+            npc_html_hash=self.npc_html_hash,
+        )
+        return d
+
+
 # Вызывается тогда, когда не меняется машинка.
 class UserExampleSelfShortMessage(Message):
     def as_dict(self):

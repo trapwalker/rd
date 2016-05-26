@@ -3,6 +3,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from datetime import datetime
 from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
@@ -242,14 +243,23 @@ class TransactionHangarBuy(TransactionEvent):
 
         # todo: refactoring (use inventory to choose car)
         if agent_balance >= car_proto.price:
+
+            # Отправка сообщения о транзакции
+            date_str = datetime.strftime(datetime.now(), "%d.%m.%Y")
+            if self.agent.example.car:
+                info_string = date_str + ': Обмен на ' + car_proto.title + ', ' + \
+                              str(self.agent.example.car.price - car_proto.price) + 'NC'
+            else:
+                info_string = date_str + ': Покупка ' + car_proto.title + ', -' + str(car_proto.price)  + 'NC'
+            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                           info_string=info_string).post()
+
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-
             self.agent.example.balance = agent_balance - car_proto.price
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
-            # ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=self.time).post()
         else:
             # todo: message to client if not enough money
             pass

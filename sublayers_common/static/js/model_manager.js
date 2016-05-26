@@ -882,6 +882,12 @@ var ClientManager = (function () {
         wFireController.updateQuickConsumerPanel(event.quick_panel);
     };
 
+    ClientManager.prototype.NPCTransactionMessage = function (event) {
+        //console.log('ClientManager.prototype.NPCTransactionMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+            locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
+    };
+
     // Фраг
 
     ClientManager.prototype.AddExperienceMessage = function (event) {
@@ -911,7 +917,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.avatar_link = event.avatar_link;

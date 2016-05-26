@@ -210,7 +210,7 @@ var LocationPanelInfo = (function () {
     };
 
     LocationPanelInfo.prototype.show_npc_transaction_info = function (options) {
-        //console.log('LocationPanelInfo.prototype.show_self_car_info', options);
+        //console.log('LocationPanelInfo.prototype.show_npc_transaction_info', options);
         var jq_panel = this.jq_main_div.find('.panel-info-npc-transaction-info').first();
         jq_panel.css('display', 'block');
 
@@ -218,12 +218,16 @@ var LocationPanelInfo = (function () {
         if (user.example_agent)
             jq_panel.find('.npc-transaction-info-money').text(user.example_agent.balance + ' нукойнов');
 
-        jq_panel.find('.npc-transaction-info-price').text('0 нукойнов');
-        if (options.hasOwnProperty('price'))
-            jq_panel.find('.npc-transaction-info-price').text(options.price + ' нукойнов');
+        //jq_panel.find('.npc-transaction-info-price').text('0 нукойнов');
+        //if (options.hasOwnProperty('price'))
+        //    jq_panel.find('.npc-transaction-info-price').text(options.price + ' нукойнов');
 
-        jq_panel.find('.npc-transaction-info-transaction-list').empty();
-        if (options.hasOwnProperty('transactions')) {}
+        var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
+        jq_transaction_list.empty();
+        if (options.hasOwnProperty('transactions')) {
+            for (var i = 0; i < options.transactions.length; i++)
+                jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> -' + options.transactions[i] + '</div>');
+        }
     };
 
     return LocationPanelInfo;
@@ -405,6 +409,7 @@ var LocationPlaceNPC = (function (_super) {
 
     function LocationPlaceNPC(npc_rec, jq_town_div, building_name) {
         //console.log('LocationPlaceNPC', npc_rec);
+        this.transactions = [];
         this.npc_rec = npc_rec;
         this.owner_name = building_name;
 
@@ -412,6 +417,12 @@ var LocationPlaceNPC = (function (_super) {
 
         this.get_self_info();
     }
+
+    LocationPlaceNPC.prototype.add_transaction = function (transaction_msg) {
+        //console.log('LocationPlaceNPC.prototype.add_transaction', transaction_msg);
+        this.transactions.push(transaction_msg);
+        this.set_panels();
+    };
 
     LocationPlaceNPC.prototype.activate = function () {
         //console.log('LocationPlaceBuilding.prototype.activate');

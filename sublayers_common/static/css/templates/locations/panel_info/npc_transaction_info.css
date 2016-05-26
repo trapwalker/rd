@@ -8,6 +8,10 @@
     box-sizing: border-box;
 }
 
+.npc-transaction-info-text-shadow {
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
 .npc-transaction-info-label {
     position: relative;
     float: left;
