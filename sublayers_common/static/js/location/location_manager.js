@@ -230,6 +230,13 @@ var LocationPanelInfo = (function () {
         }
     };
 
+    LocationPanelInfo.prototype.show_description = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_description', options);
+        var jq_panel = this.jq_main_div.find('.panel-info-description').first();
+        jq_panel.css('display', 'block');
+        jq_panel.find('.panel-info-content').first().html(options.text);
+    };
+
     return LocationPanelInfo;
 })();
 

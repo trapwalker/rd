@@ -22,7 +22,6 @@ class Mobile(Root):
 
     # Последняя посещенная локация
     last_location = RegistryLink(caption=u'Последняя посещенная локация')
-    last_parking_npc = RegistryLink(default=None, caption=u'Парковщик машины.')
 
     # атрибуты от ObserverObjects
     p_observing_range = Parameter(default=1000, caption=u"Радиус обзора")
@@ -189,6 +188,9 @@ class Mobile(Root):
 
 
 class Car(Mobile):
+    last_parking_npc = RegistryLink(default=None, caption=u'Парковщик машины.')
+    date_setup_parking = FloatAttribute(default=0, caption=u'Дата оставления у парковщика')
+
     armorer_car = Attribute(caption=u"Представление машинки у оружейника")
     tuner_car = Attribute(caption=u"Представление машинки у тюнера")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")

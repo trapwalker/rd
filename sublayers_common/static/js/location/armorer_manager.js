@@ -351,7 +351,7 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.changeItem = function(src, dest) {
         if (src == dest) return;
-        console.log('LocationArmorerNPC.prototype.changeItem', src, dest);
+        //console.log('LocationArmorerNPC.prototype.changeItem', src, dest);
 
         var item = this.items[src];
 
@@ -438,24 +438,44 @@ var LocationArmorerNPC = (function (_super) {
         }
     };
 
+    LocationArmorerNPC.prototype.getSlotTextInfo = function(slot_name) {
+        var text = '';
+        var dir_and_weight = this.armorer_slots_flags[slot_name].split('_');
+        var dir = dir_and_weight[0];
+        var weight = dir_and_weight[1];
+        if (dir.length) {
+            text = text + 'Доступные направления:<ul>';
+            if (dir.indexOf('F') >= 0) text = text + '<li>вперёд</li>';
+            if (dir.indexOf('B') >= 0) text = text + '<li>назад</li>';
+            if (dir.indexOf('L') >= 0) text = text + '<li>влево</li>';
+            if (dir.indexOf('R') >= 0) text = text + '<li>вправо</li>';
+            text = text + '</ul>';
+        }
+        if (weight.length) {
+            text = text + 'Класс тяжести: ' + weight + '</br>';
+        }
+        return text;
+    };
+
     LocationArmorerNPC.prototype.viewRightPanel = function(slot_name) {
         //console.log('LocationArmorerNPC.prototype.viewRightPanel', slot_name);
         // Получаем слот и соостветствующий итем
         var item_rec = this.items[slot_name];
         if (item_rec.example) {
             // Вывод информации об итеме
-            console.log(item_rec, slot_name);
+            locationManager.panel_right.show({text: item_rec.example.description }, 'description');
         }
         else {
             if (slot_name.toString().indexOf('slot') >= 0) {
                 // Вывод информации о слоте
-                console.log('slot_info from armorer slots', slot_name);
+                locationManager.panel_right.show({text: this.getSlotTextInfo(slot_name)}, 'description');
             }
         }
     };
 
     LocationArmorerNPC.prototype.clearRightPanel = function() {
         //console.log('LocationArmorerNPC.prototype.clearRightPanel');
+        locationManager.panel_right.show({}, '');
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
@@ -548,15 +568,12 @@ var LocationArmorerNPC = (function (_super) {
         event.data.armorer.setActiveSector(event.data.sector_name);
     };
 
-    LocationArmorerNPC.drag_handler = function (event, ui, inv_offset_x, inv_offset_y) {
-        inv_offset_x = inv_offset_x ? inv_offset_x : 0;
-        inv_offset_y = inv_offset_y ? inv_offset_y : 0;
-        console.log(inv_offset_x, inv_offset_y);
+    LocationArmorerNPC.drag_handler = function (event, ui) {
         var original = ui.originalPosition;
         // jQuery will simply use the same object we alter here
         ui.position = {
-            left: (event.clientX - location_armorer_draggable_click.x + original.left + inv_offset_x) / window_scaled_prc,
-            top: (event.clientY - location_armorer_draggable_click.y + original.top + inv_offset_y) / window_scaled_prc
+            left: (event.clientX - location_armorer_draggable_click.x + original.left) / window_scaled_prc,
+            top: (event.clientY - location_armorer_draggable_click.y + original.top) / window_scaled_prc
         };
     };
 
