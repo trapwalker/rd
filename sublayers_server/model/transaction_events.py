@@ -3,6 +3,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from datetime import datetime
+import time
+import math
+
 from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
@@ -277,17 +281,31 @@ class TransactionParkingSelect(TransactionEvent):
            len(car_list) <= self.car_number:
             return
 
-        if agent_ex.car:
-            agent_ex.car.last_parking_npc = npc.node_hash()
-            agent_ex.car_list.append(agent_ex.car)
-        agent_ex.car = car_list[self.car_number]
-        agent_ex.car_list.remove(car_list[self.car_number])
+        # todo: сделать иначе работу с датой
+        # Установка цены и может ли пользователь забрать машинка
+        delta = car_list[self.car_number].date_setup_parking - time.mktime(datetime.now().timetuple())
+        if delta < 0:
+            delta = 0
+        delta_days = math.floor(delta / (60 * 60 * 24)) + 1
+        summ_for_paying = delta_days * npc.cost_for_day_parking
 
-        agent_ex.car.last_parking_npc = None
+        # Процедура списывания денег и взятия машинки
+        if agent_ex.balance >= summ_for_paying:
+            if agent_ex.car:
+                agent_ex.car.last_parking_npc = npc.node_hash()
+                agent_ex.car_list.append(agent_ex.car)
+            agent_ex.car = car_list[self.car_number]
+            agent_ex.car_list.remove(car_list[self.car_number])
+            agent_ex.car.last_parking_npc = None
 
-        # messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
-        messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
-        messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+            agent_ex.balance -= summ_for_paying
+
+            messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+            messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        else:
+            # todo: отправить сообщение о том, что недостаточно денег для данного действия
+            pass
+
 
 
 class TransactionParkingLeave(TransactionEvent):
@@ -308,10 +326,11 @@ class TransactionParkingLeave(TransactionEvent):
            npc not in self.agent.current_location.example.get_npc_list():
             return
         agent_ex.car.last_parking_npc = npc.node_hash()
+        # todo: сделать через обычный тип Date
+        agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
 
-        # messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
 

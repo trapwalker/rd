@@ -4,7 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, Position, Parameter, TextAttribute, DictAttribute
+from sublayers_server.model.registry.attr import (Attribute, Position, Parameter, TextAttribute, DictAttribute,
+                                                  FloatAttribute)
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.price import PriceAttribute
@@ -146,6 +147,7 @@ class Hangar(Institution):
 
 class Parking(Institution):
     type = TextAttribute(default='parking', caption=u"Специальность NPC", tags='client')
+    cost_for_day_parking = FloatAttribute(default=10, caption=u'Стоимость дня у парковщика', tags='client')
 
 
 class Mayor(Institution):
