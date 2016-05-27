@@ -361,31 +361,58 @@ var LocationMechanicNPC = (function (_super) {
         locationManager.panel_right.show({text: ''}, 'description');
     };
 
+    LocationMechanicNPC.prototype.viewSubsystem = function (subsystem, flag) {
+        if (flag) {
+            $('#mechanic-img-' + subsystem).removeClass('mechanic-img-subsystem');
+        } else {
+            $('#mechanic-img-' + subsystem).addClass('mechanic-img-subsystem');
+        }
+    };
+
+    LocationMechanicNPC.prototype.viewSubsystemByItem = function (slot_name, flag) {
+        if (! this.items.hasOwnProperty(slot_name)) return;
+        var item_rec = this.items[slot_name];
+        if (! item_rec || !item_rec.example) return;
+        var slots_for_light = [];
+        for (var i = 0; i < this.mechanic_slots.length; i++) {
+            var slot = this.mechanic_slots[i];
+            if (this._compare_tags(item_rec, slot)){
+                slots_for_light.push(slot);
+            }
+        }
+        // Имитируем эвенты для слотов
+        var event_name = flag ? 'mouseenter' : 'mouseleave';
+        var hover_class_action = flag ? 'addClass' : 'removeClass';
+
+        for (var i = 0; i < slots_for_light.length; i++) {
+            var jq_slot = $('#mechanic_' + slots_for_light[i].name);
+            jq_slot[event_name]();
+            jq_slot[hover_class_action]('hover');
+        }
+    };
+
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
 
     // Обработка слотовых событий
     LocationMechanicNPC.slot_event_mouseenter = function (event) {
-        var subs = $(this).data('subsystem');
-        $('#mechanic-img-' + subs).removeClass('mechanic-img-subsystem');
-
-        //console.log('locationManager.mechanic.showItemInfo', $(this).data('pos'));
+        event.data.mechanic.viewSubsystem($(this).data('subsystem'), true);
         event.data.mechanic.viewRightPanel($(this).data('pos'));
     };
 
     LocationMechanicNPC.slot_event_mouseleave = function (event) {
-        var subs = $(this).data('subsystem');
-        $('#mechanic-img-' + subs).addClass('mechanic-img-subsystem');
-
+        event.data.mechanic.viewSubsystem($(this).data('subsystem'), false);
         event.data.mechanic.clearRightPanel();
     };
 
     LocationMechanicNPC.inventory_slot_event_mouseenter = function (event) {
         //console.log('LocationMechanicNPC.inventory_slot_event_mouseenter', $(this).data('pos'));
         event.data.mechanic.viewRightPanel($(this).data('pos'));
+        event.data.mechanic.viewSubsystemByItem($(this).data('pos'), true);
     };
 
     LocationMechanicNPC.inventory_slot_event_mouseleave = function (event) {
         event.data.mechanic.clearRightPanel();
+        event.data.mechanic.viewSubsystemByItem($(this).data('pos'), false);
     };
 
     LocationMechanicNPC.system_event_click = function (event) {

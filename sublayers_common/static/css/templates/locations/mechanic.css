@@ -118,7 +118,7 @@
     opacity: 0.6;
 }
 
-.mechanic-big-slot-main:hover {
+.mechanic-big-slot-main:hover, .mechanic-big-slot-main.hover {
     opacity: 1;
 }
 
@@ -145,7 +145,7 @@
     opacity: 0.6;
 }
 
-.mechanic-small-slot-main:hover {
+.mechanic-small-slot-main:hover, .mechanic-small-slot-main.hover {
     opacity: 1;
 }
 
