@@ -1388,25 +1388,16 @@ var ClientManager = (function () {
 
     // Механик
 
-    ClientManager.prototype.sendMechanicApply = function () {
+    ClientManager.prototype.sendMechanicApply = function (npc) {
         //console.log('ClientManager.prototype.sendMechanicApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "mechanic_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                mechanic_slots: locationManager.mechanic.exportSlotState()
+                npc_node_hash: npc.npc_rec.node_hash,
+                mechanic_slots: npc.exportSlotState()
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendMechanicCancel = function () {
-        //console.log('ClientManager.prototype.sendMechanicCancel');
-        var mes = {
-            call: "mechanic_cancel",
-            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

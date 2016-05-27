@@ -457,21 +457,24 @@ class TransactionArmorerApply(TransactionEvent):
 
 
 class TransactionMechanicApply(TransactionEvent):
-    def __init__(self, agent, mechanic_slots, **kw):
+    def __init__(self, agent, mechanic_slots, npc_node_hash, **kw):
         super(TransactionMechanicApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.mechanic_slots = mechanic_slots
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionMechanicApply, self).on_perform()
-
         agent = self.agent
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'mechanic'):
+            return
+        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
             return
 
-        # Проверяем находится ли агент в локации с механиком
-        if not (isinstance(agent.current_location, Town) and agent.current_location.example.mechanic):
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
             return
 
         # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
@@ -533,7 +536,7 @@ class TransactionMechanicApply(TransactionEvent):
             item.position = position
             agent.example.car.inventory.append(item)
             position += 1
-        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
 
 class TransactionTunerApply(TransactionEvent):

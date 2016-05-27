@@ -630,13 +630,9 @@ class AgentAPI(API):
     # Механик
 
     @public_method
-    def mechanic_apply(self, mechanic_slots):
-        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots)\
-            .post()
-
-    @public_method
-    def mechanic_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def mechanic_apply(self, mechanic_slots, npc_node_hash):
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots,
+                                 npc_node_hash=npc_node_hash).post()
 
     # Тюнер
 

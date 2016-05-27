@@ -229,8 +229,8 @@ var LocationMechanicNPC = (function (_super) {
         //console.log('LocationHangarNPC.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
             case '1':
-                //if (user.example_car)
-                //    clientManager.sendMechanicApply(this);
+                if (user.example_car)
+                    clientManager.sendMechanicApply(this);
                 break;
             case '2':
                 if (user.example_car) {
@@ -333,6 +333,11 @@ var LocationMechanicNPC = (function (_super) {
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
+    };
+
+    LocationMechanicNPC.prototype.set_panels = function () {
+        _super.prototype.set_panels.call(this);
+        this.clearRightPanel();
     };
 
     LocationMechanicNPC.prototype.viewRightPanel = function(slot_name) {

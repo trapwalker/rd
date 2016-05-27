@@ -396,6 +396,11 @@ var LocationArmorerNPC = (function (_super) {
         // todo: сделать запрос стоимости текущих настроек
     };
 
+    LocationArmorerNPC.prototype.set_panels = function () {
+        _super.prototype.set_panels.call(this);
+        this.clearRightPanel();
+    };
+
     LocationArmorerNPC.prototype.activeSlot = function(slot_name) {
         //console.log('LocationArmorerNPC.prototype.setActiveSlot');
         //if (!window.hasOwnProperty('dropSectorActive') || !window.hasOwnProperty('dropSlotActive')) return;
