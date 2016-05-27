@@ -45,7 +45,7 @@ var LocationHangarNPC = (function (_super) {
                 );
                 jq_car_list_inventory.append(jq_inv_car);
             }
-            this.resizeNPCList(jq_car_list_inventory);
+            this.resizeInventory(jq_car_list_inventory);
 
             // Вешаем клики на машинки в инвентаре
             var self = this;
@@ -64,6 +64,7 @@ var LocationHangarNPC = (function (_super) {
                 // Установить выбранную машинку в менеджер
                 self.current_car = $(this).data('car_number');
                 self.set_panels();
+                self.set_header_text();
             });
             this.jq_main_div.find('.hangar-car-list-itemWrap').first().click();
         }
@@ -76,6 +77,7 @@ var LocationHangarNPC = (function (_super) {
     };
 
     LocationHangarNPC.prototype.set_buttons = function () {
+        if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
             locationManager.setBtnState(1, '</br>Обменять ТС', true);
             locationManager.setBtnState(2, '</br>Продать ТС', true);
@@ -89,9 +91,21 @@ var LocationHangarNPC = (function (_super) {
     };
 
     LocationHangarNPC.prototype.set_panels = function() {
-        if (locationManager.screens[locationManager.active_screen_name] != this) return;
+        if (!locationManager.isActivePlace(this)) return;
         locationManager.panel_right.show({}, 'self_car_info');
         locationManager.panel_left.show({price: 0, transactions: this.transactions}, 'npc_transaction_info');
+    };
+
+    LocationHangarNPC.prototype.set_header_text = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        var jq_text_div = $('<div></div>');
+        if (user.example_car) {
+            jq_text_div.append('<div>Обменять ТС: ' + (user.example_car.price - this.cars_list[this.current_car].car.price) + 'NC</div>');
+            jq_text_div.append('<div>Продать ТС: ' + user.example_car.price + 'NC</div>');
+        }
+        else
+            jq_text_div.append('<div>Купить ТС: -' + this.cars_list[this.current_car].car.price + 'NC</div>');
+        _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
     LocationHangarNPC.prototype.clickBtn = function (btnIndex) {
@@ -127,6 +141,7 @@ var LocationParkingNPC = (function (_super) {
 
     LocationParkingNPC.prototype.set_buttons = function () {
         //console.log('LocationParkingNPC.prototype.set_buttons', this.cars_list.length);
+        if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
             if (this.cars_list.length) {
                 locationManager.setBtnState(1, '</br>Сменить ТС', true);
@@ -163,11 +178,23 @@ var LocationParkingNPC = (function (_super) {
         }
     };
 
-    //LocationParkingNPC.prototype.set_panels = function() {
-    //    if (locationManager.screens[locationManager.active_screen_name] != this) return;
-    //    locationManager.panel_right.show({}, 'self_car_info');
-    //    locationManager.panel_left.show({price: temp_price, transactions: this.transactions}, 'npc_transaction_info');
-    //};
+    LocationParkingNPC.prototype.set_header_text = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        var jq_text_div = $('<div></div>');
+
+        if (this.cars_list.length)
+            if (user.example_car)
+                jq_text_div.append('<div>Обменять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+            else
+                jq_text_div.append('<div>Взять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+
+        if (user.example_car)
+            jq_text_div.append('<div>Поставить ТС: 0NC</div>');
+
+        var jq_header_text = this.jq_main_div.find('.npc-text');
+        jq_header_text.empty();
+        jq_header_text.append(jq_text_div);
+    };
 
     return LocationParkingNPC;
 })(LocationHangarNPC);

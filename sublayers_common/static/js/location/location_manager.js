@@ -155,7 +155,7 @@ var LocationManager = (function () {
     };
 
     LocationManager.prototype.update = function () {
-        //console.log('LocationPanelInfo.prototype.init');
+        //console.log('LocationManager.prototype.init');
         for (var key in this.buildings)
             if (this.buildings.hasOwnProperty(key))
                 this.buildings[key].update();
@@ -163,6 +163,11 @@ var LocationManager = (function () {
         for (var key in this.npc)
             if (this.npc.hasOwnProperty(key))
                 this.npc[key].update();
+    };
+
+    LocationManager.prototype.isActivePlace = function (location_place) {
+        //console.log('LocationManager.prototype.isActivePlace');
+        return this.screens[this.active_screen_name] == location_place;
     };
 
     return LocationManager;
@@ -219,16 +224,11 @@ var LocationPanelInfo = (function () {
         if (user.example_agent)
             jq_panel.find('.npc-transaction-info-money').text(user.example_agent.balance + ' нукойнов');
 
-        //jq_panel.find('.npc-transaction-info-price').text('0 нукойнов');
-        //if (options.hasOwnProperty('price'))
-        //    jq_panel.find('.npc-transaction-info-price').text(options.price + ' нукойнов');
-
         var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
         jq_transaction_list.empty();
-        if (options.hasOwnProperty('transactions')) {
+        if (options.hasOwnProperty('transactions'))
             for (var i = 0; i < options.transactions.length; i++)
-                jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> -' + options.transactions[i] + '</div>');
-        }
+                jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> - ' + options.transactions[i] + '</div>');
     };
 
     LocationPanelInfo.prototype.show_description = function (options) {
@@ -268,9 +268,12 @@ var LocationPlace = (function () {
         this.set_buttons();
         // Настроить внеэкранные области
         this.set_panels();
+        // Настроить речь NPC
+        this.set_header_text();
     };
 
     LocationPlace.prototype.set_buttons = function () {
+        if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '', false);
@@ -278,9 +281,17 @@ var LocationPlace = (function () {
     };
 
     LocationPlace.prototype.set_panels = function () {
+        if (!locationManager.isActivePlace(this)) return;
         // Выключить панели
         locationManager.panel_left.show({}, '');
         locationManager.panel_right.show({}, '');
+    };
+
+    LocationPlace.prototype.set_header_text = function (html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+        var jq_header_text = this.jq_main_div.find('.npc-text');
+        jq_header_text.empty();
+        jq_header_text.append(html_text);
     };
 
     LocationPlace.prototype.clear = function () {
@@ -293,21 +304,9 @@ var LocationPlace = (function () {
     LocationPlace.prototype.clickBtn = function (btnIndex) {};
 
     LocationPlace.prototype.update = function () {
-        if (locationManager.screens[locationManager.active_screen_name] == this) {
-            this.set_buttons();
-            this.set_panels();
-        }
-    };
-
-    LocationPlace.prototype.resizeNPCList = function (jq_list) {
-        var width = 0;
-        if (jq_list) {
-            jq_list.children().each(function (index, element) {
-                if ($(element).css('display') == 'block')
-                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-            });
-            jq_list.width(width);
-        }
+        this.set_buttons();
+        this.set_panels();
+        this.set_header_text();
     };
 
     /*
@@ -315,15 +314,14 @@ var LocationPlace = (function () {
      данную функцию всякий раз когда меняется количество слотов в инвентаре (иначе
      горизонтальный слайдер будер расти вниз)
      */
-    LocationPlace.prototype.resizeInventory = function(inventory) {
-        //var inventory = $(".npcInventory-inventory:first");
+    LocationPlace.prototype.resizeInventory = function(jq_list) {
         var width = 0;
-        if (inventory) {
-            $(inventory).find('.npcInventory-itemWrap').each(function (index, element) {
+        if (jq_list) {
+            jq_list.children().each(function (index, element) {
                 if ($(element).css('display') == 'block')
                     width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
             });
-            $(inventory).width(width);
+            jq_list.width(width);
         }
     };
 
@@ -341,7 +339,6 @@ var LocationPlace = (function () {
             default:
                 return (new LocationPlaceNPC(npc_rec, jq_town_div, key));
         }
-        console.log('Мы тут не должны быть!!!');
     };
 
     return LocationPlace;
@@ -365,7 +362,7 @@ var LocationPlaceBuilding = (function (_super) {
                 console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
         }
 
-        this.resizeNPCList(this.jq_main_div.find('.building-npc-list'));
+        this.resizeInventory(this.jq_main_div.find('.building-npc-list'));
 
         this.active_screen_name = 'location_screen';
 
@@ -380,30 +377,25 @@ var LocationPlaceBuilding = (function (_super) {
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
-        switch (btnIndex) {
-            case '3':
-                $('#layer2').css('display', 'block');
-                $('#landscape').css('display', 'block');
-                $('.building-back').css('display', 'none');
-                this.jq_main_div.css('display', 'none');
-                if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
-                    locationManager.screens[this.screen_name] = null;
-                else // если нет, то записаться в последний активный
-                    locationManager.screens[locationManager.active_screen_name] = null;
+        if (btnIndex == '3') {
+            $('#layer2').css('display', 'block');
+            $('#landscape').css('display', 'block');
+            $('.building-back').css('display', 'none');
+            this.jq_main_div.css('display', 'none');
+            if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
+                locationManager.screens[this.screen_name] = null;
+            else // если нет, то записаться в последний активный
+                locationManager.screens[locationManager.active_screen_name] = null;
 
-                locationManager.setBtnState(1, '', false);
-                locationManager.setBtnState(2, '', false);
-                locationManager.setBtnState(3, '</br>Назад', false);
-                locationManager.setBtnState(4, '</br>Выход', true);
-
-                break;
-            case '4':
-                console.log('выход из города');
-                break;
+            locationManager.setBtnState(1, '', false);
+            locationManager.setBtnState(2, '', false);
+            locationManager.setBtnState(3, '</br>Назад', false);
+            locationManager.setBtnState(4, '</br>Выход', true);
         }
     };
 
     LocationPlaceBuilding.prototype.set_buttons = function () {
+        if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
@@ -443,34 +435,29 @@ var LocationPlaceNPC = (function (_super) {
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
-        switch (btnIndex) {
-            case '3':
-                if (this.owner_name)
-                    locationManager.openBuilding(this.owner_name);
-                else {
-                    $('#layer2').css('display', 'block');
-                    $('#landscape').css('display', 'block');
+        if (btnIndex == '3')
+            if (this.owner_name)
+                locationManager.openBuilding(this.owner_name);
+            else {
+                $('#layer2').css('display', 'block');
+                $('#landscape').css('display', 'block');
 
-                    this.jq_main_div.css('display', 'none');
+                this.jq_main_div.css('display', 'none');
 
-                    if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
-                        locationManager.screens[this.screen_name] = null;
-                    else // если нет, то записаться в последний активный
-                        locationManager.screens[locationManager.active_screen_name] = null;
+                if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
+                    locationManager.screens[this.screen_name] = null;
+                else // если нет, то записаться в последний активный
+                    locationManager.screens[locationManager.active_screen_name] = null;
 
-                    locationManager.setBtnState(1, '', false);
-                    locationManager.setBtnState(2, '', false);
-                    locationManager.setBtnState(3, '</br>Назад', false);
-                    locationManager.setBtnState(4, '</br>Выход', true);
-                }
-                break;
-            case '4':
-                //console.log('выход из города');
-                break;
-        }
+                locationManager.setBtnState(1, '', false);
+                locationManager.setBtnState(2, '', false);
+                locationManager.setBtnState(3, '</br>Назад', false);
+                locationManager.setBtnState(4, '</br>Выход', true);
+            }
     };
 
     LocationPlaceNPC.prototype.set_buttons = function () {
+        if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };

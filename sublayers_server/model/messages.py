@@ -1097,7 +1097,6 @@ class ParkingInfoMessage(NPCInfoMessage):
                 "templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_table.html")
-
             template_img = tornado.template.Loader(
                 "templates/location",
                 namespace=agent.connection.get_template_namespace()
@@ -1105,10 +1104,9 @@ class ParkingInfoMessage(NPCInfoMessage):
 
             d.update(cars=[dict(
                 car=car.as_client_dict(),
+                car_parking_price=npc.get_car_price(car),
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
-                # todo: use agent.example.get_car_list_by_npc(npc)
-                # ) for car in agent.example.car_list])
             ) for car in agent.example.get_car_list_by_npc(npc)])
         d['npc_html_hash'] = npc.node_html()
         return d
