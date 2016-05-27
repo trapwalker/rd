@@ -4,6 +4,8 @@
     {% include hangar_window.html %}
 {% elif cur_npc.type == 'armorer' %}
     {% include armorer_window.html %}
+{% elif cur_npc.type == 'mechanic' %}
+    {% include mechanic_window.html %}
 {% else %}
     {% set npc_photo = cur_npc.photo %}
     {% set npc_title = cur_npc.title %}

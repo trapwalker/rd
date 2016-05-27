@@ -28,10 +28,6 @@ var LocationArmorerNPC = (function (_super) {
         this.update();
     }
 
-    LocationArmorerNPC.prototype.get_self_info = function () {
-        //console.log('LocationArmorerNPC.prototype.get_self_info')
-    };
-
     LocationArmorerNPC.prototype.set_buttons = function () {
         if (user.example_car) {
             locationManager.setBtnState(1, '</br>Установить', true);
@@ -156,6 +152,7 @@ var LocationArmorerNPC = (function (_super) {
 
             // Старый апдейт
 
+            var item;
             // Проверить если город
             this.inv_show_div = this.jq_main_div.find('.npcInventory-inventory').first();
             if (this.inv_show_div.length == 0) {
@@ -271,8 +268,6 @@ var LocationArmorerNPC = (function (_super) {
                         '<img id="armorer' + position + 'ImgSide" src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '">' +
                     '</div>');
 
-                //itemDivTop.data('pos', position);
-                //itemDivSide.data('pos', position);
 
                 itemDivTop.draggable({
                     helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
