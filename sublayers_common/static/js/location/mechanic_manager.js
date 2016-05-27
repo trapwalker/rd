@@ -374,12 +374,11 @@ var LocationMechanicNPC = (function (_super) {
             }
         }
         // Имитируем эвенты для слотов
-        var event_name = flag ? 'mouseenter' : 'mouseleave';
         var hover_class_action = flag ? 'addClass' : 'removeClass';
 
         for (var i = 0; i < slots_for_light.length; i++) {
             var jq_slot = $('#mechanic_' + slots_for_light[i].name);
-            jq_slot[event_name]();
+            this.viewSubsystem(jq_slot.data('subsystem'), flag);
             jq_slot[hover_class_action]('hover');
         }
     };
