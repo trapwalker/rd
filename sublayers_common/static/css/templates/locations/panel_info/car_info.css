@@ -11,7 +11,7 @@
     position: relative;
     text-align: left;
     float: left;
-    color: #135806;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
     width: 35%;
 }
 
@@ -29,5 +29,53 @@
 }
 .panel-info-car-info-car .car-info-block-picture-main { transform: scale(0.813); margin: 0 0 0 -46px; }
 
+.panel-info-car-info-car .car-info-block-picture::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(2px) brightness(200%);
+    -webkit-filter: blur(2px) brightness(200%);
+}
+.panel-info-car-info-car .car-info-block-picture::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(4px) brightness(200%);
+    -webkit-filter: blur(4px) brightness(200%);
+}
 
-
+.panel-info-car-info-car .armorer-car-slot-picture::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(3px) brightness(200%);
+    -webkit-filter: blur(3px) brightness(200%);
+}
+.panel-info-car-info-car .armorer-car-slot-picture::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(0px) brightness(200%);
+    -webkit-filter: blur(0px) brightness(200%);
+    opacity: 0.6;
+}

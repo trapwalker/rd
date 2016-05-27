@@ -18,7 +18,7 @@
     float: left;
     text-align: left;
     width: 50%;
-    color: #135806;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
 }
 
 .npc-transaction-info-value {
