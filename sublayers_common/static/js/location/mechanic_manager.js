@@ -1,10 +1,3 @@
-var location_mechanic_draggable_click = {
-    x: 0,
-    y: 0,
-    pos_x: 0,
-    pos_y: 0
-};
-
 var LocationMechanicNPC = (function (_super) {
     __extends(LocationMechanicNPC, _super);
 
@@ -265,8 +258,8 @@ var LocationMechanicNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationMechanicNPC.start_drag_handler,
-                    drag: LocationMechanicNPC.drag_handler
+                    start: LocationPlace.start_drag_handler,
+                    drag: LocationPlace.drag_handler
                 });
                 img_div.append(itemDiv);
             }
@@ -292,8 +285,8 @@ var LocationMechanicNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationMechanicNPC.start_drag_handler,
-                    drag: LocationMechanicNPC.drag_handler
+                    start: LocationPlace.start_drag_handler,
+                    drag: LocationPlace.drag_handler
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -418,21 +411,6 @@ var LocationMechanicNPC = (function (_super) {
     LocationMechanicNPC.system_event_click = function (event) {
         //console.log('LocationMechanicNPC.system_event_click', event);
         event.data.mechanic.activateSystem(event);
-    };
-
-    LocationMechanicNPC.drag_handler = function (event, ui) {
-        var original = ui.originalPosition;
-        // jQuery will simply use the same object we alter here
-        ui.position = {
-            left: (event.clientX - location_mechanic_draggable_click.x + original.left) / window_scaled_prc,
-            top: (event.clientY - location_mechanic_draggable_click.y + original.top) / window_scaled_prc
-        };
-    };
-
-    LocationMechanicNPC.start_drag_handler = function (event, ui) {
-        var pos = event.target.getBoundingClientRect();
-        location_mechanic_draggable_click.x = pos.left + pos.width / 4.;
-        location_mechanic_draggable_click.y = pos.top + pos.height / 4.;
     };
 
     return LocationMechanicNPC;

@@ -341,6 +341,23 @@ var LocationPlace = (function () {
         }
     };
 
+    // Классовые методы для работы draggable
+
+    LocationPlace.drag_handler = function (event, ui) {
+        var original = ui.originalPosition;
+        // jQuery will simply use the same object we alter here
+        ui.position = {
+            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc,
+            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc
+        };
+    };
+
+    LocationPlace.start_drag_handler = function (event, ui) {
+        var pos = event.target.getBoundingClientRect();
+        location_draggable_click.x = pos.left + pos.width / 4.;
+        location_draggable_click.y = pos.top + pos.height / 4.;
+    };
+
     return LocationPlace;
 })();
 
@@ -469,6 +486,7 @@ var LocationPlaceNPC = (function (_super) {
 
 
 var locationManager;
+var location_draggable_click = {x:0, y:0};
 
 
 

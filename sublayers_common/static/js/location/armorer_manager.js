@@ -1,10 +1,3 @@
-var location_armorer_draggable_click = {
-    x: 0,
-    y: 0,
-    pos_x: 0,
-    pos_y: 0
-};
-
 var LocationArmorerNPC = (function (_super) {
     __extends(LocationArmorerNPC, _super);
 
@@ -281,17 +274,13 @@ var LocationArmorerNPC = (function (_super) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
 
-                        var pos = event.target.getBoundingClientRect();
-                        //location_armorer_draggable_click.x = event.clientX;
-                        //location_armorer_draggable_click.y = event.clientY;
-                        location_armorer_draggable_click.x = pos.left + pos.width / 4.;
-                        location_armorer_draggable_click.y = pos.top + pos.height / 4.;
+                        LocationPlace.start_drag_handler(event, ui);
                     },
                     stop: function(event, ui) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
                     },
-                    drag: LocationArmorerNPC.drag_handler
+                    drag: LocationPlace.drag_handler
                 });
                 itemDivSide.draggable({
                     helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
@@ -305,17 +294,13 @@ var LocationArmorerNPC = (function (_super) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
 
-                        var pos = event.target.getBoundingClientRect();
-                        //location_armorer_draggable_click.x = event.clientX;
-                        //location_armorer_draggable_click.y = event.clientY;
-                        location_armorer_draggable_click.x = pos.left + pos.width / 4.;
-                        location_armorer_draggable_click.y = pos.top + pos.height / 4.;
+                        LocationPlace.start_drag_handler(event, ui);
                     },
                     stop: function(event, ui) {
                         $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
                     },
-                    drag: LocationArmorerNPC.drag_handler
+                    drag: LocationPlace.drag_handler
                 });
 
                 top_slot.append(itemDivTop);
@@ -344,14 +329,8 @@ var LocationArmorerNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: function(event, ui) {
-                        var pos = event.target.getBoundingClientRect();
-                        //location_armorer_draggable_click.x = event.clientX;
-                        //location_armorer_draggable_click.y = event.clientY;
-                        location_armorer_draggable_click.x = pos.left + pos.width / 4.;
-                        location_armorer_draggable_click.y = pos.top + pos.height / 4.;
-                    },
-                    drag: LocationArmorerNPC.drag_handler
+                    start: LocationPlace.start_drag_handler,
+                    drag: LocationPlace.drag_handler
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -580,15 +559,6 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.sector_event_click = function (event) {
         event.data.armorer.setActiveSector(event.data.sector_name);
-    };
-
-    LocationArmorerNPC.drag_handler = function (event, ui) {
-        var original = ui.originalPosition;
-        // jQuery will simply use the same object we alter here
-        ui.position = {
-            left: (event.clientX - location_armorer_draggable_click.x + original.left) / window_scaled_prc,
-            top: (event.clientY - location_armorer_draggable_click.y + original.top) / window_scaled_prc
-        };
     };
 
     return LocationArmorerNPC;
