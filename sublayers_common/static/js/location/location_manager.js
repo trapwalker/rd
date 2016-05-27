@@ -224,16 +224,11 @@ var LocationPanelInfo = (function () {
         if (user.example_agent)
             jq_panel.find('.npc-transaction-info-money').text(user.example_agent.balance + ' нукойнов');
 
-        //jq_panel.find('.npc-transaction-info-price').text('0 нукойнов');
-        //if (options.hasOwnProperty('price'))
-        //    jq_panel.find('.npc-transaction-info-price').text(options.price + ' нукойнов');
-
         var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
         jq_transaction_list.empty();
-        if (options.hasOwnProperty('transactions')) {
+        if (options.hasOwnProperty('transactions'))
             for (var i = 0; i < options.transactions.length; i++)
-                jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> -' + options.transactions[i] + '</div>');
-        }
+                jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> - ' + options.transactions[i] + '</div>');
     };
 
     LocationPanelInfo.prototype.show_description = function (options) {

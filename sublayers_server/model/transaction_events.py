@@ -298,14 +298,8 @@ class TransactionParkingSelect(TransactionEvent):
            len(car_list) <= self.car_number:
             return
 
-        # todo: сделать иначе работу с датой
         # Установка цены и может ли пользователь забрать машинка
-        delta = car_list[self.car_number].date_setup_parking - time.mktime(datetime.now().timetuple())
-        if delta < 0:
-            delta = 0
-            log.warning('Time parking = 0s !!! warning!!!!')
-        delta_days = math.floor(delta / (60 * 60 * 24)) + 1
-        summ_for_paying = delta_days * npc.cost_for_day_parking
+        summ_for_paying = npc.get_car_price(car_list[self.car_number])
 
         # Процедура списывания денег и взятия машинки
         if agent_ex.balance >= summ_for_paying:

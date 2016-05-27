@@ -178,11 +178,23 @@ var LocationParkingNPC = (function (_super) {
         }
     };
 
-    //LocationParkingNPC.prototype.set_panels = function() {
-    //    if (locationManager.screens[locationManager.active_screen_name] != this) return;
-    //    locationManager.panel_right.show({}, 'self_car_info');
-    //    locationManager.panel_left.show({price: temp_price, transactions: this.transactions}, 'npc_transaction_info');
-    //};
+    LocationParkingNPC.prototype.set_header_text = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        var jq_text_div = $('<div></div>');
+
+        if (this.cars_list.length)
+            if (user.example_car)
+                jq_text_div.append('<div>Обменять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+            else
+                jq_text_div.append('<div>Взять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+
+        if (user.example_car)
+            jq_text_div.append('<div>Поставить ТС: 0NC</div>');
+
+        var jq_header_text = this.jq_main_div.find('.npc-text');
+        jq_header_text.empty();
+        jq_header_text.append(jq_text_div);
+    };
 
     return LocationParkingNPC;
 })(LocationHangarNPC);

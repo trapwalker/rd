@@ -3,6 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
+from datetime import datetime
+import time
+import math
+
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import (Attribute, Position, Parameter, TextAttribute, DictAttribute,
                                                   FloatAttribute)
@@ -148,6 +152,16 @@ class Hangar(Institution):
 class Parking(Institution):
     type = TextAttribute(default='parking', caption=u"Специальность NPC", tags='client')
     cost_for_day_parking = FloatAttribute(default=10, caption=u'Стоимость дня у парковщика', tags='client')
+
+    def get_car_price(self, car):
+        # todo: сделать иначе работу с датой
+        # Установка цены и может ли пользователь забрать машинка
+        delta = car.date_setup_parking - time.mktime(datetime.now().timetuple())
+        if delta < 0:
+            delta = 0
+            log.warning('Time parking = 0s !!! warning!!!!')
+        delta_days = math.floor(delta / (60 * 60 * 24)) + 1
+        return delta_days * self.cost_for_day_parking
 
 
 class Mayor(Institution):
