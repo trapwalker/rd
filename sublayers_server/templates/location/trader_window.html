@@ -1,33 +1,32 @@
-<div class="mainTraderWindow">
-    <div class="mainTraderWindow-up">
-        <div class="mainTraderWindow-wrap-up">
-            <div class="mainTraderWindow-up-picture">
-                <img class="trader-foto" src="{{ town.example.trader.photo }}" alt="Оружейник" />
-                <div class="mainTraderWindow-up-name">{{ town.example.trader.title }}</div>
+<div class="traderWindow-main">
+    {% set npc_photo = cur_npc.photo %}
+    {% set npc_title = cur_npc.title %}
+    {% set npc_text = cur_npc.text %}
+    {% include npc_header.html %}
+
+    <div class="trader-center">
+        <div class="trader-center-header">
+            <div class="trader-center-header-player-title trader-center-header-block">Ваш инвентарь:</div>
+            <div class="trader-center-header-exchange-title trader-center-header-block">Столик обмена:</div>
+            <div class="trader-center-header-trader-title trader-center-header-block">Товары на продажу:</div>
+        </div>
+        <div class="trader-center-area">
+            <div class="trader-center-area-player-body trader-center-area-block"></div>
+            <div class="trader-center-area-player-exchange-body trader-center-area-block"></div>
+            <div class="trader-center-area-trader-exchange-body trader-center-area-block"></div>
+            <div class="trader-center-area-trader-body trader-center-area-block"></div>
+        </div>
+        <div class="trader-center-footer">
+            <div class="trader-center-header-player-title trader-center-header-block">
+                <span class="trader-player-total">0NC</span>
             </div>
-            <div class="mainTraderWindow-up-text">{{ town.example.trader.text }}</div>
-        </div>
-    </div>
-    <div class="mainTraderWindow-down">
-        <div class="mainTraderWindow-down-header">
-            <div class="mainTraderWindow-down-player-title">Ваш инвентарь:</div>
-            <div class="mainTraderWindow-down-exchange-title">Столик обмена:</div>
-            <div class="mainTraderWindow-down-trader-title">Инвентарь Бухмана:</div>
-        </div>
-        <div class="mainTraderWindow-down-exchange-area">
-            <div class="mainTraderWindow-down-player-body mainTraderWindow-down-column"></div>
-            <div class="mainTraderWindow-down-exchange-leftbody mainTraderWindow-down-column"></div>
-            <div class="mainTraderWindow-down-exchange-rightbody mainTraderWindow-down-column"></div>
-            <div class="mainTraderWindow-down-trader-body mainTraderWindow-down-column"></div>
-        </div>
-        <div class="mainTraderWindow-down-footer">
-            <div class="mainTraderWindow-down-player-score">Ваш счет:<br/>
-                <span id="mainTraderWindow-down-player-score-span">0</span> нк.</div>
-            <div class="mainTraderWindow-down-exchange-lefttotal">Сумма:<br/>
-                <span id="mainTraderWindow-down-exchange-lefttotal-span">0</span> нк.</div>
-            <div class="mainTraderWindow-down-exchange-righttotal">Сумма:<br/>
-                <span id="mainTraderWindow-down-exchange-righttotal-span">0</span> нк.</div>
-            <div class="mainTraderWindow-down-trader-score">Счет Бухмана:<br/>999999 нк.</div>
+            <div class="trader-center-header-exchange-title trader-center-header-block">
+                <div class="trader-center-header-exchange-text"><span class="trader-player-exchange-total">0NC</span></div>
+                <div class="trader-center-header-exchange-text"><span class="trader-trader-exchange-total">0NC</span></div>
+            </div>
+            <div class="trader-center-header-trader-title trader-center-header-block">
+                <span class="trader-trader-total">0NC</span>
+            </div>
         </div>
     </div>
 </div>
