@@ -22,6 +22,7 @@ var LocationArmorerNPC = (function (_super) {
     }
 
     LocationArmorerNPC.prototype.set_buttons = function () {
+        if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
             locationManager.setBtnState(1, '</br>Установить', true);
             locationManager.setBtnState(2, '</br>Отмена', true);

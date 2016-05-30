@@ -914,7 +914,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
-        console.log('ClientManager.prototype.TraderInfoMessage', event);
+        //console.log('ClientManager.prototype.TraderInfoMessage', event);
         var inv = this._getInventory(event.inventory);
         if (inventoryList.getInventory(inv.owner_id))
             inventoryList.delInventory(inv.owner_id);
@@ -1416,25 +1416,16 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendTraderApply = function () {
+    ClientManager.prototype.sendTraderApply = function (npc) {
         //console.log('ClientManager.prototype.sendTraderApply');
         var mes = {
             call: "trader_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                player_table: locationManager.trader.getPlayerTable(),
-                trader_table: locationManager.trader.getTraderTable()
+                player_table: npc.getPlayerTable(),
+                trader_table: npc.getTraderTable(),
+                npc_node_hash: npc.npc_rec.node_hash,
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendTraderCancel = function () {
-        //console.log('ClientManager.prototype.sendTraderCancel');
-        var mes = {
-            call: "trader_cancel",
-            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

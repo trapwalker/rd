@@ -554,7 +554,6 @@ class TransactionMechanicApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-
 class TransactionTunerApply(TransactionEvent):
     def __init__(self, agent, tuner_slots, **kw):
         super(TransactionTunerApply, self).__init__(server=agent.server, **kw)
@@ -635,11 +634,12 @@ class TransactionTunerApply(TransactionEvent):
 
 
 class TransactionTraderApply(TransactionEvent):
-    def __init__(self, agent, player_table, trader_table, **kw):
+    def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.player_table = player_table
         self.trader_table = trader_table
+        self.npc_node_hash = npc_node_hash
         self.position = 0
 
     def _get_position(self):
@@ -651,16 +651,20 @@ class TransactionTraderApply(TransactionEvent):
         reg = self.server.reg
         agent = self.agent
         ex_car = agent.example.car
+        trader = self.agent.server.reg[self.npc_node_hash]
+
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        tr_msg_list = []
 
         # Проверяем есть ли у агента машинка
-        if ex_car is None:
+        if (ex_car is None) or (trader is None):
             return  # todo: Как такое может случиться? Может быть здесь должен быть assert?
 
         # Проверяем находится ли агент в локации с торговцем
-        if not (isinstance(agent.current_location, Town) and agent.current_location.example.trader):
+        if not (isinstance(agent.current_location, Town) and (trader in agent.current_location.example.get_npc_list())):
             return  # todo: а как может быть иначе? Может быть здесь должно быть исключение?
 
-        trader = agent.current_location.example.trader
         trader_price = trader.get_prices(items=ex_car.inventory)
 
         # Заполняем буфер итемов игрока
@@ -668,6 +672,7 @@ class TransactionTraderApply(TransactionEvent):
 
         # Обход столика игрока: формирование цены и проверка наличия
         price_player = 0
+        temp_price = 0
         for item_id in self.player_table:
             if item_id not in buffer_player:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
@@ -675,7 +680,11 @@ class TransactionTraderApply(TransactionEvent):
                 return
 
             item = ex_car.inventory.get_item_by_id(item_id)
-            price_player += 0.01 * item.base_price * trader_price[item_id].buy  # * item.amount / item.stack_size
+            temp_price = 0.01 * item.base_price * trader_price[item_id].buy  # * item.amount / item.stack_size
+
+            tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(temp_price) + 'NC')
+
+            price_player += temp_price
             # todo: Учитывать количество
             buffer_player.remove(item_id)
 
@@ -691,7 +700,11 @@ class TransactionTraderApply(TransactionEvent):
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
-            price_trader += 0.01 * item.base_price * trader_price[item_id].sale  # * item.amount / item.stack_size
+            temp_price = 0.01 * item.base_price * trader_price[item_id].sale  # * item.amount / item.stack_size
+            print item.title
+            tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(temp_price) + 'NC')
+
+            price_trader += temp_price
             # todo: Учитывать количество
             bought_items.append(item)
 
@@ -725,6 +738,11 @@ class TransactionTraderApply(TransactionEvent):
             new_inventory.append(item.instantiate(position=self._get_position(), amount=item.stack_size))
         ex_car.inventory = new_inventory
 
+        for msg in tr_msg_list:
+            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),
+                                           info_string=msg).post()
+
+        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
         # todo: вариативные реплики
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
 
