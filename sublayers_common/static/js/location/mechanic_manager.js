@@ -96,16 +96,17 @@ var LocationMechanicNPC = (function (_super) {
 
         if (this.inv_show_div)
             this.inv_show_div.empty();
+
+        this.jq_center_main_block.empty();
     };
 
     LocationMechanicNPC.prototype.update = function(data) {
         //console.log('LocationMechanicNPC.prototype.update', data);
+        this.clear_user_info();
         if (user.example_car && user.car_npc_info) {
             var self = this;
-            this.clear_user_info();
-            this.mechanic_slots = user.car_npc_info.mechanic_slots;
 
-            this.jq_center_main_block.empty();
+            this.mechanic_slots = user.car_npc_info.mechanic_slots;
 
             var jq_buttons_list = $('<div class="mechanic-center-page-control"></div>');
 
@@ -329,8 +330,10 @@ var LocationMechanicNPC = (function (_super) {
     };
 
     LocationMechanicNPC.prototype.set_panels = function () {
+        if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
         this.clearRightPanel();
+        locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
     };
 
     LocationMechanicNPC.prototype.viewRightPanel = function(slot_name) {
@@ -381,6 +384,18 @@ var LocationMechanicNPC = (function (_super) {
             this.viewSubsystem(jq_slot.data('subsystem'), flag);
             jq_slot[hover_class_action]('hover');
         }
+    };
+
+    LocationMechanicNPC.prototype.set_header_text = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
+        var jq_text_div = $('<div></div>');
+        if (user.example_car) {
+            jq_text_div.append('<div>Выбирай, что ставить.</div>');
+        }
+        else
+            jq_text_div.append('<div>Иди отсюда! И без машины не возвращайся!</div>');
+        _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!

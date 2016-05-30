@@ -910,6 +910,8 @@ class StrategyModeInfoObjectsMessage(Message):
 
 
 class NPCTransactionMessage(Message):
+    _transaction_time_format = "%d.%m.%Y"
+
     def __init__(self, npc_html_hash, info_string, **kw):
         super(NPCTransactionMessage, self).__init__(**kw)
         self.info_string = info_string

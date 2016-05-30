@@ -215,7 +215,7 @@ class TransactionHangarSell(TransactionEvent):
 
         # Отправка сообщения о транзакции
         now_date = datetime.now()
-        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), "%d.%m.%Y")
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         info_string = date_str + ': Продажа ' + self.agent.example.car.title + ', ' + \
                       str(self.agent.example.car.price) + 'NC'
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
@@ -256,7 +256,7 @@ class TransactionHangarBuy(TransactionEvent):
 
             # Отправка сообщения о транзакции
             now_date = datetime.now()
-            date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), "%d.%m.%Y")
+            date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             if self.agent.example.car:
                 info_string = date_str + ': Обмен на ' + car_proto.title + ', ' + \
                               str(self.agent.example.car.price - car_proto.price) + 'NC'
@@ -308,7 +308,7 @@ class TransactionParkingSelect(TransactionEvent):
 
             # Отправка сообщения о транзакции
             now_date = datetime.now()
-            date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), "%d.%m.%Y")
+            date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             if agent_ex.car:
                 info_string = date_str + ': Обмен на ' + car_list[self.car_number].title + ', -' + \
                               str(summ_for_paying) + 'NC'
@@ -356,7 +356,7 @@ class TransactionParkingLeave(TransactionEvent):
 
         # Отправка сообщения о транзакции
         now_date = datetime.now()
-        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), "%d.%m.%Y")
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         info_string = date_str + ': Оставил ' + agent_ex.car.title + ', ' + '0NC'
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
@@ -455,6 +455,14 @@ class TransactionArmorerApply(TransactionEvent):
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
+        # Информация о транзакции
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: правильную стоимость услуг вывести сюда
+        info_string = date_str + ': Установка на ' + ex_car.title + ', ' + str(0) + 'NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
+
 
 class TransactionMechanicApply(TransactionEvent):
     def __init__(self, agent, mechanic_slots, npc_node_hash, **kw):
@@ -537,6 +545,15 @@ class TransactionMechanicApply(TransactionEvent):
             agent.example.car.inventory.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+
+        # Информация о транзакции
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: правильную стоимость услуг вывести сюда
+        info_string = date_str + ': Установка на ' + ex_car.title + ', ' + str(0) + 'NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
+
 
 
 class TransactionTunerApply(TransactionEvent):
