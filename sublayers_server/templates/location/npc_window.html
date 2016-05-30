@@ -6,6 +6,8 @@
     {% include armorer_window.html %}
 {% elif cur_npc.type == 'mechanic' %}
     {% include mechanic_window.html %}
+{% elif cur_npc.type == 'tuner' %}
+    {% include tuner_window.html %}
 {% elif cur_npc.type == 'trader' %}
     {% include trader_window.html %}
 {% else %}
