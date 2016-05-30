@@ -642,9 +642,13 @@ class AgentAPI(API):
 
     @public_method
     def tuner_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        pass
 
     # Торговец
+
+    @public_method
+    def get_trader_info(self, npc_node_hash):
+        messages.TraderInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @public_method
     def trader_apply(self, player_table, trader_table):
@@ -653,9 +657,7 @@ class AgentAPI(API):
 
     @public_method
     def trader_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
-        messages.SetupTraderReplica(agent=self.agent, time=self.agent.server.get_time(),
-                                    replica=u'Ну как хочешь...').post()
+        pass
 
     # Бартер
 

@@ -701,59 +701,6 @@ class GasStationUpdate(Message):
         return d
 
 
-class ExamplesShowMessage(Message):
-    def as_dict(self):
-        d = super(ExamplesShowMessage, self).as_dict()
-
-        d['agent_balance'] = self.agent.example.balance
-
-        if self.agent.example.car:
-            d['example_car_node'] = self.agent.example.car.node_hash()
-            d['example_car_image_scale'] = self.agent.example.car.image_scale
-
-            d['armorer_slots'] = [
-                dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots(tags='armorer')
-            ]
-
-            d['mechanic_slots'] = [
-                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
-                for k, v, attr in self.agent.example.car.iter_slots2(tags='mechanic')
-            ]
-
-            d['tuner_slots'] = [
-                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
-                for k, v, attr in self.agent.example.car.iter_slots2(tags='tuner')
-            ]
-
-            d['armorer_slots_flags'] = [
-                dict(name=attr.name, value=getter and getter())
-                for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
-            ]
-
-            d['inventory'] = dict(
-                max_size=self.agent.example.car.inventory_size,
-                items=[
-                    dict(
-                        position=ex.position,
-                        item=dict(
-                            cls='ItemState',
-                            balance_cls=ex.parent.node_hash(),
-                            example=ex.as_client_dict(),
-                            max_val=ex.stack_size,
-                            t0=self.time,
-                            val0=ex.amount,
-                            dvs=0,
-                        )
-                    )
-                    for ex in self.agent.example.car.inventory
-                ],
-                owner_id=self.agent.uid
-            )
-
-        return d
-
-
 class QuestUpdateMessage(Message):
     def __init__(self, quest, **kw):
         super(QuestUpdateMessage, self).__init__(**kw)
@@ -762,53 +709,6 @@ class QuestUpdateMessage(Message):
     def as_dict(self):
         d = super(QuestUpdateMessage, self).as_dict()
         d['quest'] = self.quest.as_client_dict()
-        return d
-
-
-class TraderInventoryShowMessage(Message):
-    # todo: переделать этот кошмар
-    def __init__(self, town_id, **kw):
-        super(TraderInventoryShowMessage, self).__init__(**kw)
-        self.town_id = town_id
-        self.position = 0
-
-    def _get_position(self):
-        self.position += 1
-        return self.position - 1
-
-    def as_dict(self):
-        d = super(TraderInventoryShowMessage, self).as_dict()
-
-        # Получаем сервер и экземпляр торговца
-        server = self.agent.server
-        trader = server.objects[self.town_id].example.trader
-
-        # Отправка инвентаря торговца
-        d['inventory'] = dict(
-                max_size=trader.inventory_size,
-                items=[
-                    dict(
-                        position=self._get_position(),
-                        item=dict(
-                            cls='ItemState',
-                            balance_cls=None,
-                            example=server.reg[ex].as_client_dict(),
-                            max_val=server.reg[ex].stack_size,
-                            t0=self.time,
-                            val0=server.reg[ex].stack_size,
-                            dvs=0,
-                        )
-                    ) for ex in trader.inventory
-                ],
-                owner_id=str(self.town_id) + '_trader'
-            )
-
-        # Отправка цен
-        car_inventory = ()
-        if self.agent.example.car:
-            car_inventory = self.agent.example.car.inventory
-        d['price'] = trader.as_client_dict(items=car_inventory)
-
         return d
 
 
@@ -1108,5 +1008,53 @@ class ParkingInfoMessage(NPCInfoMessage):
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
             ) for car in agent.example.get_car_list_by_npc(npc)])
+        d['npc_html_hash'] = npc.node_html()
+        return d
+
+
+# Сообщение-ответ для клиента - информация об нпц-стоянке
+# todo: переделать этот кошмар
+class TraderInfoMessage(NPCInfoMessage):
+    def __init__(self, **kw):
+        super(TraderInfoMessage, self).__init__(**kw)
+        self.position = 0
+
+    def _get_position(self):
+        self.position += 1
+        return self.position - 1
+
+    def as_dict(self):
+        d = super(TraderInfoMessage, self).as_dict()
+
+        # Получаем сервер и экземпляр торговца
+        server = self.agent.server
+        npc = self.agent.server.reg[self.npc_node_hash]
+
+        # Отправка инвентаря торговца
+        d['inventory'] = dict(
+                max_size=npc.inventory_size,
+                items=[
+                    dict(
+                        position=self._get_position(),
+                        item=dict(
+                            cls='ItemState',
+                            balance_cls=None,
+                            example=server.reg[ex].as_client_dict(),
+                            max_val=server.reg[ex].stack_size,
+                            t0=self.time,
+                            val0=server.reg[ex].stack_size,
+                            dvs=0,
+                        )
+                    ) for ex in npc.inventory
+                ],
+                owner_id=npc.node_html()
+            )
+
+        # Отправка цен
+        car_inventory = ()
+        if self.agent.example.car:
+            car_inventory = self.agent.example.car.inventory
+        d['price'] = npc.as_client_dict(items=car_inventory)
+
         d['npc_html_hash'] = npc.node_html()
         return d

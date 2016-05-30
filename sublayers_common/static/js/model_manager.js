@@ -751,38 +751,6 @@ var ClientManager = (function () {
             console.warn('InventoryIncSizeMessage:: инвентарь' + event.inventory_owner_id + ' отсутствует на клиенте:');
     };
 
-    ClientManager.prototype.ExamplesShowMessage = function (event) {
-        //console.log('ClientManager.prototype.ExamplesShowMessage', event);
-        // Обновление баланса пользователя
-        //user.balance = event.agent_balance;
-        //locationManager.example_car_node = event.example_car_node;
-        //if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
-        //    var inv = this._getInventory(event.inventory);
-        //    if (inventoryList.getInventory(inv.owner_id))
-        //        inventoryList.delInventory(inv.owner_id);
-        //    inventoryList.addInventory(inv);
-        //    locationManager.nucoil.update();
-        //    locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags, event.example_car_image_scale);
-        //    locationManager.mechanic.update(event.mechanic_slots);
-        //    locationManager.tuner.update(event.tuner_slots);
-        //    locationManager.trader.updatePlayerInv();
-        //    locationManager.trader.updateTraderInv();
-        //    locationManager.hangar.update();
-        //    locationManager.parking.update();
-        //}
-    };
-
-    ClientManager.prototype.TraderInventoryShowMessage = function (event) {
-        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
-        //var inv = this._getInventory(event.inventory);
-        //locationManager.trader_uid = inv.owner_id;
-        //if (inventoryList.getInventory(inv.owner_id))
-        //    inventoryList.delInventory(inv.owner_id);
-        //inventoryList.addInventory(inv);
-        //locationManager.trader.updateTraderInv();
-        //locationManager.trader.updatePrice(event.price.price)
-    };
-
     ClientManager.prototype.InventoryItemMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryItemMessage', event);
         var inventory = inventoryList.getInventory(event.owner_id);
@@ -813,11 +781,6 @@ var ClientManager = (function () {
     ClientManager.prototype.GasStationUpdate = function (event) {
         //console.log('ClientManager.prototype.GasStationUpdate', event);
         initGasStation(event.balance, event.fuel);
-    };
-
-    ClientManager.prototype.SetupTraderReplica = function (event) {
-        //console.log('ClientManager.prototype.sendTraderCancel');
-        //locationManager.trader.setupTraderReplica(event.replica)
     };
 
     //ClientManager.prototype.GetStashWindow = function (event) {
@@ -950,6 +913,18 @@ var ClientManager = (function () {
         }
     };
 
+    ClientManager.prototype.TraderInfoMessage = function (event) {
+        console.log('ClientManager.prototype.TraderInfoMessage', event);
+        var inv = this._getInventory(event.inventory);
+        if (inventoryList.getInventory(inv.owner_id))
+            inventoryList.delInventory(inv.owner_id);
+        inventoryList.addInventory(inv);
+        if (locationManager.npc.hasOwnProperty(inv.owner_id)) {
+            locationManager.npc[inv.owner_id].updateTraderInv();
+            locationManager.npc[inv.owner_id].updatePrice(event.price.price);
+        }
+    };
+
     // Журнал (стоянка)
     ClientManager.prototype.JournalParkingInfoMessage = function (event) {
         //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
@@ -973,7 +948,6 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
     };
-
 
     // Исходящие сообщения
 
@@ -1430,6 +1404,17 @@ var ClientManager = (function () {
     };
 
     // Торговец
+
+    ClientManager.prototype.sendGetTraderInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendGetParkingInfo', npc);
+        var mes = {
+            call: "get_trader_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: { npc_node_hash: npc.npc_rec.node_hash }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     ClientManager.prototype.sendTraderApply = function () {
         //console.log('ClientManager.prototype.sendTraderApply');

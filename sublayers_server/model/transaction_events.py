@@ -192,7 +192,6 @@ class TransactionGasStation(TransactionEvent):
                 agent.example.car.inventory.append(item)
 
         messages.GasStationUpdate(agent=agent, time=self.time).post()
-        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
 
 
 class TransactionHangarSell(TransactionEvent):
@@ -616,7 +615,6 @@ class TransactionTunerApply(TransactionEvent):
             item.position = position
             agent.example.car.inventory.append(item)
             position += 1
-        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
 
 
 class TransactionTraderApply(TransactionEvent):
@@ -710,7 +708,6 @@ class TransactionTraderApply(TransactionEvent):
             new_inventory.append(item.instantiate(position=self._get_position(), amount=item.stack_size))
         ex_car.inventory = new_inventory
 
-        messages.ExamplesShowMessage(agent=agent, time=self.time).post()
         # todo: вариативные реплики
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
 

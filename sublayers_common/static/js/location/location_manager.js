@@ -155,7 +155,7 @@ var LocationManager = (function () {
     };
 
     LocationManager.prototype.update = function () {
-        //console.log('LocationManager.prototype.init');
+        //console.log('LocationManager.prototype.update');
         for (var key in this.buildings)
             if (this.buildings.hasOwnProperty(key))
                 this.buildings[key].update();
@@ -336,6 +336,8 @@ var LocationPlace = (function () {
                 return (new LocationArmorerNPC(npc_rec, jq_town_div, key));
             case 'mechanic':
                 return (new LocationMechanicNPC(npc_rec, jq_town_div, key));
+            case 'trader':
+                return (new LocationTraderNPC(npc_rec, jq_town_div, key));
             default:
                 return (new LocationPlaceNPC(npc_rec, jq_town_div, key));
         }

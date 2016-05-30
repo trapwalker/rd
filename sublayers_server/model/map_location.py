@@ -5,8 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage,
-    ExamplesShowMessage, TraderInventoryShowMessage, InventoryHideMessage,
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, InventoryHideMessage,
 )
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats
@@ -75,9 +74,6 @@ class MapLocation(Observer):
         # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
         agent.on_enter_location(location=self, time=time)
 
-        # todo: перенести на после входа
-        # self.send_inventory_info(agent=agent, time=time)
-
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
         for visitor in self.visitors:
@@ -86,21 +82,12 @@ class MapLocation(Observer):
         agent.current_location = self
         self.visitors.append(agent)
 
-        # Отправить инвентарь из экземпляра на клиент, при условии, что есть машинка
-        if agent.example.car:
-            ExamplesShowMessage(agent=agent, time=time).post()
-
     def on_re_enter(self, agent, time):
         agent.save(time)  # todo: Уточнить можно ли сохранять здесь
         if agent in self.visitors:
-            # Отправить инвентарь из экземпляра на клиент, при условии, что есть машинка
-            if agent.example.car:
-                ExamplesShowMessage(agent=agent, time=time).post()
 
             # todo: review agent.on_enter_location call
             agent.on_enter_location(location=self, time=time)
-
-            # self.send_inventory_info(agent=agent, time=time)
 
             EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
             for visitor in self.visitors:
@@ -138,9 +125,6 @@ class MapLocation(Observer):
             if location.example.uri == uri:
                 return location
 
-    def send_inventory_info(self, agent, time):
-        pass
-
     def on_enter_npc(self, agent, time, npc_type):
         pass
 
@@ -167,11 +151,6 @@ class Town(MapLocation):
         for location in cls.locations:
             if isinstance(location, Town):
                 yield location
-
-    def send_inventory_info(self, agent, time):
-        super(Town, self).send_inventory_info(agent=agent, time=time)
-        if self.example.trader:
-            TraderInventoryShowMessage(agent=agent, time=time, town_id=self.uid).post()
 
     def on_enter_npc(self, agent, time, npc_type):
         npc = getattr(self.example, npc_type)
