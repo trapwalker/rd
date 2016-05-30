@@ -87,20 +87,20 @@ var LocationArmorerNPC = (function (_super) {
 
         if (this.inv_show_div)
             this.inv_show_div.empty();
+
+        this.jq_car_view.empty();
+        this.jq_sectors_slot_name.empty();
+        this.jq_sectors_view.empty();
     };
 
     LocationArmorerNPC.prototype.update = function(data) {
         //console.log('LocationArmorerNPC.prototype.update', data);
+        this.clear_user_info();
         if (user.example_car && user.car_npc_info) {
             var self = this;
-            this.clear_user_info();
             this.armorer_slots = user.car_npc_info.armorer_slots;
             if (user.car_npc_info.armorer_slots_flags) this._update_armorer_slots_flags(user.car_npc_info.armorer_slots_flags);
             this.image_scale = user.example_car.image_scale;
-
-            this.jq_car_view.empty();
-            this.jq_sectors_slot_name.empty();
-            this.jq_sectors_view.empty();
 
             this.jq_car_view.append(user.templates.html_armorer_car);
             this.jq_sectors_view.append(user.templates.armorer_sectors_svg);
@@ -376,8 +376,10 @@ var LocationArmorerNPC = (function (_super) {
     };
 
     LocationArmorerNPC.prototype.set_panels = function () {
+        if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
         this.clearRightPanel();
+        locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
     };
 
     LocationArmorerNPC.prototype.activeSlot = function(slot_name) {
@@ -469,6 +471,18 @@ var LocationArmorerNPC = (function (_super) {
     LocationArmorerNPC.prototype.clearRightPanel = function() {
         //console.log('LocationArmorerNPC.prototype.clearRightPanel');
         locationManager.panel_right.show({text: ''}, 'description');
+    };
+
+    LocationArmorerNPC.prototype.set_header_text = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
+        var jq_text_div = $('<div></div>');
+        if (user.example_car) {
+            jq_text_div.append('<div>Давай повесим пушек на твоё корыто</div>');
+        }
+        else
+            jq_text_div.append('<div>А машина где? Угнали?</div>');
+        _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
