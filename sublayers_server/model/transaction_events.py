@@ -555,21 +555,24 @@ class TransactionMechanicApply(TransactionEvent):
 
 
 class TransactionTunerApply(TransactionEvent):
-    def __init__(self, agent, tuner_slots, **kw):
+    def __init__(self, agent, tuner_slots, npc_node_hash, **kw):
         super(TransactionTunerApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.tuner_slots = tuner_slots
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionTunerApply, self).on_perform()
-
         agent = self.agent
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'tuner'):
+            return
+        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
             return
 
-        # Проверяем находится ли агент в локации с тюнером
-        if not (isinstance(agent.current_location, Town) and agent.current_location.example.tuner):
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
             return
 
         # todo: здесь можно сделать проход по self.tuner_slots для проверки по тегам.
@@ -631,6 +634,15 @@ class TransactionTunerApply(TransactionEvent):
             item.position = position
             agent.example.car.inventory.append(item)
             position += 1
+
+        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        # Информация о транзакции
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: правильную стоимость услуг вывести сюда
+        info_string = date_str + ': Установка на ' + ex_car.title + ', ' + str(0) + 'NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
 
 
 class TransactionTraderApply(TransactionEvent):

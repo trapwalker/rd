@@ -1379,25 +1379,16 @@ var ClientManager = (function () {
 
     // Тюнер
 
-    ClientManager.prototype.sendTunerApply = function () {
+    ClientManager.prototype.sendTunerApply = function (npc) {
         //console.log('ClientManager.prototype.sendTunerApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "tuner_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                tuner_slots: locationManager.tuner.exportSlotState()
+                npc_node_hash: npc.npc_rec.node_hash,
+                tuner_slots: npc.exportSlotState()
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendTunerCancel = function () {
-        //console.log('ClientManager.prototype.sendTunerCancel');
-        var mes = {
-            call: "tuner_cancel",
-            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

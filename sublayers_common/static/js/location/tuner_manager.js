@@ -5,15 +5,13 @@ var LocationTunerNPC = (function (_super) {
         //console.log('LocationPlaceNPC', npc_rec);
         _super.call(this, npc_rec, jq_town_div, building_name);
 
-
         this.items = {};
         this.inv_show_div = null;
         this.tuner_slots = [];
         this.active_slot = null;
 
-
         this.jq_car_view = this.jq_main_div.find('.armorer-car').first(); // в шаблоне почему-то этот же класс
-        this.jq_ppv = this.jq_main_div.find('#tunerPontPointsValue').first();  // Pont Points Value
+        this.jq_ppv = this.jq_main_div.find('#tunerPontPointsValue');  // Pont Points Value
 
         this.update();
     }
@@ -73,7 +71,7 @@ var LocationTunerNPC = (function (_super) {
         //console.log('TunerManager.prototype.testItemForCar', item);
         if (! item.hasTag('tuner')) return false;
         if (item.example.hasOwnProperty('images'))
-            if (item.example.images.hasOwnProperty(locationManager.example_car_node))
+            if (item.example.images.hasOwnProperty(user.example_car.node_hash))
                 return true;
         return false
     };
@@ -87,6 +85,7 @@ var LocationTunerNPC = (function (_super) {
             this.inv_show_div.empty();
 
         this.jq_car_view.empty();
+        this.jq_ppv.text(0);
     };
 
     LocationTunerNPC.prototype.update = function(data) {
@@ -97,7 +96,6 @@ var LocationTunerNPC = (function (_super) {
             this.tuner_slots = user.car_npc_info.tuner_slots;
 
             this.jq_car_view.append(user.templates.html_tuner_car);
-
 
             // Вешаем события на слоты (проход по именам слотов)
             for (var slot_index = 0; slot_index < this.tuner_slots.length; slot_index++) {
@@ -213,10 +211,10 @@ var LocationTunerNPC = (function (_super) {
 
     LocationTunerNPC.prototype.reDrawItem = function(position) {
         //console.log('LocationTunerNPC.prototype.reDrawItem');
-        var top_before = $('#tunerCarTopBefore');
-        var top_after = $('#tunerCarTopAfter');
-        var side_before = $('#tunerCarSideBefore');
-        var side_after = $('#tunerCarSideAfter');
+        var jq_top_before = this.jq_main_div.find('#tunerCarTopBefore');
+        var jq_top_after = this.jq_main_div.find('#tunerCarTopAfter');
+        var jq_side_before = this.jq_main_div.find('#tunerCarSideBefore');
+        var jq_side_after = this.jq_main_div.find('#tunerCarSideAfter');
 
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
@@ -227,10 +225,10 @@ var LocationTunerNPC = (function (_super) {
             top_slot.empty();
             side_slot.empty();
 
-            top_before.find('#' + position + 'ImgTop').remove();
-            top_after.find('#' + position + 'ImgTop').remove();
-            side_before.find('#' + position + 'ImgSide').remove();
-            side_after.find('#' + position + 'ImgSide').remove();
+            jq_top_before.find('#' + position + 'ImgTop').remove();
+            jq_top_after.find('#' + position + 'ImgTop').remove();
+            jq_side_before.find('#' + position + 'ImgSide').remove();
+            jq_side_after.find('#' + position + 'ImgSide').remove();
 
             // создать вёрстку для отрисовки
             var item = this.items[position];
@@ -250,17 +248,17 @@ var LocationTunerNPC = (function (_super) {
                     var itemViewImgTop = $('<img id="' + position + 'ImgTop" src="' + itemImgTop + '" class="tuner-car-main-container tuner-car-item-img">');
                     //if (item.example['tuner_top_pos'] > 0)
                     if (ex_car_images.top.z_index > 0)
-                        top_after.append(itemViewImgTop);
+                        jq_top_after.append(itemViewImgTop);
                     else
-                        top_before.append(itemViewImgTop);
+                        jq_top_before.append(itemViewImgTop);
                 }
                 if (itemImgSide) {
                     var itemViewImgSide = $('<img id="' + position + 'ImgSide"  src="' + itemImgSide + '" class="tuner-car-main-container tuner-car-item-img">');
                     //if (item.example['tuner_side_pos'] > 0)
                     if (ex_car_images.side.z_index > 0)
-                        side_after.append(itemViewImgSide);
+                        jq_side_after.append(itemViewImgSide);
                     else
-                        side_before.append(itemViewImgSide);
+                        jq_side_before.append(itemViewImgSide);
                 }
 
                 itemDivTop.data('pos', position);
@@ -339,107 +337,6 @@ var LocationTunerNPC = (function (_super) {
             }
             itemWrapDiv.append(itemDiv);
         }
-
-
-
-        //if (position.toString().indexOf('slot') >= 0) {
-        //    // Позиция в слотах
-        //    var top_slot = $('#top_' + position);
-        //    var side_slot = $('#side_' + position);
-        //
-        //    // Очистить слоты
-        //    top_slot.empty();
-        //    side_slot.empty();
-        //
-        //    // создать вёрстку для отрисовки
-        //    var item = this.items[position];
-        //    if (item.example && this.image_scale) {
-        //        var item_image_scale = item.example.armorer_images[this.image_scale];
-        //
-        //        var itemImgTop = item_image_scale['armorer_top_' + item.direction];
-        //        var itemImgSide = item_image_scale['armorer_side_' + item.direction];
-        //
-        //        var itemDivTop = $('<div class="armorer-car-slot-picture" data-pos="' + position +'">' +
-        //                '<img id="armorer' + position + 'ImgTop" src="' + itemImgTop + '" class="' + 'armorer_top_'  + item.direction + '">' +
-        //            '</div>');
-        //        var itemDivSide = $('<div class="armorer-car-slot-picture" data-pos="' + position +'">' +
-        //                '<img id="armorer' + position + 'ImgSide" src="' + itemImgSide+ '" class="' + 'armorer_side_'  + item.direction + '">' +
-        //            '</div>');
-        //
-        //
-        //        itemDivTop.draggable({
-        //            helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
-        //            cursorAt: { left: 31, top: 16 },
-        //            opacity: 0.8,
-        //            revert: true,
-        //            revertDuration: 0,
-        //            zIndex: 1,
-        //            appendTo: '#location-content',
-        //            start: function(event, ui) {
-        //                $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
-        //                $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
-        //
-        //                LocationPlace.start_drag_handler(event, ui);
-        //            },
-        //            stop: function(event, ui) {
-        //                $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
-        //                $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
-        //            },
-        //            drag: LocationPlace.drag_handler
-        //        });
-        //        itemDivSide.draggable({
-        //            helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
-        //            cursorAt: { left: 31, top: 16 },
-        //            opacity: 0.8,
-        //            revert: true,
-        //            revertDuration: 0,
-        //            zIndex: 1,
-        //            appendTo: '#location-content',
-        //            start: function(event, ui) {
-        //                $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'none');
-        //                $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'none');
-        //
-        //                LocationPlace.start_drag_handler(event, ui);
-        //            },
-        //            stop: function(event, ui) {
-        //                $('#armorer' + $(this).data('pos') + 'ImgTop').css('display', 'block');
-        //                $('#armorer' + $(this).data('pos') + 'ImgSide').css('display', 'block');
-        //            },
-        //            drag: LocationPlace.drag_handler
-        //        });
-        //
-        //        top_slot.append(itemDivTop);
-        //        side_slot.append(itemDivSide);
-        //    }
-        //}
-        //else {
-        //    // Позиция в инвентаре
-        //    var itemWrapDiv = this.inv_show_div.find('.armorer-itemWrap-' + position).first();
-        //    itemWrapDiv.empty();
-        //
-        //    var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
-        //    var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
-        //        '<div class="npcInventory-name">Пусто</div>';
-        //    itemDiv.append(emptyItemDiv);
-        //    var item = this.items[position];
-        //    if (item.example) {
-        //        itemDiv.find('.npcInventory-name').text(item.example.title);
-        //        itemDiv.find('.npcInventory-picture')
-        //            .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
-        //        itemDiv.draggable({
-        //            helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
-        //            cursorAt: { left: 31, top: 16 },
-        //            opacity: 0.8,
-        //            revert: true,
-        //            revertDuration: 0,
-        //            zIndex: 1,
-        //            appendTo: '#location-content',
-        //            start: LocationPlace.start_drag_handler,
-        //            drag: LocationPlace.drag_handler
-        //        });
-        //    }
-        //    itemWrapDiv.append(itemDiv);
-        //}
     };
 
     LocationTunerNPC.prototype._compare_tags = function(item, slot) {
@@ -454,36 +351,30 @@ var LocationTunerNPC = (function (_super) {
         if (src == dest) return;
         //console.log('LocationTunerNPC.prototype.changeItem', src, dest);
 
-        var item = this.items[src];
+        var item1 = this.items[src];
+        if (! item1) return;
+        var slot1 = null;
+        for (var i = 0; i < this.tuner_slots.length; i++)
+            if (this.tuner_slots[i].name == dest)
+                slot1 = this.tuner_slots[i];
 
-        // Проверка класса тяжести
-        if (dest.toString().indexOf('slot') >= 0) {
-            var split_res = this.armorer_slots_flags[dest].split('_');
-            if (split_res.length <= 1) return;
-            var slot_weight = split_res[1];
-            var item_weight = item.example.weight_class;
-            if (parseInt(slot_weight) < parseInt(item_weight)) {
-                console.log('Вы не можете поставить данное оружие в данный слот');
-                return;
-            }
-        }
+        var item2 = this.items[dest];
+        var slot2 = null;
+        for (var i = 0; i < this.tuner_slots.length; i++)
+            if (this.tuner_slots[i].name == src)
+                slot2 = this.tuner_slots[i];
+
+        if ((slot1) && (!this._compare_tags(item1, slot1))) return;
+        if ((slot2) && (item2.example) && (!this._compare_tags(item2, slot2))) return;
 
         this.items[src] = this.items[dest];
-        this.items[dest] = item;
-
-        // Предусатновка направления итема
-        if (dest.toString().indexOf('slot') >= 0)
-            this.items[dest].direction = this.armorer_slots_flags[dest][0];
-        if (src.toString().indexOf('slot') >= 0)
-            this.items[src].direction = this.armorer_slots_flags[src][0];
+        this.items[dest] = item1;
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
-        if (dest.toString().indexOf('slot') >= 0)
-            this.activeSlot(dest);
-        else
-            this.activeSlot(null);
 
+        // Отрисовать значение Очков Крутости
+        this._pont_points_refresh();
 
         // todo: сделать запрос стоимости текущих настроек
     };
@@ -502,59 +393,8 @@ var LocationTunerNPC = (function (_super) {
                 if (key.toString().indexOf('slot') >= 0)
                     if (this.items[key].example)
                         pp += this.items[key].example.pont_points;
-        $('#tunerPontPointsValue').text(pp);
+        this.jq_ppv.text(pp);
     };
-
-    //LocationTunerNPC.prototype.activeSlot = function(slot_name) {
-    //    //console.log('LocationTunerNPC.prototype.setActiveSlot');
-    //    //if (!window.hasOwnProperty('dropSectorActive') || !window.hasOwnProperty('dropSlotActive')) return;
-    //
-    //    // Гасим все лепестки виджета и все слоты
-    //    LocationTunerNPC.dropSectorActive();
-    //    LocationTunerNPC.dropSlotActive(this);
-    //
-    //    // Устанавливаем новый активный слот и пытаемся получить соостветствующий итем
-    //    if (this.active_slot == slot_name) this.active_slot = null;
-    //    else this.active_slot = slot_name;
-    //    this.setEnableSector();
-    //    if (!this.items.hasOwnProperty(this.active_slot)) return;
-    //    var item_rec = this.items[this.active_slot];
-    //
-    //    // Подсвечиваем слот и если есть экземпляр то устанавливаем текущее направление
-    //    LocationTunerNPC.setSlotActive(this.active_slot);
-    //    if (item_rec.example)
-    //        LocationTunerNPC.setSectorActive(item_rec.direction);
-    //};
-    //
-    //LocationTunerNPC.prototype.setEnableSector = function() {
-    //    //console.log('LocationTunerNPC.prototype.setEnableSector');
-    //    LocationTunerNPC.addClassSVG($("#sector_F"), 'car_sector_disable');
-    //    LocationTunerNPC.addClassSVG($("#sector_B"), 'car_sector_disable');
-    //    LocationTunerNPC.addClassSVG($("#sector_L"), 'car_sector_disable');
-    //    LocationTunerNPC.addClassSVG($("#sector_R"), 'car_sector_disable');
-    //    if (this.active_slot && this.armorer_slots_flags)
-    //        for(var i = 0; i < this.armorer_slots_flags[this.active_slot].length; i++){
-    //            var ch = this.armorer_slots_flags[this.active_slot][i];
-    //            LocationTunerNPC.removeClassSVG($("#sector_" + ch), 'car_sector_disable');
-    //        }
-    //};
-
-    //LocationTunerNPC.prototype.setActiveSector = function(sectorName) {
-    //    //console.log('LocationTunerNPC.prototype.setActiveSector');
-    //    // Получаем активный слот и соостветствующий итем
-    //    if (! this.items.hasOwnProperty(this.active_slot)) return;
-    //    var item_rec = this.items[this.active_slot];
-    //    // Устанавливаем новое направление
-    //    item_rec.direction = sectorName;
-    //    this.items[this.active_slot] = item_rec;
-    //
-    //    // Гасим все лепестки виджета и если есть экземпляр то устанавливаем текущее направление
-    //    LocationTunerNPC.dropSectorActive();
-    //    if (item_rec.example) {
-    //        LocationTunerNPC.setSectorActive(item_rec.direction);
-    //        this.reDrawItem(this.active_slot);
-    //    }
-    //};
 
     LocationTunerNPC.prototype.getSlotTextInfo = function(slot_name) {
         return slot_name;
@@ -595,59 +435,6 @@ var LocationTunerNPC = (function (_super) {
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
 
-    // Подсветка слотов при наведении указателя мыши
-    //LocationTunerNPC.setSlotOpacity = function(slot_name, hover) {
-    //    if (hover) {
-    //        $("#top_" + slot_name).addClass("armorer-slot-hover");
-    //        $("#side_" + slot_name).addClass("armorer-slot-hover");
-    //    }
-    //    else {
-    //        $("#top_" + slot_name).removeClass("armorer-slot-hover");
-    //        $("#side_" + slot_name).removeClass("armorer-slot-hover");
-    //    }
-    //};
-    //
-    //LocationTunerNPC.dropSlotActive = function(armorer) {
-    //    if (armorer && armorer.hasOwnProperty('jq_main_div')) {
-    //        armorer.jq_main_div.find('.armorer-slot').removeClass("armorer-slot-active");
-    //    }
-    //    else {
-    //        $('.armorer-slot').removeClass("armorer-slot-active");
-    //    }
-    //};
-
-    //LocationTunerNPC.setSlotActive = function(slot_name) {
-    //    $("#top_" + slot_name).addClass("armorer-slot-active");
-    //    $("#side_" + slot_name).addClass("armorer-slot-active");
-    //};
-    //
-    //LocationTunerNPC.addClassSVG = function (obj, cls) {
-    //    var oldClass = obj.attr('class');
-    //    if (!oldClass) oldClass = cls;
-    //    oldClass= oldClass.toString();
-    //    if (oldClass.indexOf(cls) == -1) oldClass += ' ' + cls;
-    //    obj.attr('class', oldClass);
-    //};
-    //
-    //LocationTunerNPC.removeClassSVG = function (obj, cls) {
-    //    var oldClass = obj.attr('class');
-    //    if (!oldClass) return;
-    //    oldClass = oldClass.toString();
-    //    oldClass = oldClass.replace(cls, '');
-    //    obj.attr('class', oldClass);
-    //};
-
-    //LocationTunerNPC.dropSectorActive = function () {
-    //    LocationTunerNPC.removeClassSVG($("#sector_F"), 'car_sector_active');
-    //    LocationTunerNPC.removeClassSVG($("#sector_B"), 'car_sector_active');
-    //    LocationTunerNPC.removeClassSVG($("#sector_L"), 'car_sector_active');
-    //    LocationTunerNPC.removeClassSVG($("#sector_R"), 'car_sector_active');
-    //};
-
-    //LocationTunerNPC.setSectorActive = function (sectorName) {
-    //    LocationTunerNPC.addClassSVG($("#sector_" + sectorName), 'car_sector_active');
-    //};
-
     // Обработка слотовых событий
 
     LocationTunerNPC.hoverSlot = function(slot_name, hover) {
@@ -668,20 +455,20 @@ var LocationTunerNPC = (function (_super) {
 
     LocationTunerNPC.slot_event_mouseenter = function (event) {
         LocationTunerNPC.hoverSlot(event.data.slot_name, true);
-        //event.data.armorer.viewRightPanel(event.data.slot_name);
+        event.data.tuner.viewRightPanel(event.data.slot_name);
     };
 
     LocationTunerNPC.slot_event_mouseleave = function (event) {
         LocationTunerNPC.hoverSlot(event.data.slot_name, false);
-        //event.data.armorer.clearRightPanel();
+        event.data.tuner.clearRightPanel();
     };
 
     LocationTunerNPC.inventory_slot_event_mouseenter = function (event) {
-        //event.data.armorer.viewRightPanel(event.data.slot_name);
+        event.data.tuner.viewRightPanel(event.data.slot_name);
     };
 
     LocationTunerNPC.inventory_slot_event_mouseleave = function (event) {
-        //event.data.armorer.clearRightPanel();
+        event.data.tuner.clearRightPanel();
     };
 
     return LocationTunerNPC;

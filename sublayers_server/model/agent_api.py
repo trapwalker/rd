@@ -637,8 +637,9 @@ class AgentAPI(API):
     # Тюнер
 
     @public_method
-    def tuner_apply(self, tuner_slots):
-        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots).post()
+    def tuner_apply(self, tuner_slots, npc_node_hash):
+        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots,
+                              npc_node_hash=npc_node_hash).post()
 
     @public_method
     def tuner_cancel(self):
