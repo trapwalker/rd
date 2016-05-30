@@ -179,6 +179,11 @@ var LocationTraderNPC = (function (_super) {
                 drag: LocationPlace.drag_handler
             });
 
+            itemDiv.mouseenter({example: itemList[i]}, function(event) {
+                locationManager.panel_right.show({text: event.data.example.description }, 'description');
+            });
+            itemDiv.mouseleave({}, function(event) { locationManager.panel_right.show({text: '' }, 'description'); });
+
             parentDiv.append(itemDiv);
         }
     };
@@ -285,12 +290,12 @@ var LocationTraderNPC = (function (_super) {
 
     LocationTraderNPC.prototype.apply = function() {
         //console.log('TraderManager.prototype.apply');
-        clientManager.sendTraderApply();
+        clientManager.sendTraderApply(this);
     };
 
     LocationTraderNPC.prototype.cancel = function() {
         //console.log('TraderManager.prototype.cancel');
-        clientManager.sendTraderCancel();
+        this.update();
     };
 
     LocationTraderNPC.prototype.update = function(data) {
@@ -318,6 +323,34 @@ var LocationTraderNPC = (function (_super) {
 
     LocationTraderNPC.prototype.get_self_info = function () {
         clientManager.sendGetTraderInfo(this);
+    };
+
+    LocationTraderNPC.prototype.set_buttons = function () {
+        //console.log('LocationParkingNPC.prototype.set_buttons', this.cars_list.length);
+        if (!locationManager.isActivePlace(this)) return;
+        locationManager.setBtnState(1, 'Подтвердить</br>сделку', true);
+        locationManager.setBtnState(2, '</br>Отмена', true);
+    };
+
+    LocationTraderNPC.prototype.set_panels = function () {
+        if (!locationManager.isActivePlace(this)) return;
+        _super.prototype.set_panels.call(this);
+        locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
+        locationManager.panel_right.show({text: '' }, 'description');
+    };
+
+    LocationTraderNPC.prototype.clickBtn = function (btnIndex) {
+        //console.log('LocationHangarNPC.prototype.clickBtn', btnIndex);
+        switch (btnIndex) {
+            case '1':
+                this.apply();
+                break;
+            case '2':
+                this.cancel();
+                break;
+            default:
+                _super.prototype.clickBtn.call(this, btnIndex);
+        }
     };
 
     return LocationTraderNPC;

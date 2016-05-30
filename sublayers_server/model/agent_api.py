@@ -651,13 +651,9 @@ class AgentAPI(API):
         messages.TraderInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def trader_apply(self, player_table, trader_table):
+    def trader_apply(self, player_table, trader_table, npc_node_hash):
         TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
-                               trader_table=trader_table).post()
-
-    @public_method
-    def trader_cancel(self):
-        pass
+                               trader_table=trader_table, npc_node_hash=npc_node_hash).post()
 
     # Бартер
 
