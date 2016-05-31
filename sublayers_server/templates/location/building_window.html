@@ -7,11 +7,11 @@
     {% end %}
     <div class="building-center-block">
         <div class="building-center-menu-block">
-            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks">Доступные задания</div>
-            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks">Активные задания</div>
+            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks_{{ building }}">Доступные задания</div>
+            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks_{{ building }}">Активные задания</div>
         </div>
         <div class="building-center-pages-block">
-            <div id="buildingPageAvailableTasks" class="building-center-page">
+            <div id="buildingPageAvailableTasks_{{ building }}" class="building-center-page">
                 <div class="building-quest-list-block">
                     <div class="building-quest-list building-inventory-list">
                         <div class="building-quest-list-item">
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div id="buildingPageActiveTasks" class="building-center-page">
+            <div id="buildingPageActiveTasks_{{ building }}" class="building-center-page">
                 <div class="building-quest-list-block">
                     <div class="building-quest-list building-inventory-list">
                         <div class="building-quest-list-item">
@@ -80,14 +80,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    $('.building-center-menu-item').click(function(){
-        $('.building-center-menu-item').removeClass('active');
-        $(this).addClass('active');
-        $('.building-center-page').css('display', 'none');
-        $('#' + $(this).data('page_id')).css('display', 'block');
-    });
-    $('.building-center-menu-item').first().click();
-</script>
 

@@ -61,7 +61,7 @@ var LocationManager = (function () {
         // Создаем окна зданий
         for (var i = 0; i < data.location.example_town.buildings.length; i++) {
             var building_rec = data.location.example_town.buildings[i];
-            this.buildings[building_rec.key] = new LocationPlaceBuilding(building_rec, this.jq_town_div);
+            this.buildings[building_rec.key] = this._getBuildingByType(building_rec, this.jq_town_div);
         }
         this.active_screen_name = 'location_screen';
 
@@ -168,6 +168,16 @@ var LocationManager = (function () {
     LocationManager.prototype.isActivePlace = function (location_place) {
         //console.log('LocationManager.prototype.isActivePlace');
         return this.screens[this.active_screen_name] == location_place;
+    };
+
+    LocationManager.prototype._getBuildingByType = function (building_rec, jq_town_div) {
+        //console.log('LocationManager.prototype._getBuildingByType', building_rec);
+        switch (building_rec.key) {
+            case 'autoservice':
+                return (new LocationServiceBuilding(building_rec, jq_town_div));
+            default:
+                return (new LocationPlaceBuilding(building_rec, jq_town_div));
+        }
     };
 
     return LocationManager;
@@ -372,7 +382,9 @@ var LocationPlaceBuilding = (function (_super) {
     function LocationPlaceBuilding(building_rec, jq_town_div) {
         //console.log('LocationPlaceBuilding', building_rec);
         this.building_rec = building_rec;
-        _super.call(this, jq_town_div.find('#building_' + this.building_rec.key), 'location_screen');
+        _super.call(this, jq_town_div.find('#building_' + building_rec.key), 'location_screen');
+
+        this.active_central_page = null;
 
         // Создаем специалистов этого здания
         for (var i = 0; i < this.building_rec.build.instances.length; i++) {
@@ -386,6 +398,12 @@ var LocationPlaceBuilding = (function (_super) {
         this.resizeInventory(this.jq_main_div.find('.building-npc-list'));
 
         this.active_screen_name = 'location_screen';
+
+        this.addExtraPages(
+            this.jq_main_div.find('.building-center-menu-block').first(),
+            this.jq_main_div.find('.building-center-pages-block').first()
+        );
+        this.centralMenuBindReaction();
 
         // todo: заполнить квесты
     }
@@ -421,6 +439,27 @@ var LocationPlaceBuilding = (function (_super) {
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
+    };
+
+    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {};
+
+    LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
+        var self = this;
+        this.jq_main_div.find('.building-center-menu-item').click(function () {
+            var page_id = $(this).data('page_id');
+            if (! page_id) return;
+            self.jq_main_div.find('.building-center-menu-item').removeClass('active');
+            $(this).addClass('active');
+            self.jq_main_div.find('.building-center-page').css('display', 'none');
+            self.jq_main_div.find('#' + page_id).css('display', 'block');
+            self.centralMenuReaction(page_id)
+        });
+        this.jq_main_div.find('.building-center-menu-item').first().click();
+    };
+
+    LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
+        //console.log('LocationPlaceBuilding.prototype.centralMenuReaction', page_id);
+        this.active_central_page = page_id;
     };
 
     return LocationPlaceBuilding;
