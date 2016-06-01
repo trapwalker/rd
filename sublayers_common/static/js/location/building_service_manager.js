@@ -46,6 +46,8 @@ var LocationServiceBuilding = (function (_super) {
             }
             if (btnIndex == '2') {
                 console.log('Попытка отремонтировать машину на 100%');
+                clientManager.sendMechanicRepairApply(this.building_rec.build.head.node_hash,
+                    user.example_car.max_hp - user.example_car.hp);
                 return;
             }
         } else {

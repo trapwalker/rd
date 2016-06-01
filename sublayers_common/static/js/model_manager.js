@@ -1377,6 +1377,21 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendMechanicRepairApply = function (npc_head_html_hash, hp) {
+        //console.log('ClientManager.prototype.sendMechanicApply');
+        // todo: оптимизировать отправку
+        var mes = {
+            call: "mechanic_repair_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc_head_html_hash,
+                hp: hp
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Тюнер
 
     ClientManager.prototype.sendTunerApply = function (npc) {

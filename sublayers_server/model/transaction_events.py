@@ -554,6 +554,53 @@ class TransactionMechanicApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
+class TransactionMechanicRepairApply(TransactionEvent):
+    def __init__(self, agent, hp, npc_node_hash, **kw):
+        super(TransactionMechanicRepairApply, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.hp = hp
+        self.npc_node_hash = npc_node_hash
+
+    def on_perform(self):
+        super(TransactionMechanicRepairApply, self).on_perform()
+        agent = self.agent
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        # todo: Проверить, есть ли в этом городе автосервис
+        if npc is None:
+            return
+        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
+            return
+        # Проверяем есть ли у агента машинка
+        if not agent.example.car:
+            return
+        ex_car = agent.example.car
+
+        if ex_car.max_hp < ex_car.hp + self.hp:
+            log.warning('%s Try to lie in repair transaction', agent)
+            return
+        # todo: взять цену за ремонт одного HP откуда-то! Здание, NPC, или из самой машинки
+        repair_cost = self.hp * 1
+        if agent.example.balance < repair_cost:
+            return
+        if repair_cost <= 0:
+            return
+        ex_car.hp = ex_car.hp + self.hp
+        agent.example.balance = agent.example.balance - repair_cost
+
+        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+
+        # todo: Отправить транзакционное сообщение для здания (раньше такого не делали)
+
+        # Информация о транзакции
+        # now_date = datetime.now()
+        # date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # # todo: правильную стоимость услуг вывести сюда
+        # info_string = date_str + ': Ремонт ' + ex_car.title + ', ' + str(0) + 'NC'
+        # messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+        #                                info_string=info_string).post()
+
+
 class TransactionTunerApply(TransactionEvent):
     def __init__(self, agent, tuner_slots, npc_node_hash, **kw):
         super(TransactionTunerApply, self).__init__(server=agent.server, **kw)

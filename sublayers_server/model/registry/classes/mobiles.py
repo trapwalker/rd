@@ -61,8 +61,8 @@ class Mobile(Root):
 
     # атрибуты от Unit
     p_defence = Parameter(default=1, caption=u"Броня")
-    max_hp = FloatAttribute(caption=u"Максимальное значение HP")
-    hp = FloatAttribute(caption=u"Текущее значение HP")
+    max_hp = FloatAttribute(caption=u"Максимальное значение HP", tags='client')
+    hp = FloatAttribute(caption=u"Текущее значение HP", tags='client')
     direction = FloatAttribute(default=-pi/2, caption=u"Текущее направление машины")
 
     # атрибуты Mobile

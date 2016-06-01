@@ -20,7 +20,7 @@ from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
     TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills,
-    TransactionResetPerks)
+    TransactionResetPerks, TransactionMechanicRepairApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -632,6 +632,11 @@ class AgentAPI(API):
     @public_method
     def mechanic_apply(self, mechanic_slots, npc_node_hash):
         TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots,
+                                 npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def mechanic_repair_apply(self, hp, npc_node_hash):
+        TransactionMechanicRepairApply(time=self.agent.server.get_time(), agent=self.agent, hp=hp,
                                  npc_node_hash=npc_node_hash).post()
 
     # Тюнер
