@@ -64,57 +64,7 @@
 
 .trader-center-area-trader-body { margin: 0px; }
 
-
-
-
-
-.mainTraderWindow-down-player-body-item {
-    position: relative;
-    cursor: pointer;
-    margin: 3px 0px 3px 3px;
-    height: 75px;
-    width: 140px;
-    border: 1px solid #1F900A;
-    opacity: 0.6;
-    box-sizing: border-box;
-}
-
-.mainTraderWindow-down-player-body-item:hover {
-    opacity: 1;
-}
-
-.mainTraderWindow-down-player-body-item-name {
-    position: absolute;
-    font: 11pt Nouveau_IBM;
-    color: #135806;
-    width: 100%;
-    text-align: center;
-    margin-top: 3px;
-}
-
-.mainTraderWindow-down-player-body-item-picture-wrap {
-    position: absolute;
-    width: 150px;
-    height: 75px;
-}
-
-.mainTraderWindow-down-player-body-item-picture {
-    height: 33px;
-    width: 62px;
-    margin: 30px auto 0px auto;
-}
-
-.mainTraderWindow-down-player-body-item-count {
-    position: relative;
-    font: 11pt Nouveau_IBM;
-    color: #135806;
-    text-align: right;
-    top: 58px;
-    padding-right: 3px;
-}
-
-
-
+.trader-center .npcInventory-itemWrap { margin: 7px 0 0 7px; }
 
 .trader-center-footer {
     position: relative;

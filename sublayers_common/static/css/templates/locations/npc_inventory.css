@@ -32,6 +32,7 @@
     background-color: #082801;
 }
 .npcInventory-itemWrap:hover { background-color: #0E4b00; }
+.npcInventory-itemWrap.active { background-color: #0E4b00; }
 
 .npcInventory-item {
     position: relative;
@@ -43,11 +44,23 @@
 
 .npcInventory-name {
     position: absolute;
-    padding: 2px 2px 2px 2px;
+    width: 100%;
+    padding: 2px 4px 2px 4px;
     font: 10pt Nouveau_IBM;
     color: #29F200;
-    margin-left: 3px;
+    box-sizing: border-box;
 }
+
+.npcInventory-text {
+    position: absolute;
+    width: 100%;
+    padding: 2px 4px 2px 4px;
+    font: 10pt Nouveau_IBM;
+    color: #29F200;
+    box-sizing: border-box;
+}
+.npcInventory-text.name { top: 0px; text-align: left; }
+.npcInventory-text.count { bottom: 0px; text-align: right; }
 
 .npcInventory-pictureWrap {
     position: absolute;
