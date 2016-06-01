@@ -157,16 +157,16 @@ var LocationTraderNPC = (function (_super) {
     LocationTraderNPC.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
         for(var i = 0; i < itemList.length; i++) {
             var example = itemList[i];
-            var itemDiv = $('<div class="mainTraderWindow-down-player-body-item ' + dropCls  + '" data-pos="' + i + '"></div>');
-            itemDiv.append(
-                '<div class="mainTraderWindow-down-player-body-item-name">' + example.title + '</div>' +
-                    '<div class="mainTraderWindow-down-player-body-item-picture-wrap">' +
-                        '<div class="mainTraderWindow-down-player-body-item-picture"></div>' +
+
+            var itemDiv = $(
+                '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
+                    '<div class="npcInventory-item">' +
+                        '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + example.inv_icon_small + ') no-repeat center"></div>' +
+                        '<div class="npcInventory-text name">' + example.title + '</div>' +
+                        '<div class="npcInventory-text count">' + example.count.toFixed(1) + '</div>' +
                     '</div>' +
-                '<div class="mainTraderWindow-down-player-body-item-count">' + example.count.toFixed(1) + '</div>'
+                '</div>'
             );
-            itemDiv.find('.mainTraderWindow-down-player-body-item-picture')
-                .css('background', 'transparent url(' + example.inv_icon_small + ') no-repeat 100% 100%');
 
             itemDiv.draggable({
                 helper: 'clone',

@@ -36,10 +36,10 @@ var LocationHangarNPC = (function (_super) {
                 jq_car_list.append(jq_car);
 
                 var jq_inv_car = $(
-                    '<div class="hangar-car-list-itemWrap" data-car_number="' + i + '" ' + 'data-car_price="' + car_rec.car.price + '">' +
-                        '<div class="hangar-car-list-item">' +
-                            '<div class="hangar-car-list-pictureWrap" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
-                            '<div class="hangar-car-list-name">' + car_rec.car.title + '</div>' +
+                    '<div class="npcInventory-itemWrap" data-car_number="' + i + '" ' + 'data-car_price="' + car_rec.car.price + '">' +
+                        '<div class="npcInventory-item">' +
+                            '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
+                            '<div class="npcInventory-name">' + car_rec.car.title + '</div>' +
                         '</div>' +
                     '</div>'
                 );
@@ -49,10 +49,10 @@ var LocationHangarNPC = (function (_super) {
 
             // Вешаем клики на машинки в инвентаре
             var self = this;
-            this.jq_main_div.find('.hangar-car-list-itemWrap').click(function () {
+            this.jq_main_div.find('.npcInventory-itemWrap').click(function () {
                 // Сбросить предыдущее выделение и выджелить выбранный итем
-                self.jq_main_div.find('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
-                $(this).addClass('hangar-car-list-itemWrap-active');
+                self.jq_main_div.find('.npcInventory-itemWrap').removeClass('active');
+                $(this).addClass('active');
 
                 // todo: Установить цену
                 //$('#hangar-footer-price').text($(this).data('car_price'));
@@ -66,7 +66,7 @@ var LocationHangarNPC = (function (_super) {
                 self.set_panels();
                 self.set_header_text();
             });
-            this.jq_main_div.find('.hangar-car-list-itemWrap').first().click();
+            this.jq_main_div.find('.npcInventory-itemWrap').first().click();
         }
         _super.prototype.update.call(this, data);
     };
