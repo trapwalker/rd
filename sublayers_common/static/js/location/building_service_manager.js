@@ -37,7 +37,6 @@ var LocationServiceBuilding = (function (_super) {
         this.jq_repair_page.empty();
 
         if (user.example_car) {
-            user.example_car.hp = user.example_car.hp / 3;
             jq_repair_page.append(
                 '<div class="autoservice-repair-block">' +
                     '<div class="autoservice-repair-car">' + user.templates.html_car_img + '</div>' +
