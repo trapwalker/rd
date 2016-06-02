@@ -584,6 +584,7 @@ class TransactionMechanicRepairApply(TransactionEvent):
         if agent.example.balance < repair_cost:
             return
         if repair_cost <= 0:
+            log.warning('%s Try to repair with cost = 0 NC', agent)
             return
         ex_car.hp = ex_car.hp + self.hp
         agent.example.balance = agent.example.balance - repair_cost
