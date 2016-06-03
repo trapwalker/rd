@@ -691,16 +691,6 @@ class BalanceClsInfo(Message):
         return d
 
 
-class GasStationUpdate(Message):
-    def as_dict(self):
-        d = super(GasStationUpdate, self).as_dict()
-        d.update(
-            balance=self.agent.example.balance,
-            fuel=self.agent.example.car.fuel,
-        )
-        return d
-
-
 class QuestUpdateMessage(Message):
     def __init__(self, quest, **kw):
         super(QuestUpdateMessage, self).__init__(**kw)

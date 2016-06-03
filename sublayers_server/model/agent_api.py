@@ -578,10 +578,10 @@ class AgentAPI(API):
                             time=self.agent.server.get_time()).post()
 
     @public_method
-    def fuel_station_active(self, fuel, tank_list):
+    def fuel_station_active(self, fuel, tank_list, npc_node_hash):
         # log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
         TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel,
-                              tank_list=tank_list).post()
+                              tank_list=tank_list, npc_node_hash=npc_node_hash).post()
 
     @public_method
     def get_loot(self, poi_id):

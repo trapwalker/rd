@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, InventoryHideMessage,
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, InventoryHideMessage, UserExampleSelfMessage
 )
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats
@@ -81,6 +81,9 @@ class MapLocation(Observer):
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
         agent.current_location = self
         self.visitors.append(agent)
+
+        # todo: review
+        UserExampleSelfMessage(agent=agent, time=time).post()
 
     def on_re_enter(self, agent, time):
         agent.save(time)  # todo: Уточнить можно ли сохранять здесь

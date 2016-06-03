@@ -145,53 +145,60 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
 
 
 class TransactionGasStation(TransactionEvent):
-    def __init__(self, agent, fuel, tank_list, **kw):
+    def __init__(self, agent, fuel, tank_list, npc_node_hash, **kw):
         super(TransactionGasStation, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.fuel = fuel
         self.tank_list = tank_list
+        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionGasStation, self).on_perform()
-
         agent = self.agent
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
+        tank_list = self.tank_list
+        ex_car = agent.example.car
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'npc_gas_station') or (ex_car is None):
+            return
+        if agent.current_location is None or npc not in self.agent.current_location.example.get_npc_list():
+            return
+        if not self.fuel:
+            self.fuel = 0
+        if ex_car.max_fuel < self.fuel + ex_car.fuel:
             return
 
-        # Проверяем находится ли агент в локации с заправкой
-        if not ((isinstance(agent.current_location, Town) and agent.current_location.example.nucoil) or
-                isinstance(agent.current_location, GasStation)):
+        # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
+        sum_fuel = self.fuel
+        for item in ex_car.inventory:
+            if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tags):
+                sum_fuel += item.value_fuel
+
+        if sum_fuel > agent.example.balance:
             return
 
-        # Сначала пытаемся наполнить бак
-        if self.fuel:
-            dec_val = min(agent.example.balance, self.fuel)
-            agent.example.balance -= dec_val
-            cur_fuel = agent.example.car.fuel + dec_val
-            max_fuel = agent.example.car.max_fuel
-            if cur_fuel <= max_fuel:
-                agent.example.car.fuel = cur_fuel
-            else:
-                agent.example.car.fuel = max_fuel
-
-        # Далее заправляем столько канистр, сколько сможем
-        old_inventory = agent.example.car.inventory
-        agent.example.car.inventory = RegistryInventory()
+        # проверив всё, можем приступить к заливке топлива
+        ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
+        # Далее заправляем канистры
+        old_inventory = ex_car.inventory
+        ex_car.inventory = RegistryInventory()
         for item in old_inventory:
             if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
-                dec_val = item.value_fuel
-                if dec_val < agent.example.balance:
-                    agent.example.balance -= dec_val
-                    new_tank = self.server.reg['/items/usable/tanks/tank_full/tank' + str(dec_val)].instantiate()
-                    new_tank.position = item.position
-                    agent.example.car.inventory.append(new_tank)
-                else:
-                    agent.example.car.inventory.append(item)
+                new_tank = self.server.reg['/items/usable/tanks/tank_full/tank' + str(item.value_fuel)].instantiate()
+                new_tank.position = item.position
+                ex_car.inventory.append(new_tank)
             else:
-                agent.example.car.inventory.append(item)
+                ex_car.inventory.append(item)
 
-        messages.GasStationUpdate(agent=agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+
+        # Информация о транзакции
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: правильную стоимость услуг вывести сюда
+        info_string = date_str + ': Заправка ' + str(sum_fuel) + 'NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
 
 
 class TransactionHangarSell(TransactionEvent):

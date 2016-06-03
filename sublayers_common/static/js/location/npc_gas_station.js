@@ -121,7 +121,7 @@ var LocationGasStationNPC = (function (_super) {
     };
 
     LocationGasStationNPC.prototype.update = function (data) {
-        //console.log('LocationGasStationNPC.prototype.activate');
+        //console.log('LocationGasStationNPC.prototype.update');
         this.jq_repair_page = this.jq_main_div.find('.npc-gas-station-scale-block-main');
         this.jq_repair_page.empty();
 
@@ -133,7 +133,6 @@ var LocationGasStationNPC = (function (_super) {
         this.jq_full_tank_inventory.empty();
 
         if (user.example_car) {
-            user.example_car.fuel = Math.floor(user.example_car.fuel / 2);
             // Добавление верхней части, там где драгабл
             this.add_top_path(this.jq_repair_page);
 
