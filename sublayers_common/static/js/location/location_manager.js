@@ -350,6 +350,8 @@ var LocationPlace = (function () {
                 return (new LocationMechanicNPC(npc_rec, jq_town_div, key));
             case 'trader':
                 return (new LocationTraderNPC(npc_rec, jq_town_div, key));
+            case 'npc_gas_station':
+                return (new LocationGasStationNPC(npc_rec, jq_town_div, key));
             default:
                 return (new LocationPlaceNPC(npc_rec, jq_town_div, key));
         }

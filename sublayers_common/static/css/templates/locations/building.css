@@ -210,7 +210,7 @@
     margin-bottom: 10px;
 }
 
-.autoservice-repair-scale-block {
+.building-gas-repair-scale-block {
     position: relative;
     width: 500px;
     height: 120px;
@@ -218,7 +218,7 @@
     top: -20px;
 }
 
-.autoservice-repair-fill {
+.building-gas-repair-fill {
     position: absolute;
     left: 5px;
     top: 17px;
@@ -227,11 +227,11 @@
     background-color: #082801;
 }
 
-.autoservice-repair-fill.need-for-feel {background-color: #0e4b00;}
+.building-gas-repair-fill.need-for-feel {background-color: #0e4b00;}
 
-.autoservice-repair-fill.in-gas-tank {background-color: #2ffa00;}
+.building-gas-repair-fill.in-gas-tank {background-color: #2ffa00;}
 
-.autoservice-repair-scale {
+.building-gas-repair-scale {
     position: absolute;
     left: 0;
     top: 0;
@@ -240,7 +240,7 @@
     background: transparent url("/static/content/locations/institutions/autoservice/repair_scale.png") 100% 100% no-repeat;
 }
 
-.autoservice-repair-rail {
+.building-gas-repair-rail {
     position: absolute;
     left: -19px;
     top: 96px;
@@ -249,7 +249,7 @@
     /*background-color: red;*/
 }
 
-.autoservice-repair-carette {
+.building-gas-repair-carette {
     position: absolute;
     width: 48px;
     height: 105px;
@@ -258,13 +258,13 @@
     cursor: pointer;
 }
 
-.autoservice-repair-text {
+.building-gas-repair-text {
     color: #2ffa00;
     font-size: 18px;
     line-height: 29px;
 }
 
-.autoservice-repair-hp-value {
+.building-gas-repair-hp-value {
     position: absolute;
     left: 432px;
     top: 92px;
@@ -275,7 +275,7 @@
     border: 1px solid #135806;
 }
 
-.autoservice-repair-hp-text {
+.building-gas-repair-hp-text {
     position: absolute;
     left: 485px;
     top: 95px;

@@ -174,3 +174,7 @@ class Barman(Institution):
 
 class Girl(Institution):
     type = TextAttribute(default='girl', caption=u"Специальность NPC", tags='client')
+
+
+class GasStationNPC(Institution):
+    type = TextAttribute(default='npc_gas_station', caption=u"Специальность NPC", tags='client')

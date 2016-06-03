@@ -1,0 +1,55 @@
+.npc-gas-station-main {
+    position: relative;
+    cursor: default;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.npc-gas-station-center {
+    position: relative;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+    width: 734px;
+    height: 392px;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+.npc-gas-station-scale-block-main {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    height: 150px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+
+
+/* Классы для Скейла в заправке */
+.npc-gas-station-fillcar-block {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.npc-gas-station-scale-block-main .building-gas-repair-scale-block {
+    margin: auto;
+    top: 10px;
+}
+
+.npc-gas-station-scale-block-main .building-gas-repair-scale {
+    background: transparent url("/static/content/locations/institutions/nucoil/fuel_scale.png") 100% 100% no-repeat;
+}
+
+
+/* Блок инвентаря и пустых канистр */
+

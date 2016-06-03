@@ -75,8 +75,8 @@ class Mobile(Root):
     a_backward = FloatAttribute(default=-3, caption=u"Ускорение разгона назад")
     a_braking = FloatAttribute(default=-6, caption=u"Ускорение торможения")
 
-    max_fuel = FloatAttribute(default=100, caption=u"Максимальное количество топлива")
-    fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива")
+    max_fuel = FloatAttribute(default=100, caption=u"Максимальное количество топлива", tags="client")
+    fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива", tags="client")
     p_fuel_rate = FloatAttribute(default=0.5, caption=u"Расход топлива (л/с)")
 
     # атрибуты влияющие на эффективность стрельбы

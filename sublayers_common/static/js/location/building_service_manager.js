@@ -40,20 +40,20 @@ var LocationServiceBuilding = (function (_super) {
             jq_repair_page.append(
                 '<div class="autoservice-repair-block">' +
                     '<div class="autoservice-repair-car">' + user.templates.html_car_img + '</div>' +
-                    '<div class="autoservice-repair-scale-block">' +
-                        '<div class="autoservice-repair-scale"></div>' +
-                        '<div class="autoservice-repair-fill"></div>' +
-                        '<div id="autoserviceRepairNeedFeel" class="autoservice-repair-fill need-for-feel"></div>' +
-                        '<div id="autoserviceRepairInGasTank" class="autoservice-repair-fill in-gas-tank"></div>' +
-                        '<div id="autoserviceRepairRail" class="autoservice-repair-rail">' +
-                            '<div id="autoserviceRepairCarrette" class="autoservice-repair-carette"></div>' +
+                    '<div class="building-gas-repair-scale-block">' +
+                        '<div class="building-gas-repair-scale"></div>' +
+                        '<div class="building-gas-repair-fill"></div>' +
+                        '<div id="autoserviceRepairNeedFeel" class="building-gas-repair-fill need-for-feel"></div>' +
+                        '<div id="autoserviceRepairInGasTank" class="building-gas-repair-fill in-gas-tank"></div>' +
+                        '<div id="autoserviceRepairRail" class="building-gas-repair-rail">' +
+                            '<div id="autoserviceRepairCarrette" class="building-gas-repair-carette"></div>' +
                         '</div>' +
-                        '<div id="autoserviceRepairHPValue" class="autoservice-repair-hp-value autoservice-repair-text"></div>' +
-                        '<div class="autoservice-repair-hp-text autoservice-repair-text">HP</div>' +
+                        '<div id="autoserviceRepairHPValue" class="building-gas-repair-hp-value building-gas-repair-text"></div>' +
+                        '<div class="building-gas-repair-hp-text building-gas-repair-text">HP</div>' +
                     '</div>' +
                 '</div>');
 
-            this.filler_div_max_width = jq_repair_page.find('.autoservice-repair-fill').first().outerWidth();
+            this.filler_div_max_width = jq_repair_page.find('.building-gas-repair-fill').first().outerWidth();
             this.jq_repair_fill_gas = jq_repair_page.find('#autoserviceRepairInGasTank');
             this.jq_repair_fill_need = jq_repair_page.find('#autoserviceRepairNeedFeel');
             this.jq_repair_carette = jq_repair_page.find('#autoserviceRepairCarrette');
