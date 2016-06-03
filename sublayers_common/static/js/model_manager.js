@@ -1301,18 +1301,19 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendFuelStationActive = function (fuel) {
-        //console.log('ClientManager.prototype.sendFuelStationActive');
-        //var mes = {
-        //    call: "fuel_station_active",
-        //    rpc_call_id: rpcCallList.getID(),
-        //    params: {
-        //        tank_list: locationManager.nucoil.tank_list,
-        //        fuel: fuel
-        //    }
-        //};
-        //rpcCallList.add(mes);
-        //this._sendMessage(mes);
+    ClientManager.prototype.sendFuelStationActive = function (fuel, tank_list, npc) {
+        console.log('ClientManager.prototype.sendFuelStationActive');
+        var mes = {
+            call: "fuel_station_active",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                tank_list: tank_list,
+                fuel: fuel,
+                npc_node_hash: npc.npc_rec.node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
     };
 
     ClientManager.prototype.sendGetLoot = function (poi_id) {

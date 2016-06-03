@@ -273,6 +273,8 @@
     text-align: center;
     box-sizing: border-box;
     border: 1px solid #135806;
+    font: 16pt Nouveau_IBM;
+    line-height: 28px;
 }
 
 .building-gas-repair-hp-text {
@@ -283,4 +285,6 @@
     height: 30px;
     text-align: center;
     box-sizing: border-box;
+    font: 16pt Nouveau_IBM;
+    line-height: 28px;
 }
