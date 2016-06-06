@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Position, FloatAttribute, TextAttribute, Attribute
+from sublayers_server.model.registry.attr import Position, IntAttribute, FloatAttribute, TextAttribute, Attribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
 from sublayers_server.model.registry.classes.skills import Skill
@@ -41,8 +41,21 @@ class Agent(Root):
     perks = InventoryPerksAttribute(caption=u'Список прокачанных перков')
 
     # Механизм скилов
-    exp_table = RegistryLink(caption=u"Таблица опыта")
+    exp_table = RegistryLink(default='reg://registry/rpg_settings/exptable', caption=u"Таблица опыта")
     role_class = RegistryLink(caption=u"Ролевой класс")
+
+    buy_driving = RegistryLink(default='reg://registry/rpg_settings/buy_skill',
+                               caption=u"Купленные очки навыка вождения")
+    buy_shooting = RegistryLink(default='reg://registry/rpg_settings/buy_skill',
+                                caption=u"Купленные очки навыка стрельбы")
+    buy_masking = RegistryLink(default='reg://registry/rpg_settings/buy_skill',
+                               caption=u"Купленные очки навыка маскировки")
+    buy_leading = RegistryLink(default='reg://registry/rpg_settings/buy_skill',
+                               caption=u"Купленные очки навыка лидерства")
+    buy_trading = RegistryLink(default='reg://registry/rpg_settings/buy_skill',
+                               caption=u"Купленные очки навыка торговли")
+    buy_engineering = RegistryLink(default='reg://registry/rpg_settings/buy_skill',
+                                   caption=u"Купленные очки навыка инженеринга")
 
     driving = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык вождения", tags='skill')
     shooting = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык стрельбы", tags='skill')

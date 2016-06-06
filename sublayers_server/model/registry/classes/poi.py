@@ -9,7 +9,7 @@ import math
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import (Attribute, Position, Parameter, TextAttribute, DictAttribute,
-                                                  FloatAttribute)
+                                                  FloatAttribute, IntAttribute)
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.price import PriceAttribute
@@ -126,6 +126,7 @@ class Tuner(Institution):
 
 class Trainer(Institution):
     type = TextAttribute(default='trainer', caption=u"Специальность NPC", tags='client')
+    drop_price = IntAttribute(default=10, caption=u"Цена за сброс перков и навыков", tags='client')
 
 
 class Trader(Institution):

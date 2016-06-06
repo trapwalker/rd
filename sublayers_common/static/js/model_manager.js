@@ -857,13 +857,6 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
 
-    // RPG
-
-    ClientManager.prototype.RPGStateMessage = function (event) {
-        //console.log('ClientManager.prototype.RPGStateMessage', event);
-        //locationManager.trainer.update(event);
-    };
-
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
@@ -880,9 +873,10 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
+        user.example_agent.rpg_info = event.rpg_info;
         user.avatar_link = event.avatar_link;
         if (event.example_car && event.templates)
             user.templates.html_car_img = event.templates.html_car_img;
@@ -923,6 +917,12 @@ var ClientManager = (function () {
             locationManager.npc[inv.owner_id].updateTraderInv();
             locationManager.npc[inv.owner_id].updatePrice(event.price.price);
         }
+    };
+
+    ClientManager.prototype.TrainerInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.TrainerInfoMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+            locationManager.npc[event.npc_html_hash].setDropPrice(event.drop_price);
     };
 
     // Журнал (стоянка)
@@ -1605,12 +1605,14 @@ var ClientManager = (function () {
 
     // RPG система
 
-    ClientManager.prototype.sendGetRPGInfo = function () {
-        //console.log('ClientManager.prototype.sendGetRPGInfo');
+    ClientManager.prototype.sendGetTrainerInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendGetTrainerInfo', npc);
         var mes = {
-            call: "get_rpg_info",
+            call: "get_trainer_info",
             rpc_call_id: rpcCallList.getID(),
-            params: {}
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

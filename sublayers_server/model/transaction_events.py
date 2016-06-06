@@ -845,7 +845,7 @@ class TransactionSkillApply(TransactionEvent):
             self.agent.example.trading.value = self.trading
             self.agent.example.engineering.value = self.engineering
 
-        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionActivatePerk(TransactionEvent):
@@ -877,7 +877,7 @@ class TransactionActivatePerk(TransactionEvent):
                     return
             ex_agent.perks.append(activate_perk)
 
-        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionResetSkills(TransactionEvent):
@@ -901,7 +901,7 @@ class TransactionResetSkills(TransactionEvent):
         # todo: сделать правильно удаление перков из массива перков
         # ex_agent.perks = InventoryPerksAttribute()
 
-        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionResetPerks(TransactionEvent):
@@ -918,4 +918,4 @@ class TransactionResetPerks(TransactionEvent):
         # todo: сделать правильно удаление перков из массива перков
         # ex_agent.perks = InventoryPerksAttribute()
 
-        messages.RPGStateMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()

@@ -698,8 +698,10 @@ class AgentAPI(API):
     # RPG
 
     @public_method
-    def get_rpg_info(self):
-        messages.RPGStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def get_trainer_info(self, npc_node_hash):
+        messages.TrainerInfoMessage(time=self.agent.server.get_time(),
+                                    agent=self.agent,
+                                    npc_node_hash=npc_node_hash).post()
 
     @public_method
     def reset_skills(self):
