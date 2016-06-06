@@ -4,7 +4,6 @@ from __future__ import absolute_import
 import logging
 log = logging.getLogger(__name__)
 
-import six
 import yaml
 
 from sublayers_server.model.registry.odm import AbstractDocument
@@ -142,12 +141,6 @@ class Node(AbstractDocument):
     #         d[attr.name] = v
     #     return d
 
-    # def prepare(self):
-    #     for attr, getter in self.iter_attrs():
-    #         assert isinstance(attr, Attribute)
-    #         if attr.name not in self._prepared_attrs:
-    #             attr.prepare(obj=self)
-
     # def iter_attrs(self, tags=None, classes=None):
     #     if isinstance(tags, basestring):
     #         tags = set(tags.split())
@@ -208,22 +201,11 @@ class Node(AbstractDocument):
     #     for k, v in state.items():
     #         setattr(self, k, v)
 
-    # noinspection PyUnusedLocal
-    # def attach(self, name, cls):
-    #     assert self.name is None
-    #     self.name = name
-    #     # todo: tags apply
-
     # def save(self, storage=None):
     #     storage = storage or self.storage
     #     if storage is None:
     #         raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
     #     storage.save_node(node=self)
-
-    # def reset(self):
-    #     if self.storage is None:
-    #         raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
-    #     self.storage.reset(node=self)
 
     # def deep_iter(self, reject_abstract=True):
     #     queue = [self]

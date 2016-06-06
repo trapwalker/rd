@@ -194,10 +194,6 @@ class Collection(AbstractStorage):
         doc = dict(name=key, data=self._serialize(node))
         self.dataset.update({'name': key}, doc, upsert=True)  # todo: db index
 
-    def reset(self, node):
-        key = self.make_key(node.uri.path)
-        self.dataset.remove({'name': key})
-
     def get_path_tuple(self, node):
         return [node.name]
 
