@@ -34,66 +34,66 @@ class Node(Document):
     fixtured = BooleanField(default=False)  # Признак предопределенности объекта из файлового репозитория
     uri = StringField()
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
-    parent = ReferenceField('sublayers_server.model.registry.tree.Node')
-    owner = ReferenceField('sublayers_server.model.registry.tree.Node')
+    # parent = ReferenceField('sublayers_server.model.registry.tree.Node')
+    #owner = ReferenceField('sublayers_server.model.registry.tree.Node')
     can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'
     name = StringField()
     doc = StringField()
     tags = ListField(StringField())  # Теги
-    _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))  # todo: реализовать переподчинении нода?
+    # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))  # todo: реализовать переподчинении нода?
 
-    def __init__(self, storage=None, **kw):
-        """
-        @param str name: Name of node
-        @param Node parent: Parent of node
-        @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
-        @param Node owner: Owner of node in dhe tree
-        @param bool abstract: Abstract sign of node
-        """
-        #_id=kw.pop('_id', ObjectId()),
-        super(Node, self).__init__(storage=storage, **kw)
-    
-        if self.owner:
-            self.owner._subnodes.append(self)  # todo: check it
-    
-        self.storage = storage
-        if storage:
-            storage.put(self)
+    # def __init__(self, storage=None, **kw):
+    #     """
+    #     @param str name: Name of node
+    #     @param Node parent: Parent of node
+    #     @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
+    #     @param Node owner: Owner of node in dhe tree
+    #     @param bool abstract: Abstract sign of node
+    #     """
+    #     #_id=kw.pop('_id', ObjectId()),
+    #     super(Node, self).__init__(storage=storage, **kw)
+    #
+    #     if self.owner:
+    #         self.owner._subnodes.append(self)  # todo: check it
+    #
+    #     self.storage = storage
+    #     if storage:
+    #         storage.put(self)
 
-    @staticmethod
-    def _filter_args_deco(f):
-        def cover(*av, **kw):
-            if av:
-                av = list(av)
-                key = av and av.pop(0)
+    # @staticmethod
+    # def _filter_args_deco(f):
+    #     def cover(*av, **kw):
+    #         if av:
+    #             av = list(av)
+    #             key = av and av.pop(0)
+    #
+    #             if isinstance(key, ObjectId):
+    #                 kw.update(id=key)
+    #             elif isinstance(key, URI):
+    #                 kw.update(uri=key)
+    #             elif isinstance(key, basestring):
+    #                 try:
+    #                     kw.update(uri=URI(key))
+    #                 except:
+    #                     try:
+    #                         kw.update(id=ObjectId(key))
+    #                     except:
+    #                         raise ValueError('Wrong registry object identify: {!r}'.format(key))
+    #             else:
+    #                 raise ValueError('Unexpected type of object identify: {!r}'.format(key))
+    #
+    #         return f(*av, **kw)
+    #
+    #     return cover
 
-                if isinstance(key, ObjectId):
-                    kw.update(id=key)
-                elif isinstance(key, URI):
-                    kw.update(uri=key)
-                elif isinstance(key, basestring):
-                    try:
-                        kw.update(uri=URI(key))
-                    except:
-                        try:
-                            kw.update(id=ObjectId(key))
-                        except:
-                            raise ValueError('Wrong registry object identify: {!r}'.format(key))
-                else:
-                    raise ValueError('Unexpected type of object identify: {!r}'.format(key))
-
-            return f(*av, **kw)
-
-        return cover
-
-    def _get_load_function(self, document, field_name, document_type):
-        """Get appropriate method to load reference field of the document"""
-        if field_name in document._reference_loaded_fields:
-            # there is a projection for this field
-            fields = document._reference_loaded_fields[field_name]
-            return document_type.objects.fields(**fields).get
-
-        return self._filter_args_deco(document_type.objects.get)
+    # def _get_load_function(self, document, field_name, document_type):
+    #     """Get appropriate method to load reference field of the document"""
+    #     if field_name in document._reference_loaded_fields:
+    #         # there is a projection for this field
+    #         fields = document._reference_loaded_fields[field_name]
+    #         return document_type.objects.fields(**fields).get
+    #
+    #     return self._filter_args_deco(document_type.objects.get)
 
     def __repr__(self):
         return '{self.__class__.__name__}(\n{params})'.format(
@@ -101,65 +101,67 @@ class Node(Document):
             params=''.join(['\t{}={!r},\n'.format(k, v) for k, v in sorted(self.to_son().items() + [('_id', self._id)])]),
         )
 
-    @classmethod
-    def get_by_uri(cls, uri, callback):
-        # todo: test uri to string and URI
-        pass
+    # @classmethod
+    # def get_by_uri(cls, uri, callback):
+    #     # todo: test uri to string and URI
+    #     pass
 
-    def validate_fields(self):
-        for name, field in self._fields.items():
-            value = self.get_field_value(name)
-            # todo: required fields disabled (restore it)
-            #parent = self.parent
-            #if field.required and field.is_empty(value) and (not parent or not hasattr(parent, name)):
-            #    raise InvalidDocumentError("Field '%s' is required." % name)
-            if not field.validate(value):
-                raise InvalidDocumentError("Field '%s' must be valid." % name)
+    # def validate_fields(self):
+    #     for name, field in self._fields.items():
+    #         value = self.get_field_value(name)
+    #         # todo: required fields disabled (restore it)
+    #         #parent = self.parent
+    #         #if field.required and field.is_empty(value) and (not parent or not hasattr(parent, name)):
+    #         #    raise InvalidDocumentError("Field '%s' is required." % name)
+    #         if not field.validate(value):
+    #             raise InvalidDocumentError("Field '%s' must be valid." % name)
+    #
+    #     return True
 
-        return True
+    # @property
+    # def _field_tags(self):
+    #     d = {}
+    #     parent = self.parent
+    #     if parent:
+    #         d.update(parent._field_tags)
+    #     d.update(self.__field_tags__)
+    #     return d
 
-    @property
-    def _field_tags(self):
-        d = {}
-        parent = self.parent
-        if parent:
-            d.update(parent._field_tags)
-        d.update(self.__field_tags__)
-        return d
+    # def __getattribute__(self, name):
+    #     # required for the next test
+    #     if name in ['_fields']:
+    #         return object.__getattribute__(self, name)
+    #
+    #     if name in self._fields:
+    #         field = self._fields[name]
+    #         is_reference_field = self.is_reference_field(field)
+    #         value = field.get_value(self._values.get(name, None))
+    #
+    #         if value is None and name != 'parent' and name != 'owner':
+    #             parent = self.parent
+    #             value = getattr(parent, name, None)  # todo: may be exception need?
+    #
+    #         if field.required and value is None:
+    #             log.warning(
+    #                 'Required value %s of %s is not defined in property owner class %s',
+    #                 name, self, self.__class__,
+    #             )
+    #
+    #         if is_reference_field and value is not None and not isinstance(value, field.reference_type):
+    #             message = "The property '%s' can't be accessed before calling 'load_references'" + \
+    #                 " on its instance first (%s) or setting __lazy__ to False in the %s class."
+    #
+    #             raise LoadReferencesRequiredError(
+    #                 message % (name, self.__class__.__name__, self.__class__.__name__)
+    #             )
+    #
+    #         return value
+    #
+    #     return object.__getattribute__(self, name)
 
-    def __getattribute__(self, name):
-        # required for the next test
-        if name in ['_fields']:
-            return object.__getattribute__(self, name)
-
-        if name in self._fields:
-            field = self._fields[name]
-            is_reference_field = self.is_reference_field(field)
-            if name in self._values:
-                value = field.get_value(self._values[name])
-            elif name == 'parent':
-                return None
-            else:
-                parent = self.parent
-                if field.required and (not parent or not hasattr(parent, name)):
-                    log.warning('Required value %s is not defined in property owner class %s', name, self.__class__)
-                value = getattr(parent, name, None)  # todo: may be exception need?
-
-            if is_reference_field and value is not None and not isinstance(value, field.reference_type):
-                message = "The property '%s' can't be accessed before calling 'load_references'" + \
-                    " on its instance first (%s) or setting __lazy__ to False in the %s class."
-
-                raise LoadReferencesRequiredError(
-                    message % (name, self.__class__.__name__, self.__class__.__name__)
-                )
-
-            return value
-
-        return object.__getattribute__(self, name)
-
-    @property
-    def id(self):
-        return str(self._id)
+    # @property
+    # def id(self):
+    #     return str(self._id)
 
     # todo: (!!) remove 'node_hash' method
 
@@ -270,8 +272,8 @@ class Node(Document):
     #         if not item.abstract or not reject_abstract:
     #             yield item
 
-    def __iter__(self):
-        return iter(self._subnodes)
+    # def __iter__(self):
+    #     return iter(self._subnodes)
 
     # def __hash__(self):
     #     return hash((self.storage, self.name))
@@ -281,8 +283,8 @@ class Node(Document):
     #     return '<{self.__class__.__name__}@{details}>'.format(
     #         self=self, details=self.uri if self.storage else id(self))
 
-    def dump(self):
-        return yaml.dump(self, default_flow_style=False, allow_unicode=True)
+    # def dump(self):
+    #     return yaml.dump(self, default_flow_style=False, allow_unicode=True)
 
     # def resume_dict(self):
     #     d = dict(

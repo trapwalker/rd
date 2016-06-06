@@ -7,10 +7,10 @@ PyYAML
 cmd2
 
 git+https://github.com/py-bson/bson
-motor
 git+https://github.com/sergyp/motorengine
+git+https://github.com/mongodb/motor/
 pymongo==2.8
 
 #Pillow
 
-#bson==0.4.3 pymongo==2.8 motor==0.6.2 motorengine==0.9.0
+#bson==0.4.3; motorengine==0.9.0; motor==0.6.2; pymongo==2.8

@@ -20,19 +20,20 @@ log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry.tree import Node
-from motorengine.fields import IntField
+from motorengine.fields import IntField, ReferenceField
 from bson import ObjectId
 
 
 class A(Node):
     __lazy__ = False
-    __collection__ = 'test_a'
+    __collection__ = 'test_ab'
+    lnk = ReferenceField('sublayers_server.model.registry.tree.Node')
     x = IntField()
     
 
 class B(A):
     __lazy__ = False
-    __collection__ = 'test_b'
+    __collection__ = 'test_ab'
     y = IntField()
 
 
@@ -65,15 +66,15 @@ if __name__ == '__main__':
         uid1 = ObjectId()
         print('uid1=', uid1)
         
-        a = A(name='a', doc='aa', uri='reg://reg1/a13', fixtured=True, x=13, id=uid1)
-        b = B(name='b', doc='bb', uri='reg://reg1/b14', fixtured=True, y=14, parent=a)
+        a = B(name='a', doc='aa', uri='reg://reg1/a13', fixtured=True, x=13, id=uid1)
+        b = B(name='b', doc='bb', uri='reg://reg1/b14', fixtured=True, y=14, lnk=a)
 
         aa = yield a.save()
         bb = yield b.save()
         log.debug('saved A(%s->%s): %r', id(a), id(aa), aa)
         log.debug('saved B(%s->%s): %r', id(b), id(bb), bb)
 
-        bbb = yield B.objects.get(id=bb.id)
+        bbb = yield B.objects.get(_id=bb._id)
         log.debug('loaded B(%s->%s): %r', id(b), id(bbb), bbb)
 
         log.debug('no more ' + '#' * 20)
