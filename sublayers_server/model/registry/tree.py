@@ -31,35 +31,47 @@ class Node(AbstractDocument):
         'client': ['tags'],
     }
     # todo: override attributes in subclasses
-    uid = UUIDField(default=get_uuid)
+    uid = UUIDField(default=get_uuid, unique=True)
     fixtured = BooleanField(default=False)  # Признак предопределенности объекта из файлового репозитория
-    uri = StringField()
+    uri = StringField(unique=True)
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
     parent = ReferenceField('sublayers_server.model.registry.tree.Node')
-    # owner = ReferenceField('sublayers_server.model.registry.tree.Node')
+    owner = ReferenceField('sublayers_server.model.registry.tree.Node')
     # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))
     can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'
     name = StringField()
     doc = StringField()
     tags = ListField(StringField())  # Теги
 
-    # def __init__(self, storage=None, **kw):
-    #     """
-    #     @param str name: Name of node
-    #     @param Node parent: Parent of node
-    #     @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
-    #     @param Node owner: Owner of node in dhe tree
-    #     @param bool abstract: Abstract sign of node
-    #     """
-    #     #_id=kw.pop('_id', ObjectId()),
-    #     super(Node, self).__init__(storage=storage, **kw)
-    #
-    #     if self.owner:
-    #         self.owner._subnodes.append(self)  # todo: check it
-    #
-    #     self.storage = storage
-    #     if storage:
-    #         storage.put(self)
+    def make_uri(self):
+        owner = self.owner
+        assert not owner or owner.uri
+        path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self.id_),)
+        return URI(
+            scheme='reg',
+            storage=self.__class__.__collection__,
+            path=path,
+        )
+
+    def __init__(self, storage=None, **kw):
+        """
+        @param str name: Name of node
+        @param Node parent: Parent of node
+        @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
+        @param Node owner: Owner of node in dhe tree
+        @param bool abstract: Abstract sign of node
+        """
+        #_id=kw.pop('_id', ObjectId()),
+        super(Node, self).__init__(storage=storage, **kw)
+        if self.uri is None:
+            self.uri = str(self.make_uri())
+
+        # if self.owner:
+        #     self.owner._subnodes.append(self)  # todo: check it
+        #
+        # self.storage = storage
+        # if storage:
+        #     storage.put(self)
 
     # @classmethod
     # def get_by_uri(cls, uri, callback):
@@ -97,7 +109,7 @@ class Node(AbstractDocument):
             is_reference_field = self.is_reference_field(field)
             value = field.get_value(self._values.get(name, None))
 
-            if value is None and name != 'parent' and name != 'owner':
+            if value is None and name not in {'parent', 'owner', 'uri'}:
                 parent = self.parent
                 value = getattr(parent, name, None)  # todo: may be exception need?
 
