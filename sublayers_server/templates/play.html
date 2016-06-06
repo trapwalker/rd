@@ -11,6 +11,11 @@
         }
 
         @font-face {
+            font-family: Molot;
+            src: url({{ static_url('fonts/molot.otf') }});
+        }
+
+        @font-face {
             font-family: Gruppo-Regular;
             src: url({{ static_url('fonts/gruppo-regular.ttf') }});
         }
@@ -65,6 +70,7 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/trader.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/trainer.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_gas_station.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/nucoil_building.css') }}"/>
     
     <link rel="stylesheet" href="{{ static_url('css/templates/journal/journal_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/journal/journal_window_quests.css') }}"/>
@@ -145,6 +151,7 @@
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location/location_manager.js') }}"></script>
     <script src="{{ static_url('js/location/building_service_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/building_nucoil_manager.js') }}"></script>
     <script src="{{ static_url('js/location/armorer_manager.js') }}"></script>
     <script src="{{ static_url('js/location/hangar_manager.js') }}"></script>
     <script src="{{ static_url('js/location/mechanic_manager.js') }}"></script>

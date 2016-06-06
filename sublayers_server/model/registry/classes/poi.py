@@ -178,3 +178,8 @@ class Girl(Institution):
 
 class GasStationNPC(Institution):
     type = TextAttribute(default='npc_gas_station', caption=u"Специальность NPC", tags='client')
+
+
+class NucoilHelpNPC(Institution):
+    type = TextAttribute(default='nucoil_help_npc', caption=u"Специальность NPC", tags='client')
+

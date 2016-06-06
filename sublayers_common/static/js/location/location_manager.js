@@ -175,6 +175,8 @@ var LocationManager = (function () {
         switch (building_rec.key) {
             case 'autoservice':
                 return (new LocationServiceBuilding(building_rec, jq_town_div));
+            case 'nucoil':
+                return (new LocationNucoilBuilding(building_rec, jq_town_div));
             default:
                 return (new LocationPlaceBuilding(building_rec, jq_town_div));
         }

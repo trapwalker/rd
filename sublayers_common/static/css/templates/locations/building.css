@@ -104,13 +104,18 @@
     margin-bottom: 4px;
     cursor: pointer;
     font-size: 16px;
-    line-height: 14px;
     background-color: #082801;
     color: #33c811;
     box-sizing: border-box;
+    height: 40px;
+    line-height: 14px;
 }
 .building-center-menu-item:hover { background-color: #0e4b00; color: #2ffa00; }
 .building-center-menu-item.active { background-color: #0e4b00; color: #2ffa00; }
+.building-center-menu-item.one-line {
+    line-height: 28px;
+}
+
 
 .building-center-pages-block {
     position: relative;

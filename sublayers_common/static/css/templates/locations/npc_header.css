@@ -44,3 +44,9 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+
+
+#building_nucoil .npc-info {  width: 253px; }
+
+#building_nucoil .npc-text-block {  width: 320px;  float: right; }
