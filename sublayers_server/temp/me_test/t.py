@@ -21,8 +21,7 @@ log.addHandler(logging.StreamHandler(sys.stderr))
 
 
 from sublayers_server.model.registry.odm import AbstractDocument
-
-from motorengine.fields import IntField, ReferenceField, StringField
+from sublayers_server.model.registry.odm.fields import IntField, ReferenceField, StringField
 
 
 class A0(AbstractDocument):
