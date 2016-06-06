@@ -10,6 +10,8 @@
     {% include tuner_window.html %}
 {% elif cur_npc.type == 'trader' %}
     {% include trader_window.html %}
+{% elif cur_npc.type == 'trainer' %}
+    {% include trainer_window.html %}
 {% elif cur_npc.type == 'npc_gas_station' %}
     {% include npc_gas_station.html %}
 {% else %}

@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
 
+import math
 import os.path
 import tornado.template
 from tornado.options import options
@@ -727,33 +728,6 @@ class AddExperienceMessage(Message):
         return d
 
 
-class RPGStateMessage(Message):
-    def as_dict(self):
-        d = super(RPGStateMessage, self).as_dict()
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
-            exp=self.agent.stat_log.get_metric('exp'))
-        d.update(
-            driving=self.agent.example.driving.value,
-            shooting=self.agent.example.shooting.value,
-            masking=self.agent.example.masking.value,
-            leading=self.agent.example.leading.value,
-            trading=self.agent.example.trading.value,
-            engineering=self.agent.example.engineering.value,
-            current_level=lvl,
-            current_exp=self.agent.stat_log.get_metric('exp'),
-            next_level=nxt_lvl,
-            next_level_exp=nxt_lvl_exp,
-            perks=[
-                dict(
-                    perk=perk.as_client_dict(),
-                    active=perk in self.agent.example.perks,
-                    perk_req=[self.agent.server.reg[p_req].node_hash() for p_req in perk.perks_req],
-                ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()
-            ],
-        )
-        return d
-
-
 class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
@@ -823,6 +797,46 @@ class UserExampleSelfShortMessage(Message):
         agent = self.agent
         user = agent.user
         ex_car = agent.example.car
+
+        # RPGInfo
+        rpg_info = dict()
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
+            exp=agent.stat_log.get_metric('exp'))
+
+        rpg_info.update(
+            current_level=math.floor(lvl / 10),
+            all_skill_points=(lvl + self.agent.example.buy_driving.value + self.agent.example.shooting.value +
+                              self.agent.example.masking.value + self.agent.example.leading.value +
+                              self.agent.example.trading.value + self.agent.example.engineering.value),
+            driving=self.agent.example.driving.as_client_dict(),
+            shooting=self.agent.example.shooting.as_client_dict(),
+            masking=self.agent.example.masking.as_client_dict(),
+            leading=self.agent.example.leading.as_client_dict(),
+            trading=self.agent.example.trading.as_client_dict(),
+            engineering=self.agent.example.engineering.as_client_dict(),
+
+            buy_driving=self.agent.example.buy_driving.as_client_dict(),
+            buy_shooting=self.agent.example.buy_shooting.as_client_dict(),
+            buy_masking=self.agent.example.buy_masking.as_client_dict(),
+            buy_leading=self.agent.example.buy_leading.as_client_dict(),
+            buy_trading=self.agent.example.buy_trading.as_client_dict(),
+            buy_engineering=self.agent.example.buy_engineering.as_client_dict(),
+
+
+            # current_exp=self.agent.stat_log.get_metric('exp'),
+            # next_level=nxt_lvl,
+            # next_level_exp=nxt_lvl_exp,
+
+            perks=[
+                dict(
+                    perk=perk.as_client_dict(),
+                    active=perk in self.agent.example.perks,
+                    perk_req=[self.agent.server.reg[p_req].node_hash() for p_req in perk.perks_req],
+                ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()
+            ],
+        )
+        d['rpg_info'] = rpg_info
+
         d['user_name'] = user.name
         d['avatar_link'] = user.avatar_link
         d['example_agent'] = agent.example.as_client_dict()
@@ -833,10 +847,9 @@ class UserExampleSelfShortMessage(Message):
                                      agent.example.skill_point_summ()
             d['free_point_perks'] = agent.lvl + agent.example.role_class.start_free_point_perks - len(agent.example.perks)
 
-
-        # Шаблоны машинки
-        templates = dict()
         if ex_car:
+             # Шаблоны машинки
+            templates = dict()
             template_car_img = tornado.template.Loader(
                 "../sublayers_server/templates/location",
                 namespace=agent.connection.get_template_namespace()
@@ -948,14 +961,21 @@ class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
         super(NPCInfoMessage, self).__init__(**kw)
         self.npc_node_hash = npc_node_hash
+        self.npc = self.agent.server.reg[self.npc_node_hash]
+
+    def as_dict(self):
+        d = super(NPCInfoMessage, self).as_dict()
+        if self.npc:
+            d.update(npc_html_hash=self.npc.node_html())
+        return d
 
 
 # Сообщение-ответ для клиента - информация об нпц-ангаре
 class HangarInfoMessage(NPCInfoMessage):
     def as_dict(self):
         d = super(HangarInfoMessage, self).as_dict()
-        npc = self.agent.server.reg[self.npc_node_hash]
 
+        npc = self.npc
         if npc and npc.type == 'hangar':
             template_table = tornado.template.Loader(
                 "templates/location",
@@ -974,7 +994,6 @@ class HangarInfoMessage(NPCInfoMessage):
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
             ) for car in prototypes])
-        d['npc_html_hash'] = npc.node_html()
         return d
 
 
@@ -982,7 +1001,7 @@ class HangarInfoMessage(NPCInfoMessage):
 class ParkingInfoMessage(NPCInfoMessage):
     def as_dict(self):
         d = super(ParkingInfoMessage, self).as_dict()
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.npc
         agent = self.agent
         if npc and npc.type == 'parking':
             template_table = tornado.template.Loader(
@@ -1000,11 +1019,10 @@ class ParkingInfoMessage(NPCInfoMessage):
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
             ) for car in agent.example.get_car_list_by_npc(npc)])
-        d['npc_html_hash'] = npc.node_html()
         return d
 
 
-# Сообщение-ответ для клиента - информация об нпц-стоянке
+# Сообщение-ответ для клиента - информация об нпц-торговце
 # todo: переделать этот кошмар
 class TraderInfoMessage(NPCInfoMessage):
     def __init__(self, **kw):
@@ -1020,7 +1038,7 @@ class TraderInfoMessage(NPCInfoMessage):
 
         # Получаем сервер и экземпляр торговца
         server = self.agent.server
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.npc
 
         # Отправка инвентаря торговца
         d['inventory'] = dict(
@@ -1047,6 +1065,12 @@ class TraderInfoMessage(NPCInfoMessage):
         if self.agent.example.car:
             car_inventory = self.agent.example.car.inventory
         d['price'] = npc.as_client_dict(items=car_inventory)
+        return d
 
-        d['npc_html_hash'] = npc.node_html()
+
+# Сообщение-ответ для клиента - информация об нпц-тренере
+class TrainerInfoMessage(NPCInfoMessage):
+    def as_dict(self):
+        d = super(TrainerInfoMessage, self).as_dict()
+        d.update(drop_price=self.npc.drop_price)
         return d
