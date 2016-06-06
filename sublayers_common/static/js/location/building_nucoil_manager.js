@@ -44,10 +44,10 @@ var LocationNucoilBuilding = (function (_super) {
         jq_center_pages.append(this.jq_actions_page);
 
         // Страница со специальными предолжениями
-        page_id = 'buildingPageSpecOffer_' + this.building_rec.key;
-        jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Специальные предложения</div>');
-        this.jq_spec_offer_page = $('<div id="' + page_id + '" class="building-center-page">');
-        jq_center_pages.append(this.jq_spec_offer_page);
+        //page_id = 'buildingPageSpecOffer_' + this.building_rec.key;
+        //jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Специальные предложения</div>');
+        //this.jq_spec_offer_page = $('<div id="' + page_id + '" class="building-center-page">');
+        //jq_center_pages.append(this.jq_spec_offer_page);
     };
 
     LocationNucoilBuilding.prototype.activate = function () {
