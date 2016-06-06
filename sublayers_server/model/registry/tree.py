@@ -6,17 +6,20 @@ log = logging.getLogger(__name__)
 
 import six
 import yaml
-from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
-from motorengine import (
-    Document, StringField, ListField, BooleanField, UUIDField, ReferenceField,
-    EmbeddedDocumentField, EmailField, IntField, DateTimeField,
+
+from sublayers_server.model.registry.odm import AbstractDocument
+from sublayers_server.model.registry.odm.fields import (
+    StringField, ListField, BooleanField, UUIDField,
+    ReferenceField, EmbeddedDocumentField, EmailField, IntField, DateTimeField,
 )
-from uuid import uuid1 as get_uuid, UUID
-from bson import ObjectId
-from tornado.concurrent import return_future
 
 from sublayers_server.model.registry.uri_reference_field import UniReferenceField
 from sublayers_server.model.registry.uri import URI
+
+from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
+from uuid import uuid1 as get_uuid, UUID
+from bson import ObjectId
+from tornado.concurrent import return_future
 
 
 class StorageUnspecified(Exception):
@@ -24,8 +27,7 @@ class StorageUnspecified(Exception):
     pass
 
 
-class Node(Document):
-    __lazy__ = False
+class Node(AbstractDocument):
     __field_tags__ = {
         'client': ['tags'],
     }
@@ -35,12 +37,12 @@ class Node(Document):
     uri = StringField()
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
     # parent = ReferenceField('sublayers_server.model.registry.tree.Node')
-    #owner = ReferenceField('sublayers_server.model.registry.tree.Node')
+    # owner = ReferenceField('sublayers_server.model.registry.tree.Node')
+    # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))
     can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'
     name = StringField()
     doc = StringField()
     tags = ListField(StringField())  # Теги
-    # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))  # todo: реализовать переподчинении нода?
 
     # def __init__(self, storage=None, **kw):
     #     """
@@ -59,47 +61,6 @@ class Node(Document):
     #     self.storage = storage
     #     if storage:
     #         storage.put(self)
-
-    # @staticmethod
-    # def _filter_args_deco(f):
-    #     def cover(*av, **kw):
-    #         if av:
-    #             av = list(av)
-    #             key = av and av.pop(0)
-    #
-    #             if isinstance(key, ObjectId):
-    #                 kw.update(id=key)
-    #             elif isinstance(key, URI):
-    #                 kw.update(uri=key)
-    #             elif isinstance(key, basestring):
-    #                 try:
-    #                     kw.update(uri=URI(key))
-    #                 except:
-    #                     try:
-    #                         kw.update(id=ObjectId(key))
-    #                     except:
-    #                         raise ValueError('Wrong registry object identify: {!r}'.format(key))
-    #             else:
-    #                 raise ValueError('Unexpected type of object identify: {!r}'.format(key))
-    #
-    #         return f(*av, **kw)
-    #
-    #     return cover
-
-    # def _get_load_function(self, document, field_name, document_type):
-    #     """Get appropriate method to load reference field of the document"""
-    #     if field_name in document._reference_loaded_fields:
-    #         # there is a projection for this field
-    #         fields = document._reference_loaded_fields[field_name]
-    #         return document_type.objects.fields(**fields).get
-    #
-    #     return self._filter_args_deco(document_type.objects.get)
-
-    def __repr__(self):
-        return '{self.__class__.__name__}(\n{params})'.format(
-            self=self,
-            params=''.join(['\t{}={!r},\n'.format(k, v) for k, v in sorted(self.to_son().items() + [('_id', self._id)])]),
-        )
 
     # @classmethod
     # def get_by_uri(cls, uri, callback):
