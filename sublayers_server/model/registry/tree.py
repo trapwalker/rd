@@ -36,7 +36,7 @@ class Node(AbstractDocument):
     fixtured = BooleanField(default=False)  # Признак предопределенности объекта из файлового репозитория
     uri = StringField()
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
-    # parent = ReferenceField('sublayers_server.model.registry.tree.Node')
+    parent = ReferenceField('sublayers_server.model.registry.tree.Node')
     # owner = ReferenceField('sublayers_server.model.registry.tree.Node')
     # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))
     can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'

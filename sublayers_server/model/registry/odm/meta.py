@@ -11,6 +11,14 @@ from sublayers_server.model.registry.odm.qs import CachebleQuerySet
 class NodeMeta(DocumentMetaClass):
     _classes = {}
     _objects_cache = {}
+
+    @property
+    def objects_cache(cls):
+        """
+        @:return dict
+        """
+        return cls._objects_cache
+
     def __new__(cls, name, bases, attrs):
         new_class = super(NodeMeta, cls).__new__(cls, name, bases, attrs)
         cls._classes[name] = new_class
