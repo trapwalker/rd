@@ -69,7 +69,7 @@ var LocationNucoilBuilding = (function (_super) {
 
     LocationNucoilBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        if (this.active_central_page == 'buildingPageRepair_autoservice') {
+        if (this.active_central_page == 'buildingPageInsurance_nucoil') {
             locationManager.setBtnState(1, '</br>Оформить', true);
             locationManager.setBtnState(2, '</br>Продлить', true);
         }
