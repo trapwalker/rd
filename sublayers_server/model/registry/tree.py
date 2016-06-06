@@ -88,41 +88,41 @@ class Node(AbstractDocument):
     #     d.update(self.__field_tags__)
     #     return d
 
-    # def __getattribute__(self, name):
-    #     # required for the next test
-    #     if name in ['_fields']:
-    #         return object.__getattribute__(self, name)
-    #
-    #     if name in self._fields:
-    #         field = self._fields[name]
-    #         is_reference_field = self.is_reference_field(field)
-    #         value = field.get_value(self._values.get(name, None))
-    #
-    #         if value is None and name != 'parent' and name != 'owner':
-    #             parent = self.parent
-    #             value = getattr(parent, name, None)  # todo: may be exception need?
-    #
-    #         if field.required and value is None:
-    #             log.warning(
-    #                 'Required value %s of %s is not defined in property owner class %s',
-    #                 name, self, self.__class__,
-    #             )
-    #
-    #         if is_reference_field and value is not None and not isinstance(value, field.reference_type):
-    #             message = "The property '%s' can't be accessed before calling 'load_references'" + \
-    #                 " on its instance first (%s) or setting __lazy__ to False in the %s class."
-    #
-    #             raise LoadReferencesRequiredError(
-    #                 message % (name, self.__class__.__name__, self.__class__.__name__)
-    #             )
-    #
-    #         return value
-    #
-    #     return object.__getattribute__(self, name)
+    def __getattribute__(self, name):
+        # required for the next test
+        if name in ['_fields']:
+            return object.__getattribute__(self, name)
 
-    # @property
-    # def id(self):
-    #     return str(self._id)
+        if name in self._fields:
+            field = self._fields[name]
+            is_reference_field = self.is_reference_field(field)
+            value = field.get_value(self._values.get(name, None))
+
+            if value is None and name != 'parent' and name != 'owner':
+                parent = self.parent
+                value = getattr(parent, name, None)  # todo: may be exception need?
+
+            if field.required and value is None:
+                log.warning(
+                    'Required value %s of %s is not defined in property owner class %s',
+                    name, self, self.__class__,
+                )
+
+            if is_reference_field and value is not None and not isinstance(value, field.reference_type):
+                message = "The property '%s' can't be accessed before calling 'load_references'" + \
+                    " on its instance first (%s) or setting __lazy__ to False in the %s class."
+
+                raise LoadReferencesRequiredError(
+                    message % (name, self.__class__.__name__, self.__class__.__name__)
+                )
+
+            return value
+
+        return object.__getattribute__(self, name)
+
+    @property
+    def id(self):
+        return str(self._id)
 
     # todo: (!!) remove 'node_hash' method
 
