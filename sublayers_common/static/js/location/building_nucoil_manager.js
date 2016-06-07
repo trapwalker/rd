@@ -50,18 +50,6 @@ var LocationNucoilBuilding = (function (_super) {
         //jq_center_pages.append(this.jq_spec_offer_page);
     };
 
-    LocationNucoilBuilding.prototype.activate = function () {
-        //console.log('LocationHangarNPC.prototype.activate');
-        _super.prototype.activate.call(this);
-        this.update();
-    };
-
-    LocationNucoilBuilding.prototype.update = function () {
-        //console.log('LocationNucoilBuilding.prototype.update');
-        _super.prototype.update.call(this);
-    };
-
-
     LocationNucoilBuilding.prototype.centralMenuReaction = function (page_id) {
         _super.prototype.centralMenuReaction.call(this, page_id);
         this.set_buttons();
