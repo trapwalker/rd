@@ -79,6 +79,7 @@ var LocationTrainerNPC = (function (_super) {
                 }
 
             self.refreshUpdatePrice();
+            self.refreshPerkState();
         });
         this.jq_main_div.find('.trainer-center-updates-block').click(function () {
             var jq_this =  $(this);
@@ -104,6 +105,41 @@ var LocationTrainerNPC = (function (_super) {
 
     LocationTrainerNPC.prototype.get_self_info = function () {
         clientManager.sendGetTrainerInfo(this);
+    };
+
+    LocationTrainerNPC.prototype._getPrice = function() {
+        var price = 0;
+
+        // Проверка факта сброса скилов
+        for (var skill_name in this.skills)
+            if (this.skills.hasOwnProperty(skill_name)) {
+                var need_price = user.example_agent.rpg_info[skill_name].value + this.buy_skills['buy_' + skill_name].value;
+                if (this.skills[skill_name].value < need_price) {
+                    price += this.drop_price;
+                    break;
+                }
+            }
+
+        // Проверка факта сброса перков
+        if (price == 0)
+            for (var perk_name in this.perks)
+                if (this.perks.hasOwnProperty(perk_name)) {
+                    var perk = this.perks[perk_name];
+                    if ((perk.start_state == 'default') && ((perk.state == 'unactive') || (perk.state == 'disable'))) {
+                        price += this.drop_price;
+                        break;
+                    }
+                }
+
+        // Проверка факта покупки очков навыков
+        for (var buy_skill_name in this.buy_skills)
+            if (this.buy_skills.hasOwnProperty(buy_skill_name)) {
+                var buy_skill = this.buy_skills[buy_skill_name];
+                for (var val = buy_skill.value; val > buy_skill.start_value; val--)
+                    price += buy_skill.price[val];
+            }
+
+        return price;
     };
 
     LocationTrainerNPC.prototype._getSkillValue = function(skill_name) {
@@ -218,6 +254,7 @@ var LocationTrainerNPC = (function (_super) {
                 perk.state = 'default';
             else
                 perk.state = 'unactive';
+            perk.start_state = perk.state;
             this.perks[perk.node_hash] = perk;
         }
         this.append_div_perk('default');
@@ -318,6 +355,7 @@ var LocationTrainerNPC = (function (_super) {
                 jq_checkbox.text(self.perk_state[perk.state].text);
             }
         });
+        this.set_header_text();
     };
 
     LocationTrainerNPC.prototype.refreshUpdatePrice = function() {
@@ -430,6 +468,14 @@ var LocationTrainerNPC = (function (_super) {
         _super.prototype.set_panels.call(this);
         locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
         locationManager.panel_right.show({text: '' }, 'description');
+    };
+
+    LocationTrainerNPC.prototype.set_header_text = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        var jq_text_div = $('<div></div>');
+        jq_text_div.append('<div>Применить: ' + this._getPrice() + 'NC</div>');
+        jq_text_div.append('<div>Отмена: 0NC</div>');
+        _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
     LocationTrainerNPC.prototype.clickBtn = function (btnIndex) {
