@@ -107,6 +107,7 @@
         </div>
         {% end %}
     {% end %}
+    <div id="townMenuLocation" class="townPageWrap menu-wrap" style="display: none"></div>
 </div>
 
 <div class="town-btn-area">
@@ -240,13 +241,13 @@
                                 locationManager.clickBtn(id.replace('btn_', ''));
                                 break;
                             case 'btn_screen_location':
-                                console.log('click on btn_screen_location');
+                                locationManager.activateScreen('location_screen');
                                 break;
                             case 'btn_screen_chat':
-                                console.log('click on btn_screen_chat');
+                                locationManager.activateScreen('chat_screen');
                                 break;
                             case 'btn_screen_menu':
-                                console.log('click on btn_screen_menu');
+                                locationManager.activateScreen('menu_screen');
                                 break;
                         }
                     }

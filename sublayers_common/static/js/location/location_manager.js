@@ -19,6 +19,9 @@ var LocationManager = (function () {
         // Дикт всех специалистов
         this.npc = {};
 
+        // Дикт для всех локаций меню
+        this.location_menu = null;
+
         // Для различных эффектов в городе
         this.location_canvas_manager = new LocationCanvasManager();
 
@@ -37,10 +40,24 @@ var LocationManager = (function () {
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
     LocationManager.prototype.activateScreen = function (screenName) {
-        //console.log('LocationManager.prototype.activateScreen');
+        //console.log('LocationManager.prototype.activateScreen', screenName);
         if (this.screens.hasOwnProperty(screenName)) {
             this.active_screen_name = screenName;
-            locationManager.screens[screenName].activate();
+            var location = locationManager.screens[screenName];
+            if (location) {
+                locationManager.screens[screenName].activate();
+            } else {
+                // Если вдруг что-то не так, то вернуть нас на главную страницу города
+                $('.building-back').css('display', 'none');
+                $('.townPageWrap').css('display', 'none');
+                $('#layer2').css('display', 'block');
+                $('#landscape').css('display', 'block');
+
+                locationManager.setBtnState(1, '', false);
+                locationManager.setBtnState(2, '', false);
+                locationManager.setBtnState(3, '</br>Назад', false);
+                locationManager.setBtnState(4, '</br>Выход', true);
+            }
         }
     };
 
@@ -85,6 +102,9 @@ var LocationManager = (function () {
         this.setBtnState(3, '</br>Назад', false);
         this.setBtnState(4, '</br>Выход', true);
 
+        // Локации меню
+        this.location_menu = new LocationPlaceMenu(this.jq_town_div);
+
         // Разрешаем отрисовку эффектов на канвас
         this.location_canvas_manager.init_canvas();
         this.location_canvas_manager.is_canvas_render = true;
@@ -92,17 +112,6 @@ var LocationManager = (function () {
         //locationManager.location_uid = event.location.uid;
         //chat.showChatInTown();
         //locationManager.visitorsManager.update_visitors();
-        //locationManager.nucoil.update();
-        //locationManager.armorer.update();
-        //locationManager.mechanic.update();
-        //locationManager.tuner.update();
-        //locationManager.trader.updatePlayerInv();
-        //locationManager.trader.updateTraderInv();
-        //locationManager.trader.updatePrice();
-        //locationManager.hangar.update();
-        //locationManager.parking.update();
-        // Запрос RGP информации для тренера
-        //clientManager.sendGetRPGInfo();
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
     };
@@ -132,15 +141,15 @@ var LocationManager = (function () {
         // Запрещаем отрисовку эффектов на канвас
         this.location_canvas_manager.is_canvas_render = false;
 
+        // Очистка локаций меню
+        if (this.location_menu) {
+            this.location_menu.clear();
+            this.location_menu = null;
+        }
+
         //chat.showChatInMap();
         //locationManager.location_uid = null;
         //locationManager.visitorsManager.clear_visitors();
-        //locationManager.nucoil.clear();
-        //locationManager.armorer.clear();
-        //locationManager.mechanic.clear();
-        //locationManager.tuner.clear();
-        //locationManager.trader.clear();
-        //locationManager.trainer.clear();
     };
 
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
