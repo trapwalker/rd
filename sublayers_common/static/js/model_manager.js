@@ -39,8 +39,8 @@ var ClientManager = (function () {
     ClientManager.prototype._getMObj = function (uid) {
         //console.log("ClientManager.prototype._getMObj");
         var obj = visualManager.getModelObject(uid);
-        if (obj)
-            console.warn('Contact: Такой объект уже есть на клиенте!');
+        //if (obj)
+        //    console.warn('Contact: Такой объект уже есть на клиенте!');
         return obj;
     };
 
@@ -439,7 +439,7 @@ var ClientManager = (function () {
     ClientManager.prototype.See = function (event) {
         //console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
-            console.warn('Контакт ивент до инициализации своей машинки!');
+            //console.warn('Контакт ивент до инициализации своей машинки!');
             return;
         }
 
@@ -697,11 +697,13 @@ var ClientManager = (function () {
     ClientManager.prototype.EnterToLocation = function (event) {
         //console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
+        mapCanvasManager.is_canvas_render = false;
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         locationManager.onExit();
+        mapCanvasManager.is_canvas_render = true;
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){

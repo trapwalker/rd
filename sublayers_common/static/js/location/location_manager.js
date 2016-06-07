@@ -18,6 +18,21 @@ var LocationManager = (function () {
 
         // Дикт всех специалистов
         this.npc = {};
+
+        // Для различных эффектов в городе
+        this.location_canvas_manager = new LocationCanvasManager();
+
+        // todo: Придумать куда это перенести!
+        this.locations_canvas_effects = {};
+        var lasers_img = new Image();
+        lasers_img.src = '/static/content/locations/towns/all_frames.png';
+
+        SetImageOnLoad(lasers_img, function (img) {
+                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
+                locationManager.locations_canvas_effects['laser'].start();
+            }
+        );
+
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
@@ -70,6 +85,10 @@ var LocationManager = (function () {
         this.setBtnState(3, '</br>Назад', false);
         this.setBtnState(4, '</br>Выход', true);
 
+        // Разрешаем отрисовку эффектов на канвас
+        this.location_canvas_manager.init_canvas();
+        this.location_canvas_manager.is_canvas_render = true;
+
         //locationManager.location_uid = event.location.uid;
         //chat.showChatInTown();
         //locationManager.visitorsManager.update_visitors();
@@ -109,6 +128,9 @@ var LocationManager = (function () {
             if (this.npc.hasOwnProperty(key))
                 this.npc[key].clear();
         this.npc = {};
+
+        // Запрещаем отрисовку эффектов на канвас
+        this.location_canvas_manager.is_canvas_render = false;
 
         //chat.showChatInMap();
         //locationManager.location_uid = null;

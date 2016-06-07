@@ -160,6 +160,7 @@ var TimeManager = (function () {
 
         //CanvasTestStart();
         mapCanvasManager.redraw(time);
+        locationManager.location_canvas_manager.redraw(time);
 
         return requestAnimationFrame(timeManager._interval_perform);
 

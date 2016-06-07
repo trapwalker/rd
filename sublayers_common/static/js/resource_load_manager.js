@@ -14,12 +14,12 @@ var ResourceLoadManager = (function () {
     }
 
     ResourceLoadManager.prototype.add = function (obj) {
-        console.log('ResourceLoadManager: ', obj, '   added');
+        //console.log('ResourceLoadManager: ', obj, '   added');
         this.resource_list.push(obj);
     };
 
     ResourceLoadManager.prototype.del = function (obj) {
-        console.log('ResourceLoadManager: load complete for ', obj);
+        //console.log('ResourceLoadManager: load complete for ', obj);
         var index = 0;
         for (var i = 0; i < this.resource_list.length; i++)
             if (obj == this.resource_list[i])
