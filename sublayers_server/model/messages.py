@@ -804,10 +804,11 @@ class UserExampleSelfShortMessage(Message):
             exp=agent.stat_log.get_metric('exp'))
 
         rpg_info.update(
-            current_level=math.floor(lvl / 10),
-            all_skill_points=(lvl + self.agent.example.buy_driving.value + self.agent.example.shooting.value +
-                              self.agent.example.masking.value + self.agent.example.leading.value +
-                              self.agent.example.trading.value + self.agent.example.engineering.value),
+            current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
+            all_skill_points=(lvl + agent.example.role_class.start_free_point_skills +
+                              agent.example.buy_driving.value + agent.example.buy_shooting.value +
+                              agent.example.buy_masking.value + agent.example.buy_leading.value +
+                              agent.example.buy_trading.value + agent.example.buy_engineering.value),
             driving=self.agent.example.driving.as_client_dict(),
             shooting=self.agent.example.shooting.as_client_dict(),
             masking=self.agent.example.masking.as_client_dict(),

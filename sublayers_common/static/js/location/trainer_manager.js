@@ -195,8 +195,7 @@ var LocationTrainerNPC = (function (_super) {
     LocationTrainerNPC.prototype.update = function() {
         //console.log('LocationTrainerNPC.prototype.update');
         this.clear();
-        //this.cur_level = user.example_agent.rpg_info.current_level;
-        this.cur_level = 10;
+        this.cur_level = user.example_agent.rpg_info.current_level;
         var self = this;
 
         // Навыки
@@ -408,30 +407,8 @@ var LocationTrainerNPC = (function (_super) {
     };
 
     LocationTrainerNPC.prototype.apply = function() {
-        //console.log('TrainerManager.prototype.apply');
-        // Установить все навыки
-        //clientManager.sendSetSkillState(this.cur_driving, this.cur_shooting, this.cur_masking, this.cur_leading,
-        //    this.cur_trading, this.cur_engineering);
-        //
-        //// Установить перки в правильном порядке
-        //var set_perks = this._getActivePerks();
-        //var sort_perks = [];
-        //while (set_perks.length > 0) {
-        //    var i;
-        //    var can_add = false;
-        //    for (i = 0; !can_add && (i < set_perks.length); i++) {
-        //        can_add = true;
-        //        for (var j = 0; can_add && (j < set_perks[i].perk_req.length); j++)
-        //            can_add = sort_perks.indexOf(set_perks[i].perk_req[j]) >= 0;
-        //    }
-        //    if (i != 0) {
-        //        sort_perks.push(set_perks[i-1].node_hash);
-        //        set_perks.splice(i-1, 1);
-        //    } else console.error('Алгоритм выбора перков в правильном порядке имеет ошибку. Проверить!')
-        //}
-        //
-        //for (var j = 0; j < sort_perks.length; j++)
-        //    clientManager.sendActivatePerk(sort_perks[j]);
+        //console.log('LocationTrainerNPC.prototype.apply');
+        clientManager.sendSetRPGState(this);
     };
 
     LocationTrainerNPC.prototype.cancel = function() {
@@ -490,6 +467,28 @@ var LocationTrainerNPC = (function (_super) {
             default:
                 _super.prototype.clickBtn.call(this, btnIndex);
         }
+    };
+
+    LocationTrainerNPC.prototype.get_rpg_data = function() {
+        var res = {
+            skills: {},
+            buy_skills: {},
+            perks: {}
+        };
+
+        for (var skill_name in this.skills)
+            if (this.skills.hasOwnProperty(skill_name))
+                res.skills[skill_name] = this.skills[skill_name].value;
+
+        for (var buy_skill_name in this.buy_skills)
+            if (this.buy_skills.hasOwnProperty(buy_skill_name))
+                res.buy_skills[buy_skill_name] = this.buy_skills[buy_skill_name].value;
+
+        for (var perk_name in this.perks)
+            if (this.perks.hasOwnProperty(perk_name))
+                res.perks[perk_name] = {state: (this.perks[perk_name].state == 'active') || (this.perks[perk_name].state == 'default')}
+
+        return res;
     };
 
     return LocationTrainerNPC;

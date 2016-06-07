@@ -29,13 +29,16 @@ class Skill(Root):
             return v + self.get_bonuses(int(math.floor(v / self.mod.bonus_step)))
         return v
 
-    def calc_value(self):
+    def calc_value(self, value=-1):
         # limit = self.mod.limit if self.mod.limit > 0 else self.limit
+
+        if value < 0:
+            value = self.value
         if self.mod.bonus_step > 0:
-            return self.value + int(math.floor(self.value / self.mod.bonus_step))  # Классический рассчёт
+            return value + int(math.floor(self.value / self.mod.bonus_step))  # Классический рассчёт
             # return self.value + self.get_bonuses(int(math.floor(self.value / self.mod.bonus_step)))  # Расчёт бонусов на бонусы
         else:
-            return self.value
+            return value
 
     def as_client_dict(self):
         d = super(Skill, self).as_client_dict()

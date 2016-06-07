@@ -203,8 +203,9 @@
     cursor: pointer;
     width: 27px;
     height: 100%;
-    box-sizing: border-box;
+    text-align: center;
     margin-left: 10px;
+    box-sizing: border-box;
 }
 .trainer-perk-item-checkbox.default { cursor: default; }
 .trainer-perk-item-checkbox.disable { cursor: default; }

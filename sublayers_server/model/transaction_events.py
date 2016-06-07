@@ -814,108 +814,99 @@ class TransactionTraderApply(TransactionEvent):
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
 
 
-class TransactionSkillApply(TransactionEvent):
-    def __init__(self, agent, driving, shooting, masking, leading, trading, engineering, **kw):
-        super(TransactionSkillApply, self).__init__(server=agent.server, **kw)
+class TransactionSetRPGState(TransactionEvent):
+    def __init__(self, agent, npc_node_hash, skills, buy_skills, perks, **kw):
+        super(TransactionSetRPGState, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.driving = driving
-        self.shooting = shooting
-        self.masking = masking
-        self.leading = leading
-        self.trading = trading
-        self.engineering = engineering
+        self.npc_node_hash = npc_node_hash
+        self.skills = skills
+        self.buy_skills = buy_skills
+        self.perks = perks
+        self.lvl = 0
 
-    def on_perform(self):
-        super(TransactionSkillApply, self).on_perform()
-
-        # todo: добавить проверку - находится ли агент в городе где есть Бордель (skill home)
-
-        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
-            exp=self.agent.stat_log.get_metric('exp'))
-        rqst_skill_pnt = self.driving + self.shooting + self.masking + self.leading + self.trading + self.engineering
-
-        if (rqst_skill_pnt <= cur_lvl) and (self.agent.example.driving.value <= self.driving) and \
-                (self.agent.example.shooting.value <= self.shooting) and (self.agent.example.masking.value <= self.masking) and \
-                (self.agent.example.leading.value <= self.leading) and (self.agent.example.trading.value <= self.trading) and \
-                (self.agent.example.engineering.value <= self.engineering):
-            self.agent.example.driving.value = self.driving
-            self.agent.example.shooting.value = self.shooting
-            self.agent.example.masking.value = self.masking
-            self.agent.example.leading.value = self.leading
-            self.agent.example.trading.value = self.trading
-            self.agent.example.engineering.value = self.engineering
-
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
-
-
-class TransactionActivatePerk(TransactionEvent):
-    def __init__(self, agent, perk_id, **kw):
-        super(TransactionActivatePerk, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-        self.perk_id = perk_id
-
-    def on_perform(self):
-        super(TransactionActivatePerk, self).on_perform()
+    def is_available_perk(self, perk_node_hash):
+        perk_rec = self.perks[perk_node_hash]
         ex_agent = self.agent.example
+        if ((perk_rec['perk'].driving_req > ex_agent.driving.calc_value(value=self.skills[u'driving'])) or
+            (perk_rec['perk'].masking_req > ex_agent.masking.calc_value(value=self.skills[u'masking'])) or
+            (perk_rec['perk'].shooting_req > ex_agent.shooting.calc_value(value=self.skills[u'shooting'])) or
+            (perk_rec['perk'].leading_req > ex_agent.leading.calc_value(value=self.skills[u'leading'])) or
+            (perk_rec['perk'].trading_req > ex_agent.trading.calc_value(value=self.skills[u'trading'])) or
+            (perk_rec['perk'].engineering_req > ex_agent.engineering.calc_value(value=self.skills[u'engineering'])) or
+            (perk_rec['perk'].level_req > self.lvl)):
+            return False
+        for perk_id in perk_rec['perk'].perks_req:
+            perk_req = self.agent.server.reg[perk_id]
+            if not self.perks[perk_req.node_hash()][u'state']:
+                return False
+        return True
 
-        activate_perk = None
-        for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter():
-            if perk.id == self.perk_id:
-                activate_perk = perk
-                break
+    def on_perform(self):
+        super(TransactionSetRPGState, self).on_perform()
+        agent = self.agent
 
-        if (activate_perk is None) or (activate_perk in ex_agent.perks):
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = agent.server.reg[self.npc_node_hash]
+        if (npc is None) or (npc.type != 'trainer'):
             return
-        cur_lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = ex_agent.exp_table.by_exp(
-            exp=self.agent.stat_log.get_metric('exp'))
-        if (activate_perk.driving_req <= ex_agent.driving.calc_value()) and (activate_perk.masking_req <= ex_agent.masking.calc_value()) and \
-           (activate_perk.shooting_req <= ex_agent.shooting.calc_value()) and (activate_perk.leading_req <= ex_agent.leading.calc_value()) and \
-           (activate_perk.trading_req <= ex_agent.trading.calc_value()) and \
-           (activate_perk.engineering_req <= ex_agent.engineering.calc_value()) and (activate_perk.level_req <= cur_lvl):
-            for perk in activate_perk.perks_req:
-                if self.agent.server.reg[perk] not in ex_agent.perks:
-                    return
-            ex_agent.perks.append(activate_perk)
 
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
+        if (agent.current_location is None) or (npc not in agent.current_location.example.get_npc_list()):
+            return
+
+        # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.stat_log.get_metric('exp'))
+        self.lvl = lvl
+
+        max_sp = lvl + agent.example.role_class.start_free_point_skills
+        for buy_skill in self.buy_skills.values():
+            max_sp += buy_skill
+
+        cur_sp = 0
+        for skill in self.skills.values():
+            cur_sp += skill
+
+        if cur_sp > max_sp:
+            return
+
+        # Проверяем перки
+        max_p = math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks
+        cur_p = 0
+        for perk_node_hash in self.perks:
+            if self.perks[perk_node_hash][u'state']:
+                cur_p += 1
+        if cur_p > max_p:
+            return
+
+        for perk in agent.server.reg['/rpg_settings/perks'].deep_iter():
+            self.perks[perk.node_hash()].update(perk=perk)
+
+        for perk_node_hash in self.perks:
+            if self.perks[perk_node_hash][u'state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
+                return
+
+        # Считаем стоимость транзакции и проверяем хватает ли денег
+
+        price = 0
 
 
-class TransactionResetSkills(TransactionEvent):
-    def __init__(self, agent, **kw):
-        super(TransactionResetSkills, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-
-    def on_perform(self):
-        super(TransactionResetSkills, self).on_perform()
-        ex_agent = self.agent.example
-
-        # todo: списать деньги
-
-        ex_agent.driving.value = 0
-        ex_agent.shooting.value = 0
-        ex_agent.masking.value = 0
-        ex_agent.leading.value = 0
-        ex_agent.trading.value = 0
-        ex_agent.engineering.value = 0
-
-        # todo: сделать правильно удаление перков из массива перков
-        # ex_agent.perks = InventoryPerksAttribute()
-
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
 
-class TransactionResetPerks(TransactionEvent):
-    def __init__(self, agent, **kw):
-        super(TransactionResetPerks, self).__init__(server=agent.server, **kw)
-        self.agent = agent
 
-    def on_perform(self):
-        super(TransactionResetPerks, self).on_perform()
-        ex_agent = self.agent.example
+        # Устанавливаем состояние
+        self.agent.example.driving.value = self.skills[u'driving']
+        self.agent.example.shooting.value = self.skills[u'shooting']
+        self.agent.example.masking.value = self.skills[u'masking']
+        self.agent.example.leading.value = self.skills[u'leading']
+        self.agent.example.trading.value = self.skills[u'trading']
+        self.agent.example.engineering.value = self.skills[u'engineering']
 
-        # todo: списать деньги
-
-        # todo: сделать правильно удаление перков из массива перков
-        # ex_agent.perks = InventoryPerksAttribute()
+        for perk_node_hash in self.perks:
+            perk_rec = self.perks[perk_node_hash]
+            if perk_rec[u'state']:
+                if perk_rec['perk'] not in agent.example.perks:
+                    agent.example.perks.append(perk_rec['perk'])
+            else:
+                if perk_rec['perk'] in agent.example.perks:
+                    agent.example.perks.remove(perk_rec['perk'])
 
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
