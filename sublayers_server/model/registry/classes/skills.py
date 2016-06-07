@@ -20,6 +20,9 @@ class Skill(Root):
     value = IntAttribute(default=0, caption=u"Уровень навыка вождения", tags='client')
     limit = IntAttribute(default=100, caption=u"Предел прокачки навыка", tags='client')
     mod = RegistryLink(default='reg://registry/rpg_settings/class_skill/empty_0', caption=u"Модификатор навыка")
+    description = TextAttribute(default=u'Игрвой навык персонажа',
+                                caption=u'Расширенное описание',
+                                tags='client')
 
     def get_bonuses(self, v):
         if v >= self.mod.bonus_step:
@@ -44,6 +47,6 @@ class BuySkill(Root):
     value = IntAttribute(default=0, caption=u"Количество купленных очков навыка", tags='client')
     limit = IntAttribute(default=3, caption=u"Предел покупки очков навыка", tags='client')
     description = TextAttribute(default=u'Дополнительное очко навыка',
-                                caption=u'Расширенное описание перка',
+                                caption=u'Расширенное описание',
                                 tags='client')
     price = Attribute(caption=u'Таблица цен на очки навыков', tags='client')

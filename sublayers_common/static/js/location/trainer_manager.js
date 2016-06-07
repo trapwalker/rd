@@ -33,10 +33,18 @@ var LocationTrainerNPC = (function (_super) {
         };
         this.str_for_remove_cls = 'default active unactive disable';
 
-        // Клики на стрелки навыков
+        // Навыки
         this.jq_main_div.find('.trainer-skill-item-change-arrow').click(function () {
             var jq_this = $(this);
             self.setSkill(jq_this.data('skill_name'), jq_this.data('d_val'));
+        });
+        this.jq_main_div.find('.trainer-skill-item-main').mouseenter(function() {
+            var skill_name = $(this).data('skill_name');
+            if (self.skills.hasOwnProperty(skill_name))
+                locationManager.panel_right.show({text: self.skills[skill_name].description }, 'description');
+        });
+        this.jq_main_div.find('.trainer-skill-item-main').mouseleave(function() {
+            locationManager.panel_right.show({text: '' }, 'description');
         });
 
         // Кнопка сброса
@@ -90,7 +98,7 @@ var LocationTrainerNPC = (function (_super) {
                 locationManager.panel_right.show({text: self.buy_skills[skill_name].description }, 'description');
         });
         this.jq_main_div.find('.trainer-center-updates-block').mouseleave(function() { locationManager.panel_right.show({text: '' }, 'description'); });
-        
+
         this.update();
     }
 
@@ -166,6 +174,7 @@ var LocationTrainerNPC = (function (_super) {
                 skill.limit = ex_skill.limit;
                 skill.mod.bonus_step = ex_skill.mod.bonus_step;
                 skill.mod.limit = ex_skill.mod.limit;
+                skill.description = ex_skill.description;
                 this.jq_main_div.find('.trainer-skill-' + skill_name).text(this._getSkillValue(skill_name));
             }
         this.jq_main_div.find('.trainer-skill-free-points').text(this._getFreeSkillPoints());
@@ -249,6 +258,7 @@ var LocationTrainerNPC = (function (_super) {
                     start_value: 0,
                     value: 0,
                     limit: 0,
+                    description: '',
                     mod: {
                         bonus_step: 0,
                         limit: 0
