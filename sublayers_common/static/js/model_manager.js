@@ -1620,53 +1620,17 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendResetSkills = function () {
-        //console.log('ClientManager.prototype.sendResetSkills');
-        var mes = {
-            call: "reset_skills",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendResetPerks = function () {
-        //console.log('ClientManager.prototype.sendResetSkills');
-        var mes = {
-            call: "reset_perks",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendSetSkillState = function (driving, shooting, masking, leading, trading, engineering) {
+    ClientManager.prototype.sendSetRPGState = function (npc) {
         //console.log('ClientManager.prototype.sendSetSkillState');
+        var rpg_data = npc.get_rpg_data();
         var mes = {
-            call: "set_skill_state",
+            call: "set_rpg_state",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                driving: driving,
-                shooting: shooting,
-                masking: masking,
-                leading: leading,
-                trading: trading,
-                engineering: engineering
-            }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendActivatePerk = function (perk_id) {
-        //console.log('ClientManager.prototype.sendSetPerkState', perk_id);
-        var mes = {
-            call: "activate_perk",
-            rpc_call_id: rpcCallList.getID(),
-            params: {
-                perk_id: perk_id
+                npc_node_hash: npc.npc_rec.node_hash,
+                skills: rpg_data.skills,
+                buy_skills: rpg_data.buy_skills,
+                perks: rpg_data.perks
             }
         };
         rpcCallList.add(mes);
