@@ -113,7 +113,7 @@ var LocationTraderNPC = (function (_super) {
         // Добавить итемы инвентаря своего агента
         var inventory = inventoryList.getInventory(this.npc_rec.html_hash);
         if (! inventory) {
-            console.warn('Ивентарь торговца не найден');
+            //console.warn('Ивентарь торговца не найден');
             return
         }
         for (var i = 0; i < inventory.max_size; i++) {

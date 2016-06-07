@@ -5,6 +5,16 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
+function SetImageOnLoad(img, onLoadHandler) {
+    if (img.complete) {
+        onLoadHandler(img);
+        return;
+    }
+    img.addEventListener('load', function () {
+        onLoadHandler(img);
+    }, false);
+}
+
 var Point = (function () {
     function Point(ax, ay) {
         this.x = ax;

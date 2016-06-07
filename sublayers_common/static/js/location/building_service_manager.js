@@ -13,6 +13,8 @@ var LocationServiceBuilding = (function (_super) {
         this.jq_repair_fill_gas = null;
         this.jq_repair_fill_need = null;
         this.jq_repair_carette = null;
+
+        this.update();
     }
 
     LocationServiceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
@@ -22,12 +24,6 @@ var LocationServiceBuilding = (function (_super) {
         jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Ремонт</br>автомобиля</div>');
         this.jq_repair_page = $('<div id="' + page_id + '" class="building-center-page">');
         jq_center_pages.append(this.jq_repair_page);
-    };
-
-    LocationServiceBuilding.prototype.activate = function () {
-        //console.log('LocationHangarNPC.prototype.activate');
-        _super.prototype.activate.call(this);
-        this.update();
     };
 
     LocationServiceBuilding.prototype.update = function () {
