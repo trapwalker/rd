@@ -19,8 +19,7 @@ from sublayers_server.model.events import (
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
-    TransactionTraderApply, TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills,
-    TransactionResetPerks, TransactionMechanicRepairApply)
+    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -704,23 +703,10 @@ class AgentAPI(API):
                                     npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def reset_skills(self):
-        TransactionResetSkills(agent=self.agent, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def reset_perks(self):
-        TransactionResetPerks(agent=self.agent, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
-        # log.debug('Agent %s try set skill state', self.agent)
-        TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
-                              masking=masking, leading=leading, trading=trading, engineering=engineering).post()
-
-    @public_method
-    def activate_perk(self, perk_id):
-        # log.debug('Agent %s try aktivate perk %s', self.agent, perk_id)
-        TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
+    def set_rpg_state(self, npc_node_hash, skills, buy_skills, perks):
+        # log.debug('Agent %s try set rpg state', self.agent)
+        TransactionSetRPGState(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash,
+                               skills=skills, buy_skills=buy_skills, perks=perks).post()
 
     @public_method
     def set_about_self(self, text):
