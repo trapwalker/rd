@@ -157,3 +157,10 @@
     height: 100%;
     width: 326px;
 }
+
+
+/* Вкладка Меню */
+.menu-item .journal-main { height: 396px; }
+.menu-item .journal-header { border-width: 0 0 1px 0; }
+.menu-item .journal-page-left { border-width: 0 1px 0 0; }
+.menu-item .journal-page-right { border-width: 0; }

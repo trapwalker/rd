@@ -28,6 +28,15 @@ var LocationPlaceMenu = (function (_super) {
 
         // Инициализация кликов на фильтры инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').click({location: this}, LocationPlaceMenu.inv_filters_click);
+
+        // Инициализация для журнала
+        this.jq_main_div.find('.journal-page-button-block').click(function () {
+            $('.journal-page-button-block').removeClass('active');
+            $(this).addClass('active');
+            $('.journal-page-block').css('display', 'none');
+            $('#' + $(this).data('page_id')).css('display', 'block');
+        });
+        this.jq_main_div.find('.journal-page-button-block').first().click();
     };
 
     LocationPlaceMenu.prototype.select_page = function (page_id) {
@@ -94,6 +103,9 @@ var LocationPlaceMenu = (function (_super) {
             jq_car_block_table.append(user.templates['html_car_table']);
         }
 
+
+        // Обновление журнала
+        journalManager.redraw();
 
         // Отображение инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').first().click();
