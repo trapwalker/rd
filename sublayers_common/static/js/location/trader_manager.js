@@ -58,7 +58,7 @@ var LocationTraderNPC = (function (_super) {
         var item;
 
         // Отрисовать собственный счет
-        this.jq_main_div.find('.trader-player-total').text(user.example_agent.balance);
+        this.jq_main_div.find('.trader-player-total').text(user.example_agent.balance + 'NC');
 
         // Добавить итемы инвентаря своего агента
         var inventory = inventoryList.getInventory(user.ID);
@@ -205,8 +205,8 @@ var LocationTraderNPC = (function (_super) {
             price_player = (price_trader - price_player).toFixed(0);
             price_trader = 0;
         }
-        this.jq_main_div.find('.trader-player-exchange-total').text(price_player);
-        this.jq_main_div.find('.trader-trader-exchange-total').text(price_trader);
+        this.jq_main_div.find('.trader-player-exchange-total').text(price_player + 'NC');
+        this.jq_main_div.find('.trader-trader-exchange-total').text(price_trader + 'NC');
     };
 
     LocationTraderNPC.prototype.changeItemPlayer = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
@@ -248,8 +248,6 @@ var LocationTraderNPC = (function (_super) {
 
         if (! price_list) { console.warn('Отсутствует список цен торговца.'); return }
 
-        //// Проверить если город
-        //if (!locationManager.in_location) {console.warn('Вёрстка города не найдена'); return }
 
         // Данный метод просто добавит в текущие списки итемов правильные цены этого торговца.
         var new_inventory = [];

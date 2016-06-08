@@ -700,6 +700,7 @@ class TransactionTunerApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
+# todo: переделать ценообразование
 class TransactionTraderApply(TransactionEvent):
     def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
@@ -749,7 +750,7 @@ class TransactionTraderApply(TransactionEvent):
             item = ex_car.inventory.get_item_by_id(item_id)
             temp_price = 0.01 * item.base_price * trader_price[item_id].buy  # * item.amount / item.stack_size
 
-            tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(temp_price) + 'NC')
+            tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(int(temp_price)) + 'NC')
 
             price_player += temp_price
             # todo: Учитывать количество
@@ -768,7 +769,7 @@ class TransactionTraderApply(TransactionEvent):
                 return
 
             temp_price = 0.01 * item.base_price * trader_price[item_id].sale  # * item.amount / item.stack_size
-            tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(temp_price) + 'NC')
+            tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(int(temp_price)) + 'NC')
 
             price_trader += temp_price
             # todo: Учитывать количество
