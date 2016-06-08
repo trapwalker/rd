@@ -33,6 +33,7 @@ var LocationTrainerNPC = (function (_super) {
         };
         this.str_for_remove_cls = 'default active unactive disable';
 
+        this._perk_line_back = true;
         // Навыки
         this.jq_main_div.find('.trainer-skill-item-change-arrow').click(function () {
             var jq_this = $(this);
@@ -273,15 +274,19 @@ var LocationTrainerNPC = (function (_super) {
     LocationTrainerNPC.prototype.append_div_perk = function (state) {
         //console.log('LocationTrainerNPC.prototype.append_div_perk', state);
         var jq_perk_list = this.jq_main_div.find('.trainer-perks-list');
+        var back_class = '';
         for (var key in this.perks)
             if (this.perks.hasOwnProperty(key)) {
                 var perk = this.perks[key];
-                if (perk.state == state)
+                if (perk.state == state) {
+                    var back_class = this._perk_line_back ? 'trainer-light-back' : 'trainer-dark-back';
+                    this._perk_line_back = !this._perk_line_back;
                     jq_perk_list.append(
                         '<div class="trainer-perk-item" data-node_hash="' + perk.node_hash + '">' +
-                            '<div class="trainer-perk-item-caption ' + state +'">' + perk.title + '</div>' +
-                            '<div class="trainer-perk-item-checkbox ' + state + '" data-node_hash="' + perk.node_hash + '">' + this.perk_state[state].text + '</div>' +
+                            '<div class="trainer-perk-item-caption ' + state + ' ' + back_class + '">' + perk.title + '</div>' +
+                            '<div class="trainer-perk-item-checkbox ' + state + ' ' + back_class + '" data-node_hash="' + perk.node_hash + '">' + this.perk_state[state].text + '</div>' +
                         '</div>');
+                }
             }
     };
 
@@ -311,8 +316,10 @@ var LocationTrainerNPC = (function (_super) {
                     description: '',
                     select: false
                 };
+        this.jq_main_div.find('.trainer-center-updates-block').removeClass('active');
 
         this.perks = {};
+        this._perk_line_back = true;
         this.jq_main_div.find('.trainer-perks-list').empty();
     };
 
