@@ -1,0 +1,27 @@
+<div class="menu-main">
+    <div class="menu-header">
+        <div class="menu-header-item small" onclick="alert('на сайт')">Главная</div>
+        <div class="menu-header-item click" data-page_id="Person">Персонаж</div>
+        <div class="menu-header-item big click" data-page_id="Car">Автомобиль</div>
+        <div class="menu-header-item click" data-page_id="Inventory">Инвентарь</div>
+        <div class="menu-header-item click small" data-page_id="Journal">Журнал</div>
+        <div class="menu-header-item click small" data-page_id="Nukeoil">NukeOil</div>
+        <div class="menu-header-item"  onclick="alert('на форум или группу вк')">Сообщество</div>
+    </div>
+    <div class="menu-center">
+        <div id="locationMenuItem_Person" class="menu-item"></div>
+        <div id="locationMenuItem_Car" class="menu-item"></div>
+        <div id="locationMenuItem_Inventory" class="menu-item">
+            <div class="location-inventory-info">
+                <div class="location-inventory-filters">
+                    <div class="location-inventory-filters-item" data-filter="">Все</div>
+                    <div class="location-inventory-filters-item" data-filter="ammo">Боеприпасы</div>
+                    <div class="location-inventory-filters-item" data-filter="cargo">Грузы</div>
+                </div>
+                <div class="location-inventory-block"></div>
+            </div>
+        </div>
+        <div id="locationMenuItem_Journal" class="menu-item"></div>
+        <div id="locationMenuItem_Nukeoil" class="menu-item"></div>
+    </div>
+</div>

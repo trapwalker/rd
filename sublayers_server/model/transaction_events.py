@@ -700,6 +700,7 @@ class TransactionTunerApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
+# todo: переделать ценообразование
 class TransactionTraderApply(TransactionEvent):
     def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
@@ -749,7 +750,7 @@ class TransactionTraderApply(TransactionEvent):
             item = ex_car.inventory.get_item_by_id(item_id)
             temp_price = 0.01 * item.base_price * trader_price[item_id].buy  # * item.amount / item.stack_size
 
-            tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(temp_price) + 'NC')
+            tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(int(temp_price)) + 'NC')
 
             price_player += temp_price
             # todo: Учитывать количество
@@ -768,8 +769,7 @@ class TransactionTraderApply(TransactionEvent):
                 return
 
             temp_price = 0.01 * item.base_price * trader_price[item_id].sale  # * item.amount / item.stack_size
-            print item.title
-            tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(temp_price) + 'NC')
+            tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(int(temp_price)) + 'NC')
 
             price_trader += temp_price
             # todo: Учитывать количество
@@ -884,13 +884,41 @@ class TransactionSetRPGState(TransactionEvent):
             if self.perks[perk_node_hash][u'state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
                 return
 
-        # Считаем стоимость транзакции и проверяем хватает ли денег
+        for buy_skill_name in self.buy_skills:
+            if hasattr(self.agent.example, buy_skill_name):
+                buy_skill = getattr(self.agent.example, buy_skill_name, None)
+                if self.buy_skills[buy_skill_name] < buy_skill.value:
+                    return
 
+        # Считаем стоимость транзакции и проверяем хватает ли денег
         price = 0
 
+        # Проверка факта сброса скилов
+        for skill_name in self.skills:
+            if hasattr(agent.example, skill_name):
+                ex_skill = getattr(agent.example, skill_name, None)
+                need_value = ex_skill.value + self.buy_skills[u'buy_' + skill_name]
+                if self.skills[skill_name] < need_value:
+                    price += npc.drop_price
+                    break
 
+        # Проверка факта сброса перков
+        if price == 0:
+            for perk in agent.example.perks:
+                if not self.perks[perk.node_hash()][u'state']:
+                    price += npc.drop_price
+                    break
 
+        # Проверка факта покупки очков навыков
+        for buy_skill_name in self.buy_skills:
+            if hasattr(agent.example, buy_skill_name):
+                buy_skill = getattr(agent.example, buy_skill_name, None)
+                for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
+                    price += buy_skill.price[val]
 
+        if price > agent.example.balance:
+            return
+        agent.example.balance -= price
 
         # Устанавливаем состояние
         self.agent.example.driving.value = self.skills[u'driving']
@@ -899,6 +927,13 @@ class TransactionSetRPGState(TransactionEvent):
         self.agent.example.leading.value = self.skills[u'leading']
         self.agent.example.trading.value = self.skills[u'trading']
         self.agent.example.engineering.value = self.skills[u'engineering']
+
+        self.agent.example.buy_driving.value = self.buy_skills[u'buy_driving']
+        self.agent.example.buy_shooting.value = self.buy_skills[u'buy_shooting']
+        self.agent.example.buy_masking.value = self.buy_skills[u'buy_masking']
+        self.agent.example.buy_leading.value = self.buy_skills[u'buy_leading']
+        self.agent.example.buy_trading.value = self.buy_skills[u'buy_trading']
+        self.agent.example.buy_engineering.value = self.buy_skills[u'buy_engineering']
 
         for perk_node_hash in self.perks:
             perk_rec = self.perks[perk_node_hash]
@@ -910,3 +945,9 @@ class TransactionSetRPGState(TransactionEvent):
                     agent.example.perks.remove(perk_rec['perk'])
 
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
+
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        info_string = date_str + ': Прокачка персонажа, ' + str(-price) + 'NC'
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
