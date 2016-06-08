@@ -2,10 +2,6 @@
     <div class="journal-header">
         <div class="journal-page-button-block" data-page_id="journal_page_task">Задания</div>
         <div class="journal-page-button-block" data-page_id="journal_page_parking">Стоянки</div>
-        <!--
-        <div class="journal-page-button-block" data-page_id="journal_page_trade">Торговля</div>
-        <div class="journal-page-button-block" data-page_id="journal_page_note">Заметки</div>
-        -->
     </div>
     <div class="journal-page-list">
         <div id="journal_page_task" class="journal-page-block">
@@ -16,25 +12,5 @@
             <div class="journal-page-left"></div>
             <div class="journal-page-right"></div>
         </div>
-        <!--
-        <div id="journal_page_trade" class="journal-page-block">
-            <div class="journal-page-left"></div>
-            <div class="journal-page-right"></div>
-        </div>
-        <div id="journal_page_note" class="journal-page-block">
-            <div class="journal-page-left"></div>
-            <div class="journal-page-right"></div>
-        </div>
-        -->
     </div>
 </div>
-
-<script>
-    $('.journal-page-button-block').click(function(){
-        $('.journal-page-button-block').removeClass('active');
-        $(this).addClass('active');
-        $('.journal-page-block').css('display', 'none');
-        $('#' + $(this).data('page_id')).css('display', 'block');
-    });
-    $('.journal-page-button-block')[0].click();
-</script>

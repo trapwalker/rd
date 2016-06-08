@@ -4,3 +4,13 @@
     {% include drag_close_header.html %}
     {% include location/journal_window.html %}
 </div>
+
+<script>
+    $('.journal-page-button-block').click(function(){
+        $('.journal-page-button-block').removeClass('active');
+        $(this).addClass('active');
+        $('.journal-page-block').css('display', 'none');
+        $('#' + $(this).data('page_id')).css('display', 'block');
+    });
+    $('.journal-page-button-block')[0].click();
+</script>

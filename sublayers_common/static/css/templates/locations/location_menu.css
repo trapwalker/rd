@@ -70,7 +70,7 @@
 
 .menu-center {
     position: relative;
-    width: 710px;
+    width: 734px;
     margin: 10px auto 0 auto;
     height: 400px;
     background-color: rgba(0, 0, 0, 0.45);
@@ -119,7 +119,7 @@
 
 .location-inventory-block {
     position: relative;
-    width: 574px;
+    width: 709px;
     margin: auto;
     height: 365px;
     overflow-y: auto;
@@ -134,3 +134,33 @@
 }
 
 
+/*Работа со вкладкой Авто*/
+
+.location-menu-car-picture {
+    position: relative;
+    float: left;
+    width: 408px;
+    height: 390px;
+    overflow: hidden;
+    border-right: 1px solid #30fc00;
+    box-sizing: border-box;
+}
+
+.location-menu-car-picture .car-info-block-picture-main {
+    left: -42px;
+    top: 80px;
+}
+
+.location-menu-car-table {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 326px;
+}
+
+
+/* Вкладка Меню */
+.menu-item .journal-main { height: 396px; }
+.menu-item .journal-header { border-width: 0 0 1px 0; }
+.menu-item .journal-page-left { border-width: 0 1px 0 0; }
+.menu-item .journal-page-right { border-width: 0; }
