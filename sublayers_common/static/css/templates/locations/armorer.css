@@ -24,7 +24,7 @@
     float: left;
     width: 491px;
     height: 100%;
-    padding-top: 25px;
+    /*padding-top: 25px;*/
     border-right: 1px solid #30fc00;
     box-sizing: border-box;
 }
@@ -111,7 +111,7 @@
 .armorer-car-main {
     position: relative;
     width: 492px;
-    height: 325px;
+    height: 392px;
 }
 
 .armorer-slot {
