@@ -84,7 +84,18 @@ var LocationPlaceMenu = (function (_super) {
     LocationPlaceMenu.prototype.update = function (data) {
         //console.log('LocationPlaceMenu.prototype.update', this.jq_main_div);
 
-        //this.inv_click_filter(this.jq_main_div.find('location-inventory-filters-item').first());
+        // Вкладка Автомобиль
+        var jq_car_block_pic = this.jq_main_div.find('.location-menu-car-picture').first();
+        var jq_car_block_table = this.jq_main_div.find('.location-menu-car-table').first();
+        jq_car_block_pic.empty();
+        jq_car_block_table.empty();
+        if (user.example_car && user.templates.hasOwnProperty('html_car_img') && user.templates.hasOwnProperty('html_car_table')){
+            jq_car_block_pic.append(user.templates['html_car_img']);
+            jq_car_block_table.append(user.templates['html_car_table']);
+        }
+
+
+        // Отображение инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').first().click();
 
         _super.prototype.update.call(this, data);

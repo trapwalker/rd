@@ -855,8 +855,13 @@ class UserExampleSelfShortMessage(Message):
                 "../sublayers_server/templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
+            template_table = tornado.template.Loader(
+                "templates/location",
+                namespace=agent.connection.get_template_namespace()
+            ).load("car_info_table.html")
 
             templates['html_car_img'] = template_car_img.generate(car=ex_car)
+            templates['html_car_table'] = template_table.generate(car=ex_car)
             d['templates'] = templates
 
             # Инвентарь
