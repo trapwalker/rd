@@ -5,27 +5,28 @@ import logging
 log = logging.getLogger(__name__)
 
 from tornado.concurrent import return_future
+import tornado.ioloop
 from motorengine.queryset import QuerySet
 
 
 class CachebleQuerySet(QuerySet):
     @return_future
     def get(self, id=None, callback=None, alias=None, **kwargs):
+        # handler = callback
         def handler(doc, **kw):
-            cache[id] = doc
+            if doc is not None:
+                doc.to_cache()
             return callback(doc, **kw)
 
-        cache = self.__klass__._objects_cache
-        obj = id and cache.get(id)
+        obj = self.__klass__.search_in_cache(id=id, **kwargs)
         if obj is None:
             super(CachebleQuerySet, self).get(id=id, callback=handler, alias=alias, **kwargs)
         else:
-            callback(obj)
+            tornado.ioloop.IOLoop.instance().add_callback(callback, obj)
 
     def save(self, document, callback, alias=None, upsert=False):
         def handler(doc, **kw):
-            cache[doc._id] = doc
+            doc.to_cache()
             return callback(doc, **kw)
 
-        cache = self.__klass__._objects_cache
         super(CachebleQuerySet, self).save(document=document, callback=handler, alias=alias, upsert=upsert)

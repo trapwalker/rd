@@ -15,6 +15,23 @@ class AbstractDocument(Document):
     __classes__ = {}
     __cls__ = StringField()
 
+    def to_cache(self, *av):
+        assert self._id
+        keys = set(av)
+        keys.add(self._id)
+        for key in keys:
+            self.__class__.objects_cache[key] = self
+
+    @classmethod
+    def search_in_cache(cls, **kw):
+        key_fields = {'id', '_id', 'uri'}
+        for key_name in set(kw.keys()) & key_fields:
+            key = kw[key_name]
+            if key:
+                obj = cls.objects_cache.get(key)
+                if obj:
+                    return obj
+
     @classmethod
     def get_global_class_name(cls):
         return cls.__name__  # todo: add module importing path

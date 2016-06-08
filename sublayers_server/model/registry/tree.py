@@ -53,6 +53,10 @@ class Node(AbstractDocument):
             path=path,
         )
 
+    def to_cache(self):
+        assert self.uri
+        super(Node, self).to_cache(self.uri)
+
     def __init__(self, storage=None, **kw):
         """
         @param str name: Name of node
@@ -134,6 +138,11 @@ class Node(AbstractDocument):
     @property
     def id(self):
         return str(self._id)
+
+    # def __str__(self):
+    #     # todo: make correct representation
+    #     return '<{self.__class__.__name__}@{details}>'.format(self=self, details=self._id)
+
 
     # todo: (!!) remove 'node_hash' method
 

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
 import sys
 import logging
@@ -18,6 +18,7 @@ from sublayers_server.model.registry import classes  # Не удалять эт�
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.odm.fields import StringField, IntField
 from sublayers_server.model.registry.uri import URI
+from motorengine import Document
 
 
 class A(Node):
@@ -38,10 +39,15 @@ def test_store():
     #Node.objects_cache.clear()
 
     aa = yield Node.objects.get(id="5755803f7ee5fe3760e9b38b") #a._id)
-    log.debug('aa[%s]: %r', id(aa), aa)
+    log.debug('aa[%s]: %s', id(aa), aa)
 
-    bb = yield Node.objects.get(uri='reg://registry/a/b') #id=b._id)
-    log.debug('aa[%s]: %r', id(bb), bb)
+    bb = yield Node.objects.get(
+        uri='reg://registry/a/b',
+        #id="5755803f7ee5fe3760e9b38c",
+        #id=b._id,
+    )
+    log.debug('bb[%s]: %s', id(bb), bb)
+    #print(bb.uri)
 
     log.debug('THE END ' + '########################################')
     globals().update(locals())

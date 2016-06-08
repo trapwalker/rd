@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
         log.debug('=======================')
 
-        A._objects_cache.clear()
+        A.objects_cache.clear()
         log.debug('Cache cleaned.')
 
         aaa = yield AbstractDocument.objects.get(id=a._id)
