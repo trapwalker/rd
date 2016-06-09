@@ -5,20 +5,16 @@ import logging
 log = logging.getLogger(__name__)
 
 import yaml
+from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
+from uuid import uuid1 as get_uuid
 
 from sublayers_server.model.registry.odm import AbstractDocument
 from sublayers_server.model.registry.odm.fields import (
     StringField, ListField, BooleanField, UUIDField,
-    ReferenceField, EmbeddedDocumentField, EmailField, IntField, DateTimeField,
+    EmbeddedDocumentField, EmailField, IntField, DateTimeField,
+    UniReferenceField,
 )
-
-from sublayers_server.model.registry.uri_reference_field import UniReferenceField
 from sublayers_server.model.registry.uri import URI
-
-from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
-from uuid import uuid1 as get_uuid, UUID
-from bson import ObjectId
-from tornado.concurrent import return_future
 
 
 class StorageUnspecified(Exception):
@@ -35,8 +31,8 @@ class Node(AbstractDocument):
     fixtured = BooleanField(default=False)  # Признак предопределенности объекта из файлового репозитория
     uri = StringField(unique=True)
     abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
-    parent = ReferenceField('sublayers_server.model.registry.tree.Node')
-    owner = ReferenceField('sublayers_server.model.registry.tree.Node')
+    parent = UniReferenceField('sublayers_server.model.registry.tree.Node')
+    owner = UniReferenceField('sublayers_server.model.registry.tree.Node')
     # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))
     can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'
     name = StringField()
@@ -139,10 +135,10 @@ class Node(AbstractDocument):
     def id(self):
         return str(self._id)
 
-    # def __str__(self):
-    #     # todo: make correct representation
-    #     return '<{self.__class__.__name__}@{details}>'.format(self=self, details=self._id)
-
+    def __str__(self):
+        # todo: make correct representation
+        return '<{self.__class__.__name__}@{details}>'.format(
+            self=self, details=self.uri or self._id or id(self))
 
     # todo: (!!) remove 'node_hash' method
 
@@ -222,12 +218,6 @@ class Node(AbstractDocument):
     #     for k, v in state.items():
     #         setattr(self, k, v)
 
-    # def save(self, storage=None):
-    #     storage = storage or self.storage
-    #     if storage is None:
-    #         raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
-    #     storage.save_node(node=self)
-
     # def deep_iter(self, reject_abstract=True):
     #     queue = [self]
     #     while queue:
@@ -241,11 +231,6 @@ class Node(AbstractDocument):
 
     # def __hash__(self):
     #     return hash((self.storage, self.name))
-
-    # def __repr__(self):
-    #     # todo: make correct representation
-    #     return '<{self.__class__.__name__}@{details}>'.format(
-    #         self=self, details=self.uri if self.storage else id(self))
 
     # def dump(self):
     #     return yaml.dump(self, default_flow_style=False, allow_unicode=True)
@@ -272,9 +257,3 @@ class Node(AbstractDocument):
     # def resume(self):
     #     d = self.resume_dict()
     #     return yaml.dump(d, default_flow_style=False, allow_unicode=True)
-
-    # def _del_attr_value(self, name):
-    #     del(self.values[name])
-
-    # def _has_attr_value(self, name):
-    #     return name in self.values

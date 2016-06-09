@@ -8,12 +8,25 @@ from sublayers_server.model.registry.odm.meta import NodeMeta
 from sublayers_server.model.registry.odm.fields import StringField
 
 from motorengine import Document
+from tornado.concurrent import return_future
 
 
 class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
     __cls__ = StringField()
+
+    def _get_load_function(self, document, field_name, document_type):
+        value = document._values.get(field_name, None)
+        if not isinstance(value, document_type):
+            return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
+
+        @return_future
+        def fake_load_function(id, callback, **kwargs):
+            import tornado.ioloop
+            tornado.ioloop.IOLoop.instance().add_callback(callback, id)
+
+        return fake_load_function
 
     def to_cache(self, *av):
         assert self._id
@@ -39,6 +52,11 @@ class AbstractDocument(Document):
     def __init__(self, **kw):
         kw.setdefault('__cls__', self.get_global_class_name())
         super(AbstractDocument, self).__init__(**kw)
+        # for key, field in self._fields.items():
+        #     if self.is_reference_field(field):
+        #         value = self._values[key]
+        #         if value is not None and not isinstance(value, field.reference_type):
+        #             self._values[key]
 
     @classmethod
     def from_son(cls, dic, _is_partly_loaded=False, _reference_loaded_fields=None):

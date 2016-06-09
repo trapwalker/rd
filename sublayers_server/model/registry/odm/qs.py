@@ -8,6 +8,8 @@ from tornado.concurrent import return_future
 import tornado.ioloop
 from motorengine.queryset import QuerySet
 
+from sublayers_server.model.registry.uri import URI
+
 
 class CachebleQuerySet(QuerySet):
     @return_future
@@ -18,10 +20,15 @@ class CachebleQuerySet(QuerySet):
                 doc.to_cache()
             return callback(doc, **kw)
 
+        if URI.try_or_default(id):  # В качестве идентификатора может быть подан URI и тогда поиск будет вестись по нему
+            kwargs['uri'] = id
+            id = None
+
         obj = self.__klass__.search_in_cache(id=id, **kwargs)
         if obj is None:
             super(CachebleQuerySet, self).get(id=id, callback=handler, alias=alias, **kwargs)
         else:
+            obj.load_references(callback=lambda _: None)  # todo: optimize? При взятии из кеша происходит перезагрузка ссылок
             tornado.ioloop.IOLoop.instance().add_callback(callback, obj)
 
     def save(self, document, callback, alias=None, upsert=False):
