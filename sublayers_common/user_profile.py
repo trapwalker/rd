@@ -49,6 +49,7 @@ class User(Document):
     car_die = BooleanField(default=None)
     ordinal_number = IntField(default=None)
     date_created = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)
+    avatar_link = StringField(default='/static/content/default_images/default_avatar_170_146.png', max_length=255)
 
     def __init__(self, raw_password=None, email=None, **kw):
         super(User, self).__init__(**kw)

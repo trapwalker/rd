@@ -399,12 +399,12 @@ class Agent(Object):
 
     def on_kill(self, time, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
-        # todo: party
 
+        # todo: party
         self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        # self.stat_log.exp(time=time, delta=obj.example.exp_price)   # начисляем опыт агенту
-        self.stat_log.exp(time=time, delta=150)   # начисляем опыт агенту
-        self.car.example.exp_price += 1  # увеличиваем "опытную" стоимость своего автомобиля
+        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp')) * \
+                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.stat_log.get_metric('exp'))
+        self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
 
         # Отправить сообщение на клиент о начисленной экспе
         AddExperienceMessage(agent=self, time=time,).post()
@@ -451,11 +451,24 @@ class Agent(Object):
             canceled=canceled, buy=buy, sale=sale, cost=cost,
             time=time, is_init=is_init)
 
+    @property
+    def skill_points(self):
+        return self.example.exp_table.agent_skill_points_by_exp(self.stat_log.get_metric('exp'))
+
+    @property
+    def lvl(self):
+        # todo: должно вычисляться не так
+        return self.skill_points
 
 # todo: Переименовать в UserAgent
 class User(Agent):
     # todo: realize
-    pass
+
+    def as_dict(self, **kw):
+        d = super(User, self).as_dict(**kw)
+        d['user_name'] = self.user.name
+        d['avatar_link'] = self.user.avatar_link
+        return d
 
 
 def test_cb(f):

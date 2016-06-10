@@ -1,0 +1,76 @@
+.npcInventory-block {
+    position: relative;
+    margin: auto;
+    width: 572px;
+    height: 125px;
+}
+
+.npcInventory-label {
+    position: relative;
+    padding-top: 12px;
+    height: 35px;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+    margin-left: 20px;
+    box-sizing: border-box;        
+}
+
+.npcInventory-wrap {
+    width: 100%;
+    height: 90px;
+    overflow-x: scroll;
+    float: left;
+}
+
+.npcInventory-itemWrap {
+    box-sizing: border-box;
+    margin-right: 10px;
+    width: 130px;
+    height: 71px;
+    float: left;
+    overflow: hidden;
+    background-color: #082801;
+}
+.npcInventory-itemWrap:hover { background-color: #0E4b00; }
+.npcInventory-itemWrap.active { background-color: #0E4b00; }
+
+.npcInventory-item {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    float: left;
+}
+
+.npcInventory-name {
+    position: absolute;
+    width: 100%;
+    padding: 2px 4px 2px 4px;
+    font: 10pt Nouveau_IBM;
+    color: #29F200;
+    box-sizing: border-box;
+}
+
+.npcInventory-text {
+    position: absolute;
+    width: 100%;
+    padding: 2px 4px 2px 4px;
+    font: 10pt Nouveau_IBM;
+    color: #29F200;
+    box-sizing: border-box;
+}
+.npcInventory-text.name { top: 0px; text-align: left; }
+.npcInventory-text.count { bottom: 0px; text-align: right; }
+
+.npcInventory-pictureWrap {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.npcInventory-picture {
+    position: relative;
+    height: 33px;
+    width: 62px;
+    margin: 25px auto 0 auto;
+}

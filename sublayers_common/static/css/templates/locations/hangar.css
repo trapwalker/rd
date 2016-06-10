@@ -1,0 +1,50 @@
+.hangarWindow-main {
+    position: relative;
+    cursor: default;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.hangar-center {
+    position: relative;
+    margin: 0 auto 0 auto;
+    width: 734px;
+    height: 392px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+}
+
+.hangar-center-info-car-wrap {
+    position: relative;
+    height: 100%;
+    display: none;
+}
+
+.hangar-car-list {
+    position: relative;
+    margin: auto;
+    width: 572px;
+    height: 125px;
+}
+
+.hangar-car-list-label {
+    position: relative;
+    padding-top: 12px;
+    height: 35px;
+    color: #29F200;
+    font: 11pt Nouveau_IBM;
+    margin-left: 20px;
+    box-sizing: border-box;
+}
+
+.hangar-car-list-wrap {
+    width: 100%;
+    height: 90px;
+    overflow-x: scroll;
+    float: left;
+}

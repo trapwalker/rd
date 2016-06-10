@@ -1,0 +1,52 @@
+.npc-header {
+    position: relative;
+    box-sizing: border-box;
+    margin: 0 auto 0 auto;
+    width: 620px;
+    height: 163px;
+    font: 16px Nouveau_IBM;
+    color: #2ffa00;
+}
+
+.npc-info {
+    position: relative;
+    width: 170px;
+    height: 146px;
+    float: left;
+    margin: 14px 21px 0px 0px;
+}
+
+.npc-photo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.npc-text-block {
+    height: 100%;
+    width: 424px;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.npc-name {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+}
+
+.npc-text {
+    position: relative;
+    height: calc(100% - 40px);
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+
+#building_nucoil .npc-info {  width: 253px; }
+
+#building_nucoil .npc-text-block {  width: 320px;  float: right; }

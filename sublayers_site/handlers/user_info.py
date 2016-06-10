@@ -18,35 +18,42 @@ class GetUserInfoHandler(BaseSiteHandler):
     def post(self):
         user = self.current_user
         user_info = dict()
-        if user:
-            user_info = yield self._get_car(username=user.name)
+        if user is None:
+            self.finish({'user_status': 'not_register'})
+            return
+
+        if user.quick:
+            self.finish({'user_status': 'quick_user', 'user_name': user.name})
+            return
+
+        user_info = self._get_car(user=user)
         agent_info = user_info.get('user_info', dict())
 
         created = None
-        if user:
-            if user.date_created is not None:
-                created = mktime(user.date_created.timetuple()) * 1000
-            else:
-                user.date_created = datetime.datetime.now()
-                yield user.save()
-                created = 0
-                log.warn('User dont have date_created. Setup now Date')
+        if user.date_created is None:
+            user.date_created = datetime.datetime.now()
+            yield user.save()
+            log.warn('User dont have date_created. Setup now Date')
+
+        created = mktime(user.date_created.timetuple()) * 1000
 
         self.finish({
-            'user_status': 'not_register' if user is None else user.registration_status,
-            'user_name': '' if user is None else user.name,
+            'user_status': user.registration_status,
+            'user_name': user.name,
             'user_car_html': user_info.get('html_car_img', ''),
             'user_info_html': user_info.get('html_agent', ''),
             'user_balance': agent_info.get('balance', 0),
             'position': agent_info.get('position', 0),
-            'ordinal_number': None if user is None else user.ordinal_number,
+            'ordinal_number': user.ordinal_number,
             'created': created,
+            'avatar_link': user.avatar_link,
         })
 
 
 class GetUserInfoByIDHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def post(self):
+        pass
         user_id = self.get_argument('user_id', None)
         if user_id:
             user = None
@@ -55,12 +62,17 @@ class GetUserInfoByIDHandler(BaseSiteHandler):
             except InvalidId as e:
                 log.warning('User resolve error: %r', e)
             if user:
-                user_info = yield self._get_car(username=user.name)
-                self.finish({
-                    'user_name': user.name,
-                    'user_car_html': user_info.get('html_car_img', ''),
-                    'user_info_html': user_info.get('html_agent', ''),
-                })
+                if user.quick:
+                    self.finish({
+                        'user_name': user.name,
+                    })
+                else:
+                    user_info = self._get_car(user=user)
+                    self.finish({
+                        'user_name': user.name,
+                        'user_car_html': user_info.get('html_car_img', ''),
+                        'user_info_html': user_info.get('html_agent', ''),
+                    })
             else:
                 self.send_error(404)
         else:

@@ -1,0 +1,86 @@
+.traderWindow-main {
+    position: relative;
+    cursor: default;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.trader-center {
+    position: relative;
+    margin: 0 auto;
+    padding-top: 8px;
+    width: 650px;
+    height: 520px;
+    box-sizing: border-box;
+    color: #29F200;
+    font: 10pt Nouveau_IBM;
+}
+
+.trader-center-header {
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.trader-center-header-block {
+    position: relative;
+    float: left;
+    height: 100%;
+    margin-right: 4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border: solid 1px #135806;
+    text-align: center;
+    line-height: 20px;
+    box-sizing: border-box;
+}
+
+.trader-center-header-player-title { width: 159px; }
+
+.trader-center-header-exchange-title { width: 322px; }
+
+.trader-center-header-trader-title { width: 159px; margin: 0px; }
+
+.trader-center-area {
+    position: relative;
+    height: calc(100% - 45px);
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.trader-center-area-block {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 159px;
+    margin-right: 4px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border: solid 1px #135806;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+.trader-center-area-trader-body { margin: 0px; }
+
+.trader-center .npcInventory-itemWrap { margin: 7px 0 0 8px; }
+
+.trader-center-footer {
+    position: relative;
+    height: 20px;
+    width: 100%;
+}
+
+.trader-footer-exchange-body {
+    text-align: center;
+    line-height: 20px;
+    overflow: hidden;
+}
+
+.trader-center-header-exchange-text {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+}

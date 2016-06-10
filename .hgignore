@@ -50,3 +50,4 @@ nginx/
 audio_static/audio
 nginx_conf/sites-enabled/
 nginx_conf/rd_project_path.conf
+env__*/

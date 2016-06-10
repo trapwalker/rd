@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.attr import Attribute, FloatAttribute, TextAttribute, IntAttribute
+from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
 
 
@@ -24,6 +25,23 @@ class Perk(Root):
     level_req = IntAttribute(default=0, caption=u"Необходимый уровень персонажа", tags='client')
 
     perks_req = InventoryPerksAttribute(caption=u'Список прокачанных перков')
+
+    role_class_req = RegistryLink(caption=u"Требование к ролевому классу")
+
+    def can_apply(self, agent_ex):
+        agent_lvl = 0  # todo: взять уровень как-то правильно из агента  (ДОБАВИТЬ проверку по LVL)
+        if (self.driving_req <= agent_ex.driving.calc_value()) and (self.masking_req <= agent_ex.masking.calc_value()) and \
+           (self.shooting_req <= agent_ex.shooting.calc_value()) and (self.leading_req <= agent_ex.leading.calc_value()) and \
+           (self.trading_req <= agent_ex.trading.calc_value()) and \
+           (self.engineering_req <= agent_ex.engineering.calc_value()):
+            for perk in self.perks_req:
+                if self.storage[perk] not in agent_ex.perks:
+                    return False
+                # todo: Здесь проверка по role_class
+                if self.role_class_req and agent_ex.role_class.node_hash() != self.role_class_req.node_hash():
+                    return False
+            return True
+        return False
 
 
 class PerkPassive(Perk):

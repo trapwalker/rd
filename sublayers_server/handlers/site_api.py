@@ -72,26 +72,35 @@ class APIGetUserInfoHandler(BaseHandler):
         name_car = None
         html_agent = None
 
-        agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example
+        log.info('APIGetUserInfoHandler: %r', username)
+        agent = None
+        if user.quick:
+            agent = self.application.srv.api.get_agent_quick_game(user)
+        else:
+            agent = self.application.srv.api.get_agent(user, make=True)
+        # agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example
         if agent:
-            user_info['driving'] = agent.example.driving
-            user_info['shooting'] = agent.example.shooting
-            user_info['masking'] = agent.example.masking
-            user_info['engineering'] = agent.example.engineering
-            user_info['trading'] = agent.example.trading
-            user_info['leading'] = agent.example.leading
+            user_info['driving'] = agent.example.driving.value
+            user_info['shooting'] = agent.example.shooting.value
+            user_info['masking'] = agent.example.masking.value
+            user_info['engineering'] = agent.example.engineering.value
+            user_info['trading'] = agent.example.trading.value
+            user_info['leading'] = agent.example.leading.value
             user_info['about_self'] = agent.example.about_self  # Досье
             user_info['balance'] = agent.example.balance
             # todo: сделать пересылку правильных параметров
             user_info['lvl'] = '5'
-            user_info['class'] = u'Избранный'
+
+            user_info['class'] = ''
+            if agent.example.role_class:
+                user_info['class'] = agent.example.role_class.description
             user_info['karma'] = '138'
 
             template_agent_info = tornado.template.Loader(
                     "templates/person",
                     namespace=self.get_template_namespace()
             ).load("person_site_info.html")
-            html_agent = template_agent_info.generate(agent_example=agent.example, with_css=False)
+            html_agent = template_agent_info.generate(agent_example=agent.example, with_css=False, curr_user=user)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent.example.car

@@ -108,6 +108,7 @@ class Node(object):
         d = dict(
             id=self.id,
             node_hash=self.node_hash(),
+            html_hash=self.node_html(),
         )
         for attr, getter in self.iter_attrs(tags='client'):
             v = getter()

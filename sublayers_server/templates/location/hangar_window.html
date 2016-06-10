@@ -1,67 +1,13 @@
-{% set npc_photo = town.example.hangar.photo %}
-{% set npc_title = town.example.hangar.title %}
-{% set npc_text = town.example.hangar.text %}
-
 <div class="hangarWindow-main">
+    {% set npc_photo = cur_npc.photo %}
+    {% set npc_title = cur_npc.title %}
+    {% set npc_text = cur_npc.text %}
     {% include npc_header.html %}
-    <div class="hangar-center">
-        {% for car_number in range(0, len(town.example.hangar.car_list)) %}
-        {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}
-        <div id="hangar-center-info-car-{{ car_number }}" class="hangar-center-info-car-wrap">
-            {% include car_info_block.html %}
-        </div>
-        {% end %}
-    </div>
-
+    <div class="hangar-center"></div>
     <div class="hangar-car-list">
-        <div class="hangar-car-list-label">Предложение:</div>
+        <div class="hangar-car-list-label">{{ 'Предложение:' if cur_npc.type == 'hangar' else 'ТС на парковке:' }}</div>
         <div class="hangar-car-list-wrap">
-            <div class="hangar-car-list-list">
-                {% for car_number in range(0, len(town.example.hangar.car_list)) %}
-                {% set car = agent.server.reg[town.example.hangar.car_list[car_number]] %}
-                <div class="hangar-car-list-itemWrap" data-car_number="{{ car_number }}"
-                     data-car_price="{{ car.price }}">
-                    <div class="hangar-car-list-item">
-                        <div class="hangar-car-list-pictureWrap"
-                             style="background: url({{ car.inv_icon_mid }}) no-repeat center"></div>
-                        <div class="hangar-car-list-name">{{ car.title }}</div>
-                    </div>
-                </div>
-                {% end %}
-            </div>
+            <div class="hangar-car-list-list"></div>
         </div>
     </div>
 </div>
-
-<script>
-    // Функция подстраивает ширину списка под его содержимое
-    function resizeHangarCarList() {
-        var inventory = $('#townHangarPageWrap').find('.hangar-car-list-list').first();
-        var width = 0;
-        if (inventory) {
-            $(inventory).find('.hangar-car-list-itemWrap').each(function (index, element) {
-                if ($(element).css('display') == 'block')
-                    width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-            });
-            $(inventory).width(width);
-        }
-    }
-    resizeHangarCarList();
-
-    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').click(function () {
-        // Сбросить предыдущее выделение и выджелить выбранный итем
-        $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').removeClass('hangar-car-list-itemWrap-active');
-        $(this).addClass('hangar-car-list-itemWrap-active');
-
-        // Установить цену
-        $('#hangar-footer-price').text($(this).data('car_price'));
-
-        // Скрыть информационные окна всех машинок, показать выбранную
-        $('#townHangarPageWrap').find('.hangar-center-info-car-wrap').css('display', 'none');
-        $('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
-
-        // Установить выбранную машинку в менеджер
-        locationManager.hangar.current_car = $(this).data('car_number');
-    })
-    $('#townHangarPageWrap').find('.hangar-car-list-itemWrap').first().click();
-</script>
