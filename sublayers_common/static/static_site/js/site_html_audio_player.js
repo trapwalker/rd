@@ -11,6 +11,7 @@ var constHtmlSize = {
         height_channels_pointer: 18,
         width_of_one_station: 43,
         height_volume_disc: 105,
+        height_volume_indicator: 110,
     },
     768: {
 
@@ -83,6 +84,16 @@ var RadioPlayer = (function () {
         this.jq_station_name = $('.radio-screen-channel-name').first();
 
         // Работа с громкостью
+        this.jq_volume_indicator = $('.radio-volume-indicator-block').first();
+        this.jq_volume_indicator.click(function(event) {
+            var y1 = $(event.currentTarget).offset().top;
+            var y2 = event.clientY;
+            var volume = (y2 - y1) / constHtmlSize[currentSiteSize].height_volume_indicator;
+            if (volume > 1.0 || volume < 0.0) return;
+            self.set_volume((1.0 - volume).toFixed(2));
+        });
+
+
         this.jq_volume_disc = $('.radio-volume-controller-images').first();
         this.jq_volume_disc_item = $('.radio-volume-controller-item').first();
         this.volume_disc_active = false;
@@ -94,11 +105,12 @@ var RadioPlayer = (function () {
         });
         this.jq_volume_disc.mousemove(function() {
             if (self.volume_disc_active) {
-                var value = self.volume_disc_start_coord - event.clientY;
-                var abs_value = Math.abs(value);
-                if (abs_value > 100) value = 100;
-                if (abs_value < 0) value = 0;
-                self.set_volume((Math.abs(value) / 100.).toFixed(2));
+                if (self.power_on) { // Колёсико влияет на звук только когда включено питание
+                    var value = self.volume_disc_start_coord - event.clientY;
+                    if (value > 100) value = 100;
+                    if (value < 0) value = 0;
+                    self.set_volume((Math.abs(value) / 100.).toFixed(2));
+                }
                 // Изменение колёсика
                 if (self.jq_volume_disc_item.hasClass('item-2')) {
                     self.jq_volume_disc_item.removeClass('item-2');
@@ -117,14 +129,12 @@ var RadioPlayer = (function () {
             self.volume_disc_active = false;
         });
 
-
-        //this.elem_volume = document.getElementById('sliderVolume_' + name);  //.value;
-        //this.elem_channel = document.getElementById('sliderChannel_' + name);
-        //this.elem_quality = document.getElementById('sliderQuality_' + name);
-
         // инициализация громкости
-        //this.current_volume = this.elem_volume.value;
-        this.current_volume = 0.1;
+        this.current_volume = 0.5;
+
+        // Инициализация при старте (всё выключено)
+        this.jq_display.css('display', 'none');
+        this.jq_volume_indicator.css('display', 'none');
 
         // Эвенты на воспроизведение
         this.audio.onloadeddata = RadioPlayer.prototype.load_buffer_complete.bind(this);
@@ -266,6 +276,7 @@ var RadioPlayer = (function () {
             this.jq_power_btn.removeClass('active');
             this.jq_quality_btn.removeClass('active');
             this.jq_display.css('display', 'none');
+            this.jq_volume_indicator.css('display', 'none');
             this.power_on = false;
         }
         else {
@@ -273,17 +284,30 @@ var RadioPlayer = (function () {
             this.jq_power_btn.addClass('active');
             this.jq_quality_btn.addClass('active');
             this.jq_display.css('display', 'block');
+            this.jq_volume_indicator.css('display', 'block');
             this.power_on = true;
+            // Отстроить звук
+            this.set_volume(this.current_volume, true);
         }
     };
 
-    RadioPlayer.prototype.set_volume = function (volume) {
+    RadioPlayer.prototype.set_volume = function (volume, not_ignore_equals) {
         //console.log('RadioPlayer.prototype.change_volume', volume);
+        if (!not_ignore_equals && this.current_volume == volume) return;
         this.current_volume = volume;
         this.audio.volume = this.current_volume;
         // Изменение шума помех, если вдруг они запущены
         audioManager.gain('radio_noise_switch', this.current_volume);
         audioManager.gain('radio_noise', this.current_volume);
+
+        // Правка вёрстки уровня громкости
+        var jq_childs = this.jq_volume_indicator.children();
+        jq_childs.removeClass('active');
+        var indicator_count = Math.floor(volume * 100 / 14.);
+        //console.log(indicator_count, this.current_volume);
+        for(var i = 0; i < indicator_count; i++) {
+            $(jq_childs[i]).addClass('active');
+        }
     };
 
     RadioPlayer.prototype.change_channel = function(event) {

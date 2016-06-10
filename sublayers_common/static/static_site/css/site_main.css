@@ -559,7 +559,8 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     .radio-screen-text.radio-screen-channel-name {
         line-height: 62px;
         overflow: hidden;
-        padding: 0 5px 0 0;
+        width: 255px;
+        white-space: nowrap;
     }
 
     .radio-screen-text.radio-screen-track-name {
