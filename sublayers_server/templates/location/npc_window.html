@@ -14,6 +14,8 @@
     {% include trainer_window.html %}
 {% elif cur_npc.type == 'barman' %}
     {% include trader_window.html %}
+{% elif cur_npc.type == 'girl' %}
+    {% include girl_window.html %}
 {% elif cur_npc.type == 'npc_gas_station' %}
     {% include npc_gas_station.html %}
 {% else %}

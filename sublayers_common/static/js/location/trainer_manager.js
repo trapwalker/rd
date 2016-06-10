@@ -170,10 +170,8 @@ var LocationTrainerNPC = (function (_super) {
 
         var buy_skill_point = 0;
         for (var buy_skill_name in this.buy_skills)
-            if (this.buy_skills.hasOwnProperty(buy_skill_name)) {
+            if (this.buy_skills.hasOwnProperty(buy_skill_name))
                 buy_skill_point += this.buy_skills[buy_skill_name].value;
-                console.log(this.buy_skills[buy_skill_name]);
-            }
 
         return this.all_skill_points - skill_point + buy_skill_point;
     };
