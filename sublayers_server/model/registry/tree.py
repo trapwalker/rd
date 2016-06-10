@@ -5,16 +5,15 @@ import logging
 log = logging.getLogger(__name__)
 
 import yaml
-from motorengine.errors import InvalidDocumentError, LoadReferencesRequiredError
+from motorengine.errors import LoadReferencesRequiredError
 from uuid import uuid1 as get_uuid
 
+from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm import AbstractDocument
 from sublayers_server.model.registry.odm.fields import (
     StringField, ListField, BooleanField, UUIDField,
-    EmbeddedDocumentField, EmailField, IntField, DateTimeField,
     UniReferenceField,
 )
-from sublayers_server.model.registry.uri import URI
 
 
 class StorageUnspecified(Exception):
@@ -23,21 +22,22 @@ class StorageUnspecified(Exception):
 
 
 class Node(AbstractDocument):
+    # todo: make sparse indexes
     __field_tags__ = {
         'client': ['tags'],
     }
     # todo: override attributes in subclasses
     uid = UUIDField(default=get_uuid, unique=True)
-    fixtured = BooleanField(default=False)  # Признак предопределенности объекта из файлового репозитория
+    fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
     uri = StringField(unique=True)
-    abstract = BooleanField(default=True)  # Абстракция - Признак абстрактности узла
-    parent = UniReferenceField('sublayers_server.model.registry.tree.Node')
-    owner = UniReferenceField('sublayers_server.model.registry.tree.Node')
-    # _subnodes = ListField(ReferenceField('sublayers_server.model.registry.tree.Node'))
-    can_instantiate = BooleanField(default=True)  # Инстанцируемый - Признак возможности инстанцирования'
+    abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
+    parent = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
+    owner = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
+    # _subnodes = ListField(base_field=ReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node'))
+    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     name = StringField()
     doc = StringField()
-    tags = ListField(StringField())  # Теги
+    tags = ListField(base_field=StringField(), caption=u"Теги", doc=u"Набор тегов объекта", tags="client")
 
     def make_uri(self):
         owner = self.owner
@@ -72,23 +72,6 @@ class Node(AbstractDocument):
         # self.storage = storage
         # if storage:
         #     storage.put(self)
-
-    # @classmethod
-    # def get_by_uri(cls, uri, callback):
-    #     # todo: test uri to string and URI
-    #     pass
-
-    # def validate_fields(self):
-    #     for name, field in self._fields.items():
-    #         value = self.get_field_value(name)
-    #         # todo: required fields disabled (restore it)
-    #         #parent = self.parent
-    #         #if field.required and field.is_empty(value) and (not parent or not hasattr(parent, name)):
-    #         #    raise InvalidDocumentError("Field '%s' is required." % name)
-    #         if not field.validate(value):
-    #             raise InvalidDocumentError("Field '%s' must be valid." % name)
-    #
-    #     return True
 
     # @property
     # def _field_tags(self):

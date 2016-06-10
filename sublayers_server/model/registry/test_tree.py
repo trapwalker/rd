@@ -16,7 +16,7 @@ from sublayers_server.test_iolop import io_loop, start
 
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry.tree import Node
-from sublayers_server.model.registry.odm.fields import StringField, IntField
+from sublayers_server.model.registry.odm.fields import StringField, IntField, EmbeddedDocumentField
 from sublayers_server.model.registry.uri import URI
 from motorengine import Document
 

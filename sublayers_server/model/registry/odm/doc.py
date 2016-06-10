@@ -52,11 +52,6 @@ class AbstractDocument(Document):
     def __init__(self, **kw):
         kw.setdefault('__cls__', self.get_global_class_name())
         super(AbstractDocument, self).__init__(**kw)
-        # for key, field in self._fields.items():
-        #     if self.is_reference_field(field):
-        #         value = self._values[key]
-        #         if value is not None and not isinstance(value, field.reference_type):
-        #             self._values[key]
 
     @classmethod
     def from_son(cls, dic, _is_partly_loaded=False, _reference_loaded_fields=None):
