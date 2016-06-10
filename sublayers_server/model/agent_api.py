@@ -17,9 +17,9 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
     StrategyModeInfoObjectsEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarChoice, TransactionParkingLeaveCar, TransactionParkingSelectCar,
-    TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply, TransactionTraderApply,
-    TransactionSkillApply, TransactionActivatePerk, TransactionResetSkills, TransactionResetPerks)
+    TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
+    TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
+    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -393,6 +393,7 @@ class AgentAPI(API):
 
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
+        messages.UserExampleSelfMessage(agent=self.agent, time=time).post()
 
         # Отправка сообщений для журнала
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
@@ -538,9 +539,9 @@ class AgentAPI(API):
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def exit_from_location(self, location_id):
+    def exit_from_location(self):
         # log.info('agent %s want exit from location is %s', self.agent, town_id)
-        ExitFromMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
+        ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_npc(self, npc_type):
@@ -576,10 +577,10 @@ class AgentAPI(API):
                             time=self.agent.server.get_time()).post()
 
     @public_method
-    def fuel_station_active(self, fuel, tank_list):
+    def fuel_station_active(self, fuel, tank_list, npc_node_hash):
         # log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
         TransactionGasStation(time=self.agent.server.get_time(), agent=self.agent, fuel=fuel,
-                              tank_list=tank_list).post()
+                              tank_list=tank_list, npc_node_hash=npc_node_hash).post()
 
     @public_method
     def get_loot(self, poi_id):
@@ -589,65 +590,75 @@ class AgentAPI(API):
     # Ангар
 
     @public_method
-    def choice_car_in_hangar(self, car_number):
-        log.info('agent %r want choice car, with number=%r', self.agent, car_number)
-        TransactionHangarChoice(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
+    def sell_car_in_hangar(self, npc_node_hash):
+        log.info('agent %r sell car', self.agent)
+        TransactionHangarSell(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def buy_car_in_hangar(self, car_number, npc_node_hash):
+        log.info('agent %r want buy car, with number=%r', self.agent, car_number)
+        TransactionHangarBuy(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def get_hangar_info(self, npc_node_hash):
+        messages.HangarInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     # Стоянка
 
     @public_method
-    def parking_select_car(self, car_number):
-        # log.info('agent %r want get car from parking, with number=%r', self.agent, car_number)
-        TransactionParkingSelectCar(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number).post()
+    def parking_leave_car(self, npc_node_hash):
+        log.info('agent %r sell car', self.agent)
+        TransactionParkingLeave(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def parking_leave_car(self):
-        # log.info('agent %r want leave car in parking', self.agent)
-        TransactionParkingLeaveCar(time=self.agent.server.get_time(), agent=self.agent).post()
+    def parking_select_car(self, car_number, npc_node_hash):
+        log.info('agent %r want buy car, with number=%r', self.agent, car_number)
+        TransactionParkingSelect(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def get_parking_info(self, npc_node_hash):
+        messages.ParkingInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     # Оружейник
 
     @public_method
-    def armorer_apply(self, armorer_slots):
-        TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots).post()
-
-    @public_method
-    def armorer_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def armorer_apply(self, armorer_slots, npc_node_hash):
+        TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots,
+                                npc_node_hash=npc_node_hash).post()
 
     # Механик
 
     @public_method
-    def mechanic_apply(self, mechanic_slots):
-        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots)\
-            .post()
+    def mechanic_apply(self, mechanic_slots, npc_node_hash):
+        TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots,
+                                 npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def mechanic_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def mechanic_repair_apply(self, hp, npc_node_hash):
+        TransactionMechanicRepairApply(time=self.agent.server.get_time(), agent=self.agent, hp=hp,
+                                 npc_node_hash=npc_node_hash).post()
 
     # Тюнер
 
     @public_method
-    def tuner_apply(self, tuner_slots):
-        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots).post()
+    def tuner_apply(self, tuner_slots, npc_node_hash):
+        TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots,
+                              npc_node_hash=npc_node_hash).post()
 
     @public_method
     def tuner_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        pass
 
     # Торговец
 
     @public_method
-    def trader_apply(self, player_table, trader_table):
-        TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
-                               trader_table=trader_table).post()
+    def get_trader_info(self, npc_node_hash):
+        messages.TraderInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def trader_cancel(self):
-        messages.ExamplesShowMessage(agent=self.agent, time=self.agent.server.get_time()).post()
-        messages.SetupTraderReplica(agent=self.agent, time=self.agent.server.get_time(),
-                                    replica=u'Ну как хочешь...').post()
+    def trader_apply(self, player_table, trader_table, npc_node_hash):
+        TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
+                               trader_table=trader_table, npc_node_hash=npc_node_hash).post()
 
     # Бартер
 
@@ -686,27 +697,16 @@ class AgentAPI(API):
     # RPG
 
     @public_method
-    def get_rpg_info(self):
-        messages.RPGStateMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+    def get_trainer_info(self, npc_node_hash):
+        messages.TrainerInfoMessage(time=self.agent.server.get_time(),
+                                    agent=self.agent,
+                                    npc_node_hash=npc_node_hash).post()
 
     @public_method
-    def reset_skills(self):
-        TransactionResetSkills(agent=self.agent, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def reset_perks(self):
-        TransactionResetPerks(agent=self.agent, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def set_skill_state(self, driving, shooting, masking, leading, trading, engineering):
-        # log.debug('Agent %s try set skill state', self.agent)
-        TransactionSkillApply(time=self.agent.server.get_time(), agent=self.agent, driving=driving, shooting=shooting,
-                              masking=masking, leading=leading, trading=trading, engineering=engineering).post()
-
-    @public_method
-    def activate_perk(self, perk_id):
-        # log.debug('Agent %s try aktivate perk %s', self.agent, perk_id)
-        TransactionActivatePerk(time=self.agent.server.get_time(), agent=self.agent, perk_id=perk_id).post()
+    def set_rpg_state(self, npc_node_hash, skills, buy_skills, perks):
+        # log.debug('Agent %s try set rpg state', self.agent)
+        TransactionSetRPGState(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash,
+                               skills=skills, buy_skills=buy_skills, perks=perks).post()
 
     @public_method
     def set_about_self(self, text):

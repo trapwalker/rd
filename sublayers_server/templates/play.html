@@ -11,6 +11,11 @@
         }
 
         @font-face {
+            font-family: Molot;
+            src: url({{ static_url('fonts/molot.otf') }});
+        }
+
+        @font-face {
             font-family: Gruppo-Regular;
             src: url({{ static_url('fonts/gruppo-regular.ttf') }});
         }
@@ -50,6 +55,9 @@
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/context_panel.css') }}"/>
 
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/car_info.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/npc_transaction_info.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/panel_description.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_header.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_inventory.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/building.css') }}"/>
@@ -61,6 +69,9 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/town_main.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/trader.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/trainer.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_gas_station.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/nucoil_building.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/location_menu.css') }}"/>
     
     <link rel="stylesheet" href="{{ static_url('css/templates/journal/journal_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/journal/journal_window_quests.css') }}"/>
@@ -102,6 +113,7 @@
     <script src="{{ static_url('js/item_balance_cls_manager.js') }}"></script>
 
     <script src="{{ static_url('js/map_canvas_manager.js') }}"></script>
+    <script src="{{ static_url('js/location_canvas_manager.js') }}"></script>
 
     <script src="{{ static_url('js/connector.js') }}"></script>
 
@@ -133,13 +145,24 @@
     <script src="{{ static_url('js/effects/rocket_bang.js') }}"></script>
     <script src="{{ static_url('js/effects/e_points_tracer.js') }}"></script>
     <script src="{{ static_url('js/effects/e_fire_effect_png_animation.js') }}"></script>
+     <script src="{{ static_url('js/effects/effect_location_laser_animation.js') }}"></script>
 
     <script src="{{ static_url('js/rpc_list.js') }}"></script>
     <script src="{{ static_url('js/leaflet_addon.js') }}"></script>
 
     <script src="{{ static_url('js/view.js') }}"></script>
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
-    <script src="{{ static_url('js/location_managers.js') }}"></script>
+    <script src="{{ static_url('js/location/location_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/location_place_menu.js') }}"></script>
+    <script src="{{ static_url('js/location/building_service_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/building_nucoil_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/armorer_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/hangar_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/mechanic_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/tuner_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/trader_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/trainer_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/npc_gas_station.js') }}"></script>
     <script src="{{ static_url('js/journal_managers.js') }}"></script>
     <script src="{{ static_url('js/barter_manager.js') }}"></script>
     <script src="{{ static_url('js/cache.js') }}"></script>
@@ -202,7 +225,9 @@
         <div id="modalRestart"></div>
     </div>
 
-    <div id="activeTownDiv"></div>
+    <div id="activeTownDivBack">
+        <div id="activeTownDiv"></div>
+    </div>
 
     <div style="display: none">
         <span id="settings_ws_port">{{ ws_port }}</span>

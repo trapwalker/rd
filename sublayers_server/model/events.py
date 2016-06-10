@@ -335,17 +335,15 @@ class ReEnterToLocation(Event):
 
 
 class ExitFromMapLocation(Event):
-    def __init__(self, agent, obj_id, **kw):
+    def __init__(self, agent, **kw):
         server = agent.server
         super(ExitFromMapLocation, self).__init__(server=server, **kw)
         self.agent = agent
-        self.obj_id = obj_id
 
     def on_perform(self):
         super(ExitFromMapLocation, self).on_perform()
-        obj = self.server.objects.get(self.obj_id)
-        if obj:
-            obj.on_exit(agent=self.agent, time=self.time)
+        if self.agent.current_location:
+            self.agent.current_location.on_exit(agent=self.agent, time=self.time)
         else:
             log.warning('agent %s try to exit from location %s, but location is not found', self.agent, obj)
 

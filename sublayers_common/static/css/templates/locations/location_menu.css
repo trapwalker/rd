@@ -1,0 +1,166 @@
+.menu-wrap {
+    position: absolute;
+    pointer-events: auto;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    font-family: Nouveau_IBM, sans-serif;
+}
+
+
+.menu-main {
+    position: relative;
+    top: 110px;
+    width: 100%;
+}
+
+.menu-header {
+    position: relative;
+    width: 90%;
+    height: 30px;
+    padding-top: 5px;
+    box-sizing: border-box;
+    margin: auto;
+    border-width: 0 0 2px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+.menu-header-item {
+    position: relative;
+    float: left;
+    margin: 0 4px;
+    color: #31c811;
+    cursor: pointer;
+    text-align: center;
+    width: 14%;
+    overflow: hidden;
+}
+
+.menu-header-item.small {width: 11%; }
+.menu-header-item.big {width: 16%; }
+
+.menu-header-item.active, .menu-header-item:hover{color:#29F200;}
+
+.menu-header-item.active:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 0px;
+    top: 2px;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #00ff00;
+    border-bottom: 5px solid transparent;
+}
+
+.menu-header-item.active:after {
+    content: ' ';
+    position: absolute;
+    right: 3px;
+    top: 2px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #00ff00;
+    border-bottom: 5px solid transparent;
+}
+
+.menu-center {
+    position: relative;
+    width: 734px;
+    margin: 10px auto 0 auto;
+    height: 400px;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.menu-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+
+.location-inventory-info {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.location-inventory-filters {
+    position: relative;
+    width: 574px;
+    height: calc(100% - 365px);
+    line-height: 30px;
+}
+
+.location-inventory-filters-item {
+    position: relative;
+    float: left;
+    cursor: pointer;
+    margin: 0 30px;
+    color: #31c811;
+}
+
+.location-inventory-filters-item:hover, .location-inventory-filters-item.active {color: #29F200;}
+
+
+.location-inventory-filters-item.active:after {
+    content: '[●]';
+    position: absolute;
+    right: -28px;
+    top: 1px;
+}
+
+
+.location-inventory-block {
+    position: relative;
+    width: 709px;
+    margin: auto;
+    height: 365px;
+    overflow-y: auto;
+}
+
+.location-inventory-block .npcInventory-itemWrap {
+    margin: 0 5px 10px 5px;
+}
+
+.location-inventory-block .npcInventory-itemWrap.selected {
+    background-color: #0E4b00;
+}
+
+
+/*Работа со вкладкой Авто*/
+
+.location-menu-car-picture {
+    position: relative;
+    float: left;
+    width: 408px;
+    height: 390px;
+    overflow: hidden;
+    border-right: 1px solid #30fc00;
+    box-sizing: border-box;
+}
+
+.location-menu-car-picture .car-info-block-picture-main {
+    left: -42px;
+    top: 80px;
+}
+
+.location-menu-car-table {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 326px;
+}
+
+
+/* Вкладка Меню */
+.menu-item .journal-main { height: 396px; }
+.menu-item .journal-header { border-width: 0 0 1px 0; }
+.menu-item .journal-page-left { border-width: 0 1px 0 0; }
+.menu-item .journal-page-right { border-width: 0; }

@@ -34,7 +34,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         # log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
 
-        if user.is_quick_user:
+        if user.quick:
             agent = srv.api.get_agent_quick_game(user, do_disconnect=True)  # todo: Change to make=False
         else:
             agent = srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False

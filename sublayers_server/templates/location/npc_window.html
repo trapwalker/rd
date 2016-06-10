@@ -1,0 +1,24 @@
+{% if cur_npc.type == 'hangar' %}
+    {% include hangar_window.html %}
+{% elif cur_npc.type == 'parking' %}
+    {% include hangar_window.html %}
+{% elif cur_npc.type == 'armorer' %}
+    {% include armorer_window.html %}
+{% elif cur_npc.type == 'mechanic' %}
+    {% include mechanic_window.html %}
+{% elif cur_npc.type == 'tuner' %}
+    {% include tuner_window.html %}
+{% elif cur_npc.type == 'trader' %}
+    {% include trader_window.html %}
+{% elif cur_npc.type == 'trainer' %}
+    {% include trainer_window.html %}
+{% elif cur_npc.type == 'barman' %}
+    {% include trader_window.html %}
+{% elif cur_npc.type == 'npc_gas_station' %}
+    {% include npc_gas_station.html %}
+{% else %}
+    {% set npc_photo = cur_npc.photo %}
+    {% set npc_title = cur_npc.title %}
+    {% set npc_text = cur_npc.text %}
+    {% include npc_header.html %}
+{% end %}

@@ -78,6 +78,14 @@ class StandardLoginHandler(BaseSiteHandler):
         user = User(email=email, raw_password=password)
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
+
+        agent_example = self.application.reg_agents.get([str(user._id)])
+        if agent_example is None:
+            agent_example = self.application.reg['/agents/user'].instantiate(
+                storage=self.application.reg_agents, name=str(user._id),
+            )
+        self.application.reg_agents.save_node(agent_example)
+
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
 
@@ -181,11 +189,12 @@ class StandardLoginHandler(BaseSiteHandler):
             username = self.get_argument('username', None)
             avatar_index = self.get_argument('avatar_index', None)
             class_index = self.get_argument('class_index', None)
+            class_node_hash = self.get_argument('class_node_hash', None)
 
-            #todo: проверить ник на допустимые символы, аватар и класс на допустимые значения
-            if ((avatar_index is None) or (class_index is None) or
-                (username is None) or (not isinstance(username, basestring)) or
-                (username == '') or (len(username) > 100)):
+            # todo: проверить ник на допустимые символы
+            if ((avatar_index is None) or (class_index is None) or (class_node_hash is None) or
+                    (username is None) or (not isinstance(username, basestring)) or
+                    (username == '') or (len(username) > 100)):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
@@ -194,9 +203,39 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
+            agent_ex = self.application.reg_agents.get([str(user._id)])
+            if agent_ex is None:
+                self.send_error(status_code=404)
+                return
+
+            # Получаем ссылку на аватар
+            avatar_link = ''
+            role_class_ex = None
+            try:
+                avatar_index = int(avatar_index)
+                avatar_link = self.application.reg['/world_settings'].values.get('avatar_list')[avatar_index]
+                role_class_ex = self.application.reg[class_node_hash]
+            except:
+                self.finish({'status': 'fail_wrong_input'})
+                return
+
+            agent_ex.role_class = role_class_ex
+            # Установка классового навыка
+            empty_skill_mod = self.application.reg['reg://registry/rpg_settings/class_skill/empty_0']
+            for skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                skill = getattr(agent_ex, skill_name)
+                skill.mod = empty_skill_mod
+
+            for class_skill_uri in role_class_ex.class_skills:
+                class_skill = self.application.reg[class_skill_uri]
+                if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                    skill = getattr(agent_ex, class_skill.target)
+                    skill.mod = class_skill
+
+            user.avatar_link = avatar_link
             user.name = username
             user.registration_status = 'settings'
-            #todo: внести информацию об аватаре и классе
+            self.application.reg_agents.save_node(agent_ex)
             yield user.save()
             self.finish({'status': 'success'})
 

@@ -1,0 +1,42 @@
+.panel-info-npc-transaction-info {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    padding-bottom: 10px;
+    font: 16px Nouveau_IBM;
+    color: #2ffa00;
+    box-sizing: border-box;
+}
+
+.npc-transaction-info-text-shadow {
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
+.npc-transaction-info-label {
+    position: relative;
+    float: left;
+    text-align: left;
+    width: 50%;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
+.npc-transaction-info-value {
+    position: relative;
+    float: left;
+    text-align: right;
+    width: 50%;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
+.npc-transaction-info-transaction-list {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    padding-top: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+
+

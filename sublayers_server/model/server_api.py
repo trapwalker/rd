@@ -90,8 +90,8 @@ class ServerAPI(API):
             # todo: Не забыть на быструю машинку повесить пулемёты !
             log.info('Server API: New QuickGameAgent is connected and New Car is Ready !!!!!!: %r', agent)  # todo: fix text
         else:
-            log.info('get_agent_quick_game  --- dont know why Im here !!!')
-            if agent.connection:
-                agent.connection.close()
+            if agent and do_disconnect:
+                if agent.connection:
+                    agent.connection.close()
             # log.info('Server API: Old Agent given: %s', agent_id)
         return agent

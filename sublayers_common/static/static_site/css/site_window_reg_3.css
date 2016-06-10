@@ -1,0 +1,157 @@
+#RDSiteWReg3 {
+    border: 2px solid transparent;
+    background: transparent url('/static/static_site/img/back_chip.png') 100% 100% no-repeat;
+    background-size: contain;
+}
+
+.site-chip-content {
+    position: absolute;
+    top: 125px;
+    left: 226px;
+    z-index: 1;
+    width: 378px;
+    height: 234px;
+    font-size: 10pt;
+    text-shadow: none;
+}
+
+
+.site-chip-content-path {
+    position: relative;
+    float: left;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.site-chip-content-path.left {
+    width: 45%;
+    padding-top: 80px;
+}
+
+.site-chip-content-path.right {
+    width: 55%;
+    padding-top: 6px;
+}
+
+
+/* Аватарка и никнейм */
+
+.site-chip-content-avatar-block {
+    position: relative;
+    height: 146px;
+    width: 170px;
+    background-image: url('/static/content/default_images/default_avatar_170_146.png');
+    margin: auto;
+}
+
+.site-chip-content-nickname-block {
+    position: relative;
+    padding: 0 2px;
+    width: 85%;
+    margin: 0 auto 0 auto;
+    box-sizing: border-box;
+    top: -18px;
+    background-color: #01380b;
+    border-radius: 3px;
+}
+
+.site-chip-content-nickname {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+
+/* Правая часть с характеристиками */
+
+.site-chip-content-line {
+    position: relative;
+    line-height: 1.0;
+    padding: 0 5px 0 0;
+    margin: 0 auto;
+    box-sizing: border-box;
+    height: 13px;
+}
+
+
+.site-chip-content-line.shift {
+    margin-left: 30px;
+}
+
+.site-chip-content-line-text {
+    position: relative;
+}
+
+.site-chip-content-line-text.left {
+    float: left;
+}
+
+.site-chip-content-line-text.right {
+    float: right;
+}
+
+.site-chip-content-line-text.bold {
+    font-family: Nouveau_IBM;
+}
+
+.site-chip-content-line-text.user-ordinal-number {
+    position: absolute;
+    top: 104px;
+    left: -225px;
+    font-size: 12pt;
+    color: #31c811;
+    text-shadow: -2px 2px 0px #082801;
+    transform: rotateZ(-90deg);
+}
+
+
+
+/* Кнопки */
+.reg3-btn {
+    position: absolute;
+    width: 170px;
+    height: 60px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.reg3-btn.reg3-top {top: 30px;}
+.reg3-btn.reg3-bottom {bottom: 30px;}
+.reg3-btn.reg3-left {left: 20px;}
+.reg3-btn.reg3-right {right: 20px;}
+
+.reg3-btn.reg3-school { background: transparent url('/static/static_site/img/chip_buttons/school.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school:hover {background: transparent url('/static/static_site/img/chip_buttons/school_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school:active {background: transparent url('/static/static_site/img/chip_buttons/school_press.png') 100% 100% no-repeat;}
+
+.reg3-btn.reg3-novice {background: transparent url('/static/static_site/img/chip_buttons/noob.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice:hover {background: transparent url('/static/static_site/img/chip_buttons/noob_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice:active {background: transparent url('/static/static_site/img/chip_buttons/noob_press.png') 100% 100% no-repeat;}
+
+.reg3-btn.reg3-back { background: transparent url('/static/static_site/img/chip_buttons/back.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back:hover {background: transparent url('/static/static_site/img/chip_buttons/back_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back:active {background: transparent url('/static/static_site/img/chip_buttons/back_press.png') 100% 100% no-repeat;}
+
+.reg3-btn.reg3-finish { background: transparent url('/static/static_site/img/chip_buttons/start.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish:hover {background: transparent url('/static/static_site/img/chip_buttons/start_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish:active {background: transparent url('/static/static_site/img/chip_buttons/start_press.png') 100% 100% no-repeat;}
+
+
+
+@media screen and (max-width: 1366px) {
+    .site-chip-content {
+        top: 85px;
+        left: 120px;
+    }
+
+    .site-chip-content-path.right {
+        padding-top: 2px;
+    }
+
+    .reg3-btn.reg3-top {top: 2px;}
+    .reg3-btn.reg3-bottom {bottom: 2px;}
+
+    .site-chip-content-line-text.user-ordinal-number {
+        left: -224px;
+    }
+}

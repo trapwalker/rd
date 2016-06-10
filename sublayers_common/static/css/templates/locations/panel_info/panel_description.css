@@ -1,0 +1,32 @@
+.panel-info-description {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    font: 16px Nouveau_IBM;
+    color: #2ffa00;
+    box-sizing: border-box;
+}
+
+.panel-info-description .panel-info-description-label {
+    position: relative;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 20px;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
+.panel-info-description .panel-info-content-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 170px;
+}
+
+.panel-info-description .panel-info-content {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
+.panel-info-description ul {margin-top: 2px;}
+.panel-info-description li {}

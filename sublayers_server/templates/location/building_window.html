@@ -1,116 +1,53 @@
-{% set npc_photo = cur_build.head.photo %}
-{% set npc_title = cur_build.head.title %}
-{% set npc_text = cur_build.head.text %}
-
 <div class="building-main">
-    {% include npc_header.html %}
+    {% if cur_build.head is not None %}
+        {% set npc_photo = cur_build.head.photo %}
+        {% set npc_title = cur_build.head.title %}
+        {% set npc_text = cur_build.head.text %}
+        {% include npc_header.html %}
+    {% end %}
     <div class="building-center-block">
         <div class="building-center-menu-block">
-            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks">
-                <div class="building-center-menu-item-icon"></div>
-                <div class="building-center-menu-item-caption">Доступные задания</div>
-            </div>
-            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks">
-                <div class="building-center-menu-item-icon"></div>
-                <div class="building-center-menu-item-caption">Активные задания</div>
-            </div>
+            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks_{{ building }}">Доступные задания</div>
+            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks_{{ building }}">Активные задания</div>
         </div>
         <div class="building-center-pages-block">
-            <div id="buildingPageAvailableTasks" class="building-center-page">
+            <div id="buildingPageAvailableTasks_{{ building }}" class="building-center-page">
                 <div class="building-quest-list-block">
                     <div class="building-quest-list building-inventory-list">
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 2</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 3</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 4</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 5</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
+{#                        <div class="building-quest-list-item">#}
+{#                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>#}
+{#                            <div class="building-quest-list-item-lvl">Уровень: 1</div>#}
+{#                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>#}
+{#                            <div class="building-quest-list-item-time">00:00:00</div>#}
+{#                        </div>#}
                     </div>
                 </div>
             </div>
-            <div id="buildingPageActiveTasks" class="building-center-page">
+            <div id="buildingPageActiveTasks_{{ building }}" class="building-center-page">
                 <div class="building-quest-list-block">
                     <div class="building-quest-list building-inventory-list">
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
-                        <div class="building-quest-list-item">
-                            <div class="building-quest-list-item-caption">Тестовый квест 2</div>
-                            <div class="building-quest-list-item-lvl">Уровень: 1</div>
-                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>
-                            <div class="building-quest-list-item-time">00:00:00</div>
-                        </div>
+{#                        <div class="building-quest-list-item">#}
+{#                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>#}
+{#                            <div class="building-quest-list-item-lvl">Уровень: 1</div>#}
+{#                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>#}
+{#                            <div class="building-quest-list-item-time">00:00:00</div>#}
+{#                        </div>#}
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="building-bottom-block">
-        <div class="building-bottom-caption">Выбор специалиста</div>
         <div class="building-npc-list-block">
             <div class="building-npc-list building-inventory-list">
                 {% for npc in cur_build.instances %}
-                <div class="building-npc-list-item" onclick="openNPC('{{ npc.type }}', '{{ building }}')">
+                <div class="building-npc-list-item" onclick="locationManager.openNPC('{{ npc.node_html() }}')">
                     <img class="building-npc-photo" src="{{ npc.photo }}"/>
-                    <div class="building-npc-name">{{ npc.title }}<br>({{ npc.doc }})</div>
+                    <div class="building-npc-name-block"><span class="building-npc-name"> {{ npc.doc }} </span></div>
                 </div>
                 {% end %}
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    // Функции подстраивающие ширины списка под их содержимое
-    function resizeLists() {
-        var lists = $('#building_{{ building }}').find(".building-inventory-list");
-        lists.each(function(index, list) {
-            var width = 0;
-            var jq_list = $(list);
-            if (jq_list) {
-                jq_list.children().each(function (index, element) {
-                    if ($(element).css('display') == 'block')
-                        width += $(element).outerWidth() + parseInt($(element).css('margin-right'));
-                });
-                jq_list.width(width);
-            }
-        });
-    }
-    resizeLists();
-
-    $('.building-center-menu-item').click(function(){
-        $('.building-center-menu-item').removeClass('active');
-        $(this).addClass('active');
-        $('.building-center-page').css('display', 'none');
-        $('#' + $(this).data('page_id')).css('display', 'block');
-    });
-    $('.building-center-menu-item').first().click();
-</script>
 

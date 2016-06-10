@@ -100,6 +100,7 @@ class Node(AbstractDocument):
                 log.warning(
                     'Required value %s of %s is not defined in property owner class %s',
                     name, self, self.__class__,
+            html_hash=self.node_html(),
                 )
 
             if is_reference_field and value is not None and not isinstance(value, field.reference_type):
