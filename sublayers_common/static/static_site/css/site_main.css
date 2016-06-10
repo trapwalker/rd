@@ -335,7 +335,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     .site-main-all-block {
         width: 1189px;
         height: 821px;
-        top: -400px;
+        /*top: -400px;*/
     }
 
     .site-main-all-block .microwawe {
