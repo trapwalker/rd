@@ -387,6 +387,8 @@ var LocationPlace = (function () {
                 return (new LocationTrainerNPC(npc_rec, jq_town_div, key));
             case 'barman':
                 return (new LocationBarmanNPC(npc_rec, jq_town_div, key));
+            case 'girl':
+                return (new LocationGirlNPC(npc_rec, jq_town_div, key));
             case 'npc_gas_station':
                 return (new LocationGasStationNPC(npc_rec, jq_town_div, key));
             default:
