@@ -805,10 +805,7 @@ class UserExampleSelfShortMessage(Message):
 
         rpg_info.update(
             current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
-            all_skill_points=(lvl + agent.example.role_class.start_free_point_skills +
-                              agent.example.buy_driving.value + agent.example.buy_shooting.value +
-                              agent.example.buy_masking.value + agent.example.buy_leading.value +
-                              agent.example.buy_trading.value + agent.example.buy_engineering.value),
+            all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
             driving=self.agent.example.driving.as_client_dict(),
             shooting=self.agent.example.shooting.as_client_dict(),
             masking=self.agent.example.masking.as_client_dict(),
@@ -822,7 +819,6 @@ class UserExampleSelfShortMessage(Message):
             buy_leading=self.agent.example.buy_leading.as_client_dict(),
             buy_trading=self.agent.example.buy_trading.as_client_dict(),
             buy_engineering=self.agent.example.buy_engineering.as_client_dict(),
-
 
             # current_exp=self.agent.stat_log.get_metric('exp'),
             # next_level=nxt_lvl,

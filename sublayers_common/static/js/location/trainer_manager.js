@@ -5,7 +5,7 @@ var LocationTrainerNPC = (function (_super) {
         _super.call(this, npc_rec, jq_town_div, building_name);
         var self = this;
 
-        this.all_skill_points = 0;
+        this.all_skill_points = 0;  // без учета купленных
         this.cur_level = 0;
         this.drop_price = 0;
         this.skills = {
@@ -170,8 +170,10 @@ var LocationTrainerNPC = (function (_super) {
 
         var buy_skill_point = 0;
         for (var buy_skill_name in this.buy_skills)
-            if (this.buy_skills.hasOwnProperty(buy_skill_name))
+            if (this.buy_skills.hasOwnProperty(buy_skill_name)) {
                 buy_skill_point += this.buy_skills[buy_skill_name].value;
+                console.log(this.buy_skills[buy_skill_name]);
+            }
 
         return this.all_skill_points - skill_point + buy_skill_point;
     };
@@ -213,7 +215,6 @@ var LocationTrainerNPC = (function (_super) {
                 skill.description = ex_skill.description;
                 this.jq_main_div.find('.trainer-skill-' + skill_name).text(this._getSkillValue(skill_name));
             }
-        this.jq_main_div.find('.trainer-skill-free-points').text(this._getFreeSkillPoints());
 
         // Апдейты
         this.jq_main_div.find('.trainer-center-updates-block').css('display', 'none');
@@ -232,6 +233,7 @@ var LocationTrainerNPC = (function (_super) {
                 }
             }
         this.jq_main_div.find('.trainer-update-price').text(0);
+        this.jq_main_div.find('.trainer-skill-free-points').text(this._getFreeSkillPoints());
 
         // Перки
         for (var i = 0; i < user.example_agent.rpg_info.perks.length; i++) {
