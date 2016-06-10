@@ -820,7 +820,6 @@ class UserExampleSelfShortMessage(Message):
             buy_trading=self.agent.example.buy_trading.as_client_dict(),
             buy_engineering=self.agent.example.buy_engineering.as_client_dict(),
 
-
             # current_exp=self.agent.stat_log.get_metric('exp'),
             # next_level=nxt_lvl,
             # next_level_exp=nxt_lvl_exp,

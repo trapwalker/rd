@@ -353,3 +353,24 @@ var LocationTraderNPC = (function (_super) {
 
     return LocationTraderNPC;
 })(LocationPlaceNPC);
+
+
+var LocationBarmanNPC = (function (_super) {
+    __extends(LocationBarmanNPC, _super);
+
+    function LocationBarmanNPC(npc_rec, jq_town_div, building_name) {
+        _super.call(this, npc_rec, jq_town_div, building_name);
+        this.jq_main_div.find('.trader-center-player-table-label').text('Ваши квесты:');
+        this.jq_main_div.find('.trader-center-trader-table-label').text('Квесты на продажу:');
+    }
+
+    LocationBarmanNPC.prototype.get_self_info = function () {
+        console.log('LocationBarmanNPC.prototype.get_self_info');
+    };
+
+    LocationBarmanNPC.prototype.apply = function() {
+        console.log('LocationBarmanNPC.prototype.apply');
+    };
+
+    return LocationBarmanNPC;
+})(LocationTraderNPC);
