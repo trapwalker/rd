@@ -1,0 +1,81 @@
+.panel-info-car-info {
+    position: relative;
+    width: 100%;
+    min-height: 130px;
+    font: 16px Nouveau_IBM;
+    color: #2ffa00;
+    box-sizing: border-box;
+}
+
+.panel-info-car-info-label {
+    position: relative;
+    text-align: left;
+    float: left;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    width: 35%;
+}
+
+.panel-info-car-info-car-name {
+    position: relative;
+    text-align: right;
+    float: left;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    width: 65%;
+}
+
+.panel-info-car-info-car {
+    position: relative;
+    width: 100%;
+}
+.panel-info-car-info-car .car-info-block-picture-main { transform: scale(0.813); margin: 0 0 0 -46px; }
+
+.panel-info-car-info-car .car-info-block-picture::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(2px) brightness(200%);
+    -webkit-filter: blur(2px) brightness(200%);
+}
+.panel-info-car-info-car .car-info-block-picture::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(4px) brightness(200%);
+    -webkit-filter: blur(4px) brightness(200%);
+}
+
+.panel-info-car-info-car .armorer-car-slot-picture::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(3px) brightness(200%);
+    -webkit-filter: blur(3px) brightness(200%);
+}
+.panel-info-car-info-car .armorer-car-slot-picture::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(0px) brightness(200%);
+    -webkit-filter: blur(0px) brightness(200%);
+    opacity: 0.6;
+}

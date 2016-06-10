@@ -1,207 +1,210 @@
-#townTrainerPageWrap {
-    position: absolute;
-    top: 140px;
-    left: 592px;
-}
-
 .trainerWindow-main {
     position: relative;
-    width: 734px;
-    height: 661px;
     cursor: default;
-    overflow-x: hidden;
-    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .trainer-center {
     position: relative;
+    padding-top: 8px;
+    margin: auto;
+    width: 650px;
+    height: 520px;
+    color: #31c811;
+    font: 12pt Nouveau_IBM;
     box-sizing: border-box;
-    margin-right: auto;
-    margin-left: auto;
-    width: 620px;
-    height: 450px;
 }
 
-.trainer-center-side {
+.trainer-center-block {
+    background-color: rgba(0, 0, 0, 0.45);
+    border: solid 1px #135806;
+    box-sizing: border-box;
+    margin: 0 4px 4px 0 ;
+}
+.trainer-center-block.right-block { margin-right: 0px; }
+
+.trainer-center-header {
     position: relative;
     float: left;
-    width: 50%;
-    height: 100%;
-}
-
-#trainer-perks {
-    height: calc(100% - 30px);
-}
-
-#trainer-skills {
-    height: 170px;
-}
-
-#trainer-trains {
-    height: calc(100% - 30px - 172px);
-}
-
-.trainer-table-main {
-    position: relative;
-    width: calc(100% - 4px);
-    box-sizing: border-box;
-    margin: 2px auto 0px auto;
-    border: 1px solid #135806;
-}
-
-.trainer-table-header {
-    position: relative;
-    box-sizing: border-box;
-    border-bottom: 1px solid #135806;
+    width: calc(50% - 2px);
     height: 30px;
-    width: 100%;
-    color: #29F200;
-    font: 12pt Nouveau_IBM;
     text-align: center;
-    line-height: 2;
+    line-height: 30px;
 }
+
+.trainer-center-content {
+    position: relative;
+    float: left;
+    width: calc(50% - 2px);
+    height: 430px;
+}
+
+.trainer-center-skills {
+    position: relative;
+    height: 200px;
+    width: 100%;
+}
+
+.trainer-center-updates {
+    position: relative;
+    height: 226px;
+    width: 100%;
+}
+
+.trainer-center-button {
+    position: relative;
+    cursor: pointer;
+    float: left;
+    width: calc(50% - 2px);
+    height: 25px;
+    background-color: #082801;
+    color: #31c811;
+    text-align: center;
+    line-height: 25px;
+}
+.trainer-center-button:hover { background-color: #0c4b00; color: #2ffa00; }
+.trainer-center-button.active { background-color: #0c4b00; color: #31c811; }
 
 .trainer-table-list {
     position: relative;
-    box-sizing: border-box;
-    height: calc(100% - 50px);
+    height: calc(100% - 25px);
     width: 100%;
     overflow-y: auto;
+    padding: 4px;
+    box-sizing: border-box;
 }
 
 .trainer-table-footer {
     position: relative;
     box-sizing: border-box;
     border-top: 1px solid #135806;
-    height: 20px;
+    height: 25px;
     width: 100%;
-    color: #22BD00;
-    font: 12pt Nouveau_IBM;
-    line-height: 1.3;
+    line-height: 25px;
 }
 
 .trainer-table-footer-caption {
     position: relative;
-    box-sizing: border-box;
     float: left;
     width: 60%;
+    padding-left: 15px;
     text-align: left;
-    padding-left: 5px;
+    box-sizing: border-box;
 }
 
 .trainer-table-footer-value {
     position: relative;
-    box-sizing: border-box;
     float: left;
     width: 40%;
+    padding-right: 15px;
     text-align: right;
-    padding-right: 5px;
-}
-
-.trainer-drop-button {
-    position: relative;
-    cursor: pointer;
-    height: 20px;
-    width: calc(100% - 4px);
     box-sizing: border-box;
-    margin: 8px auto 0px auto;
-    border: 1px solid #135806;
-    background-color: #0d3707;
-    font: 12pt Nouveau_IBM;
-    text-align: center;
-    color: #29F200;
-    opacity: 0.8;
 }
-
-.trainer-drop-button:hover {opacity: 1;}
 
 .trainer-skill-item-main {
     position: relative;
     width: 100%;
-    height: 16px;
-    margin-top: 2px;
-    color: #22BD00;
-    font: 12pt Nouveau_IBM;
+    height: 20px;
+    line-height: 20px;
+    margin-bottom: 5px;
 }
+.trainer-skill-item-main:hover { color: #2ffa00 }
 
 .trainer-skill-item-caption {
     position: relative;
     float: left;
     width: calc(100% - 82px);
     height: 100%;
-    box-sizing: border-box;
     padding-left: 5px;
     text-align: left;
+    box-sizing: border-box;
 }
 
 .trainer-skill-item-change-arrow {
     position: relative;
     float: left;
     box-sizing: border-box;
-    margin-top: 2px;
+    margin-top: 4px;
     border: 6px solid transparent;
     cursor: pointer;
-    opacity: 0.8;
 }
-
-.trainer-skill-item-change-arrow:hover {opacity: 1;}
-
-.trainer-skill-item-dec {
-    border-right: 6px solid #22BD00;
-    margin-right: 4px;
-}
-
-.trainer-skill-item-inc {
-    border-left: 6px solid #22BD00;
-    margin-left: 4px;
-}
+.trainer-skill-item-dec { border-right: 6px solid #31c811; margin-right: 4px; }
+.trainer-skill-item-dec:hover { border-right-color: #2ffa00; }
+.trainer-skill-item-inc { border-left: 6px solid #31c811; margin-left: 4px; }
+.trainer-skill-item-inc:hover { border-left-color: #2ffa00; }
 
 .trainer-skill-item-value {
     position: relative;
     float: left;
-    box-sizing: border-box;
     width: 50px;
     height: 100%;
     text-align: center;
-    line-height: 1.2;
+    box-sizing: border-box;
 }
 
+.trainer-center-updates-block {
+    position: relative;
+    cursor: pointer;
+    float: left;
+    width: 90px;
+    height: 100px;
+    margin: 7px 0 0 12px;
+    background-color: #082801;
+}
+.trainer-center-updates-block:hover { background-color: #0E4b00; }
+.trainer-center-updates-block.active { background-color: #0E4b00; }
 
-.trainer-perk-item-main {
+.trainer-center-updates-picture {
     position: relative;
     width: 100%;
-    height: 16px;
-    margin-top: 3px;
-    color: #22BD00;
-    font: 12pt Nouveau_IBM;
+    height: 100%;
+}
+.trainer-buy-driving-picture { background: url('/static/content/locations/institutions/trainer/driving_skill.png'); }
+.trainer-buy-shooting-picture { background: url('/static/content/locations/institutions/trainer/shooting_skill.png'); }
+.trainer-buy-masking-picture { background: url('/static/content/locations/institutions/trainer/secrecy_skill.png'); }
+.trainer-buy-engineering-picture { background: url('/static/content/locations/institutions/trainer/mechanica_skill.png'); }
+.trainer-buy-trading-picture { background: url('/static/content/locations/institutions/trainer/trading_skill.png'); }
+.trainer-buy-leading-picture { background: url('/static/content/locations/institutions/trainer/leading_skill.png'); }
+
+.trainer-center-updates-label {
+    position: absolute;
+    font-size: 10pt;
+    top: 3px;
+    right: 3px;
 }
 
-.trainer-perk-item-main.disable { color: #555555; }
+.trainer-perk-item {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    margin-bottom: 5px;
+}
+.trainer-perk-item:hover { color: #2ffa00 }
 
 .trainer-perk-item-caption {
     position: relative;
     float: left;
-    width: calc(100% - 28px);
+    width: calc(100% - 37px);
     height: 100%;
-    box-sizing: border-box;
     padding-left: 5px;
-    text-align: left;
+    box-sizing: border-box;
 }
 
 .trainer-perk-item-checkbox {
     position: relative;
     float: left;
     cursor: pointer;
-    width: 20px;
+    width: 33px;
     height: 100%;
+    text-align: center;
+    margin-left: 4px;
     box-sizing: border-box;
-    margin: 0 4px 0 4px;
 }
-
-.trainer-perk-item-checkbox.default { display: none; }
-.trainer-perk-item-checkbox.active {background: transparent url('../../../img/check_box/checkbox_check.png') no-repeat 100% 100%;}
-.trainer-perk-item-checkbox.unactive { background: transparent url('../../../img/check_box/checkbox_clear.png') no-repeat 100% 100%;}
-.trainer-perk-item-checkbox.disable { display: none; }
+.trainer-perk-item-checkbox.default { cursor: default; }
+.trainer-perk-item-checkbox.disable { cursor: default; }
 
 .trainer-light-back {
     background-color: #000000;
@@ -218,6 +221,7 @@
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
 }
+
 
 
 

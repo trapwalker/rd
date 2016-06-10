@@ -1,15 +1,12 @@
-{% set npc_photo = town.example.tuner.photo %}
-{% set npc_title = town.example.tuner.title %}
-{% set npc_text = town.example.tuner.text %}
+{% set npc_photo = cur_npc.photo %}
+{% set npc_title = cur_npc.title %}
+{% set npc_text = cur_npc.text %}
 
 <div class="tunerWindow-main">
     {% include npc_header.html %}
     <div class="tuner-center">
-        <div class="armorer-car">
-            {% raw open(tuner_link).read() %}
-        </div>
+        <div class="armorer-car"></div>
         <div class="tunerRightSide">
-
             <div id="tunerPontPointsValue"></div>
         </div>
     </div>
@@ -17,19 +14,19 @@
 </div>
 
 <script>
-    {% for slot in tuner_slots %}
-    $("#tuner_top_{{slot}}").mouseenter(function() {
-        locationManager.tuner.hoverSlot("{{slot}}", true);
-    });
-    $("#tuner_side_{{slot}}").mouseenter(function() {
-        locationManager.tuner.hoverSlot("{{slot}}", true);
-    });
-
-    $("#tuner_top_{{slot}}").mouseleave(function() {
-        locationManager.tuner.hoverSlot("{{slot}}", false);
-    });
-    $("#tuner_side_{{slot}}").mouseleave(function() {
-        locationManager.tuner.hoverSlot("{{slot}}", false);
-    });
-    {% end %}
+{#    {% for slot in tuner_slots %}#}
+{#    $("#tuner_top_{{slot}}").mouseenter(function() {#}
+{#        locationManager.tuner.hoverSlot("{{slot}}", true);#}
+{#    });#}
+{#    $("#tuner_side_{{slot}}").mouseenter(function() {#}
+{#        locationManager.tuner.hoverSlot("{{slot}}", true);#}
+{#    });#}
+{##}
+{#    $("#tuner_top_{{slot}}").mouseleave(function() {#}
+{#        locationManager.tuner.hoverSlot("{{slot}}", false);#}
+{#    });#}
+{#    $("#tuner_side_{{slot}}").mouseleave(function() {#}
+{#        locationManager.tuner.hoverSlot("{{slot}}", false);#}
+{#    });#}
+{#    {% end %}#}
 </script>

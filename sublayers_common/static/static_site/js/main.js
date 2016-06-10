@@ -29,7 +29,7 @@ function main() {
     canvasDisplayLine = new CanvasDisplayLine();
     canvasDisplayRippling = new CanvasDisplayRippling();
     canvasBlackOut = new CanvasBlackOut();
-    indicatorBlink = new IndicatorBlink();
+    //indicatorBlink = new IndicatorBlink();
     //textBlurBlink = new TextBlurBlink();
 
     // Получить стартовые ролевые классы и аватарки
@@ -71,6 +71,8 @@ function main() {
     for (var i = 0; i < ratings_name.length; i++) {
         GetRatingInfo(ratings_name[i]);
     }
+
+    initRadioPlayer();
 }
 
 function init_site_sound() {

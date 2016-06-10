@@ -551,6 +551,13 @@ var User = (function () {
         this.login = null;
         this.userCar = null;
         this.balance = 0;
+
+
+        this.example_car = null;
+        this.example_agent = null;
+        this.avatar_link = null;
+        this.templates = {};
+        this.car_npc_info = null;
     }
 
 

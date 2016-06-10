@@ -1,10 +1,9 @@
 .hangarWindow-main {
     position: relative;
+    cursor: default;
     width: 100%;
     height: 100%;
-    cursor: default;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .hangar-center {
@@ -12,6 +11,7 @@
     margin: 0 auto 0 auto;
     width: 734px;
     height: 392px;
+    background-color: rgba(0, 0, 0, 0.45);
     border-width: 1px 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
@@ -27,19 +27,19 @@
 
 .hangar-car-list {
     position: relative;
-    margin-right: auto;
-    margin-left: auto;
-    width: 635px;
-    height: 113px;
+    margin: auto;
+    width: 572px;
+    height: 125px;
 }
 
 .hangar-car-list-label {
-    box-sizing: border-box;
-    height: 20px;
+    position: relative;
+    padding-top: 12px;
+    height: 35px;
     color: #29F200;
     font: 11pt Nouveau_IBM;
-    padding-top: 3px;
     margin-left: 20px;
+    box-sizing: border-box;
 }
 
 .hangar-car-list-wrap {
@@ -47,45 +47,4 @@
     height: 90px;
     overflow-x: scroll;
     float: left;
-}
-
-.hangar-car-list-itemWrap {
-    box-sizing: border-box;
-    margin-right: 10px;
-    width: 130px;
-    height: 70px;
-    float: left;
-    background-color: #021503;
-    opacity: 0.6;
-}
-.hangar-car-list-itemWrap:hover {
-    opacity: 1;
-    background-color: #073D06;
-}
-
-.hangar-car-list-itemWrap-active {
-    opacity: 1;
-    background-color: #073D06;
-}
-
-.hangar-car-list-item {
-    position: relative;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    float: left;
-}
-
-.hangar-car-list-name {
-    position: absolute;
-    padding: 2px 2px 2px 2px;
-    font: 10pt Nouveau_IBM;
-    color: #29F200;
-    margin-left: 3px;
-}
-
-.hangar-car-list-pictureWrap {
-    position: absolute;
-    height: 100%;
-    width: 100%;
 }

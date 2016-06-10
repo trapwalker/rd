@@ -1,109 +1,14 @@
-{% set npc_photo = town.example.armorer.photo %}
-{% set npc_title = town.example.armorer.title %}
-{% set npc_text = town.example.armorer.text %}
-
 <div class="armorerWindow-main">
+    {% set npc_photo = cur_npc.photo %}
+    {% set npc_title = cur_npc.title %}
+    {% set npc_text = cur_npc.text %}
     {% include npc_header.html %}
     <div class="armorer-center">
-        <div class="armorer-car">
-            {% module Template(armorer_link, car=agent.example.car, need_css_only=False) %}
-        </div>
+        <div class="armorer-car"></div>
         <div class="armorerSectors">
             <div class="armorerSectors-slotName">Имя слота</div>
-            <div class="armorerSectors-svg">
-                {% raw open(sector_svg_link).read() %}
-            </div>
+            <div class="armorerSectors-svg"></div>
         </div>
     </div>
     {% include npc_inventory.html %}
 </div>
-
-<script>
-    // Подсветка слотов при наведении указателя мыши
-    function setSlotOpacity(slot_name, hover) {
-        if (hover) {
-            $("#top_" + slot_name).addClass("armorer-slot-hover");
-            $("#side_" + slot_name).addClass("armorer-slot-hover");
-        }
-        else {
-            $("#top_" + slot_name).removeClass("armorer-slot-hover");
-            $("#side_" + slot_name).removeClass("armorer-slot-hover");
-        }
-    }
-
-    // Подсветка активных слотов
-    function dropSlotActive() {
-        $('.armorer-slot').removeClass("armorer-slot-active");
-    }
-
-    function setSlotActive(slot_name) {
-        $("#top_" + slot_name).addClass("armorer-slot-active");
-        $("#side_" + slot_name).addClass("armorer-slot-active");
-    }
-
-    {% for slot in armorer_slots %}
-    $("#top_{{slot}}").mouseenter(function() {
-        setSlotOpacity("{{slot}}", true);
-    });
-    $("#side_{{slot}}").mouseenter(function() {
-        setSlotOpacity("{{slot}}", true);
-    });
-
-    $("#top_{{slot}}").mouseleave(function() {
-        setSlotOpacity("{{slot}}", false);
-    });
-    $("#side_{{slot}}").mouseleave(function() {
-        setSlotOpacity("{{slot}}", false);
-    });
-
-    $("#top_{{slot}}").click(function() {
-        locationManager.armorer.setActiveSlot("{{slot}}");
-    });
-    $("#side_{{slot}}").click(function() {
-        locationManager.armorer.setActiveSlot("{{slot}}");
-    });
-
-    {% end %}
-    // Подсветка секторов
-
-    function addClassSVG(obj, cls) {
-        var oldClass = obj.attr('class');
-        if (!oldClass) oldClass = cls;
-        oldClass= oldClass.toString();
-        if (oldClass.indexOf(cls) == -1) oldClass += ' ' + cls;
-        obj.attr('class', oldClass);
-    }
-
-    function removeClassSVG(obj, cls) {
-        var oldClass = obj.attr('class');
-        if (!oldClass) return;
-        oldClass = oldClass.toString();
-        oldClass = oldClass.replace(cls, '');
-        obj.attr('class', oldClass);
-    }
-
-    function dropSectorActive() {
-        removeClassSVG($("#sector_F"), 'car_sector_active');
-        removeClassSVG($("#sector_B"), 'car_sector_active');
-        removeClassSVG($("#sector_L"), 'car_sector_active');
-        removeClassSVG($("#sector_R"), 'car_sector_active');
-    }
-
-    function setSectorActive(sectorName) {
-        addClassSVG($("#sector_" + sectorName), 'car_sector_active');
-    }
-
-    {% for sector in ['F', 'B', 'L', 'R'] %}
-    addClassSVG($("#sector_{{sector}}"), 'car_sector_disable');
-
-    $("#sector_{{sector}}").mouseenter(function() {
-        addClassSVG($("#sector_{{sector}}"), 'car_sector_hover');
-    });
-    $("#sector_{{sector}}").mouseleave(function() {
-        removeClassSVG($("#sector_{{sector}}"), 'car_sector_hover');
-    });
-    $("#sector_{{sector}}").click(function() {
-        locationManager.armorer.setActiveSector("{{sector}}");
-    });
-    {% end %}
-</script>

@@ -42,8 +42,7 @@ class Perk(Root):
                     return False
             return True
         return False
-        
-        
+
 
 class PerkPassive(Perk):
     p_visibility_min = FloatAttribute(default=0, caption=u"Коэффициент минимальной заметности")

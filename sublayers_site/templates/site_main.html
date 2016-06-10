@@ -14,6 +14,11 @@
             font-family: FreePixel;
             src: url( {{ static_url('fonts/FreePixel.ttf') }} );
         }
+
+        @font-face {
+            font-family: perfo-bold;
+            src: url( {{ static_url('fonts/perfo-bold.ttf') }} );
+        }
     </style>
 
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_main.css') }}"/>
@@ -28,12 +33,14 @@
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_ratings.css') }}"/>
 
     <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
+    <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
     <script src="{{ static_url('static_site/js/main.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_object.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_manager.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_keyboard_emulate.js') }}"></script>
+    <script src="{{ static_url('static_site/js/site_html_audio_player.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/text_console.js') }}"></script>
     <script src="{{ static_url('static_site/js/time_manager.js') }}"></script>
     <script src="{{ static_url('static_site/js/canvas/canvas_manager.js') }}"></script>
@@ -81,11 +88,46 @@
                     <a id="RDbtn_news" class="btn-page btn btn-4" href="/#news" data-window_id="RDSiteNews"></a>
                     <a id="RDbtn_ratings" class="btn-page btn btn-5" href="/#ratings" data-window_id="RDSiteWRatings"></a>
                     <a class="btn btn-6" href="/forum" target="_blank"></a>
-                    <div class="btn-fake-radio"></div>
-                    <div class="light-indicator"></div>
+                    <div class="radio-block">
+                        <div class="radio-screen">
+                            <div class="radio-screen-content">
+                                <div class="radio-screen-text radio-screen-channel-name">RADIO ВОЛНА ЛНА</div>
+                                <div class="radio-screen-text radio-screen-track-name" onclick="window.location = 'http://radiotower.su'">RADIOTOWER.SU</div>
+                            </div>
+                        </div>
+                        <div class="radio-control-block">
+                            <div class="radio-quality-btn high-quality"></div>
+                            <div class="radio-power-btn"></div>
+                            <div class="radio-volume-controller-block">
+                                <div class="radio-volume-controller-images">
+                                    <div class="radio-volume-controller-item item-0"></div>
+                                </div>
+                            </div>
+                            <div class="radio-volume-indicator-block">
+                                <div class="radio-volume-indicator-item volume-17"></div>
+                                <div class="radio-volume-indicator-item volume-34"></div>
+                                <div class="radio-volume-indicator-item volume-51"></div>
+                                <div class="radio-volume-indicator-item volume-68"></div>
+                                <div class="radio-volume-indicator-item volume-85"></div>
+                                <div class="radio-volume-indicator-item volume-99"></div>
+                            </div>
+                        </div>
+                        <div class="radio-slider-block">
+                            <div class="radio-slider-channel">
+                                <div class="radio-slider-carette"></div>
+                            </div>
+                            <div class="radio-slider-channel-pointer-block">
+                                <div class="radio-slider-channel-pointer"></div>
+                            </div>
+                            <div class="radio-scale-channels-block"></div>
+                        </div>
+                    </div>
                 </div>
                 <!--Машинка-фон при старте сайте-->
-                <div class="content-start-back content-start"></div>
+                <div class="content-start-back content-start road-grid"></div>
+                <div class="content-start-back content-start road"></div>
+                <div class="content-start-back content-start car"></div>
+
             </div>
             <!--Консоль на главной странице -->
             <div id="RDSiteStartPage" class="content-block content-start switch-page">

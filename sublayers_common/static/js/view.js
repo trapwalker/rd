@@ -6,6 +6,7 @@ $(document).ready(function () {
 
     mapManager._init();
 
+    locationManager = new LocationManager();
     mapCanvasManager = new MapCanvasManager();
     wStrategyModeManager = new WStrategyModeManager();
 
@@ -123,6 +124,11 @@ $(document).ready(function () {
 
     //ws_connector.connect(); // вызывается лишь тогда, когда всё будет загружено и проинициализировано
 
+
+
+
+    // Установка размеров экрана города
+    resizeWindowHandler();
 });
 
 var b_canvas;
@@ -130,10 +136,26 @@ var b_context;
 var pat;
 var img = [];
 var img1;
+var window_scaled_prc = 1.0;
 
 
 function returnFocusToMap() {
     document.getElementById('map').focus();
+}
+
+
+$(window).resize(resizeWindowHandler);
+
+
+function resizeWindowHandler() {
+    //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
+    var scale_prc_w_width = $(window).width() / 1920;
+    var scale_prc_w_height = $(window).height() / 1080;
+    var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
+    if (scale_prc > 0.3) {
+        $('#activeTownDiv').css('transform', 'scale(' + scale_prc + ')');
+        window_scaled_prc = scale_prc;
+    }
 }
 
 

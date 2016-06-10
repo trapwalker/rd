@@ -185,16 +185,30 @@ input:focus {
 
 }
 
-#activeTownDiv {
+#activeTownDivBack {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    background-color: #000000;
     display: none;
-    background-color: #0078A8;
+}
+
+#activeTownDiv {
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
     margin-left: -960px;
     margin-top: -540px;
     left: 50%;
     top: 50%;
+}
+
+@media screen and (max-width: 1367px) {
+    #activeTownDiv {
+
+    }
 }
 
 .my-effect-icon {
@@ -231,6 +245,7 @@ input:focus {
 .main-menu-btn-up:active {
     color: rgba(42, 253, 10, 0.3);
 }
+
 
 /* Настройка скроллбара !!! */
 /* Общие характеристикики скролбара*/

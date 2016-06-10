@@ -17,7 +17,9 @@
             {% if scale_images is not None %}
                 {% set scale_images_links = scale_images[str(scale)] %}
                 <div class="armorer-slot for-journal side_{{ k }}_{{ car.node_html() }} shift-for-journal_{{ car.node_html() }}" style="z-index: 2">
-                    <div class="armorer-car-slot-picture"><img src="{{ static_url(static_world_link_repr(scale_images_links['armorer_side_' + v.direction])) }}" class="armorer_side_{{ v.direction }}"></div>
+                    <div class="armorer-car-slot-picture armorer_side_{{ v.direction }}"
+                         style="background: url({{ static_url(static_world_link_repr(scale_images_links['armorer_side_' + v.direction])) }} ) no-repeat center;
+                                width: 200px; height: 100px;"></div>
                 </div>
             {% end %}
         {% end %}

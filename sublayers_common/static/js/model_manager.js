@@ -39,8 +39,8 @@ var ClientManager = (function () {
     ClientManager.prototype._getMObj = function (uid) {
         //console.log("ClientManager.prototype._getMObj");
         var obj = visualManager.getModelObject(uid);
-        if (obj)
-            console.warn('Contact: Такой объект уже есть на клиенте!');
+        //if (obj)
+        //    console.warn('Contact: Такой объект уже есть на клиенте!');
         return obj;
     };
 
@@ -439,7 +439,7 @@ var ClientManager = (function () {
     ClientManager.prototype.See = function (event) {
         //console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
-            console.warn('Контакт ивент до инициализации своей машинки!');
+            //console.warn('Контакт ивент до инициализации своей машинки!');
             return;
         }
 
@@ -696,58 +696,14 @@ var ClientManager = (function () {
 
     ClientManager.prototype.EnterToLocation = function (event) {
         //console.log('ClientManager.prototype.EnterToLocation', event);
-        // POST запрос на получение города и вывод его на экран.
-        // К этому моменту машинка уже удаляется или вот-вот удалится
-        $.ajax({
-            url: "http://" + location.host + '/api/location',
-            data:  { location_id: event.location.uid },
-            success: function(data) {
-                //console.log('ClientManager.prototype.EnterToLocation Answer');
-
-                if (locationManager.in_location)
-                    clientManager.ExitFromLocation();
-
-                $('#activeTownDiv').append(data);
-                $('#activeTownDiv').css('display', 'block');
-                locationManager.location_uid = event.location.uid;
-                windowTemplateManager.closeAllWindows();
-                locationManager.in_location = true;
-                chat.showChatInTown();
-                locationManager.visitorsManager.update_visitors();
-                locationManager.nucoil.update();
-                locationManager.armorer.update();
-                locationManager.mechanic.update();
-                locationManager.tuner.update();
-                locationManager.trader.updatePlayerInv();
-                locationManager.trader.updateTraderInv();
-                locationManager.trader.updatePrice();
-                locationManager.hangar.update();
-                locationManager.parking.update();
-
-                // Запрос RGP информации для тренера
-                clientManager.sendGetRPGInfo();
-
-                // Принудительно перерисовать все квесты
-                journalManager.quest.redraw();
-            }
-        });
+        locationManager.onEnter(event);
+        mapCanvasManager.is_canvas_render = false;
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
-        locationManager.in_location = false;
-        locationManager.currentNpc = null;
-        chat.showChatInMap();
-        $('#activeTownDiv').empty();
-        $('#activeTownDiv').css('display', 'none');
-        locationManager.location_uid = null;
-        locationManager.visitorsManager.clear_visitors();
-        locationManager.nucoil.clear();
-        locationManager.armorer.clear();
-        locationManager.mechanic.clear();
-        locationManager.tuner.clear();
-        locationManager.trader.clear();
-        locationManager.trainer.clear();
+        locationManager.onExit();
+        mapCanvasManager.is_canvas_render = true;
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -772,10 +728,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
         //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
-        if (event.action)
-            locationManager.visitorsManager.add_visitor(event.visitor);
-        else
-            locationManager.visitorsManager.del_visitor(event.visitor);
+        //if (event.action)
+        //    locationManager.visitorsManager.add_visitor(event.visitor);
+        //else
+        //    locationManager.visitorsManager.del_visitor(event.visitor);
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
@@ -795,38 +751,6 @@ var ClientManager = (function () {
             inventory.setNewSize(event.size);
         else
             console.warn('InventoryIncSizeMessage:: инвентарь' + event.inventory_owner_id + ' отсутствует на клиенте:');
-    };
-
-    ClientManager.prototype.ExamplesShowMessage = function (event) {
-        //console.log('ClientManager.prototype.ExamplesShowMessage', event);
-        // Обновление баланса пользователя
-        user.balance = event.agent_balance;
-        locationManager.example_car_node = event.example_car_node;
-        if (event.inventory) {  // инвентарь может оказаться пустым, так как нет машинки
-            var inv = this._getInventory(event.inventory);
-            if (inventoryList.getInventory(inv.owner_id))
-                inventoryList.delInventory(inv.owner_id);
-            inventoryList.addInventory(inv);
-            locationManager.nucoil.update();
-            locationManager.armorer.update(event.armorer_slots, event.armorer_slots_flags, event.example_car_image_scale);
-            locationManager.mechanic.update(event.mechanic_slots);
-            locationManager.tuner.update(event.tuner_slots);
-            locationManager.trader.updatePlayerInv();
-            locationManager.trader.updateTraderInv();
-            locationManager.hangar.update();
-            locationManager.parking.update();
-        }
-    };
-
-    ClientManager.prototype.TraderInventoryShowMessage = function (event) {
-        //console.log('ClientManager.prototype.TraderInventoryShowMessage', event);
-        var inv = this._getInventory(event.inventory);
-        locationManager.trader_uid = inv.owner_id;
-        if (inventoryList.getInventory(inv.owner_id))
-            inventoryList.delInventory(inv.owner_id);
-        inventoryList.addInventory(inv);
-        locationManager.trader.updateTraderInv();
-        locationManager.trader.updatePrice(event.price.price)
     };
 
     ClientManager.prototype.InventoryItemMessage = function (event) {
@@ -859,11 +783,6 @@ var ClientManager = (function () {
     ClientManager.prototype.GasStationUpdate = function (event) {
         //console.log('ClientManager.prototype.GasStationUpdate', event);
         initGasStation(event.balance, event.fuel);
-    };
-
-    ClientManager.prototype.SetupTraderReplica = function (event) {
-        //console.log('ClientManager.prototype.sendTraderCancel');
-        locationManager.trader.setupTraderReplica(event.replica)
     };
 
     //ClientManager.prototype.GetStashWindow = function (event) {
@@ -928,17 +847,84 @@ var ClientManager = (function () {
         wFireController.updateQuickConsumerPanel(event.quick_panel);
     };
 
+    ClientManager.prototype.NPCTransactionMessage = function (event) {
+        //console.log('ClientManager.prototype.NPCTransactionMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+            locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
+    };
+
     // Фраг
 
     ClientManager.prototype.AddExperienceMessage = function (event) {
         console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
 
-    // RPG
+    // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
+    ClientManager.prototype.UserExampleSelfMessage = function(event) {
+        //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
+        // Эта функция заполняет только шаблоны
+        user.templates = {};
+        if (event.example_car) {
+            for (var key in event.templates)
+                if (event.templates.hasOwnProperty(key)) {
+                    user.templates[key] = event.templates[key];
+                }
+        }
 
-    ClientManager.prototype.RPGStateMessage = function (event) {
-        //console.log('ClientManager.prototype.RPGStateMessage', event);
-        locationManager.trainer.update(event);
+        this.UserExampleSelfShortMessage(event);
+    };
+
+    ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
+        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        user.example_car = event.example_car;
+        user.example_agent = event.example_agent;
+        user.example_agent.rpg_info = event.rpg_info;
+        user.avatar_link = event.avatar_link;
+        if (event.example_car && event.templates)
+            user.templates.html_car_img = event.templates.html_car_img;
+
+        user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
+
+        if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
+            var inv = this._getInventory(event.car_inventory);
+            if (inventoryList.getInventory(inv.owner_id))
+                inventoryList.delInventory(inv.owner_id);
+            inventoryList.addInventory(inv);
+        }
+
+        locationManager.update();
+    };
+
+    ClientManager.prototype.HangarInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.HangarInfoMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
+            locationManager.npc[event.npc_html_hash].update(event);
+        }
+    };
+
+    ClientManager.prototype.ParkingInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.ParkingInfoMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
+            locationManager.npc[event.npc_html_hash].update(event);
+        }
+    };
+
+    ClientManager.prototype.TraderInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.TraderInfoMessage', event);
+        var inv = this._getInventory(event.inventory);
+        if (inventoryList.getInventory(inv.owner_id))
+            inventoryList.delInventory(inv.owner_id);
+        inventoryList.addInventory(inv);
+        if (locationManager.npc.hasOwnProperty(inv.owner_id)) {
+            locationManager.npc[inv.owner_id].updateTraderInv();
+            locationManager.npc[inv.owner_id].updatePrice(event.price.price);
+        }
+    };
+
+    ClientManager.prototype.TrainerInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.TrainerInfoMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+            locationManager.npc[event.npc_html_hash].setDropPrice(event.drop_price);
     };
 
     // Журнал (стоянка)
@@ -964,7 +950,6 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
     };
-
 
     // Исходящие сообщения
 
@@ -1318,14 +1303,15 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendFuelStationActive = function (fuel) {
+    ClientManager.prototype.sendFuelStationActive = function (fuel, tank_list, npc) {
         //console.log('ClientManager.prototype.sendFuelStationActive');
         var mes = {
             call: "fuel_station_active",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                tank_list: locationManager.nucoil.tank_list,
-                fuel: fuel
+                tank_list: tank_list,
+                fuel: fuel,
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
@@ -1362,25 +1348,16 @@ var ClientManager = (function () {
 
     // Оружейник
 
-    ClientManager.prototype.sendArmorerApply = function () {
+    ClientManager.prototype.sendArmorerApply = function (npc) {
         //console.log('ClientManager.prototype.sendArmorerApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "armorer_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                armorer_slots: locationManager.armorer.exportSlotState()
+                npc_node_hash: npc.npc_rec.node_hash,
+                armorer_slots: npc.exportSlotState()
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendArmorerCancel = function () {
-        //console.log('ClientManager.prototype.sendArmorerCancel');
-        var mes = {
-            call: "armorer_cancel",
-            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1388,25 +1365,31 @@ var ClientManager = (function () {
 
     // Механик
 
-    ClientManager.prototype.sendMechanicApply = function () {
+    ClientManager.prototype.sendMechanicApply = function (npc) {
         //console.log('ClientManager.prototype.sendMechanicApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "mechanic_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                mechanic_slots: locationManager.mechanic.exportSlotState()
+                npc_node_hash: npc.npc_rec.node_hash,
+                mechanic_slots: npc.exportSlotState()
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendMechanicCancel = function () {
-        //console.log('ClientManager.prototype.sendMechanicCancel');
+    ClientManager.prototype.sendMechanicRepairApply = function (npc_head_html_hash, hp) {
+        //console.log('ClientManager.prototype.sendMechanicApply');
+        // todo: оптимизировать отправку
         var mes = {
-            call: "mechanic_cancel",
-            rpc_call_id: rpcCallList.getID()
+            call: "mechanic_repair_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc_head_html_hash,
+                hp: hp
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1414,25 +1397,16 @@ var ClientManager = (function () {
 
     // Тюнер
 
-    ClientManager.prototype.sendTunerApply = function () {
+    ClientManager.prototype.sendTunerApply = function (npc) {
         //console.log('ClientManager.prototype.sendTunerApply');
         // todo: оптимизировать отправку
         var mes = {
             call: "tuner_apply",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                tuner_slots: locationManager.tuner.exportSlotState()
+                npc_node_hash: npc.npc_rec.node_hash,
+                tuner_slots: npc.exportSlotState()
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendTunerCancel = function () {
-        //console.log('ClientManager.prototype.sendTunerCancel');
-        var mes = {
-            call: "tuner_cancel",
-            rpc_call_id: rpcCallList.getID()
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1440,25 +1414,27 @@ var ClientManager = (function () {
 
     // Торговец
 
-    ClientManager.prototype.sendTraderApply = function () {
-        //console.log('ClientManager.prototype.sendTraderApply');
+    ClientManager.prototype.sendGetTraderInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendGetParkingInfo', npc);
         var mes = {
-            call: "trader_apply",
+            call: "get_trader_info",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                player_table: locationManager.trader.getPlayerTable(),
-                trader_table: locationManager.trader.getTraderTable()
-            }
+            params: { npc_node_hash: npc.npc_rec.node_hash }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendTraderCancel = function () {
-        //console.log('ClientManager.prototype.sendTraderCancel');
+    ClientManager.prototype.sendTraderApply = function (npc) {
+        //console.log('ClientManager.prototype.sendTraderApply');
         var mes = {
-            call: "trader_cancel",
-            rpc_call_id: rpcCallList.getID()
+            call: "trader_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                player_table: npc.getPlayerTable(),
+                trader_table: npc.getTraderTable(),
+                npc_node_hash: npc.npc_rec.node_hash,
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1466,13 +1442,40 @@ var ClientManager = (function () {
 
     // Ангар
 
-    ClientManager.prototype.sendHangarCarChoice = function () {
+    ClientManager.prototype.sendHangarSell = function (npc) {
         //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
         var mes = {
-            call: "choice_car_in_hangar",
+            call: "sell_car_in_hangar",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_number: locationManager.hangar.current_car
+                npc_node_hash: npc.npc_rec.node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendHangarBuy = function (npc) {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "buy_car_in_hangar",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash,
+                car_number: npc.current_car
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetHangarInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        var mes = {
+            call: "get_hangar_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
@@ -1481,25 +1484,41 @@ var ClientManager = (function () {
 
     // Стоянка
 
-    ClientManager.prototype.sendParkingSelectCar = function () {
-//        console.log('ClientManager.prototype.sendParkingSelectCar', locationManager.parking.current_car);
+    ClientManager.prototype.sendParkingLeave = function (npc) {
+        //console.log('ClientManager.prototype.sendParkingLeave');
         var mes = {
-            call: "parking_select_car",
+            call: "parking_leave_car",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_number: locationManager.parking.current_car
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendParkingLeaveCar = function () {
-        //console.log('ClientManager.prototype.sendParkingLeaveCar');
+    ClientManager.prototype.sendParkingSelect = function (npc) {
+        //console.log('ClientManager.prototype.sendParkingSelect');
         var mes = {
-            call: "parking_leave_car",
+            call: "parking_select_car",
             rpc_call_id: rpcCallList.getID(),
-            params: {}
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash,
+                car_number: npc.current_car
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetParkingInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendGetParkingInfo', npc);
+        var mes = {
+            call: "get_parking_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1588,64 +1607,30 @@ var ClientManager = (function () {
 
     // RPG система
 
-    ClientManager.prototype.sendGetRPGInfo = function () {
-        //console.log('ClientManager.prototype.sendGetRPGInfo');
+    ClientManager.prototype.sendGetTrainerInfo = function (npc) {
+        //console.log('ClientManager.prototype.sendGetTrainerInfo', npc);
         var mes = {
-            call: "get_rpg_info",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendResetSkills = function () {
-        //console.log('ClientManager.prototype.sendResetSkills');
-        var mes = {
-            call: "reset_skills",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendResetPerks = function () {
-        //console.log('ClientManager.prototype.sendResetSkills');
-        var mes = {
-            call: "reset_perks",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendSetSkillState = function (driving, shooting, masking, leading, trading, engineering) {
-        //console.log('ClientManager.prototype.sendSetSkillState');
-        var mes = {
-            call: "set_skill_state",
+            call: "get_trainer_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                driving: driving,
-                shooting: shooting,
-                masking: masking,
-                leading: leading,
-                trading: trading,
-                engineering: engineering
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendActivatePerk = function (perk_id) {
-        //console.log('ClientManager.prototype.sendSetPerkState', perk_id);
+    ClientManager.prototype.sendSetRPGState = function (npc) {
+        //console.log('ClientManager.prototype.sendSetSkillState');
+        var rpg_data = npc.get_rpg_data();
         var mes = {
-            call: "activate_perk",
+            call: "set_rpg_state",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                perk_id: perk_id
+                npc_node_hash: npc.npc_rec.node_hash,
+                skills: rpg_data.skills,
+                buy_skills: rpg_data.buy_skills,
+                perks: rpg_data.perks
             }
         };
         rpcCallList.add(mes);

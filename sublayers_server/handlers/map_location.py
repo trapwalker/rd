@@ -13,7 +13,8 @@ import os
 
 def patch_svg_links(src, pth):
     import re
-    r = re.compile(r'(xlink:href=")([^\.]+\.(jpg|png)")')  # todo: opimize
+    # r = re.compile(r'(xlink:href=")([^\.]+\.(jpg|png)")')  # todo: opimize
+    r = re.compile(r'(xlink:href=")(.*.(jpg|png)")')  # todo: opimize
     return r.sub(r'\1{}\2'.format(pth), src)
 
 
@@ -70,7 +71,7 @@ class MapLocationHandler(BaseHandler):
                     mechanic_slots = [v[0] for v in car_ex.iter_slots(tags='mechanic')]
                     tuner_slots = [v[0] for v in car_ex.iter_slots(tags='tuner')]
 
-                self.render("location/town.html", town=location, svg_code=svg_code,
+                self.render("location/town_new.html", town=location, svg_code=svg_code,
                             mechanic_engine=mechanic_engine,
                             mechanic_transmission=mechanic_transmission,
                             mechanic_brakes=mechanic_brakes,

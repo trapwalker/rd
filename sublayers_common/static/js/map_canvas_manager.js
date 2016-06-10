@@ -5,29 +5,27 @@
 * */
 
 
-var MapCanvasManager = (function(_super){
-    __extends(MapCanvasManager, _super);
+var ParentCanvasManager = (function(_super){
+    __extends(ParentCanvasManager, _super);
 
-    function MapCanvasManager(){
+    function ParentCanvasManager(canvas_id){
         _super.call(this);
+        this.canvas_id = canvas_id;
+        this.canvas = null;
+        this.context = null;
+        this.is_canvas_render = true;
+        // todo: сделать это не просто списком, а списком с параметрами
+        this.vobj_list = [];
+    }
 
-        this.canvas = document.getElementById("ctest_1");
+    ParentCanvasManager.prototype.init_canvas = function() {
+        this.canvas = document.getElementById(this.canvas_id);
         this.context = this.canvas.getContext("2d");
         this.canvas.width = 1920;
         this.canvas.height = 1080;
+    };
 
-        // todo: сделать это не просто списком, а списком с параметрами
-        this.vobj_list = [];
-
-        // Общие переменные
-        this.real_zoom = null; // Зум текущей итерации перерисовки
-        this.zoom_koeff = null; // Коэффициент зуммирования: 2 в стемени 18 зум минус текущий зум
-        this.map_tl = null;  // Игровые координаты, которые соответствуют 0,0 на канвасе (Map Top Left)
-        this.cur_map_size = new Point(0, 0); // Текущие размеры карты
-        this.cur_ctx_car_pos = new Point(0, 0); // Текущее положение userCar
-    }
-
-    MapCanvasManager.prototype.add_vobj = function(vobj, priority) {
+    ParentCanvasManager.prototype.add_vobj = function(vobj, priority) {
         //console.log('MapCanvasManager.prototype.add_vobj');
         for (var i = 0; i < this.vobj_list.length; i++)
             if (this.vobj_list[i].obj == vobj) {
@@ -45,7 +43,7 @@ var MapCanvasManager = (function(_super){
         }
     };
 
-    MapCanvasManager.prototype.del_vobj = function (vobj) {
+    ParentCanvasManager.prototype.del_vobj = function (vobj) {
         //console.log('MapCanvasManager.prototype.del_vobj');
         var index = -1;
         for (var i = 0; i < this.vobj_list.length; i++)
@@ -55,15 +53,40 @@ var MapCanvasManager = (function(_super){
             this.vobj_list.splice(index, 1);
     };
 
-    MapCanvasManager.prototype.get_ctx = function() {
+    ParentCanvasManager.prototype.get_ctx = function() {
         return this.context;
     };
+
+    ParentCanvasManager.prototype.redraw = function(time) {
+        for (var i = 0; i < this.vobj_list.length; i++)
+            this.vobj_list[i].obj.redraw(this.context, time);
+    };
+
+    return ParentCanvasManager;
+})(ClientObject);
+
+
+var MapCanvasManager = (function(_super){
+    __extends(MapCanvasManager, _super);
+
+    function MapCanvasManager(){
+        _super.call(this, "ctest_1");
+        this.init_canvas();
+        // Общие переменные
+        this.real_zoom = null; // Зум текущей итерации перерисовки
+        this.zoom_koeff = null; // Коэффициент зуммирования: 2 в стемени 18 зум минус текущий зум
+        this.map_tl = null;  // Игровые координаты, которые соответствуют 0,0 на канвасе (Map Top Left)
+        this.cur_map_size = new Point(0, 0); // Текущие размеры карты
+        this.cur_ctx_car_pos = new Point(0, 0); // Текущее положение userCar
+    }
 
     MapCanvasManager.prototype.get_canvas_center = function() {
         return new Point(this.canvas.width >> 1, this.canvas.height >> 1);  // divison by 2
     };
 
     MapCanvasManager.prototype.redraw = function(time) {
+        if(! this.is_canvas_render) return;
+        //console.log('MapCanvasManager.prototype.redraw', time);
         this.context.clearRect(0, 0, 1920, 1080);
 
         this.real_zoom = mapManager.getRealZoom(time);
@@ -77,8 +100,7 @@ var MapCanvasManager = (function(_super){
             this.cur_ctx_car_pos = car_ctx_pos;
         }
 
-        for (var i = 0; i < this.vobj_list.length; i++)
-            this.vobj_list[i].obj.redraw(this.context, time);
+        _super.prototype.redraw.call(this, time);
     };
 
     MapCanvasManager.prototype.on_new_map_size = function() {
@@ -86,10 +108,8 @@ var MapCanvasManager = (function(_super){
     };
 
 
-
-
     return MapCanvasManager;
-})(ClientObject);
+})(ParentCanvasManager);
 
 
 var mapCanvasManager;

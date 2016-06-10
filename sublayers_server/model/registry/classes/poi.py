@@ -3,8 +3,13 @@
 import logging
 log = logging.getLogger(__name__)
 
+from datetime import datetime
+import time
+import math
+
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, Position, Parameter, TextAttribute, DictAttribute
+from sublayers_server.model.registry.attr import (Attribute, Position, Parameter, TextAttribute, DictAttribute,
+                                                  FloatAttribute, IntAttribute)
 from sublayers_server.model.registry.attr.inv import InventoryAttribute
 from sublayers_server.model.registry.attr.link import RegistryLink
 from sublayers_server.model.registry.attr.price import PriceAttribute
@@ -38,7 +43,7 @@ class RadioTower(POIObserver):
 
 class MapLocation(POIObserver):
     svg_link = Attribute(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
-    title = TextAttribute(caption=u"Название локации")
+    title = TextAttribute(caption=u"Название локации", tags='client')
 
 
 class GasStation(MapLocation):
@@ -64,27 +69,39 @@ class Building(object):
             self._instances_resolved = [uri.resolve() for uri in self._instances]
         return self._instances_resolved
 
+    def as_client_dict(self):
+        d = dict(
+            captiont=self.caption,
+            head=None if self._head is None else self._head.resolve().as_client_dict(),
+            instances=[npc.as_client_dict() for npc in self.instances]
+        )
+        return d
+
 
 class Town(MapLocation):
-    armorer = RegistryLink(caption=u'Оружейник')
-    mechanic = RegistryLink(caption=u'Механик')
-    tuner = RegistryLink(caption=u'Тюнер')
-    trader = RegistryLink(caption=u'Торговец')
-    hangar = RegistryLink(caption=u'Ангар')
-    nucoil = RegistryLink(caption=u'Заправка')
-    trainer = RegistryLink(caption=u'Тренер: прокачка навыков и перков')
-    parking = RegistryLink(caption=u'Автостоянка')
-
     buildings = DictAttribute(
         default=dict, itemclass=Building,
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.')
 
+    def get_npc_list(self):
+        res = []
+        for build in self.buildings.values():
+            res.extend(build.instances)
+        return res
+
+    def as_client_dict(self):
+        d = super(Town, self).as_client_dict()
+        d.update(
+            buildings=[dict(key=key, build=self.buildings[key].as_client_dict()) for key in self.buildings.keys()]
+        )
+        return d
+
 
 class Institution(Root):
-    title = TextAttribute(caption=u"Имя")
-    photo = Attribute(caption=u"Фото")  # todo: Сделать специальный атрибут для ссылки на файл
-    text = TextAttribute(caption=u"Текст приветствия")
-    type = TextAttribute(caption=u"Специальность NPC")
+    title = TextAttribute(caption=u"Имя", tags='client')
+    photo = Attribute(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
+    text = TextAttribute(caption=u"Текст приветствия", tags='client')
+    type = TextAttribute(caption=u"Специальность NPC", tags='client')
     quests = Attribute(caption=u"Квесты")
 
     def as_dict4quest(self):
@@ -96,23 +113,24 @@ class Nucoil(Institution):
 
 
 class Armorer(Institution):
-    type = TextAttribute(default='armorer', caption=u"Специальность NPC")
+    type = TextAttribute(default='armorer', caption=u"Специальность NPC", tags='client')
 
 
 class Mechanic(Institution):
-    type = TextAttribute(default='mechanic', caption=u"Специальность NPC")
+    type = TextAttribute(default='mechanic', caption=u"Специальность NPC", tags='client')
 
 
 class Tuner(Institution):
-    type = TextAttribute(default='tuner', caption=u"Специальность NPC")
+    type = TextAttribute(default='tuner', caption=u"Специальность NPC", tags='client')
 
 
 class Trainer(Institution):
-    type = TextAttribute(default='trainer', caption=u"Специальность NPC")
+    type = TextAttribute(default='trainer', caption=u"Специальность NPC", tags='client')
+    drop_price = IntAttribute(default=10, caption=u"Цена за сброс перков и навыков", tags='client')
 
 
 class Trader(Institution):
-    type = TextAttribute(default='trader', caption=u"Специальность NPC")
+    type = TextAttribute(default='trader', caption=u"Специальность NPC", tags='client')
 
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
     inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
@@ -128,8 +146,41 @@ class Trader(Institution):
 
 
 class Hangar(Institution):
-    type = TextAttribute(default='hangar', caption=u"Специальность NPC")
-    car_list = Attribute(caption=u"Список продаваемых машин")
+    type = TextAttribute(default='hangar', caption=u"Специальность NPC", tags='client')
+    car_list = Attribute(caption=u"Список продаваемых машин", tags='client')
+
 
 class Parking(Institution):
-    type = TextAttribute(default='parking', caption=u"Специальность NPC")
+    type = TextAttribute(default='parking', caption=u"Специальность NPC", tags='client')
+    cost_for_day_parking = FloatAttribute(default=10, caption=u'Стоимость дня у парковщика', tags='client')
+
+    def get_car_price(self, car):
+        # todo: сделать иначе работу с датой
+        # Установка цены и может ли пользователь забрать машинка
+        delta = car.date_setup_parking - time.mktime(datetime.now().timetuple())
+        if delta < 0:
+            delta = 0
+            log.warning('Time parking = 0s !!! warning!!!!')
+        delta_days = math.floor(delta / (60 * 60 * 24)) + 1
+        return delta_days * self.cost_for_day_parking
+
+
+class Mayor(Institution):
+    type = TextAttribute(default='mayor', caption=u"Специальность NPC", tags='client')
+
+
+class Barman(Institution):
+    type = TextAttribute(default='barman', caption=u"Специальность NPC", tags='client')
+
+
+class Girl(Institution):
+    type = TextAttribute(default='girl', caption=u"Специальность NPC", tags='client')
+
+
+class GasStationNPC(Institution):
+    type = TextAttribute(default='npc_gas_station', caption=u"Специальность NPC", tags='client')
+
+
+class NucoilHelpNPC(Institution):
+    type = TextAttribute(default='nucoil_help_npc', caption=u"Специальность NPC", tags='client')
+

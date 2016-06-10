@@ -61,8 +61,8 @@ class Mobile(Root):
 
     # атрибуты от Unit
     p_defence = Parameter(default=1, caption=u"Броня")
-    max_hp = FloatAttribute(caption=u"Максимальное значение HP")
-    hp = FloatAttribute(caption=u"Текущее значение HP")
+    max_hp = FloatAttribute(caption=u"Максимальное значение HP", tags='client')
+    hp = FloatAttribute(caption=u"Текущее значение HP", tags='client')
     direction = FloatAttribute(default=-pi/2, caption=u"Текущее направление машины")
 
     # атрибуты Mobile
@@ -75,8 +75,8 @@ class Mobile(Root):
     a_backward = FloatAttribute(default=-3, caption=u"Ускорение разгона назад")
     a_braking = FloatAttribute(default=-6, caption=u"Ускорение торможения")
 
-    max_fuel = FloatAttribute(default=100, caption=u"Максимальное количество топлива")
-    fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива")
+    max_fuel = FloatAttribute(default=100, caption=u"Максимальное количество топлива", tags="client")
+    fuel = FloatAttribute(default=100, caption=u"Текущее количество топлива", tags="client")
     p_fuel_rate = FloatAttribute(default=0.5, caption=u"Расход топлива (л/с)")
 
     # атрибуты влияющие на эффективность стрельбы
@@ -118,7 +118,7 @@ class Mobile(Root):
     inventory_size = Attribute(default=10, caption=u"Размер инвентаря")
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
-    price = Attribute(default=0, caption=u"Цена")
+    price = Attribute(default=0, caption=u"Цена", tags='client')
 
     # Косметика
     title = Attribute(default="", caption=u"Модель автомобиля", tags='client')
@@ -188,6 +188,9 @@ class Mobile(Root):
 
 
 class Car(Mobile):
+    last_parking_npc = RegistryLink(default=None, caption=u'Парковщик машины.')
+    date_setup_parking = FloatAttribute(default=0, caption=u'Дата оставления у парковщика')
+
     armorer_car = Attribute(caption=u"Представление машинки у оружейника")
     tuner_car = Attribute(caption=u"Представление машинки у тюнера")
     armorer_sectors_svg = Attribute(caption=u"Представление секторов машинки у оружейника")
@@ -200,9 +203,9 @@ class Car(Mobile):
     mechanic_cooling = Attribute(caption=u"Представление системы охлаждения у механника")
     mechanic_suspension = Attribute(caption=u"Представление подвески у механника")
 
-    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей')
-    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей')
-    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей')
+    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags="client")
+    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей', tags="client")
+    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей', tags="client")
 
     # Атрибуты - слоты механика. Скиданы в кучу, работают по тегам систем
     # Двигатель

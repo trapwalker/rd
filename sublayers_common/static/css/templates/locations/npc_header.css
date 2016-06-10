@@ -2,10 +2,10 @@
     position: relative;
     box-sizing: border-box;
     margin: 0 auto 0 auto;
-    width: 640px;
-    height: 160px;
-    font: 13pt Nouveau_IBM;
-    color: #30fc00;
+    width: 620px;
+    height: 163px;
+    font: 16px Nouveau_IBM;
+    color: #2ffa00;
 }
 
 .npc-info {
@@ -13,7 +13,7 @@
     width: 170px;
     height: 146px;
     float: left;
-    margin: 10px 28px 0px 10px;
+    margin: 14px 21px 0px 0px;
 }
 
 .npc-photo {
@@ -22,23 +22,31 @@
     height: 100%;
 }
 
-.npc-name {
-    position: relative;
-    margin: 120px auto 0 auto;
-    text-align: center;
+.npc-text-block {
+    height: 100%;
+    width: 424px;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-.npc-name-span {
-    background-color: black;
-    padding: 0 5px 0 5px;
-    box-sizing: border-box;
+.npc-name {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
 }
 
 .npc-text {
-    height: 100%;
-    width: 432px;
+    position: relative;
+    height: calc(100% - 40px);
+    width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 40px 0px 0px 0px;
-    box-sizing: border-box;
 }
+
+
+
+#building_nucoil .npc-info {  width: 253px; }
+
+#building_nucoil .npc-text-block {  width: 320px;  float: right; }
