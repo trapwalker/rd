@@ -30,9 +30,10 @@ var LocationManager = (function () {
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/towns/all_frames.png';
 
+        var self = this;
         SetImageOnLoad(lasers_img, function (img) {
-                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
-                locationManager.locations_canvas_effects['laser'].start();
+                self.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
+                self.locations_canvas_effects['laser'].start();
             }
         );
 
