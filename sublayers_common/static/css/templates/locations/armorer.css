@@ -95,15 +95,15 @@
 .armorer_side_F, .armorer_side_B {
     position: absolute;
     pointer-events: none;
-    top: -65px;
+    top: -97px;
     left: -82px;
 }
 
 .armorer_side_L, .armorer_side_R {
     position: absolute;
     pointer-events: none;
-    top: -65px;
-    left: -32px;
+    top: -97px;
+    left: -82px;
 }
 
 /* Общие классы для всех шаблонов оружейника */
