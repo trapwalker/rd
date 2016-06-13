@@ -100,9 +100,9 @@ var LocationPlaceMenu = (function (_super) {
         jq_car_block_table.empty();
         if (user.example_car && user.templates.hasOwnProperty('html_car_img') && user.templates.hasOwnProperty('html_car_table')){
             jq_car_block_pic.append(user.templates['html_car_img']);
+            jq_car_block_pic.append('<div class="location-menu-car-name">' + user.example_car.title + '</div>');
             jq_car_block_table.append(user.templates['html_car_table']);
         }
-
 
         // Обновление журнала
         journalManager.redraw();
