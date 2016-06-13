@@ -39,3 +39,10 @@
 }
 .journal-parking-menu-city-car:hover { opacity: 1; }
 .journal-parking-menu-city-car.active { opacity: 1; }
+
+.journal-page-car-name {
+    position: absolute;
+    top: 25px;
+    width: 100%;
+    text-align: center;
+}

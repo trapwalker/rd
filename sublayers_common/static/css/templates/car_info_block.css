@@ -16,6 +16,15 @@
 }
 .car-info-block-picture-hangar .car-info-block-picture-main { margin: 100px 0 0 0; }
 
+.car-info-block-car-name-hangar {
+    position: absolute;
+    top: 80px;
+    width: 492px;
+    text-align: center;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+}
+
 .car-info-block-picture-main {
     position: relative;
     width: 492px;
