@@ -268,6 +268,15 @@ class Car(Mobile):
     slot_m51 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension hub')
     slot_m52 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension hub')
     slot_m53 = Slot(caption=u'M1', doc=u'Подвеска: ступица', tags='mechanic suspension hub')
+	
+	slot_m89 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m90 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m91 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m92 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m93 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m94 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m95 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
+    slot_m96 = Slot(caption=u'M1', doc=u'Подвеска: колесо', tags='mechanic suspension wheels')
 
     # Тормоза
     slot_m54 = Slot(caption=u'M1', doc=u'Тормоза: передние тормозные механизмы', tags='mechanic brake front_brakes')
