@@ -139,7 +139,7 @@
 .location-menu-car-picture {
     position: relative;
     float: left;
-    width: 408px;
+    width: 492px;
     height: 390px;
     overflow: hidden;
     border-right: 1px solid #30fc00;
@@ -147,7 +147,6 @@
 }
 
 .location-menu-car-picture .car-info-block-picture-main {
-    left: -42px;
     top: 80px;
 }
 
@@ -155,7 +154,8 @@
     position: relative;
     float: left;
     height: 100%;
-    width: 326px;
+    width: 240px;
+    overflow: hidden;
 }
 
 
