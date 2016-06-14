@@ -23,20 +23,34 @@ var LocationPlaceMenu = (function (_super) {
 
     LocationPlaceMenu.prototype.init_click = function () {
         //console.log('LocationPlaceMenu.prototype.init_click', this.jq_main_div);
+        var self = this;
         this.jq_main_div.find('.menu-header-item.click').click({location: this}, LocationPlaceMenu.menu_buttons_reaction);
         this.jq_main_div.find('.menu-header-item.click').first().click();
+        this.jq_main_div.find('.location-menu-person-skills-block .location-menu-person-ttx-item')
+            .mouseenter({npc: this}, LocationPlaceMenu.skills_event_mouseenter)
+            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
 
         // Инициализация кликов на фильтры инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').click({location: this}, LocationPlaceMenu.inv_filters_click);
 
         // Инициализация для журнала
         this.jq_main_div.find('.journal-page-button-block').click(function () {
-            $('.journal-page-button-block').removeClass('active');
+            self.jq_main_div.find('.journal-page-button-block').removeClass('active');
             $(this).addClass('active');
-            $('.journal-page-block').css('display', 'none');
-            $('#' + $(this).data('page_id')).css('display', 'block');
+            self.jq_main_div.find('.journal-page-block').css('display', 'none');
+            self.jq_main_div.find('#' + $(this).data('page_id')).css('display', 'block');
         });
         this.jq_main_div.find('.journal-page-button-block').first().click();
+
+        // Инициализация для вкладки персонажа
+        this.jq_main_div.find('.location-menu-person-bottom-menu-item').click(function () {
+            self.jq_main_div.find('.location-menu-person-bottom-menu-item').removeClass('active');
+            $(this).addClass('active');
+            self.jq_main_div.find('.location-menu-person-page').css('display', 'none');
+            self.jq_main_div.find('.location-menu-person-page.' + $(this).data('page')).first().css('display', 'block');
+        });
+        this.jq_main_div.find('.location-menu-person-bottom-menu-item').first().click();
+
     };
 
     LocationPlaceMenu.prototype.select_page = function (page_id) {
@@ -66,6 +80,12 @@ var LocationPlaceMenu = (function (_super) {
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
+    LocationPlaceMenu.prototype.set_panels = function () {
+        if (!locationManager.isActivePlace(this)) return;
+        _super.prototype.set_panels.call(this);
+        this.clearRightPanel();
+    };
+
     LocationPlaceMenu.prototype._addToFullInventory = function (item) {
         if (! item.hasOwnProperty('example')) return;
 
@@ -84,7 +104,7 @@ var LocationPlaceMenu = (function (_super) {
         itemWrapDiv.append(itemDiv);
 
         itemWrapDiv.mouseenter({item: item, npc: this}, LocationPlaceMenu.inventory_slot_event_mouseenter);
-        itemWrapDiv.mouseleave({npc: this}, LocationPlaceMenu.inventory_slot_event_mouseleave);
+        itemWrapDiv.mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
         itemWrapDiv.click({item: item, npc: this}, LocationPlaceMenu.inventory_slot_event_click);
 
         this.jq_car_inventory.append(itemWrapDiv);
@@ -92,6 +112,46 @@ var LocationPlaceMenu = (function (_super) {
 
     LocationPlaceMenu.prototype.update = function (data) {
         //console.log('LocationPlaceMenu.prototype.update', this.jq_main_div);
+
+        // Вкладка Персонаж
+        this.jq_main_div.find('.location-menu-person-avatar').first()
+            .css('background', 'transparent url(' + user.avatar_link + ') 100% 100% no-repeat');
+        this.jq_main_div.find('.location-menu-person-name').first().text(user.login);
+
+        this.jq_main_div.find('.location-menu-person-about-line.lvl span').text(user.example_agent.rpg_info.current_level);
+        this.jq_main_div.find('.location-menu-person-about-line.role-class span').text(user.example_agent.role_class);
+
+        this.jq_main_div.find('.location-menu-person-about-area').first().text(user.example_agent.about_self);
+        this.jq_main_div.find('.free-perks').first().text(LocationTrainerNPC._getFreePerkPointsReal());
+        this.jq_main_div.find('.free-skills').first().text(LocationTrainerNPC._getFreeSkillPointsReal());
+
+        // Добавление перков
+        var jq_perks = this.jq_main_div.find('.location-menu-person-ttx-center.perks').first();
+        jq_perks.empty();
+        var k = 0;
+        var perk_list = user.example_agent.rpg_info.perks;
+        for (var i = 0; i < perk_list.length; i++) {
+            var perk_rec = perk_list[i];
+            if (perk_rec.active) {
+                k++;
+                var class_light = k % 2 ? 'trainer-light-back' : 'trainer-dark-back';
+                jq_perks.append(
+                    '<div class="location-menu-person-ttx-item ' + class_light + '" ' +
+                    'data-index="' + i + '">' + perk_rec.perk.title +'</div>'
+                );
+            }
+        }
+
+        jq_perks.find('.location-menu-person-ttx-item')
+            .mouseenter({npc: this}, LocationPlaceMenu.perks_event_mouseenter)
+            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
+
+        var skill_names = ['driving', 'engineering', 'leading', 'masking', 'shooting', 'trading'];
+        for (var  i = 0; i < skill_names.length; i++) {
+            var skill_name = skill_names[i];
+            this.jq_main_div.find('.location-menu-person-ttx-value.' + skill_name).first().text(LocationTrainerNPC._getSkillValueReal(skill_name));
+        }
+
 
         // Вкладка Автомобиль
         var jq_car_block_pic = this.jq_main_div.find('.location-menu-car-picture').first();
@@ -134,9 +194,9 @@ var LocationPlaceMenu = (function (_super) {
         }
     };
 
-    LocationPlaceMenu.prototype.viewRightPanel = function(item) {
+    LocationPlaceMenu.prototype.viewRightPanel = function(description) {
         //console.log('LocationArmorerNPC.prototype.viewRightPanel', slot_name);
-        locationManager.panel_right.show({text: item.example.description }, 'description');
+        locationManager.panel_right.show({text: description }, 'description');
     };
 
     LocationPlaceMenu.prototype.clearRightPanel = function() {
@@ -168,17 +228,32 @@ var LocationPlaceMenu = (function (_super) {
 
     LocationPlaceMenu.inventory_slot_event_mouseenter = function (event) {
         //console.log('LocationPlaceMenu.inventory_slot_event_mouseenter', event.data.item);
-        event.data.npc.viewRightPanel(event.data.item);
+        event.data.npc.viewRightPanel(event.data.item.example.description);
     };
 
-    LocationPlaceMenu.inventory_slot_event_mouseleave = function (event) {
-        //console.log('LocationPlaceMenu.inventory_slot_event_mouseleave');
-        event.data.npc.clearRightPanel(event.data.item);
+    LocationPlaceMenu.event_mouseleave = function (event) {
+        //console.log('LocationPlaceMenu.event_mouseleave');
+        event.data.npc.clearRightPanel();
     };
 
     LocationPlaceMenu.inventory_slot_event_click = function (event) {
         //console.log('LocationPlaceMenu.inventory_slot_event_click', event);
         event.data.npc.select_inv_item(event.data.item, $(event.currentTarget));
+    };
+
+
+    LocationPlaceMenu.perks_event_mouseenter = function (event) {
+        //console.log('LocationPlaceMenu.perks_event_mouseenter');
+        var perc_rec = user.example_agent.rpg_info.perks[$(event.currentTarget).data('index')];
+        if(! perc_rec) return;
+        event.data.npc.viewRightPanel(perc_rec.perk.description);
+    };
+
+    LocationPlaceMenu.skills_event_mouseenter = function (event) {
+        //console.log('LocationPlaceMenu.skills_event_mouseenter');
+        var skill_name = $(event.currentTarget).data('skill');
+        if(! skill_name) return;
+        event.data.npc.viewRightPanel(user.example_agent.rpg_info[skill_name].description);
     };
 
 
