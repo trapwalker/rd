@@ -4,9 +4,9 @@ from __future__ import absolute_import
 import logging
 log = logging.getLogger(__name__)
 
-import yaml
 from motorengine.errors import LoadReferencesRequiredError
 from uuid import uuid1 as get_uuid
+from weakref import WeakSet
 
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm import AbstractDocument
@@ -23,9 +23,6 @@ class StorageUnspecified(Exception):
 
 class Node(AbstractDocument):
     # todo: make sparse indexes
-    __field_tags__ = {
-        'client': ['tags'],
-    }
     # todo: override attributes in subclasses
     uid = UUIDField(default=get_uuid, unique=True)
     fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
@@ -33,7 +30,6 @@ class Node(AbstractDocument):
     abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
     parent = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
     owner = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
-    # _subnodes = ListField(base_field=ReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node'))
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     name = StringField()
     doc = StringField()
@@ -52,6 +48,9 @@ class Node(AbstractDocument):
     def to_cache(self):
         assert self.uri
         super(Node, self).to_cache(self.uri)
+        owner = self.owner
+        if owner:
+            owner._subnodes.add(self)
 
     def __init__(self, storage=None, **kw):
         """
@@ -66,25 +65,20 @@ class Node(AbstractDocument):
         if self.uri is None:
             self.uri = str(self.make_uri())
 
-        # if self.owner:
-        #     self.owner._subnodes.append(self)  # todo: check it
-        #
+        self._subnodes = WeakSet()
         # self.storage = storage
         # if storage:
         #     storage.put(self)
 
-    # @property
-    # def _field_tags(self):
-    #     d = {}
-    #     parent = self.parent
-    #     if parent:
-    #         d.update(parent._field_tags)
-    #     d.update(self.__field_tags__)
-    #     return d
+    def __setattr__(self, name, value):
+        if name in ['_subnodes']:
+            return object.__setattr__(self, name, value)
+
+        return super(Node, self).__setattr__(name, value)
 
     def __getattribute__(self, name):
         # required for the next test
-        if name in ['_fields']:
+        if name in ['_fields', '_subnodes']:
             return object.__getattribute__(self, name)
 
         if name in self._fields:
@@ -124,47 +118,45 @@ class Node(AbstractDocument):
         return '<{self.__class__.__name__}@{details}>'.format(
             self=self, details=self.uri or self._id or id(self))
 
-    # todo: (!!) remove 'node_hash' method
+    def node_hash(self):  # todo: (!) rename
+        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        if self.abstract:
+            return '_{}'.format(str(self.uri))
+        elif self.parent:
+            return self.parent.node_hash()
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
 
-    # def node_html(self):
-    #     return self.node_hash().replace('://', '-').replace('/', '-')
+    def node_html(self):  # todo: rename
+        return self.node_hash().replace('://', '-').replace('/', '-')
 
-    # def as_client_dict(self):  # todo: rename to 'to_son_client'
-    #     # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
-    #     d = dict(
-    #         id=self.id,
-    #         node_hash=self.node_hash(),
-    #     )
-    #     for attr, getter in self.iter_attrs(tags='client'):
-    #         v = getter()
-    #         if isinstance(attr, TagsAttribute):
-    #             v = list(v)  # todo: Перенести это в расширение сериализатора
-    #         d[attr.name] = v
-    #     return d
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = dict(
+            id=self.id,
+            node_hash=self.node_hash(),
+        )
+        for name, attr, getter in self.iter_attrs(tags='client'):
+            d[name] = getter()
+        return d
 
-    # def iter_attrs(self, tags=None, classes=None):
-    #     if isinstance(tags, basestring):
-    #         tags = set(tags.split())
-    #     elif tags is not None:
-    #         tags = set(tags)
-    #
-    #     cls = self.__class__
-    #     for k in dir(cls):
-    #         attr = getattr(cls, k)
-    #         """@type: Attribute"""
-    #         if (
-    #             isinstance(attr, Attribute)
-    #             and (not tags or attr.tags & tags)
-    #             and (not classes or isinstance(attr, classes))
-    #         ):
-    #             getter = lambda: attr.__get__(self, cls)
-    #             yield attr, getter
+    def iter_attrs(self, tags=None, classes=None):
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
 
-    # def instantiate(self, storage=None, name=None, **kw):
-    #     assert self.abstract
-    #     inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
-    #     # log.debug('Maked new instance %s', inst.uri)
-    #     return inst
+        for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
+            if (
+                (not tags or attr.tags & tags) and
+                (not classes or isinstance(attr, classes))
+            ):
+                getter = lambda: getattr(self, name)
+                yield name, attr, getter
+
+    def instantiate(self, storage=None, name=None, **kw):
+        assert self.abstract
+        inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
+        log.debug('Maked new instance %s', inst.uri)
+        return inst
 
     # def __getstate__(self):
     #     #do_not_store = ('storage', '_subnodes', '_cache', 'owner',)
@@ -176,7 +168,7 @@ class Node(AbstractDocument):
     #         abstract=self.abstract,
     #         parent=self.parent.uri if self.parent.storage else self.parent,
     #     )
-    #     for attr, getter in self.iter_attrs():
+    #     for name, attr, getter in self.iter_attrs():  # todo: migration is not complete
     #         if attr.name in values:  # todo: refactor it
     #             v = getter()
     #             if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
@@ -202,42 +194,19 @@ class Node(AbstractDocument):
     #     for k, v in state.items():
     #         setattr(self, k, v)
 
-    # def deep_iter(self, reject_abstract=True):
-    #     queue = [self]
-    #     while queue:
-    #         item = queue.pop()
-    #         queue.extend(item)
-    #         if not item.abstract or not reject_abstract:
-    #             yield item
+    def deep_iter(self, reject_abstract=True):
+        queue = [self]
+        while queue:
+            item = queue.pop()
+            queue.extend(item)
+            if not item.abstract or not reject_abstract:
+                yield item
 
-    # def __iter__(self):
-    #     return iter(self._subnodes)
+    def __iter__(self):
+        return iter(self._subnodes)
 
-    # def __hash__(self):
-    #     return hash((self.storage, self.name))
+    def __hash__(self):
+        return hash(self._id)  # todo: test just created objects
 
     # def dump(self):
     #     return yaml.dump(self, default_flow_style=False, allow_unicode=True)
-
-    # def resume_dict(self):
-    #     d = dict(
-    #         __cls__=self.__class__.__name__,
-    #         name=self.name,
-    #     )
-    #     for attr, getter in self.iter_attrs():
-    #         v = getter()
-    #         if isinstance(attr, TagsAttribute):
-    #             v = str(v)
-    #         elif isinstance(v, Node):
-    #             if v.storage and v.storage.name == 'registry':
-    #                 v = str(v.uri)  # todo: (!!)
-    #             else:
-    #                 v = v.resume_dict()
-    #         elif isinstance(v, URI):
-    #             v = str(v)
-    #         d[attr.name] = v
-    #     return d
-
-    # def resume(self):
-    #     d = self.resume_dict()
-    #     return yaml.dump(d, default_flow_style=False, allow_unicode=True)

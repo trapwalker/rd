@@ -64,11 +64,11 @@ class Agent(Root):
     trading = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык торговли", tags='skill')
     engineering = RegistryLink(default='reg://registry/rpg_settings/skill', caption=u"Навык инженеринга", tags='skill')
 
-    def iter_skills(self):
-        for attr, getter in self.iter_attrs(tags='skill'):
-            yield attr.name, getter().calc_value()
+    def iter_skills(self):  # todo: need review
+        for name, attr, getter in self.iter_attrs(tags='skill'):
+            yield name, getter().calc_value()
 
-    def iter_perks(self):
+    def iter_perks(self):  # todo: need review
         for perk in self.perks:
             yield perk
             

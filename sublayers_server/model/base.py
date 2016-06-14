@@ -177,17 +177,25 @@ class VisibleObject(PointObject):
         pass
 
     def set_default_params(self):
-        for name, value in self.example.iter_attrs(tags='parameter p_modifier'):
-            Parameter(original=self.example.get_modify_value(param_name=name.name,
-                                                             example_agent=getattr(self, 'owner_example', None)),
-                      name=name.name,
-                      owner=self)
-        for name, value in self.example.iter_attrs(tags='parameter p_resist'):
-            Parameter(original=self.example.get_modify_value(param_name=name.name,
-                                                             example_agent=getattr(self, 'owner_example', None)),
-                      name=name.name,
-                      max_value=1.0,
-                      owner=self)
+        for name, attr, getter in self.example.iter_attrs(tags='parameter p_modifier'):
+            Parameter(
+                original=self.example.get_modify_value(
+                    param_name=name,
+                    example_agent=getattr(self, 'owner_example', None),
+                ),
+                name=name,
+                owner=self,
+            )
+        for name, attr, getter in self.example.iter_attrs(tags='parameter p_resist'):
+            Parameter(
+                original=self.example.get_modify_value(
+                    param_name=name,
+                    example_agent=getattr(self, 'owner_example', None),
+                ),
+                name=name,
+                max_value=1.0,
+                owner=self,
+            )
 
     def add_to_chat(self, chat, time):
         pass

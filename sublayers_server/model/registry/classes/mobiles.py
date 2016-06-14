@@ -148,20 +148,20 @@ class Mobile(Root):
         return (v for attr, v in self.iter_slots(tags='armorer') if isinstance(v, Weapon))
 
     def iter_slots(self, tags=None):
-        for attr, getter in self.iter_attrs(tags=tags, classes=Slot):
+        for name, attr, getter in self.iter_attrs(tags=tags, classes=Slot):
             v = getter()
             if not isinstance(v, SlotLock) and v is not False:  # todo: SlotLock
-                yield attr.name, v
+                yield name, v
 
     def iter_slots2(self, tags=None):
-        for attr, getter in self.iter_attrs(tags=tags, classes=Slot):
+        for name, attr, getter in self.iter_attrs(tags=tags, classes=Slot):
             v = getter()
             if not isinstance(v, SlotLock) and v is not False:  # todo: SlotLock
-                yield attr.name, v, attr
+                yield name, v, attr
 
     def get_count_slots(self, tags=None):
         result = 0
-        for attr, getter in self.iter_attrs(tags=tags, classes=Slot):
+        for name, attr, getter in self.iter_attrs(tags=tags, classes=Slot):
             v = getter()
             if not isinstance(v, SlotLock) and v is not False:
                 result += 1

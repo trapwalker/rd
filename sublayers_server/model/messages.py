@@ -888,8 +888,8 @@ class UserExampleSelfShortMessage(Message):
                 for k, v in self.agent.example.car.iter_slots(tags='armorer')
             ]
             car_npc_info['armorer_slots_flags'] = [
-                dict(name=attr.name, value=getter and getter())
-                for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
+                dict(name=name, value=getter and getter())
+                for name, attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
             ]
             # Информация для механика
             car_npc_info['mechanic_slots'] = [

@@ -57,11 +57,8 @@ if __name__ == '__main__':
     #proto_agent = reg['/agents/user']
     #protocar = reg['/mobiles/cars/sedan']
     #user = proto_agent.instantiate(storage=a)
-    #pp(user.resume_dict())
-    ##print user.resume().decode('utf-8')
     #car = protocar.instantiate()
     #user.car = car
-    #print car.resume().decode('utf-8')
     ##it = reg[car.inventory[0]]
     ##it.as_client_dict()
     #rt = reg['/poi/radio_towers/radio_tower1']
