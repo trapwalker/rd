@@ -1,6 +1,6 @@
 .journal-quest-menu-quest {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.6;
 }
 .journal-quest-menu-quest:hover { opacity: 1; }

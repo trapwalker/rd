@@ -1,6 +1,6 @@
 .armorerWindow-main {
     position: relative;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -56,7 +56,7 @@
 
 .car_sector {
     opacity: 0.3;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .car_sector_hover {

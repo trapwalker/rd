@@ -6,7 +6,7 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     min-width: 1024px;
     min-height: 600px;
 }
@@ -89,7 +89,7 @@ body{
     right: 15px;
     width: 62px;
     height: 62px;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .buttonFullScreenOn {
@@ -164,11 +164,11 @@ input:focus {
 }
 
 .sublayers-clickable {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .sublayers-unclickable {
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 #timeToResetDiv {
@@ -180,7 +180,7 @@ input:focus {
     font-size: 12px;
     font-family: Arial;
     color: lime;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     pointer-event: none;
 
 }

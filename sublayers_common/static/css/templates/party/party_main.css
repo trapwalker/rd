@@ -40,7 +40,7 @@
 .partyCreateWindow-buttonCreate {
     position: absolute;
     pointer-events: auto;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     top: 0;
     bottom: 0;
     margin: auto;
@@ -221,7 +221,7 @@
 .partyInfoWindow-buttonJoin {
     position: absolute;
     pointer-events: auto;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     top: 0;
     bottom: 0;
     margin: auto;

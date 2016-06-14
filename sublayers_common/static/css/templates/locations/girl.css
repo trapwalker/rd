@@ -1,6 +1,6 @@
 .girlWindow-main {
     position: relative;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -35,7 +35,7 @@
     width: 150px;
     padding: 6px 10px;
     margin-bottom: 4px;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     font-size: 16px;
     background-color: #082801;
     color: #33c811;

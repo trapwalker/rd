@@ -33,7 +33,7 @@
     float: left;
     margin: 0 4px;
     color: #31c811;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     text-align: center;
     width: 14%;
     overflow: hidden;
@@ -101,7 +101,7 @@
 .location-inventory-filters-item {
     position: relative;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     margin: 0 30px;
     color: #31c811;
 }
@@ -260,7 +260,7 @@
     float: left;
     margin: 0 10px;
     height: 100%;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .location-menu-person-bottom-menu-item.active:before {
@@ -364,7 +364,7 @@
     height: 20px;
     line-height: 21px;
     box-sizing: border-box;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     color: #31c811;
 }
 .location-menu-person-ttx-item:hover {color: #2ffa00;}

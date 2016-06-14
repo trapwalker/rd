@@ -69,7 +69,7 @@
     margin: 0 0 0 18px;
     text-align: center;
     color: #135806;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .mainCarInfoWindow-body-right-menu-button.active:before {
@@ -126,7 +126,7 @@
     /* padding-right: 10px; */
     box-sizing: border-box;
     overflow-y: auto;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     display: none;
 }
 
