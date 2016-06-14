@@ -875,7 +875,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.example_agent.rpg_info = event.rpg_info;

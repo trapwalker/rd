@@ -195,6 +195,8 @@ var LocationManager = (function () {
         for (var key in this.npc)
             if (this.npc.hasOwnProperty(key))
                 this.npc[key].update();
+
+        if (this.location_menu) this.location_menu.update();
     };
 
     LocationManager.prototype.isActivePlace = function (location_place) {
