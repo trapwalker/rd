@@ -85,7 +85,7 @@ var LocationGasStationNPC = (function (_super) {
         itemDiv.append(emptyItemDiv);
 
         itemDiv.find('.npcInventory-picture')
-            .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+            .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
         itemWrapDiv.append(itemDiv);
 
@@ -109,7 +109,7 @@ var LocationGasStationNPC = (function (_super) {
         itemDiv.append(emptyItemDiv);
 
         itemDiv.find('.npcInventory-picture')
-            .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+            .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
         itemWrapDiv.append(itemDiv);
 

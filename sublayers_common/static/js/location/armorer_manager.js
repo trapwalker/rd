@@ -321,7 +321,7 @@ var LocationArmorerNPC = (function (_super) {
             if (item.example) {
                 itemDiv.find('.npcInventory-name').text(item.example.title);
                 itemDiv.find('.npcInventory-picture')
-                    .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+                    .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
                     helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
                     cursorAt: { left: 31, top: 16 },

@@ -161,7 +161,7 @@ var LocationTraderNPC = (function (_super) {
             var itemDiv = $(
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
                     '<div class="npcInventory-item">' +
-                        '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + example.inv_icon_small + ') no-repeat center"></div>' +
+                        '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
                         '<div class="npcInventory-text name">' + example.title + '</div>' +
                         '<div class="npcInventory-text count">' + example.count.toFixed(1) + '</div>' +
                     '</div>' +
