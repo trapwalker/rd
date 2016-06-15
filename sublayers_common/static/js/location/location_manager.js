@@ -32,8 +32,20 @@ var LocationManager = (function () {
 
         var self = this;
         SetImageOnLoad(lasers_img, function (img) {
-                self.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
-                self.locations_canvas_effects['laser'].start();
+                function start() {
+                    self.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
+                    self.locations_canvas_effects['laser'].start();
+                }
+
+                function call_back_start() {
+                    if (locationManager && locationManager.location_canvas_manager) {
+                        start();
+                    }
+                    else {
+                        setTimeout(call_back_start, 100);
+                    }
+                }
+                call_back_start();
             }
         );
 
