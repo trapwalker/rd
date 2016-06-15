@@ -229,12 +229,25 @@
     top: 17px;
     width: 401px;
     height: 20px;
-    background-color: #082801;
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #082801 25%, transparent 25%, transparent 74%, #082801 75%, #082801), linear-gradient(45deg, #082801 25%, transparent 25%, transparent 74%, #082801 75%, #082801);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
 }
 
-.building-gas-repair-fill.need-for-feel {background-color: #0e4b00;}
+.building-gas-repair-fill.need-for-feel {
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00), linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
 
-.building-gas-repair-fill.in-gas-tank {background-color: #2ffa00;}
+.building-gas-repair-fill.in-gas-tank {
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00), linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
 
 .building-gas-repair-scale {
     position: absolute;
