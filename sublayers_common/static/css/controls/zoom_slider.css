@@ -110,7 +110,10 @@
     border: 0;
     position: absolute;
     background-color: transparent;
+}
 
+#Zoom_slider span {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .slider-zoom-carriage {

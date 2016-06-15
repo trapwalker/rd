@@ -445,6 +445,8 @@ var LocationTrainerNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, '</br>Применить', true);
         locationManager.setBtnState(2, '</br>Отмена', true);
+        locationManager.setBtnState(3, '</br>Назад', true);
+        locationManager.setBtnState(4, '</br>Выход', true);
     };
 
     LocationTrainerNPC.prototype.set_panels = function () {
@@ -497,6 +499,38 @@ var LocationTrainerNPC = (function (_super) {
 
         return res;
     };
+
+    LocationTrainerNPC._getSkillValueReal = function (skill_name) {
+        var skill = user.example_agent.rpg_info[skill_name];
+        if (skill.mod.bonus_step > 0)
+            return skill.value + Math.floor(skill.value / skill.mod.bonus_step);
+        else
+            return skill.value;
+    };
+
+    LocationTrainerNPC._getFreeSkillPointsReal = function() {
+        var skill_point = 0;
+        var buy_skill_point = 0;
+        var rpg_info = user.example_agent.rpg_info;
+        var skill_names = ['driving', 'engineering', 'leading', 'masking', 'shooting', 'trading'];
+
+        for (var  i = 0; i < skill_names.length; i++) {
+            skill_point += LocationTrainerNPC._getSkillValueReal(skill_names[i]);
+            buy_skill_point += rpg_info['buy_' + skill_names[i]].value;
+        }
+
+        return rpg_info.all_skill_points - skill_point + buy_skill_point;
+    };
+
+    LocationTrainerNPC._getFreePerkPointsReal = function() {
+        var res = 0;
+        var perks = user.example_agent.rpg_info.perks;
+        for(var key in perks)
+            if (perks.hasOwnProperty(key))
+                if (perks[key].active) res++;
+        return user.example_agent.rpg_info.current_level - res;
+    };
+
 
     return LocationTrainerNPC;
 })(LocationPlaceNPC);

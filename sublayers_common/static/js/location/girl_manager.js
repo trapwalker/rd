@@ -26,6 +26,8 @@ var LocationGirlNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, 'Подтвердить</br>сделку', true);
         locationManager.setBtnState(2, '</br>Отмена', true);
+        locationManager.setBtnState(3, '</br>Назад', true);
+        locationManager.setBtnState(4, '</br>Выход', true);
     };
 
     LocationGirlNPC.prototype.set_panels = function() {

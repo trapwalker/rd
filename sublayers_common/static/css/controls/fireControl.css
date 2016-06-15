@@ -21,7 +21,7 @@
 
 .fire-controll-quick-btn-block {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     pointer-events: auto;
     width: 62px;
     height: 33px;

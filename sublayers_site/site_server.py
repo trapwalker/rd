@@ -34,6 +34,7 @@ from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHa
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 from sublayers_site.handlers.audio_test import GetAudioTest
 
+from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
 
 import sublayers_server.model.registry.classes  #autoregistry classes
@@ -84,6 +85,7 @@ class Application(BaseApplication):
 
 def main():
     settings.load('site_server.conf')
+    service_tools.pidfile_save(options.pidfile)
     app = Application()
     try:
         app.listen(options.port)

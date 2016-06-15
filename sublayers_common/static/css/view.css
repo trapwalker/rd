@@ -6,7 +6,7 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     min-width: 1024px;
     min-height: 600px;
 }
@@ -20,6 +20,7 @@ body{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+	cursor: url('/static/img/cursors/main.png'), default;
 }
 
 #bodydiv{
@@ -89,7 +90,7 @@ body{
     right: 15px;
     width: 62px;
     height: 62px;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .buttonFullScreenOn {
@@ -163,12 +164,12 @@ input:focus {
     background: transparent url('/static/img/misc_button/btn_connection2_pressed.png') 100% 100% no-repeat;
 }
 
-.sublayers-clickable {
-    cursor: pointer;
+.sublayers-clickable, .leaflet-clickable {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .sublayers-unclickable {
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 #timeToResetDiv {
@@ -180,7 +181,7 @@ input:focus {
     font-size: 12px;
     font-family: Arial;
     color: lime;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     pointer-event: none;
 
 }

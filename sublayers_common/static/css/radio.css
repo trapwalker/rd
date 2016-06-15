@@ -76,7 +76,7 @@ header a, a:visited {
 }
 
 .controls {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 23px;
     left: 167px;
     position: absolute;
@@ -148,7 +148,7 @@ header a, a:visited {
 }
 
 .ui-slider-handle {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 10px;
     margin-left: -5px;
     position: absolute;
@@ -177,7 +177,7 @@ header a, a:visited {
 
 .playlist li {
     color: #EEEEEE;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     margin: 0 0 5px 15px;
     font-family: FreePixel;
 }

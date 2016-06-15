@@ -1,6 +1,6 @@
 .trainerWindow-main {
     position: relative;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -55,7 +55,7 @@
 
 .trainer-center-button {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     float: left;
     width: calc(50% - 2px);
     height: 25px;
@@ -128,7 +128,7 @@
     box-sizing: border-box;
     margin-top: 4px;
     border: 6px solid transparent;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 .trainer-skill-item-dec { border-right: 6px solid #31c811; margin-right: 4px; }
 .trainer-skill-item-dec:hover { border-right-color: #2ffa00; }
@@ -146,7 +146,7 @@
 
 .trainer-center-updates-block {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     float: left;
     width: 90px;
     height: 100px;
@@ -196,15 +196,15 @@
 .trainer-perk-item-checkbox {
     position: relative;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 33px;
     height: 100%;
     text-align: center;
     margin-left: 4px;
     box-sizing: border-box;
 }
-.trainer-perk-item-checkbox.default { cursor: default; }
-.trainer-perk-item-checkbox.disable { cursor: default; }
+.trainer-perk-item-checkbox.default { cursor: url('/static/img/cursors/main.png'), default; }
+.trainer-perk-item-checkbox.disable { cursor: url('/static/img/cursors/main.png'), default; }
 
 .trainer-light-back {
     background-color: #000000;

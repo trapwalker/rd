@@ -6,7 +6,7 @@
 
 .mechanicWindow-main {
     position: relative;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -21,6 +21,7 @@
     height: 392px;
     border-width: 1px 0 1px 0;
     border-style: solid;
+    background-color: rgba(0, 0, 0, 0.45);
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
     border-image-slice: 1;
 }
@@ -74,7 +75,7 @@
     font: 12pt Nouveau_IBM;
     color: #29F200;
     opacity: 0.6;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .mechanic-center-page-control-page-button:hover {
@@ -115,7 +116,7 @@
 
 .mechanic-big-slot-main {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.6;
 }
 
@@ -142,7 +143,7 @@
 
 .mechanic-small-slot-main {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.6;
 }
 

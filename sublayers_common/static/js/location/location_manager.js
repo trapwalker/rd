@@ -30,9 +30,22 @@ var LocationManager = (function () {
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/towns/all_frames.png';
 
+        var self = this;
         SetImageOnLoad(lasers_img, function (img) {
-                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
-                locationManager.locations_canvas_effects['laser'].start();
+                function start() {
+                    self.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
+                    self.locations_canvas_effects['laser'].start();
+                }
+
+                function call_back_start() {
+                    if (locationManager && locationManager.location_canvas_manager) {
+                        start();
+                    }
+                    else {
+                        setTimeout(call_back_start, 100);
+                    }
+                }
+                call_back_start();
             }
         );
 
@@ -194,6 +207,8 @@ var LocationManager = (function () {
         for (var key in this.npc)
             if (this.npc.hasOwnProperty(key))
                 this.npc[key].update();
+
+        if (this.location_menu) this.location_menu.update();
     };
 
     LocationManager.prototype.isActivePlace = function (location_place) {
