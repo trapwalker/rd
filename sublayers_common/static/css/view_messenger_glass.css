@@ -59,6 +59,7 @@
     position: absolute;
     bottom: 397px;
     left: 2px;
+	cursor: url('/static/img/cursors/hyper.png'), hyper;
 }
 
 #VMGMainDivGlass {
@@ -156,6 +157,7 @@
     padding-left: 4px;
     color: #2afd0a;
     font: 10pt MICRADI;
+	cursor: url('/static/img/cursors/text.png'), text;
 }
 
 .VMGChatOutArea {

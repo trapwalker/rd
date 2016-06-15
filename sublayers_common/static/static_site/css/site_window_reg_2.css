@@ -1,5 +1,5 @@
 #RDSiteWReg2 .odd { background-color: #082801; }
-#RDSiteWReg2 .window-qg-content-header { cursor: pointer; }
+#RDSiteWReg2 .window-qg-content-header { cursor: url('/static/img/cursors/hyper.png'), pointer; }
 
 .window-reg2-main {
     position: relative;
@@ -9,7 +9,7 @@
     box-sizing: border-box;
     margin: 0 auto;
     font-size: 12pt;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 .window-reg2-path {
@@ -51,7 +51,7 @@
 
 .reg2-skill-table-label {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     padding-left: 10px;
     box-sizing: border-box;
     float: left;
@@ -84,7 +84,7 @@
     box-sizing: border-box;
 }
 
-.reg2-perk-table .reg2-table-line { cursor: pointer; }
+.reg2-perk-table .reg2-table-line { cursor: url('/static/img/cursors/hyper.png'), pointer; }
 
 .reg2-table-line .decorator {text-decoration: underline;}
 
@@ -108,7 +108,7 @@
 
 .reg2-skill-table-counter-btn {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     float: left;
     width: 16px;
     height: 16px;
@@ -139,7 +139,7 @@
 .reg2-btn {
     position: absolute;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 23%;
     height: 18px;
     background-color: #01380b;

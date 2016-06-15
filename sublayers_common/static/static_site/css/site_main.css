@@ -22,7 +22,7 @@ body {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     color: #00ff00;
     font-family: FreePixel;
 	font-weight: bold;
@@ -141,7 +141,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     margin-bottom: 3px;
     text-align: center;
     line-height: 24px;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 .btn-block {
@@ -178,7 +178,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .scroll-btn {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 24px;
     height: 17px;
     bottom: 10px;
@@ -194,7 +194,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .slide-arrow {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 17px;
     height: 24px;
 }
@@ -219,7 +219,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 /* Кнопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текущая страничка !!!!*/
 .btn {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     right: 103px;
 }
 
@@ -285,7 +285,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .btn-fake-radio {
     position: absolute;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 110px;
     height: 40px;
     top: 557px;
@@ -295,7 +295,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .light-indicator {
     position: absolute;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 29px;
     height: 28px;
     top: 478px;
@@ -417,7 +417,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -23px;
         top: 39px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn1_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .btn-2 {
@@ -438,7 +438,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -22px;
         top: 42px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn2_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .btn-3 {
@@ -458,7 +458,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -22px;
         top: 32px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn3_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .btn-4 {
@@ -478,7 +478,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -22px;
         top: 26px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn4_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .btn-5 {
@@ -498,7 +498,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -23px;
         top: 20px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn5_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .btn-6 {
@@ -518,7 +518,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -22px;
         top: 15px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn6_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
 
@@ -567,7 +567,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         /*padding-left: 18px;*/
         text-align: center;
         height: 33%;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
     }
 
     .radio-slider-block {
@@ -588,7 +588,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
     .radio-power-btn {
         position: absolute;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
         left: 42px;
         width: 61px;
         height: 31px;
@@ -606,13 +606,13 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -18px;
         top: -3px;
         background: transparent url(/static/static_site/img/09-06-16/1080_quality_power_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
 
     .radio-quality-btn {
         position: absolute;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
         left: 50px;
         width: 40px;
         height: 26px;
@@ -639,7 +639,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: -17px;
         top: -5px;
         background: transparent url(/static/static_site/img/09-06-16/1080_quality_power_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
 
@@ -651,7 +651,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: 39px;
         top: 1px;
         background: transparent url(/static/static_site/img/09-06-16/1080_quality_power_indicator.png) no-repeat 100% 100%;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
 
@@ -680,7 +680,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         height: 25px;
         top: 0;
         left: 0;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
         background: transparent url(/static/static_site/img/09-06-16/1080_freq_slider_normal.png) no-repeat 100% 100%;
     }
 
