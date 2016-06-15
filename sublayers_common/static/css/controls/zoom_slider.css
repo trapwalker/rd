@@ -112,6 +112,10 @@
     background-color: transparent;
 }
 
+#Zoom_slider span {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+}
+
 .slider-zoom-carriage {
     pointer-events: auto;
     background: transparent url('/static/img/control_zoom/zoom_mark.png') 50% 50% no-repeat;

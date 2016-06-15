@@ -59,7 +59,7 @@
     position: absolute;
     bottom: 397px;
     left: 2px;
-	cursor: url('/static/img/cursors/hyper.png'), hyper;
+	cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 #VMGMainDivGlass {
