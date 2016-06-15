@@ -204,6 +204,15 @@ function CarTableInfoMenuClick(target) {
 }
 
 
+function CarInfoBlockAmmoInfoView(description) {
+    locationManager.panel_right.show({text: description}, 'description');
+}
+
+function CarInfoBlockAmmoInfoHide(descripion) {
+    locationManager.panel_right.show({text: ''}, 'description');
+}
+
+
 
 // todo: снести myMap
 var myMap;
