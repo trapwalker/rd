@@ -164,7 +164,7 @@ input:focus {
     background: transparent url('/static/img/misc_button/btn_connection2_pressed.png') 100% 100% no-repeat;
 }
 
-.sublayers-clickable {
+.sublayers-clickable, .leaflet-clickable {
     cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
