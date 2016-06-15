@@ -99,7 +99,7 @@ var LocationPlaceMenu = (function (_super) {
             '</div>');
 
         itemDiv.find('.npcInventory-picture')
-            .css('background', 'transparent url(' + item.example.inv_icon_small + ') no-repeat 100% 100%');
+            .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
         itemWrapDiv.append(itemDiv);
 
