@@ -6,16 +6,14 @@ var ViewMessengerGlass = (function () {
             height: 400,
             width: 300,
             _visible: true,
-            mesCountInChat: 30,
+            mesCountInChat: 50,
             stream_mes: null}, this.options);
         if (options) setOptions(options, this.options);
-
 
         this.chats = [];
         this.pages = [];
         this.log_index = 0;
         this.chat_visible = true;
-
 
         // вёрстка
         var mainParent = $('#chatAreaGlass');
@@ -25,17 +23,16 @@ var ViewMessengerGlass = (function () {
         this.parentGlass.append('<div id="VMGDivWrapChat"></div>');
         this.chatWrapDiv = $('#VMGDivWrapChat');
         this.chatWrapDiv.append('<div id="VMGMainDivChat"></div>');
-        var parent = $('#VMGMainDivChat');
-        this.parent = parent;
+        this.parent = $('#VMGMainDivChat');
         var width = 480;
         var height = 310;
 
         // добавление верхнего дива PageControl
-        parent.append('<div id="VMGPageControlArea"></div>');
+        this.parent.append('<div id="VMGPageControlArea"></div>');
         this.divPageControlArea = $('#VMGPageControlArea');
 
         // создание центральной динамической части
-        parent.append("<div id='VMGDynamicAreaForBorder'></div>");
+        this.parent.append("<div id='VMGDynamicAreaForBorder'></div>");
         var dynamicAreaForBorder = $('#VMGDynamicAreaForBorder');
 
         // создание центральной динамической части (в котором будут формировать под-вкладки)
@@ -79,7 +76,6 @@ var ViewMessengerGlass = (function () {
         // инициализация истории сообщений
         this._history = [];
         this._historyIndex = -1;
-
 
         // повесить хендлеры на разные эвенты
         var stream = this.options.stream_mes;
@@ -431,7 +427,6 @@ var ViewMessengerGlass = (function () {
         }
     };
 
-
     // ======== Отправка и получение сообщений
 
     ViewMessengerGlass.prototype.sendMessage = function() {
@@ -487,7 +482,6 @@ var ViewMessengerGlass = (function () {
         return true;
     };
 
-
     // ======== Кнопки работы с пати
 
     ViewMessengerGlass.prototype.party_invite = function (event) {
@@ -508,7 +502,6 @@ var ViewMessengerGlass = (function () {
         clientManager.sendConsoleCmd('/party leave');
         chat.main_input.focus();
     };
-
 
     // ======== Работа с пати чатом
 
@@ -664,7 +657,6 @@ var ViewMessengerGlass = (function () {
         p_chat.room_jid = null;
     };
 
-
     // ======== Механизм сворачивания/разворачивания окна чата
 
     ViewMessengerGlass.prototype.btnHideReaction = function(event) {
@@ -790,7 +782,6 @@ var ViewMessengerGlass = (function () {
         }
     };
 
-
     // ======== Добавление системной страницы (System)
 
     ViewMessengerGlass.prototype.initSysPage = function (){
@@ -848,11 +839,10 @@ var ViewMessengerGlass = (function () {
         }
     };
 
-
     // ======== Отображение чата в других местах
 
-    ViewMessengerGlass.prototype.showChatInTown = function(){
-        $('#chatTownWrap').append(this.parent);
+    ViewMessengerGlass.prototype.showChatInTown = function(jq_town_chat_div){
+       jq_town_chat_div.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '0px');
     };
 

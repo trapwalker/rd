@@ -1,0 +1,63 @@
+<div class="chat-interaction-main">
+    {% if cur_build.head is not None %}
+        {% set npc_photo = '' %}
+        {% set npc_title = '' %}
+        {% set npc_text = '' %}
+        {% include npc_header.html %}
+    {% end %}
+    <div class="chat-interaction-center-block">
+        <div class="chat-interaction-center-menu-block">
+            <div class="chat-interaction-center-menu-item one-line" data-page_id="chatInteractionInfo">Информация</div>
+            <div class="chat-interaction-center-menu-item one-line" data-page_id="chatInteractionTrading">Торговля</div>
+        </div>
+        <div class="chat-interaction-center-pages-block">
+            <div id="chatInteractionInfo" class="chat-interaction-center-page">
+                <div class="chat-interaction-car-photo-name"></div>
+                <div class="chat-interaction-car-photo-block"></div>
+                <div class="chat-interaction-car-info-block">
+                    <div class="chat-interaction-pers-info">
+                        <div class="chat-interaction-pers-info-line interaction-dark-back">
+                            <div class="chat-interaction-pers-info-label">Уровень:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-lvl"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-light-back">
+                            <div class="chat-interaction-pers-info-label">Класс:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-role_class"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-dark-back">
+                            <div class="chat-interaction-pers-info-label">Карма:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-karma"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-light-back">
+                            <div class="chat-interaction-pers-info-label">Вождение:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-driving"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-dark-back">
+                            <div class="chat-interaction-pers-info-label">Стрельба:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-shooting"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-light-back">
+                            <div class="chat-interaction-pers-info-label">Скрытность:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-masking"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-dark-back">
+                            <div class="chat-interaction-pers-info-label">Механика:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-engineering"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-light-back">
+                            <div class="chat-interaction-pers-info-label">Торговля:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-trading"></div>
+                        </div>
+                        <div class="chat-interaction-pers-info-line interaction-dark-back">
+                            <div class="chat-interaction-pers-info-label">Лидерство:</div>
+                            <div class="chat-interaction-pers-info-value chat-interaction-leading"></div>
+                        </div>
+                    </div>
+                    <div class="chat-interaction-car-info"></div>
+                </div>
+            </div>
+            <div id="chatInteractionTrading" class="chat-interaction-center-page"></div>
+        </div>
+    </div>
+</div>
+
