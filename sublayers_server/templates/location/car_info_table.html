@@ -31,7 +31,18 @@
         <!--<div class="mainCarInfoWindow-body-right-list-model-mountain-value">Невозможно</div>-->
     </div>
     <div class="car-info-block-body-right-list ammo">
-        Список вооружения, установленного на машинку.
+        {% for k, v in car.iter_slots(tags='armorer') %}
+            {% if v is not None %}
+            <div class="car-info-block-item-wrap"
+                 onmouseover="CarInfoBlockAmmoInfoView('{{ v.description }}')" onmouseout="CarInfoBlockAmmoInfoHide()">
+                <div class="npcInventory-pictureWrap">
+                    <div class="car-info-block-itemy-picture"
+                         style="background: url({{ static_url(static_world_link_repr(v.inv_icon_big)) }} ) no-repeat center;"></div>
+                </div>
+                <div class="npcInventory-name">{{ v.title }}</div>
+            </div>
+            {% end %}
+        {% end %}
     </div>
     <div class="car-info-block-body-right-list history">Оригинальная ПТС, 1 хозяин, не битая, царапина на заднем бампере.</div>
 </div>
