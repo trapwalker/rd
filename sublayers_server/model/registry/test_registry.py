@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function
 import sys
 import logging
 log = logging.getLogger(__name__)
@@ -9,22 +10,34 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
+import tornado.gen
+from pprint import pprint as pp
+from sublayers_server.test_iolop import io_loop, start
+
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry import storage
 from sublayers_server.model.registry.uri import URI
 
+from itertools import chain
+import random
+from sublayers_server.model.vectors import Point
+import yaml
+
+
+@tornado.gen.coroutine
+def test_registry():
+    log.debug('### test registry')
+    reg = storage.Registry(name='registry')
+    log.debug('Empty registry created')
+    yield reg.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+    log.debug('### Registry test end')
+
 
 if __name__ == '__main__':
-    sys.path.append('../../..')
-    from itertools import chain
-    import random
-    from sublayers_server.model.vectors import Point
-    from pprint import pprint as pp
-    import yaml
+    io_loop.add_callback(test_registry)
+    start()
 
-    log.debug('Registry loading start')
-    reg = storage.Registry(name='registry', path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
-    log.debug('Registry loading done')
+    
     # c = storage.Collection(name='cars', path=r"D:\Home\svp\projects\sublayers\sublayers_server\temp\user_data.db")
     # sedan = reg['/mobiles/cars/sedan']
     #
@@ -70,5 +83,5 @@ if __name__ == '__main__':
     #tr = reg['/institutions/trader/buhman']
     #pp(tr.as_client_dict(items=car.inventory))
 
-    d = reg['/mobiles/cars/middle/sports/delorean_dmc12']
-    print repr(d)
+    #d = reg['/mobiles/cars/middle/sports/delorean_dmc12']
+    #print repr(d)

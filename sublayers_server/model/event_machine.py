@@ -46,7 +46,9 @@ class Server(object):
         self.start_time = None
         # todo: blocking of init of servers with same uid
 
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
+        self.reg = Registry(name='registry')
+        # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
+
         self.zones = []
 
         self.stat_log = StatLogger()

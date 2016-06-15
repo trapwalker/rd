@@ -5,23 +5,24 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Position, IntAttribute, FloatAttribute, TextAttribute, Attribute
-from sublayers_server.model.registry.attr.link import RegistryLink
-from sublayers_server.model.registry.attr.inv import InventoryPerksAttribute
-from sublayers_server.model.registry.classes.skills import Skill
-
-from sublayers_server.model.registry.attr.inv import InventoryAttribute
-
-import random
+from sublayers_server.model.registry.odm.fields import (
+    StringField, ListField, BooleanField, UUIDField,
+    UniReferenceField,
+)
 
 
 class Agent(Root):
-    login = TextAttribute(caption=u'Уникальное имя пользователя', tags='client')
-    about_self = TextAttribute(default=u'', caption=u'Уникальное имя пользователя', tags='client')
-    # avatar_170_146 = TextAttribute(default=u'', caption=u'Ссылка на аватар разрешения 170x146 px') # todo: не использовать; брать user.avatar_link
+    login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
+    about_self = StringField(default=u'', caption=u'О себе', tags='client')
 
-    car = RegistryLink(caption=u"Активный автомобиль")  # todo: test to prefix path like: /mobile/cars/*
-    car_list = Attribute(default=[], caption=u"Список всех машин, кроме активной")
+    car = UniReferenceField(
+        reference_document_type='sublayers_server.model.registry.classes.mobiles.Car',
+        caption=u"Активный автомобиль",
+    )  # todo: test to prefix path like: /mobile/cars/*
+    car_list = ListField(
+        base_field='sublayers_server.model.registry.classes.mobiles.Car',
+        default=[], caption=u"Список всех машин, кроме активной",
+    )
 
     position = Position(caption=u"Последние координаты агента")
     balance = FloatAttribute(default=1000, caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить
@@ -29,8 +30,6 @@ class Agent(Root):
     last_town = RegistryLink(caption=u"Последний посещенный город")
     current_location = RegistryLink(caption=u"Текущая локация")
 
-    # todo: current car
-    # todo: car list
     # todo: current location link
 
     # todo: party link

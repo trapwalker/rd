@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.uri import URI
 
+import tornado.ioloop
+from tornado.concurrent import return_future
 from collections import deque
 from uuid import uuid4 as uid_func
 import pickle
@@ -203,12 +205,11 @@ class Collection(AbstractStorage):
 
 # noinspection PyProtectedMember
 class Registry(AbstractStorage):
-    def __init__(self, path=None, **kw):
+    def __init__(self, **kw):
         super(Registry, self).__init__(dispatcher=Node.DISPATCHER, **kw)
-        self.path = path
         log.info('Registry loading...')
         t = time.time()
-        self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
+        self.root = None # Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
         t = time.time() - t
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, t))
 
@@ -237,7 +238,7 @@ class Registry(AbstractStorage):
         else:
             self.root = node
 
-    def _load_node(self, path, owner):
+    def  _load_node(self, path, owner):
         assert isinstance(path, unicode)
         attrs = {}
         for f in os.listdir(path):
@@ -252,13 +253,13 @@ class Registry(AbstractStorage):
                         raise RegistryNodeFormatError(e)
                     attrs.update(d)
 
-        cls = None
-        class_name = attrs.pop('__cls__', None)
-        if class_name:
-            cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
-            if cls is None:
-                raise NodeClassError(
-                    'Unknown registry class ({}) found into the path: {!r}'.format(class_name, path))
+        # cls = None
+        # class_name = attrs.pop('__cls__', None)
+        # if class_name:
+        #     cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
+        #     if cls is None:
+        #         raise NodeClassError(
+        #             'Unknown registry class ({}) found into the path: {!r}'.format(class_name, path))
 
         # todo: get parent
         parent = None
@@ -271,27 +272,36 @@ class Registry(AbstractStorage):
         if parent is None:  # todo: make option 'owner_is_parent_by_default'
             parent = owner
 
-        cls = cls or parent and parent.__class__
-        if cls is None:
-            raise NodeClassError('Node class unspecified on path: {!r}'.format(path))
+        #cls = cls or parent and parent.__class__
+        cls = parent and parent.__class__ or Root
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
         abstract = attrs.pop('abstract', True)  # todo: Вынести это умолчание на видное место
-        return cls(name=name, parent=parent, owner=owner, storage=self, abstract=abstract, values=attrs)
+        attrs.update(
+            name=name,
+            parent=parent,
+            owner=owner,
+            abstract=abstract,
+            # storage=self,
+        )
+        return cls.from_son(attrs)
 
-    def load(self, path):
+    @return_future
+    def load(self, path, callback=None):
         root = None
         stack = deque([(path, None)])
         while stack:
             pth, owner = stack.pop()
             node = self._load_node(pth, owner)
             if node:
+                #yield node.save(upsert=True)
                 if owner is None:
                     root = node  # todo: optimize
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
                     if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                         stack.append((next_path, node))
-        return root
+
+        tornado.ioloop.IOLoop.instance().add_callback(callback, root)
 
     def get_path_tuple(self, node):
         # todo: cache
