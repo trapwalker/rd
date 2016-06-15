@@ -14,7 +14,7 @@ h1 {
     font: 72pt agency_fb_cyrillic;
     font-weight: bolder;
     color: #30fc00;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

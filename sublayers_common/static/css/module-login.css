@@ -20,7 +20,7 @@ body {
 #login a { color: #888; text-decoration: none; }
 #login a:hover { color: #369; }
 #login p { margin: 0;}
-#login .social { display: inline-block; height: 20px; margin-left: 7px; padding: 0 2px; cursor: pointer; border-radius: 3px; }
+#login .social { display: inline-block; height: 20px; margin-left: 7px; padding: 0 2px; cursor: url('/static/img/cursors/hyper.png'), pointer; border-radius: 3px; }
 #login .social:before { content: ""; display: inline-block; width: 15px; height: 15px; vertical-align: top; margin: 3px 5px 0 0; }
 #login .social.fb:before { background: url('../img/fc-webicon-facebook.svg') no-repeat; }
 #login .social.gp:before { background: url('../img/fc-webicon-googleplus.svg') no-repeat; }
@@ -35,7 +35,7 @@ body {
 #login input[type="password"] {	border-width: 0 1px; border-radius: 0; }
 #login .form-login input[type="password"] {	border-width: 0 1px 1px 1px;	border-radius: 0 0 3px 3px; }
 #login input[type="text"] {	border-radius: 0 0 3px 3px; }
-#login input[type="submit"] { width: 260px; padding: 12px 20px; margin: 15px 0; border: 1px solid #C1711B; border-radius: 3px; color: #111; font-size: 1.3em; font-weight: bold; text-shadow: 1px 1px 1px rgba(255,255,255,.5); cursor: pointer;
+#login input[type="submit"] { width: 260px; padding: 12px 20px; margin: 15px 0; border: 1px solid #C1711B; border-radius: 3px; color: #111; font-size: 1.3em; font-weight: bold; text-shadow: 1px 1px 1px rgba(255,255,255,.5); cursor: url('/static/img/cursors/hyper.png'), pointer;
   background-color: #FFB83A; box-shadow: inset 0 1px 1px rgba(255,255,0,.6); 
 	background-image: linear-gradient(rgba(255,207,92,.7), rgba(223,156,38,.8));
 }

@@ -32,7 +32,7 @@
     border-bottom: none;
 }
 .leaflet-bar-checked a.leaflet-disabled {
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     background-color: #f4f4f4;
     color: #bbb;
 }

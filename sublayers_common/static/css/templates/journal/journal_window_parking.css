@@ -34,7 +34,7 @@
 
 .journal-parking-menu-city-car {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.6;
 }
 .journal-parking-menu-city-car:hover { opacity: 1; }

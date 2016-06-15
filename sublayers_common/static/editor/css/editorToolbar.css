@@ -28,7 +28,7 @@
     height: 15px;
     top: 0px;
 
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 
 }
 
@@ -104,7 +104,7 @@
     background: white;
     -webkit-border-radius: 16px;
     border-radius: 16px;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     user-select: none;
     -webkit-user-select: none;
 

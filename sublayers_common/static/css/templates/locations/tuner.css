@@ -6,7 +6,7 @@
 
 .tunerWindow-main {
     position: relative;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -72,7 +72,7 @@
 
 .tuner-slot {
     position: absolute;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 35px;
     width: 35px;
     background: transparent url(/static/img/cars/slot_passive.png) no-repeat 100% 100%;

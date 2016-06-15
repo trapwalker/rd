@@ -6,7 +6,7 @@
         background-color: rgba(0, 0, 0, 0.9);
         color: #ffffff;
         font: 12pt FreePixel;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .mainCarInfoWindow-body-trunk {
@@ -34,7 +34,7 @@
         margin-left: 7px;
         text-align: center;
         color: #135806;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
     }
 
     .mainCarInfoWindow-body-trunk-filter-all.activateFilter {
@@ -99,7 +99,7 @@
         border: solid 1px #125306;
         background-color: #0d3707;
         margin: 35px auto 5px auto;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
         font: 12pt Nouveau_IBM;
         width: 130px;
         opacity: 0.6;
@@ -120,7 +120,7 @@
 
     .mainCarInfoWindow-body-trunk-body-right-item-wrap {
         position: relative;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
         box-sizing: border-box;
         border: 1px solid #054E05;
         width: 140px;
@@ -191,7 +191,7 @@
         background-color: rgba(0, 0, 0, 0.9);
         color: #27ED0A;
         font: 12pt FreePixel;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .containerInventoryWindow-window-wrap{
@@ -251,7 +251,7 @@
         background-color: rgba(0, 0, 0, 0.9);
         color: #27ED0A;
         font: 12pt FreePixel;
-        cursor: default;
+        cursor: url('/static/img/cursors/main.png'), default;
     }
 
     .barterInventoryWindow-window-wrap {
@@ -333,7 +333,7 @@
         color: #30fc00;
         background-color: #0d3707;
         border: solid 1px #054E05;
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
         text-align: center;
         opacity: 0.6;
     }

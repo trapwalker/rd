@@ -42,7 +42,7 @@
 
 .building-quest-list-item {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 170px;
     width: 170px;
     margin-right: 10px;
@@ -102,7 +102,7 @@
     width: 150px;
     padding: 6px 10px;
     margin-bottom: 4px;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     font-size: 16px;
     background-color: #082801;
     color: #33c811;
@@ -160,7 +160,7 @@
 
 .building-npc-list-item {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 160px;
     width: 180px;
     margin-right: 23px;
@@ -260,7 +260,7 @@
     height: 105px;
     top: -80px;
     background: transparent url("/static/content/locations/institutions/scale_arrow_ico.png") 100% 100% no-repeat;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .building-gas-repair-text {

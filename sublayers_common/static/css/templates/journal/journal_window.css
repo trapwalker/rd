@@ -3,7 +3,7 @@
     width: 666px;
     height: 456px;
     background-color: rgba(0, 0, 0, 0.9);
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 #townJournalPageWrap {
@@ -19,7 +19,7 @@
     margin: 3px auto 0px auto;
     width: 660px;
     height: 424px;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 .journal-header {
@@ -35,7 +35,7 @@
 
 .journal-page-button-block {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     float: left;
     margin-right: 30px;
     color: #29F200;
@@ -83,7 +83,7 @@
 
 .journal-menu-block {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 100%;
 }
 
