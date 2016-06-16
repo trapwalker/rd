@@ -6,10 +6,6 @@ import motorengine.fields
 from bson.objectid import ObjectId
 
 
-# def _make_mix(name, cls):
-#     return type(name, (MetaFieldMixin, cls), {})
-
-
 class MetaFieldMixin(object):
     def __init__(self, name=None, caption=None, doc=None, tags=None, **kw):
         super(MetaFieldMixin, self).__init__(**kw)
@@ -25,25 +21,8 @@ class MetaFieldMixin(object):
 
         self.tags = tags
 
-
-# _ORIGINAL_FIELDS = {
-#     k: v
-#     for k, v in motorengine.fields.__dict__.items()
-#     if (
-#         isinstance(v, type) and (
-#             issubclass(v, motorengine.fields.BaseField)
-#             or v is motorengine.fields.BaseField
-#         )
-#     )
-# }
-#
-#
-# _MIXED_FIELDS = {
-#     k: _make_mix(k, v)
-#     for k, v in _ORIGINAL_FIELDS.items()
-# }
-#
-# globals().update(_MIXED_FIELDS)
+    def set_value(self, value):
+        return value
 
 
 class BaseField             (MetaFieldMixin, motorengine.fields.BaseField               ): pass
