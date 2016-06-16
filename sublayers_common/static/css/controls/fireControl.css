@@ -181,3 +181,12 @@
 .fire-control-radar-circle {
     stroke-width: 1px;
 }
+
+@media screen and (max-width: 1366px) {
+
+    .fire-control-parent {
+        transform: scale(0.75);
+        bottom: 171px;
+        margin-left: -132px;
+    }
+}

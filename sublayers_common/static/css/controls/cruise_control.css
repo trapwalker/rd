@@ -357,3 +357,10 @@
     font: 7pt MICRADI;
     color: rgba(42, 253, 10, 0.50);
 }
+
+@media screen and (max-width: 1366px) {
+
+    .cruise-control-main {
+        transform: scale(0.75);
+    }
+}
