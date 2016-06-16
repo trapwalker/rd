@@ -2,7 +2,7 @@
 /* Настройка слайдера зума */
 .slider-zoom-parent {
     left: 0;
-    top: 25px;
+    top: 0px;
     position: absolute;
     z-index: 0;
 }
