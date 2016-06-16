@@ -2,7 +2,7 @@
 /* Настройка слайдера зума */
 .slider-zoom-parent {
     left: 0;
-    top: 25px;
+    top: 0px;
     position: absolute;
     z-index: 0;
 }
@@ -370,4 +370,11 @@
     color: #2afd0a;
     opacity: 0.5;
     /*Если что, то смотреть прозрачность в коде, так как она там стоит = 0.5!!! Функция зуммирования!*/
+}
+
+@media screen and (max-width: 1366px) {
+
+    .slider-zoom-parent {
+        transform: scale(0.75);
+    }
 }
