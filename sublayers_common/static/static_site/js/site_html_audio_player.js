@@ -11,12 +11,19 @@ var constHtmlSize = {
         height_channels_pointer: 18,
         width_of_one_station: 43,
         height_volume_disc: 105,
-        height_volume_indicator: 110,
+        height_volume_indicator: 110
     },
     768: {
-
+        offset_click_scale: 27,
+        width_channels_rail: 196,
+        width_channels_rail_click: 164,
+        height_channels_rail: 18,
+        height_channels_pointer: 16,
+        width_of_one_station: 35,
+        height_volume_disc: 85,
+        height_volume_indicator: 90
     }
-}
+};
 
 
 

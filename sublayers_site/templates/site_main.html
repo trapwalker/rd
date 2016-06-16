@@ -124,7 +124,7 @@
                 <div class="content-start-back content-start road-grid"></div>
                 <div class="content-start-back content-start road"></div>
                 <div class="content-start-back content-start car"></div>
-
+                <a class="site-logo" href="/#"></a>
             </div>
             <!--Консоль на главной странице -->
             <div id="RDSiteStartPage" class="content-block content-start switch-page">
@@ -231,6 +231,21 @@
             d_scroll = 0;
             clearInterval(scroll_interval);
         });
+
+
+        // Вешаем клик на логотип
+        $('.site-logo').first().click(function() {
+            if (! content_start_back_visible) {
+                content_start_back_visible = true;
+                $('.switch-page').css({display: 'none'});
+                $('.btn').removeClass('active');
+                $('.content-start').css({display: 'block'});
+                $('.content-start').animate({opacity: 1.0});
+            }
+        });
+
+        // Начальная установка размера
+        currentSiteSize = $('.content-block').width() > 800 ? '1080' : '768';
     });
 </script>
 </html>
