@@ -353,3 +353,12 @@
     top: 0;
     left: 0;
 }
+
+@media screen and (max-width: 1366px) {
+
+    #chatAreaGlass {
+        transform: scale(0.75);
+        bottom: -57px;
+        left: -70px;
+    }
+}
