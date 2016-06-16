@@ -95,7 +95,7 @@
 }
 
 .window-reg-up-btn:active {
-    background-color: #000000;
+    background-color: #030f00;
     color: #00ff00;
     border-color: #008000;
 }
@@ -167,7 +167,7 @@
 }
 
 .window-reg-footer .reg-btn:active {
-    background-color: #000000;
+    background-color: #030f00;
 }
 
 /* Медиа Запросы для разрешения 1366 */

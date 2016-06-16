@@ -149,7 +149,7 @@
     line-height: 1.35;
 }
 .reg2-btn:hover { background-color: #01550b; }
-.reg2-btn:active { background-color: #000000; }
+.reg2-btn:active { background-color: #030f00; }
 
 .reg2-btn-back { left: 8px; }
 .reg2-btn-next { right: 9px; width: calc(23% - 1px); }
