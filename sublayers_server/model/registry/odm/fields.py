@@ -46,6 +46,11 @@ class UniReferenceField(ReferenceField): # todo: replace to mixed
     '''
     Field responsible for creating a reference to another document (Node) by _id or uri.
     '''
+    def __init__(self, reference_document_type=None, *args, **kw):
+        if reference_document_type is None:
+            from sublayers_server.model.registry.odm import AbstractDocument
+            reference_document_type = AbstractDocument
+        super(UniReferenceField, self).__init__(reference_document_type=reference_document_type, *args, **kw)
 
     def validate(self, value):
         # avoiding circular reference
