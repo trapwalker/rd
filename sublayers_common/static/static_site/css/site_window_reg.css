@@ -6,7 +6,7 @@
     box-sizing: border-box;
     margin: 0 auto;
     font-size: 12pt;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 .window-reg-path {
@@ -71,6 +71,7 @@
     border-width: 0;
     background-color: #082308;
     font-size: 12pt;
+	cursor: url('/static/img/cursors/text.png'), text;
 }
 
 .window-reg-up-btn-block {
@@ -81,7 +82,7 @@
 }
 
 .window-reg-up-btn {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     border: 2px solid #209509;
     background-color: #0d3207;
     border-radius: 1px;
@@ -151,7 +152,7 @@
 .window-reg-footer .reg-btn {
     position: relative;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 23%;
     height: 18px;
     background-color: #01380b;

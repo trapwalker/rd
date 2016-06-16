@@ -6,7 +6,7 @@
     box-sizing: border-box;
     margin: 0 auto;
     font-size: 12pt;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 .window-reg1-path {
@@ -57,6 +57,7 @@
     border-width: 0;
     background-color: #082308;
     font-size: 12pt;
+	cursor: url('/static/img/cursors/text.png'), text;
 }
 
 .reg1-path-avatar-list {
@@ -90,7 +91,7 @@
 .reg1-btn {
     position: absolute;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 23%;
     height: 18px;
     background-color: #01380b;

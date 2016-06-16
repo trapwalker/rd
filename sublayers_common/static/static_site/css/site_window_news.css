@@ -37,7 +37,7 @@
 
 .window-news-log-news-header {
     position: relative;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     width: 100%;
     margin: 0px 0px 4px 10px;
     padding-left: 110px;

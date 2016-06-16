@@ -7,6 +7,9 @@ var LocationManager = (function () {
             menu_screen: null
         };
 
+        // Менеджер посетителей города
+        this.visitor_manager = new LocationVisitorsManager();
+
         // todo: добавить дивы панелей
         this.panel_left = new LocationPanelInfo(null);
         this.panel_right = new LocationPanelInfo(null);
@@ -22,6 +25,9 @@ var LocationManager = (function () {
         // Дикт для всех локаций меню
         this.location_menu = null;
 
+        // Локация чат
+        this.location_chat = null;
+
         // Для различных эффектов в городе
         this.location_canvas_manager = new LocationCanvasManager();
 
@@ -29,13 +35,6 @@ var LocationManager = (function () {
         this.locations_canvas_effects = {};
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/towns/all_frames.png';
-
-        SetImageOnLoad(lasers_img, function (img) {
-                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
-                locationManager.locations_canvas_effects['laser'].start();
-            }
-        );
-
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
@@ -105,13 +104,16 @@ var LocationManager = (function () {
         // Локации меню
         this.location_menu = new LocationPlaceMenu(this.jq_town_div);
 
+        // Локация чата
+        this.location_chat = new LocationPlaceChat(this.jq_town_div);
+
+        // Обновить список посетителей города
+        this.visitor_manager.update_visitors();
+
         // Разрешаем отрисовку эффектов на канвас
         this.location_canvas_manager.init_canvas();
         this.location_canvas_manager.is_canvas_render = true;
 
-        //locationManager.location_uid = event.location.uid;
-        //chat.showChatInTown();
-        //locationManager.visitorsManager.update_visitors();
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
     };
@@ -147,9 +149,16 @@ var LocationManager = (function () {
             this.location_menu = null;
         }
 
-        //chat.showChatInMap();
-        //locationManager.location_uid = null;
-        //locationManager.visitorsManager.clear_visitors();
+        // Очистка локации чата
+        if (this.location_chat) {
+            this.location_chat.clear();
+            this.location_chat = null;
+        }
+
+        chat.showChatInMap();
+
+        // Почистить менеджер посетителей города
+        this.visitor_manager.clear_visitors();
     };
 
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
@@ -194,6 +203,8 @@ var LocationManager = (function () {
         for (var key in this.npc)
             if (this.npc.hasOwnProperty(key))
                 this.npc[key].update();
+
+        if (this.location_menu) this.location_menu.update();
     };
 
     LocationManager.prototype.isActivePlace = function (location_place) {
@@ -387,6 +398,8 @@ var LocationPlace = (function () {
                 return (new LocationTrainerNPC(npc_rec, jq_town_div, key));
             case 'barman':
                 return (new LocationBarmanNPC(npc_rec, jq_town_div, key));
+            case 'girl':
+                return (new LocationGirlNPC(npc_rec, jq_town_div, key));
             case 'npc_gas_station':
                 return (new LocationGasStationNPC(npc_rec, jq_town_div, key));
             default:

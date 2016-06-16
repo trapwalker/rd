@@ -8,13 +8,22 @@
 .car-info-block-picture-hangar {
     position: relative;
     float: left;
-    width: 408px;
+    width: 492px;
     height: 390px;
     overflow: hidden;
     border-right: 1px solid #30fc00;
     box-sizing: border-box;
 }
-.car-info-block-picture-hangar .car-info-block-picture-main { margin: 110px 0  0 -42px; }
+.car-info-block-picture-hangar .car-info-block-picture-main { margin: 100px 0 0 0; }
+
+.car-info-block-car-name-hangar {
+    position: absolute;
+    top: 80px;
+    width: 492px;
+    text-align: center;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+}
 
 .car-info-block-picture-main {
     position: relative;
@@ -32,7 +41,7 @@
     position: relative;
     float: left;
     height: 100%;
-    width: 326px;
+    width: 240px;
 }
 
 .car-info-block-info {
@@ -43,45 +52,50 @@
 }
 
 .car-info-block-body-right-menu {
-width: 100%;
-    height: 30px;
+    width: 100%;
+    height: 25px;
+    padding-top: 4px;
     font: 12pt Nouveau_IBM;
     border-width: 0 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, #30fc00, transparent);
     border-image-slice: 1;
-    padding-left: 10px;
     box-sizing: border-box;
 }
 
 .mainCarInfoWindow-body-right-menu-button {
     position: relative;
     float: left;
-    margin: 6px 0 0 22px;
+    margin: 0 0 0 18px;
     text-align: center;
     color: #135806;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
-.mainCarInfoWindow-body-right-menu-button-arrow-left {
-    width: 0px;
-    height: 0px;
+.mainCarInfoWindow-body-right-menu-button.active:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -7px;
+    top: 2px;
     border-top: 5px solid transparent;
-    border-left: 5px solid #30fc00;
+    border-left: 5px solid #00ff00;
     border-bottom: 5px solid transparent;
-    margin: 8px 3px 0 0;
-    float: left;
 }
 
-.mainCarInfoWindow-body-right-menu-button-arrow-right {
-    width: 0px;
-    height: 0px;
+.mainCarInfoWindow-body-right-menu-button.active:after {
+    content: ' ';
+    position: absolute;
+    right: -6px;
+    top: 2px;
+    width: 0;
+    height: 0;
     border-top: 5px solid transparent;
-    border-right: 5px solid #30fc00;
+    border-right: 5px solid #00ff00;
     border-bottom: 5px solid transparent;
-    margin: 8px 0 0 3px;
-    float: left;
 }
+
 
 .mainCarInfoWindow-body-right-menu-button:hover {
     background-color: #061108;
@@ -92,50 +106,52 @@ width: 100%;
     color: #30fc00;
 }
 
-.mainCarInfoWindow-body-right-menu-button-active {
+.mainCarInfoWindow-body-right-menu-button:active, .mainCarInfoWindow-body-right-menu-button.active {
     background-color: #061108;
     background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
     linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
     color: #30fc00;
-    margin-left: 3px;
 }
 
 .car-info-block-body-right-list {
     position: relative;
     font: 12pt FreePixel;
     width: 100%;
-    height: calc(100% - 30px);
-    padding-top: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
+    height: calc(100% - 25px);
+    color: #1e9604;
+    /* padding-top: 15px; */
+    /* padding-left: 10px; */
+    /* padding-right: 10px; */
     box-sizing: border-box;
     overflow-y: auto;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
+    display: none;
 }
 
-.car-info-block-body-right-list-name {
+.car-info-block-body-right-list.active {display: block;}
+
+
+.car-info-block-body-right-list-text {
     position: relative;
     float: left;
     width: 150px;
     color: #1e9604;
     margin-bottom: 2px;
     display: inline-block;
-}
-
-.car-info-block-body-right-list-value {
-position: relative;
-    float: left;
-    width: calc(100% - 150px);
-    color: #30fc00;
-    margin-bottom: 2px;
-    padding-left: 10px;
-    display: inline-block;
     box-sizing: border-box;
 }
 
-.car-info-block-body-right-list-even {
+.car-info-block-body-right-list-text.value {
+    width: calc(100% - 150px);
+    color: #30fc00;
+    padding-right: 10px;
+    text-align: right;
+}
+
+
+.car-info-block-body-right-list-text.even {
     background-color: #000000;
     background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
     linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
@@ -143,7 +159,7 @@ position: relative;
     background-position: 0 0, 1px 1px;
 }
 
-.car-info-block-body-right-list-uneven {
+.car-info-block-body-right-list-text.uneven {
     background-color: #000000;
     background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
     linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
@@ -163,4 +179,25 @@ position: relative;
     margin-bottom: 10px;
     border-top: dashed 2px #135806;
     color: #1e9604;
+}
+
+
+/* Ammo */
+.car-info-block-item-wrap {
+    position: relative;
+    margin: 10px auto;
+    box-sizing: border-box;
+    width: 220px;
+    height: 118px;
+    overflow: hidden;
+    /*background-color: #082801;*/
+}
+.car-info-block-item-wrap.mid { width: 130px; height: 70px; }
+
+.car-info-block-item-wrap:hover { background-color: #0E4b00; }
+
+.car-info-block-itemy-picture {
+    position: relative;
+    height: 100%;
+    width: 100%;
 }

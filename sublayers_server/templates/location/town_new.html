@@ -1,11 +1,11 @@
 <style>
     #btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area,
     #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area {
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
     }
 
     .highlight-buildings {
-        cursor: pointer;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
     }
 
     #location-content {
@@ -89,7 +89,6 @@
     #btn_4_text{ top: 776px; right: 323px; transform: rotateZ(19deg) skew(5deg); }
 </style>
 
-
 <div>
     {% raw svg_code %}
 </div>
@@ -109,6 +108,12 @@
     {% end %}
     <div id="townMenuLocation" class="townPageWrap menu-wrap" style="display: none">
         {% include location_menu.html %}
+    </div>
+    <div id="townChatLocation" class="townPageWrap chat-wrap" style="display: none">
+        {% include location_chat.html %}
+    </div>
+    <div id="townChatInteraction" class="townPageWrap npc-wrap" style="display: none">
+        {% include chat_interaction.html %}
     </div>
 </div>
 

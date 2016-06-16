@@ -69,6 +69,7 @@
     border-width: 0px;
     background-color: #082308;
     font-size: 14pt;
+	cursor: url('/static/img/cursors/text.png'), text;
 }
 
 .window-qg-content-car-block {
@@ -91,7 +92,7 @@
 .window-qg-content-car-wrap .car-info-block-picture-main { margin-left: -45px; }
 
 .window-qg-btn {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     text-align: center;
     border: 2px solid #209509;
     background-color: #0d3207;

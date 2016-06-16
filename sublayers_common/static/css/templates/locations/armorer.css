@@ -1,6 +1,6 @@
 .armorerWindow-main {
     position: relative;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -22,9 +22,8 @@
 .armorer-car {
     position: relative;
     float: left;
-    width: 491px;
+    width: 492px;
     height: 100%;
-    /*padding-top: 25px;*/
     border-right: 1px solid #30fc00;
     box-sizing: border-box;
 }
@@ -57,7 +56,7 @@
 
 .car_sector {
     opacity: 0.3;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .car_sector_hover {
@@ -106,12 +105,26 @@
     left: -32px;
 }
 
+
+
+.journal-view-ammo_side_F, .journal-view-ammo_side_B {
+    width: 200px;
+    height: 100px;
+}
+
+.journal-view-ammo_side_L, .journal-view-ammo_side_R {
+    width: 100px;
+    height: 100px;
+}
+
+
 /* Общие классы для всех шаблонов оружейника */
 
 .armorer-car-main {
     position: relative;
     width: 492px;
     height: 392px;
+    overflow: hidden;
 }
 
 .armorer-slot {

@@ -1,0 +1,50 @@
+<div class="girlWindow-main">
+    {% set npc_photo = cur_npc.photo %}
+    {% set npc_title = cur_npc.title %}
+    {% set npc_text = cur_npc.text %}
+    {% include npc_header.html %}
+    <div class="girl-center-block">
+        <div class="girl-center-menu-block">
+            <div class="girl-center-menu-item" data-page_cls="girlPagePrivateDance">Приватный танец</div>
+            <div class="girl-center-menu-item one-line" data-page_cls="girlPageMassage">Массаж</div>
+            <div class="girl-center-menu-item one-line" data-page_cls="girlPageHandMade">Хендмейд</div>
+            <div class="girl-center-menu-item one-line" data-page_cls="girlPageInterlude">Интерлюдия</div>
+            <div class="girl-center-menu-item one-line" data-page_cls="girlPageIntersection">Интерсекция</div>
+            <div class="girl-center-menu-item" data-page_cls="girlPageBi">Позвать подружку</div>
+        </div>
+        <div class="building-center-pages-block">
+            <div class="girl-center-page girlPagePrivateDance">
+                <div class="girl-center-page-img"></div>
+            </div>
+            <div class="girl-center-page girlPageMassage">
+                <div class="girl-center-page-img"></div>
+            </div>
+            <div class="girl-center-page girlPageHandMade">
+                <div class="girl-center-page-img"></div>
+            </div>
+            <div class="girl-center-page girlPageInterlude">
+                <div class="girl-center-page-img"></div>
+            </div>
+            <div class="girl-center-page girlPageIntersection">
+                <div class="girl-center-page-img"></div>
+            </div>
+            <div class="girl-center-page girlPageBi">
+                <div class="girl-center-page-img"></div>
+            </div>
+        </div>
+    </div>
+    <div class="building-bottom-block">
+        <div class="building-npc-list-block">
+            <div class="building-npc-list building-inventory-list">
+{#                {% for npc in cur_build.instances %}#}
+{#                <div class="building-npc-list-item" onclick="locationManager.openNPC('{{ npc.node_html() }}')">#}
+{#                    <img class="building-npc-photo" src="{{ npc.photo }}"/>#}
+{#                    <div class="building-npc-name-block"><span class="building-npc-name"> {{ npc.doc }} </span></div>#}
+{#                </div>#}
+{#                {% end %}#}
+            </div>
+        </div>
+    </div>
+
+
+</div>

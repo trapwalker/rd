@@ -135,7 +135,7 @@
 }
 
 #welcomePageCloseButton {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: absolute;
     bottom: 10px;
@@ -183,7 +183,7 @@
 }
 
 #optionsPageDiv input {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 #optionsPageDiv li{
@@ -197,7 +197,7 @@
 
 
 .optionsPageButton {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: relative;
     color: lime;
@@ -250,7 +250,7 @@
     }
 
 #deathPageButtonResp {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: absolute;
     left: 50%;
@@ -300,7 +300,7 @@
 }
 
 #winPageButtonResp {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: absolute;
     left: 50%;
@@ -349,7 +349,7 @@
 }
 
 #losePageButtonResp {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: absolute;
     left: 50%;
@@ -389,7 +389,7 @@
 }
 
 #restartPageButton {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: absolute;
     left: 50%;

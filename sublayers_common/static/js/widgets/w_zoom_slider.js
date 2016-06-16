@@ -84,7 +84,7 @@ var WZoomSlider = (function () {
         carriage.css('border', '0px');
         carriage.css('left', '20px');
         carriage.css('margin-bottom', '-13.5px');
-        carriage.css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
+        //carriage.css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
         carriage.append('<div id="ZoomDivInsideSpanCarriage"></div>');
 
         this.zomm_circle = $('#ZoomDivInsideSpanCarriage');

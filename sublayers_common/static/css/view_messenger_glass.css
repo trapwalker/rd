@@ -22,31 +22,6 @@
     left: 1083px;
 }
 
-#visitorList {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.visitorRecord {
-    opacity: 0.5;
-    color: #2afd0a;
-    font: 8pt MICRADI;
-    letter-spacing: 1px;
-    position: relative;
-    float: left;
-}
-
-.visitorRecord:hover {
-    opacity: 1;
-}
-
-.visitorRecordInfo {
-    margin-left: 5px;
-}
-
 #VMGDivHardware {
     position: absolute;
     height: 457px;
@@ -59,6 +34,7 @@
     position: absolute;
     bottom: 397px;
     left: 2px;
+	cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 #VMGMainDivGlass {
@@ -85,10 +61,17 @@
 
 #VMGPageControlArea {
     position: relative;
-    box-sizing: border-box;
     height: 40px;
     width: 100%;
     padding-top: 6px;
+    box-sizing: border-box;
+}
+#townChatLocation #VMGPageControlArea {
+    padding-left: 120px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
 }
 
 #VMGDynamicAreaForBorder {
@@ -118,6 +101,12 @@
     border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
     border-width: 1px 0px 0px 0px;
+}
+#townChatLocation #VMGFooterArea {
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
 }
 
 #VMGEnterButtonDIV {
@@ -156,6 +145,7 @@
     padding-left: 4px;
     color: #2afd0a;
     font: 10pt MICRADI;
+	cursor: url('/static/img/cursors/text.png'), text;
 }
 
 .VMGChatOutArea {
@@ -204,6 +194,9 @@
     overflow-x: hidden;
     display: block;
 }
+#townChatLocation .VMGPartytextOutArea {
+    width: 440px;
+}
 
 .VMGPartyPageControl {
     position: relative;
@@ -233,6 +226,12 @@
     border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
     border-width: 0px 0px 1px 0px;
+}
+#townChatLocation .VMGGlobalPageControl {
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
 }
 
 .VMGPartypageButton {
@@ -346,7 +345,6 @@
     position: relative;
 }
 
-
 #VGM-PlayerInfoDivInCity {
     height: 100%;
     width: 100%;
@@ -354,12 +352,4 @@
     position: absolute;
     top: 0;
     left: 0;
-}
-
-.visitor-record {
-    position: relative;
-    height: 20px;
-    width: 100%;
-    box-sizing: border-box;
-    padding-top: 5px;
 }

@@ -1,9 +1,9 @@
 .editor-clickable {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .editor-unclickable {
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 body{
@@ -31,7 +31,7 @@ body{
     left: 0px;
     right: 0px;
     bottom: 0px;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
     min-width: 1024px;
     min-height: 600px;
 }

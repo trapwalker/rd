@@ -42,7 +42,7 @@
 }
 
 #welcomePageCloseButton {
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.7;
     position: absolute;
     bottom: 10px;

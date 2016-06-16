@@ -33,7 +33,7 @@
     float: left;
     margin: 0 4px;
     color: #31c811;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     text-align: center;
     width: 14%;
     overflow: hidden;
@@ -43,6 +43,14 @@
 .menu-header-item.big {width: 16%; }
 
 .menu-header-item.active, .menu-header-item:hover{color:#29F200;}
+
+.menu-header-item.active {
+    background-color: #061108;
+    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+        linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
 
 .menu-header-item.active:before {
     content: ' ';
@@ -101,7 +109,7 @@
 .location-inventory-filters-item {
     position: relative;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     margin: 0 30px;
     color: #31c811;
 }
@@ -139,7 +147,7 @@
 .location-menu-car-picture {
     position: relative;
     float: left;
-    width: 408px;
+    width: 492px;
     height: 390px;
     overflow: hidden;
     border-right: 1px solid #30fc00;
@@ -147,7 +155,6 @@
 }
 
 .location-menu-car-picture .car-info-block-picture-main {
-    left: -42px;
     top: 80px;
 }
 
@@ -155,7 +162,17 @@
     position: relative;
     float: left;
     height: 100%;
-    width: 326px;
+    width: 240px;
+    overflow: hidden;
+}
+
+.location-menu-car-name {
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    text-align: center;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
 }
 
 
@@ -164,3 +181,339 @@
 .menu-item .journal-header { border-width: 0 0 1px 0; }
 .menu-item .journal-page-left { border-width: 0 1px 0 0; }
 .menu-item .journal-page-right { border-width: 0; }
+
+/* Вкладка Персонаж */
+
+.location-menu-person-up {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #30fc00;
+    border-width: 0 0 1px 0;
+}
+
+
+.location-menu-person-avatar-block {
+    position: relative;
+    float: left;
+    width: 170px;
+    height: 100%;
+}
+
+.location-menu-person-avatar {
+    position: absolute;
+    width: 170px;
+    height: 146px;
+}
+
+.location-menu-person-name {
+    position: relative;
+    width: 75%;
+    height: 20px;
+    text-align: center;
+    top: 120px;
+    padding-top: 3px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+    background-color: #0E4b00;
+}
+
+.location-menu-person-about-block {
+    position: relative;
+    float: left;
+    width: calc(100% - 170px);
+    height: 100%;
+    box-sizing: border-box;
+    padding-left: 15px;
+}
+
+
+.location-menu-person-about-line {
+    position: relative;
+    width: 100%;
+    height: 18px;
+}
+
+.location-menu-person-about-area {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    border: 1px solid #0E4b00;
+}
+
+
+.location-menu-person-down {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 150px - 10px);
+    font: 11pt Nouveau_IBM;
+    color: #29F200;
+}
+
+
+.location-menu-person-bottom-menu {
+    position: relative;
+    width: 100%;
+    height: 25px;
+}
+
+.location-menu-person-bottom-menu-item {
+    position: relative;
+    float: left;
+    margin: 0 10px;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+}
+
+.location-menu-person-bottom-menu-item.active {
+    background-color: #061108;
+    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
+    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.location-menu-person-bottom-menu-item.active:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -7px;
+    top: 2px;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #00ff00;
+    border-bottom: 5px solid transparent;
+}
+
+.location-menu-person-bottom-menu-item.active:after {
+    content: ' ';
+    position: absolute;
+    right: -6px;
+    top: 2px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #00ff00;
+    border-bottom: 5px solid transparent;
+}
+
+.location-menu-person-page-list {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 25px);
+}
+
+.location-menu-person-page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+
+.location-menu-person-perks-block {
+    position: relative;
+    float: left;
+    width: 40%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #0E4b00;
+}
+.location-menu-person-skills-block {
+    position: relative;
+    float: left;
+    width: calc(60% - 4px);
+    margin-left: 4px;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #0E4b00;
+}
+
+.location-menu-person-ttx-header {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    border-bottom: 1px solid #0E4b00;
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 21px
+}
+
+.location-menu-person-ttx-center {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.location-menu-person-ttx-footer {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    border-top: 1px solid #0E4b00;
+    box-sizing: border-box;
+}
+
+
+.location-menu-person-ttx-footer-text {
+    position: relative;
+    float: left;
+    width: 50%;
+    box-sizing: border-box;
+    padding: 0 10px;
+    line-height: 21px
+}
+.location-menu-person-ttx-footer-text.right{
+    text-align: right;
+}
+
+.location-menu-person-ttx-item {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    line-height: 21px;
+    box-sizing: border-box;
+    cursor: url('/static/img/cursors/main.png'), default;
+    color: #31c811;
+}
+.location-menu-person-ttx-item:hover {color: #2ffa00;}
+.location-menu-person-perks-block .location-menu-person-ttx-item{padding-left: 10px;}
+
+.location-menu-person-ttx-skill {
+    position: relative;
+    float: left;
+    width: calc(100% - 10px - 55px);
+    margin-right: 10px;
+    box-sizing: border-box;
+    padding-left: 10px;
+}
+
+.location-menu-person-ttx-value {
+    position: relative;
+    float: left;
+    width: 55px;
+    text-align: center;
+}
+
+
+
+/*  NukeOil  */
+
+.location-menu-nukeoil-header {
+position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    padding: 12px 0px 0px 20px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #29F200;
+}
+
+.location-menu-nukeoil-button-block {
+    position: relative;
+    cursor: pointer;
+    float: left;
+    margin-right: 30px;
+    color: #29F200;
+    font: 12pt Nouveau_IBM;
+    opacity: 0.6;
+}
+.location-menu-nukeoil-button-block:hover { opacity: 1; }
+.location-menu-nukeoil-button-block.active { opacity: 1; }
+
+
+.location-menu-nukeoil-page-list {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 45px);
+}
+
+.location-menu-nukeoil-page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 40px 0 0 98px;
+}
+
+.location-menu-nukeoil-ins-block {
+    position: relative;
+    float: left;
+    width: 150px;
+    height: 250px;
+    box-sizing: border-box;
+    border: 1px solid #0E4b00;
+    margin-right: 50px;
+    color: #29F200;
+    font-family: Nouveau_IBM, sans-serif;
+}
+
+.location-menu-nukeoil-ins-block.active {
+    background-color: darkred;
+}
+
+
+.location-menu-nukeoil-ins-img {
+    position: relative;
+    width: 120px;
+    height: 130px;
+    margin: 10px auto 0 auto;
+}
+
+.location-menu-nukeoil-ins-img.standart {background: transparent url("/static/content/locations/institutions/nucoil/st_small_mapmenu.png") 100% 100% no-repeat;}
+.location-menu-nukeoil-ins-img.premium {background: transparent url("/static/content/locations/institutions/nucoil/pr_small_mapmenu.png") 100% 100% no-repeat;}
+.location-menu-nukeoil-ins-img.vip {background: transparent url("/static/content/locations/institutions/nucoil/vip_small_mapmenu.png") 100% 100% no-repeat;}
+
+.location-menu-nukeoil-ins-name {
+    position: relative;
+    height: 20px;
+    text-align: center;
+    width: 100%;
+    line-height: 22px;
+}
+
+.location-menu-nukeoil-ins-delimeter {
+    position: relative;
+    height: 1px;
+    border-bottom: 2px solid #31c811;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 3px;
+}
+
+.location-menu-nukeoil-ins-line {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 3px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -712,6 +712,14 @@ class AgentAPI(API):
     def set_about_self(self, text):
         self.agent.example.about_self = text
 
+    # Запрос инфы о другом игроке
+
+    @public_method
+    def get_interaction_info(self, player_nick):
+        messages.InteractionInfoMessage(time=self.agent.server.get_time(),
+                                        agent=self.agent,
+                                        player_nick=player_nick).post()
+
     # Административные методы
     @public_method
     def get_tiles_admin(self, x, y):

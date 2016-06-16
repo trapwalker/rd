@@ -24,7 +24,7 @@
 .window-ratings-header-path {
     position: relative;
     float: left;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     text-align: center;
     width: 13%;
     overflow: hidden;
@@ -106,7 +106,7 @@
     font-size: 12pt;
     margin-bottom: 4px;
     line-height: 1.7;
-    cursor: pointer;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
     border: 2px solid rgba(0, 0, 0, 0);
 }
 
@@ -202,7 +202,7 @@
     height: 20%;
     box-sizing: border-box;
     border: 2px solid #007700;
-    cursor: default;
+    cursor: url('/static/img/cursors/main.png'), default;
 }
 
 .window-ratings-right-path-top-header {

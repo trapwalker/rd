@@ -161,7 +161,7 @@ var LocationTraderNPC = (function (_super) {
             var itemDiv = $(
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
                     '<div class="npcInventory-item">' +
-                        '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + example.inv_icon_small + ') no-repeat center"></div>' +
+                        '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
                         '<div class="npcInventory-text name">' + example.title + '</div>' +
                         '<div class="npcInventory-text count">' + example.count.toFixed(1) + '</div>' +
                     '</div>' +
@@ -328,6 +328,8 @@ var LocationTraderNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, 'Подтвердить</br>сделку', true);
         locationManager.setBtnState(2, '</br>Отмена', true);
+        locationManager.setBtnState(3, '</br>Назад', true);
+        locationManager.setBtnState(4, '</br>Выход', true);
     };
 
     LocationTraderNPC.prototype.set_panels = function () {
@@ -365,11 +367,11 @@ var LocationBarmanNPC = (function (_super) {
     }
 
     LocationBarmanNPC.prototype.get_self_info = function () {
-        console.log('LocationBarmanNPC.prototype.get_self_info');
+        //console.log('LocationBarmanNPC.prototype.get_self_info');
     };
 
     LocationBarmanNPC.prototype.apply = function() {
-        console.log('LocationBarmanNPC.prototype.apply');
+        //console.log('LocationBarmanNPC.prototype.apply');
     };
 
     return LocationBarmanNPC;

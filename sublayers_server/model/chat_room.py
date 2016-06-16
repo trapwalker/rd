@@ -151,11 +151,7 @@ class ChatRoom(object):
     def __contains__(self, agent):
         if agent is None:
             return False
-        # todo: ##optimize
-        for member in self.members:
-            if member == agent:
-                return True
-        return False
+        return agent in self.members
 
     def include(self, agent, time):
         ChatRoomIncludeEvent(room=self, agent=agent, time=time).post()

@@ -1,0 +1,71 @@
+.girlWindow-main {
+    position: relative;
+    cursor: url('/static/img/cursors/main.png'), default;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.girl-center-block {
+    position: relative;
+    width: 734px;
+    height: 318px;
+    margin: 0 auto;
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    font-family: Nouveau_IBM;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.girl-center-menu-block {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 162px;
+    border-right: 1px solid green;
+    padding: 10px 0px 10px 0px;
+    box-sizing: border-box;
+}
+
+.girl-center-menu-item {
+    position: relative;
+    width: 150px;
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    font-size: 16px;
+    background-color: #082801;
+    color: #33c811;
+    box-sizing: border-box;
+    height: 40px;
+    line-height: 14px;
+}
+.girl-center-menu-item:hover { background-color: #0e4b00; color: #2ffa00; }
+.girl-center-menu-item.active { background-color: #0e4b00; color: #2ffa00; }
+.girl-center-menu-item.one-line { line-height: 28px; }
+
+.girl-center-page {
+    position: absolute;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    color: #28F100;
+    display: none;
+}
+
+.girl-center-page-img {
+    position: relative;
+    margin: 10px;
+    width: 550px;
+    height: 280px;
+}
+
+.girlPagePrivateDance .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_poledance.png'); }
+.girlPageMassage .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_massage.png'); }
+.girlPageHandMade .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_handmade.png'); }
+.girlPageInterlude .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_interlude.png'); }
+.girlPageIntersection .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_intersection.png'); }
+.girlPageBi .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_bi.png'); }
