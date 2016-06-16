@@ -535,18 +535,23 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         position: absolute;
         width: 100%;
         height: 100px;
-        /*background-color: rgba(255, 0, 0, 0.51);*/
-        perspective: 470px;
-        -webkit-perspective: 470px;
-        perspective-origin: 55% 0%;
     }
 
     .radio-screen-content {
         position: absolute;
-        width: 100%;
-        height: 100%;
-        transform: rotateY(-20deg);
+        width: 261px;
+        height: 76px;
+        top: 5px;
+        left: 10px;
     }
+
+    .radio-screen-content.scan {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_scan.png) no-repeat 100% 100%;}
+    .radio-screen-content.junk {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_junk.png) no-repeat 100% 100%;}
+    .radio-screen-content.maddog {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_maddog.png) no-repeat 100% 100%;}
+    .radio-screen-content.rrn {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_rrn.png) no-repeat 100% 100%;}
+    .radio-screen-content.town {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_town.png) no-repeat 100% 100%;}
+    .radio-screen-content.vigilante {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_vigilante.png) no-repeat 100% 100%;}
+
 
     .radio-screen-text {
         position: relative;

@@ -81,7 +81,7 @@ var RadioPlayer = (function () {
 
         // Дисплей и работа с ним
         this.jq_display = $('.radio-screen-content').first();
-        this.jq_station_name = $('.radio-screen-channel-name').first();
+        //this.jq_station_name = $('.radio-screen-channel-name').first();
 
         // Работа с громкостью
         this.jq_volume_indicator = $('.radio-volume-indicator-block').first();
@@ -208,7 +208,9 @@ var RadioPlayer = (function () {
         //this.jq_btn_stop.css({display: 'block'});
         //this.jq_btn_play.css({display: 'none'});
 
-        this.jq_station_name.text(this.channels[this.get_channel_key()].name);
+        //this.jq_station_name.text(this.channels[this.get_channel_key()].name);
+        this.jq_display.removeClass('scan');
+        this.jq_display.addClass(this.channels[this.get_channel_key()].screen_class);
     };
 
     RadioPlayer.prototype.load_buffer_timeout = function () {
@@ -256,7 +258,9 @@ var RadioPlayer = (function () {
         // Запуск шума в цикле
         audioManager.play('radio_noise_switch', 0, this.current_volume, null, true);
         // Смена названия радиостанции на "поиск"
-        this.jq_station_name.text(RadioNameSwitchText);
+        //this.jq_station_name.text(RadioNameSwitchText);
+        this.jq_display.removeClass('junk maddog rrn town vigilante');
+        this.jq_display.addClass('scan');
     };
 
     RadioPlayer.prototype.click_stop = function(event) {
@@ -348,43 +352,53 @@ function initRadioPlayer() {
         channels: {
             'r_ch0_128': {
                 link: "http://listen.radiotower.su:8000/vigilante_2084_128",
-                name: "Vigilante 2084 128"
+                name: "Vigilante 2084 128",
+                screen_class: 'vigilante'
             },
             'r_ch0_320': {
                 link: "http://listen.radiotower.su:8000/vigilante_2084_320",
-                name: "Vigilante 2084 320"
+                name: "Vigilante 2084 320",
+                screen_class: 'vigilante'
             },
             'r_ch1_128': {
                 link: "http://listen.radiotower.su:8000/lonesome_town_128",
-                name: "Lonesome Town 128"
+                name: "Lonesome Town 128",
+                screen_class: 'town'
             },
             'r_ch1_320': {
                 link: "http://listen.radiotower.su:8000/lonesome_town_320",
-                name: "Lonesome Town 320"
+                name: "Lonesome Town 320",
+                screen_class: 'town'
             },
             'r_ch2_128': {
                 link: "http://listen.radiotower.su:8000/mad_dog_fm_128",
-                name: "Mad Dog FM 128"
+                name: "Mad Dog FM 128",
+                screen_class: 'maddog'
             },
             'r_ch2_320': {
                 link: "http://listen.radiotower.su:8000/mad_dog_fm_320",
-                name: "Mad Dog FM 320"
+                name: "Mad Dog FM 320",
+                screen_class: 'maddog'
             },
             'r_ch3_128': {
                 link: "http://listen.radiotower.su:8000/rrn_radio_128",
-                name: "RRN Radio 128"
+                name: "RRN Radio 128",
+                screen_class: 'rrn'
             },
             'r_ch3_320': {
                 link: "http://listen.radiotower.su:8000/rrn_radio_320",
-                name: "RRN Radio 320"
+                name: "RRN Radio 320",
+                screen_class: 'rrn'
             },
             'r_ch4_128': {
                 link: "http://listen.radiotower.su:8000/industrial_junk_128",
-                name: "Industrial Junk 128"
+                name: "Industrial Junk 128",
+                screen_class: 'junk'
             },
             'r_ch4_320': {
                 link: "http://listen.radiotower.su:8000/industrial_junk_320",
-                name: "Industrial Junk 320"
+                name: "Industrial Junk 320",
+                screen_class: 'junk'
             }
         },
         channel_name_prefix: 'r_',
