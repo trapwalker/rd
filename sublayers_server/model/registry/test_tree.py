@@ -14,15 +14,18 @@ import tornado.gen
 from pprint import pprint as pp
 from sublayers_server.test_iolop import io_loop, start
 
-from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
+#from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.odm.fields import StringField, IntField, EmbeddedDocumentField
 from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry.ext_types import PositionField
 from motorengine import Document
+from sublayers_server.model.vectors import Point
 
 
 class A(Node):
     x = IntField()
+    p = PositionField()
 
 
 class B(A):
@@ -34,7 +37,7 @@ def test_store():
     log.debug('### test tree')
     print((yield A.objects.delete()))
 
-    a = yield A(name='a', x=3).save()
+    a = yield A(name='a', x=3, p=[3,5]).save()
     b = yield B(name='b', y=4, parent=a.uri, owner=a).save()
     #Node.objects_cache.clear()
 
