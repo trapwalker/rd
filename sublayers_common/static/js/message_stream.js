@@ -1,4 +1,3 @@
-
 var MessageStream = (function () {
     function MessageStream(options) {
         this.options = {};
@@ -8,7 +7,6 @@ var MessageStream = (function () {
         this.eventList = [];
     }
 
-
     MessageStream.prototype.addEvent = function(event){
         // event = {key: message | invite_room | leave_room | ... text-type of event,
         //          cbFunc: func
@@ -17,7 +15,6 @@ var MessageStream = (function () {
         if (typeof(event.subject[event.cbFunc]) === 'function')
             this.eventList.push(event);
     };
-
 
     MessageStream.prototype.runEvents = function (msg) {
         /*

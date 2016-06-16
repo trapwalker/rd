@@ -1076,3 +1076,48 @@ class TrainerInfoMessage(NPCInfoMessage):
         d = super(TrainerInfoMessage, self).as_dict()
         d.update(drop_price=self.npc.drop_price)
         return d
+
+
+# Сообщение о параметров другого игрока (окно города)
+class InteractionInfoMessage(Message):
+    def __init__(self, player_nick, **kw):
+        super(InteractionInfoMessage, self).__init__(**kw)
+        self.player_nick = player_nick
+
+    def as_dict(self):
+        d = super(InteractionInfoMessage, self).as_dict()
+        player = self.agent.server.agents_by_name.get(self.player_nick, None)
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
+        if player:
+            d.update(
+                avatar=player.user.avatar_link,
+                about_self=player.example.about_self,
+                lvl=lvl,
+                role_class=player.example.role_class.title,
+                karma=0,  # todo: убрать заглушку
+                driving=player.example.driving.calc_value(),
+                shooting=player.example.shooting.calc_value(),
+                masking=player.example.masking.calc_value(),
+                leading=player.example.leading.calc_value(),
+                trading=player.example.trading.calc_value(),
+                engineering=player.example.engineering.calc_value(),
+            )
+
+            # Еслли есть машинка то отправить ее шаблоны и имя
+            if player.example.car:
+                template_table = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_table.html")
+                template_img = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_img_ext.html")
+                d.update(
+                    car_name = player.example.car.title,
+                    html_car_table=template_table.generate(car=player.example.car),
+                    html_car_img=template_img.generate(car=player.example.car)
+                )
+        return d
+
+

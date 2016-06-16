@@ -74,6 +74,8 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_gas_station.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/nucoil_building.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/location_menu.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/location_chat.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/chat_interaction.css') }}"/>
     
     <link rel="stylesheet" href="{{ static_url('css/templates/journal/journal_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/journal/journal_window_quests.css') }}"/>
@@ -155,6 +157,7 @@
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location/location_manager.js') }}"></script>
     <script src="{{ static_url('js/location/location_place_menu.js') }}"></script>
+    <script src="{{ static_url('js/location/location_place_chat.js') }}"></script>
     <script src="{{ static_url('js/location/building_service_manager.js') }}"></script>
     <script src="{{ static_url('js/location/building_nucoil_manager.js') }}"></script>
     <script src="{{ static_url('js/location/armorer_manager.js') }}"></script>
@@ -165,6 +168,8 @@
     <script src="{{ static_url('js/location/trainer_manager.js') }}"></script>
     <script src="{{ static_url('js/location/girl_manager.js') }}"></script>
     <script src="{{ static_url('js/location/npc_gas_station.js') }}"></script>
+    <script src="{{ static_url('js/location/visitor_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/interaction_manager.js') }}"></script>
     <script src="{{ static_url('js/journal_managers.js') }}"></script>
     <script src="{{ static_url('js/barter_manager.js') }}"></script>
     <script src="{{ static_url('js/cache.js') }}"></script>
@@ -182,8 +187,7 @@
         <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
     </div>
 
-    <div id="title" class="sublayers-unclickable">NUKE Navigator v5.51</div>
-    <div style="position: absolute; right: 15px; top: 6px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
+    <div style="position: absolute; right: 150px; top: 6px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
     <div id="divMainMenu">
         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Персонаж</div>
         <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Главная</div>

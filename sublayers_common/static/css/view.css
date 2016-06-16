@@ -225,7 +225,7 @@ input:focus {
 #divMainMenu {
     position: absolute;
     left: 120px;
-    top: 35px;
+    top: 6px;
     pointer-events: none;
 }
 

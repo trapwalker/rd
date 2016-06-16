@@ -3,7 +3,7 @@
 
 .fire-control-parent {
     position: absolute;
-    bottom: 233px;
+    bottom: 228px;
     left: 50%;
     pointer-events: none;
     margin-left: -175px;
@@ -180,4 +180,13 @@
 
 .fire-control-radar-circle {
     stroke-width: 1px;
+}
+
+@media screen and (max-width: 1366px) {
+
+    .fire-control-parent {
+        transform: scale(0.75);
+        bottom: 171px;
+        margin-left: -132px;
+    }
 }

@@ -56,6 +56,7 @@ function main() {
 
     window.onresize = function() {
         canvasManager.resize_window();
+        currentSiteSize = $('.content-block').width() > 800 ? '1080' : '768';
     };
 
 

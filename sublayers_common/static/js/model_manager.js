@@ -160,7 +160,6 @@ var ClientManager = (function () {
                 // Todo: обработка ошибки
             }
         return true;
-
     };
 
     ClientManager.prototype._contactBot = function (event) {
@@ -727,11 +726,11 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
-        //console.log('ClientManager.prototype.ChangeLocationVisitorsMessage', event);
-        //if (event.action)
-        //    locationManager.visitorsManager.add_visitor(event.visitor);
-        //else
-        //    locationManager.visitorsManager.del_visitor(event.visitor);
+        //console.log('ClientManger.prototype.ChangeLocationVisitorsMessage', locationManager, event);
+        if (event.action)
+            locationManager.visitor_manager.add_visitor(event.visitor);
+        else
+            locationManager.visitor_manager.del_visitor(event.visitor);
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
@@ -925,6 +924,11 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.TrainerInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
             locationManager.npc[event.npc_html_hash].setDropPrice(event.drop_price);
+    };
+
+    ClientManager.prototype.InteractionInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.InteractionInfoMessage', event);
+        locationManager.location_chat.interaction_manager.update(event);
     };
 
     // Журнал (стоянка)
@@ -1644,6 +1648,20 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 text: str
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Окно взаимодействия с другими игроками (в городе)
+    ClientManager.prototype.sendGetInteractionInfo = function () {
+        //console.log('ClientManager.prototype.sendGetInteractionInfo');
+        var mes = {
+            call: "get_interaction_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                player_nick: locationManager.location_chat.interaction_manager.player_nick
             }
         };
         rpcCallList.add(mes);

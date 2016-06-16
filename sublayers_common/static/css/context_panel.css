@@ -4,7 +4,7 @@
     height: 300px;
     background-color: transparent;
     right: 4px;
-    top: 25px;
+    top: 10px;
     pointer-events: none;
 }
 
@@ -65,4 +65,13 @@
     opacity: 1.0;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     pointer-events: auto;
+}
+
+@media screen and (max-width: 1366px) {
+
+    #contextPanelDiv {
+        transform: scale(0.75);
+        right: -20px;
+        top: -30px;
+    }
 }

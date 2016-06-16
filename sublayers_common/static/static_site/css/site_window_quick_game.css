@@ -99,7 +99,7 @@
     border-radius: 1px;
 }
 .window-qg-btn:hover { background-color: #16560c; border: 2px solid #37ff10; color: #51ff00; }
-.window-qg-btn:active { background-color: #000000; border: 2px solid #008000; color: #00ff00; }
+.window-qg-btn:active { background-color: #030f00; border: 2px solid #008000; color: #00ff00; }
 
 .window-qg-content-play-btn {
     position: relative;

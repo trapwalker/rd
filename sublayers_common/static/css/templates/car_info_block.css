@@ -180,3 +180,24 @@
     border-top: dashed 2px #135806;
     color: #1e9604;
 }
+
+
+/* Ammo */
+.car-info-block-item-wrap {
+    position: relative;
+    margin: 10px auto;
+    box-sizing: border-box;
+    width: 220px;
+    height: 118px;
+    overflow: hidden;
+    /*background-color: #082801;*/
+}
+.car-info-block-item-wrap.mid { width: 130px; height: 70px; }
+
+.car-info-block-item-wrap:hover { background-color: #0E4b00; }
+
+.car-info-block-itemy-picture {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
