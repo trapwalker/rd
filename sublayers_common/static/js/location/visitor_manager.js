@@ -7,7 +7,11 @@ var LocationVisitorsManager = (function () {
 
     LocationVisitorsManager.prototype.visitor_record_click = function (event) {
         //console.log('LocationVisitorsManager.prototype.visitor_record_click');
-        clientManager.sendCreatePrivateChat($(event.target).parent().data('visitor'))
+        var nick = $(event.target).parent().data('visitor');
+        var current_str = chat.main_input.val();
+        current_str += '@' + nick + ', ';
+        chat.main_input.val(current_str);
+        chat.main_input.focus();
     };
 
     LocationVisitorsManager.prototype.visitor_record_info_click = function (event) {

@@ -143,8 +143,8 @@
     border-radius: 2px;
     background-color: transparent;
     padding-left: 4px;
-    color: #2afd0a;
-    font: 10pt MICRADI;
+    color: #2ffa00;
+    font: 12pt FreePixel;
 	cursor: url('/static/img/cursors/text.png'), text;
 }
 
@@ -156,6 +156,7 @@
     overflow-x: hidden;
     display: none;
 }
+#townChatLocation .VMGChatAreaScroll { overflow-y: scroll; }
 
 .VMGChatOutAreaActive {
     display: block;
@@ -195,7 +196,7 @@
     display: block;
 }
 #townChatLocation .VMGPartytextOutArea {
-    width: 440px;
+    width: 470px;
 }
 
 .VMGPartyPageControl {
@@ -236,24 +237,16 @@
 
 .VMGPartypageButton {
     position: relative;
-    opacity: 0.5;
     float: left;
-    color: #2afd0a;
-    border: solid lime 0px;
-    border-radius: 3px;
+    color: #31c811;
+    background-color: #082901;
     margin: 3px;
     padding: 3px 5px 3px 5px;
-    font: 8pt MICRADI;
+    font: 11pt Nouveau_IBM;
     pointer-events: auto;
 }
-
-.VMGPartypageButtonActive {
-    opacity: 1;
-}
-
-.VMGPartypageButton:hover {
-    opacity: 1;
-}
+.VMGPartypageButton.active { color: #000000; background-color: #2ffa00; }
+.VMGPartypageButton:hover { color: #000000; background-color: #2ffa00; }
 
 .VMGPartypageButtonClose {
     position: relative;
@@ -261,13 +254,11 @@
     width: 8px;
     float: right;
     background: transparent url('/static/img/chat/tab_close_btn.png') 50% 50% no-repeat;
-    padding: 0px 0px 0px 5px;
+    margin: 3px 3px 0px 10px;
 }
-
 .VMGPartypageButtonClose:hover {
     background: transparent url('/static/img/chat/tab_close_btn_over.png') 50% 50% no-repeat;
 }
-
 .VMGPartypageButtonClose:active {
     background: transparent url('/static/img/chat/tab_close_btn_pressed.png') 50% 50% no-repeat;
 }
@@ -289,30 +280,24 @@
 .VMG-message-message {
     padding-left: 3px;
     padding-right: 3px;
+    color: #31c811;
 }
+.VMG-message-message.my-user { color: #2ffa00; }
+.VMG-message-message.for-my-user { background-color: #082801; }
+/*.VMG-message-message.for-my-user .VMG-message-text-text { font: 10pt Nouveau_IBM; }*/
 
 .VMG-message-text-time {
-    color: #2afd0a;
-    font: 6pt MICRADI;
-    letter-spacing: 1px;
+    font: 10pt Nouveau_IBM;
+    font-weight: bold;
 }
 
 .VMG-message-text-user {
-    color: #2afd0a;
-    font: 10pt MICRADI;
-    letter-spacing: 1px;
-}
-
-.VMG-message-text-my-user {
-    color: #2afd0a;
-    font: 11pt MICRADI;
-    letter-spacing: 1px;
+    font: 10pt Nouveau_IBM;
+    font-weight: bold;
 }
 
 .VMG-message-text-text {
-    color: #2afd0a;
-    font: 8pt MICRADI;
-    letter-spacing: 1px;
+    font: 12pt FreePixel;
 }
 
 /* Компактная версия чата */

@@ -297,8 +297,10 @@ var ViewMessengerGlass = (function () {
         // Повесить клик на юзер спан, чтобы по клику можно было определять какой юзер сейчас выбран
         spanUser.on('click', {owner: aUser}, this.viewMessengerClickSpanUser);
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
-        if(aUser.login == user.login)
-            spanUser.addClass("VMG-message-text-my-user");
+        if (aUser.login == user.login)
+            mesDiv.addClass("my-user");
+        if (aText.indexOf('@' + user.login) >= 0)
+            mesDiv.addClass("for-my-user");
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
@@ -371,11 +373,11 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.setActiveChat = function (aChat) {
         this.chats.forEach(function (chat) {
             if (aChat == chat) {
-                aChat.pageButton.addClass('VMGPartypageButtonActive');
+                aChat.pageButton.addClass('active');
                 aChat.chatArea.addClass('VMGChatOutAreaActive');
             }
             else {
-                chat.pageButton.removeClass('VMGPartypageButtonActive');
+                chat.pageButton.removeClass('active');
                 chat.chatArea.removeClass('VMGChatOutAreaActive');
             }
         });
@@ -398,14 +400,15 @@ var ViewMessengerGlass = (function () {
             clientManager.sendGetPrivateChatMembers(room_jid);
 
             var close_str = 'clientManager.sendClosePrivateChat(\'' + room_jid + '\')';
-            var pageButtonClose = $('<div class="sublayers-clickable VMGPartypageButtonClose" ' +
-                'onClick="' + close_str + '"</div>');
+            var pageButtonClose = $(
+                '<div class="sublayers-clickable VMGPartypageButtonClose" onClick="' + close_str + '"></div>'
+            );
             pageButton.append(pageButtonClose);
         }
 
         var chat = {
             room_jid: room_jid,
-            chatArea: $('<div id="_charArea' + room_jid + '" class="VMGChatOutArea"></div>'),
+            chatArea: $('<div id="_charArea' + room_jid + '" class="VMGChatOutArea VMGChatAreaScroll"></div>'),
             pageButton: pageButton,
             mesList: [],
             mesCount: 0
@@ -544,7 +547,7 @@ var ViewMessengerGlass = (function () {
         }
 
         //фокус на поле ввода
-        chat.main_input.focus()
+        chat.main_input.focus();
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {

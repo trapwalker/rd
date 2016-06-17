@@ -16,7 +16,7 @@ class InitBarterEvent(Event):
 
     def on_perform(self):
         super(InitBarterEvent, self).on_perform()
-        recipient = self.server.agents_by_name.get(self.recipient_login, None)
+        recipient = self.server.agents_by_name.get(str(self.recipient_login), None)
 
         for barter in self.initiator.barters:
             # Проверить нет ли уже приглашения для этого пользователя и если есть то новое не создавать

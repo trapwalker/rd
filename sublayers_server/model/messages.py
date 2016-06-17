@@ -1102,7 +1102,7 @@ class InteractionInfoMessage(Message):
 
     def as_dict(self):
         d = super(InteractionInfoMessage, self).as_dict()
-        player = self.agent.server.agents_by_name.get(self.player_nick, None)
+        player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
         if player:
             d.update(
