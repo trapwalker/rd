@@ -56,7 +56,15 @@ function main() {
 
     window.onresize = function() {
         canvasManager.resize_window();
-        currentSiteSize = $('.content-block').width() > 800 ? '1080' : '768';
+
+        var new_size = $('.content-block').width() > 800 ? '1080' : '768';
+        var old_size = currentSiteSize;
+        if (new_size != currentSiteSize) {
+            currentSiteSize = new_size;
+            radioPlayer.change_site_size(old_size, new_size);
+
+        }
+
     };
 
 
@@ -77,7 +85,7 @@ function main() {
 }
 
 function init_site_sound() {
-    audioManager.gain_all(0.01);
+    //audioManager.gain_all(0.01);
 
     audioManager.load('click_0', {url: '/audio/button_click/2023__edwin-p-manchester__tapeplayer04.wav'});
     audioManager.load('click_1', {url: '/audio/button_click/275152__bird-man__click.wav'});

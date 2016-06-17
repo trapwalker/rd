@@ -428,6 +428,20 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .box-shadow.box-shadow-non-active:active { box-shadow: none; }
 
 
+.site-sound-switch {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    right: 20px;
+    top: 20px;
+    background-color: #2aae1c;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+}
+.site-sound-switch:hover { background-color: #33e521; }
+.site-sound-switch.off { background-color: #ae0000; }
+.site-sound-switch.off:hover { background-color: #ce0000; }
+
+
  /* RADIO !!!  */
 .radio-block {
     position: absolute;

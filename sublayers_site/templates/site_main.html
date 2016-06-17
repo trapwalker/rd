@@ -136,10 +136,12 @@
             </div>
         </div>
     </div>
+    <div class="site-sound-switch"></div>
 </body>
 
 <script>
     var version = '{{ version }}';
+    var GlobalGeneralSiteGain = 1.0;
     $(document).ready(function () {
         var content_start_back_visible = true;
 
@@ -241,6 +243,23 @@
                 $('.btn').removeClass('active');
                 $('.content-start').css({display: 'block'});
                 $('.content-start').animate({opacity: 1.0});
+            }
+        });
+
+        // Клик на отключение звуков сайта
+        $('.site-sound-switch').first().click(function(){
+            if (audioManager.general_gain == 0.0) {
+                // Отключено, нужно включить звук
+                audioManager.gain_all(GlobalGeneralSiteGain);
+                radioPlayer.set_volume(lastRadioVolume, true);
+                $(this).removeClass('off');
+            }
+            else {
+                GlobalGeneralSiteGain = audioManager.general_gain;
+                lastRadioVolume = radioPlayer.current_volume;
+                audioManager.gain_all(0.0);
+                radioPlayer.set_volume(0.0, true);
+                $(this).addClass('off');
             }
         });
 
