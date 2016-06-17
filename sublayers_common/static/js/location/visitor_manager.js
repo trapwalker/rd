@@ -7,7 +7,7 @@ var LocationVisitorsManager = (function () {
 
     LocationVisitorsManager.prototype.visitor_record_click = function (event) {
         //console.log('LocationVisitorsManager.prototype.visitor_record_click');
-        //clientManager.sendCreatePrivateChat($(event.target).parent().data('visitor'))
+        clientManager.sendCreatePrivateChat($(event.target).parent().data('visitor'))
     };
 
     LocationVisitorsManager.prototype.visitor_record_info_click = function (event) {
@@ -18,7 +18,7 @@ var LocationVisitorsManager = (function () {
 
     LocationVisitorsManager.prototype.add_visitor_record = function (visitor) {
         var visitorDiv = $(
-            '<div class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
+            '<div id="visitorRecord_' + visitor + '" class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
                 '<div class="visitor-record-label">' + visitor + '</div>'+
                 '<div class="visitor-record-button"></div>'+
             '</div>'
@@ -43,7 +43,7 @@ var LocationVisitorsManager = (function () {
     };
 
     LocationVisitorsManager.prototype.del_visitor = function (visitor) {
-        //console.log('LocationVisitorsManager.prototype.del_visitor');
+        //console.log('LocationVisitorsManager.prototype.del_visitor', this.visitors, visitor);
         var visitorIndex = this.visitors.indexOf(visitor);
         if (visitorIndex >= 0) {
             this.visitors.splice(visitorIndex, 1);

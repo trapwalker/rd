@@ -85,7 +85,6 @@ var ViewMessengerGlass = (function () {
             cbFunc: 'receiveMessage',
             subject: this
         });
-
         stream.addOutEvent({
             key: 'ws_message_send',
             cbFunc: 'receiveMessageFromModelManager',
@@ -149,6 +148,29 @@ var ViewMessengerGlass = (function () {
         })
 
 
+    };
+
+    ViewMessengerGlass.prototype.addMessageToInteraction = function(chat, aUser, aText, time){
+        //console.log('ViewMessengerGlass.prototype.addMessageToInteraction', chat, aUser, aText, time);
+        if (!locationManager.location_chat) return;
+        var int_mngr = locationManager.location_chat.interaction_manager;
+        if (chat.room_jid != int_mngr.room_jid) return;
+
+        // создать див сообщения и спаны
+        var tempTime = new Date(time).toLocaleTimeString();
+        var mesDiv = $(
+            '<div class="VMG-message-message">' +
+                '<span class="VMG-message-text-time">' + '[' + tempTime + '] ' + '</span>' +
+                '<span class="VMG-message-text-user sublayers-clickable">' + aUser.login + '</span>' +
+                '<span class="VMG-message-text-text">' + ': ' + aText + '</span>' +
+            '</div>'
+        );
+
+        // Добавить, предварительно скрыв
+        mesDiv.hide();
+        var jq_int_mngr = int_mngr.jq_main_div.find('.chat-interaction-private-chat').first();
+        jq_int_mngr.append(mesDiv);
+        mesDiv.slideDown('fast', function() {jq_int_mngr.scrollTop(99999999)});
     };
 
     ViewMessengerGlass.prototype._removeAllMessagesInChat = function(chat){
@@ -246,6 +268,7 @@ var ViewMessengerGlass = (function () {
 
     // Добавление сообщений в окно чата
     ViewMessengerGlass.prototype.addMessageByJID = function (room_jid, aUser, aText, time) {
+        console.log(room_jid, aText);
         // Найти чат для добавления в него сообщения
         var chat = this._getChatByJID(room_jid);
         if(! chat) {
@@ -256,6 +279,7 @@ var ViewMessengerGlass = (function () {
 
         var type_for_compact = room_jid == this.page_party.chat.room_jid ? 'party' : 'global';
         this.addMessageToCompact(chat, aUser, aText, type_for_compact);
+        this.addMessageToInteraction(chat, aUser, aText, time);
         var messageID = chat.mesCount++;
         // получить локальное время
         var tempTime = new Date(time).toLocaleTimeString();
@@ -278,9 +302,15 @@ var ViewMessengerGlass = (function () {
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
-        chat.mesList.push({mesDiv: mesDiv, spanUser: spanUser});
+        chat.mesList.push({
+            mesDiv: mesDiv,
+            spanUser: spanUser,
+            user: aUser,
+            text: aText,
+            time: time
+        });
         // Удалить старые сообщения, предварительно сняв с них всё
-        if(chat.mesList.length > this.options.mesCountInChat){
+        if(chat.mesList.length > this.options.mesCountInChat) {
             var dmessage = chat.mesList.shift();
             dmessage.spanUser.off('click', this.viewMessengerClickSpanUser);
             dmessage.mesDiv.remove();
@@ -354,7 +384,7 @@ var ViewMessengerGlass = (function () {
     };
 
     // Добавление произвольной чат-комнаты
-    ViewMessengerGlass.prototype.addChat = function (room_jid, chat_type){
+    ViewMessengerGlass.prototype.addChat = function (room_jid, chat_type) {
         //console.log('ViewMessengerGlass.prototype.addChat');
         if (this._getChatByJID(room_jid)) {
             console.warn('Попытка повторного создания чат-комнаты.');
@@ -364,10 +394,12 @@ var ViewMessengerGlass = (function () {
         var pageButton = $('<div id="pageButton' + room_jid + '" class="VMGPartypageButton sublayers-clickable">' + room_jid + '</div>');
 
         if (chat_type === 'PrivateChatRoom') {
-            console.log('Генерация приватного чата');
+            //console.log('Генерация приватного чата');
+            clientManager.sendGetPrivateChatMembers(room_jid);
+
             var close_str = 'clientManager.sendClosePrivateChat(\'' + room_jid + '\')';
             var pageButtonClose = $('<div class="sublayers-clickable VMGPartypageButtonClose" ' +
-            'onClick="' + close_str + '"</div>');
+                'onClick="' + close_str + '"</div>');
             pageButton.append(pageButtonClose);
         }
 
@@ -390,6 +422,41 @@ var ViewMessengerGlass = (function () {
             this.setActiveChat(chat);
     };
 
+    ViewMessengerGlass.prototype.addChatToInteraction = function (room_jid, members) {
+        //console.log('ViewMessengerGlass.prototype.addChatToInteraction', room_jid, members);
+        var chat = this._getChatByJID(room_jid);
+        if (!chat) return;
+        chat.members = members;
+        if (!locationManager.location_chat) return;
+        var int_mngr = locationManager.location_chat.interaction_manager;
+        if (int_mngr.room_jid != '') return;
+        if (members.indexOf(int_mngr.player_nick) < 0) return;
+        this._setInteractionChat(room_jid);
+    };
+
+    ViewMessengerGlass.prototype.searchChatInteraction = function (player_nick) {
+        for (var i = 0; i < this.chats.length; i++) {
+            var chat = this.chats[i];
+            if (chat.members && (chat.members.indexOf(player_nick) >= 0)) {
+                this._setInteractionChat(chat.room_jid);
+                return;
+            }
+        }
+    };
+
+    ViewMessengerGlass.prototype._setInteractionChat = function (room_jid) {
+        console.log('ViewMessengerGlass.prototype._setInteractionChat');
+        var int_mngr = locationManager.location_chat.interaction_manager;
+        int_mngr.room_jid = room_jid;
+        var chat = this._getChatByJID(room_jid);
+        for (var i = 0; i < chat.mesList.length; i++) {
+            var msg = chat.mesList[i];
+            if (msg.hasOwnProperty(user) && msg.hasOwnProperty(text) && msg.hasOwnProperty(time))
+                console.log(msg.user, msg.text, msg.time);
+                this.addMessageToInteraction(chat, msg.user, msg.text, msg.time)
+        }
+    };
+
     // Удаление произвольной чат-комнаты
     ViewMessengerGlass.prototype.removeChat = function (room_jid) {
         // получить чат
@@ -398,6 +465,8 @@ var ViewMessengerGlass = (function () {
             console.warn('Попытка удалить несуществующую чат-комнату.');
             return;
         }
+
+        this.removeChatFromInteraction(room_jid);
 
         // удалить все сообщения у чата
         this._removeAllMessagesInChat(chat);
@@ -427,6 +496,14 @@ var ViewMessengerGlass = (function () {
         }
     };
 
+    ViewMessengerGlass.prototype.removeChatFromInteraction = function (room_jid) {
+        if (!locationManager.location_chat) return;
+        var int_mngr = locationManager.location_chat.interaction_manager;
+        if (int_mngr.room_jid != room_jid) return;
+        int_mngr.room_jid = '';
+        int_mngr.jq_main_div.find('.chat-interaction-private-chat').empty();
+    };
+
     // ======== Отправка и получение сообщений
 
     ViewMessengerGlass.prototype.sendMessage = function() {
@@ -451,7 +528,6 @@ var ViewMessengerGlass = (function () {
                     chat.options.stream_mes.sendMessage({
                         type: 'send_chat_message',
                         body: mes
-
                     });
 
                     rpcCallList.add(mes);
@@ -469,7 +545,6 @@ var ViewMessengerGlass = (function () {
 
         //фокус на поле ввода
         chat.main_input.focus()
-
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
@@ -706,7 +781,6 @@ var ViewMessengerGlass = (function () {
             }
         }
     };
-
 
     // ======== Добавление страницы логов
 

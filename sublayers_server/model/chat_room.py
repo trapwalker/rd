@@ -52,14 +52,15 @@ class ChatRoomMessageEvent(Event):
 
 
 class ChatRoomPrivateCreateEvent(Event):
-    def __init__(self, agent, recipient_login, **kw):
+    def __init__(self, agent, recipient_login, msg, **kw):
         super(ChatRoomPrivateCreateEvent, self).__init__(server=agent.server, **kw)
         self.recipient_login = recipient_login
         self.agent = agent
+        self.msg = msg
 
     def on_perform(self):
         super(ChatRoomPrivateCreateEvent, self).on_perform()
-        assert False, '# todo: Get agent by user._id'
+        # assert False, '# todo: Get agent by user._id'
         recipient = self.server.agents_by_name.get(self.recipient_login, None)
         if not recipient:
             log.warning('Agent with login %r not found', self.recipient_login)
@@ -67,7 +68,9 @@ class ChatRoomPrivateCreateEvent(Event):
         if (self.agent.current_location is recipient.current_location) and (self.agent.current_location is not None):
             # todo: refactoring
             if PrivateChatRoom.search_private(agent1=self.agent, agent2=recipient) is None:
-                PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
+                room = PrivateChatRoom(agent=self.agent, recipient=recipient, time=self.time)
+                if self.msg != '':
+                    ChatRoomMessageEvent(agent=self.agent, room_name=room.name, msg=self.msg, time=self.time + 0.1).post()
             else:
                 log.warning('%s try create second private with %s ', self.agent, recipient)
 

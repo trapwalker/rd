@@ -725,6 +725,11 @@ var ClientManager = (function () {
         chat.deactivateParty(event.room_name);
     };
 
+    ClientManager.prototype.GetPrivateChatMembersMessage = function(event){
+        //console.log('ClientManager.prototype.GetPrivateChatMembersMessage', event);
+        chat.addChatToInteraction(event.room_name, event.members);
+    };
+
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
         //console.log('ClientManger.prototype.ChangeLocationVisitorsMessage', locationManager, event);
         if (event.action)
@@ -1212,12 +1217,26 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendCreatePrivateChat = function (recipient) {
+    ClientManager.prototype.sendCreatePrivateChat = function (recipient, msg) {
+        if (!msg) msg = '';
         var mes = {
             call: "create_private_chat",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                recipient: recipient
+                recipient: recipient,
+                msg: msg
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetPrivateChatMembers = function (room_jid) {
+        var mes = {
+            call: "get_private_chat_members",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: room_jid
             }
         };
         rpcCallList.add(mes);
@@ -1231,6 +1250,20 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 name: chat_name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendChatMessage = function (room_jid, msg) {
+        //console.log('ClientManager.prototype.sendChatMessage', room_jid, msg);
+        var mes = {
+            call: "chat_message",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                room_name: room_jid,
+                msg: msg
             }
         };
         rpcCallList.add(mes);
