@@ -19,23 +19,65 @@
     bottom: -225px
 }
 
+#fireControlQuickBtn1BG {
+    width: 56px;
+    height: 52px;
+    background-image: url("/static/img/fire_widget_buttons/lup_noactive.png");
+    position: absolute;
+    top: 89px;
+    left: 21px;
+}
+#fireControlQuickBtn1BG:hover {background-image: url("/static/img/fire_widget_buttons/lup_hover.png");}
+#fireControlQuickBtn1BG:active {background-image: url("/static/img/fire_widget_buttons/lup_active.png");}
+
+#fireControlQuickBtn2BG {
+    width: 49px;
+    height: 44px;
+    background-image: url("/static/img/fire_widget_buttons/ldown_noactive.png");
+    position: absolute;
+    top: 138px;
+    left: 31px;
+}
+#fireControlQuickBtn2BG:hover {background-image: url("/static/img/fire_widget_buttons/ldown_hover.png");}
+#fireControlQuickBtn2BG:active {background-image: url("/static/img/fire_widget_buttons/ldown_active.png");}
+
+#fireControlQuickBtn3BG {
+    width: 56px;
+    height: 52px;
+    background-image: url("/static/img/fire_widget_buttons/rup_noactive.png");
+    position: absolute;
+    top: 89px;
+    left: 309px;
+}
+#fireControlQuickBtn3BG:hover {background-image: url("/static/img/fire_widget_buttons/rup_hover.png");}
+#fireControlQuickBtn3BG:active {background-image: url("/static/img/fire_widget_buttons/rup_active.png");}
+
+#fireControlQuickBtn4BG {
+    width: 49px;
+    height: 44px;
+    background-image: url("/static/img/fire_widget_buttons/rdown_noactive.png");
+    position: absolute;
+    top: 138px;
+    left: 306px;
+
+}
+#fireControlQuickBtn4BG:hover {background-image: url("/static/img/fire_widget_buttons/rdown_hover.png");}
+#fireControlQuickBtn4BG:active {background-image: url("/static/img/fire_widget_buttons/rdown_active.png");}
+
 .fire-controll-quick-btn-block {
     position: absolute;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     pointer-events: auto;
-    width: 62px;
-    height: 33px;
-    border: 1px solid green;
+    width: 36px;
+    height: 26px;
     box-sizing: border-box;
     background-size: contain;
-    opacity: 0.7;
 }
-.fire-controll-quick-btn-block:hover { opacity: 1; }
 
-#fireControlQuickBtn1 { top: 100px; left: 21px; }
-#fireControlQuickBtn2 { top: 145px; left: 32px; }
-#fireControlQuickBtn3 { top: 100px; left: 300px; }
-#fireControlQuickBtn4 { top: 145px; left: 294px; }
+#fireControlQuickBtn1 { top: 15px; left: 13px; transform: rotate(-18deg); }
+#fireControlQuickBtn2 { top: 9px; left: 10px; transform: rotate(-14deg); }
+#fireControlQuickBtn3 { top: 15px; left: 9px; transform: rotate(18deg); }
+#fireControlQuickBtn4 { top: 10px; left: 4px; transform: rotate(14deg); }
 
 #divForSVG {
     margin-left: 118px;
