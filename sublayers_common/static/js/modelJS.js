@@ -666,6 +666,18 @@ var OwnerList = (function () {
             this.owners[i].unbindAllCars();
     };
 
+    OwnerList.prototype.update_party_icons = function (party_id) {
+        for (var i = 0; i < this.owners.length; i++) {
+            var curr_owner = this.owners[i];
+            //if (party_id == curr_owner.party.id) {
+                for (var car_index = 0; i < curr_owner.cars.length; i++) {
+                    var widget_marker = visualManager.getVobjByType(curr_owner.cars[car_index], WCanvasUserCarMarker);
+                    if (widget_marker) widget_marker.updateIcon();
+                //}
+            }
+        }
+    };
+
 
     return OwnerList;
 })();
