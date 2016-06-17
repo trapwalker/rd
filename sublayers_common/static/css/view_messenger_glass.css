@@ -246,7 +246,20 @@
     pointer-events: auto;
 }
 .VMGPartypageButton.active { color: #000000; background-color: #2ffa00; }
+/*.VMGPartypageButton.wait { color: #2ffa00; background-color: #0e4b00; }*/
 .VMGPartypageButton:hover { color: #000000; background-color: #2ffa00; }
+
+.VMGPartypageButton.wait {
+    animation: blink-animation 1s steps(2, start) infinite;
+    -webkit-animation: blink-animation 1s steps(2, start) infinite;
+}
+
+@keyframes blink-animation {
+  to { color: #2ffa00; background-color: #0e4b00; }
+}
+@-webkit-keyframes blink-animation {
+  to { color: #2ffa00; background-color: #0e4b00; }
+}
 
 .VMGPartypageButtonClose {
     position: relative;

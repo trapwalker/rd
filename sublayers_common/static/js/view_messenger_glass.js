@@ -268,7 +268,6 @@ var ViewMessengerGlass = (function () {
 
     // Добавление сообщений в окно чата
     ViewMessengerGlass.prototype.addMessageByJID = function (room_jid, aUser, aText, time) {
-        console.log(room_jid, aText);
         // Найти чат для добавления в него сообщения
         var chat = this._getChatByJID(room_jid);
         if(! chat) {
@@ -301,6 +300,8 @@ var ViewMessengerGlass = (function () {
             mesDiv.addClass("my-user");
         if (aText.indexOf('@' + user.login) >= 0)
             mesDiv.addClass("for-my-user");
+        if (this.activeChat != chat)
+            chat.pageButton.addClass('wait');
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
@@ -374,6 +375,7 @@ var ViewMessengerGlass = (function () {
         this.chats.forEach(function (chat) {
             if (aChat == chat) {
                 aChat.pageButton.addClass('active');
+                chat.pageButton.removeClass('wait');
                 aChat.chatArea.addClass('VMGChatOutAreaActive');
             }
             else {
