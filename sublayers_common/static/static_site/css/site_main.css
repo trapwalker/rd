@@ -449,6 +449,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     height: 62px;
     top: 14px;
     left: 12px;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .radio-screen-content.scan {
