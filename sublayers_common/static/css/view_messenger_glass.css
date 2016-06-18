@@ -95,14 +95,6 @@
     pointer-events: auto;
     height: 30px;
     width: 100%;
-    border-image-slice: 1 0 0 0;
-    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
-    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
-    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
-    border-image-source: linear-gradient(to right, transparent, lime, transparent);
-    border-width: 1px 0px 0px 0px;
-}
-#townChatLocation #VMGFooterArea {
     border-width: 1px 0 0 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
@@ -212,8 +204,6 @@
     border-image-source: linear-gradient(to right, transparent, lime, transparent);
     border-width: 0px 0px 1px 0px;
 }
-
-
 
 .VMGGlobalPgCtrlBlock {
     position: relative;

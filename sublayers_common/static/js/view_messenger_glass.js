@@ -557,7 +557,7 @@ var ViewMessengerGlass = (function () {
     // ======== Отправка и получение сообщений
 
     ViewMessengerGlass.prototype.sendMessage = function() {
-        //console.log('ViewMessengerGlass.prototype.sendMessage');
+        console.log('ViewMessengerGlass.prototype.sendMessage');
 
         var str = chat.main_input.val();
         if (str.length) {
