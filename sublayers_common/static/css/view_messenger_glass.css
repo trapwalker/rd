@@ -213,26 +213,45 @@
     border-width: 0px 0px 1px 0px;
 }
 
-.VMGGlobalPageControl {
+
+
+.VMGGlobalPgCtrlBlock {
     position: relative;
     height: 30px;
-    max-height: 30px;
     width: 100%;
     overflow: hidden;
-    box-sizing: border-box;
-    padding-top: 2px;
-    border-image-slice: 0 0 1 0;
-    border-image-source: -webkit-linear-gradient(right, transparent, lime, transparent);
-    border-image-source: -o-linear-gradient(right, transparent, lime, transparent);
-    border-image-source: -moz-linear-gradient(right, transparent, lime, transparent);
-    border-image-source: linear-gradient(to right, transparent, lime, transparent);
-    border-width: 0px 0px 1px 0px;
-}
-#townChatLocation .VMGGlobalPageControl {
+    padding: 3px;
     border-width: 0 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
     border-image-slice: 1;
+    box-sizing: border-box;
+}
+
+.VMGGlobalPgCtrlScrlBtn {
+    position: relative;
+    float: left;
+    width: 17px;
+    height: 24px;
+}
+.VMGGlobalPgCtrlScrlBtn.Left { background: transparent url('/static/img/chat/btn_slide_left.png') 50% 50% no-repeat; }
+.VMGGlobalPgCtrlScrlBtn.Left:hover { background: transparent url('/static/img/chat/btn_slide_left_over.png') 50% 50% no-repeat; }
+.VMGGlobalPgCtrlScrlBtn.Right { background: transparent url('/static/img/chat/btn_slide_right.png') 50% 50% no-repeat; }
+.VMGGlobalPgCtrlScrlBtn.Right:hover { background: transparent url('/static/img/chat/btn_slide_right_over.png') 50% 50% no-repeat; }
+
+.VMGGlobalPgCtrlWrap {
+    position: relative;
+    float: left;
+    height: 24px;
+    width: calc(100% - 34px);
+    overflow: hidden;
+}
+
+.VMGGlobalPageControl {
+    position: relative;
+    height: 100%;
+    padding: 1px 5px 0 5px;
+    box-sizing: border-box;
 }
 
 .VMGPartypageButton {
@@ -240,10 +259,11 @@
     float: left;
     color: #31c811;
     background-color: #082901;
-    margin: 3px;
+    margin-right: 4px;
     padding: 3px 5px 3px 5px;
     font: 11pt Nouveau_IBM;
     pointer-events: auto;
+    box-sizing: border-box;
 }
 .VMGPartypageButton.active { color: #000000; background-color: #2ffa00; }
 /*.VMGPartypageButton.wait { color: #2ffa00; background-color: #0e4b00; }*/

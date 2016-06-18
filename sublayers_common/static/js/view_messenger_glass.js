@@ -346,20 +346,50 @@ var ViewMessengerGlass = (function () {
     // ======== Глобальные чаты
 
     // Создание вкладки глобальных чат-комнат
+    ViewMessengerGlass.prototype._makeScrollPgCtrl = function (jq_block, d_scroll) {
+        //console.log('ViewMessengerGlass.prototype._makeScrollPgCtrl', jq_block, d_scroll);
+        var scroll_pos = jq_block.scrollLeft();
+        jq_block.scrollLeft(scroll_pos + d_scroll);
+    };
+
     ViewMessengerGlass.prototype.initGlobalPage = function (){
         var page = {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
-            pageControl: $('<div id="chatPageControlGlobal" class="VMGGlobalPageControl"></div>'),
+            pageControl: $(''),
             chatArea: $('<div id="textAreaGlobal" class="VMGPartytextOutArea"></div>'),
             pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Radio</div>'),
             chat: null
         };
 
+        var jq_pg_ctrl_block = $(
+            '<div class="VMGGlobalPgCtrlBlock">' +
+                '<div class="VMGGlobalPgCtrlScrlBtn Left" data-block_id="chatPageControlGlobalWrap"></div>' +
+                '<div id="chatPageControlGlobalWrap" class="VMGGlobalPgCtrlWrap">' +
+                    '<div id="chatPageControlGlobal" class="VMGGlobalPageControl"></div>' +
+                '</div>' +
+                '<div class="VMGGlobalPgCtrlScrlBtn Right" data-block_id="chatPageControlGlobalWrap"></div>' +
+            '</div>'
+        );
+
         this.dynamicArea.append(page.pageArea);
-        page.pageArea.append(page.pageControl);
+        page.pageArea.append(jq_pg_ctrl_block);
         page.pageArea.append(page.chatArea);
         this.divPageControlArea.append(page.pageButton);
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
+        page.pageControl = jq_pg_ctrl_block.find('#chatPageControlGlobal');
+         // Активация скролов
+        jq_pg_ctrl_block.find('.VMGGlobalPgCtrlScrlBtn').mousedown(function(event) {
+            var jq_this = $(this);
+            var scroll_block = $('#' + jq_this.data('block_id'));
+            var d_scroll = 0;
+            if (jq_this.hasClass('Left')) d_scroll = -10;
+            if (jq_this.hasClass('Right')) d_scroll = 10;
+            chat.pg_ctrl_scrl_interval = setInterval(chat._makeScrollPgCtrl, 50, scroll_block, d_scroll);
+        });
+        jq_pg_ctrl_block.find('.VMGGlobalPgCtrlScrlBtn').mouseup(function(event) {
+            if (chat.pg_ctrl_scrl_interval)
+                clearInterval(chat.pg_ctrl_scrl_interval);
+        });
         this.pages.push(page);
         return page;
     };
@@ -385,6 +415,19 @@ var ViewMessengerGlass = (function () {
         });
         this.activeChat = aChat;
         this.page_global.chat = aChat;
+    };
+
+    ViewMessengerGlass.prototype._resizePageControl = function(jq_list) {
+        //console.log('ViewMessengerGlass.prototype._resizePageControl');
+        var width = 10;
+        if (jq_list) {
+            jq_list.children().each(function (index, element) {
+                if ($(element).css('display') == 'block')
+                    width += $(element).outerWidth(true);
+            });
+            console.log(width);
+            jq_list.width(width);
+        }
     };
 
     // Добавление произвольной чат-комнаты
@@ -418,6 +461,7 @@ var ViewMessengerGlass = (function () {
 
         this.page_global.chatArea.append(chat.chatArea);
         this.page_global.pageControl.append(chat.pageButton);
+        this._resizePageControl(this.page_global.pageControl);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
         this.chats.push(chat);
@@ -450,7 +494,7 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype._setInteractionChat = function (room_jid) {
-        console.log('ViewMessengerGlass.prototype._setInteractionChat');
+        //console.log('ViewMessengerGlass.prototype._setInteractionChat');
         var int_mngr = locationManager.location_chat.interaction_manager;
         int_mngr.room_jid = room_jid;
         var chat = this._getChatByJID(room_jid);
@@ -482,6 +526,7 @@ var ViewMessengerGlass = (function () {
         // отключить клик, удалить вкладку
         chat.pageButton.off('click', this.clickForPageButton);
         chat.pageButton.remove();
+        this._resizePageControl(this.page_global.pageControl);
 
         // сделать сплайс по данному chat
         var index = 0;
@@ -921,7 +966,7 @@ var ViewMessengerGlass = (function () {
     // ======== Отображение чата в других местах
 
     ViewMessengerGlass.prototype.showChatInTown = function(jq_town_chat_div){
-       jq_town_chat_div.append(this.parent);
+        jq_town_chat_div.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '0px');
     };
 
