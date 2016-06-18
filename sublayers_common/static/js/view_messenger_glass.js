@@ -39,7 +39,6 @@ var ViewMessengerGlass = (function () {
         dynamicAreaForBorder.append("<div id='VMGDynamicArea'></div>");
         this.dynamicArea = $('#VMGDynamicArea');
 
-
         // добавление дива с элементами ввода сообщений
         dynamicAreaForBorder.append("<div id='VMGFooterArea'></div>");
         var foot_area = $('#VMGFooterArea');
@@ -103,12 +102,35 @@ var ViewMessengerGlass = (function () {
         this.page_sys = this.initSysPage(); // системный лог
 
         // портативная версия чата. Главный див.
-        mainParent.append('<div id="VGMMainDivCompact"></div>');
-        this.mainCompact = $('#VGMMainDivCompact');
+        mainParent.append('<div id="VMGMainDivCompact"></div>');
+        this.mainCompact = $('#VMGMainDivCompact');
 
         // зона для сообщений портативной версии
-        this.mainCompact.append('<div id="VGMtextAreaCompact"></div>');
-        this.textAreaCompact = $('#VGMtextAreaCompact');
+        this.mainCompact.append('<div id="VMGtextAreaCompact"></div>');
+        this.textAreaCompact = $('#VMGtextAreaCompact');
+
+        // поле ввода компактной версии
+        var jq_cmpct_input_div = $(
+            '<div class="VMGinputAreaCompact">' +
+                '<input id="VMGMainInputCompact" type="text">' +
+                '<div class="VMGMainBtnCompact">></div>' +
+            '</div>'
+        );
+        this.mainCompact.append(jq_cmpct_input_div);
+        jq_cmpct_input_div.find(".VMGMainBtnCompact").on('click', this.sendMessage);
+
+        this.compact_input = jq_cmpct_input_div.find("#VMGMainInputCompact");
+        this.compact_input.on('keydown', {self: this}, function (event) {
+            if (event.keyCode == 13) {
+                event.data.self.sendMessage();
+            }
+            if (event.keyCode == 38) { // стрелка вверх
+                event.data.self.setNextHistoryMessage();
+            }
+            if (event.keyCode == 40) { // стрелка вниз
+                event.data.self.setPrevHistoryMessage();
+            }
+        });
 
         // объект, содержащий какие именно сообщения отображать в компактной версии
         this.compactVisibleOptions = ['global', 'party', 'system']; // ещё может быть 'gamelog'
@@ -125,14 +147,19 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.addMessageToCompact = function(chat, aUser, aText, type){
+        //console.log('ViewMessengerGlass.prototype.addMessageToCompact');
+        if (chat != this.activeChat) return;
         var self = this;
+
         // если компактная версия скрыта, то ничего не делать
-        if(this.chat_visible) return;
+        if (this.chat_visible) return;
         if (this.compactVisibleOptions.indexOf(type) == -1) return;
+
         // создать див сообщения и спаны
         var mesDiv = $('<div class="VGM-message-compact"></div>');
         var spanUser = $('<span class="VMG-message-text-user">' + aUser.login + '</span>');
         var spanText = $('<span class="VMG-message-text-text">' + ': ' + aText + '</span>');
+
         // Добавить, предварительно скрыв
         mesDiv.hide();
         this.textAreaCompact.append(mesDiv);
@@ -142,12 +169,6 @@ var ViewMessengerGlass = (function () {
         // Показать сообщение, опустив скрол дива
         self.textAreaCompact.scrollTop(99999999);
         mesDiv.slideDown('fast',function() {self.textAreaCompact.scrollTop(99999999)});
-
-        mesDiv.animate({opacity: 0}, 3000, function(){
-            this.remove();
-        })
-
-
     };
 
     ViewMessengerGlass.prototype.addMessageToInteraction = function(chat, aUser, aText, time){
@@ -300,7 +321,7 @@ var ViewMessengerGlass = (function () {
             mesDiv.addClass("my-user");
         if (aText.indexOf('@' + user.login) >= 0)
             mesDiv.addClass("for-my-user");
-        if (this.activeChat != chat)
+        if ((this.activeChat != chat) && (chat.pageButton))
             chat.pageButton.addClass('wait');
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
@@ -425,7 +446,6 @@ var ViewMessengerGlass = (function () {
                 if ($(element).css('display') == 'block')
                     width += $(element).outerWidth(true);
             });
-            console.log(width);
             jq_list.width(width);
         }
     };
@@ -500,9 +520,18 @@ var ViewMessengerGlass = (function () {
         var chat = this._getChatByJID(room_jid);
         for (var i = 0; i < chat.mesList.length; i++) {
             var msg = chat.mesList[i];
-            if (msg.hasOwnProperty(user) && msg.hasOwnProperty(text) && msg.hasOwnProperty(time))
-                console.log(msg.user, msg.text, msg.time);
+            if (msg.hasOwnProperty('user') && msg.hasOwnProperty('text') && msg.hasOwnProperty('time'))
                 this.addMessageToInteraction(chat, msg.user, msg.text, msg.time)
+        }
+    };
+
+    ViewMessengerGlass.prototype._setCompactChat = function () {
+        this.textAreaCompact.empty();
+        var chat = this.activeChat;
+        for (var i = 0; i < chat.mesList.length; i++) {
+            var msg = chat.mesList[i];
+            if (msg.hasOwnProperty('user') && msg.hasOwnProperty('text') && msg.hasOwnProperty('time'))
+                this.addMessageToCompact(chat, msg.user, msg.text, 'global')
         }
     };
 
@@ -557,9 +586,11 @@ var ViewMessengerGlass = (function () {
     // ======== Отправка и получение сообщений
 
     ViewMessengerGlass.prototype.sendMessage = function() {
-        console.log('ViewMessengerGlass.prototype.sendMessage');
+        //console.log('ViewMessengerGlass.prototype.sendMessage');
 
-        var str = chat.main_input.val();
+        var jq_input = chat.chat_visible ? chat.main_input : chat.compact_input;
+
+        var str = jq_input.val();
         if (str.length) {
             if (str[0] === '#' || str[0] === '\\' || str[0] === '/') {
                 clientManager.sendConsoleCmd(str);
@@ -586,7 +617,7 @@ var ViewMessengerGlass = (function () {
                     chat.addMessageToHistory(str);
 
                     // очистить поле ввода
-                    chat.main_input.val('');
+                    jq_input.val('');
                 }
                 else
                     console.warn('Вы не можете отправить сообщение в неактивный чат');
@@ -594,7 +625,7 @@ var ViewMessengerGlass = (function () {
         }
 
         //фокус на поле ввода
-        chat.main_input.focus();
+        jq_input.focus();
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
@@ -818,6 +849,7 @@ var ViewMessengerGlass = (function () {
                 self.mainCompact.animate({opacity: 0}, 300, function () {
                     self.mainCompact.css({display: 'none'});
                 });
+                chat.main_input.val(chat.compact_input.val());
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -555}, 1000, function () {
@@ -828,6 +860,8 @@ var ViewMessengerGlass = (function () {
                 // и нужно показать портативную версию
                 self.mainCompact.css({display: 'block'});
                 self.mainCompact.animate({opacity: 1}, 300);
+                chat.compact_input.val(chat.main_input.val());
+                chat._setCompactChat();
             }
         }
     };
