@@ -91,7 +91,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_dead_van', '/static/img/char_icons/dead/van.png', [53, 53], this.max_id++);
 
 
-
+        this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
 
 
         // Создание иконки стоящей машинки V 2
