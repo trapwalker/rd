@@ -121,6 +121,8 @@ var LocationManager = (function () {
     LocationManager.prototype.onExit = function () {
         //console.log('LocationManager.prototype.onExit');
 
+        chat.showChatInMap();
+
         // Сброс панелей
         this.panel_left.clear();
         this.panel_right.clear();
@@ -154,8 +156,6 @@ var LocationManager = (function () {
             this.location_chat.clear();
             this.location_chat = null;
         }
-
-        chat.showChatInMap();
 
         // Почистить менеджер посетителей города
         this.visitor_manager.clear_visitors();

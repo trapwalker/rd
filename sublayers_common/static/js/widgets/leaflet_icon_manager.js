@@ -40,6 +40,21 @@ var LeafletIconManager = (function(){
         // Создание иконки БЫСТРО движущейся машинки V 2
         this.load_new_icon('icon_moving_fast_V2', '/static/img/map_icons/map_icon_player_v2_moving_fast.png', [51, 28], this.max_id++);
 
+
+
+        // Новые иконки машин
+        this.load_new_icon('icon_party_arrow', '/static/img/char_icons/party/arrow.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_car', '/static/img/char_icons/party/car.png', [53, 53], this.max_id++);
+
+        this.load_new_icon('icon_neutral_arrow', '/static/img/char_icons/neutral/arrow.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_car', '/static/img/char_icons/neutral/car.png', [53, 53], this.max_id++);
+
+        this.load_new_icon('icon_dead_car', '/static/img/char_icons/bad/car.png', [53, 53], this.max_id++);
+
+
+
+
+
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
             icon: new L.icon({
@@ -248,8 +263,9 @@ var LeafletIconManager = (function(){
         };
     }
 
-    LeafletIconManager.prototype.getIcon = function(icon_name){
-        return this.icons[icon_name].icon;
+    LeafletIconManager.prototype.getIcon = function(icon_name, type){
+        type = type ? type : 'icon';
+        return this.icons[icon_name][type];
     };
 
     LeafletIconManager.prototype.getIconByID = function(ID, type) {

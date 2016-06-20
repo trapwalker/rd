@@ -1,6 +1,5 @@
-var RadioNameSwitchText = "search ...";
-
 var currentSiteSize = 1080;
+var lastRadioVolume = 1.0;
 
 var constHtmlSize = {
     1080: {
@@ -26,7 +25,6 @@ var constHtmlSize = {
 };
 
 
-
 var RadioPlayer = (function () {
     function RadioPlayer(options) {
         var name = options.name;
@@ -46,17 +44,7 @@ var RadioPlayer = (function () {
         // timeout на загрузку радио при старте проигрывания
         this.timer_for_buffer = null;
 
-
         // Вешаем эвенты на элементы управления плеером
-        //$('#btnPlay_' + name).click(RadioPlayer.prototype.click_play.bind(this));
-        //$('#btnStop_' + name).click(RadioPlayer.prototype.click_stop.bind(this));
-        //$('#sliderVolume_' + name).change(RadioPlayer.prototype.change_volume.bind(this));
-        //$('#sliderChannel_' + name).change(RadioPlayer.prototype.change_channel.bind(this));
-        //$('#sliderQuality_' + name).change(RadioPlayer.prototype.change_quality.bind(this));
-        //
-        //this.jq_btn_stop = $('#btnStop_' + name);
-        //this.jq_btn_play = $('#btnPlay_' + name);
-
         // сеть:
         this.power_on = false;
         this.jq_power_btn = $('.radio-power-btn').first();
@@ -88,7 +76,6 @@ var RadioPlayer = (function () {
 
         // Дисплей и работа с ним
         this.jq_display = $('.radio-screen-content').first();
-        //this.jq_station_name = $('.radio-screen-channel-name').first();
 
         // Работа с громкостью
         this.jq_volume_indicator = $('.radio-volume-indicator-block').first();
@@ -99,7 +86,6 @@ var RadioPlayer = (function () {
             if (volume > 1.0 || volume < 0.0) return;
             self.set_volume((1.0 - volume).toFixed(2));
         });
-
 
         this.jq_volume_disc = $('.radio-volume-controller-images').first();
         this.jq_volume_disc_item = $('.radio-volume-controller-item').first();
@@ -340,6 +326,12 @@ var RadioPlayer = (function () {
          if (this.playing) this.click_play();
     };
 
+    RadioPlayer.prototype.change_site_size = function (old_size, new_size) {
+        var scale_length_old = constHtmlSize[old_size].offset_click_scale;
+        var scale_length_new = constHtmlSize[new_size].offset_click_scale;
+        var carrete_pos = this.jq_channels_carrete.position().left;
+        this.set_channel_carrete(scale_length_new * carrete_pos / scale_length_old);
+    };
 
     return RadioPlayer;
 })();
@@ -348,7 +340,7 @@ var RadioPlayer = (function () {
 var radioPlayer;
 
 function initRadioPlayer() {
-    console.log('initRadioPlayer !');
+    //console.log('initRadioPlayer !');
     context = audioManager.get_ctx();
 
     audioManager.load('radio_noise_switch', {url: "/audio/radio_noise_switch/60819__erh__radio-t2-lw-static-3.wav"}, false);

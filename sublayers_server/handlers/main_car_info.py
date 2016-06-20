@@ -22,7 +22,7 @@ class PersonInfoHandler(BaseHandler):
         person = None
         if person_name:
             log.debug('Person Name is %s', person_name)
-            person = self.application.srv.agents_by_name.get(person_name, None)
+            person = self.application.srv.agents_by_name.get(str(person_name), None)
         if agent is None or person is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)

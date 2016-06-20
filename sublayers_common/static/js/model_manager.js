@@ -194,7 +194,8 @@ var ClientManager = (function () {
                 aOwner.bindCar(car);
 
             // Создание/инициализация виджетов
-            new WCarMarker(car);                 // виджет маркера
+            //new WCarMarker(car);                 // виджет маркера
+            new WCanvasUserCarMarker(car);
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
@@ -613,9 +614,8 @@ var ClientManager = (function () {
         if(event.subj.uid == user.ID) return;
         var owner = this._getOwner(event.subj);
         for (var i = 0; i < owner.cars.length; i++) {
-            var widget_marker = visualManager.getVobjByType(owner.cars[i], WCarMarker);
-            widget_marker.updateLabel();
-            widget_marker.updateIcon();
+            var widget_marker = visualManager.getVobjByType(owner.cars[i], WCanvasUserCarMarker);
+            if (widget_marker) widget_marker.updateIcon();
         }
         if (windowTemplateManager.isOpen('party'))
             windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
@@ -623,12 +623,15 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
-        console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+        //console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
         // изменить настройки своей пати для своего клиента
         if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
         user.party = new OwnerParty(event.party.id, event.party.name);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
-        widget_marker.updateLabel();
+        // обновить иконки для всех сопартийцев
+        ownerList.update_party_icons(user.party.id);
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        if (widget_marker) widget_marker.updateIcon();
+
         chat.page_party.buttons.create.text('Отряд');
         chat.party_info_message(event);
         // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
@@ -645,10 +648,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
-        //console.log('ClientManager.prototype.PartyExcludeMessageForExcluded', event);
+        //console.log('ClientManager.prototype.PartyExcludeMessageForExcluded', event, user.party);
+        var old_party_id = user.party.id;
         user.party = null;
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
-        widget_marker.updateLabel();
+        // обновить иконки для всех бывших сопартийцев
+        ownerList.update_party_icons(old_party_id);
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        if (widget_marker) widget_marker.updateIcon();
+
         chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
@@ -662,9 +669,13 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
         //console.log('ClientManager.prototype.PartyKickMessageForKicked', event);
+        var old_party_id = user.party.id;
         user.party = null;
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCarMarker);
-        widget_marker.updateLabel();
+        // обновить иконки для всех бывших сопартийцев
+        ownerList.update_party_icons(old_party_id);
+        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        if (widget_marker) widget_marker.updateIcon();
+
         chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
         // изменить иконки машинок для всех бывших мемберов пати
@@ -723,6 +734,11 @@ var ClientManager = (function () {
     ClientManager.prototype.ChatPartyRoomExcludeMessage = function(event){
         //console.log('ClientManager.prototype.ChatPartyRoomExcludeMessage', event);
         chat.deactivateParty(event.room_name);
+    };
+
+    ClientManager.prototype.GetPrivateChatMembersMessage = function(event){
+        //console.log('ClientManager.prototype.GetPrivateChatMembersMessage', event);
+        chat.addChatToInteraction(event.room_name, event.members);
     };
 
     ClientManager.prototype.ChangeLocationVisitorsMessage = function(event){
@@ -1212,12 +1228,26 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendCreatePrivateChat = function (recipient) {
+    ClientManager.prototype.sendCreatePrivateChat = function (recipient, msg) {
+        if (!msg) msg = '';
         var mes = {
             call: "create_private_chat",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                recipient: recipient
+                recipient: recipient,
+                msg: msg
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetPrivateChatMembers = function (room_jid) {
+        var mes = {
+            call: "get_private_chat_members",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: room_jid
             }
         };
         rpcCallList.add(mes);
@@ -1231,6 +1261,20 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 name: chat_name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendChatMessage = function (room_jid, msg) {
+        //console.log('ClientManager.prototype.sendChatMessage', room_jid, msg);
+        var mes = {
+            call: "chat_message",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                room_name: room_jid,
+                msg: msg
             }
         };
         rpcCallList.add(mes);

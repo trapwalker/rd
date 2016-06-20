@@ -3,12 +3,14 @@ var InteractionManager = (function (_super) {
 
     function InteractionManager(jq_town_div) {
         _super.call(this, jq_town_div.find('#townChatInteraction'), 'chat_screen');
+
+        this.room_jid = '';
         this.player_nick = '';
         this.field_name_list = ['lvl', 'role_class', 'karma', 'driving', 'shooting', 'masking', 'leading', 'trading', 'engineering'];
 
         // Клики на пункты меню
         var self = this;
-        this.jq_main_div.find('.chat-interaction-center-menu-item').click(function () {
+        this.jq_main_div.find('.chat-interaction-center-menu-item').click(function() {
             var page_id = $(this).data('page_id');
             self.jq_main_div.find('.chat-interaction-center-menu-item').removeClass('active');
             $(this).addClass('active');
@@ -16,7 +18,25 @@ var InteractionManager = (function (_super) {
             self.jq_main_div.find('#' + page_id).css('display', 'block');
         });
         this.jq_main_div.find('.chat-interaction-center-menu-item').first().click();
+
+        // События на кнопку отправить и Enter в поле ввода
+        this.jq_main_div.find('.chat-interaction-private-chat-input-button').click(function() { self._send_message(); });
+        this.jq_main_div.find('.chat-interaction-private-chat-input').first().on('keydown', function (event) {
+            if (event.keyCode == 13)
+                self._send_message();
+        });
     }
+
+    InteractionManager.prototype._send_message = function () {
+        var jq_input = this.jq_main_div.find('.chat-interaction-private-chat-input').first();
+        var msg = jq_input.val();
+        if (this.room_jid != '')
+            clientManager.sendChatMessage(this.room_jid, msg);
+        else
+            clientManager.sendCreatePrivateChat(this.player_nick, msg);
+        jq_input.val('');
+        jq_input.focus();
+    };
 
     InteractionManager.prototype.set_buttons = function () {
         //console.log('InteractionManager.prototype.set_buttons');
@@ -43,7 +63,7 @@ var InteractionManager = (function (_super) {
     };
 
     InteractionManager.prototype.activate = function (person) {
-        if (person) {
+        if (person && (this.player_nick != person)) {
             this.player_nick = person;
             this.get_self_info();
         }
@@ -70,10 +90,15 @@ var InteractionManager = (function (_super) {
             if (user_data.hasOwnProperty(field_name))
                 this.jq_main_div.find('.chat-interaction-' + field_name).text(user_data[field_name]);
         }
+
+        chat.searchChatInteraction(this.player_nick);
     };
 
     InteractionManager.prototype.clear = function() {
         //console.log('InteractionManager.prototype.clear');
+        this.room_jid = '';
+        this.jq_main_div.find('.chat-interaction-private-chat').empty();
+
         this.jq_main_div.find('.npc-name').text('');
         this.jq_main_div.find('.npc-text').text('');
         this.jq_main_div.find('.npc-photo').attr("src", '');

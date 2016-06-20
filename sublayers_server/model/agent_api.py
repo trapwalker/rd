@@ -22,7 +22,7 @@ from sublayers_server.model.transaction_events import (
     TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
-    ChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
+    ChatRoom, PrivateChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
     CancelBarterEvent, SetMoneyBarterEvent
@@ -230,7 +230,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        user = self.agent.server.agents_by_name.get(self.username)
+        user = self.agent.server.agents_by_name.get(str(self.username))
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
             return
@@ -266,7 +266,7 @@ class SendKickEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
 
-        user = self.agent.server.agents_by_name.get(self.username)
+        user = self.agent.server.agents_by_name.get(str(self.username))
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
             return
@@ -292,7 +292,7 @@ class SendSetCategoryEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
             return
 
-        user = self.agent.server.agents_by_name.get(self.username)
+        user = self.agent.server.agents_by_name.get(str(self.username))
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
@@ -523,15 +523,25 @@ class AgentAPI(API):
         self.console.on_cmd(cmd.lstrip('/'))
 
     @public_method
-    def create_private_chat(self, recipient):
+    def create_private_chat(self, recipient, msg):
         # log.info('agent %s try create private room with %s', self.agent, recipient)
-        ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient,
+        ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient, msg=msg,
                                    time=self.agent.server.get_time()).post()
 
     @public_method
     def close_private_chat(self, name):
         # log.info('agent %s try close private chat %s', self.agent, name)
         ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def get_private_chat_members(self, name):
+        # log.info('agent %s try close private chat %s', self.agent, name)
+
+        chat = ChatRoom.search(name=name)
+        if (chat is not None) and (isinstance(chat, PrivateChatRoom)) and (self.agent in chat.members):
+            messages.GetPrivateChatMembersMessage(agent=self.agent,
+                                                  chat=chat,
+                                                  time=self.agent.server.get_time()).post()
 
     @public_method
     def enter_to_location(self, location_id):

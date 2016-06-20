@@ -115,17 +115,27 @@ var WFireController = (function (_super) {
         //console.log("WFireController.prototype.initQuickConsumerPanel");
 
         // Создаем 4 дива под кнопки
+        var jq_wrap_list = {
+            1: $('<div id="fireControlQuickBtn1BG"></div>'),
+            2: $('<div id="fireControlQuickBtn2BG"></div>'),
+            3: $('<div id="fireControlQuickBtn3BG"></div>'),
+            4: $('<div id="fireControlQuickBtn4BG"></div>')
+        }
+
         this.jq_quick_btns = {
             1: $('<div id="fireControlQuickBtn1" class="fire-controll-quick-btn-block" data-index="1"></div>'),
             2: $('<div id="fireControlQuickBtn2" class="fire-controll-quick-btn-block" data-index="2"></div>'),
             3: $('<div id="fireControlQuickBtn3" class="fire-controll-quick-btn-block" data-index="3"></div>'),
             4: $('<div id="fireControlQuickBtn4" class="fire-controll-quick-btn-block" data-index="4"></div>')
-        };
+        };      
 
         // Добавляем дивы кнопок в верстку и вешаем на них клики с активейтами
         for (var key in this.jq_quick_btns)
             if (this.jq_quick_btns.hasOwnProperty(key)) {
-                this.fCT.append(this.jq_quick_btns[key]);
+                var jq_wrap = jq_wrap_list[key];
+                var jq_slot = this.jq_quick_btns[key];
+                jq_wrap.append(jq_slot);
+                this.fCT.append(jq_wrap);
                 this.jq_quick_btns[key].on('click', function () {
                     clientManager.sendActivateQuickItem($(this).data('index'), user.userCar.ID)
                 });
