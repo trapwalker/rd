@@ -227,9 +227,16 @@ var ClientManager = (function () {
                 case 'RadioPoint':
                     direction = 0.5 * Math.PI;
                     break;
+                case 'POICorpse':
+                    direction = event.object.car_direction + Math.PI / 2.;
+                    break;
             }
+
             obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
+            if (event.object.hasOwnProperty('sub_class_car')) {
+                obj.sub_class_car = event.object.sub_class_car;
+            }
 
             // Создание/инициализация виджетов
             obj_marker = new WCarMarker(obj); // виджет маркера
@@ -460,6 +467,7 @@ var ClientManager = (function () {
             case 'Town':
             case 'POILoot':
             case 'POIContainer':
+            case 'POICorpse':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;

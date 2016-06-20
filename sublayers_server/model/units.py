@@ -18,7 +18,7 @@ from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEven
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.inventory import Inventory, ItemState
-from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer, POILoot
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer, POILoot, POICorpse
 
 from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
 from sublayers_server.model.vectors import Point
@@ -222,9 +222,10 @@ class Unit(Observer):
 
         # создать труп с инвентарём
         if not self.inventory.is_empty():
-            CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
+            CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POICorpse, example=None,
                                inventory_size=self.example.inventory_size, position=self.position(event.time),
-                               life_time=600.0, items=self.inventory.get_items()).post()
+                               life_time=600.0, items=self.inventory.get_items(),
+                               sub_class_car=self.example.sub_class_car, car_direction=self.direction(event.time)).post()
 
     def drop_item_to_map(self, item, time):
         CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,

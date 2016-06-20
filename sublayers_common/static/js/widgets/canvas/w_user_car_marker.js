@@ -91,7 +91,7 @@ var WCanvasUserCarMarker = (function (_super) {
             case 'armored':
                 icon_name = 'bm';
                 break;
-           case 'btrs':
+            case 'btrs':
                 icon_name = 'btr';
                 break;
             case 'buggies':
@@ -124,7 +124,7 @@ var WCanvasUserCarMarker = (function (_super) {
             case 'tractors':
                 icon_name = 'truck';
                 break;
-             case 'vans':
+            case 'vans':
                 icon_name = 'van';
                 break;
             default:
@@ -135,6 +135,7 @@ var WCanvasUserCarMarker = (function (_super) {
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name, 'canvas_icon');
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow', 'canvas_icon');
     };
+
 
     return WCanvasUserCarMarker;
 })(VisualObject);
