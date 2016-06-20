@@ -15,6 +15,8 @@ var ViewMessengerGlass = (function () {
         this.log_index = 0;
         this.chat_visible = true;
 
+        this.in_town = false;
+
         // вёрстка
         var mainParent = $('#chatAreaGlass');
         mainParent.append('<div id="VMGDivHardware"></div>');
@@ -537,6 +539,7 @@ var ViewMessengerGlass = (function () {
 
     // Удаление произвольной чат-комнаты
     ViewMessengerGlass.prototype.removeChat = function (room_jid) {
+        //console.log('ViewMessengerGlass.prototype.removeChat');
         // получить чат
         var chat = this._getChatByJID(room_jid);
         if (!chat) {
@@ -564,6 +567,10 @@ var ViewMessengerGlass = (function () {
                 index = i;
         this.chats.splice(index, 1);
 
+        for (var i in this.pages)
+            if ((this.pages[i].chat) && (this.pages[i].chat.room_jid == room_jid))
+                this.pages[i].chat = null;
+
         // если нужно, установить активным другой чат
         if (this.activeChat == chat) {
             if (this.chats.length > 0)
@@ -588,7 +595,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.sendMessage = function() {
         //console.log('ViewMessengerGlass.prototype.sendMessage');
 
-        var jq_input = chat.chat_visible ? chat.main_input : chat.compact_input;
+        var jq_input = (chat.chat_visible || chat.in_town) ? chat.main_input : chat.compact_input;
 
         var str = jq_input.val();
         if (str.length) {
@@ -1002,12 +1009,14 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.showChatInTown = function(jq_town_chat_div){
         jq_town_chat_div.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '0px');
+        this.in_town = true;
     };
 
     ViewMessengerGlass.prototype.showChatInMap = function(){
         this.chatWrapDiv.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '1px');
         $('#VGM-PlayerInfoDivInCity').remove();
+        this.in_town = false;
     };
 
     return ViewMessengerGlass;

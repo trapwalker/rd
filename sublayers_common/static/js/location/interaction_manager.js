@@ -76,7 +76,7 @@ var InteractionManager = (function (_super) {
         this.clear();
 
         // Заполнение npc заголовка
-        this.jq_main_div.find('.npc-name').text(this.player_nick + ':');
+        this.jq_main_div.find('.npc-name').text(this.player_nick);
         this.jq_main_div.find('.npc-text').text(user_data.about_self);
         this.jq_main_div.find('.npc-photo').attr("src", user_data.avatar);
 
