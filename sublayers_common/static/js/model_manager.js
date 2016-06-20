@@ -188,6 +188,7 @@ var ClientManager = (function () {
             car = new MapCar(uid, state, hp_state, fuel_state, v_forward, p_observing_range, aObsRangeRateMin, aObsRangeRateMax);
             car.role = event.object.role;
             car.cls = event.object.cls;
+            car.sub_class_car = event.object.sub_class_car;
             car.main_agent_login = main_agent_login;
 
             if (aOwner)
@@ -327,6 +328,7 @@ var ClientManager = (function () {
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
 
             user.userCar = mcar;
+            mcar.sub_class_car = event.car.sub_class_car;
             mapCanvasManager.on_new_map_size();
 
             // Виджеты:

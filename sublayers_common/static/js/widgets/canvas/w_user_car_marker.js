@@ -84,7 +84,53 @@ var WCanvasUserCarMarker = (function (_super) {
             icon_type = 'party';
         }
 
-        // todo: узнать подкласс машинки
+        switch (car.sub_class_car) {
+            case 'artillery':
+                icon_name = 'art';
+                break;
+            case 'armored':
+                icon_name = 'bm';
+                break;
+           case 'btrs':
+                icon_name = 'btr';
+                break;
+            case 'buggies':
+                icon_name = 'buggy';
+                break;
+            case 'buses':
+                icon_name = 'bus';
+                break;
+            case 'cars':
+                icon_name = 'car';
+                break;
+            case 'trucks':
+                icon_name = 'cargo';
+                break;
+            case 'motorcycles':
+                icon_name = 'moto';
+                break;
+            case 'quadbikes':
+                icon_name = 'quadro';
+                break;
+            case 'sports':
+                icon_name = 'sport';
+                break;
+            case 'offroad':
+                icon_name = 'suv';
+                break;
+            case 'tanks':
+                icon_name = 'tank';
+                break;
+            case 'tractors':
+                icon_name = 'truck';
+                break;
+             case 'vans':
+                icon_name = 'van';
+                break;
+            default:
+                console.log('Не найдена иконка. Установлена стандартная. ', car);
+                icon_name = 'car';
+        }
 
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name, 'canvas_icon');
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow', 'canvas_icon');

@@ -458,6 +458,8 @@ class Bot(Mobile):
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
         d.update(quick_consumer_panel=self.quick_consumer_panel.as_dict(time=time))
+        if self.example:
+            d.update(class_car=self.example.class_car, sub_class_car=self.example.sub_class_car)
         return d
 
     @property
