@@ -123,6 +123,7 @@ class Mobile(Root):
     # Косметика
     title = Attribute(default="", caption=u"Модель автомобиля", tags='client')
     class_car = Attribute(default="", caption=u"Класс автомобиля", tags='client')
+    sub_class_car = Attribute(default="", caption=u"Подкласс автомобиля", tags='client')
     name_car = Attribute(default="", caption=u"Название автомобиля", tags='client')
 
     # Влияние скилов
