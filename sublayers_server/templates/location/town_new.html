@@ -203,7 +203,7 @@
 
                         // Это необходимо сделать вне зависимости от активности кнопки
                         $('#' + id + '_hover').css('display', 'none');
-                        $('#' + id + '_pressed').css('display', 'none');
+{#                        $('#' + id + '_pressed').css('display', 'none');#}
                         $('#' + id + '_text').removeClass('hover');
                         $('#' + id + '_text').removeClass('pressed');
 
@@ -248,13 +248,13 @@
                                 locationManager.clickBtn(id.replace('btn_', ''));
                                 break;
                             case 'btn_screen_location':
-                                locationManager.activateScreen('location_screen');
+                                locationManager.activateScreen('location_screen', id + '_pressed');
                                 break;
                             case 'btn_screen_chat':
-                                locationManager.activateScreen('chat_screen');
+                                locationManager.activateScreen('chat_screen', id + '_pressed');
                                 break;
                             case 'btn_screen_menu':
-                                locationManager.activateScreen('menu_screen');
+                                locationManager.activateScreen('menu_screen', id + '_pressed');
                                 break;
                         }
                     }

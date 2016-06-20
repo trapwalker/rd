@@ -38,14 +38,22 @@ var LocationManager = (function () {
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
-    LocationManager.prototype.activateScreen = function (screenName) {
-        //console.log('LocationManager.prototype.activateScreen', screenName);
+    LocationManager.prototype.activateScreen = function (screenName, btn_id) {
+        //console.log('LocationManager.prototype.activateScreen', screenName, btn_id);
         if (this.screens.hasOwnProperty(screenName)) {
             this.active_screen_name = screenName;
             var location = locationManager.screens[screenName];
+            $('#btn_screen_location_pressed').css('display', 'none');
+            $('#btn_screen_chat_pressed').css('display', 'none');
+            $('#btn_screen_menu_pressed').css('display', 'none');
             if (location) {
+                if (btn_id)
+                    $('#' + btn_id).css('display', 'block');
                 locationManager.screens[screenName].activate();
             } else {
+                if (btn_id)
+                    $('#' + btn_id).css('display', 'block');
+
                 // Если вдруг что-то не так, то вернуть нас на главную страницу города
                 $('.building-back').css('display', 'none');
                 $('.townPageWrap').css('display', 'none');
@@ -113,6 +121,8 @@ var LocationManager = (function () {
         // Разрешаем отрисовку эффектов на канвас
         this.location_canvas_manager.init_canvas();
         this.location_canvas_manager.is_canvas_render = true;
+
+        this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
