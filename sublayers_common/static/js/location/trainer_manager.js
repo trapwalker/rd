@@ -515,7 +515,7 @@ var LocationTrainerNPC = (function (_super) {
         var skill_names = ['driving', 'engineering', 'leading', 'masking', 'shooting', 'trading'];
 
         for (var  i = 0; i < skill_names.length; i++) {
-            skill_point += LocationTrainerNPC._getSkillValueReal(skill_names[i]);
+            skill_point += rpg_info[skill_names[i]].value;
             buy_skill_point += rpg_info['buy_' + skill_names[i]].value;
         }
 
