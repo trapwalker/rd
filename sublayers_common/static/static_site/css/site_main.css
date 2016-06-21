@@ -430,16 +430,19 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .site-sound-switch {
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 59px;
+    height: 52px;
     right: 20px;
     top: 20px;
-    background-color: #2aae1c;
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_on_normal.png) no-repeat 100% 100%;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
-.site-sound-switch:hover { background-color: #33e521; }
-.site-sound-switch.off { background-color: #ae0000; }
-.site-sound-switch.off:hover { background-color: #ce0000; }
+.site-sound-switch:hover { background: transparent url(/static/static_site/img/site_sound_btn/sound_on_over.png) no-repeat 100% 100%; }
+.site-sound-switch:active { background: transparent url(/static/static_site/img/site_sound_btn/sound_on_pressed.png) no-repeat 100% 100%; }
+
+.site-sound-switch.off { background: transparent url(/static/static_site/img/site_sound_btn/sound_off_normal.png) no-repeat 100% 100%;}
+.site-sound-switch.off:hover { background: transparent url(/static/static_site/img/site_sound_btn/sound_off_over.png) no-repeat 100% 100%; }
+.site-sound-switch.off:active { background: transparent url(/static/static_site/img/site_sound_btn/sound_off_pressed.png) no-repeat 100% 100%; }
 
 
  /* RADIO !!!  */
