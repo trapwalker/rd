@@ -134,6 +134,9 @@ var LocationManager = (function () {
     LocationManager.prototype.onExit = function () {
         //console.log('LocationManager.prototype.onExit');
 
+         // Вызов OnExit для локаций, неписей и тд... Делается ДО удаления вёрстки
+        if (this.location_menu) this.location_menu.on_exit();
+
         chat.showChatInMap();
 
         // Сброс панелей
