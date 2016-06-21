@@ -426,17 +426,20 @@ var LocationPlace = (function () {
 
     LocationPlace.drag_handler = function (event, ui) {
         var original = ui.originalPosition;
-        // jQuery will simply use the same object we alter here
         ui.position = {
-            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc,
-            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc
+            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc - location_draggable_click.half_helper_width,
+            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc - location_draggable_click.half_helper_height
         };
     };
 
     LocationPlace.start_drag_handler = function (event, ui) {
         var pos = event.target.getBoundingClientRect();
-        location_draggable_click.x = pos.left + pos.width / 4.;
-        location_draggable_click.y = pos.top + pos.height / 4.;
+        location_draggable_click.x = pos.left; // + pos.width / 4.;
+        location_draggable_click.y = pos.top; // + pos.height / 4.;
+
+        var size_helper = ui.helper[0].getBoundingClientRect();
+        location_draggable_click.half_helper_width = size_helper.width / 2.;
+        location_draggable_click.half_helper_height = size_helper.height / 2.;
     };
 
     return LocationPlace;
