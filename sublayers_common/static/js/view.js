@@ -205,11 +205,15 @@ function CarTableInfoMenuClick(target) {
 
 
 function CarInfoBlockAmmoInfoView(description) {
-    locationManager.panel_right.show({text: description}, 'description');
+    if (locationManager.in_location_flag) {
+        locationManager.panel_right.show({text: description}, 'description');
+    }
 }
 
 function CarInfoBlockAmmoInfoHide(descripion) {
-    locationManager.panel_right.show({text: ''}, 'description');
+    if (locationManager.in_location_flag) {
+        locationManager.panel_right.show({text: ''}, 'description');
+    }
 }
 
 

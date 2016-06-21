@@ -7,6 +7,8 @@ var LocationManager = (function () {
             menu_screen: null
         };
 
+        this.in_location_flag = false;
+
         // Менеджер посетителей города
         this.visitor_manager = new LocationVisitorsManager();
 
@@ -124,6 +126,7 @@ var LocationManager = (function () {
 
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
+        this.in_location_flag = true;
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
     };
@@ -169,6 +172,8 @@ var LocationManager = (function () {
 
         // Почистить менеджер посетителей города
         this.visitor_manager.clear_visitors();
+
+        this.in_location_flag = false;
     };
 
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
