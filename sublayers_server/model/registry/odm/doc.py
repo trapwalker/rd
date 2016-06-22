@@ -9,12 +9,28 @@ from sublayers_server.model.registry.odm.fields import StringField
 
 from motorengine import Document
 from tornado.concurrent import return_future
+import collections
 
 
 class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
     __cls__ = StringField()
+
+    def find_embed_field(self, document, results, field_name, field):
+        if self.is_embedded_field(field):
+            value = document._values.get(field_name, None)
+            if isinstance(value, Document):
+                self.find_references(document=value, results=results)
+            elif value is not None:
+                load_function = self._get_load_function(document, field_name, field.embedded_type)
+                results.append([
+                    load_function,
+                    value,
+                    document._values,
+                    field_name,
+                    None
+                ])
 
     def _get_load_function(self, document, field_name, document_type):
         value = document._values.get(field_name, None)
@@ -74,15 +90,14 @@ class AbstractDocument(Document):
             self._reference_loaded_fields = {}
 
         for key, field in self._fields.items():
-            if callable(field.default):
-                self._values[field.name] = field.set_value(field.default())
-            else:
-                self._values[field.name] = field.set_value(field.default)
+            default = field.default() if callable(field.default) else field.default
+            self._values[field.name] = field.set_value(default) if hasattr(field, 'set_value') else default
 
         for key, value in kw.items():
             field = self._fields.get(key)
             if field:
-                value = field.set_value(value)
+                if hasattr(field, 'set_value'):
+                    value = field.set_value(value)
             else:
                 self._fields[key] = DynamicField(db_field="_%s" % key.lstrip('_'))
             self._values[key] = value
