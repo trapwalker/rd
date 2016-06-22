@@ -71,7 +71,8 @@ function main() {
     var hash_url = window.location.hash;
     if (hash_url && hash_url.length) {
         hash_url = hash_url.split('#')[1];
-        $('#RDbtn_' + hash_url).click();
+        if (hash_url.length)
+            $('#RDbtn_' + hash_url).click();
     }
 
     // Запрос разных рейтингов
@@ -82,6 +83,9 @@ function main() {
     }
 
     initRadioPlayer();
+
+    if (! hash_url.length)
+        glitchInit();
 }
 
 function init_site_sound() {
@@ -347,4 +351,168 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
 }
 
 
+
+
+var glitchInterval;
+var glitchTimeouts = [];
+
+function glitchStop(){
+    if (glitchInterval) {
+        clearTimeout(glitchInterval);
+        glitchInterval = null;
+    }
+
+    while (glitchTimeouts.length) {
+        clearTimeout(glitchTimeouts.pop());
+    }
+}
+
+
+
+function glitchInit() {
+    var canvas = document.getElementById('glith_test');
+    var context = canvas.getContext('2d');
+    var img = new Image();
+    var w;
+    var h;
+    var globalCompositeOperationArray = ['overlay', 'lighter', 'screen', 'color-dodge'];
+    var current_opacity = 1.0;
+    console.log('glitchInit start ', timeManager.getTime());
+
+    var draw_pure_image = function () {
+        while (glitchTimeouts.length) {
+            clearTimeout(glitchTimeouts.pop());
+        }
+        clear();
+        context.drawImage(img, 0, 0, w, h, 0, 0, w, h);
+
+        if (current_opacity != 1.0) {
+            current_opacity = 1.0;
+            $('.content-start-back.content-start.road-grid').css('opacity', current_opacity);
+            $('.content-start-back.content-start.road').css('opacity', current_opacity);
+        }
+    };
+
+    var glith_timeot_fire = function () {
+        console.log('glith_timeot_fire start at ', timeManager.getTime());
+        clear();
+        context.drawImage(img, 0, 0, w, h, 0, 0, w, h);
+        var i = 0;
+        var one_frame = 200;
+        for (i = 1; i < randInt(4, 7); i++) {
+            glitchTimeouts.push(setTimeout(glitchImg, randInt2(i * one_frame, 50)));
+        }
+        glitchTimeouts.push(setTimeout(draw_pure_image, randInt2(i * one_frame, 50)));
+
+        glitchInterval = setTimeout(glith_timeot_fire, randInt2(6000, 3000));
+    };
+
+    var init = function () {
+        clearTimeout(glitchInterval);
+        canvas.width = w = 2013;
+        canvas.height = h = 997;
+        glitchInterval = setTimeout(glith_timeot_fire, randInt2(6000, 3000));
+        draw_pure_image();
+    };
+
+    var clear = function () {
+         context.clearRect(0, 0, w, h);
+    };
+
+
+    var grayscale = function (pixels) {
+        // получаем одномерный массив, описывающий все пиксели изображения
+        var d = pixels.data;
+        for (var i = 0; i < d.length; i += 4) {
+            var r = d[i];
+            var g = d[i + 1];
+            var b = d[i + 2];
+            var v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            d[i] = d[i + 1] = d[i + 2] = v;
+        }
+        return pixels;
+    };
+
+    var threshold = function (pixels, threshold) {
+        var d = pixels.data;
+        for (var i = 0; i < d.length; i += 4) {
+            var r = d[i];
+            var g = d[i + 1];
+            var b = d[i + 2];
+            var v = (0.2126 * r + 0.7152 * g + 0.0722 * b >= threshold) ? 255 : 0;
+            d[i] = d[i + 1] = d[i + 2] = v
+        }
+        return pixels;
+    };
+
+    var glitchImg = function () {
+
+        context.save();
+        var opacity = null;
+        context.clearRect(0, 0, w, h);
+
+        // Глобальная прозрачность
+        if (Math.random() < 0.6) {
+            opacity =  Math.random() * 0.5 + 0.3;
+            context.globalAlpha = opacity;
+        }
+        // Сдвиг всей машинки
+        if (Math.random() < 0.4) {
+            var offset_x = Math.random() * 15;
+            var offset_y = Math.random() * 12;
+            context.drawImage(img, 0, 0, w, h, offset_x, offset_y, w, h);
+        }else {
+            context.drawImage(img, 0, 0, w, h, 0, 0, w, h);
+        }
+
+        // Глич отдельных частей машинки
+        for (var i = 0; i < randInt(2, 10); i++) {
+            var x = Math.random() * w;
+            var rand_offset_x = Math.random() * 200 - 100;
+            var rand_offset_y = Math.random() * 60 - 30;
+            var y = Math.random() * h;
+            var spliceHeight = randInt(40, 100);
+            context.save();
+            if (y < 300 && Math.random() < 0.4) { // Значит можно делать globalCompositeOperation
+                context.globalCompositeOperation = globalCompositeOperationArray[Math.floor(Math.random() * 4)];
+            }
+            context.drawImage(canvas,
+                0, y, w, spliceHeight,
+                rand_offset_x, y + rand_offset_y, w, spliceHeight);
+
+
+            if (Math.random() > 0.7) {
+                var imageData = context.getImageData(0, y, w, spliceHeight);
+                var imageDataFiltered = Math.random() > 0.4 ? grayscale(imageData) : threshold(imageData, 100);
+                //var imageDataFiltered = grayscale(imageData);
+                context.putImageData(imageDataFiltered, 0, y);
+            }
+
+            context.restore();
+        }
+
+        context.restore();
+
+        if (opacity && Math.random() > 0.5) {
+            current_opacity = opacity;
+            if (Math.random() > 0.5)
+                $('.content-start-back.content-start.road-grid').css('opacity', current_opacity);
+            if (Math.random() > 0.5)
+                $('.content-start-back.content-start.road').css('opacity', current_opacity);
+        }
+
+    };
+
+    var randInt = function (a, b) {
+        return ~~(Math.random() * (b - a) + a);
+    };
+
+    var randInt2 = function (number, radius) {
+        return randInt(number - radius, number + radius);
+    };
+
+
+    img.src = '/static/static_site/img/09-06-16/1080_car.png';
+    SetImageOnLoad(img, init);
+}
 

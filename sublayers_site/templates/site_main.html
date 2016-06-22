@@ -123,7 +123,10 @@
                 <!--Машинка-фон при старте сайте-->
                 <div class="content-start-back content-start road-grid"></div>
                 <div class="content-start-back content-start road"></div>
-                <div class="content-start-back content-start car"></div>
+{#                <div class="content-start-back content-start car"></div>#}
+                <div class="content-start-back content-start glitch">
+                    <canvas id="glith_test"></canvas>
+                </div>
                 <a class="site-logo" href="/#"></a>
             </div>
             <!--Консоль на главной странице -->
@@ -156,6 +159,7 @@
                 $('.content-start').animate({opacity: 0}, function () {
                     $('.content-start').first().css({display: 'none'});
                 });
+                glitchStop();
             }
 
             // Скрыть все окна
@@ -243,6 +247,7 @@
                 $('.btn').removeClass('active');
                 $('.content-start').css({display: 'block'});
                 $('.content-start').animate({opacity: 1.0});
+                glitchInit();
             }
         });
 
