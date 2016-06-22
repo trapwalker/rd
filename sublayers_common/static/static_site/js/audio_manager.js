@@ -13,6 +13,9 @@ var AudioManager = (function () {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
+        if (this.general_gain == 0.0) {
+            return true;
+        }
         if (loop && audio_obj.is_playing && audio_obj.play_loop) { // В случае лупа повторный запуск невозможен!
             return true; // Значит уже луп запущен и второй нет смысла запускать
         }

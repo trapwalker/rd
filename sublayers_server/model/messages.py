@@ -577,16 +577,18 @@ class ChatRoomMessage(Message):
 
 
 class ChatRoomIncludeMessage(Message):
-    def __init__(self, room_name, chat_type=None, **kw):
+    def __init__(self, room_name, chat_type=None, members=[], **kw):
         super(ChatRoomIncludeMessage, self).__init__(**kw)
         self.room_name = room_name
         self.chat_type = chat_type
+        self.members = members  # только для приватных чатов
 
     def as_dict(self):
         d = super(ChatRoomIncludeMessage, self).as_dict()
         d.update(
             room_name=self.room_name,
-            chat_type=self.chat_type
+            chat_type=self.chat_type,
+            members=self.members
         )
         return d
 
@@ -610,6 +612,20 @@ class ChatPartyRoomIncludeMessage(ChatRoomIncludeMessage):
 
 class ChatPartyRoomExcludeMessage(ChatRoomExcludeMessage):
     pass
+
+
+class GetPrivateChatMembersMessage(Message):
+    def __init__(self, chat, **kw):
+        super(GetPrivateChatMembersMessage, self).__init__(**kw)
+        self.chat = chat
+
+    def as_dict(self):
+        d = super(GetPrivateChatMembersMessage, self).as_dict()
+        d.update(
+            room_name=self.chat.name,
+            members=[member.user.name for member in self.chat.members],
+        )
+        return d
 
 
 class InventoryShowMessage(Message):
@@ -1086,7 +1102,7 @@ class InteractionInfoMessage(Message):
 
     def as_dict(self):
         d = super(InteractionInfoMessage, self).as_dict()
-        player = self.agent.server.agents_by_name.get(self.player_nick, None)
+        player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
         if player:
             d.update(

@@ -12,6 +12,8 @@ var WCanvasTargetPoint = (function (_super) {
         this.car = car;
         this.target_point = null;
 
+        this.icon_target_obj = iconsLeaflet.getIcon('icon_map_target_point', 'canvas_icon');
+
         mapCanvasManager.add_vobj(this, 20);
     }
 
@@ -40,6 +42,14 @@ var WCanvasTargetPoint = (function (_super) {
         }
 
         ctx.restore();
+
+        ctx.save();
+        var ctx_car_pos = mulScalVector(subVector(this.target_point, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        ctx.drawImage(this.icon_target_obj.img, -this.icon_target_obj.iconSize[0] >> 1, -this.icon_target_obj.iconSize[1] >> 1);
+        ctx.restore();
+
+
     };
 
     WCanvasTargetPoint.prototype.equals_target_points = function (target) {

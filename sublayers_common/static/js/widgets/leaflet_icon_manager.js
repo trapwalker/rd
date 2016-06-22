@@ -40,6 +40,60 @@ var LeafletIconManager = (function(){
         // Создание иконки БЫСТРО движущейся машинки V 2
         this.load_new_icon('icon_moving_fast_V2', '/static/img/map_icons/map_icon_player_v2_moving_fast.png', [51, 28], this.max_id++);
 
+
+
+        // Новые иконки машин
+        this.load_new_icon('icon_party_arrow', '/static/img/char_icons/party/arrow.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_car', '/static/img/char_icons/party/car.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_art', '/static/img/char_icons/party/art.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_bm', '/static/img/char_icons/party/bm.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_btr', '/static/img/char_icons/party/btr.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_buggy', '/static/img/char_icons/party/buggy.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_bus', '/static/img/char_icons/party/bus.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_cargo', '/static/img/char_icons/party/cargo.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_moto', '/static/img/char_icons/party/moto.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_quadro', '/static/img/char_icons/party/quadro.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_sport', '/static/img/char_icons/party/sport.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_suv', '/static/img/char_icons/party/suv.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_tank', '/static/img/char_icons/party/tank.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_truck', '/static/img/char_icons/party/truck.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_party_van', '/static/img/char_icons/party/van.png', [53, 53], this.max_id++);
+
+        this.load_new_icon('icon_neutral_arrow', '/static/img/char_icons/neutral/arrow.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_car', '/static/img/char_icons/neutral/car.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_art', '/static/img/char_icons/neutral/art.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_bm', '/static/img/char_icons/neutral/bm.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_btr', '/static/img/char_icons/neutral/btr.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_buggy', '/static/img/char_icons/neutral/buggy.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_bus', '/static/img/char_icons/neutral/bus.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_cargo', '/static/img/char_icons/neutral/cargo.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_moto', '/static/img/char_icons/neutral/moto.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_quadro', '/static/img/char_icons/neutral/quadro.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_sport', '/static/img/char_icons/neutral/sport.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_suv', '/static/img/char_icons/neutral/suv.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_tank', '/static/img/char_icons/neutral/tank.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_truck', '/static/img/char_icons/neutral/truck.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_neutral_van', '/static/img/char_icons/neutral/van.png', [53, 53], this.max_id++);
+
+        this.load_new_icon('icon_dead_car', '/static/img/char_icons/dead/car.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_art', '/static/img/char_icons/dead/art.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_bm', '/static/img/char_icons/dead/bm.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_btr', '/static/img/char_icons/dead/btr.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_buggy', '/static/img/char_icons/dead/buggy.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_bus', '/static/img/char_icons/dead/bus.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_cargo', '/static/img/char_icons/dead/cargo.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_moto', '/static/img/char_icons/dead/moto.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_quadro', '/static/img/char_icons/dead/quadro.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_sport', '/static/img/char_icons/dead/sport.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_suv', '/static/img/char_icons/dead/suv.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_tank', '/static/img/char_icons/dead/tank.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_truck', '/static/img/char_icons/dead/truck.png', [53, 53], this.max_id++);
+        this.load_new_icon('icon_dead_van', '/static/img/char_icons/dead/van.png', [53, 53], this.max_id++);
+
+
+        this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
+
+
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
             icon: new L.icon({
@@ -248,8 +302,9 @@ var LeafletIconManager = (function(){
         };
     }
 
-    LeafletIconManager.prototype.getIcon = function(icon_name){
-        return this.icons[icon_name].icon;
+    LeafletIconManager.prototype.getIcon = function(icon_name, type){
+        type = type ? type : 'icon';
+        return this.icons[icon_name][type];
     };
 
     LeafletIconManager.prototype.getIconByID = function(ID, type) {

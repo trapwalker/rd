@@ -1,5 +1,10 @@
-html, body { height: 100%; }
-html { height: 100%; }
+html, body {
+    height: 100%;
+}
+
+html {
+    height: 100%;
+}
 
 .text-blur {
     text-shadow: 0px 0px 0px #00ff00;
@@ -25,7 +30,7 @@ body {
     cursor: url('/static/img/cursors/main.png'), default;
     color: #00ff00;
     font-family: FreePixel;
-	font-weight: bold;
+    font-weight: bold;
     text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
     letter-spacing: 2px;
 }
@@ -47,7 +52,7 @@ input[type="text"], input[type='email'], input[type='password'] {
     letter-spacing: 2px;
 }
 
-input[type="text"]:focus, input[type='email']:focus, input[type='password']:focus{
+input[type="text"]:focus, input[type='email']:focus, input[type='password']:focus {
     outline: none;
 }
 
@@ -89,6 +94,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     -webkit-perspective: 613px;
     perspective-origin: 70% 51%;
 }
+
 .content-block .content {
     position: absolute;
     width: 100%;
@@ -101,6 +107,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     padding: 2px;
 
 }
+
 .content.black {
     background-color: #030f00;
 }
@@ -139,6 +146,18 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     background: transparent url(/static/static_site/img/1366_june/768_road+grid.png) no-repeat 100% 100%;
 }
 
+.content-start-back.glitch {
+    width: 1631px;
+    height: 791px;
+    top: 418px;
+    left: -1309px;
+}
+
+.content-start-back.glitch canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
 .content-start-console-wrap {
     position: relative;
@@ -212,13 +231,29 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     bottom: 10px;
 }
 
-.scroll-btn.up { background: transparent url(/static/static_site/img/btn_slide_up.png) no-repeat 100% 100%; }
-.scroll-btn.up:hover { background: transparent url(/static/static_site/img/btn_slide_up_over.png) no-repeat 100% 100%; }
-.scroll-btn.up:active { background: none; }
+.scroll-btn.up {
+    background: transparent url(/static/static_site/img/btn_slide_up.png) no-repeat 100% 100%;
+}
 
-.scroll-btn.down { background: transparent url(/static/static_site/img/btn_slide_down.png) no-repeat 100% 100%; }
-.scroll-btn.down:hover { background: transparent url(/static/static_site/img/btn_slide_down_over.png) no-repeat 100% 100%; }
-.scroll-btn.down:active { background: none; }
+.scroll-btn.up:hover {
+    background: transparent url(/static/static_site/img/btn_slide_up_over.png) no-repeat 100% 100%;
+}
+
+.scroll-btn.up:active {
+    background: none;
+}
+
+.scroll-btn.down {
+    background: transparent url(/static/static_site/img/btn_slide_down.png) no-repeat 100% 100%;
+}
+
+.scroll-btn.down:hover {
+    background: transparent url(/static/static_site/img/btn_slide_down_over.png) no-repeat 100% 100%;
+}
+
+.scroll-btn.down:active {
+    background: none;
+}
 
 .slide-arrow {
     position: absolute;
@@ -226,23 +261,32 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     width: 17px;
     height: 24px;
 }
+
 .slide-arrow.left {
     background: transparent url(/static/static_site/img/btn_slide_left.png) no-repeat 100% 100%;
     left: 10px;
 }
+
 .slide-arrow.left:hover {
     background: transparent url(/static/static_site/img/btn_slide_left_over.png) no-repeat 100% 100%;
 }
-.slide-arrow.left:active {background: none;}
+
+.slide-arrow.left:active {
+    background: none;
+}
 
 .slide-arrow.right {
     background: transparent url(/static/static_site/img/btn_slide_right.png) no-repeat 100% 100%;
     right: 10px;
 }
+
 .slide-arrow.right:hover {
     background: transparent url(/static/static_site/img/btn_slide_right_over.png) no-repeat 100% 100%;
 }
-.slide-arrow.right:active {background: none;}
+
+.slide-arrow.right:active {
+    background: none;
+}
 
 .site-logo {
     position: absolute;
@@ -255,7 +299,9 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     pointer-events: auto;
 }
 
-.site-logo:hover {cursor: url('/static/img/cursors/hyper.png'), pointer;}
+.site-logo:hover {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+}
 
 /* Кнопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текущая страничка !!!!*/
 .btn {
@@ -270,8 +316,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 44px;
     background: transparent url(/static/static_site/img/1366_june/768_btn1_normal.png) no-repeat 100% 100%;
 }
-.btn-1:hover {background: transparent url(/static/static_site/img/1366_june/768_btn1_over.png) no-repeat 100% 100%;}
-.btn-1:active, .btn-1.active {background: transparent url(/static/static_site/img/1366_june/768_btn1_pressed.png) no-repeat 100% 100%;}
+
+.btn-1:hover {
+    background: transparent url(/static/static_site/img/1366_june/768_btn1_over.png) no-repeat 100% 100%;
+}
+
+.btn-1:active, .btn-1.active {
+    background: transparent url(/static/static_site/img/1366_june/768_btn1_pressed.png) no-repeat 100% 100%;
+}
 
 .btn-1.active:before {
     content: ' ';
@@ -290,8 +342,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 101px;
     background: transparent url(/static/static_site/img/1366_june/768_btn2_normal.png) no-repeat 100% 100%;
 }
-.btn-2:hover {background: transparent url(/static/static_site/img/1366_june/768_btn2_over.png) no-repeat 100% 100%;}
-.btn-2:active, .btn-2.active {background: transparent url(/static/static_site/img/1366_june/768_btn2_pressed.png) no-repeat 100% 100%;}
+
+.btn-2:hover {
+    background: transparent url(/static/static_site/img/1366_june/768_btn2_over.png) no-repeat 100% 100%;
+}
+
+.btn-2:active, .btn-2.active {
+    background: transparent url(/static/static_site/img/1366_june/768_btn2_pressed.png) no-repeat 100% 100%;
+}
 
 .btn-2.active:before {
     content: ' ';
@@ -310,8 +368,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 162px;
     background: transparent url(/static/static_site/img/1366_june/768_btn3_normal.png) no-repeat 100% 100%;
 }
-.btn-3:hover {background: transparent url(/static/static_site/img/1366_june/768_btn3_over.png) no-repeat 100% 100%;}
-.btn-3:active, .btn-3.active {background: transparent url(/static/static_site/img/1366_june/768_btn3_pressed.png) no-repeat 100% 100%;}
+
+.btn-3:hover {
+    background: transparent url(/static/static_site/img/1366_june/768_btn3_over.png) no-repeat 100% 100%;
+}
+
+.btn-3:active, .btn-3.active {
+    background: transparent url(/static/static_site/img/1366_june/768_btn3_pressed.png) no-repeat 100% 100%;
+}
 
 .btn-3.active:before {
     content: ' ';
@@ -330,8 +394,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 219px;
     background: transparent url(/static/static_site/img/1366_june/768_btn4_normal.png) no-repeat 100% 100%;
 }
-.btn-4:hover {background: transparent url(/static/static_site/img/1366_june/768_btn4_over.png) no-repeat 100% 100%;}
-.btn-4:active, .btn-4.active {background: transparent url(/static/static_site/img/1366_june/768_btn4_pressed.png) no-repeat 100% 100%;}
+
+.btn-4:hover {
+    background: transparent url(/static/static_site/img/1366_june/768_btn4_over.png) no-repeat 100% 100%;
+}
+
+.btn-4:active, .btn-4.active {
+    background: transparent url(/static/static_site/img/1366_june/768_btn4_pressed.png) no-repeat 100% 100%;
+}
 
 .btn-4.active:before {
     content: ' ';
@@ -350,8 +420,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 277px;
     background: transparent url(/static/static_site/img/1366_june/768_btn5_normal.png) no-repeat 100% 100%;
 }
-.btn-5:hover {background: transparent url(/static/static_site/img/1366_june/768_btn5_over.png) no-repeat 100% 100%;}
-.btn-5:active, .btn-5.active {background: transparent url(/static/static_site/img/1366_june/768_btn5_pressed.png) no-repeat 100% 100%;}
+
+.btn-5:hover {
+    background: transparent url(/static/static_site/img/1366_june/768_btn5_over.png) no-repeat 100% 100%;
+}
+
+.btn-5:active, .btn-5.active {
+    background: transparent url(/static/static_site/img/1366_june/768_btn5_pressed.png) no-repeat 100% 100%;
+}
 
 .btn-5.active:before {
     content: ' ';
@@ -370,8 +446,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 334px;
     background: transparent url(/static/static_site/img/1366_june/768_btn6_normal.png) no-repeat 100% 100%;
 }
-.btn-6:hover {background: transparent url(/static/static_site/img/1366_june/768_btn6_over.png) no-repeat 100% 100%;}
-.btn-6:active, .btn-6.active {background: transparent url(/static/static_site/img/1366_june/768_btn6_pressed.png) no-repeat 100% 100%;}
+
+.btn-6:hover {
+    background: transparent url(/static/static_site/img/1366_june/768_btn6_over.png) no-repeat 100% 100%;
+}
+
+.btn-6:active, .btn-6.active {
+    background: transparent url(/static/static_site/img/1366_june/768_btn6_pressed.png) no-repeat 100% 100%;
+}
 
 .btn-6.active:before {
     content: ' ';
@@ -404,31 +486,67 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     background: transparent url(/static/static_site/img/1366/768_light_indicator.png) no-repeat 100% 100%;
 }
 
-.box-shadow { box-shadow: none; }
+.box-shadow {
+    box-shadow: none;
+}
+
 .box-shadow:hover {
-    box-shadow: 1px  1px 5px rgba(0, 255, 0, 0.4),
-               -1px -1px 5px rgba(0, 255, 0, 0.4),
-                1px -1px 5px rgba(0, 255, 0, 0.4),
-               -1px  1px 5px rgba(0, 255, 0, 0.4),
-               inset  1px  1px 5px rgba(0, 255, 0, 0.4),
-               inset -1px -1px 5px rgba(0, 255, 0, 0.4),
-               inset  1px -1px 5px rgba(0, 255, 0, 0.4),
-               inset -1px  1px 5px rgba(0, 255, 0, 0.4);
+    box-shadow: 1px 1px 5px rgba(0, 255, 0, 0.4),
+    -1px -1px 5px rgba(0, 255, 0, 0.4),
+    1px -1px 5px rgba(0, 255, 0, 0.4),
+    -1px 1px 5px rgba(0, 255, 0, 0.4),
+    inset 1px 1px 5px rgba(0, 255, 0, 0.4),
+    inset -1px -1px 5px rgba(0, 255, 0, 0.4),
+    inset 1px -1px 5px rgba(0, 255, 0, 0.4),
+    inset -1px 1px 5px rgba(0, 255, 0, 0.4);
 }
+
 .box-shadow.active {
-    box-shadow: 1px  1px 5px rgba(0, 255, 0, 0.4),
-               -1px -1px 5px rgba(0, 255, 0, 0.4),
-                1px -1px 5px rgba(0, 255, 0, 0.4),
-               -1px  1px 5px rgba(0, 255, 0, 0.4),
-               inset  1px  1px 5px rgba(0, 255, 0, 0.4),
-               inset -1px -1px 5px rgba(0, 255, 0, 0.4),
-               inset  1px -1px 5px rgba(0, 255, 0, 0.4),
-               inset -1px  1px 5px rgba(0, 255, 0, 0.4);
+    box-shadow: 1px 1px 5px rgba(0, 255, 0, 0.4),
+    -1px -1px 5px rgba(0, 255, 0, 0.4),
+    1px -1px 5px rgba(0, 255, 0, 0.4),
+    -1px 1px 5px rgba(0, 255, 0, 0.4),
+    inset 1px 1px 5px rgba(0, 255, 0, 0.4),
+    inset -1px -1px 5px rgba(0, 255, 0, 0.4),
+    inset 1px -1px 5px rgba(0, 255, 0, 0.4),
+    inset -1px 1px 5px rgba(0, 255, 0, 0.4);
 }
-.box-shadow.box-shadow-non-active:active { box-shadow: none; }
 
+.box-shadow.box-shadow-non-active:active {
+    box-shadow: none;
+}
 
- /* RADIO !!!  */
+.site-sound-switch {
+    position: absolute;
+    width: 59px;
+    height: 52px;
+    right: 20px;
+    top: 20px;
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_on_normal.png) no-repeat 100% 100%;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+}
+
+.site-sound-switch:hover {
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_on_over.png) no-repeat 100% 100%;
+}
+
+.site-sound-switch:active {
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_on_pressed.png) no-repeat 100% 100%;
+}
+
+.site-sound-switch.off {
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_off_normal.png) no-repeat 100% 100%;
+}
+
+.site-sound-switch.off:hover {
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_off_over.png) no-repeat 100% 100%;
+}
+
+.site-sound-switch.off:active {
+    background: transparent url(/static/static_site/img/site_sound_btn/sound_off_pressed.png) no-repeat 100% 100%;
+}
+
+/* RADIO !!!  */
 .radio-block {
     position: absolute;
     width: 228px;
@@ -449,6 +567,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     height: 62px;
     top: 14px;
     left: 12px;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .radio-screen-content.scan {
@@ -707,14 +826,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 9px;
 }
 
-
-
-
-
-
-
-
-
 @media screen and (min-width: 1367px) {
     body {
         background: transparent url(/static/static_site/img/09-06-16/1080_main_bg.jpg) no-repeat center center;
@@ -780,6 +891,20 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         background: transparent url(/static/static_site/img/09-06-16/1080_road+grid_002.png) no-repeat 100% 100%;
     }
 
+    .content-start-back.glitch {
+        width: 2013px;
+        height: 997px;
+        top: 418px;
+        left: -1309px;
+        background-color: transparent;
+    }
+
+    .content-start-back.glitch canvas {
+        position: relative;
+        width: 2013px;
+        height: 997px;
+    }
+
     .site-logo {
         border-radius: 50%;
         width: 269px;
@@ -790,13 +915,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         background-size: contain;
     }
 
-
-
     .btn-block {
         width: 300px;
     }
 
-    .btn { right: 181px; }
+    .btn {
+        right: 181px;
+    }
+
     /* Кнопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текущая страничка !!!!*/
     .btn-1 {
         width: 215px;
@@ -805,8 +931,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         /*right: 181px;*/
         background: transparent url(/static/static_site/img/09-06-16/1080_btn1_normal.png) no-repeat 100% 100%;
     }
-    .btn-1:hover {background: transparent url(/static/static_site/img/09-06-16/1080_btn1_over.png) no-repeat 100% 100%;}
-    .btn-1:active, .btn-1.active {background: transparent url(/static/static_site/img/09-06-16/1080_btn1_pressed.png) no-repeat 100% 100%;}
+
+    .btn-1:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn1_over.png) no-repeat 100% 100%;
+    }
+
+    .btn-1:active, .btn-1.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn1_pressed.png) no-repeat 100% 100%;
+    }
 
     .btn-1.active:before {
         content: ' ';
@@ -826,8 +958,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         /*right: 181px;*/
         background: transparent url(/static/static_site/img/09-06-16/1080_btn2_normal.png) no-repeat 100% 100%;
     }
-    .btn-2:hover {background: transparent url(/static/static_site/img/09-06-16/1080_btn2_over.png) no-repeat 100% 100%;}
-    .btn-2:active, .btn-2.active {background: transparent url(/static/static_site/img/09-06-16/1080_btn2_pressed.png) no-repeat 100% 100%;}
+
+    .btn-2:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn2_over.png) no-repeat 100% 100%;
+    }
+
+    .btn-2:active, .btn-2.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn2_pressed.png) no-repeat 100% 100%;
+    }
 
     .btn-2.active:before {
         content: ' ';
@@ -846,8 +984,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 198px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn3_normal.png) no-repeat 100% 100%;
     }
-    .btn-3:hover {background: transparent url(/static/static_site/img/09-06-16/1080_btn3_over.png) no-repeat 100% 100%;}
-    .btn-3:active, .btn-3.active {background: transparent url(/static/static_site/img/09-06-16/1080_btn3_pressed.png) no-repeat 100% 100%;}
+
+    .btn-3:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn3_over.png) no-repeat 100% 100%;
+    }
+
+    .btn-3:active, .btn-3.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn3_pressed.png) no-repeat 100% 100%;
+    }
 
     .btn-3.active:before {
         content: ' ';
@@ -866,8 +1010,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 271px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn4_normal.png) no-repeat 100% 100%;
     }
-    .btn-4:hover {background: transparent url(/static/static_site/img/09-06-16/1080_btn4_over.png) no-repeat 100% 100%;}
-    .btn-4:active, .btn-4.active {background: transparent url(/static/static_site/img/09-06-16/1080_btn4_pressed.png) no-repeat 100% 100%;}
+
+    .btn-4:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn4_over.png) no-repeat 100% 100%;
+    }
+
+    .btn-4:active, .btn-4.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn4_pressed.png) no-repeat 100% 100%;
+    }
 
     .btn-4.active:before {
         content: ' ';
@@ -886,8 +1036,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 342px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn5_normal.png) no-repeat 100% 100%;
     }
-    .btn-5:hover {background: transparent url(/static/static_site/img/09-06-16/1080_btn5_over.png) no-repeat 100% 100%;}
-    .btn-5:active, .btn-5.active {background: transparent url(/static/static_site/img/09-06-16/1080_btn5_pressed.png) no-repeat 100% 100%;}
+
+    .btn-5:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn5_over.png) no-repeat 100% 100%;
+    }
+
+    .btn-5:active, .btn-5.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn5_pressed.png) no-repeat 100% 100%;
+    }
 
     .btn-5.active:before {
         content: ' ';
@@ -906,8 +1062,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 412px;
         background: transparent url(/static/static_site/img/09-06-16/1080_btn6_normal.png) no-repeat 100% 100%;
     }
-    .btn-6:hover {background: transparent url(/static/static_site/img/09-06-16/1080_btn6_over.png) no-repeat 100% 100%;}
-    .btn-6:active, .btn-6.active {background: transparent url(/static/static_site/img/09-06-16/1080_btn6_pressed.png) no-repeat 100% 100%;}
+
+    .btn-6:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn6_over.png) no-repeat 100% 100%;
+    }
+
+    .btn-6:active, .btn-6.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_btn6_pressed.png) no-repeat 100% 100%;
+    }
 
     .btn-6.active:before {
         content: ' ';
@@ -919,7 +1081,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         background: transparent url(/static/static_site/img/09-06-16/1080_btn6_indicator.png) no-repeat 100% 100%;
         cursor: url('/static/img/cursors/main.png'), default;
     }
-
 
     /* RADIO !!!  */
     .radio-block {
@@ -944,13 +1105,29 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: 10px;
     }
 
-    .radio-screen-content.scan {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_scan.png) no-repeat 100% 100%;}
-    .radio-screen-content.junk {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_junk.png) no-repeat 100% 100%;}
-    .radio-screen-content.maddog {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_maddog.png) no-repeat 100% 100%;}
-    .radio-screen-content.rrn {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_rrn.png) no-repeat 100% 100%;}
-    .radio-screen-content.town {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_town.png) no-repeat 100% 100%;}
-    .radio-screen-content.vigilante {background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_vigilante.png) no-repeat 100% 100%;}
+    .radio-screen-content.scan {
+        background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_scan.png) no-repeat 100% 100%;
+    }
 
+    .radio-screen-content.junk {
+        background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_junk.png) no-repeat 100% 100%;
+    }
+
+    .radio-screen-content.maddog {
+        background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_maddog.png) no-repeat 100% 100%;
+    }
+
+    .radio-screen-content.rrn {
+        background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_rrn.png) no-repeat 100% 100%;
+    }
+
+    .radio-screen-content.town {
+        background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_town.png) no-repeat 100% 100%;
+    }
+
+    .radio-screen-content.vigilante {
+        background: transparent url(/static/static_site/img/09-06-16/1080_radio_text_vigilante.png) no-repeat 100% 100%;
+    }
 
     .radio-slider-block {
         position: absolute;
@@ -977,8 +1154,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 84px;
         background: transparent url(/static/static_site/img/09-06-16/1080_power_btn_normal.png) no-repeat 100% 100%;
     }
-    .radio-power-btn:hover {background: transparent url(/static/static_site/img/09-06-16/1080_power_btn_over.png) no-repeat 100% 100%;}
-    .radio-power-btn:active, .radio-power-btn.active {background: transparent url(/static/static_site/img/09-06-16/1080_power_btn_pressed.png) no-repeat 100% 100%;}
+
+    .radio-power-btn:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_power_btn_over.png) no-repeat 100% 100%;
+    }
+
+    .radio-power-btn:active, .radio-power-btn.active {
+        background: transparent url(/static/static_site/img/09-06-16/1080_power_btn_pressed.png) no-repeat 100% 100%;
+    }
 
     .radio-power-btn.active:before, .radio-power-btn:active:before {
         content: ' ';
@@ -991,7 +1174,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         cursor: url('/static/img/cursors/main.png'), default;
     }
 
-
     .radio-quality-btn {
         position: absolute;
         cursor: url('/static/img/cursors/hyper.png'), pointer;
@@ -1001,7 +1183,10 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 13px;
         background: transparent url(/static/static_site/img/09-06-16/1080_quality_btn_normal.png) no-repeat 100% 100%;
     }
-    .radio-quality-btn:hover {background: transparent url(/static/static_site/img/09-06-16/1080_quality_btn_over.png) no-repeat 100% 100%;}
+
+    .radio-quality-btn:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_quality_btn_over.png) no-repeat 100% 100%;
+    }
 
     .radio-quality-btn.high-quality {
         left: 40px;
@@ -1024,7 +1209,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         cursor: url('/static/img/cursors/main.png'), default;
     }
 
-
     .radio-quality-btn.super-quality.active:before {
         content: ' ';
         position: absolute;
@@ -1035,7 +1219,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         background: transparent url(/static/static_site/img/09-06-16/1080_quality_power_indicator.png) no-repeat 100% 100%;
         cursor: url('/static/img/cursors/main.png'), default;
     }
-
 
     .radio-slider-channel {
         position: absolute;
@@ -1081,7 +1264,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         background: transparent url(/static/static_site/img/09-06-16/1080_freq_slider_mark.png) no-repeat 100% 100%;
     }
 
-
     .radio-scale-channels-block {
         position: absolute;
         width: 100%;
@@ -1089,8 +1271,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         top: 1px;
         /*background-color: rgba(255, 0, 0, 0.49);*/
     }
-
-
 
     /* Volume */
     .radio-volume-controller-block {
@@ -1118,11 +1298,21 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         left: 0;
     }
 
-    .radio-volume-controller-item.item-0 {background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_001.png) no-repeat 100% 100%;}
-    .radio-volume-controller-item.item-1 {background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_002.png) no-repeat 100% 100%;}
-    .radio-volume-controller-item.item-0:hover {background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_over_001.png) no-repeat 100% 100%;}
-    .radio-volume-controller-item.item-1:hover {background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_over_002.png) no-repeat 100% 100%;}
+    .radio-volume-controller-item.item-0 {
+        background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_001.png) no-repeat 100% 100%;
+    }
 
+    .radio-volume-controller-item.item-1 {
+        background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_002.png) no-repeat 100% 100%;
+    }
+
+    .radio-volume-controller-item.item-0:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_over_001.png) no-repeat 100% 100%;
+    }
+
+    .radio-volume-controller-item.item-1:hover {
+        background: transparent url(/static/static_site/img/09-06-16/1080_volume_disc_over_002.png) no-repeat 100% 100%;
+    }
 
     .radio-volume-indicator-block {
         position: absolute;
@@ -1143,14 +1333,33 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         display: none;
     }
 
-    .radio-volume-indicator-item.active {display: block;}
+    .radio-volume-indicator-item.active {
+        display: block;
+    }
 
-    .radio-volume-indicator-item.volume-17 {top: 87px;}
-    .radio-volume-indicator-item.volume-34 {top: 71px;}
-    .radio-volume-indicator-item.volume-51 {top: 55px;}
-    .radio-volume-indicator-item.volume-68 {top: 40px;}
-    .radio-volume-indicator-item.volume-85 {top: 25px;}
-    .radio-volume-indicator-item.volume-99 {top: 9px;}
+    .radio-volume-indicator-item.volume-17 {
+        top: 87px;
+    }
+
+    .radio-volume-indicator-item.volume-34 {
+        top: 71px;
+    }
+
+    .radio-volume-indicator-item.volume-51 {
+        top: 55px;
+    }
+
+    .radio-volume-indicator-item.volume-68 {
+        top: 40px;
+    }
+
+    .radio-volume-indicator-item.volume-85 {
+        top: 25px;
+    }
+
+    .radio-volume-indicator-item.volume-99 {
+        top: 9px;
+    }
 
 }
 

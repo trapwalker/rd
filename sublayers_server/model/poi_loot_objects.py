@@ -9,7 +9,8 @@ from sublayers_server.model.vectors import Point
 
 
 class CreatePOILootEvent(Event):
-    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50):
+    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50,
+                 sub_class_car=None, car_direction=None):
         super(CreatePOILootEvent, self).__init__(server=server, time=time)
         self.poi_cls = poi_cls
         self.example = example
@@ -18,6 +19,8 @@ class CreatePOILootEvent(Event):
         self.life_time = life_time
         self.items = items
         self.connect_radius = connect_radius
+        self.sub_class_car = sub_class_car
+        self.car_direction = car_direction
 
     def on_perform(self):
         super(CreatePOILootEvent, self).on_perform()
@@ -33,8 +36,15 @@ class CreatePOILootEvent(Event):
                     break
 
         if not stash:
-            stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
-                                 inventory_size=self.inventory_size, position=self.position, life_time=self.life_time)
+            if self.poi_cls is POICorpse:
+                stash = POICorpse(server=self.server, time=self.time, example=self.example,
+                                  inventory_size=self.inventory_size, position=self.position,
+                                  life_time=self.life_time, sub_class_car=self.sub_class_car,
+                                  car_direction=self.car_direction)
+            else:
+                stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
+                                     inventory_size=self.inventory_size, position=self.position,
+                                     life_time=self.life_time)
 
         # заполнить инвентарь сундука
         for item in self.items:
@@ -103,3 +113,15 @@ class POILoot(POIContainer):
     def on_before_delete(self, event):
         self.inventory.del_change_call_back(method=self.change_inventory)
         super(POILoot, self).on_before_delete(event=event)
+
+
+class POICorpse(POIContainer):
+    def __init__(self, sub_class_car, car_direction, **kw):
+        super(POICorpse, self).__init__(**kw)
+        self.sub_class_car = sub_class_car
+        self.car_direction = car_direction
+
+    def as_dict(self, time):
+        d = super(POICorpse, self).as_dict(time=time)
+        d.update(sub_class_car=self.sub_class_car, car_direction=self.car_direction)
+        return d

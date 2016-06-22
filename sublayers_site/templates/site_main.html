@@ -90,7 +90,7 @@
                     <a class="btn btn-6" href="/forum" target="_blank"></a>
                     <div class="radio-block">
                         <div class="radio-screen">
-                            <div class="radio-screen-content"></div>
+                            <a class="radio-screen-content" target="_blank" href="http://radiotower.su"></a>
                         </div>
                         <div class="radio-control-block">
                             <div class="radio-quality-btn high-quality"></div>
@@ -123,7 +123,10 @@
                 <!--Машинка-фон при старте сайте-->
                 <div class="content-start-back content-start road-grid"></div>
                 <div class="content-start-back content-start road"></div>
-                <div class="content-start-back content-start car"></div>
+{#                <div class="content-start-back content-start car"></div>#}
+                <div class="content-start-back content-start glitch">
+                    <canvas id="glith_test"></canvas>
+                </div>
                 <a class="site-logo" href="/#"></a>
             </div>
             <!--Консоль на главной странице -->
@@ -136,10 +139,12 @@
             </div>
         </div>
     </div>
+    <div class="site-sound-switch"></div>
 </body>
 
 <script>
     var version = '{{ version }}';
+    var GlobalGeneralSiteGain = 1.0;
     $(document).ready(function () {
         var content_start_back_visible = true;
 
@@ -154,6 +159,7 @@
                 $('.content-start').animate({opacity: 0}, function () {
                     $('.content-start').first().css({display: 'none'});
                 });
+                glitchStop();
             }
 
             // Скрыть все окна
@@ -241,6 +247,24 @@
                 $('.btn').removeClass('active');
                 $('.content-start').css({display: 'block'});
                 $('.content-start').animate({opacity: 1.0});
+                glitchInit();
+            }
+        });
+
+        // Клик на отключение звуков сайта
+        $('.site-sound-switch').first().click(function(){
+            if (audioManager.general_gain == 0.0) {
+                // Отключено, нужно включить звук
+                audioManager.gain_all(GlobalGeneralSiteGain);
+                radioPlayer.set_volume(lastRadioVolume, true);
+                $(this).removeClass('off');
+            }
+            else {
+                GlobalGeneralSiteGain = audioManager.general_gain;
+                lastRadioVolume = radioPlayer.current_volume;
+                audioManager.gain_all(0.0);
+                radioPlayer.set_volume(0.0, true);
+                $(this).addClass('off');
             }
         });
 

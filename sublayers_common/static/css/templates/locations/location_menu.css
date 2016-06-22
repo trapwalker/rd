@@ -221,7 +221,7 @@
     margin: 0 auto;
     font: 11pt Nouveau_IBM;
     color: #29F200;
-    background-color: #0E4b00;
+    background-color: #030f00;
 }
 
 .location-menu-person-about-block {
@@ -231,6 +231,18 @@
     height: 100%;
     box-sizing: border-box;
     padding-left: 15px;
+}
+
+.location-menu-person-about-block textarea {
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    color: #30fc00;
+    font: 12pt Nouveau_IBM;
+    background-color: transparent;
+    height: 100%;
+    width: 100%;
+    resize: none;
 }
 
 

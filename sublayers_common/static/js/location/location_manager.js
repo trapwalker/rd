@@ -7,6 +7,8 @@ var LocationManager = (function () {
             menu_screen: null
         };
 
+        this.in_location_flag = false;
+
         // Менеджер посетителей города
         this.visitor_manager = new LocationVisitorsManager();
 
@@ -38,14 +40,22 @@ var LocationManager = (function () {
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
-    LocationManager.prototype.activateScreen = function (screenName) {
-        //console.log('LocationManager.prototype.activateScreen', screenName);
+    LocationManager.prototype.activateScreen = function (screenName, btn_id) {
+        //console.log('LocationManager.prototype.activateScreen', screenName, btn_id);
         if (this.screens.hasOwnProperty(screenName)) {
             this.active_screen_name = screenName;
             var location = locationManager.screens[screenName];
+            $('#btn_screen_location_pressed').css('display', 'none');
+            $('#btn_screen_chat_pressed').css('display', 'none');
+            $('#btn_screen_menu_pressed').css('display', 'none');
             if (location) {
+                if (btn_id)
+                    $('#' + btn_id).css('display', 'block');
                 locationManager.screens[screenName].activate();
             } else {
+                if (btn_id)
+                    $('#' + btn_id).css('display', 'block');
+
                 // Если вдруг что-то не так, то вернуть нас на главную страницу города
                 $('.building-back').css('display', 'none');
                 $('.townPageWrap').css('display', 'none');
@@ -114,12 +124,20 @@ var LocationManager = (function () {
         this.location_canvas_manager.init_canvas();
         this.location_canvas_manager.is_canvas_render = true;
 
+        this.activateScreen('location_screen', 'btn_screen_location_pressed');
+
+        this.in_location_flag = true;
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
     };
 
     LocationManager.prototype.onExit = function () {
         //console.log('LocationManager.prototype.onExit');
+
+         // Вызов OnExit для локаций, неписей и тд... Делается ДО удаления вёрстки
+        if (this.location_menu) this.location_menu.on_exit();
+
+        chat.showChatInMap();
 
         // Сброс панелей
         this.panel_left.clear();
@@ -155,10 +173,10 @@ var LocationManager = (function () {
             this.location_chat = null;
         }
 
-        chat.showChatInMap();
-
         // Почистить менеджер посетителей города
         this.visitor_manager.clear_visitors();
+
+        this.in_location_flag = false;
     };
 
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
@@ -411,17 +429,20 @@ var LocationPlace = (function () {
 
     LocationPlace.drag_handler = function (event, ui) {
         var original = ui.originalPosition;
-        // jQuery will simply use the same object we alter here
         ui.position = {
-            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc,
-            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc
+            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc - location_draggable_click.half_helper_width,
+            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc - location_draggable_click.half_helper_height
         };
     };
 
     LocationPlace.start_drag_handler = function (event, ui) {
         var pos = event.target.getBoundingClientRect();
-        location_draggable_click.x = pos.left + pos.width / 4.;
-        location_draggable_click.y = pos.top + pos.height / 4.;
+        location_draggable_click.x = pos.left; // + pos.width / 4.;
+        location_draggable_click.y = pos.top; // + pos.height / 4.;
+
+        var size_helper = ui.helper[0].getBoundingClientRect();
+        location_draggable_click.half_helper_width = size_helper.width / 2.;
+        location_draggable_click.half_helper_height = size_helper.height / 2.;
     };
 
     return LocationPlace;

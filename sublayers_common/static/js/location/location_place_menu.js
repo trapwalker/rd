@@ -11,6 +11,8 @@ var LocationPlaceMenu = (function (_super) {
         this.selected_car_inv_item = null;
         this.jq_car_inventory = this.jq_main_div.find('.location-inventory-block').first();
 
+        this.timer_auto_save_about_self = null;
+
         this.init_click();
         this.update();
     }
@@ -51,6 +53,36 @@ var LocationPlaceMenu = (function (_super) {
         });
         this.jq_main_div.find('.location-menu-person-bottom-menu-item').first().click();
 
+        location.timer_auto_save_about_self = null;
+        this.jq_main_div.find('textarea').first().on('change keyup paste', {location: this}, function(event) {
+            // Поставить таймер на 3 секунды, если он сработает, то сохранить значение
+            var location = event.data.location;
+            if (location.timer_auto_save_about_self) {
+                clearTimeout(location.timer_auto_save_about_self);
+                location.timer_auto_save_about_self = null;
+            }
+
+            location.timer_auto_save_about_self = setTimeout(function() {
+                location.timer_auto_save_about_self = null;
+                location.save_pers_about_self();
+            }, 3000);
+        })
+
+    };
+
+    LocationPlaceMenu.prototype.on_exit = function () {
+        //console.log('LocationPlaceMenu.prototype.on_exit');
+        if (this.timer_auto_save_about_self) {
+            clearTimeout(this.timer_auto_save_about_self);
+            this.timer_auto_save_about_self = null;
+        }
+        this.save_pers_about_self();
+    };
+
+    LocationPlaceMenu.prototype.save_pers_about_self = function() {
+        var new_text = this.jq_main_div.find('textarea').first().val();
+        if (user.example_agent.about_self != new_text)
+            clientManager.sendSetAboutSelf(new_text);
     };
 
     LocationPlaceMenu.prototype.select_page = function (page_id) {
@@ -121,7 +153,7 @@ var LocationPlaceMenu = (function (_super) {
         this.jq_main_div.find('.location-menu-person-about-line.lvl span').text(user.example_agent.rpg_info.current_level);
         this.jq_main_div.find('.location-menu-person-about-line.role-class span').text(user.example_agent.role_class);
 
-        this.jq_main_div.find('.location-menu-person-about-area').first().text(user.example_agent.about_self);
+        this.jq_main_div.find('.location-menu-person-about-area').first().find('textarea').first().text(user.example_agent.about_self);
         this.jq_main_div.find('.free-perks').first().text(LocationTrainerNPC._getFreePerkPointsReal());
         this.jq_main_div.find('.free-skills').first().text(LocationTrainerNPC._getFreeSkillPointsReal());
 
