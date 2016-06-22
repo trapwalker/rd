@@ -398,8 +398,8 @@ function glitchInit() {
         clear();
         context.drawImage(img, 0, 0, w, h, 0, 0, w, h);
         var i = 0;
-        var one_frame = 200;
-        for (i = 1; i < randInt(4, 7); i++) {
+        var one_frame = 130;
+        for (i = 1; i < randInt(6, 9); i++) {
             glitchTimeouts.push(setTimeout(glitchImg, randInt2(i * one_frame, 50)));
         }
         glitchTimeouts.push(setTimeout(draw_pure_image, randInt2(i * one_frame, 50)));
