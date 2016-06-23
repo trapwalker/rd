@@ -20,6 +20,7 @@ var GlitchImageEffect = (function(){
 
         this.jq_road_grid = $('.content-start-back.content-start.road-grid').first();
         this.jq_road = $('.content-start-back.content-start.road').first();
+        this.jq_skeletons = $('.car-skeleton-path'); // Массив элементов каркаса авто
 
 
         // todo: решить проблему с ресайзом
@@ -31,7 +32,6 @@ var GlitchImageEffect = (function(){
 
         timeManager.addTimerEvent(this, 'redraw');
         this.draw_pure_image();
-
     }
 
     GlitchImageEffect.prototype.redraw = function(time) {
@@ -78,6 +78,7 @@ var GlitchImageEffect = (function(){
             this.current_opacity = 1.0;
             this.jq_road_grid.css('opacity', this.current_opacity);
             this.jq_road.css('opacity', this.current_opacity);
+            this.jq_skeletons.css('opacity', 0.0);
         }
     };
 
@@ -144,6 +145,16 @@ var GlitchImageEffect = (function(){
                 this.jq_road_grid.css('opacity', this.current_opacity);
             if (Math.random() > 0.5)
                 this.jq_road.css('opacity', this.current_opacity);
+        }
+
+        if (opacity && Math.random() > 0.6) {
+            this.current_opacity = opacity;
+            if (Math.random() > 0.8)
+                $(this.jq_skeletons[0]).css('opacity', 1.0);
+            if (Math.random() > 0.8)
+                $(this.jq_skeletons[1]).css('opacity', 1.0);
+            if (Math.random() > 0.8)
+                $(this.jq_skeletons[2]).css('opacity', 1.0);
         }
 
     };

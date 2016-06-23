@@ -96,23 +96,39 @@ function main() {
     var img_start_page_1080 = new Image();
     img_start_page_1080.src = '/static/static_site/img/09-06-16/1080_car.png';
     SetImageOnLoad(img_start_page_1080, function () {
-        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 3000, 1080);
+        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 6000, 1080);
         if (!hash_url.length) {
-            glitchEffectStartPage1080.is_active = true;
+            glitchEffectStartPage1080.start();
         }
     });
 
     var img_start_page_768 = new Image();
     img_start_page_768.src = '/static/static_site/img/1366_june/768_car.png';
     SetImageOnLoad(img_start_page_768, function () {
-        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 3000, 768);
+        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 6000, 768);
         if (!hash_url.length) {
-            glitchEffectStartPage768.is_active = true;
+            glitchEffectStartPage768.start();
         }
     });
 
 
 
+    // Вешаем эвенты для отображения каркаса машинки
+    $('.car-skeleton-path')
+        .mouseover(function() {
+            $(this).css('opacity', 1.0);
+            $('.content-start-back.glitch').css('opacity', 0.3);
+
+            if(glitchEffectStartPage1080)glitchEffectStartPage1080.stop();
+            if(glitchEffectStartPage768)glitchEffectStartPage768.stop();
+        })
+        .mouseout(function() {
+            $(this).css('opacity', 0.0);
+            $('.content-start-back.glitch').css('opacity', 1);
+
+            if(glitchEffectStartPage1080)glitchEffectStartPage1080.start();
+            if(glitchEffectStartPage768)glitchEffectStartPage768.start();
+        })
 }
 
 function init_site_sound() {
