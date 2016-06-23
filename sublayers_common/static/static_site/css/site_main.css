@@ -133,24 +133,24 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .content-start-back.road {
     width: 1793px;
     height: 1010px;
-    top: 171px;
-    left: -1420px;
+    top: 148px;
+    left: -1150px;
     background: transparent url(/static/static_site/img/1366_june/768_road.png) no-repeat 100% 100%;
 }
 
 .content-start-back.road-grid {
-    width: 1246px;
-    height: 897px;
-    top: -149px;
-    left: -483px;
+    width: 1221px;
+    height: 938px;
+    top: -128px;
+    left: -386px;
     background: transparent url(/static/static_site/img/1366_june/768_road+grid.png) no-repeat 100% 100%;
 }
 
 .content-start-back.glitch {
     width: 1631px;
     height: 791px;
-    top: 418px;
-    left: -1309px;
+    top: 412px;
+    left: -1048px;
 }
 
 .content-start-back.glitch canvas {
@@ -290,10 +290,10 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .site-logo {
     position: absolute;
-    width: 162px;
-    height: 150px;
-    top: 70px;
-    left: -137px;
+    width: 269px;
+    height: 250px;
+    top: 26px;
+    left: -200px;
     background: transparent url(/static/static_site/img/1366_june/768_logo.png) no-repeat 100% 100%;
     background-size: contain;
     pointer-events: auto;
