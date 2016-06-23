@@ -149,15 +149,17 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .content-start-back.glitch {
     width: 1631px;
     height: 791px;
-    top: 412px;
-    left: -1048px;
+    top: 332px;
+    left: -1044px;
+    background-color: transparent;
 }
 
 .content-start-back.glitch canvas {
     position: relative;
-    width: 100%;
-    height: 100%;
 }
+
+#glitch_test_768 {display: block;}
+#glitch_test_1080 {display: none;}
 
 .content-start-console-wrap {
     position: relative;
@@ -896,14 +898,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         height: 997px;
         top: 418px;
         left: -1309px;
-        background-color: transparent;
     }
 
     .content-start-back.glitch canvas {
         position: relative;
-        width: 2013px;
-        height: 997px;
     }
+
+    #glitch_test_768 {display: none;}
+    #glitch_test_1080 {display: block;}
 
     .site-logo {
         border-radius: 50%;

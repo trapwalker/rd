@@ -126,7 +126,8 @@
                 <div class="content-start-back content-start road"></div>
 {#                <div class="content-start-back content-start car"></div>#}
                 <div class="content-start-back content-start glitch">
-                    <canvas id="glith_test"></canvas>
+                    <canvas id="glitch_test_768"></canvas>
+                    <canvas id="glitch_test_1080"></canvas>
                 </div>
                 <a class="site-logo" href="/#"></a>
             </div>
@@ -160,8 +161,10 @@
                 $('.content-start').animate({opacity: 0}, function () {
                     $('.content-start').first().css({display: 'none'});
                 });
-                if (glitchEffectStartPage)
-                    glitchEffectStartPage.stop();
+                if (glitchEffectStartPage1080)
+                    glitchEffectStartPage1080.stop();
+                if (glitchEffectStartPage768)
+                    glitchEffectStartPage768.stop();
             }
 
             // Скрыть все окна
@@ -249,8 +252,10 @@
                 $('.btn').removeClass('active');
                 $('.content-start').css({display: 'block'});
                 $('.content-start').animate({opacity: 1.0});
-                 if (glitchEffectStartPage)
-                    glitchEffectStartPage.start();
+                if (glitchEffectStartPage768)
+                    glitchEffectStartPage768.start();
+                if (glitchEffectStartPage1080)
+                    glitchEffectStartPage1080.start();
             }
         });
 

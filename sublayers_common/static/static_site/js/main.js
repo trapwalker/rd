@@ -12,12 +12,8 @@ var registration_status = 'not_register';
 
 var currentSiteSize = 1080;
 
-//var glitchEffectStartPage = {
-//    1080: null,
-//    768: null
-//};
-
-var glitchEffectStartPage = null;
+var glitchEffectStartPage768 = null;
+var glitchEffectStartPage1080 = null;
 
 
 
@@ -72,6 +68,8 @@ function main() {
         if (new_size != currentSiteSize) {
             currentSiteSize = new_size;
             radioPlayer.change_site_size(old_size, new_size);
+            //if (glitchEffectStartPage)
+            //    glitchEffectStartPage.change_site_size(old_size, new_size);
 
         }
 
@@ -95,13 +93,21 @@ function main() {
     initRadioPlayer();
 
 
-    var img_start_page = new Image();
-    img_start_page.src = '/static/static_site/img/09-06-16/1080_car.png';
-    SetImageOnLoad(img_start_page, function () {
-        glitchEffectStartPage = new GlitchImageEffect('glith_test', img_start_page, 3000);
-
+    var img_start_page_1080 = new Image();
+    img_start_page_1080.src = '/static/static_site/img/09-06-16/1080_car.png';
+    SetImageOnLoad(img_start_page_1080, function () {
+        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 3000, 1080);
         if (!hash_url.length) {
-            glitchEffectStartPage.is_active = true;
+            glitchEffectStartPage1080.is_active = true;
+        }
+    });
+
+    var img_start_page_768 = new Image();
+    img_start_page_768.src = '/static/static_site/img/1366_june/768_car.png';
+    SetImageOnLoad(img_start_page_768, function () {
+        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 3000, 768);
+        if (!hash_url.length) {
+            glitchEffectStartPage768.is_active = true;
         }
     });
 
