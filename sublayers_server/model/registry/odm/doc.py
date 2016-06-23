@@ -105,7 +105,7 @@ class AbstractDocument(Document):
     def __setattr__(self, name, value):
         if name in self._fields:
             field = self._fields[name]
-            self._values[name] = field.set_value(value)
+            self._values[name] = field.set_value(value) if hasattr(field, 'set_value') else value
         else:
             super(AbstractDocument, self).__setattr__(name, value)
 
