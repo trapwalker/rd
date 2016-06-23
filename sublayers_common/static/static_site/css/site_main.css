@@ -133,31 +133,33 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .content-start-back.road {
     width: 1793px;
     height: 1010px;
-    top: 171px;
-    left: -1420px;
+    top: 148px;
+    left: -1150px;
     background: transparent url(/static/static_site/img/1366_june/768_road.png) no-repeat 100% 100%;
 }
 
 .content-start-back.road-grid {
-    width: 1246px;
-    height: 897px;
-    top: -149px;
-    left: -483px;
+    width: 1221px;
+    height: 938px;
+    top: -128px;
+    left: -386px;
     background: transparent url(/static/static_site/img/1366_june/768_road+grid.png) no-repeat 100% 100%;
 }
 
 .content-start-back.glitch {
     width: 1631px;
     height: 791px;
-    top: 418px;
-    left: -1309px;
+    top: 332px;
+    left: -1044px;
+    background-color: transparent;
 }
 
 .content-start-back.glitch canvas {
     position: relative;
-    width: 100%;
-    height: 100%;
 }
+
+#glitch_test_768 {display: block;}
+#glitch_test_1080 {display: none;}
 
 .content-start-console-wrap {
     position: relative;
@@ -290,10 +292,10 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 
 .site-logo {
     position: absolute;
-    width: 162px;
-    height: 150px;
-    top: 70px;
-    left: -137px;
+    width: 269px;
+    height: 250px;
+    top: 26px;
+    left: -200px;
     background: transparent url(/static/static_site/img/1366_june/768_logo.png) no-repeat 100% 100%;
     background-size: contain;
     pointer-events: auto;
@@ -302,6 +304,41 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 .site-logo:hover {
     cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
+
+/* Вид машинки при наведении */
+
+.car-skeleton-path {
+    position: absolute;
+    pointer-events: auto;
+    box-sizing: border-box;
+    opacity: 0.0;
+    z-index: 10;
+}
+
+.car-skeleton-path.drivetrain {
+    top: 500px;
+    left: 130px;
+    width: 344px;
+    height: 166px;
+    background: transparent url('/static/static_site/img/1366_june/768_car_skeleton_drivetrain.png') 100% 100% no-repeat;
+}
+
+.car-skeleton-path.engine {
+    top: 450px;
+    left: 331px;
+    width: 110px;
+    height: 104px;
+    background: transparent url('/static/static_site/img/1366_june/768_car_skeleton_engine.png') 100% 100% no-repeat;
+}
+
+.car-skeleton-path.gun {
+    left: 10px;
+    top: 342px;
+    width: 334px;
+    height: 203px;
+    background: transparent url('/static/static_site/img/1366_june/768_car_skeleton_gun.png') 100% 100% no-repeat;
+}
+
 
 /* Кнопки  ---- класс .active ---- когда кнопка вжата ---- когда выбрана именно текущая страничка !!!!*/
 .btn {
@@ -896,14 +933,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         height: 997px;
         top: 418px;
         left: -1309px;
-        background-color: transparent;
     }
 
     .content-start-back.glitch canvas {
         position: relative;
-        width: 2013px;
-        height: 997px;
     }
+
+    #glitch_test_768 {display: none;}
+    #glitch_test_1080 {display: block;}
 
     .site-logo {
         border-radius: 50%;
@@ -914,6 +951,33 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         background: transparent url(/static/static_site/img/09-06-16/1080_logo.png) no-repeat 100% 100%;
         background-size: contain;
     }
+
+
+    .car-skeleton-path.drivetrain {
+        top: 620px;
+        left: 120px;
+        width: 440px;
+        height: 211px;
+        background: transparent url('/static/static_site/img/09-06-16/1080_car_skeleton_drivetrain.png') 100% 100% no-repeat;
+    }
+
+    .car-skeleton-path.engine {
+        top: 555px;
+        left: 369px;
+        width: 140px;
+        height: 133px;
+        background: transparent url('/static/static_site/img/09-06-16/1080_car_skeleton_engine.png') 100% 100% no-repeat;
+    }
+
+    .car-skeleton-path.gun {
+        left: -27px;
+        top: 430px;
+        width: 436px;
+        height: 259px;
+        background: transparent url('/static/static_site/img/09-06-16/1080_car_skeleton_gun.png') 100% 100% no-repeat;
+    }
+
+
 
     .btn-block {
         width: 300px;
