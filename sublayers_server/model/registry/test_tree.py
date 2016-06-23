@@ -33,20 +33,20 @@ class B(A):
 @tornado.gen.coroutine
 def test_store():
     log.debug('### test tree')
-    #print((yield A.objects.delete()))
+    print((yield A.objects.delete()))
 
-    #a = A(name='a', x=3)
-    #yield a.save()
-    #b = B(name='b', y=4, parent=a.uri, owner=a, p=a._id)
-    #yield b.load_references()
-    #yield b.save()
-    #Node.objects_cache.clear()
+    a = A(name='a', x=3)
+    yield a.save()
+    b = B(name='b', y=4, parent=a.uri, owner=a, p=a._id)
+    yield b.load_references()
+    yield b.save()
+    Node.objects_cache.clear()
 
-    #aa = yield Node.objects.get(
-    #    a._id
-    #    #id='reg://registry/a',
-    #)
-    #log.debug('aa[%s]: %s', id(aa), aa)
+    aa = yield Node.objects.get(
+        a._id
+        #id='reg://registry/a',
+    )
+    log.debug('aa[%s]: %s', id(aa), aa)
 
     bb = yield Node.objects.get(
         'reg://registry/a/b',

@@ -23,9 +23,22 @@ class AbstractDocument(Document):
             if isinstance(value, Document):
                 self.find_references(document=value, results=results)
             elif value is not None:
+                def getter_with_instantiation(*av, **kw):
+                    callback = kw.pop('callback')
+                    def wrapper(proto):
+                        if proto:
+                            from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
+                            if isinstance(proto, Node):
+                                callback(proto.instantiate())  # todo: проверить можно ли делать такой вызов
+                        else:
+                            callback(None)
+
+                    load_function(callback=wrapper, *av, **kw)
+
+                # todo: instantiate
                 load_function = self._get_load_function(document, field_name, field.embedded_type)
                 results.append([
-                    load_function,
+                    getter_with_instantiation, #load_function,
                     value,
                     document._values,
                     field_name,
