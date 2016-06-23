@@ -51,6 +51,7 @@
     <script src="{{ static_url('static_site/js/canvas/canvas_png_animation.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/indicator_blink.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/text_blur_blink.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/glitch.js') }}"></script>
 
 </head>
 <body>
@@ -159,7 +160,8 @@
                 $('.content-start').animate({opacity: 0}, function () {
                     $('.content-start').first().css({display: 'none'});
                 });
-                glitchStop();
+                if (glitchEffectStartPage)
+                    glitchEffectStartPage.stop();
             }
 
             // Скрыть все окна
@@ -247,7 +249,8 @@
                 $('.btn').removeClass('active');
                 $('.content-start').css({display: 'block'});
                 $('.content-start').animate({opacity: 1.0});
-                glitchInit();
+                 if (glitchEffectStartPage)
+                    glitchEffectStartPage.start();
             }
         });
 

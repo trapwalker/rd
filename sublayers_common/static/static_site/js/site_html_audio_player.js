@@ -1,4 +1,3 @@
-var currentSiteSize = 1080;
 var lastRadioVolume = 1.0;
 
 var constHtmlSize = {
