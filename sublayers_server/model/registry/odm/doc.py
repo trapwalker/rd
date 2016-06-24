@@ -9,7 +9,7 @@ from sublayers_server.model.registry.odm.fields import StringField
 
 from motorengine import Document
 from tornado.concurrent import return_future
-import collections
+from bson import ObjectId
 
 
 class AbstractDocument(Document):
@@ -22,7 +22,7 @@ class AbstractDocument(Document):
             value = document._values.get(field_name, None)
             if isinstance(value, Document):
                 self.find_references(document=value, results=results)
-            elif value is not None:
+            elif isinstance(value, basestring) or isinstance(value, ObjectId):
                 def getter_with_instantiation(*av, **kw):
                     callback = kw.pop('callback')
                     def wrapper(proto):

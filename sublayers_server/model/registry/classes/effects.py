@@ -4,19 +4,18 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, TextAttribute
-
+from sublayers_server.model.registry.odm.fields import IntField, BooleanField, StringField
 from sublayers_server.model.events import Event
 
 
 class Effect(Root):
-    param_name  = TextAttribute(caption=u'Параметр')
-    m_name      = TextAttribute(caption=u'Модификатор')
-    r_name      = TextAttribute(caption=u'Резист')
-    upd_method  = TextAttribute(caption=u'Callback', default=None)
-    sign        = TextAttribute(caption=u'Знак', default=-1)
-    is_stack    = TextAttribute(caption=u'Стекается?', default=False)
-    absolute    = TextAttribute(caption=u'Абсолютное значение', default=False)
+    param_name  = StringField(caption=u'Параметр')
+    m_name      = StringField(caption=u'Модификатор')
+    r_name      = StringField(caption=u'Резист')
+    upd_method  = StringField(caption=u'Callback', default=None)
+    sign        = IntField(caption=u'Знак', default=-1)
+    is_stack    = BooleanField(caption=u'Стекается?', default=False)
+    absolute    = BooleanField(caption=u'Абсолютное значение', default=False)
 
     def __init__(self, *av, **kw):
         super(Effect, self).__init__(*av, **kw)

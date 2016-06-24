@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField
+    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField,
 )
 
 
@@ -20,8 +20,8 @@ class Agent(Root):
         caption=u"Активный автомобиль",
     )  # todo: test to prefix path like: /mobile/cars/*
     car_list = ListField(
-        base_field='sublayers_server.model.registry.classes.mobiles.Car',
-        default=[], caption=u"Список всех машин, кроме активной",
+        base_field=EmbeddedDocumentField(embedded_document_type='sublayers_server.model.registry.classes.mobiles.Car'),
+        default=list, caption=u"Список всех машин, кроме активной",
     )
 
     position = PositionField(caption=u"Последние координаты агента")
@@ -35,7 +35,10 @@ class Agent(Root):
     # todo: chats list?
 
     # Механизм перков
-    perks = InventoryPerksAttribute(caption=u'Список прокачанных перков')
+    perks = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.perks.Perk'),
+        caption=u'Список прокачанных перков',
+    )
 
     # Механизм скилов
     exp_table = UniReferenceField(default='reg://registry/rpg_settings/exptable', caption=u"Таблица опыта")
