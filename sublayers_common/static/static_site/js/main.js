@@ -16,7 +16,6 @@ var glitchEffectStartPage768 = null;
 var glitchEffectStartPage1080 = null;
 
 
-
 function SetImageOnLoad(img, onLoadHandler) {
     if (img.complete) {
         onLoadHandler(img);
@@ -30,6 +29,9 @@ function SetImageOnLoad(img, onLoadHandler) {
 
 // Инициализация всего и вся
 function main() {
+    // Начальная установка размера
+    currentSiteSize = $('.content-block').width() > 800 ? '1080' : '768';
+
     canvasManager = new CanvasManager();
     canvasNoise = new CanvasNoise();
     canvasDisplayLine = new CanvasDisplayLine();
@@ -37,6 +39,8 @@ function main() {
     canvasBlackOut = new CanvasBlackOut();
     //indicatorBlink = new IndicatorBlink();
     //textBlurBlink = new TextBlurBlink();
+
+    init_preload_images();
 
     // Получить стартовые ролевые классы и аватарки
     GetRPGInfo();
@@ -50,17 +54,147 @@ function main() {
 
 
     SetImageOnLoad(plate_img, function (img) {
-            console.info('Event!!! haha!!! Event on load!!!!');
             eCanvasChipAnimation = new ECanvasChipAnimation(img);
         }
     );
+
+    var content_start_back_visible = true;
+
+    // Чтобы кнопки залипали!
+    $('.btn-page').click(function () {
+        $('.btn').removeClass('active');
+        $(this).addClass('active');
+
+        // скрыть сетку, машинку и тд
+        if (content_start_back_visible) {
+            content_start_back_visible = false;
+            $('.content-start').animate({opacity: 0}, function () {
+                $('.content-start').css({display: 'none'});
+                $('.car-skeleton-path').css({display: 'none'});
+            });
+            if (glitchEffectStartPage1080)
+                glitchEffectStartPage1080.stop();
+            if (glitchEffectStartPage768)
+                glitchEffectStartPage768.stop();
+        }
+
+        // Скрыть все окна
+        $('.switch-page').css({display: 'none'});
+
+        // Получить id-шник страницы, которую нужно отобразить
+        var data;
+        if (this.id == 'RDbtn_start') {
+            data = GetIDForStartRegistrationPage();
+        }
+        else {
+            data = $(this).data('window_id');
+        }
+
+        // Показать окно
+        $('#' + data).css({display: 'block'});
+
+        // Отключить мерцание и линию на "Об игре"
+        if (data == 'RDSiteGameInfo') {
+            canvasDisplayLine.pause();
+            canvasDisplayRippling.pause();
+        }
+        else {
+            canvasDisplayLine.play();
+            canvasDisplayRippling.play();
+        }
+
+        if (data == 'RDSiteWReg3') {
+            // Включить рисование анимации платы завершения регистрации на канвасе
+            var start_animation_func = function () {
+                if (eCanvasChipAnimation) eCanvasChipAnimation.start();
+                else setTimeout(start_animation_func, 300)
+            };
+            start_animation_func();
+        }
+        else {
+            if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
+        }
+
+        // Работа с консолями
+        textConsoleManager.start(data);
+
+        // Мерцание шума
+        if (canvasNoise) canvasNoise.flashNoise();
+
+        // Проигрывание звуков
+        audioManager.play('click_' + Math.floor(Math.random() * 3.99));
+        // audioManager.play('dev_gl_' + Math.floor(Math.random() * 1.99), 0.2 * Math.random(), 0.4 * Math.random());
+
+        // Изменение хеша в адресной строке (хеш возьмётся из data-url_hash самой кнопки
+        var url_hash = $(this).attr('id');
+        if (url_hash && url_hash.length) {
+            window.location.hash = url_hash.split('_')[1];
+        }
+    });
+
+
+    // Активация скролов
+    var scroll_interval = null;
+    var d_scroll = 0;
+    var scroll_block = null;
+
+    function makeScroll() {
+        var scroll_pos = scroll_block.scrollTop();
+        scroll_block.scrollTop(scroll_pos + d_scroll);
+    }
+
+    $('.scroll-btn').mousedown(function (event) {
+        var jq_this = $(this);
+        scroll_block = $('#' + jq_this.data('block_id'));
+        if (jq_this.hasClass('up')) d_scroll = -10;
+        if (jq_this.hasClass('down')) d_scroll = 10;
+        scroll_interval = setInterval(makeScroll, 50);
+    });
+    $('.scroll-btn').mouseup(function (event) {
+        d_scroll = 0;
+        clearInterval(scroll_interval);
+    });
+
+
+    // Вешаем клик на логотип
+    $('.site-logo').first().click(function () {
+        if (!content_start_back_visible) {
+            content_start_back_visible = true;
+            $('.switch-page').css({display: 'none'});
+            $('.btn').removeClass('active');
+            $('.car-skeleton-path').css({display: 'block'});
+            $('.content-start').css({display: 'block'});
+            $('.content-start').animate({opacity: 1.0});
+            if (glitchEffectStartPage768)
+                glitchEffectStartPage768.start();
+            if (glitchEffectStartPage1080)
+                glitchEffectStartPage1080.start();
+        }
+    });
+
+    // Клик на отключение звуков сайта
+    $('.site-sound-switch').first().click(function () {
+        if (audioManager.general_gain == 0.0) {
+            // Отключено, нужно включить звук
+            audioManager.gain_all(GlobalGeneralSiteGain);
+            radioPlayer.set_volume(lastRadioVolume, true);
+            $(this).removeClass('off');
+        }
+        else {
+            GlobalGeneralSiteGain = audioManager.general_gain;
+            lastRadioVolume = radioPlayer.current_volume;
+            audioManager.gain_all(0.0);
+            radioPlayer.set_volume(0.0, true);
+            $(this).addClass('off');
+        }
+    });
 
 
     initConsoles();
 
     init_site_sound();
 
-    window.onresize = function() {
+    window.onresize = function () {
         canvasManager.resize_window();
 
         var new_size = $('.content-block').width() > 800 ? '1080' : '768';
@@ -112,23 +246,188 @@ function main() {
     });
 
 
-
     // Вешаем эвенты для отображения каркаса машинки
+    var skeleton_logic = {
+        glitch_opacity: 1.0,
+        glitch_anim: false
+    };
+
     $('.car-skeleton-path')
-        .mouseover(function() {
-            $(this).css('opacity', 1.0);
-            $('.content-start-back.glitch').css('opacity', 0.3);
+        .mouseover(function () {
+            //console.log('mouseover');
+            var name = $(this).data('name');
+            //$(this).css('opacity', 1.0);
+            //$('.content-start-back.glitch').css('opacity', 0.3);
 
-            if(glitchEffectStartPage1080)glitchEffectStartPage1080.stop();
-            if(glitchEffectStartPage768)glitchEffectStartPage768.stop();
-        })
-        .mouseout(function() {
-            $(this).css('opacity', 0.0);
-            $('.content-start-back.glitch').css('opacity', 1);
+            if (skeleton_logic[name]) skeleton_logic[name].finish();
+            skeleton_logic[name] = $(this).animate({opacity: 1.0}, 500, function () {});
 
-            if(glitchEffectStartPage1080)glitchEffectStartPage1080.start();
-            if(glitchEffectStartPage768)glitchEffectStartPage768.start();
+            if (skeleton_logic.glitch_anim) skeleton_logic.glitch_anim.finish();
+            skeleton_logic.glitch_anim = $('.content-start-back.glitch').animate({opacity: 0.3}, 500, function () {});
+            skeleton_logic.glitch_opacity = 0.3;
+
+
+            if (glitchEffectStartPage1080)glitchEffectStartPage1080.stop();
+            if (glitchEffectStartPage768)glitchEffectStartPage768.stop();
         })
+        .mouseout(function () {
+            //console.log('mouseout');
+            //$(this).css('opacity', 0.0);
+            //$('.content-start-back.glitch').css('opacity', 1);
+            $(this).animate({opacity: 0.0}, 500, function () {});
+
+            skeleton_logic.glitch_opacity = 1.0;
+            if (skeleton_logic.glitch_anim) skeleton_logic.glitch_anim.finish();
+            setTimeout(function() {
+                if (skeleton_logic.glitch_opacity == 1.0) // Значит мы снова зашли на какую-то систему
+                    $('.content-start-back.glitch').animate({opacity: 1.0}, 500, function () {});
+            }, 10);
+
+
+            if (glitchEffectStartPage1080)glitchEffectStartPage1080.start();
+            if (glitchEffectStartPage768)glitchEffectStartPage768.start();
+        })
+}
+
+function init_preload_images() {
+    preloaderImage.add('/static/img/cursors/main.png');
+    preloaderImage.add('/static/img/cursors/hyper.png');
+
+    if (currentSiteSize == 1080) {
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_main_bg.jpg');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_car.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_road.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_road+grid_002.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_logo.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_car_skeleton_drivetrain.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_car_skeleton_engine.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_car_skeleton_gun.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_scan.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_junk.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_maddog.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_rrn.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_town.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_vigilante.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_power_btn_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_power_btn_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_power_btn_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_power_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_btn_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_btn_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_power_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_power_indicator.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_normal.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_over.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_pressed.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_mark.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_001.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_002.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_001.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_002.png');
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_indicator_mark.png');
+    }
+
+    if (currentSiteSize == '768') {
+        preloaderImage.add('/static/static_site/img/1366_june/768_main_bg.jpg');
+        preloaderImage.add('/static/static_site/img/1366_june/768_microwave_body_003.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_car.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_road.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_road+grid.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_up.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_up_over.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_down.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_down_over.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_left.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_left_over.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_right.png');
+        preloaderImage.add('/static/static_site/img/btn_slide_right_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_logo.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_drivetrain.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_engine.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_gun.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366/768_fake_radiobuttons.png');
+        preloaderImage.add('/static/static_site/img/1366/768_light_indicator.png');
+        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_normal.png');
+        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_over.png');
+        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_pressed.png');
+        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_normal.png');
+        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_over.png');
+        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_scan.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_junk.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_maddog.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_rrn.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_town.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_vigilante.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_power_btn_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_power_btn_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_power_btn_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_quality_power_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_quality_btn_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_quality_btn_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_quality_power_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_quality_power_indicator.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_normal.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_over.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_pressed.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_mark.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_001.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_002.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_over_001.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_over_002.png');
+        preloaderImage.add('/static/static_site/img/1366_june/768_volume_indicator_mark.png');
+    }
+
+
+
 }
 
 function init_site_sound() {
@@ -173,7 +472,7 @@ function GetQuickGameRecords() {
             $('#RDSiteQuickGameRatingsTable').append(data);
 
         },
-        error: function() {
+        error: function () {
             $('#RDSiteQuickGameRatingsTable').empty();
             $('#RDSiteQuickGameRatingsTable').append('<p style="margin-left: 20px">@admin>: Connection Error: 404 </br> Ratings not load.</p>');
         }
@@ -193,14 +492,14 @@ function GetRatingInfo(rating_name) {
                 $('.window-ratings-header-path').first().click();
             }
         },
-        error: function() {
+        error: function () {
             jq_elem.empty();
             jq_elem.append('<p style="margin-left: 20px">@admin>: Connection Error: 404 </br> Ratings not load.</p>');
         }
     });
 }
 
-function GetIDForStartRegistrationPage(){
+function GetIDForStartRegistrationPage() {
     // Функция-контроллер, которая возвращает ID для клика на кнопку Начать Игру в зависимости от Статуса регистрации пользователя
     var map = {
         'not_register': 'RDSiteWReg', // Показывать нулевое окно регистрации или авторизации
@@ -301,9 +600,9 @@ function GetRPGInfo() {
             // Установка аватаров:
             var avatar_container = $('.reg1-path-avatar-list').first();
             avatar_container.empty();
-            reg1_avatar_count =  data.avatar_list.length;
+            reg1_avatar_count = data.avatar_list.length;
             for (var i = 0; i < data.avatar_list.length; i++) {
-                var d = $('<div id="reg1_avatar_' + i +'" class="reg1-path-avatar-item"></div>');
+                var d = $('<div id="reg1_avatar_' + i + '" class="reg1-path-avatar-item"></div>');
                 avatar_container.append(d);
                 d.css('background-image', 'url(' + data.avatar_list[i] + ')');
             }
@@ -311,10 +610,10 @@ function GetRPGInfo() {
             // Установка классов
             var role_class_container = $('.reg1-path-class-list').first();
             role_class_container.empty();
-            reg1_class_count =  data.class_list.length;
+            reg1_class_count = data.class_list.length;
             role_class_list_info = data.class_list;
             for (var i = 0; i < data.class_list.length; i++) {
-                var d = $('<div id="reg1_class_' + i +'" class="reg1-path-class-item"></div>');
+                var d = $('<div id="reg1_class_' + i + '" class="reg1-path-class-item"></div>');
                 role_class_container.append(d);
                 d.css('background-image', 'url(' + role_class_list_info[i].icon + ')');
             }

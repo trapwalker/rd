@@ -385,12 +385,46 @@ var ConsoleWPI = (function (_super) {
     return ConsoleWPI;
 })(TextConsole);
 
+
+var ConsolePreloader = (function (_super) {
+    __extends(ConsolePreloader, _super);
+
+    function ConsolePreloader() {
+        _super.call(this);
+        this.target_div = $('#consolePreloader');
+        this.init();
+        this._message_info.system.placeholder = function() { return '> '  };
+        this._message_info.system.after_print_delay = 1.5;
+        this._message_info.system.before_print_delay = 1.5;
+        this._message_info.user.placeholder = function() {
+            var data = new Date();
+            var hh_str = data.getHours().toString();
+            var mm_str = data.getMinutes().toString();
+            hh_str = hh_str.length == 2 ? hh_str : '0' + hh_str;
+            mm_str = mm_str.length == 2 ? mm_str : '0' + mm_str;
+            return '[' + hh_str + ':' + mm_str + ']: ';
+        };
+        textConsoleManager.add(this);
+
+        this.start();
+        this.add_message('system', 'Загрузка...');
+        this.add_message('system', 'Загрузка 1... Загружено');
+        this.add_message('system', 'Загрузка 2... Загружено');
+        this.add_message('system', 'Загрузка 3... Загружено');
+        this.add_message('system', 'Загрузка 4... Загружено');
+        this.add_message('system', 'Загрузка 5... Загружено');
+    }
+
+    return ConsolePreloader;
+})(TextConsole);
+
 var textConsoleManager;
 
 var consoleWReg;
 var consoleWReg1;
 var consoleWReg2;
 var consoleWPI;
+var consolePreloader;
 
 function initConsoles() {
     textConsoleManager = new TextConsoleEffectManager();
@@ -400,6 +434,8 @@ function initConsoles() {
     consoleWReg2 = consoleWReg;
 
     consoleWPI = new ConsoleWPI();
+
+    consolePreloader = new ConsolePreloader();
 }
 
 
