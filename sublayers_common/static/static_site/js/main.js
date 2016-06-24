@@ -292,6 +292,20 @@ function main() {
 function init_preload_images() {
     preloaderImage.add('/static/img/cursors/main.png');
     preloaderImage.add('/static/img/cursors/hyper.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_up.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_up_over.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_down.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_down_over.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_left.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_left_over.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_right.png');
+    preloaderImage.add('/static/static_site/img/btn_slide_right_over.png');
+    preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_normal.png');
+    preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_over.png');
+    preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_pressed.png');
+    preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_normal.png');
+    preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_over.png');
+    preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_pressed.png');
 
     if (currentSiteSize == 1080) {
         preloaderImage.add('/static/static_site/img/09-06-16/1080_main_bg.jpg');
@@ -357,14 +371,6 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/1366_june/768_car.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_road.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_road+grid.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_up.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_up_over.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_down.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_down_over.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_left.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_left_over.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_right.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_right_over.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_logo.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_drivetrain.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_engine.png');
@@ -395,12 +401,6 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/1366_june/768_btn6_indicator.png');
         preloaderImage.add('/static/static_site/img/1366/768_fake_radiobuttons.png');
         preloaderImage.add('/static/static_site/img/1366/768_light_indicator.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_normal.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_over.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_pressed.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_normal.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_over.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_pressed.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_scan.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_junk.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_maddog.png');
