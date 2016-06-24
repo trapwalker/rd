@@ -37,6 +37,7 @@
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
     <script src="{{ static_url('static_site/js/main.js') }}"></script>
+    <script src="{{ static_url('static_site/js/preloader_image.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_object.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_manager.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_keyboard_emulate.js') }}"></script>
@@ -130,9 +131,9 @@
                     <canvas id="glitch_test_1080"></canvas>
                 </div>
                 <a class="site-logo" href="/#"></a>
-                <div class="car-skeleton-path gun"></div>
-                <div class="car-skeleton-path drivetrain"></div>
-                <div class="car-skeleton-path engine"></div>
+                <div class="car-skeleton-path gun" data-name="gun"></div>
+                <div class="car-skeleton-path drivetrain" data-name="drivetrain"></div>
+                <div class="car-skeleton-path engine" data-name="engine"></div>
             </div>
             <!--Консоль на главной странице -->
             <div id="RDSiteStartPage" class="content-block content-start switch-page">
@@ -145,142 +146,16 @@
         </div>
     </div>
     <div class="site-sound-switch"></div>
+    <div id="preloaderBlock">
+        <div id="consolePreloader"></div>
+    </div>
 </body>
 
 <script>
     var version = '{{ version }}';
     var GlobalGeneralSiteGain = 1.0;
     $(document).ready(function () {
-        var content_start_back_visible = true;
-
-        // Чтобы кнопки залипали!
-        $('.btn-page').click(function(){
-            $('.btn').removeClass('active');
-            $(this).addClass('active');
-
-            // скрыть сетку, машинку и тд
-            if (content_start_back_visible) {
-                content_start_back_visible = false;
-                $('.content-start').animate({opacity: 0}, function () {
-                    $('.content-start').first().css({display: 'none'});
-                });
-                if (glitchEffectStartPage1080)
-                    glitchEffectStartPage1080.stop();
-                if (glitchEffectStartPage768)
-                    glitchEffectStartPage768.stop();
-            }
-
-            // Скрыть все окна
-            $('.switch-page').css({display: 'none'});
-
-            // Получить id-шник страницы, которую нужно отобразить
-            var data;
-            if (this.id == 'RDbtn_start') {
-                data = GetIDForStartRegistrationPage();
-            }
-            else {
-                data = $(this).data('window_id');
-            }
-
-            // Показать окно
-            $('#' + data).css({display: 'block'});
-
-            // Отключить мерцание и линию на "Об игре"
-            if (data == 'RDSiteGameInfo') {
-                canvasDisplayLine.pause();
-                canvasDisplayRippling.pause();
-            }
-            else {
-                canvasDisplayLine.play();
-                canvasDisplayRippling.play();
-            }
-
-            if (data == 'RDSiteWReg3') {
-                // Включить рисование анимации платы завершения регистрации на канвасе
-                var start_animation_func = function () {
-                    if (eCanvasChipAnimation) eCanvasChipAnimation.start();
-                    else setTimeout(start_animation_func, 300)
-                };
-                start_animation_func();
-            }
-            else {
-                if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
-            }
-
-            // Работа с консолями
-            textConsoleManager.start(data);
-
-            // Мерцание шума
-            if (canvasNoise) canvasNoise.flashNoise();
-
-            // Проигрывание звуков
-            audioManager.play('click_' + Math.floor(Math.random() * 3.99));
-            // audioManager.play('dev_gl_' + Math.floor(Math.random() * 1.99), 0.2 * Math.random(), 0.4 * Math.random());
-
-            // Изменение хеша в адресной строке (хеш возьмётся из data-url_hash самой кнопки
-            var url_hash = $(this).attr('id');
-            if (url_hash && url_hash.length) {
-                window.location.hash = url_hash.split('_')[1];
-            }
-        });
-
         main();
-
-        // Активация скролов
-        var scroll_interval = null;
-        var d_scroll = 0;
-        var scroll_block = null;
-        function makeScroll() {
-            var scroll_pos = scroll_block.scrollTop();
-            scroll_block.scrollTop(scroll_pos + d_scroll);
-        }
-        $('.scroll-btn').mousedown(function(event) {
-            var jq_this = $(this);
-            scroll_block = $('#' + jq_this.data('block_id'));
-            if (jq_this.hasClass('up')) d_scroll = -10;
-            if (jq_this.hasClass('down')) d_scroll = 10;
-            scroll_interval = setInterval(makeScroll, 50);
-        });
-        $('.scroll-btn').mouseup(function(event) {
-            d_scroll = 0;
-            clearInterval(scroll_interval);
-        });
-
-
-        // Вешаем клик на логотип
-        $('.site-logo').first().click(function() {
-            if (! content_start_back_visible) {
-                content_start_back_visible = true;
-                $('.switch-page').css({display: 'none'});
-                $('.btn').removeClass('active');
-                $('.content-start').css({display: 'block'});
-                $('.content-start').animate({opacity: 1.0});
-                if (glitchEffectStartPage768)
-                    glitchEffectStartPage768.start();
-                if (glitchEffectStartPage1080)
-                    glitchEffectStartPage1080.start();
-            }
-        });
-
-        // Клик на отключение звуков сайта
-        $('.site-sound-switch').first().click(function(){
-            if (audioManager.general_gain == 0.0) {
-                // Отключено, нужно включить звук
-                audioManager.gain_all(GlobalGeneralSiteGain);
-                radioPlayer.set_volume(lastRadioVolume, true);
-                $(this).removeClass('off');
-            }
-            else {
-                GlobalGeneralSiteGain = audioManager.general_gain;
-                lastRadioVolume = radioPlayer.current_volume;
-                audioManager.gain_all(0.0);
-                radioPlayer.set_volume(0.0, true);
-                $(this).addClass('off');
-            }
-        });
-
-        // Начальная установка размера
-        currentSiteSize = $('.content-block').width() > 800 ? '1080' : '768';
     });
 </script>
 </html>

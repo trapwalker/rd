@@ -78,7 +78,7 @@ var GlitchImageEffect = (function(){
             this.current_opacity = 1.0;
             this.jq_road_grid.css('opacity', this.current_opacity);
             this.jq_road.css('opacity', this.current_opacity);
-            this.jq_skeletons.css('opacity', 0.0);
+            //this.jq_skeletons.css('opacity', 0.0);
         }
     };
 
@@ -147,19 +147,15 @@ var GlitchImageEffect = (function(){
                 this.jq_road.css('opacity', this.current_opacity);
         }
 
-        if (opacity && Math.random() > 0.6) {
-            this.current_opacity = opacity;
-            if (Math.random() > 0.8)
-                $(this.jq_skeletons[0]).css('opacity', 1.0);
-            if (Math.random() > 0.8)
-                $(this.jq_skeletons[1]).css('opacity', 1.0);
-            if (Math.random() > 0.8)
-                $(this.jq_skeletons[2]).css('opacity', 1.0);
-        }
-
-    };
-
-    GlitchImageEffect.prototype.change_site_size = function(old_size, new_size){
+        //if (opacity && Math.random() > 0.6) {
+        //    this.current_opacity = opacity;
+        //    if (Math.random() > 0.8)
+        //        $(this.jq_skeletons[0]).css('opacity', 1.0);
+        //    if (Math.random() > 0.8)
+        //        $(this.jq_skeletons[1]).css('opacity', 1.0);
+        //    if (Math.random() > 0.8)
+        //        $(this.jq_skeletons[2]).css('opacity', 1.0);
+        //}
 
     };
 
