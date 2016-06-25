@@ -5,8 +5,9 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import (
-    PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
-    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,)
+    PartyInfoMessage, PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
+    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,
+    PartyUserInfoMessage)
 from sublayers_server.model.chat_room import PartyChatRoom
 
 
@@ -14,6 +15,47 @@ def inc_name_number(name):
     clear_name = name.rstrip('0123456789')
     num = int(name[len(clear_name):] or u'0') + 1
     return u'{}{}'.format(clear_name, num)
+
+
+class PartyGetPartyInfoEvent(Event):
+    def __init__(self, name, agent, **kw):
+        assert (name is not None) and (agent is not None)
+        super(PartyGetPartyInfoEvent, self).__init__(server=agent.server, **kw)
+        self.name = name
+        self.agent = agent
+
+    def on_perform(self):
+        super(PartyGetPartyInfoEvent, self).on_perform()
+        party = Party.search(name=self.name)
+        if party is None: return
+        if (self.agent.party is party) or (party.has_invite(agent=self.agent)):
+            PartyInfoMessage(agent=self.agent, time=self.time, party=party).post()
+
+
+class PartyGetPartyUserInfoEvent(Event):
+    def __init__(self, name, agent, **kw):
+        assert (name is not None) and (agent is not None)
+        super(PartyGetPartyUserInfoEvent, self).__init__(server=agent.server, **kw)
+        self.name = name
+        self.agent = agent
+
+    def on_perform(self):
+        super(PartyGetPartyUserInfoEvent, self).on_perform()
+        # todo: проверить можно ли отправлять инфу
+        PartyUserInfoMessage(agent=self.agent, time=self.time, player_nick=self.name).post()
+
+
+class PartyGetAllInvitesEvent(Event):
+    def __init__(self, agent, **kw):
+        assert (agent is not None)
+        super(PartyGetAllInvitesEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(PartyGetAllInvitesEvent, self).on_perform()
+        for invite in self.agent.invites:
+            PartyInviteMessage(agent=self.agent, sender=invite.sender, recipient=self.agent, party=invite.party,
+                               invite=invite, time=self.time).post()
 
 
 class PartyIncludeEvent(Event):
@@ -105,6 +147,7 @@ class Invite(object):
         for member in self.party.members:
             PartyInviteDeleteMessage(agent=member.agent, sender=self.sender,
                                      recipient=self.recipient, party=self.party, invite=self, time=time).post()
+
         # Приглашаемый тоже должен об этом узнать
         PartyInviteDeleteMessage(agent=self.recipient, sender=self.sender, time=time,
                                  recipient=self.recipient, party=self.party, invite=self).post()
@@ -191,9 +234,9 @@ class PartyMember(object):
 
     # определяет, может ли данный мембер кикнуть другого мембера
     def can_kick_member(self, member):
-        if self.party != member.party:
+        if not (self.party is member.party):
             return False
-        return self.category < member.category
+        return (self.category < member.category) or (self is member)
 
 
 class Party(object):
@@ -228,7 +271,7 @@ class Party(object):
     def search_or_create(cls, name):
         return cls.search(name) or cls(name)
 
-    def _has_invite(self, agent):
+    def has_invite(self, agent):
         for inv in self.invites:
             if inv.recipient == agent:
                 return True
@@ -267,9 +310,10 @@ class Party(object):
                 old_party.on_exclude(agent, time=time)
         else:
             return
+
         # проверка по инвайтам
         if agent != self.owner:
-            if not self._has_invite(agent):
+            if not self.has_invite(agent):
                 PartyErrorMessage(agent=agent, time=time, comment='You do not have invite for this party').post()
                 return
             self._del_invites_by_agent(agent, time=time)

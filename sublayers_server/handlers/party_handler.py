@@ -14,11 +14,4 @@ class PartyHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        page_type = self.get_argument("page_type")
-        data = dict()
-        if page_type == 'party_info':
-            data.update(party=Party.search(name=self.get_argument("party_name")))
-        if page_type == 'party':
-            data.update(party=agent.party)
-        if agent:
-            self.render("party/" + page_type  + "_window.html", agent=agent, data=data)
+        self.render("party/party_window.html")

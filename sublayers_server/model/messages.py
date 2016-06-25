@@ -385,6 +385,19 @@ class AgentPartyChangeMessage(Message):
         return d
 
 
+class PartyInfoMessage(Message):
+    def __init__(self, party, **kw):
+        super(PartyInfoMessage, self).__init__(**kw)
+        self.party = party
+
+    def as_dict(self):
+        d = super(PartyInfoMessage, self).as_dict()
+        d.update(
+            party=self.party.as_dict(with_members=True),
+        )
+        return d
+
+
 class PartyIncludeMessageForIncluded(Message):
     def __init__(self, subj, party, **kw):
         super(PartyIncludeMessageForIncluded, self).__init__(**kw)
@@ -1137,3 +1150,38 @@ class InteractionInfoMessage(Message):
         return d
 
 
+class PartyUserInfoMessage(Message):
+    def __init__(self, player_nick, **kw):
+        super(PartyUserInfoMessage, self).__init__(**kw)
+        self.player_nick = player_nick
+
+    def as_dict(self):
+        d = super(PartyUserInfoMessage, self).as_dict()
+        player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
+        if player:
+            d.update(
+                name=self.player_nick,
+                avatar=player.user.avatar_link,
+                lvl=lvl,
+                role_class=player.example.role_class.title,
+                karma=0,  # todo: убрать заглушку
+                driving=player.example.driving.calc_value(),
+                shooting=player.example.shooting.calc_value(),
+                masking=player.example.masking.calc_value(),
+                leading=player.example.leading.calc_value(),
+                trading=player.example.trading.calc_value(),
+                engineering=player.example.engineering.calc_value(),
+            )
+
+            # Еслли есть машинка то отправить ее шаблоны и имя
+            if player.example.car:
+                template_img = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_img_ext.html")
+                d.update(
+                    car_name = player.example.car.title,
+                    html_car_img=template_img.generate(car=player.example.car)
+                )
+        return d
