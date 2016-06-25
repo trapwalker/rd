@@ -295,7 +295,6 @@ var ClientManager = (function () {
             user.balance = event.agent.balance;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-                chat.page_party.buttons.create.text('Отряд');
                 this.sendGetPartyInfo(event.agent.party.name);
             }
             this.sendGetAllInvites();
