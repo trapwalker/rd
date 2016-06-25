@@ -226,9 +226,21 @@ var PartyManager = (function () {
             for (i = 0; i < this.party.members.length; i++) {
                 var member = this.party.members[i];
                 back_class = (back_class == 'party-window-light-back') ? 'party-window-dark-back' : 'party-window-light-back';
+                var member_class = '';
+                switch (member.category) {
+                    case 0:
+                        member_class = 'leader';
+                        break;
+                    case 1:
+                        member_class = 'officer';
+                        break;
+                    case 2:
+                        member_class = 'soldier';
+                }
                 var jq_member = $(
                     '<div class="party-page-management-members-line ' + back_class + '" data-agent_name="' + member.agent_name + '">' + member.agent_name +
-                        '<div class="party-page-management-members-kick-btn" data-agent_name="' + member.agent_name + '">&times;</div>' +
+                        '<div class="party-page-management-members-category-btn ' + member_class + '"></div>' +
+                        '<div class="party-page-management-members-kick-btn">&times;</div>' +
                     '</div>'
                 );
                 jq_member_block.append(jq_member);
@@ -252,8 +264,13 @@ var PartyManager = (function () {
             clientManager.sendGetPartyUserInfo(agent_name);
         });
         jq_member_block.find('.party-page-management-members-kick-btn').click(function(event) {
-            var agent_name = $(this).data('agent_name');
+            var agent_name = $(this).parent().data('agent_name');
             clientManager.sendKickPartyFromTemplate(agent_name);
+            stopEvent(event);
+        });
+        jq_member_block.find('.party-page-management-members-category-btn').click(function(event) {
+            var agent_name = $(this).parent().data('agent_name');
+            clientManager.sendChangePartyCategory(agent_name);
             stopEvent(event);
         });
     };

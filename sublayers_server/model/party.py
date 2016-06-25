@@ -159,12 +159,6 @@ class Invite(object):
 
 
 class PartyMember(object):
-
-    # Распределение ролей в пати:
-    #       'Owner' - глава пати
-    #       'Admin' - заместитель главы пати
-    #       'Normal' - обычный участник
-
     def __init__(self, agent, party, time, category=2):
         u"""
             category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
@@ -209,7 +203,6 @@ class PartyMember(object):
     @category.setter
     def category(self, new_category):
         self._category = new_category
-        # todo: сообщение о присвоении роли
 
     def set_description(self, new_description):
         # todo: Сделать свойством
@@ -423,10 +416,12 @@ class Party(object):
         if recipient in self:
             PartyErrorMessage(agent=sender, comment='Recipient in party', time=event.time).post()
             return
+
         member_sender = self.get_member_by_agent(sender)
-        if member_sender.role == 'Normal':
+        if member_sender.category > 1:
             PartyErrorMessage(agent=sender, comment='Sender do not have rights', time=event.time).post()
             return
+
         for inv in self.invites:
             if (inv.sender == sender) and (inv.recipient == recipient):
                 PartyErrorMessage(agent=sender, comment='Invite already exists', time=event.time).post()

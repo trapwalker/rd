@@ -662,9 +662,7 @@ var ClientManager = (function () {
         var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
-        chat.page_party.buttons.create.text('Отряд');
         chat.party_info_message(event.party);
-
         partyManager.include_to_party(event.party);
 
         setTitleOnPage(); // обновить заголовок окна
@@ -1228,22 +1226,16 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
-
-    ClientManager.prototype.sendSetPartyCategory = function (name, category) {
+    ClientManager.prototype.sendChangePartyCategory = function (name) {
+        //console.log('ClientManager.prototype.sendChangePartyCategory', name)
         var mes = {
-            call: "send_set_category",
+            call: "send_change_category",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                username: name,
-                category: category
-            }
+            params: { username: name }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
-
 
     ClientManager.prototype.sendPartyDeleteInvite = function (invite_id) {
         var mes = {

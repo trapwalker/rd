@@ -239,6 +239,37 @@
 }
 .party-page-management-members-kick-btn:hover { color: #2ffa00; }
 
+.party-page-management-members-category-btn {
+    position: absolute;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    top: 0px;
+    right: 25px;
+    width: 25px;
+    height: 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.soldier { background-image: url('/static/img/chat/soldier_noactive.png'); }
+.party-page-management-members-line.active .soldier { background-image: url('/static/img/chat/soldier.png'); }
+.party-page-management-members-line:hover .soldier { background-image: url('/static/img/chat/soldier.png'); }
+.soldier:hover { background-image: url('/static/img/chat/soldier_active.png'); }
+.party-page-management-members-line:hover .soldier:hover { background-image: url('/static/img/chat/soldier_active.png'); }
+
+.officer { background-image: url('/static/img/chat/officer_noactive.png'); }
+.party-page-management-members-line.active .officer { background-image: url('/static/img/chat/officer.png'); }
+.party-page-management-members-line:hover .officer { background-image: url('/static/img/chat/officer.png'); }
+.officer:hover { background-image: url('/static/img/chat/officer_active.png'); }
+.party-page-management-members-line:hover .officer:hover { background-image: url('/static/img/chat/officer_active.png'); }
+
+.leader { background-image: url('/static/img/chat/leader_noactive.png'); }
+.party-page-management-members-line.active .leader { background-image: url('/static/img/chat/leader.png'); }
+.party-page-management-members-line:hover .leader { background-image: url('/static/img/chat/leader.png'); }
+.leader:hover { background-image: url('/static/img/chat/leader_active.png'); }
+.party-page-management-members-line:hover .leader:hover { background-image: url('/static/img/chat/leader_active.png'); }
+
+
+.party-page-management-members-category-btn:hover { color: #2ffa00; }
+
 .party-window-person-photo-wrap {
     position: relative;
     width: 171px;
