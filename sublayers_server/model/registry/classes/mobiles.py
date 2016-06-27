@@ -7,9 +7,10 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
 from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
+from sublayers_server.model.registry.classes.inventory import InventoryField
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField, ListField,
+    IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField,
 )
 
 from math import pi
@@ -120,7 +121,7 @@ class Mobile(Root):
     slot_BR   = SlotField(caption=u'BackwardRightSlot', doc=u'Задний правый слот', tags='armorer')
     slot_BR_f = StringField(default='BR_0', caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
 
-    inventory = InventoryAttribute(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
+    inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     inventory_size = IntField(default=10, caption=u"Размер инвентаря")
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе

@@ -27,3 +27,8 @@ class Inventory(AbstractDocument):
                 changes.append(item)
                 i += 1
         return changes
+
+
+class InventoryField(EmbeddedDocumentField):
+    def __init__(self, embedded_document_type=Inventory, *av, **kw):
+        super(InventoryField, self).__init__(embedded_document_type=Inventory, *av, **kw)
