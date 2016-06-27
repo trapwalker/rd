@@ -15,6 +15,8 @@ var ViewMessengerGlass = (function () {
         this.log_index = 0;
         this.chat_visible = true;
 
+        this.in_town = false;
+
         // вёрстка
         var mainParent = $('#chatAreaGlass');
         mainParent.append('<div id="VMGDivHardware"></div>');
@@ -537,6 +539,7 @@ var ViewMessengerGlass = (function () {
 
     // Удаление произвольной чат-комнаты
     ViewMessengerGlass.prototype.removeChat = function (room_jid) {
+        //console.log('ViewMessengerGlass.prototype.removeChat');
         // получить чат
         var chat = this._getChatByJID(room_jid);
         if (!chat) {
@@ -564,6 +567,10 @@ var ViewMessengerGlass = (function () {
                 index = i;
         this.chats.splice(index, 1);
 
+        for (var i in this.pages)
+            if ((this.pages[i].chat) && (this.pages[i].chat.room_jid == room_jid))
+                this.pages[i].chat = null;
+
         // если нужно, установить активным другой чат
         if (this.activeChat == chat) {
             if (this.chats.length > 0)
@@ -588,7 +595,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.sendMessage = function() {
         //console.log('ViewMessengerGlass.prototype.sendMessage');
 
-        var jq_input = chat.chat_visible ? chat.main_input : chat.compact_input;
+        var jq_input = (chat.chat_visible || chat.in_town) ? chat.main_input : chat.compact_input;
 
         var str = jq_input.val();
         if (str.length) {
@@ -638,27 +645,6 @@ var ViewMessengerGlass = (function () {
         return true;
     };
 
-    // ======== Кнопки работы с пати
-
-    ViewMessengerGlass.prototype.party_invite = function (event) {
-        //console.log('ViewMessengerGlass.prototype.party_invite', event);
-        windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
-    };
-
-    ViewMessengerGlass.prototype.party_create = function (event) {
-        //console.log('ViewMessengerGlass.prototype.party_create');
-        if ( user.party == null)
-            windowTemplateManager.openUniqueWindow('create_party', '/party', {page_type: 'create'});
-        if ( user.party != null)
-            windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
-    };
-
-    ViewMessengerGlass.prototype.party_leave = function (event) {
-        //alert('Окно для подтверждения выхода из пати');
-        clientManager.sendConsoleCmd('/party leave');
-        chat.main_input.focus();
-    };
-
     // ======== Работа с пати чатом
 
     // Создание вкладки пати (с кнопками и чат-комнатой пати)
@@ -673,33 +659,15 @@ var ViewMessengerGlass = (function () {
         var page = {
             pageArea: $('<div id="chatAreaParty" class="VMGChatOutArea"></div>'),
             pageButton: $('<div id="pageButtonParty" class="VMGpageButton sublayers-clickable">Party</div>'),
-            pageControl: $('<div id="chatPageControlParty" class="VMGPartyPageControl"></div>'),
+            pageControl: $(),
             chat: chat,
             buttons: null
         };
 
         this.dynamicArea.append(page.pageArea);
-        page.pageArea.append(page.pageControl);
         page.pageArea.append(chat.chatArea);
         this.divPageControlArea.append(page.pageButton);
-
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
-
-        // добавление кнопок для работы с пати
-        page.pageControl.append('<div id="VMGPartyCntrlCreate" class="VMGPartypageButton sublayers-clickable">' + 'Создать' + '</div>');
-        page.pageControl.append('<div id="VMGPartyCntrlInvite" class="VMGPartypageButton sublayers-clickable">' + 'Приглашения' + '</div>');
-        page.pageControl.append('<div id="VMGPartyCntrlLeave" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
-
-        page.buttons = {
-            create: $('#VMGPartyCntrlCreate'),
-            leave: $('#VMGPartyCntrlLeave'),
-            invite: $('#VMGPartyCntrlInvite')
-        };
-
-        // вешаем евенты для работы с пати
-        page.buttons.create.click(this, this.party_create);
-        page.buttons.invite.click(this, this.party_invite);
-        page.buttons.leave.click(this, this.party_leave);
 
         this.pages.push(page);
         return page;
@@ -1002,12 +970,14 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.showChatInTown = function(jq_town_chat_div){
         jq_town_chat_div.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '0px');
+        this.in_town = true;
     };
 
     ViewMessengerGlass.prototype.showChatInMap = function(){
         this.chatWrapDiv.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '1px');
         $('#VGM-PlayerInfoDivInCity').remove();
+        this.in_town = false;
     };
 
     return ViewMessengerGlass;

@@ -188,6 +188,7 @@ var ClientManager = (function () {
             car = new MapCar(uid, state, hp_state, fuel_state, v_forward, p_observing_range, aObsRangeRateMin, aObsRangeRateMax);
             car.role = event.object.role;
             car.cls = event.object.cls;
+            car.sub_class_car = event.object.sub_class_car;
             car.main_agent_login = main_agent_login;
 
             if (aOwner)
@@ -226,9 +227,16 @@ var ClientManager = (function () {
                 case 'RadioPoint':
                     direction = 0.5 * Math.PI;
                     break;
+                case 'POICorpse':
+                    direction = event.object.car_direction + Math.PI / 2.;
+                    break;
             }
+
             obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
+            if (event.object.hasOwnProperty('sub_class_car')) {
+                obj.sub_class_car = event.object.sub_class_car;
+            }
 
             // Создание/инициализация виджетов
             obj_marker = new WCarMarker(obj); // виджет маркера
@@ -287,8 +295,9 @@ var ClientManager = (function () {
             user.balance = event.agent.balance;
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-                chat.page_party.buttons.create.text('Отряд');
+                this.sendGetPartyInfo(event.agent.party.name);
             }
+            this.sendGetAllInvites();
             timeManager.timerStart();
         }
     };
@@ -327,6 +336,7 @@ var ClientManager = (function () {
                 mcar.fireSidesMng.addSector(fireSectors[i].sector, fireSectors[i].side)
 
             user.userCar = mcar;
+            mcar.sub_class_car = event.car.sub_class_car;
             mapCanvasManager.on_new_map_size();
 
             // Виджеты:
@@ -458,6 +468,7 @@ var ClientManager = (function () {
             case 'Town':
             case 'POILoot':
             case 'POIContainer':
+            case 'POICorpse':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;
@@ -609,6 +620,20 @@ var ClientManager = (function () {
         wCruiseControl.setZoneState(event.in_zone, event.is_start);
     };
 
+    ClientManager.prototype.PartyInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.PartyInfoMessage', event);
+        if (user.party && (user.party.id == event.party.id)) {
+            partyManager.include_to_party(event.party);
+            return;
+        }
+        partyManager.set_party_info(event.party);
+    };
+
+    ClientManager.prototype.PartyUserInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.PartyUserInfoMessage', event);
+        partyManager.set_user_info(event);
+    };
+
     ClientManager.prototype.AgentPartyChangeMessage = function (event) {
         //console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
         if(event.subj.uid == user.ID) return;
@@ -617,33 +642,31 @@ var ClientManager = (function () {
             var widget_marker = visualManager.getVobjByType(owner.cars[i], WCanvasUserCarMarker);
             if (widget_marker) widget_marker.updateIcon();
         }
-        if (windowTemplateManager.isOpen('party'))
-            windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
+
+        if ((!event.subj.party && partyManager.user_in_party(event.subj.user_name)) ||
+            (event.subj.party && (event.subj.party.id == partyManager.party.id)))
+            this.sendGetPartyInfo(partyManager.party.name);
+
         chat.party_info_message(event);
     };
 
     ClientManager.prototype.PartyIncludeMessageForIncluded = function (event) {
         //console.log('ClientManager.prototype.PartyIncludeMessageForIncluded', event);
+
         // изменить настройки своей пати для своего клиента
         if (! event.party) {console.error('Невозможно считать Party. Ошибка.'); return;}
         user.party = new OwnerParty(event.party.id, event.party.name);
+
         // обновить иконки для всех сопартийцев
         ownerList.update_party_icons(user.party.id);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
         chat.page_party.buttons.create.text('Отряд');
-        chat.party_info_message(event);
-        // изменить иконки машинок для всех мемберов пати (в евенте для этого есть список мемберов)
+        chat.party_info_message(event.party);
 
-        if (windowTemplateManager.isOpen('create_party'))
-            windowTemplateManager.closeUniqueWindow('create_party');
-        if (windowTemplateManager.isOpen('my_invites'))
-            windowTemplateManager.closeUniqueWindow('my_invites');
-        if (windowTemplateManager.isOpen('party_info'))
-            windowTemplateManager.closeUniqueWindow('party_info');
+        partyManager.include_to_party(event.party);
 
-        windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
         setTitleOnPage(); // обновить заголовок окна
     };
 
@@ -658,11 +681,8 @@ var ClientManager = (function () {
 
         chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
-        // изменить иконки машинок для всех бывших мемберов пати
-        if (windowTemplateManager.isOpen('party'))
-            windowTemplateManager.closeUniqueWindow('party');
-        if (windowTemplateManager.isOpen('my_invites'))
-            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
+
+        partyManager.exclude_from_party();
 
         setTitleOnPage(); // обновить заголовок окна
     };
@@ -678,29 +698,24 @@ var ClientManager = (function () {
 
         chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
-        // изменить иконки машинок для всех бывших мемберов пати
-        if (windowTemplateManager.isOpen('party'))
-            windowTemplateManager.closeUniqueWindow('party');
-        if (windowTemplateManager.isOpen('my_invites'))
-            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
+
+        partyManager.exclude_from_party();
     };
 
     ClientManager.prototype.PartyInviteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteMessage', event);
+        partyManager.add_invite(event.invite_id, event.party, event.sender, event.recipient);
         chat.party_info_message(event);
-        if (windowTemplateManager.isOpen('my_invites'))
-            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyInviteDeleteMessage = function (event) {
         //console.log('ClientManager.prototype.PartyInviteDeleteMessage', event);
+        partyManager.del_invite(event.invite_id);
         chat.party_info_message(event);
-        if (windowTemplateManager.isOpen('my_invites'))
-            windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
     };
 
     ClientManager.prototype.PartyErrorMessage = function (event) {
-        console.log('ClientManager.prototype.PartyErrorMessage', event);
+        //console.log('ClientManager.prototype.PartyErrorMessage', event);
         chat.party_info_message(event);
     };
 
@@ -1129,6 +1144,41 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendGetPartyInfo = function (name) {
+        var mes = {
+            call: "get_party_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetPartyUserInfo = function (name) {
+        var mes = {
+            call: "get_party_user_info",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                name: name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGetAllInvites = function () {
+        //console.log('ClientManager.prototype.sendGetAllInvites');
+        var mes = {
+            call: "get_all_invites",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description) {
         var mes = {
             call: "send_create_party_from_template",
@@ -1178,6 +1228,8 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+
+
     ClientManager.prototype.sendSetPartyCategory = function (name, category) {
         var mes = {
             call: "send_set_category",
@@ -1190,6 +1242,8 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+
 
     ClientManager.prototype.sendPartyDeleteInvite = function (invite_id) {
         var mes = {

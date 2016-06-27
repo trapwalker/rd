@@ -254,8 +254,8 @@ var LocationMechanicNPC = (function (_super) {
                 var itemDiv = $('<div class="mechanic-car-slot-picture"><img src="' + itemImg + '"></div>');
                 itemDiv.data('pos', position);
                 itemDiv.draggable({
-                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
-                    opacity: 0.8,
+                    helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
+                    cursorAt: { left: 31, top: 16 },
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
@@ -280,7 +280,7 @@ var LocationMechanicNPC = (function (_super) {
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: function() { return $('<img src="' + item.example.inv_icon_small + '">') },
+                    helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
                     cursorAt: { left: 31, top: 16 },
                     opacity: 0.8,
                     revert: true,
@@ -296,11 +296,23 @@ var LocationMechanicNPC = (function (_super) {
     };
 
     LocationMechanicNPC.prototype._compare_tags = function(item, slot) {
+        //console.log('LocationMechanicNPC.prototype._compare_tags', item, slot);
         // итем должен обладать всеми тегами слота, чтобы быть туда установленным
-        for (var i = 0; i < slot.tags.length; i++)
-            if (item.example.tags.indexOf(slot.tags[i]) < 0)
-                return false;
-        return true;
+        if (!item || !slot) return false;
+        if (!item.hasOwnProperty('example') || !item.example) return false;  // Оказывается, example может быть null;
+        if (!item.example.hasOwnProperty('tags')) return false;
+        if (!slot.hasOwnProperty('tags')) return false;
+
+        try {
+            for (var i = 0; i < slot.tags.length; i++)
+                if (item.example.tags.indexOf(slot.tags[i]) < 0)
+                    return false;
+            return true;
+        }
+        catch (e) {
+            console.warn('LocationMechanicNPC.prototype._compare_tags', e, item, slot);
+            return false;
+        }
     };
 
     LocationMechanicNPC.prototype.changeItem = function(src, dest) {

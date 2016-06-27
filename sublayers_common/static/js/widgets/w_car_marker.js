@@ -36,6 +36,7 @@ var WCarMarker = (function (_super) {
                 marker.obj_id = car.ID;
                 break;
             case 'POILoot':
+            case 'POICorpse':
                 marker.obj_id = car.ID;
                 marker.on('click', onClickPOIContainerMarker);
                 break;
@@ -48,6 +49,11 @@ var WCarMarker = (function (_super) {
         }
 
         this.updateLabel();
+
+        if (this.car.direction) {
+            this.marker.options.angle = this.car.direction;
+            this.marker.update();
+        }
 
         marker.on('contextmenu', function () {
             var car = visualManager.getModelObject(this.carID);
@@ -104,61 +110,58 @@ var WCarMarker = (function (_super) {
     };
 
     WCarMarker.prototype.updateIcon = function() {
+        //console.log('WCarMarker.prototype.updateIcon', this.car);
         var car = this.car;
         var marker = this.marker;
-        var icon_id = 1;
-        // 1 - стрелка-машинка // для всех, кроме себя
-        // 4 - одинарная стрелка // своих сапортийцев
-        // 5 - двойная стрелка  // своя
 
         if (car == user.userCar)
-            icon_id = 5;
+             marker.setIcon(iconsLeaflet.getIconByID(5));
         else {
             if (car.owner)
                 if (user.party && car.owner.party)
                     if (car.owner.party.name == user.party.name)
-                        icon_id = 4;
+                         marker.setIcon(iconsLeaflet.getIconByID(4));
         }
 
         if(car.cls == 'Rocket') {
-            icon_id = 17;
+            marker.setIcon(iconsLeaflet.getIconByID(17));
         }
 
         if(car.cls == 'ScoutDroid') {
-            icon_id = 21;
+            marker.setIcon(iconsLeaflet.getIconByID(21));
         }
 
         if(car.cls == 'StationaryTurret') {
-            icon_id = 7;
+            marker.setIcon(iconsLeaflet.getIconByID(7));
         }
 
         if(car.cls == 'SlowMine') {
-            icon_id = 31;
+            marker.setIcon(iconsLeaflet.getIconByID(31));
         }
 
         if(car.cls == 'RadioPoint') {
-            icon_id = 7;
+            marker.setIcon(iconsLeaflet.getIconByID(7));
         }
 
         if(car.cls == 'POILoot') {
-            icon_id = 3;
+            marker.setIcon(iconsLeaflet.getIconByID(3));
         }
 
         if(car.cls == 'POIContainer') {
-            icon_id = 3;
+            marker.setIcon(iconsLeaflet.getIconByID(3));
         }
 
         if(car.cls == 'Town') {
             marker.setIcon(iconsLeaflet.getIcon('icon_city'));
-            return;
         }
 
         if(car.cls == 'GasStation') {
             marker.setIcon(iconsLeaflet.getIcon('icon_station'));
-            return;
         }
 
-        marker.setIcon(iconsLeaflet.getIconByID(icon_id));
+        if(car.cls == 'POICorpse') {
+            marker.setIcon(iconsLeaflet.getIcon('icon_dead_' + WCarMarker._get_icon_by_sub_class(car.sub_class_car), 'icon'));
+        }
     };
 
     WCarMarker.prototype.updateLabel = function(new_label) {
@@ -200,6 +203,59 @@ var WCarMarker = (function (_super) {
         }
         this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
     };
+
+    WCarMarker._get_icon_by_sub_class = function(sub_class) {
+        var icon_name = null;
+        switch (sub_class) {
+            case 'artillery':
+                icon_name = 'art';
+                break;
+            case 'armored':
+                icon_name = 'bm';
+                break;
+            case 'btrs':
+                icon_name = 'btr';
+                break;
+            case 'buggies':
+                icon_name = 'buggy';
+                break;
+            case 'buses':
+                icon_name = 'bus';
+                break;
+            case 'cars':
+                icon_name = 'car';
+                break;
+            case 'trucks':
+                icon_name = 'cargo';
+                break;
+            case 'motorcycles':
+                icon_name = 'moto';
+                break;
+            case 'quadbikes':
+                icon_name = 'quadro';
+                break;
+            case 'sports':
+                icon_name = 'sport';
+                break;
+            case 'offroad':
+                icon_name = 'suv';
+                break;
+            case 'tanks':
+                icon_name = 'tank';
+                break;
+            case 'tractors':
+                icon_name = 'truck';
+                break;
+            case 'vans':
+                icon_name = 'van';
+                break;
+            default:
+                console.log('Не найдена иконка. Установлена стандартная. ', sub_class);
+                icon_name = 'car';
+        }
+        return icon_name;
+    };
+
 
     WCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCarMarker.prototype.delFromVisualManager');

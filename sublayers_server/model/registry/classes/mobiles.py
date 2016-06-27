@@ -129,6 +129,7 @@ class Mobile(Root):
     # Косметика
     title = StringField(default="", caption=u"Модель автомобиля", tags='client')
     class_car = StringField(default="", caption=u"Класс автомобиля", tags='client')
+    sub_class_car = StringField(default="", caption=u"Подкласс автомобиля", tags='client')
     name_car = StringField(default="", caption=u"Название автомобиля", tags='client')
 
     # Влияние скилов

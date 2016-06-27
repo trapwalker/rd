@@ -74,6 +74,12 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
+    document.getElementById('divMainMenuBtnParty').onclick =
+        function () {
+            windowTemplateManager.openUniqueWindow('party', '/party', null, partyManager.redraw);
+            returnFocusToMap();
+        };
+
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
     //document.getElementById('divMainMenuBtnNucoil').onclick =
@@ -205,11 +211,15 @@ function CarTableInfoMenuClick(target) {
 
 
 function CarInfoBlockAmmoInfoView(description) {
-    locationManager.panel_right.show({text: description}, 'description');
+    if (locationManager.in_location_flag) {
+        locationManager.panel_right.show({text: description}, 'description');
+    }
 }
 
 function CarInfoBlockAmmoInfoHide(descripion) {
-    locationManager.panel_right.show({text: ''}, 'description');
+    if (locationManager.in_location_flag) {
+        locationManager.panel_right.show({text: ''}, 'description');
+    }
 }
 
 

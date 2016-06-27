@@ -233,6 +233,18 @@
     padding-left: 15px;
 }
 
+.location-menu-person-about-block textarea {
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    color: #30fc00;
+    font: 12pt Nouveau_IBM;
+    background-color: transparent;
+    height: 100%;
+    width: 100%;
+    resize: none;
+}
+
 
 .location-menu-person-about-line {
     position: relative;

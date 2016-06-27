@@ -689,6 +689,5 @@ var OwnerParty = (function () {
         this.name = aName;
     }
 
-
     return OwnerParty;
 })();
