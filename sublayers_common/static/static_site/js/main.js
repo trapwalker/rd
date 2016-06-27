@@ -92,6 +92,7 @@ function main() {
         }
         else {
             data = $(this).data('window_id');
+            consoleWReg.focus_interrupt();
         }
 
         // Показать окно
@@ -135,7 +136,6 @@ function main() {
     $('.btn').mouseover(function () {
         if (! $(this).hasClass('active'))
             audioManager.play('microwave_btn_hover');
-
     });
 
 
@@ -175,6 +175,7 @@ function main() {
                 glitchEffectStartPage768.start();
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.start();
+            consoleWReg.focus_interrupt();
         }
     });
 

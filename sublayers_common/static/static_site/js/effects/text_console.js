@@ -56,6 +56,12 @@ var TextConsole = (function(){
                 before_print_delay: 0,
                 placeholder: function() { return ''; }
             },
+            interrupt: {
+                print_speed_ms: 0,
+                after_print_delay: 0,
+                before_print_delay: 0,
+                placeholder: function() { return ''; }
+            },
             system: {
                 print_speed_ms: 1,
                 after_print_delay: 0,
@@ -281,6 +287,20 @@ var TextConsoleAudio = (function (_super) {
         this.start_audio = false;
     }
 
+    // Вызывать тогда, когда консоль становится невидимой
+    TextConsoleAudio.prototype.focus_interrupt = function() {
+        //console.log('TextConsoleAudio.prototype.focus_interrupt');
+        if (! this._is_started) return;
+        this._messages = [];
+        if (((this._cur_message_len - this._cur_symbol) > 3) && (this._cur_message) && (this._cur_message.message)) {
+            this._cur_message_len = this._cur_symbol;
+            this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
+        }
+        if ((this._cur_message) && (this._cur_message.message)) {
+            this._messages.push({sender: 'interrupt', message: 'Прервано.'});
+        }
+    };
+
     TextConsoleAudio.prototype._state_print_text = function(self) {
         if (! this.start_audio) {
             this.start_audio = true;
@@ -356,6 +376,10 @@ var ConsoleWReg = (function (_super) {
 
         textConsoleManager.add(this);
     }
+
+    ConsoleWReg.prototype.update_visible = function() {
+
+    };
 
     return ConsoleWReg;
 })(TextConsoleAudio);

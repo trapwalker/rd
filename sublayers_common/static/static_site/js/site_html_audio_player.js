@@ -248,7 +248,7 @@ var RadioPlayer = (function () {
         this.playing = true;
 
         // Запуск шума в цикле
-        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 15);
+        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 35);
         // Смена названия радиостанции на "поиск"
         //this.jq_station_name.text(RadioNameSwitchText);
         this.jq_display.removeClass('junk maddog rrn town vigilante');
@@ -350,7 +350,7 @@ function initRadioPlayer() {
     //console.log('initRadioPlayer !');
     context = audioManager.get_ctx();
 
-    audioManager.load('radio_noise_switch', {url: "/audio/radio_noise_switch/60819__erh__radio-t2-lw-static-3.wav"}, false);
+    audioManager.load('radio_noise_switch', {url: "/audio/sound_final1/radio_static.mp3"}, false);
     audioManager.load('radio_noise', {url: "/audio/radio_noise_switch/74934__digifishmusic__radio-static-short-wave-choppy.wav"});
 
     radioPlayer = new RadioPlayer({
