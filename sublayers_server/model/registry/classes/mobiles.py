@@ -37,9 +37,14 @@ class Mobile(Root):
     p_vigilance = FloatField(default=0, caption=u"Коэффициент зоркости", tags="parameter")
     p_visibility_min = FloatField(default=1, caption=u"Минимальный коэффициент заметности", tags="parameter")
     p_visibility_max = FloatField(default=1, caption=u"Максимальный коэффициент заметности", tags="parameter")
-    p_obs_range_rate_min = FloatField(default=1, caption=u"Коэффициент радиуса обзора при максимальной скорости", tags="parameter")
-    p_obs_range_rate_max = FloatField(default=1, caption=u"Коэффициент радиуса обзора при скорости = 0", tags="parameter")
-
+    p_obs_range_rate_min = FloatField(
+        caption=u"Коэффициент радиуса обзора при максимальной скорости",
+        default=1, tags="parameter",
+    )
+    p_obs_range_rate_max = FloatField(
+        caption=u"Коэффициент радиуса обзора при скорости = 0",
+        default=1, tags="parameter",
+    )
     # Модификаторы эффектов зон
     m_cc_dirt = FloatField(default=0.2, caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier')
     m_cc_wood = FloatField(default=0.3, caption=u"Модификатор CC в лесу", tags='parameter p_modifier')
@@ -47,11 +52,25 @@ class Mobile(Root):
     m_observing_range_wood = FloatField(default=0.5, caption=u"Модификатор обзора в лесу", tags='parameter p_modifier')
     m_cc_slope = FloatField(default=0.2, caption=u"Модификатор CC в горах", tags='parameter p_modifier')
     m_cc_water = FloatField(default=0.45, caption=u"Модификатор CC на воде", tags='parameter p_modifier')
-    m_r_cc_wood_on_road = FloatField(default=1.0, caption=u"Модификатор резиста штрафа СС в лесу на дороге", tags='parameter p_modifier')
-    m_r_cc_water_on_road = FloatField(default=1.0, caption=u"Модификатор резиста штрафа СС в воде на дороге ", tags='parameter p_modifier')
-    m_r_cc_dirt_on_road = FloatField(default=1.0, caption=u"Модификатор резиста штрафа СС на бездорожье на дороге", tags='parameter p_modifier')
-    m_r_cc_slope_on_road = FloatField(default=1.0, caption=u"Модификатор резиста штрафа СС в горах на дороге ", tags='parameter p_modifier')
-    m_r_cc_dirt = FloatField(default=1.0, caption=u"Модификатор резиста бездорожья для отмены бездорожья", tags='parameter p_modifier')
+    m_r_cc_wood_on_road = FloatField(
+        caption=u"Модификатор резиста штрафа СС в лесу на дороге",
+        default=1, tags='parameter p_modifier',
+    )
+    m_r_cc_water_on_road = FloatField(
+        caption=u"Модификатор резиста штрафа СС в воде на дороге ", default=1.0, tags='parameter p_modifier',
+    )
+    m_r_cc_dirt_on_road = FloatField(
+        caption=u"Модификатор резиста штрафа СС на бездорожье на дороге",
+        default=1.0, tags='parameter p_modifier',
+    )
+    m_r_cc_slope_on_road = FloatField(
+        caption=u"Модификатор резиста штрафа СС в горах на дороге",
+        default=1.0, tags='parameter p_modifier',
+    )
+    m_r_cc_dirt = FloatField(
+        caption=u"Модификатор резиста бездорожья для отмены бездорожья",
+        default=1.0, tags='parameter p_modifier',
+    )
     m_cc_mine = FloatField(default=0.5, caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier')
     m_cc_fuel_empty = FloatField(default=0.9, caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier')
 
@@ -210,8 +229,10 @@ class Car(Mobile):
     tuner_car = StringField(caption=u"Представление машинки у тюнера")
     armorer_sectors_svg = StringField(caption=u"Представление секторов машинки у оружейника")
     hangar_car = StringField(caption=u"Представление машинки в ангаре")
-    image_scale = StringField(default="middle", caption=u"Масштаб машинки для отрисовки обвеса: small, middle, big", tags="client")
-
+    image_scale = StringField(
+        caption=u"Масштаб машинки для отрисовки обвеса: small, middle, big",
+        default="middle", tags="client",
+    )
     mechanic_engine = StringField(caption=u"Представление двигателя у механника")
     mechanic_transmission = StringField(caption=u"Представление трансмиссии у механника")
     mechanic_brakes = StringField(caption=u"Представление тормозной системы у механника")
@@ -378,5 +399,3 @@ class MapWeaponRocket(MobileWeapon):
     radius_damage = FloatField(default=30.0, caption=u"Радиус взрыва ракеты")
     damage = FloatField(default=30.0, caption=u"Дамаг в радиусе взрыва")
     life_time = FloatField(default=10.0, caption=u"Время жизни ракеты")
-
-
