@@ -385,7 +385,6 @@ var ConsoleWPI = (function (_super) {
     return ConsoleWPI;
 })(TextConsole);
 
-
 var ConsolePreloader = (function (_super) {
     __extends(ConsolePreloader, _super);
 

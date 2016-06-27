@@ -6,8 +6,13 @@
     color: #31c811;
     font: 12pt Nouveau_IBM;
 }
+#townMenuLocation .partyWindow-main {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+}
 
-#townMenuLocation .windowDragCloseHeader-main { display: block; }
+#townMenuLocation .windowDragCloseHeader-main { display: none; }
 
 .partyWindow-header {
     position: relative;
@@ -22,6 +27,10 @@
     box-sizing: border-box;
     width: calc(100% - 4px);
     height: calc(100% - 30px);
+}
+#townMenuLocation .party-window-wrap {
+    height: 100%;
+    border: none;
 }
 
 .party-window-header-block {
@@ -200,6 +209,7 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+#townMenuLocation .party-page-management-members-block { height: 94px; }
 
 .party-page-management-members-kick-btn {
     position: absolute;
@@ -312,6 +322,7 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+#townMenuLocation .party-page-invite-invites-block { height: 60px; }
 
 .party-page-invite-invites-accept-btn {
     position: absolute;
@@ -353,6 +364,7 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+#townMenuLocation .party-page-invite-members-block { height: 60px; }
 
 .party-window-margin-top { margin-top: 5px; }
 

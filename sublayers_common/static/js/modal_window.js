@@ -151,7 +151,6 @@ var ModalWindow = (function () {
 
             // optionsShowID переделать шапку, в зависимости от результата
             cookieStorage.optionsShowID = optionsShowID.checked ? true : false;
-            setTitleOnPage();
             */
 
         }

@@ -267,8 +267,9 @@ class Agent(Object):
         if not self.is_online:
             return
         car = self.car
-        self._auto_fire_enable = car.is_auto_fire_enable()
-        car.fire_auto_enable(enable=False, time=time)
+        if car is not None:
+            self._auto_fire_enable = car.is_auto_fire_enable()
+            car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=False, time=time)
@@ -280,7 +281,9 @@ class Agent(Object):
         # party - куда включили, agent - кого включили
         if not self.is_online:
             return
-        self.car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
+        car = self.car
+        if car is not None:
+            car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
@@ -294,8 +297,9 @@ class Agent(Object):
         if not self.is_online:
             return
         car = self.car
-        self._auto_fire_enable = car.is_auto_fire_enable()
-        car.fire_auto_enable(enable=False, time=time)
+        if car is not None:
+            self._auto_fire_enable = car.is_auto_fire_enable()
+            car.fire_auto_enable(enable=False, time=time)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=False, time=time)
@@ -308,7 +312,9 @@ class Agent(Object):
         # party - откуда исключили, agent - кого исключили
         if not self.is_online:
             return
-        self.car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
+        car = self.car
+        if car is not None:
+            car.fire_auto_enable(time=time + 0.01, enable=self._auto_fire_enable)
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)

@@ -376,12 +376,6 @@ var ClientManager = (function () {
             // Инициализация мап-зума
             mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
         }
-
-        // Установка текста в верху страницы - вывод своего ника и своей пати
-        setTitleOnPage();
-
-        // Установка своих линий
-        //user.userCar.debugLines = [];
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -659,13 +653,13 @@ var ClientManager = (function () {
 
         // обновить иконки для всех сопартийцев
         ownerList.update_party_icons(user.party.id);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        var widget_marker = null;
+        if (user.userCar)
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
         chat.party_info_message(event.party);
         partyManager.include_to_party(event.party);
-
-        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -674,11 +668,12 @@ var ClientManager = (function () {
         user.party = null;
         // обновить иконки для всех бывших сопартийцев
         ownerList.update_party_icons(old_party_id);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        var widget_marker = null;
+        if (user.userCar)
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
         chat.party_info_message(event);
         partyManager.exclude_from_party();
-        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
@@ -687,7 +682,9 @@ var ClientManager = (function () {
         user.party = null;
         // обновить иконки для всех бывших сопартийцев
         ownerList.update_party_icons(old_party_id);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        var widget_marker = null;
+        if (user.userCar)
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
         chat.party_info_message(event);
         partyManager.exclude_from_party();
