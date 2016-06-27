@@ -492,3 +492,6 @@ class Party(object):
         kicked.party_after_exclude(old_member=kicked, party=self, time=time)
         for member in self.members:
             member.agent.party_after_exclude(old_member=kicked, party=self, time=time)
+
+        # исключить агента из чат-комнаты пати
+        self.room.exclude(agent=kicked, time=time)
