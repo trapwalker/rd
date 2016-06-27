@@ -6,6 +6,13 @@
     color: #31c811;
     font: 12pt Nouveau_IBM;
 }
+#townMenuLocation .partyWindow-main {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+}
+
+#townMenuLocation .windowDragCloseHeader-main { display: none; }
 
 .partyWindow-header {
     position: relative;
@@ -20,6 +27,10 @@
     box-sizing: border-box;
     width: calc(100% - 4px);
     height: calc(100% - 30px);
+}
+#townMenuLocation .party-window-wrap {
+    height: 100%;
+    border: none;
 }
 
 .party-window-header-block {
@@ -198,33 +209,7 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-
-.party-page-management-members-line {
-    position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    padding-left: 5px;
-    box-sizing: border-box;
-    margin-bottom: 2px;
-}
-.party-page-management-members-line:hover {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-.party-page-management-members-line.active {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
+#townMenuLocation .party-page-management-members-block { height: 94px; }
 
 .party-page-management-members-kick-btn {
     position: absolute;
@@ -238,6 +223,36 @@
     line-height: 25px;
 }
 .party-page-management-members-kick-btn:hover { color: #2ffa00; }
+
+.party-page-management-members-category-btn {
+    position: absolute;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    top: 0px;
+    right: 25px;
+    width: 25px;
+    height: 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.soldier { background-image: url('/static/img/chat/soldier_noactive.png'); }
+.party-page-management-members-line.active .soldier { background-image: url('/static/img/chat/soldier.png'); }
+.party-page-management-members-line:hover .soldier { background-image: url('/static/img/chat/soldier.png'); }
+.soldier:hover { background-image: url('/static/img/chat/soldier_active.png'); }
+.party-page-management-members-line:hover .soldier:hover { background-image: url('/static/img/chat/soldier_active.png'); }
+
+.officer { background-image: url('/static/img/chat/officer_noactive.png'); }
+.party-page-management-members-line.active .officer { background-image: url('/static/img/chat/officer.png'); }
+.party-page-management-members-line:hover .officer { background-image: url('/static/img/chat/officer.png'); }
+.officer:hover { background-image: url('/static/img/chat/officer_active.png'); }
+.party-page-management-members-line:hover .officer:hover { background-image: url('/static/img/chat/officer_active.png'); }
+
+.leader { background-image: url('/static/img/chat/leader_noactive.png'); }
+.party-page-management-members-line.active .leader { background-image: url('/static/img/chat/leader.png'); }
+.party-page-management-members-line:hover .leader { background-image: url('/static/img/chat/leader.png'); }
+.leader:hover { background-image: url('/static/img/chat/leader_active.png'); }
+.party-page-management-members-line:hover .leader:hover { background-image: url('/static/img/chat/leader_active.png'); }
+
+.party-page-management-members-category-btn:hover { color: #2ffa00; }
 
 .party-window-person-photo-wrap {
     position: relative;
@@ -307,33 +322,7 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-
-.party-page-invite-invites-line {
-    position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    padding-left: 5px;
-    box-sizing: border-box;
-    margin-bottom: 2px;
-}
-.party-page-invite-invites-line:hover {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-.party-page-invite-invites-line.active {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
+#townMenuLocation .party-page-invite-invites-block { height: 60px; }
 
 .party-page-invite-invites-accept-btn {
     position: absolute;
@@ -375,33 +364,7 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-
-.party-page-invite-members-line {
-    position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    padding-left: 5px;
-    box-sizing: border-box;
-    margin-bottom: 2px;
-}
-.party-page-invite-members-line:hover {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-.party-page-invite-members-line.active {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
+#townMenuLocation .party-page-invite-members-block { height: 60px; }
 
 .party-window-margin-top { margin-top: 5px; }
 
@@ -412,3 +375,19 @@
     box-sizing: border-box;
 }
 .party-window-btn:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
+
+.party-page-line {
+    position: relative;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    width: 100%;
+    height: 25px;
+    line-height: 25px;
+    padding-left: 5px;
+    box-sizing: border-box;
+    margin-bottom: 2px;
+}
+.party-page-line-dark {background-color: #082801}
+.party-page-line-light {background-color: #0e4b00}
+.party-page-line:hover { background-color: #31c811; color: #000000; }
+.party-page-line.active { background-color: #31c811; color: #000000; }
+

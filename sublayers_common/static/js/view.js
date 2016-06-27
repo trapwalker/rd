@@ -179,17 +179,6 @@ function ifBrowser () {
     }();
 }
 
-
-// Установка текста в верху страницы - вывод своего ника и своей пати
-function setTitleOnPage() {
-    var party_str = user.party ? (' [' + user.party.name + '] ') : "/";
-    //if (cookieStorage.optionsShowID)
-    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + party_str + user.userCar.ID);
-    //else
-    //     $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + party_str);
-}
-
-
 // Функции переключения шаблонов - не должны менять модель, только вид!!!!
 function CarTableInfoMenuClick(target) {
     var jq_target = $(target);

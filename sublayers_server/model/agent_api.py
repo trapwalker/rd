@@ -273,15 +273,14 @@ class SendKickEvent(Event):
         party.kick(kicker=self.agent, kicked=user, time=self.time)
 
 
-class SendSetCategoryEvent(Event):
-    def __init__(self, agent, username, category, **kw):
-        super(SendSetCategoryEvent, self).__init__(server=agent.server, **kw)
+class SendChangeCategoryEvent(Event):
+    def __init__(self, agent, username, **kw):
+        super(SendChangeCategoryEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.username = username
-        self.category = category
 
     def on_perform(self):
-        super(SendSetCategoryEvent, self).on_perform()
+        super(SendChangeCategoryEvent, self).on_perform()
         # todo: проблемы с русским языком
         party = self.agent.party
         if party is None:
@@ -297,7 +296,17 @@ class SendSetCategoryEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
             return
-        party.get_member_by_agent(agent=user).category = self.category
+        member = party.get_member_by_agent(agent=user)
+        if member.category == 1:
+            member.category = 2
+            for member in party.members:
+                messages.PartyInfoMessage(agent=member.agent, time=self.time, party=party).post()
+            return
+        if member.category == 2:
+            member.category = 1
+            for member in party.members:
+                messages.PartyInfoMessage(agent=member.agent, time=self.time, party=party).post()
+            return
 
 
 class AgentAPI(API):
@@ -466,9 +475,8 @@ class AgentAPI(API):
         SendKickEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
     @public_method
-    def send_set_category(self, username, category):
-        SendSetCategoryEvent(agent=self.agent, username=unicode(username), category=category,
-                             time=self.agent.server.get_time()).post()
+    def send_change_category(self, username):
+        SendChangeCategoryEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
     @public_method
     def fire_discharge(self, side):
