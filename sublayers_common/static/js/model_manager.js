@@ -676,12 +676,8 @@ var ClientManager = (function () {
         ownerList.update_party_icons(old_party_id);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
-
-        chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
-
         partyManager.exclude_from_party();
-
         setTitleOnPage(); // обновить заголовок окна
     };
 
@@ -693,10 +689,7 @@ var ClientManager = (function () {
         ownerList.update_party_icons(old_party_id);
         var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
-
-        chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
-
         partyManager.exclude_from_party();
     };
 

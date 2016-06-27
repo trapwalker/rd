@@ -73,14 +73,14 @@ var PartyManager = (function () {
 
         var i;
         var jq_member_block = this.jq_main_div.find('.party-page-invite-members-block');
-        var back_class = 'party-window-light-back';
+        var back_class = 'party-page-line-light';
         jq_member_block.empty();
 
         for (i = 0; i < party.members.length; i++) {
             var member = party.members[i];
-            back_class = (back_class == 'party-window-light-back') ? 'party-window-dark-back' : 'party-window-light-back';
+            back_class = (back_class == 'party-page-line-light') ? 'party-page-line-dark' : 'party-page-line-light';
             var jq_member = $(
-                '<div class="party-page-invite-members-line ' + back_class + '" data-agent_name="' + member.agent_name + '">' + member.agent_name + '</div>'
+                '<div class="party-page-invite-members-line party-page-line ' + back_class + '" data-agent_name="' + member.agent_name + '">' + member.agent_name + '</div>'
             );
             jq_member_block.append(jq_member);
         }
@@ -155,6 +155,10 @@ var PartyManager = (function () {
             partyManager.jq_main_div.find('.party-page-create-name-input').first().val('');
             partyManager.jq_main_div.find('.party-page-create-target-textarea').first().val('');
         });
+        self.jq_main_div.find('.party-page-create-name-input').on('keydown', function (event) {
+            if (event.keyCode != 13) return;
+            partyManager.jq_main_div.find('.party-page-create-btn').click();
+        });
 
         //  Вешаем клик на отправку инвайта
         self.jq_main_div.find('.party-page-management-invite-btn').click(function() {
@@ -162,6 +166,10 @@ var PartyManager = (function () {
             if (name && (name != ''))
                 clientManager.sendInvitePartyFromTemplate(name);
             partyManager.jq_main_div.find('.party-page-management-invite-input').first().val('');
+        });
+        self.jq_main_div.find('.party-page-management-invite-input').on('keydown', function (event) {
+            if (event.keyCode != 13) return;
+            partyManager.jq_main_div.find('.party-page-management-invite-btn').click();
         });
 
         self._redraw_invites();
@@ -171,14 +179,14 @@ var PartyManager = (function () {
     PartyManager.prototype._redraw_invites = function () {
         //console.log('PartyManager.prototype._redraw_invites');
         var jq_invite_block = this.jq_main_div.find('.party-page-invite-invites-block');
-        var back_class = 'party-window-light-back';
+        var back_class = 'party-page-line-light';
         jq_invite_block.empty();
         var i;
         for (i = 0; i < this.invites.length; i++) {
             var invite = this.invites[i];
-            back_class = (back_class == 'party-window-light-back') ? 'party-window-dark-back' : 'party-window-light-back';
+            back_class = (back_class == 'party-page-line-light') ? 'party-page-line-dark' : 'party-page-line-light';
             var jq_invite = $(
-                '<div class="party-page-invite-invites-line ' + back_class + '" data-party_name="' + invite.party.name + '">' + invite.party.name + ' [' + invite.sender.login + ']' +
+                '<div class="party-page-invite-invites-line party-page-line ' + back_class + '" data-party_name="' + invite.party.name + '">' + invite.party.name + ' [' + invite.sender.login + ']' +
                     '<div class="party-page-invite-invites-accept-btn" data-party_name="' + invite.party.name + '">+</div>' +
                     '<div class="party-page-invite-invites-del-btn" data-invite_id="' + invite.invite_id + '">&ndash;</div>' +
                 '</div>'
@@ -219,13 +227,13 @@ var PartyManager = (function () {
         //console.log('PartyManager.prototype._redraw_party');
         var i;
         var jq_member_block = this.jq_main_div.find('.party-page-management-members-block');
-        var back_class = 'party-window-light-back';
+        var back_class = 'party-page-line-light';
         jq_member_block.empty();
 
         if (this.party.id >= 0) {
             for (i = 0; i < this.party.members.length; i++) {
                 var member = this.party.members[i];
-                back_class = (back_class == 'party-window-light-back') ? 'party-window-dark-back' : 'party-window-light-back';
+                back_class = (back_class == 'party-page-line-light') ? 'party-page-line-dark' : 'party-page-line-light';
                 var member_class = '';
                 switch (member.category) {
                     case 0:
@@ -238,7 +246,7 @@ var PartyManager = (function () {
                         member_class = 'soldier';
                 }
                 var jq_member = $(
-                    '<div class="party-page-management-members-line ' + back_class + '" data-agent_name="' + member.agent_name + '">' + member.agent_name +
+                    '<div class="party-page-management-members-line party-page-line ' + back_class + '" data-agent_name="' + member.agent_name + '">' + member.agent_name +
                         '<div class="party-page-management-members-category-btn ' + member_class + '"></div>' +
                         '<div class="party-page-management-members-kick-btn">&times;</div>' +
                     '</div>'

@@ -7,6 +7,8 @@
     font: 12pt Nouveau_IBM;
 }
 
+#townMenuLocation .windowDragCloseHeader-main { display: block; }
+
 .partyWindow-header {
     position: relative;
     height: 30px;
@@ -199,33 +201,6 @@
     overflow-x: hidden;
 }
 
-.party-page-management-members-line {
-    position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    padding-left: 5px;
-    box-sizing: border-box;
-    margin-bottom: 2px;
-}
-.party-page-management-members-line:hover {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-.party-page-management-members-line.active {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-
 .party-page-management-members-kick-btn {
     position: absolute;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
@@ -266,7 +241,6 @@
 .party-page-management-members-line:hover .leader { background-image: url('/static/img/chat/leader.png'); }
 .leader:hover { background-image: url('/static/img/chat/leader_active.png'); }
 .party-page-management-members-line:hover .leader:hover { background-image: url('/static/img/chat/leader_active.png'); }
-
 
 .party-page-management-members-category-btn:hover { color: #2ffa00; }
 
@@ -339,33 +313,6 @@
     overflow-x: hidden;
 }
 
-.party-page-invite-invites-line {
-    position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    padding-left: 5px;
-    box-sizing: border-box;
-    margin-bottom: 2px;
-}
-.party-page-invite-invites-line:hover {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-.party-page-invite-invites-line.active {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-
 .party-page-invite-invites-accept-btn {
     position: absolute;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
@@ -407,33 +354,6 @@
     overflow-x: hidden;
 }
 
-.party-page-invite-members-line {
-    position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    padding-left: 5px;
-    box-sizing: border-box;
-    margin-bottom: 2px;
-}
-.party-page-invite-members-line:hover {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-.party-page-invite-members-line.active {
-    color: #000000;
-    background-color: #000000;
-    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00),
-                      linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-}
-
 .party-window-margin-top { margin-top: 5px; }
 
 .party-window-btn {
@@ -443,3 +363,19 @@
     box-sizing: border-box;
 }
 .party-window-btn:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
+
+.party-page-line {
+    position: relative;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    width: 100%;
+    height: 25px;
+    line-height: 25px;
+    padding-left: 5px;
+    box-sizing: border-box;
+    margin-bottom: 2px;
+}
+.party-page-line-dark {background-color: #082801}
+.party-page-line-light {background-color: #0e4b00}
+.party-page-line:hover { background-color: #31c811; color: #000000; }
+.party-page-line.active { background-color: #31c811; color: #000000; }
+
