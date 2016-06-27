@@ -59,7 +59,7 @@
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'VKClick';
         }
-        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+        audioManager.play('error_1');
     }
 
     function FBClick() {
@@ -68,7 +68,7 @@
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'FBClick';
         }
-        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+        audioManager.play('error_1');
     }
 
     function OKClick() {
@@ -77,7 +77,7 @@
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'OKClick';
         }
-        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+        audioManager.play('error_1');
     }
 
     function GClick() {
@@ -86,7 +86,7 @@
             consoleWReg.add_message('system', 'Ошибка: недоступно в режиме альфа-теста.');
             reg_last_input_click = 'GClick';
         }
-        audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+        audioManager.play('error_1');
     }
 
     function RegEmailClick() {
@@ -153,9 +153,10 @@
                 if (data.status == 'success') {
                     consoleWReg.add_message('system', 'Успешно.');
                     GetUserInfo();
+                    audioManager.play('button_screen_press');
                     return;
                 }
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
                 if (data.status == 'fail_wrong_input') {
                     consoleWReg.add_message('system',
                             'Ошибка приема данных.\n\n' +
@@ -174,7 +175,7 @@
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
             }
         });
     }
@@ -195,6 +196,7 @@
                 if (data.status == 'success') {
                     consoleWReg.add_message('system', 'Успешно.');
                     GetUserInfo();
+                    audioManager.play('button_screen_press');
                 }
                 else {
                     consoleWReg.add_message('system',
@@ -208,7 +210,7 @@
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg.add_message('user', 'Активация процедуры авторизации.', true);
                 consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
-                audioManager.play('error_0');
+                audioManager.play('error_1');
             }
         });
     }
@@ -216,6 +218,6 @@
     function RestorePasswordBtnClick() {
         consoleWReg.add_message('user', 'Активация процедуры восстановления доступа.', true);
         consoleWReg.add_message('system', 'Функция недоступна.');
-        audioManager.play('error_0');
+        audioManager.play('error_1');
     }
 </script>

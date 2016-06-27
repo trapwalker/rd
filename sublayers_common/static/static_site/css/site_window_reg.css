@@ -121,6 +121,8 @@
     margin: 0 10px;
 }
 
+.auth-path-up-btn span {pointer-events: none;}
+
 .auth-path-up-btn:first-child {
     margin-left: 16px;
 }

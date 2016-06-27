@@ -94,11 +94,14 @@
                 action: 'next'
             },
             success: function(data) {
-                if (data.status == 'success')
+                if (data.status == 'success') {
                     GetUserInfo();
+                    audioManager.play('button_screen_press');
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.warn('Reg3NextBtnClick ajax error');
+                audioManager.play('error_1');
             }
         });
     }
@@ -108,9 +111,10 @@
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: { action: 'back' },
-            success: function(data) { GetUserInfo(); },
+            success: function(data) { GetUserInfo(); audioManager.play('button_screen_press');},
             error: function (jqXHR, textStatus, errorThrown) {
                 console.warn('Reg3BackBtnClick ajax error');
+                audioManager.play('error_1');
             }
         });
     }

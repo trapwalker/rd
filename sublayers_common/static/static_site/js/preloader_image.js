@@ -15,6 +15,7 @@ var PreloaderImage = (function(){
         this.count_loading = 0;  // —чЄтчик сколько грузитс€  (в идеале должен быть  = 0)
         this.count_image = 0;   // —чЄтчик изображений всего
         this.images = {}; // —писок всех предзагруженных изображений
+        this.ready_images = false;
 
         this.jq_preloader = null;
 
@@ -80,6 +81,7 @@ var PreloaderImage = (function(){
         console.log('PreloaderImage.prototype.all_image_loaded: ', this.count_image);
         $('.site-main-block').css('display', 'block');
         this.jq_preloader.css('display', 'none');
+        this.ready_images = true;
     };
 
 
