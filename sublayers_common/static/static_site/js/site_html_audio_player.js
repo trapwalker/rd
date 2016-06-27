@@ -248,7 +248,7 @@ var RadioPlayer = (function () {
         this.playing = true;
 
         // Запуск шума в цикле
-        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true);
+        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 15);
         // Смена названия радиостанции на "поиск"
         //this.jq_station_name.text(RadioNameSwitchText);
         this.jq_display.removeClass('junk maddog rrn town vigilante');
@@ -274,6 +274,8 @@ var RadioPlayer = (function () {
             this.jq_display.css('display', 'none');
             this.jq_volume_indicator.css('display', 'none');
             this.power_on = false;
+            audioManager.stop('radio_noise_switch');
+            audioManager.stop('radio_noise');
         }
         else {
             this.click_play();
@@ -285,6 +287,9 @@ var RadioPlayer = (function () {
             // Отстроить звук
             this.set_volume(this.current_volume, true);
         }
+
+        // Звук кнопки сети
+        audioManager.play('tumbler');
     };
 
     RadioPlayer.prototype.set_volume = function (volume, not_ignore_equals) {
@@ -322,7 +327,10 @@ var RadioPlayer = (function () {
             this.jq_quality_btn.addClass('high-quality');
         }
 
-         if (this.playing) this.click_play();
+        if (this.playing) this.click_play();
+
+        // Звук кнопки переключения качества
+        audioManager.play('tumbler');
     };
 
     RadioPlayer.prototype.change_site_size = function (old_size, new_size) {
