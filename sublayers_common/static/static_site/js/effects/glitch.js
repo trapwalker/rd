@@ -65,7 +65,8 @@ var GlitchImageEffect = (function(){
 
         //glitchInterval = setTimeout(glith_timeot_fire, randInt2(6000, 3000));
 
-        // todo: включить аудио-оповещение о гличе
+        // включить аудио-оповещение о гличе
+        audioManager.play('glitch_noise', 0, null, null, true, Math.random() * 30);
     };
 
     GlitchImageEffect.prototype.draw_pure_image = function () {
@@ -83,7 +84,8 @@ var GlitchImageEffect = (function(){
             //this.jq_skeletons.css('opacity', 0.0);
         }
 
-        // todo: выключить аудио-оповещение о гличе
+        // выключить аудио-оповещение о гличе
+        audioManager.stop('glitch_noise');
     };
 
     GlitchImageEffect.prototype.start = function () {

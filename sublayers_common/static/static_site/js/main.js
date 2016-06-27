@@ -321,6 +321,7 @@ function init_site_sound() {
     audioManager.load('button_screen_press', {url: '/audio/sound_final1/button_screen_press.wav'});
     audioManager.load('tumbler', {url: '/audio/sound_final1/tumbler.wav'});
     audioManager.load('listing', {url: '/audio/sound_final1/listing.wav'});
+    audioManager.load('glitch_noise', {url: '/audio/sound_final1/glitch_noise.mp3'});
 
     audioManager.load('error_1', {url: '/audio/error_signal/142608__autistic-lucario__error.wav'});
 
