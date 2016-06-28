@@ -21,7 +21,7 @@ import os
 class Zone(Root):
     effects = ListField(
         caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне',
-        base_field=UniReferenceField('sublayers_server.model.registry.classes.effects.Effect'),
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.effects.Effect'),
     )
     order_key = StringField(caption=u'Порядковый ключ', doc=u'Алфавитный ключ, определяющий порядок загрузки зон')
 

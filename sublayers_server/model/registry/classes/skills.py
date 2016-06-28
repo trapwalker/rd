@@ -61,5 +61,5 @@ class BuySkill(Root):
     description = StringField(default=u"Дополнительное очко навыка", caption=u"Расширенное описание", tags='client')
     price = ListField(
         caption=u'Таблица цен на очки навыков', tags='client',
-        base_field=EmbeddedDocumentField(SkillPriceItem),
+        base_field=EmbeddedDocumentField(embedded_document_type=SkillPriceItem),
     )

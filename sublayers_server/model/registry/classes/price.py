@@ -32,7 +32,7 @@ PriceBid = namedtuple('PriceBid', 'buy sale')
 
 
 class Price(AbstractDocument):
-    items = ListField(EmbeddedDocumentField(PriceOption))
+    items = ListField(base_field=EmbeddedDocumentField(embedded_document_type=PriceOption))
 
     def get_item_price(self, item):
         for option in self.items:

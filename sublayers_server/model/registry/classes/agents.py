@@ -27,9 +27,14 @@ class Agent(Root):
     position = PositionField(caption=u"Последние координаты агента")
     balance = FloatField(default=1000, caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить
 
-    last_town = UniReferenceField(caption=u"Последний посещенный город")
-    current_location = UniReferenceField(caption=u"Текущая локация")
-
+    last_town = UniReferenceField(
+        caption=u"Последний посещенный город",
+        reference_document_type='sublayers_server.model.registry.classes.poi.Town',
+    )
+    current_location = UniReferenceField(
+        caption=u"Текущая локация",
+        reference_document_type='sublayers_server.model.registry.classes.poi.Town',
+    )
     # todo: party link
     # todo: invites list
     # todo: chats list?
@@ -41,8 +46,15 @@ class Agent(Root):
     )
 
     # Механизм скилов
-    exp_table = UniReferenceField(default='reg://registry/rpg_settings/exptable', caption=u"Таблица опыта")
-    role_class = UniReferenceField(caption=u"Ролевой класс")
+    exp_table = UniReferenceField(
+        caption=u"Таблица опыта",
+        default='reg://registry/rpg_settings/exptable',
+        reference_document_type='sublayers_server.model.registry.classes.exptable.ExpTable',
+    )
+    role_class = UniReferenceField(  # todo: Проверить нужно ли декларировать default
+        caption=u"Ролевой класс",
+        reference_document_type='sublayers_server.model.registry.classes.role_class.RoleClass',
+    )
 
     buy_driving = UniReferenceField(
         default='reg://registry/rpg_settings/buy_skill',
@@ -75,12 +87,36 @@ class Agent(Root):
         reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
 
-    driving = UniReferenceField(default='reg://registry/rpg_settings/skill', caption=u"Навык вождения", tags='skill')
-    shooting = UniReferenceField(default='reg://registry/rpg_settings/skill', caption=u"Навык стрельбы", tags='skill')
-    masking = UniReferenceField(default='reg://registry/rpg_settings/skill', caption=u"Навык маскировки", tags='skill')
-    leading = UniReferenceField(default='reg://registry/rpg_settings/skill', caption=u"Навык лидерства", tags='skill')
-    trading = UniReferenceField(default='reg://registry/rpg_settings/skill', caption=u"Навык торговли", tags='skill')
-    engineering = UniReferenceField(default='reg://registry/rpg_settings/skill', caption=u"Навык инженеринга", tags='skill')
+    driving = UniReferenceField(
+        caption=u"Навык вождения", tags='skill',
+        default='reg://registry/rpg_settings/skill/driving',
+        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+    )
+    shooting = UniReferenceField(
+        caption=u"Навык стрельбы", tags='skill',
+        default='reg://registry/rpg_settings/skill/shooting',
+        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+    )
+    masking = UniReferenceField(
+        caption=u"Навык маскировки", tags='skill',
+        default='reg://registry/rpg_settings/skill/masking',
+        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+    )
+    leading = UniReferenceField(
+        caption=u"Навык лидерства", tags='skill',
+        default='reg://registry/rpg_settings/skill/leading',
+        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+    )
+    trading = UniReferenceField(
+        caption=u"Навык торговли", tags='skill',
+        default='reg://registry/rpg_settings/skill/trading',
+        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+    )
+    engineering = UniReferenceField(
+        caption=u"Навык инженеринга", tags='skill',
+        default='reg://registry/rpg_settings/skill/engineering',
+        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+    )
 
     def iter_skills(self):  # todo: need review
         for name, attr, getter in self.iter_attrs(tags='skill'):

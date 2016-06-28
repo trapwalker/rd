@@ -10,8 +10,10 @@ from sublayers_server.model.registry.odm.fields import ListField, EmbeddedDocume
 from collections import Counter
 
 class Inventory(AbstractDocument):
-    items = ListField(EmbeddedDocumentField('sublayers_server.model.registry.classes.item.Item'))
-
+    items = ListField(base_field=EmbeddedDocumentField(
+        embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+    ))
+    
     def placing(self):
         u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
         changes = []
