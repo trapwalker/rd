@@ -190,8 +190,6 @@ var RadioPlayer = (function () {
             // Загрузка произошла после таймаута.
             // todo: Что-то предпринять!!!
             this.click_stop();
-            // Запуск просто шума. Пока не переключили радио
-            audioManager.play('radio_noise', 0, this.current_volume, null, true);
         }
 
         //
@@ -349,9 +347,6 @@ var radioPlayer;
 function initRadioPlayer() {
     //console.log('initRadioPlayer !');
     context = audioManager.get_ctx();
-
-    audioManager.load('radio_noise_switch', {url: "/audio/sound_final1/radio_static.mp3"}, false);
-    audioManager.load('radio_noise', {url: "/audio/radio_noise_switch/74934__digifishmusic__radio-static-short-wave-choppy.wav"});
 
     radioPlayer = new RadioPlayer({
         name: 'p1',
