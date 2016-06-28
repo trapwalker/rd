@@ -31,18 +31,16 @@ class Effect(Root):
         ))
 
     def start(self, owner, time):
-        if self.abstract:
-            for effect in self.deep_iter(reject_abstract=True):
-                effect.start(owner, time)
-        else:
+        for effect in self.deep_iter(reject_abstract=True):
+            effect.start(owner, time)
+
+        if not self.abstract:
             EffectStartEvent(effect=self, owner=owner, time=time).post()
 
     def done(self, owner, time):
-        # todo: refactoring
-        if self.abstract:
-            for effect in self.deep_iter(reject_abstract=True):
-                effect.done(owner, time)
-        else:
+        for effect in self.deep_iter(reject_abstract=True):
+            effect.done(owner, time)
+        if not self.abstract:
             EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
     def _modify(self, on, p, m_value, r_value):
