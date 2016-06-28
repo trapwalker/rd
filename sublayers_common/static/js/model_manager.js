@@ -688,6 +688,9 @@ var ClientManager = (function () {
         if (widget_marker) widget_marker.updateIcon();
         chat.party_info_message(event);
         partyManager.exclude_from_party();
+
+        if (locationManager.in_location_flag && locationManager.location_chat)
+            locationManager.location_chat.interaction_manager.set_buttons();
     };
 
     ClientManager.prototype.PartyInviteMessage = function (event) {

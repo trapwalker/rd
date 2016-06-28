@@ -92,6 +92,8 @@ var LocationPlaceMenu = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         var item = this.selected_car_inv_item;
 
+        locationManager.setBtnState(1, '', false);
+        locationManager.setBtnState(2, '', false);
         if (this.selected_page_name == 'Inventory') {
             if (item) {
                 if (item.example.activate_type == 'self' && !item.hasTag('ammo')) {
