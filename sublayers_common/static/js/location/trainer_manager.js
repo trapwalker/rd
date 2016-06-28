@@ -531,6 +531,5 @@ var LocationTrainerNPC = (function (_super) {
         return user.example_agent.rpg_info.current_level - res;
     };
 
-
     return LocationTrainerNPC;
 })(LocationPlaceNPC);

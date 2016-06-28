@@ -41,7 +41,10 @@ var InteractionManager = (function (_super) {
     InteractionManager.prototype.set_buttons = function () {
         //console.log('InteractionManager.prototype.set_buttons');
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, '', false);
+        if (user.party)
+            locationManager.setBtnState(1, 'Пригласить</br>в пати', true);
+        else
+            locationManager.setBtnState(1, 'Пригласить</br>в пати', false);
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
@@ -50,6 +53,9 @@ var InteractionManager = (function (_super) {
     InteractionManager.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationTrainerNPC.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
+            case '1':
+                clientManager.sendInvitePartyFromTemplate(this.player_nick);
+                break;
             case '3':
                 locationManager.location_chat.activate();
                 break;

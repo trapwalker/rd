@@ -35,7 +35,6 @@
 
 .party-window-header-block {
     position: relative;
-    border: 1px solid #0e4b00;
     box-sizing: border-box;
     width: 100%;
     height: 25px;
@@ -148,6 +147,7 @@
     padding: 0 10px 10px 10px;
     box-sizing: border-box;
 }
+#townMenuLocation .party-page-content-block { padding-left: 0; }
 
 .party-page-person-block {
     position: absolute;
@@ -283,6 +283,8 @@
     padding: 0 5px 0 5px;
     box-sizing: border-box;
 }
+#townMenuLocation .party-window-pers-info-line { height: 19px; line-height: 19px; }
+
 .party-window-light-back {
     background-color: #000000;
     background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),

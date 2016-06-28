@@ -47,12 +47,17 @@ $(document).ready(function () {
 
     document.getElementById('map').focus();
 
-    // Повесить на кнопки меню возврат фокуса на карту
-    document.getElementById('divMainMenuBtnCharacter').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('character', '/main_menu_character', null);
-            returnFocusToMap();
-        };
+    document.getElementById('divMainMenuBtnCharacter').onclick = function () {
+        windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw);
+        returnFocusToMap();
+    };
+
+    document.getElementById('divMainMenuBtnParty').onclick = function () {
+        windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
+        returnFocusToMap();
+    };
+
+
 
     document.getElementById('divMainMenuBtnCar').onclick =
         function () {
@@ -74,11 +79,7 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
-    document.getElementById('divMainMenuBtnParty').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('party', '/party', null, partyManager.redraw);
-            returnFocusToMap();
-        };
+
 
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
@@ -205,12 +206,12 @@ function CarInfoBlockAmmoInfoView(description) {
     }
 }
 
+
 function CarInfoBlockAmmoInfoHide(descripion) {
     if (locationManager.in_location_flag) {
         locationManager.panel_right.show({text: ''}, 'description');
     }
 }
-
 
 
 // todo: снести myMap

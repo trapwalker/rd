@@ -21,12 +21,20 @@ var LocationVisitorsManager = (function () {
     };
 
     LocationVisitorsManager.prototype.add_visitor_record = function (visitor) {
-        var visitorDiv = $(
-            '<div id="visitorRecord_' + visitor + '" class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
-                '<div class="visitor-record-label">' + visitor + '</div>'+
-                '<div class="visitor-record-button"></div>'+
-            '</div>'
-        );
+        var visitorDiv = $();
+        if (visitor == user.login)
+            visitorDiv = $(
+                '<div id="visitorRecord_' + visitor + '" class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
+                    '<div class="visitor-record-label">' + visitor + '</div>'+
+                '</div>'
+            );
+        else
+            visitorDiv = $(
+                '<div id="visitorRecord_' + visitor + '" class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
+                    '<div class="visitor-record-label">' + visitor + '</div>'+
+                    '<div class="visitor-record-button"></div>'+
+                '</div>'
+            );
 
         visitorDiv.find('.visitor-record-label').first().click(this.visitor_record_click);
         visitorDiv.find('.visitor-record-button').first().click(this.visitor_record_info_click);
