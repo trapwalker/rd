@@ -186,6 +186,9 @@ function main() {
             audioManager.gain_all(GlobalGeneralSiteGain);
             radioPlayer.set_volume(lastRadioVolume, true);
             $(this).removeClass('off');
+
+
+            $('.site-main-block').css('display', 'block');
         }
         else {
             GlobalGeneralSiteGain = audioManager.general_gain;
@@ -193,6 +196,8 @@ function main() {
             audioManager.gain_all(0.0);
             radioPlayer.set_volume(0.0, true);
             $(this).addClass('off');
+
+            $('.site-main-block').css('display', 'none');
         }
     });
 
@@ -211,7 +216,8 @@ function main() {
             radioPlayer.change_site_size(old_size, new_size);
             //if (glitchEffectStartPage)
             //    glitchEffectStartPage.change_site_size(old_size, new_size);
-
+            if (changeBackFrameEffect)
+                changeBackFrameEffect.change_site_size(old_size, new_size);
         }
 
     };
@@ -313,37 +319,32 @@ function main() {
 function init_site_sound() {
     //audioManager.gain_all(0.01);
 
-    audioManager.load('microwave_btn_click', {url: '/audio/sound_final1/buttons.wav'});
-    audioManager.load('microwave_btn_hover', {url: '/audio/sound_final1/hover.wav'});
-    audioManager.load('skeleton_hover', {url: '/audio/sound_final1/scaner.wav'});
+    //audioManager.load('microwave_btn_click', {url: '/static/audio/sound_final1/buttons.wav'});
+    //audioManager.load('microwave_btn_hover', {url: '/static/audio/sound_final1/hover.wav'});
+    //audioManager.load('skeleton_hover', {url: '/static/audio/sound_final1/scaner.wav'});
+    //audioManager.load('button_screen_hover', {url: '/static/audio/sound_final1/button_screen_hover.wav'});
+    //audioManager.load('button_screen_press', {url: '/static/audio/sound_final1/button_screen_press.wav'});
+    //audioManager.load('tumbler', {url: '/static/audio/sound_final1/tumbler.wav'});
+    //audioManager.load('listing', {url: '/static/audio/sound_final1/listing.wav'});
+    //audioManager.load('glitch_noise', {url: '/static/audio/sound_final1/glitch_noise.mp3'});
+    //audioManager.load('error_1', {url: '/static/audio/sound_final1/error.mp3'});
+    //audioManager.load('radio_noise_switch', {url: "/static/audio/sound_final1/radio_static.mp3"}, false);
+    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
 
-    audioManager.load('button_screen_hover', {url: '/audio/sound_final1/button_screen_hover.wav'});
-    audioManager.load('button_screen_press', {url: '/audio/sound_final1/button_screen_press.wav'});
-    audioManager.load('tumbler', {url: '/audio/sound_final1/tumbler.wav'});
-    audioManager.load('listing', {url: '/audio/sound_final1/listing.wav'});
-    audioManager.load('glitch_noise', {url: '/audio/sound_final1/glitch_noise.mp3'});
-
-    audioManager.load('error_1', {url: '/audio/error_signal/142608__autistic-lucario__error.wav'});
-
-    //audioManager.load('dev_gl_0', {url: '/audio/device_noise/178306__glitchedtones__glitchedtones-apc-66.wav'});
-    //audioManager.load('dev_gl_1', {url: '/audio/device_noise/178308__glitchedtones__glitchedtones-apc-79.wav'});
-
-
-
-    // Кнопки клавиатуры
-    audioManager.load('key_cl_0', {url: '/audio/sound_final1/type.wav'});
-    audioManager.load('key_cl_1', {url: '/audio/sound_final1/type1.wav'});
-    //audioManager.load('key_cl_2', {url: '/audio/print_keyboard/181000__ueffects__r-key.wav'});
-    //audioManager.load('key_cl_3', {url: '/audio/print_keyboard/323717__reitanna__button.wav'});
-    //audioManager.load('key_cl_4', {url: '/audio/print_keyboard/333047__christopherderp__videogame-menu-button-clicking-sound-18.wav'});
-
+    audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'});
+    audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'});
+    audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'});
+    audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'});
+    audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'});
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'});
+    audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'});
+    audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'});
+    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'});
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, false);
+    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
 
     audioKeyboard = new AudioKeyboard([
-        //audioManager.get('key_cl_0'),
-        audioManager.get('key_cl_1'),
-        //audioManager.get('key_cl_2'),
-        //audioManager.get('key_cl_3'),
-        //audioManager.get('key_cl_4')
+        audioManager.get('key_cl_1')
     ]);
     audioKeyboard.gain = 0.2;
 

@@ -29,10 +29,16 @@ var PreloaderImage = (function(){
         var img = new Image();
         img.src = img_url;
 
-        if (! this.time_out_min) this.time_out_min = setTimeout(this.all_image_loaded_min.bind(this), this.min_delay);
-        if (! this.jq_preloader) this.jq_preloader = $('#preloaderBlock');
+        if (!this.time_out_min) this.time_out_min = setTimeout(this.all_image_loaded_min.bind(this), this.min_delay);
+        if (!this.jq_preloader) this.jq_preloader = $('#preloaderBlock');
 
         this.set_image_on_load(img, this.load_complete.bind(this));
+    };
+
+    PreloaderImage.prototype.add_with_callback = function(img_url, callback) {
+        var img = new Image();
+        img.src = img_url;
+        this.set_image_on_load(img, callback);
     };
 
 
@@ -79,9 +85,12 @@ var PreloaderImage = (function(){
 
     PreloaderImage.prototype.all_image_loaded = function() {
         console.log('PreloaderImage.prototype.all_image_loaded: ', this.count_image);
-        $('.site-main-block').css('display', 'block');
+        //$('.site-main-block').css('display', 'block');
+        $('#siteBlock').css('display', 'block');
         this.jq_preloader.css('display', 'none');
         this.ready_images = true;
+
+        after_preload_load_images();
     };
 
 

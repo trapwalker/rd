@@ -74,6 +74,8 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_001.png');
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_002.png');
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_indicator_mark.png');
+
+        preloaderImage.add('/static/static_site/img/09-06-16/1080_aurora_001.png');
     }
 
     if (currentSiteSize == '768') {
@@ -154,4 +156,37 @@ function init_preload_images() {
     preloaderImage.add('/static/static_site/img/chip_buttons/start.png');
     preloaderImage.add('/static/static_site/img/chip_buttons/start_over.png');
     preloaderImage.add('/static/static_site/img/chip_buttons/start_press.png');
+}
+
+
+function after_preload_load_images() {
+    function loaded_back_image(img) {
+        var jq_back =  $('.site-main-back').first();
+        var jq_back_path = $('<div class="site-main-back-part" style="opacity: 0;"></div>');
+        jq_back.append(jq_back_path);
+        jq_back_path.css('background', 'transparent url(' + img.src + ') no-repeat center top');
+        if (! changeBackFrameEffect) {
+            changeBackFrameEffect = new ChangeBackFrameEffect();
+        }
+        changeBackFrameEffect.add_image(jq_back_path, 0.0);
+    }
+
+    if (currentSiteSize == '1080') {
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_001.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_002.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_003.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_004.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_005.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_006.png', loaded_back_image);
+    }
+
+    if (currentSiteSize == '768') {
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_001.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_002.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_003.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_004.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_005.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_006.png', loaded_back_image);
+    }
+
 }
