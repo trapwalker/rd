@@ -1,0 +1,81 @@
+{% set window_caption = 'Nuke:\Character>' %}
+<div class="characterWindow-main">
+    {% include ../drag_close_header.html %}
+    <div class="character-window-wrap">
+        <div class="character-window-left-block">
+            <div class="character-window-hint-label">Описание:</div>
+            <div class="character-window-hint-text"></div>
+        </div>
+        <div class="character-window-right-block">
+            <div class="character-window-up-block">
+                <div class="character-window-avatar-block">
+                    <div class="character-window-avatar"></div>
+                    <div class="character-window-name-block">
+                        <span class="character-window-name"></span>
+                    </div>
+                </div>
+                <div class="character-window-about-block">
+                    <div class="character-window-about-line lvl">Уровень: <span></span></div>
+                    <div class="character-window-about-line role-class">Класс: <span></span></div>
+                    <div class="character-window-about-line karma">Карма: <span></span></div>
+                    <div class="character-window-about-line">О себе:</div>
+                    <div class="character-window-about-area">
+                        <textarea maxlength="100"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="character-window-down-block">
+                <div class="character-window-bottom-menu">
+                    <div class="character-window-bottom-menu-item" data-page="pers_info">Характеристики</div>
+                    <div class="character-window-bottom-menu-item" data-page="pers_inventory">Инвентарь</div>
+                </div>
+                <div class="character-window-page-list">
+                    <div class="character-window-page pers_info">
+                        <div class="character-window-perks-block">
+                            <div class="character-window-ttx-header">Перки</div>
+                            <div class="character-window-ttx-center perks"></div>
+                            <div class="character-window-ttx-footer">
+                                <div class="character-window-ttx-footer-text">Свободные очки</div>
+                                <div class="character-window-ttx-footer-text right free-perks">0</div>
+                            </div>
+                        </div>
+                        <div class="character-window-skills-block">
+                            <div class="character-window-ttx-header">Навыки</div>
+                            <div class="character-window-ttx-center skills">
+                                <div class="character-window-ttx-item" data-skill="driving">
+                                    <div class="character-window-ttx-skill trainer-light-back">Вождение:</div>
+                                    <div class="character-window-ttx-value trainer-light-back driving"></div>
+                                </div>
+                                <div class="character-window-ttx-item" data-skill="shooting">
+                                    <div class="character-window-ttx-skill trainer-dark-back">Стрельба:</div>
+                                    <div class="character-window-ttx-value trainer-dark-back shooting"></div>
+                                </div>
+                                <div class="character-window-ttx-item" data-skill="masking">
+                                    <div class="character-window-ttx-skill trainer-light-back">Скрытность:</div>
+                                    <div class="character-window-ttx-value trainer-light-back masking"></div>
+                                </div>
+                                <div class="character-window-ttx-item" data-skill="engineering">
+                                    <div class="character-window-ttx-skill trainer-dark-back">Механика:</div>
+                                    <div class="character-window-ttx-value trainer-dark-back engineering"></div>
+                                </div>
+                                <div class="character-window-ttx-item" data-skill="trading">
+                                    <div class="character-window-ttx-skill trainer-light-back">Торговля:</div>
+                                    <div class="character-window-ttx-value trainer-light-back trading"></div>
+                                </div>
+                                <div class="character-window-ttx-item" data-skill="leading">
+                                    <div class="character-window-ttx-skill trainer-dark-back">Лидерство:</div>
+                                    <div class="character-window-ttx-value trainer-dark-back leading"></div>
+                                </div>
+                            </div>
+                            <div class="character-window-ttx-footer">
+                                <div class="character-window-ttx-footer-text">Свободные очки</div>
+                                <div class="character-window-ttx-footer-text right free-skills">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="character-window-page pers_inventory">Квестовый Инвентарь</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

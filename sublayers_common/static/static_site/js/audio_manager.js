@@ -7,7 +7,9 @@ var AudioManager = (function () {
     }
 
     // Воспроизведение
-    AudioManager.prototype.play = function (name, time, gain, callback, loop) {
+    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration) {
+        if (!preloaderImage || preloaderImage.ready_images == false) return;
+
         var audio_obj = this.get(name);
         if (! audio_obj) {
             console.warn('AudioManager not found melody name:', name);
@@ -19,7 +21,7 @@ var AudioManager = (function () {
         if (loop && audio_obj.is_playing && audio_obj.play_loop) { // В случае лупа повторный запуск невозможен!
             return true; // Значит уже луп запущен и второй нет смысла запускать
         }
-        return audio_obj.play(time, gain ? gain : this.general_gain, callback, loop);
+        return audio_obj.play(time, gain ? gain : this.general_gain, callback, loop, offset, duration);
     };
 
     AudioManager.prototype.stop = function (name, time) {

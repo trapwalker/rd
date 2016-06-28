@@ -67,6 +67,7 @@
                 action: 'quick_reg'
             },
             success: function() {
+                audioManager.play('button_screen_press');
                 window.location = '/play';
             }
         });
@@ -76,12 +77,14 @@
         qg_car_index--;
         if (qg_car_index < 0) {qg_car_index += length_qg_car_list;}
         SetQuickGameCarIndex();
+        audioManager.play('listing');
     }
 
     function SlideRightQuickCars() {
         qg_car_index++;
         if (qg_car_index > length_qg_car_list - 1) {qg_car_index -= length_qg_car_list;}
         SetQuickGameCarIndex();
+        audioManager.play('listing');
     }
 
     function SetQuickGameCarIndex() {

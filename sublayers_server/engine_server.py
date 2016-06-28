@@ -35,7 +35,7 @@ from sublayers_common.base_application import BaseApplication
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler
-from sublayers_server.handlers.main_menu_character import MainMenuCharacterHandler
+from sublayers_server.handlers.main_menu_character import MenuCharacterHandler
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
@@ -110,15 +110,18 @@ class Application(BaseApplication):
             (r"/site_stat", ServerStatForSite),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
             (r"/api/location", MapLocationHandler),
-            (r"/api/main_menu_character", MainMenuCharacterHandler),
+
             (r"/api/main_car_info", MainCarInfoHandler),
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),
-            (r"/api/party", PartyHandler),
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
             (r"/api/person_info", PersonInfoHandler),
             (r"/api/map_journal", MainJournalHandler),
+
+            (r"/api/menu_character", MenuCharacterHandler),
+            (r"/api/menu_party", PartyHandler),
+
 
             (r"/api/context_panel/locations", ContextPanelLocationsHandler),
             (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),

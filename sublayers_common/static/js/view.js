@@ -47,12 +47,17 @@ $(document).ready(function () {
 
     document.getElementById('map').focus();
 
-    // Повесить на кнопки меню возврат фокуса на карту
-    document.getElementById('divMainMenuBtnCharacter').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('character', '/main_menu_character', null);
-            returnFocusToMap();
-        };
+    document.getElementById('divMainMenuBtnCharacter').onclick = function () {
+        windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw);
+        returnFocusToMap();
+    };
+
+    document.getElementById('divMainMenuBtnParty').onclick = function () {
+        windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
+        returnFocusToMap();
+    };
+
+
 
     document.getElementById('divMainMenuBtnCar').onclick =
         function () {
@@ -73,6 +78,8 @@ $(document).ready(function () {
             });
             returnFocusToMap();
         };
+
+
 
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
 
@@ -173,17 +180,6 @@ function ifBrowser () {
     }();
 }
 
-
-// Установка текста в верху страницы - вывод своего ника и своей пати
-function setTitleOnPage() {
-    var party_str = user.party ? (' [' + user.party.name + '] ') : "/";
-    //if (cookieStorage.optionsShowID)
-    $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + party_str + user.userCar.ID);
-    //else
-    //     $('#title').text('NUKE Navigator v5.51' + ' # ' + user.login + party_str);
-}
-
-
 // Функции переключения шаблонов - не должны менять модель, только вид!!!!
 function CarTableInfoMenuClick(target) {
     var jq_target = $(target);
@@ -210,12 +206,12 @@ function CarInfoBlockAmmoInfoView(description) {
     }
 }
 
+
 function CarInfoBlockAmmoInfoHide(descripion) {
     if (locationManager.in_location_flag) {
         locationManager.panel_right.show({text: ''}, 'description');
     }
 }
-
 
 
 // todo: снести myMap

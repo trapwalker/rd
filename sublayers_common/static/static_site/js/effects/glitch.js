@@ -64,6 +64,9 @@ var GlitchImageEffect = (function(){
         this.glitch_timeouts.push(setTimeout(this.draw_pure_image.bind(this), this.randInt2(i * one_frame, 50)));
 
         //glitchInterval = setTimeout(glith_timeot_fire, randInt2(6000, 3000));
+
+        // включить аудио-оповещение о гличе
+        audioManager.play('glitch_noise', 0, null, null, true, Math.random() * 30);
     };
 
     GlitchImageEffect.prototype.draw_pure_image = function () {
@@ -80,6 +83,9 @@ var GlitchImageEffect = (function(){
             this.jq_road.css('opacity', this.current_opacity);
             //this.jq_skeletons.css('opacity', 0.0);
         }
+
+        // выключить аудио-оповещение о гличе
+        audioManager.stop('glitch_noise');
     };
 
     GlitchImageEffect.prototype.start = function () {

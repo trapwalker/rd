@@ -44,12 +44,14 @@
         reg1_current_avatar--;
         if (reg1_current_avatar < 0) { reg1_current_avatar += reg1_avatar_count }
         SetCurrentAvatar();
+        audioManager.play('listing');
     }
 
     function SlideRightAvatarList() {
         reg1_current_avatar++;
         if (reg1_current_avatar > reg1_avatar_count - 1) { reg1_current_avatar -= reg1_avatar_count }
         SetCurrentAvatar();
+        audioManager.play('listing');
     }
 
     function SetCurrentAvatar() {
@@ -67,12 +69,14 @@
         reg1_current_class--;
         if (reg1_current_class < 0) { reg1_current_class += reg1_class_count }
         SetCurrentClass();
+        audioManager.play('listing');
     }
 
     function SlideRightClassList() {
         reg1_current_class++;
         if (reg1_current_class > reg1_class_count - 1) { reg1_current_class -= reg1_class_count }
         SetCurrentClass();
+        audioManager.play('listing');
     }
 
     function SetCurrentClass() {
@@ -138,9 +142,10 @@
                 if (data.status == 'success') {
                     consoleWReg1.add_message('system', 'Успешно.');
                     GetUserInfo();
+                    audioManager.play('button_screen_press');
                     return;
                 }
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
                 if (data.status == 'fail_wrong_input') {
                     consoleWReg1.add_message('system',
                             'Ошибка приема данных.\n\n' +
@@ -161,7 +166,7 @@
                 reg1_last_input_click = null;
                 consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
             }
         });
     }
@@ -174,12 +179,13 @@
             success: function(data) {
                 reg1_last_input_click = null;
                 GetUserInfo();
+                audioManager.play('button_screen_press');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
                 consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
             }
         });
     }

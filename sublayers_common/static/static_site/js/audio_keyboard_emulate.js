@@ -7,6 +7,8 @@ var AudioKeyboard = (function () {
 
     // Воспроизведение
     AudioKeyboard.prototype.play = function () {
+        if (!preloaderImage || !preloaderImage.ready_images) return;
+
         if (this.need_stop) {
             this.need_stop = false;
             return;

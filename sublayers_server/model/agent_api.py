@@ -11,7 +11,8 @@ from sublayers_server.model.api_tools import API, public_method
 # from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 # from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 # from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
-from sublayers_server.model.party import Party
+from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGetAllInvitesEvent, \
+    PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
@@ -213,11 +214,10 @@ class SetPartyEvent(Event):
                 self.agent.party.exclude(self.agent, time=self.time)
         else:
             party = Party.search(self.name)
-            if party is None:  # tido: checkit
+            if party is None:
                 party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
-
         # todo: save parties
 
 
@@ -273,15 +273,14 @@ class SendKickEvent(Event):
         party.kick(kicker=self.agent, kicked=user, time=self.time)
 
 
-class SendSetCategoryEvent(Event):
-    def __init__(self, agent, username, category, **kw):
-        super(SendSetCategoryEvent, self).__init__(server=agent.server, **kw)
+class SendChangeCategoryEvent(Event):
+    def __init__(self, agent, username, **kw):
+        super(SendChangeCategoryEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.username = username
-        self.category = category
 
     def on_perform(self):
-        super(SendSetCategoryEvent, self).on_perform()
+        super(SendChangeCategoryEvent, self).on_perform()
         # todo: проблемы с русским языком
         party = self.agent.party
         if party is None:
@@ -297,7 +296,17 @@ class SendSetCategoryEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
             return
-        party.get_member_by_agent(agent=user).category = self.category
+        member = party.get_member_by_agent(agent=user)
+        if member.category == 1:
+            member.category = 2
+            for member in party.members:
+                messages.PartyInfoMessage(agent=member.agent, time=self.time, party=party).post()
+            return
+        if member.category == 2:
+            member.category = 1
+            for member in party.members:
+                messages.PartyInfoMessage(agent=member.agent, time=self.time, party=party).post()
+            return
 
 
 class AgentAPI(API):
@@ -429,20 +438,33 @@ class AgentAPI(API):
 
     @public_method
     def send_create_party_from_template(self, name, description):
-        self.set_party(name=name, description=description)
+        self.set_party(name=unicode(name), description=unicode(description))
 
     @public_method
     def send_join_party_from_template(self, name):
-        self.set_party(name=name)
+        self.set_party(name=unicode(name))
 
     @public_method
     def set_party(self, name=None, description=''):
-        SetPartyEvent(agent=self.agent, name=name, description=description,
+        # todo: review
+        SetPartyEvent(agent=self.agent, name=unicode(name), description=unicode(description),
                       time=self.agent.server.get_time()).post()
 
     @public_method
+    def get_all_invites(self):
+        PartyGetAllInvitesEvent(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def get_party_info(self, name):
+        PartyGetPartyInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
+
+    @public_method
+    def get_party_user_info(self, name):
+        PartyGetPartyUserInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
+
+    @public_method
     def send_invite(self, username):
-        SendInviteEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
+        SendInviteEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
     @public_method
     def delete_invite(self, invite_id):
@@ -450,12 +472,11 @@ class AgentAPI(API):
 
     @public_method
     def send_kick(self, username):
-        SendKickEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
+        SendKickEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
     @public_method
-    def send_set_category(self, username, category):
-        SendSetCategoryEvent(agent=self.agent, username=username, category=category,
-                             time=self.agent.server.get_time()).post()
+    def send_change_category(self, username):
+        SendChangeCategoryEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
     @public_method
     def fire_discharge(self, side):

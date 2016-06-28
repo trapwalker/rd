@@ -93,14 +93,16 @@
 
     function Reg2IncSkill(btn) {
         var skill_name = $(btn).data('skill_name');
+        audioManager.play('listing');
         if (reg2_skill_point > 0) {
-           GetUserRPGInfo('inc_skill', skill_name)
+            GetUserRPGInfo('inc_skill', skill_name);
         }
     }
 
     function Reg2DecSkill(btn) {
         var skill_name = $(btn).data('skill_name');
         GetUserRPGInfo('dec_skill', skill_name);
+        audioManager.play('listing');
     }
 
     function Reg2PerkClick(node_hash) {
@@ -116,6 +118,7 @@
                     '--------------------------------------------------------------\n' +
                     'Распределите все свободные очки.\n' +
                     '--------------------------------------------------------------');
+            audioManager.play('error_1');
             return;
         }
         $.ajax({
@@ -129,12 +132,13 @@
                 if (data.status == 'success') {
                     consoleWReg2.add_message('system', 'Успешно.');
                     GetUserInfo();
+                    audioManager.play('button_screen_press');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
                 consoleWReg2.add_message('system', 'Система не отвечает. Повторите попытку позже.');
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
             }
         });
     }
@@ -144,11 +148,11 @@
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: { action: 'back' },
-            success: function(data) { GetUserInfo(); },
+            success: function(data) { GetUserInfo(); audioManager.play('button_screen_press'); },
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
                 consoleWReg2.add_message('system', 'Система не отвечает. Повторите попытку позже.');
-                audioManager.play('error_' + Math.floor(Math.random() * 1.99));
+                audioManager.play('error_1');
             }
         });
     }

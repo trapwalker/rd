@@ -16,7 +16,7 @@ var AudioObject = (function () {
     }
 
     // Воспроизведение
-    AudioObject.prototype.play = function (time, gain, callback, loop) {
+    AudioObject.prototype.play = function (time, gain, callback, loop, offset, duration) {
         if (this.current_source) {
             //console.warn('Вызов play, без предварительного вызова stop ');
         }
@@ -36,7 +36,14 @@ var AudioObject = (function () {
         this.current_source.connect(this.gainNode);
         this.gainNode.connect(context.destination);
         this.current_source.onended = AudioObject.prototype.ended.bind(this);  // Правильный callback с учётом объекта
-        this.current_source.start(context.currentTime + (time == undefined ? 0 : time));
+
+        try{
+            this.current_source.start(context.currentTime + (time == undefined ? 0 : time), offset, duration);
+        }
+        catch (e){
+            console.log(e);
+        }
+
         this.is_playing = true; // Даже если оно ещё не играет, а только ждёт старта
 
         if (typeof(callback) === 'function') {this.ended_callback = callback; }
@@ -49,7 +56,12 @@ var AudioObject = (function () {
     AudioObject.prototype.stop = function (time) {
         if (this.current_source) {
             this.play_loop = false;
-            this.current_source.stop(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
+            try {
+                this.current_source.stop(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
+            }
+            catch (e){
+                console.log(e);
+            }
             this.current_source = null;
             this.is_playing = false;
             return true;

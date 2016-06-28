@@ -62,6 +62,10 @@ function main() {
 
     // Чтобы кнопки залипали!
     $('.btn-page').click(function () {
+        // Проигрывание звуков
+        if (! $(this).hasClass('active'))
+            audioManager.play('microwave_btn_click');
+
         $('.btn').removeClass('active');
         $(this).addClass('active');
 
@@ -88,6 +92,7 @@ function main() {
         }
         else {
             data = $(this).data('window_id');
+            consoleWReg.focus_interrupt();
         }
 
         // Показать окно
@@ -121,15 +126,16 @@ function main() {
         // Мерцание шума
         if (canvasNoise) canvasNoise.flashNoise();
 
-        // Проигрывание звуков
-        audioManager.play('click_' + Math.floor(Math.random() * 3.99));
-        // audioManager.play('dev_gl_' + Math.floor(Math.random() * 1.99), 0.2 * Math.random(), 0.4 * Math.random());
-
         // Изменение хеша в адресной строке (хеш возьмётся из data-url_hash самой кнопки
         var url_hash = $(this).attr('id');
         if (url_hash && url_hash.length) {
             window.location.hash = url_hash.split('_')[1];
         }
+    });
+
+    $('.btn').mouseover(function () {
+        if (! $(this).hasClass('active'))
+            audioManager.play('microwave_btn_hover');
     });
 
 
@@ -169,6 +175,7 @@ function main() {
                 glitchEffectStartPage768.start();
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.start();
+            consoleWReg.focus_interrupt();
         }
     });
 
@@ -179,6 +186,9 @@ function main() {
             audioManager.gain_all(GlobalGeneralSiteGain);
             radioPlayer.set_volume(lastRadioVolume, true);
             $(this).removeClass('off');
+
+
+            $('.site-main-block').css('display', 'block');
         }
         else {
             GlobalGeneralSiteGain = audioManager.general_gain;
@@ -186,6 +196,8 @@ function main() {
             audioManager.gain_all(0.0);
             radioPlayer.set_volume(0.0, true);
             $(this).addClass('off');
+
+            $('.site-main-block').css('display', 'none');
         }
     });
 
@@ -204,7 +216,8 @@ function main() {
             radioPlayer.change_site_size(old_size, new_size);
             //if (glitchEffectStartPage)
             //    glitchEffectStartPage.change_site_size(old_size, new_size);
-
+            if (changeBackFrameEffect)
+                changeBackFrameEffect.change_site_size(old_size, new_size);
         }
 
     };
@@ -269,6 +282,8 @@ function main() {
 
             if (glitchEffectStartPage1080)glitchEffectStartPage1080.stop();
             if (glitchEffectStartPage768)glitchEffectStartPage768.stop();
+
+            audioManager.play('skeleton_hover');
         })
         .mouseout(function () {
             //console.log('mouseout');
@@ -286,146 +301,17 @@ function main() {
 
             if (glitchEffectStartPage1080)glitchEffectStartPage1080.start();
             if (glitchEffectStartPage768)glitchEffectStartPage768.start();
-        })
-}
+        });
 
-function init_preload_images() {
-    preloaderImage.add('/static/img/cursors/main.png');
-    preloaderImage.add('/static/img/cursors/hyper.png');
 
-    if (currentSiteSize == 1080) {
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_main_bg.jpg');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_car.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_road.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_road+grid_002.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_logo.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_car_skeleton_drivetrain.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_car_skeleton_engine.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_car_skeleton_gun.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn1_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn2_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn3_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn4_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn5_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_btn6_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_scan.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_junk.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_maddog.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_rrn.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_town.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_radio_text_vigilante.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_power_btn_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_power_btn_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_power_btn_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_power_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_btn_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_btn_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_power_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_quality_power_indicator.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_normal.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_over.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_pressed.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_freq_slider_mark.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_001.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_002.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_001.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_002.png');
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_indicator_mark.png');
-    }
 
-    if (currentSiteSize == '768') {
-        preloaderImage.add('/static/static_site/img/1366_june/768_main_bg.jpg');
-        preloaderImage.add('/static/static_site/img/1366_june/768_microwave_body_003.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_car.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_road.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_road+grid.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_up.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_up_over.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_down.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_down_over.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_left.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_left_over.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_right.png');
-        preloaderImage.add('/static/static_site/img/btn_slide_right_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_logo.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_drivetrain.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_engine.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_car_skeleton_gun.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn1_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn2_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn3_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn4_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn5_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_btn6_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366/768_fake_radiobuttons.png');
-        preloaderImage.add('/static/static_site/img/1366/768_light_indicator.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_normal.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_over.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_on_pressed.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_normal.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_over.png');
-        preloaderImage.add('/static/static_site/img/site_sound_btn/sound_off_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_scan.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_junk.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_maddog.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_rrn.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_town.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_vigilante.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_power_btn_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_power_btn_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_power_btn_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_quality_power_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_quality_btn_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_quality_btn_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_quality_power_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_quality_power_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_normal.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_over.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_pressed.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_freq_slider_mark.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_001.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_002.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_over_001.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_volume_disc_over_002.png');
-        preloaderImage.add('/static/static_site/img/1366_june/768_volume_indicator_mark.png');
-    }
 
+
+
+    // Клики на всякие кнопки внутри монитора
+    $('.window-reg-up-btn,.window-qg-btn,.reg-btn,.reg1-btn,.reg2-btn,.reg3-btn')
+        .mouseover(function(){audioManager.play('button_screen_hover');});
+        //.click(function(){audioManager.play('button_screen_press');})
 
 
 }
@@ -433,32 +319,35 @@ function init_preload_images() {
 function init_site_sound() {
     //audioManager.gain_all(0.01);
 
-    audioManager.load('click_0', {url: '/audio/button_click/2023__edwin-p-manchester__tapeplayer04.wav'});
-    audioManager.load('click_1', {url: '/audio/button_click/275152__bird-man__click.wav'});
-    audioManager.load('click_2', {url: '/audio/button_click/290442__littlerobotsoundfactory__mouth-09.wav'});
-    audioManager.load('click_3', {url: '/audio/button_click/278967__sfstorm__sfx-clicking.wav'});
+    //audioManager.load('microwave_btn_click', {url: '/static/audio/sound_final1/buttons.wav'});
+    //audioManager.load('microwave_btn_hover', {url: '/static/audio/sound_final1/hover.wav'});
+    //audioManager.load('skeleton_hover', {url: '/static/audio/sound_final1/scaner.wav'});
+    //audioManager.load('button_screen_hover', {url: '/static/audio/sound_final1/button_screen_hover.wav'});
+    //audioManager.load('button_screen_press', {url: '/static/audio/sound_final1/button_screen_press.wav'});
+    //audioManager.load('tumbler', {url: '/static/audio/sound_final1/tumbler.wav'});
+    //audioManager.load('listing', {url: '/static/audio/sound_final1/listing.wav'});
+    //audioManager.load('glitch_noise', {url: '/static/audio/sound_final1/glitch_noise.mp3'});
+    //audioManager.load('error_1', {url: '/static/audio/sound_final1/error.mp3'});
+    //audioManager.load('radio_noise_switch', {url: "/static/audio/sound_final1/radio_static.mp3"}, false);
+    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
 
-    audioManager.load('error_0', {url: '/audio/error_signal/151309__tcpp__beep1-resonant-error-beep.wav'});
-    audioManager.load('error_1', {url: '/audio/error_signal/142608__autistic-lucario__error.wav'});
-
-    audioManager.load('dev_gl_0', {url: '/audio/device_noise/178306__glitchedtones__glitchedtones-apc-66.wav'});
-    audioManager.load('dev_gl_1', {url: '/audio/device_noise/178308__glitchedtones__glitchedtones-apc-79.wav'});
-
-    // Кнопки клавиатуры
-    audioManager.load('key_cl_0', {url: '/audio/print_keyboard/194797__jim-ph__vintage-keyboard-3.wav'});
-    audioManager.load('key_cl_1', {url: '/audio/print_keyboard/332671__reitanna__some-sort-of-click.wav'});
-    audioManager.load('key_cl_2', {url: '/audio/print_keyboard/181000__ueffects__r-key.wav'});
-    audioManager.load('key_cl_3', {url: '/audio/print_keyboard/323717__reitanna__button.wav'});
-    audioManager.load('key_cl_4', {url: '/audio/print_keyboard/333047__christopherderp__videogame-menu-button-clicking-sound-18.wav'});
-
+    audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'});
+    audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'});
+    audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'});
+    audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'});
+    audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'});
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'});
+    audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'});
+    audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'});
+    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'});
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, false);
+    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
 
     audioKeyboard = new AudioKeyboard([
-        audioManager.get('key_cl_0'),
-        audioManager.get('key_cl_1'),
-        audioManager.get('key_cl_2'),
-        audioManager.get('key_cl_3'),
-        audioManager.get('key_cl_4')
+        audioManager.get('key_cl_1')
     ]);
+    audioKeyboard.gain = 0.2;
+
 
 }
 

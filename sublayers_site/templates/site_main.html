@@ -38,6 +38,7 @@
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
     <script src="{{ static_url('static_site/js/main.js') }}"></script>
     <script src="{{ static_url('static_site/js/preloader_image.js') }}"></script>
+    <script src="{{ static_url('static_site/js/preloader_image_list.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_object.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_manager.js') }}"></script>
     <script src="{{ static_url('static_site/js/audio_keyboard_emulate.js') }}"></script>
@@ -53,99 +54,106 @@
     <script src="{{ static_url('static_site/js/effects/indicator_blink.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/text_blur_blink.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/glitch.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/change_back.js') }}"></script>
 
 </head>
 <body>
-    <div class="site-main-block">
-        <div class="site-main-all-block">
-            <!--Сюда вверстать весь сайт!-->
-            <!-- Контент - окна -->
-            <div class="content-block">
-                <div class="content black">
-                    <!--Окно регистрации-->
-                    {% include 'site_window_reg.html' %}
-                    {% include 'site_window_reg_1.html' %}
-                    {% include 'site_window_reg_2.html' %}
-                    {% include 'site_window_reg_3.html' %}
-                    <!--Личный кабинет-->
-                    {% include 'site_personal_info.html' %}
-                    <!--Окно быстрой игры-->
-                    {% include 'site_quick_game.html' %}
-                    <!--Окно новостей-->
-                    {% include 'site_news.html' %}
-                    <!--Окно рейтинги-->
-                    {% include 'site_ratings.html' %}
-                    <!--Окно Об Игре-->
-                    {% include 'site_about_game.html' %}
-                    <canvas id="content-canvas"></canvas>
-                </div>
-            </div>
-            <!-- Микроволновка и кнопки на ней-->
-            <div class="microwawe">
-                <!--Область кнопок на микроволновке-->
-                <div class="btn-block">
-                    <a id="RDbtn_start" class="btn-page btn btn-1" href="/#start" data-window_id="RDSiteWReg"></a>
-                    <a id="RDbtn_quick" class="btn-page btn btn-2" href="/#quick" data-window_id="RDSiteQuickGame"></a>
-                    <a id="RDbtn_about" class="btn-page btn btn-3" href="/#about" data-window_id="RDSiteGameInfo"></a>
-                    <a id="RDbtn_news" class="btn-page btn btn-4" href="/#news" data-window_id="RDSiteNews"></a>
-                    <a id="RDbtn_ratings" class="btn-page btn btn-5" href="/#ratings" data-window_id="RDSiteWRatings"></a>
-                    <a class="btn btn-6" href="/forum" target="_blank"></a>
-                    <div class="radio-block">
-                        <div class="radio-screen">
-                            <a class="radio-screen-content" target="_blank" href="http://radiotower.su"></a>
-                        </div>
-                        <div class="radio-control-block">
-                            <div class="radio-quality-btn high-quality"></div>
-                            <div class="radio-power-btn"></div>
-                            <div class="radio-volume-controller-block">
-                                <div class="radio-volume-controller-images">
-                                    <div class="radio-volume-controller-item item-0"></div>
-                                </div>
-                            </div>
-                            <div class="radio-volume-indicator-block">
-                                <div class="radio-volume-indicator-item volume-17"></div>
-                                <div class="radio-volume-indicator-item volume-34"></div>
-                                <div class="radio-volume-indicator-item volume-51"></div>
-                                <div class="radio-volume-indicator-item volume-68"></div>
-                                <div class="radio-volume-indicator-item volume-85"></div>
-                                <div class="radio-volume-indicator-item volume-99"></div>
-                            </div>
-                        </div>
-                        <div class="radio-slider-block">
-                            <div class="radio-slider-channel">
-                                <div class="radio-slider-carette"></div>
-                            </div>
-                            <div class="radio-slider-channel-pointer-block">
-                                <div class="radio-slider-channel-pointer"></div>
-                            </div>
-                            <div class="radio-scale-channels-block"></div>
-                        </div>
+    <div id="siteBlock">
+        <div class="site-main-back"></div>
+        <div class="site-main-block">
+            <div class="site-main-all-block">
+                <!--Сюда вверстать весь сайт!-->
+                <!-- Контент - окна -->
+                <div class="content-block">
+                    <div class="content black">
+                        <!--Окно регистрации-->
+                        {% include 'site_window_reg.html' %}
+                        {% include 'site_window_reg_1.html' %}
+                        {% include 'site_window_reg_2.html' %}
+                        {% include 'site_window_reg_3.html' %}
+                        <!--Личный кабинет-->
+                        {% include 'site_personal_info.html' %}
+                        <!--Окно быстрой игры-->
+                        {% include 'site_quick_game.html' %}
+                        <!--Окно новостей-->
+                        {% include 'site_news.html' %}
+                        <!--Окно рейтинги-->
+                        {% include 'site_ratings.html' %}
+                        <!--Окно Об Игре-->
+                        {% include 'site_about_game.html' %}
+                        <canvas id="content-canvas"></canvas>
                     </div>
                 </div>
-                <!--Машинка-фон при старте сайте-->
-                <div class="content-start-back content-start road-grid"></div>
-                <div class="content-start-back content-start road"></div>
-{#                <div class="content-start-back content-start car"></div>#}
-                <div class="content-start-back content-start glitch">
-                    <canvas id="glitch_test_768"></canvas>
-                    <canvas id="glitch_test_1080"></canvas>
+                <!-- Микроволновка и кнопки на ней-->
+                <div class="microwawe">
+                    <!--Область кнопок на микроволновке-->
+                    <div class="btn-block">
+                        <a id="RDbtn_start" class="btn-page btn btn-1" href="/#start" data-window_id="RDSiteWReg"></a>
+                        <a id="RDbtn_quick" class="btn-page btn btn-2" href="/#quick" data-window_id="RDSiteQuickGame"></a>
+                        <a id="RDbtn_about" class="btn-page btn btn-3" href="/#about" data-window_id="RDSiteGameInfo"></a>
+                        <a id="RDbtn_news" class="btn-page btn btn-4" href="/#news" data-window_id="RDSiteNews"></a>
+                        <a id="RDbtn_ratings" class="btn-page btn btn-5" href="/#ratings"
+                           data-window_id="RDSiteWRatings"></a>
+                        <a class="btn btn-6" href="/forum" target="_blank"></a>
+
+                        <div class="radio-block">
+                            <div class="radio-screen">
+                                <a class="radio-screen-content" target="_blank" href="http://radiotower.su"></a>
+                            </div>
+                            <div class="radio-control-block">
+                                <div class="radio-quality-btn high-quality"></div>
+                                <div class="radio-power-btn"></div>
+                                <div class="radio-volume-controller-block">
+                                    <div class="radio-volume-controller-images">
+                                        <div class="radio-volume-controller-item item-0"></div>
+                                    </div>
+                                </div>
+                                <div class="radio-volume-indicator-block">
+                                    <div class="radio-volume-indicator-item volume-17"></div>
+                                    <div class="radio-volume-indicator-item volume-34"></div>
+                                    <div class="radio-volume-indicator-item volume-51"></div>
+                                    <div class="radio-volume-indicator-item volume-68"></div>
+                                    <div class="radio-volume-indicator-item volume-85"></div>
+                                    <div class="radio-volume-indicator-item volume-99"></div>
+                                </div>
+                            </div>
+                            <div class="radio-slider-block">
+                                <div class="radio-slider-channel">
+                                    <div class="radio-slider-carette"></div>
+                                </div>
+                                <div class="radio-slider-channel-pointer-block">
+                                    <div class="radio-slider-channel-pointer"></div>
+                                </div>
+                                <div class="radio-scale-channels-block"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Машинка-фон при старте сайте-->
+                    <div class="content-start-back content-start road-grid"></div>
+                    <div class="content-start-back content-start road"></div>
+                    {#                <div class="content-start-back content-start car"></div>#}
+                    <div class="content-start-back content-start glitch">
+                        <canvas id="glitch_test_768"></canvas>
+                        <canvas id="glitch_test_1080"></canvas>
+                    </div>
+                    <a class="site-logo" href="/#"></a>
+
+                    <div class="car-skeleton-path gun" data-name="gun"></div>
+                    <div class="car-skeleton-path drivetrain" data-name="drivetrain"></div>
+                    <div class="car-skeleton-path engine" data-name="engine"></div>
                 </div>
-                <a class="site-logo" href="/#"></a>
-                <div class="car-skeleton-path gun" data-name="gun"></div>
-                <div class="car-skeleton-path drivetrain" data-name="drivetrain"></div>
-                <div class="car-skeleton-path engine" data-name="engine"></div>
-            </div>
-            <!--Консоль на главной странице -->
-            <div id="RDSiteStartPage" class="content-block content-start switch-page">
-                <div class="content">
-                    <div class="content-start-console-wrap">
-                        <div id="RDSiteStartPageConsole" class="console-block"></div>
+                <!--Консоль на главной странице -->
+                <div id="RDSiteStartPage" class="content-block content-start switch-page">
+                    <div class="content">
+                        <div class="content-start-console-wrap">
+                            <div id="RDSiteStartPageConsole" class="console-block"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="site-sound-switch"></div>
     </div>
-    <div class="site-sound-switch"></div>
     <div id="preloaderBlock">
         <div id="consolePreloader"></div>
     </div>

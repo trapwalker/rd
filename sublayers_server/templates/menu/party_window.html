@@ -1,0 +1,125 @@
+{% set window_caption = 'Nuke:\Party>' %}
+<div class="partyWindow-main">
+    {% include ../drag_close_header.html %}
+    <div class="party-window-wrap">
+        <div class="party-window-header-block">
+            <div class="party-window-menu-item" data-page_class="party_page_create">Создание</div>
+            <div class="party-window-menu-item" data-page_class="party_page_management">Управление</div>
+            <div class="party-window-menu-item" data-page_class="party_page_invite">Инвайты</div>
+        </div>
+        <div class="party-window-page-block">
+            <div class="party-window-page party_page_create">
+                <div class="party-page-create-name-label">ИМЯ ПАТИ:</div>
+                <input class="party-page-create-name-input party-window-margin-top" type="text"  maxlength="30"/>
+                <div class="party-page-create-target-label">ЦЕЛИ:</div>
+                <textarea class="party-page-create-target-textarea party-window-margin-top" maxlength="250"></textarea>
+                <div class="party-page-create-btn party-window-btn">Создать</div>
+            </div>
+            <div class="party-window-page party_page_management">
+                <div class="party-page-content-block">
+                    <div class="party-page-management-invite-label">ПРИГЛАСИТЬ:</div>
+                    <input class="party-page-management-invite-input party-window-margin-top" type="text"  maxlength="16"/>
+                    <div class="party-page-management-invite-btn party-window-btn">+</div>
+                    <div class="party-page-management-members-label">УЧАСТНИКИ:</div>
+                    <div class="party-page-management-members-block party-window-margin-top"></div>
+                </div>
+                <div class="party-page-person-block">
+                    <div class="party-window-person-photo-wrap">
+                        <img class="party-window-person-photo">
+                    </div>
+                    <div class="party-window-pers-info">
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Уровень:</div>
+                            <div class="party-window-pers-info-value party-window-lvl"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-party-window-pers-info-label">Класс:</div>
+                            <div class="party-window-pers-info-value party-window-role_class"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Карма:</div>
+                            <div class="party-window-pers-info-value party-window-karma"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-pers-info-label">Вождение:</div>
+                            <div class="party-window-pers-info-value party-window-driving"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Стрельба:</div>
+                            <div class="party-window-pers-info-value party-window-shooting"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-pers-info-label">Скрытность:</div>
+                            <div class="party-window-pers-info-value party-window-masking"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Механика:</div>
+                            <div class="party-window-pers-info-value party-window-engineering"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-pers-info-label">Торговля:</div>
+                            <div class="party-window-pers-info-value party-window-trading"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Лидерство:</div>
+                            <div class="party-window-pers-info-value party-window-leading"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="party-page-car-block"></div>
+            </div>
+            <div class="party-window-page party_page_invite">
+                <div class="party-page-content-block">
+                    <div class="party-page-invite-invites-label">ИНВАЙТЫ:</div>
+                    <div class="party-page-invite-invites-block party-window-margin-top"></div>
+                    <div class="party-page-invite-members-label">УЧАСТНИКИ ПАТИ:</div>
+                    <div class="party-page-invite-members-block party-window-margin-top"></div>
+                </div>
+                <div class="party-page-person-block">
+                    <div class="party-window-person-photo-wrap">
+                        <img class="party-window-person-photo">
+                    </div>
+                    <div class="party-window-pers-info">
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Уровень:</div>
+                            <div class="party-window-pers-info-value party-window-lvl"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-party-window-pers-info-label">Класс:</div>
+                            <div class="party-window-pers-info-value party-window-role_class"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Карма:</div>
+                            <div class="party-window-pers-info-value party-window-karma"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-pers-info-label">Вождение:</div>
+                            <div class="party-window-pers-info-value party-window-driving"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Стрельба:</div>
+                            <div class="party-window-pers-info-value party-window-shooting"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-pers-info-label">Скрытность:</div>
+                            <div class="party-window-pers-info-value party-window-masking"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Механика:</div>
+                            <div class="party-window-pers-info-value party-window-engineering"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-light-back">
+                            <div class="party-window-pers-info-label">Торговля:</div>
+                            <div class="party-window-pers-info-value party-window-trading"></div>
+                        </div>
+                        <div class="party-window-pers-info-line party-window-dark-back">
+                            <div class="party-window-pers-info-label">Лидерство:</div>
+                            <div class="party-window-pers-info-value party-window-leading"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="party-page-car-block"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -379,7 +379,7 @@ var ViewMessengerGlass = (function () {
         var page = {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
             pageControl: $(''),
-            chatArea: $('<div id="textAreaGlobal" class="VMGPartytextOutArea"></div>'),
+            chatArea: $('<div id="textAreaGlobal" class="VMGTextOutArea"></div>'),
             pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Radio</div>'),
             chat: null
         };
@@ -645,27 +645,6 @@ var ViewMessengerGlass = (function () {
         return true;
     };
 
-    // ======== Кнопки работы с пати
-
-    ViewMessengerGlass.prototype.party_invite = function (event) {
-        //console.log('ViewMessengerGlass.prototype.party_invite', event);
-        windowTemplateManager.openUniqueWindow('my_invites', '/party', {page_type: 'my_invites'});
-    };
-
-    ViewMessengerGlass.prototype.party_create = function (event) {
-        //console.log('ViewMessengerGlass.prototype.party_create');
-        if ( user.party == null)
-            windowTemplateManager.openUniqueWindow('create_party', '/party', {page_type: 'create'});
-        if ( user.party != null)
-            windowTemplateManager.openUniqueWindow('party', '/party', {page_type: 'party'});
-    };
-
-    ViewMessengerGlass.prototype.party_leave = function (event) {
-        //alert('Окно для подтверждения выхода из пати');
-        clientManager.sendConsoleCmd('/party leave');
-        chat.main_input.focus();
-    };
-
     // ======== Работа с пати чатом
 
     // Создание вкладки пати (с кнопками и чат-комнатой пати)
@@ -680,33 +659,15 @@ var ViewMessengerGlass = (function () {
         var page = {
             pageArea: $('<div id="chatAreaParty" class="VMGChatOutArea"></div>'),
             pageButton: $('<div id="pageButtonParty" class="VMGpageButton sublayers-clickable">Party</div>'),
-            pageControl: $('<div id="chatPageControlParty" class="VMGPartyPageControl"></div>'),
+            pageControl: $(),
             chat: chat,
             buttons: null
         };
 
         this.dynamicArea.append(page.pageArea);
-        page.pageArea.append(page.pageControl);
         page.pageArea.append(chat.chatArea);
         this.divPageControlArea.append(page.pageButton);
-
         page.pageButton.on('click', {self: this, page: page}, this.onClickPageButton);
-
-        // добавление кнопок для работы с пати
-        page.pageControl.append('<div id="VMGPartyCntrlCreate" class="VMGPartypageButton sublayers-clickable">' + 'Создать' + '</div>');
-        page.pageControl.append('<div id="VMGPartyCntrlInvite" class="VMGPartypageButton sublayers-clickable">' + 'Приглашения' + '</div>');
-        page.pageControl.append('<div id="VMGPartyCntrlLeave" class="VMGPartypageButton sublayers-clickable">' + 'Покинуть' + '</div>');
-
-        page.buttons = {
-            create: $('#VMGPartyCntrlCreate'),
-            leave: $('#VMGPartyCntrlLeave'),
-            invite: $('#VMGPartyCntrlInvite')
-        };
-
-        // вешаем евенты для работы с пати
-        page.buttons.create.click(this, this.party_create);
-        page.buttons.invite.click(this, this.party_invite);
-        page.buttons.leave.click(this, this.party_leave);
 
         this.pages.push(page);
         return page;

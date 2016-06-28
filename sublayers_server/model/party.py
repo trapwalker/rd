@@ -5,8 +5,9 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import (
-    PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
-    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,)
+    PartyInfoMessage, PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
+    PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,
+    PartyUserInfoMessage)
 from sublayers_server.model.chat_room import PartyChatRoom
 
 
@@ -14,6 +15,47 @@ def inc_name_number(name):
     clear_name = name.rstrip('0123456789')
     num = int(name[len(clear_name):] or u'0') + 1
     return u'{}{}'.format(clear_name, num)
+
+
+class PartyGetPartyInfoEvent(Event):
+    def __init__(self, name, agent, **kw):
+        assert (name is not None) and (agent is not None)
+        super(PartyGetPartyInfoEvent, self).__init__(server=agent.server, **kw)
+        self.name = name
+        self.agent = agent
+
+    def on_perform(self):
+        super(PartyGetPartyInfoEvent, self).on_perform()
+        party = Party.search(name=self.name)
+        if party is None: return
+        if (self.agent.party is party) or (party.has_invite(agent=self.agent)):
+            PartyInfoMessage(agent=self.agent, time=self.time, party=party).post()
+
+
+class PartyGetPartyUserInfoEvent(Event):
+    def __init__(self, name, agent, **kw):
+        assert (name is not None) and (agent is not None)
+        super(PartyGetPartyUserInfoEvent, self).__init__(server=agent.server, **kw)
+        self.name = name
+        self.agent = agent
+
+    def on_perform(self):
+        super(PartyGetPartyUserInfoEvent, self).on_perform()
+        # todo: проверить можно ли отправлять инфу
+        PartyUserInfoMessage(agent=self.agent, time=self.time, player_nick=self.name).post()
+
+
+class PartyGetAllInvitesEvent(Event):
+    def __init__(self, agent, **kw):
+        assert (agent is not None)
+        super(PartyGetAllInvitesEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(PartyGetAllInvitesEvent, self).on_perform()
+        for invite in self.agent.invites:
+            PartyInviteMessage(agent=self.agent, sender=invite.sender, recipient=self.agent, party=invite.party,
+                               invite=invite, time=self.time).post()
 
 
 class PartyIncludeEvent(Event):
@@ -105,6 +147,7 @@ class Invite(object):
         for member in self.party.members:
             PartyInviteDeleteMessage(agent=member.agent, sender=self.sender,
                                      recipient=self.recipient, party=self.party, invite=self, time=time).post()
+
         # Приглашаемый тоже должен об этом узнать
         PartyInviteDeleteMessage(agent=self.recipient, sender=self.sender, time=time,
                                  recipient=self.recipient, party=self.party, invite=self).post()
@@ -116,12 +159,6 @@ class Invite(object):
 
 
 class PartyMember(object):
-
-    # Распределение ролей в пати:
-    #       'Owner' - глава пати
-    #       'Admin' - заместитель главы пати
-    #       'Normal' - обычный участник
-
     def __init__(self, agent, party, time, category=2):
         u"""
             category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
@@ -137,8 +174,12 @@ class PartyMember(object):
         # Отправка ему специального сообщения (с мемберами, чтобы он знал кто из его пати)
         PartyIncludeMessageForIncluded(agent=agent, subj=agent, party=party, time=time).post()
         # Рассылка всем агентам, которые видят машинки добавляемого агента
-        for sbscr_agent in agent.car.subscribed_agents:
-            AgentPartyChangeMessage(agent=sbscr_agent, subj=agent, time=time).post()
+        if agent.car is not None:
+            for sbscr_agent in agent.car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=agent, time=time).post()
+        else:
+            for member in self.party.members:
+                AgentPartyChangeMessage(agent=member.agent, subj=self.agent, time=time).post()
 
     def out_from_party(self, time):
         # Исключение мембера из пати
@@ -146,9 +187,12 @@ class PartyMember(object):
         # Отправка специального сообщения исключённому (вышедшему) агенту
         PartyExcludeMessageForExcluded(agent=self.agent, subj=self.agent, party=self.party, time=time).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
-
-        for sbscr_agent in self.agent.car.subscribed_agents:
-            AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
+        if self.agent.car is not None:
+            for sbscr_agent in self.agent.car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
+        else:
+            for member in self.party.members:
+                AgentPartyChangeMessage(agent=member.agent, subj=self.agent, time=time).post()
 
     def kick_from_party(self, time):
         # Исключение мембера из пати
@@ -156,8 +200,12 @@ class PartyMember(object):
         # Отправка специального сообщения исключённому (вышедшему) агенту
         PartyKickMessageForKicked(agent=self.agent, subj=self.agent, party=self.party, time=time).post()
         # Рассылка всем агентам, которые видят машинки удаляемого агента
-        for sbscr_agent in self.agent.car.subscribed_agents:
-            AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
+        if self.agent.car is not None:
+            for sbscr_agent in self.agent.car.subscribed_agents:
+                AgentPartyChangeMessage(agent=sbscr_agent, subj=self.agent, time=time).post()
+        else:
+            for member in self.party.members:
+                AgentPartyChangeMessage(agent=member.agent, subj=self.agent, time=time).post()
 
     @property
     def category(self):
@@ -166,7 +214,6 @@ class PartyMember(object):
     @category.setter
     def category(self, new_category):
         self._category = new_category
-        # todo: сообщение о присвоении роли
 
     def set_description(self, new_description):
         # todo: Сделать свойством
@@ -191,9 +238,9 @@ class PartyMember(object):
 
     # определяет, может ли данный мембер кикнуть другого мембера
     def can_kick_member(self, member):
-        if self.party != member.party:
+        if not (self.party is member.party):
             return False
-        return self.category < member.category
+        return (self.category < member.category) or (self is member)
 
 
 class Party(object):
@@ -228,7 +275,7 @@ class Party(object):
     def search_or_create(cls, name):
         return cls.search(name) or cls(name)
 
-    def _has_invite(self, agent):
+    def has_invite(self, agent):
         for inv in self.invites:
             if inv.recipient == agent:
                 return True
@@ -267,9 +314,10 @@ class Party(object):
                 old_party.on_exclude(agent, time=time)
         else:
             return
+
         # проверка по инвайтам
         if agent != self.owner:
-            if not self._has_invite(agent):
+            if not self.has_invite(agent):
                 PartyErrorMessage(agent=agent, time=time, comment='You do not have invite for this party').post()
                 return
             self._del_invites_by_agent(agent, time=time)
@@ -379,10 +427,12 @@ class Party(object):
         if recipient in self:
             PartyErrorMessage(agent=sender, comment='Recipient in party', time=event.time).post()
             return
+
         member_sender = self.get_member_by_agent(sender)
-        if member_sender.role == 'Normal':
+        if member_sender.category > 1:
             PartyErrorMessage(agent=sender, comment='Sender do not have rights', time=event.time).post()
             return
+
         for inv in self.invites:
             if (inv.sender == sender) and (inv.recipient == recipient):
                 PartyErrorMessage(agent=sender, comment='Invite already exists', time=event.time).post()
@@ -442,3 +492,6 @@ class Party(object):
         kicked.party_after_exclude(old_member=kicked, party=self, time=time)
         for member in self.members:
             member.agent.party_after_exclude(old_member=kicked, party=self, time=time)
+
+        # исключить агента из чат-комнаты пати
+        self.room.exclude(agent=kicked, time=time)

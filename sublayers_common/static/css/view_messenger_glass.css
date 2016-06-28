@@ -179,7 +179,7 @@
     content: " >";
 }
 
-.VMGPartytextOutArea {
+.VMGTextOutArea {
     position: relative;
     height: calc(100% - 30px);
     width: 100%;
@@ -187,9 +187,17 @@
     overflow-x: hidden;
     display: block;
 }
-#townChatLocation .VMGPartytextOutArea {
-    width: 470px;
+#townChatLocation .VMGTextOutArea { width: 470px; }
+
+.VMGPartytextOutArea {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
 }
+#townChatLocation .VMGPartytextOutArea { width: 470px; }
 
 .VMGPartyPageControl {
     position: relative;
@@ -306,8 +314,7 @@
     color: #31c811;
 }
 .VMG-message-message.my-user { color: #2ffa00; }
-.VMG-message-message.for-my-user { background-color: #082801; }
-/*.VMG-message-message.for-my-user .VMG-message-text-text { font: 10pt Nouveau_IBM; }*/
+.VMG-message-message.for-my-user { background-color: rgba(14,75,0,0.4); }
 
 .VMG-message-text-time {
     font: 10pt Nouveau_IBM;

@@ -190,8 +190,6 @@ var RadioPlayer = (function () {
             // Загрузка произошла после таймаута.
             // todo: Что-то предпринять!!!
             this.click_stop();
-            // Запуск просто шума. Пока не переключили радио
-            audioManager.play('radio_noise', 0, this.current_volume, null, true);
         }
 
         //
@@ -248,7 +246,7 @@ var RadioPlayer = (function () {
         this.playing = true;
 
         // Запуск шума в цикле
-        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true);
+        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 35);
         // Смена названия радиостанции на "поиск"
         //this.jq_station_name.text(RadioNameSwitchText);
         this.jq_display.removeClass('junk maddog rrn town vigilante');
@@ -274,6 +272,8 @@ var RadioPlayer = (function () {
             this.jq_display.css('display', 'none');
             this.jq_volume_indicator.css('display', 'none');
             this.power_on = false;
+            audioManager.stop('radio_noise_switch');
+            audioManager.stop('radio_noise');
         }
         else {
             this.click_play();
@@ -285,6 +285,9 @@ var RadioPlayer = (function () {
             // Отстроить звук
             this.set_volume(this.current_volume, true);
         }
+
+        // Звук кнопки сети
+        audioManager.play('tumbler');
     };
 
     RadioPlayer.prototype.set_volume = function (volume, not_ignore_equals) {
@@ -322,7 +325,10 @@ var RadioPlayer = (function () {
             this.jq_quality_btn.addClass('high-quality');
         }
 
-         if (this.playing) this.click_play();
+        if (this.playing) this.click_play();
+
+        // Звук кнопки переключения качества
+        audioManager.play('tumbler');
     };
 
     RadioPlayer.prototype.change_site_size = function (old_size, new_size) {
@@ -341,9 +347,6 @@ var radioPlayer;
 function initRadioPlayer() {
     //console.log('initRadioPlayer !');
     context = audioManager.get_ctx();
-
-    audioManager.load('radio_noise_switch', {url: "/audio/radio_noise_switch/60819__erh__radio-t2-lw-static-3.wav"}, false);
-    audioManager.load('radio_noise', {url: "/audio/radio_noise_switch/74934__digifishmusic__radio-static-short-wave-choppy.wav"});
 
     radioPlayer = new RadioPlayer({
         name: 'p1',
