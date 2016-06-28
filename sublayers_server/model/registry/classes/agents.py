@@ -56,66 +56,68 @@ class Agent(Root):
         reference_document_type='sublayers_server.model.registry.classes.role_class.RoleClass',
     )
 
-    buy_driving = UniReferenceField(
-        default='reg://registry/rpg_settings/buy_skill',
+    # todo: Избавиться от пакета покупных скиллов.
+    # Инфу этих документов нужно разместить в обычных скиллах.
+    buy_driving = EmbeddedDocumentField(
         caption=u"Купленные очки навыка вождения",
-        reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        default='reg://registry/rpg_settings/buy_skill/driving',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
-    buy_shooting = UniReferenceField(
-        default='reg://registry/rpg_settings/buy_skill',
+    buy_shooting = EmbeddedDocumentField(
         caption=u"Купленные очки навыка стрельбы",
-        reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        default='reg://registry/rpg_settings/buy_skill/shooting',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
-    buy_masking = UniReferenceField(
-        default='reg://registry/rpg_settings/buy_skill',
+    buy_masking = EmbeddedDocumentField(
         caption=u"Купленные очки навыка маскировки",
-        reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        default='reg://registry/rpg_settings/buy_skill/masking',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
-    buy_leading = UniReferenceField(
-        default='reg://registry/rpg_settings/buy_skill',
+    buy_leading = EmbeddedDocumentField(
         caption=u"Купленные очки навыка лидерства",
-        reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        default='reg://registry/rpg_settings/buy_skill/leading',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
-    buy_trading = UniReferenceField(
-        default='reg://registry/rpg_settings/buy_skill',
+    buy_trading = EmbeddedDocumentField(
         caption=u"Купленные очки навыка торговли",
-        reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        default='reg://registry/rpg_settings/buy_skill/trading',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
-    buy_engineering = UniReferenceField(
-        default='reg://registry/rpg_settings/buy_skill',
+    buy_engineering = EmbeddedDocumentField(
         caption=u"Купленные очки навыка инженеринга",
-        reference_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        default='reg://registry/rpg_settings/buy_skill/engineering',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
 
-    driving = UniReferenceField(
+    driving = EmbeddedDocumentField(
         caption=u"Навык вождения", tags='skill',
         default='reg://registry/rpg_settings/skill/driving',
-        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
-    shooting = UniReferenceField(
+    shooting = EmbeddedDocumentField(
         caption=u"Навык стрельбы", tags='skill',
         default='reg://registry/rpg_settings/skill/shooting',
-        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
-    masking = UniReferenceField(
+    masking = EmbeddedDocumentField(
         caption=u"Навык маскировки", tags='skill',
         default='reg://registry/rpg_settings/skill/masking',
-        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
-    leading = UniReferenceField(
+    leading = EmbeddedDocumentField(
         caption=u"Навык лидерства", tags='skill',
         default='reg://registry/rpg_settings/skill/leading',
-        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
-    trading = UniReferenceField(
+    trading = EmbeddedDocumentField(
         caption=u"Навык торговли", tags='skill',
         default='reg://registry/rpg_settings/skill/trading',
-        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
-    engineering = UniReferenceField(
+    engineering = EmbeddedDocumentField(
         caption=u"Навык инженеринга", tags='skill',
         default='reg://registry/rpg_settings/skill/engineering',
-        reference_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
 
     def iter_skills(self):  # todo: need review
@@ -141,10 +143,8 @@ class Agent(Root):
         for name, calc_value in self.iter_skills():
             d[name] = calc_value
         d['role_class'] = '' if self.role_class is None else self.role_class.description
-
         # todo: список перков
         # todo: машинка
-
         return d
 
     def get_car_list_by_npc(self, npc):
