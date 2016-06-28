@@ -28,9 +28,6 @@ var LocationPlaceMenu = (function (_super) {
         var self = this;
         this.jq_main_div.find('.menu-header-item.click').click({location: this}, LocationPlaceMenu.menu_buttons_reaction);
         this.jq_main_div.find('.menu-header-item.click').first().click();
-        this.jq_main_div.find('.location-menu-person-skills-block .location-menu-person-ttx-item')
-            .mouseenter({npc: this}, LocationPlaceMenu.skills_event_mouseenter)
-            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
 
         // Инициализация кликов на фильтры инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').click({location: this}, LocationPlaceMenu.inv_filters_click);
@@ -146,44 +143,13 @@ var LocationPlaceMenu = (function (_super) {
         //console.log('LocationPlaceMenu.prototype.update', this.jq_main_div);
 
         // Вкладка Персонаж
-        this.jq_main_div.find('.location-menu-person-avatar').first()
-            .css('background', 'transparent url(' + user.avatar_link + ') 100% 100% no-repeat');
-        this.jq_main_div.find('.location-menu-person-name').first().text(user.login);
-
-        this.jq_main_div.find('.location-menu-person-about-line.lvl span').text(user.example_agent.rpg_info.current_level);
-        this.jq_main_div.find('.location-menu-person-about-line.role-class span').text(user.example_agent.role_class);
-
-        this.jq_main_div.find('.location-menu-person-about-area').first().find('textarea').first().text(user.example_agent.about_self);
-        this.jq_main_div.find('.free-perks').first().text(LocationTrainerNPC._getFreePerkPointsReal());
-        this.jq_main_div.find('.free-skills').first().text(LocationTrainerNPC._getFreeSkillPointsReal());
-
-        // Добавление перков
-        var jq_perks = this.jq_main_div.find('.location-menu-person-ttx-center.perks').first();
-        jq_perks.empty();
-        var k = 0;
-        var perk_list = user.example_agent.rpg_info.perks;
-        for (var i = 0; i < perk_list.length; i++) {
-            var perk_rec = perk_list[i];
-            if (perk_rec.active) {
-                k++;
-                var class_light = k % 2 ? 'trainer-light-back' : 'trainer-dark-back';
-                jq_perks.append(
-                    '<div class="location-menu-person-ttx-item ' + class_light + '" ' +
-                    'data-index="' + i + '">' + perk_rec.perk.title +'</div>'
-                );
-            }
-        }
-
-        jq_perks.find('.location-menu-person-ttx-item')
+        characterManager.redraw(this.jq_main_div);
+        characterManager.jq_main_div.find('.character-window-ttx-center.perks').find('.character-window-ttx-item')
             .mouseenter({npc: this}, LocationPlaceMenu.perks_event_mouseenter)
             .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
-
-        var skill_names = ['driving', 'engineering', 'leading', 'masking', 'shooting', 'trading'];
-        for (var  i = 0; i < skill_names.length; i++) {
-            var skill_name = skill_names[i];
-            this.jq_main_div.find('.location-menu-person-ttx-value.' + skill_name).first().text(LocationTrainerNPC._getSkillValueReal(skill_name));
-        }
-
+        characterManager.jq_main_div.find('.character-window-ttx-center.skills').find('.character-window-ttx-item')
+            .mouseenter({npc: this}, LocationPlaceMenu.skills_event_mouseenter)
+            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
 
         // Вкладка Автомобиль
         var jq_car_block_pic = this.jq_main_div.find('.location-menu-car-picture').first();
@@ -202,7 +168,7 @@ var LocationPlaceMenu = (function (_super) {
         // Отображение инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').first().click();
 
-        // Вкладка пати
+        // Вкладка Пати
         partyManager.redraw(this.jq_main_div);
 
         _super.prototype.update.call(this, data);
@@ -276,7 +242,6 @@ var LocationPlaceMenu = (function (_super) {
         event.data.npc.select_inv_item(event.data.item, $(event.currentTarget));
     };
 
-
     LocationPlaceMenu.perks_event_mouseenter = function (event) {
         //console.log('LocationPlaceMenu.perks_event_mouseenter');
         var perc_rec = user.example_agent.rpg_info.perks[$(event.currentTarget).data('index')];
@@ -291,7 +256,6 @@ var LocationPlaceMenu = (function (_super) {
         event.data.npc.viewRightPanel(user.example_agent.rpg_info[skill_name].description);
     };
 
-
     LocationPlaceMenu.menu_buttons_reaction = function (event) {
         //console.log('.menu-header-item.click - reaction', $(this).data('page_id'), );
         var location = event.data.location;
@@ -303,13 +267,11 @@ var LocationPlaceMenu = (function (_super) {
         location.select_page(page_id);
     };
 
-
     LocationPlaceMenu.inv_filters_click = function (event) {
         //console.log('.menu-header-item.click - reaction', $(this).data('page_id'), );
         var location = event.data.location;
         location.inv_click_filter($(event.currentTarget));
     };
-
 
     return LocationPlaceMenu;
 })(LocationPlace);
