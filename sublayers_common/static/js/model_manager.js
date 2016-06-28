@@ -376,12 +376,6 @@ var ClientManager = (function () {
             // Инициализация мап-зума
             mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
         }
-
-        // Установка текста в верху страницы - вывод своего ника и своей пати
-        setTitleOnPage();
-
-        // Установка своих линий
-        //user.userCar.debugLines = [];
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -659,15 +653,13 @@ var ClientManager = (function () {
 
         // обновить иконки для всех сопартийцев
         ownerList.update_party_icons(user.party.id);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        var widget_marker = null;
+        if (user.userCar)
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
-        chat.page_party.buttons.create.text('Отряд');
         chat.party_info_message(event.party);
-
         partyManager.include_to_party(event.party);
-
-        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -676,15 +668,12 @@ var ClientManager = (function () {
         user.party = null;
         // обновить иконки для всех бывших сопартийцев
         ownerList.update_party_icons(old_party_id);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        var widget_marker = null;
+        if (user.userCar)
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
-
-        chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
-
         partyManager.exclude_from_party();
-
-        setTitleOnPage(); // обновить заголовок окна
     };
 
     ClientManager.prototype.PartyKickMessageForKicked = function (event) {
@@ -693,12 +682,11 @@ var ClientManager = (function () {
         user.party = null;
         // обновить иконки для всех бывших сопартийцев
         ownerList.update_party_icons(old_party_id);
-        var widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+        var widget_marker = null;
+        if (user.userCar)
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
         if (widget_marker) widget_marker.updateIcon();
-
-        chat.page_party.buttons.create.text('Создать');
         chat.party_info_message(event);
-
         partyManager.exclude_from_party();
     };
 
@@ -1228,22 +1216,16 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-
-
-    ClientManager.prototype.sendSetPartyCategory = function (name, category) {
+    ClientManager.prototype.sendChangePartyCategory = function (name) {
+        //console.log('ClientManager.prototype.sendChangePartyCategory', name)
         var mes = {
-            call: "send_set_category",
+            call: "send_change_category",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                username: name,
-                category: category
-            }
+            params: { username: name }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
-
 
     ClientManager.prototype.sendPartyDeleteInvite = function (invite_id) {
         var mes = {

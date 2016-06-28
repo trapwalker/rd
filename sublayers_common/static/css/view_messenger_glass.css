@@ -179,7 +179,7 @@
     content: " >";
 }
 
-.VMGPartytextOutArea {
+.VMGTextOutArea {
     position: relative;
     height: calc(100% - 30px);
     width: 100%;
@@ -187,9 +187,17 @@
     overflow-x: hidden;
     display: block;
 }
-#townChatLocation .VMGPartytextOutArea {
-    width: 470px;
+#townChatLocation .VMGTextOutArea { width: 470px; }
+
+.VMGPartytextOutArea {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
 }
+#townChatLocation .VMGPartytextOutArea { width: 470px; }
 
 .VMGPartyPageControl {
     position: relative;

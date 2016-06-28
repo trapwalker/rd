@@ -202,6 +202,9 @@ var LocationPlaceMenu = (function (_super) {
         // Отображение инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').first().click();
 
+        // Вкладка пати
+        partyManager.redraw(this.jq_main_div);
+
         _super.prototype.update.call(this, data);
     };
 
