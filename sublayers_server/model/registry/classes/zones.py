@@ -5,16 +5,13 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, IntAttribute, TextAttribute
-
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.messages import ZoneMessage
 from sublayers_server.model.events import InsertNewServerZone
 from sublayers_server.model import tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
-from sublayers_server.model.registry.uri import URIFormatError
-from sublayers_server.model.registry.storage import RegistryError
+from sublayers_server.model.registry.odm.fields import IntField, ListField, StringField, UniReferenceField
 
 from tornado.options import options
 from collections import Iterable
@@ -22,9 +19,11 @@ import os
 
 
 class Zone(Root):
-
-    effects = Attribute(caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне')  # todo: list attribute
-    order_key = TextAttribute(caption=u'Порядковый ключ', doc=u'Алфавитный ключ, определяющий порядок загрузки зон')
+    effects = ListField(
+        caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне',
+        base_field=UniReferenceField('sublayers_server.model.registry.classes.effects.Effect'),
+    )
+    order_key = StringField(caption=u'Порядковый ключ', doc=u'Алфавитный ключ, определяющий порядок загрузки зон')
 
     def __init__(self, **kw):
         super(Zone, self).__init__(**kw)
@@ -32,19 +31,6 @@ class Zone(Root):
 
     def activate(self, server, time):
         assert not self.abstract  # нельзя активировать абстрактные зоны
-        effects = []
-        for uri in self.effects or ():
-            try:
-                effect_folder = self.storage[uri]
-
-                for effect in effect_folder.deep_iter(reject_abstract=True):
-                    effects.append(effect)
-            except URIFormatError as e:
-                log.error('Wrong zone (%r) effect URI %r: %r', self, uri, e)
-            except RegistryError as e:
-                log.error('Wrong zone (%r) effect link: %r', self, e)
-
-        self.effects = effects
         InsertNewServerZone(server=server, time=time, zone=self).post()
         self.is_active = True
 
@@ -92,8 +78,8 @@ class ZoneDirt(Zone):
 
 
 class FileZone(Zone):
-    path = TextAttribute(caption=u'Путь', doc=u'Файловый путь к файлу/каталогу с описанием зоны')
-    max_map_zoom = IntAttribute(default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
+    path = StringField(caption=u'Путь', doc=u'Файловый путь к файлу/каталогу с описанием зоны')  # todo: FilepathField
+    max_map_zoom = IntField(default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
 
 
 class TilesetZone(FileZone):
@@ -124,11 +110,12 @@ class TilesetZone(FileZone):
 
 
 class RasterZone(FileZone):
-    pixel_depth = IntAttribute(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
-    extension = TextAttribute(default='.jpg', caption=u'Расширение тайлов')
-    channel = IntAttribute(default=None, caption=u'Канал',
-                           doc=u'Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)')
-
+    pixel_depth = IntField(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
+    extension = StringField(default='.jpg', caption=u'Расширение тайлов')
+    channel = IntField(
+        default=None, caption=u'Канал',
+        doc=u'Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)',
+    )
     def __init__(self, **kw):
         super(RasterZone, self).__init__(**kw)
         self._picker = None
