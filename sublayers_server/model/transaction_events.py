@@ -835,6 +835,7 @@ class TransactionSetRPGState(TransactionEvent):
             (perk_rec['perk'].engineering_req > ex_agent.engineering.calc_value(value=self.skills[u'engineering'])) or
             (perk_rec['perk'].level_req > self.lvl)):
             return False
+
         for perk_id in perk_rec['perk'].perks_req:
             perk_req = self.agent.server.reg[perk_id]
             if not self.perks[perk_req.node_hash()][u'state']:
@@ -842,16 +843,17 @@ class TransactionSetRPGState(TransactionEvent):
         return True
 
     def on_perform(self):
+        # todo: (!!!) REVIEW
         super(TransactionSetRPGState, self).on_perform()
         agent = self.agent
 
         # Получение NPC и проверка валидности совершения транзакции
         npc = agent.server.reg[self.npc_node_hash]
         if (npc is None) or (npc.type != 'trainer'):
-            return
+            return  # todo: warning
 
         if (agent.current_location is None) or (npc not in agent.current_location.example.get_npc_list()):
-            return
+            return  # todo: warning
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.stat_log.get_metric('exp'))
@@ -866,7 +868,7 @@ class TransactionSetRPGState(TransactionEvent):
             cur_sp += skill
 
         if cur_sp > max_sp:
-            return
+            return  # todo: warning
 
         # Проверяем перки
         max_p = math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks
@@ -875,20 +877,20 @@ class TransactionSetRPGState(TransactionEvent):
             if self.perks[perk_node_hash][u'state']:
                 cur_p += 1
         if cur_p > max_p:
-            return
+            return  # todo: warning
 
         for perk in agent.server.reg['/rpg_settings/perks'].deep_iter():
             self.perks[perk.node_hash()].update(perk=perk)
 
         for perk_node_hash in self.perks:
             if self.perks[perk_node_hash][u'state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
-                return
+                return  # todo: warning
 
         for buy_skill_name in self.buy_skills:
             if hasattr(self.agent.example, buy_skill_name):
                 buy_skill = getattr(self.agent.example, buy_skill_name, None)
                 if self.buy_skills[buy_skill_name] < buy_skill.value:
-                    return
+                    return  # todo: warning
 
         # Считаем стоимость транзакции и проверяем хватает ли денег
         price = 0
@@ -917,7 +919,7 @@ class TransactionSetRPGState(TransactionEvent):
                     price += buy_skill.price[val]
 
         if price > agent.example.balance:
-            return
+            return  # todo: message "нету денег"
         agent.example.balance -= price
 
         # Устанавливаем состояние
@@ -948,6 +950,6 @@ class TransactionSetRPGState(TransactionEvent):
 
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = date_str + ': Прокачка персонажа, ' + str(-price) + 'NC'
+        info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
