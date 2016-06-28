@@ -174,7 +174,13 @@ class Inventory(object):
             self.managers.remove(agent)
 
     def get_all_items(self):
-        return [dict({'item': item, 'position': self.get_position(item=item)}) for item in self._items.values()]
+        return [
+            dict({
+                'item': item,
+                'position': self.get_position(item=item)
+            })
+            for item in self._items.values()
+        ]
 
     def get_items(self):
         return self._items.values()
