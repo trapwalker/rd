@@ -7,7 +7,7 @@ import perks
 import poi
 import weapons
 import zones
-import quests
+#import quests
 import exptable
 import effects
 import role_class
