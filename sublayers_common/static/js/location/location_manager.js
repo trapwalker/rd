@@ -100,6 +100,7 @@ var LocationManager = (function () {
         this.panel_right.init(this.jq_town_div.find('#townRightPanel'));
 
         // Создаем окна зданий
+        this.screens.location_screen = null;
         for (var i = 0; i < data.location.example_town.buildings.length; i++) {
             var building_rec = data.location.example_town.buildings[i];
             this.buildings[building_rec.key] = this._getBuildingByType(building_rec, this.jq_town_div);
@@ -118,6 +119,7 @@ var LocationManager = (function () {
         this.location_chat = new LocationPlaceChat(this.jq_town_div);
 
         // Обновить список посетителей города
+        this.visitor_manager.add_visitor(user.login);
         this.visitor_manager.update_visitors();
 
         // Разрешаем отрисовку эффектов на канвас

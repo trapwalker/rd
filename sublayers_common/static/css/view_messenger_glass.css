@@ -314,8 +314,7 @@
     color: #31c811;
 }
 .VMG-message-message.my-user { color: #2ffa00; }
-.VMG-message-message.for-my-user { background-color: #082801; }
-/*.VMG-message-message.for-my-user .VMG-message-text-text { font: 10pt Nouveau_IBM; }*/
+.VMG-message-message.for-my-user { background-color: rgba(14,75,0,0.4); }
 
 .VMG-message-text-time {
     font: 10pt Nouveau_IBM;

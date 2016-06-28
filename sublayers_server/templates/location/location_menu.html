@@ -5,77 +5,11 @@
         <div class="menu-header-item click" data-page_id="Inventory">Инвентарь</div>
         <div class="menu-header-item click small" data-page_id="Journal">Журнал</div>
         <div class="menu-header-item click small" data-page_id="Nukeoil">NukeOil</div>
-        <div class="menu-header-item click small" data-page_id="Party">Party</div>
+        <div class="menu-header-item click small" data-page_id="Party">Пати</div>
     </div>
     <div class="menu-center">
         <div id="locationMenuItem_Person" class="menu-item">
-            <div class="location-menu-person-up">
-                <div class="location-menu-person-avatar-block">
-                    <div class="location-menu-person-avatar"></div>
-                    <div class="location-menu-person-name"></div>
-                </div>
-                <div class="location-menu-person-about-block">
-                    <div class="location-menu-person-about-line lvl">Уровень: <span>X</span></div>
-                    <div class="location-menu-person-about-line role-class">Класс: <span>X</span></div>
-                    <div class="location-menu-person-about-line karma">Карма: <span>0</span></div>
-                    <div class="location-menu-person-about-line">О себе:</div>
-                    <div class="location-menu-person-about-area">
-                        <textarea maxlength="100"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="location-menu-person-down">
-                <div class="location-menu-person-bottom-menu">
-                    <div class="location-menu-person-bottom-menu-item" data-page="pers_info">Характеристики</div>
-                    <div class="location-menu-person-bottom-menu-item" data-page="pers_inventory">Инвентарь</div>
-                </div>
-                <div class="location-menu-person-page-list">
-                    <div class="location-menu-person-page pers_info">
-                        <div class="location-menu-person-perks-block">
-                            <div class="location-menu-person-ttx-header">Перки</div>
-                            <div class="location-menu-person-ttx-center perks"></div>
-                            <div class="location-menu-person-ttx-footer">
-                                <div class="location-menu-person-ttx-footer-text">Свободные очки</div>
-                                <div class="location-menu-person-ttx-footer-text right free-perks">0</div>
-                            </div>
-                        </div>
-                        <div class="location-menu-person-skills-block">
-                            <div class="location-menu-person-ttx-header">Навыки</div>
-                            <div class="location-menu-person-ttx-center">
-                                <div class="location-menu-person-ttx-item" data-skill="driving">
-                                    <div class="location-menu-person-ttx-skill trainer-light-back">Вождение:</div>
-                                    <div class="location-menu-person-ttx-value trainer-light-back driving"></div>
-                                </div>
-                                <div class="location-menu-person-ttx-item" data-skill="shooting">
-                                    <div class="location-menu-person-ttx-skill trainer-dark-back">Стрельба:</div>
-                                    <div class="location-menu-person-ttx-value trainer-dark-back shooting"></div>
-                                </div>
-                                <div class="location-menu-person-ttx-item" data-skill="masking">
-                                    <div class="location-menu-person-ttx-skill trainer-light-back">Скрытность:</div>
-                                    <div class="location-menu-person-ttx-value trainer-light-back masking"></div>
-                                </div>
-                                <div class="location-menu-person-ttx-item" data-skill="engineering">
-                                    <div class="location-menu-person-ttx-skill trainer-dark-back">Механика:</div>
-                                    <div class="location-menu-person-ttx-value trainer-dark-back engineering"></div>
-                                </div>
-                                <div class="location-menu-person-ttx-item" data-skill="trading">
-                                    <div class="location-menu-person-ttx-skill trainer-light-back">Торговля:</div>
-                                    <div class="location-menu-person-ttx-value trainer-light-back trading"></div>
-                                </div>
-                                <div class="location-menu-person-ttx-item" data-skill="leading">
-                                    <div class="location-menu-person-ttx-skill trainer-dark-back">Лидерство:</div>
-                                    <div class="location-menu-person-ttx-value trainer-dark-back leading"></div>
-                                </div>
-                            </div>
-                            <div class="location-menu-person-ttx-footer">
-                                <div class="location-menu-person-ttx-footer-text">Свободные очки</div>
-                                <div class="location-menu-person-ttx-footer-text right free-skills">0</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="location-menu-person-page pers_inventory">Квестовый Инвентарь</div>
-                </div>
-            </div>
+            {% include ../menu/character_window.html %}
         </div>
         <div id="locationMenuItem_Car" class="menu-item">
             <div class="location-menu-car-picture"></div>
@@ -130,7 +64,7 @@
             </div>
         </div>
         <div id="locationMenuItem_Party" class="menu-item">
-            {% include ../party/party_window.html %}
+            {% include ../menu/party_window.html %}
         </div>
     </div>
 </div>
