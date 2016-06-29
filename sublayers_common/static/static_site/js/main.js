@@ -320,19 +320,7 @@ function main() {
 }
 
 function init_site_sound() {
-    //audioManager.gain_all(0.01);
-
-    //audioManager.load('microwave_btn_click', {url: '/static/audio/sound_final1/buttons.wav'});
-    //audioManager.load('microwave_btn_hover', {url: '/static/audio/sound_final1/hover.wav'});
-    //audioManager.load('skeleton_hover', {url: '/static/audio/sound_final1/scaner.wav'});
-    //audioManager.load('button_screen_hover', {url: '/static/audio/sound_final1/button_screen_hover.wav'});
-    //audioManager.load('button_screen_press', {url: '/static/audio/sound_final1/button_screen_press.wav'});
-    //audioManager.load('tumbler', {url: '/static/audio/sound_final1/tumbler.wav'});
-    //audioManager.load('listing', {url: '/static/audio/sound_final1/listing.wav'});
-    //audioManager.load('glitch_noise', {url: '/static/audio/sound_final1/glitch_noise.mp3'});
-    //audioManager.load('error_1', {url: '/static/audio/sound_final1/error.mp3'});
-    //audioManager.load('radio_noise_switch', {url: "/static/audio/sound_final1/radio_static.mp3"}, false);
-    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
+    audioManager.gain_all(0.0);
 
     audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 0.99);
     audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.99);
@@ -349,9 +337,6 @@ function init_site_sound() {
     audioKeyboard = new AudioKeyboard([
         audioManager.get('key_cl_1')
     ]);
-    //audioKeyboard.gain = 0.2;
-
-
 }
 
 function GetQuickGameRecords() {

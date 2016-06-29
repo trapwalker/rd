@@ -8,7 +8,8 @@ var AudioManager = (function () {
 
     // Воспроизведение
     AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration) {
-        if (!preloaderImage || preloaderImage.ready_images == false) return;
+        //console.log(name, gain, this.general_gain);
+        //if (!preloaderImage || preloaderImage.ready_images == false) return;
 
         var audio_obj = this.get(name);
         if (! audio_obj) {

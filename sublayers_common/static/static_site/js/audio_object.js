@@ -7,7 +7,7 @@ var AudioObject = (function () {
         this.is_playing = false;
         this.time = null;
         this.gainNode = audioManager.get_ctx().createGain();
-        this.start_relative_gain = gain === undefined ? 1.0 : gain; // Это относительная громкость (относительно переданной сюда)
+        this.start_relative_gain = gain === undefined ? 1.0 : gain; // Это относительная громкость (относительно переданной в play)
         this.gainNode.gain.value = this.start_relative_gain;
         this.ended_callback = null;   // callback на завершение проигрывания
         this.play_loop = false;
@@ -39,7 +39,10 @@ var AudioObject = (function () {
         this.current_source.onended = AudioObject.prototype.ended.bind(this);  // Правильный callback с учётом объекта
 
         try{
-            this.current_source.start(context.currentTime + (time == undefined ? 0 : time), offset, duration);
+            duration = duration === undefined ? this.audio_buffer.duration : duration;
+            offset = offset === undefined ? null : offset;
+            var t = context.currentTime + (time === undefined ? 0 : time);
+            this.current_source.start(t, offset, duration);
         }
         catch (e){
             console.log(e);
@@ -106,6 +109,7 @@ var AudioObject = (function () {
                         self.play();
                     }
                     self.time = new Date().getTime();
+                    //console.log('Load complete', decodedArrayBuffer);
                 }, function (e) {
                     console.log('Error decoding file', e);
                 });
@@ -135,7 +139,7 @@ var TagAudioObject = (function () {
         if (autoplay) {
             this.play();
         }
-        this.start_relative_gain = gain === undefined ? 1.0 : gain; // Это относительная громкость (относительно переданной сюда)
+        this.start_relative_gain = gain === undefined ? 1.0 : gain; // Это относительная громкость (относительно переданной в play)
     }
 
     // Воспроизведение

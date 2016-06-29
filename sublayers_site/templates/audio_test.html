@@ -7,10 +7,10 @@
 
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
 
-    <script src="{{ static_url('js/audio_object.js') }}"></script>
-    <script src="{{ static_url('js/audio_manager.js') }}"></script>
-    <script src="{{ static_url('js/html_audio_player.js') }}"></script>
-    <script src="{{ static_url('js/audio_test.js') }}"></script>
+
+    <script src="{{ static_url('static_site/js/audio_object.js') }}"></script>
+    <script src="{{ static_url('static_site/js/audio_manager.js') }}"></script>
+    <script src="{{ static_url('static_site/js/audio_test.js') }}"></script>
 
     <style>
 
@@ -21,13 +21,8 @@
 
 </head>
 <body>
-    <div id="loadDiv">Загружается</div>
-
-    <div style="width: 300px; height: 200px;">
-        {% set radioPlayerName = 'p1' %}
-        {% include 'html_radio_player.html' %}
-    </div>
-
+    <button onclick="playSoundNowTag()">Звуууук Tag</button>
+    <button onclick="playSoundNowAPI()">Звуууук API</button>
 <script>
 
 
