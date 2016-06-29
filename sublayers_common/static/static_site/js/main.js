@@ -334,22 +334,22 @@ function init_site_sound() {
     //audioManager.load('radio_noise_switch', {url: "/static/audio/sound_final1/radio_static.mp3"}, false);
     //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
 
-    audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'});
-    audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'});
-    audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'});
-    audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'});
-    audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'});
-    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'});
-    audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'});
-    audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'});
-    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'});
-    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, false);
-    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
+    audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 0.99);
+    audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.99);
+    audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'}, null, null, 0.1);
+    audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'}, null, null, 0.2);
+    audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'}, null, null, 0.5);
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 0.3);
+    audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 0.3);
+    audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.3);
+    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.2);
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 0.3);
+    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.1);
 
     audioKeyboard = new AudioKeyboard([
         audioManager.get('key_cl_1')
     ]);
-    audioKeyboard.gain = 0.2;
+    //audioKeyboard.gain = 0.2;
 
 
 }

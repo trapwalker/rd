@@ -297,7 +297,6 @@ var RadioPlayer = (function () {
         this.audio.volume = this.current_volume;
         // Изменение шума помех, если вдруг они запущены
         audioManager.gain('radio_noise_switch', this.current_volume);
-        audioManager.gain('radio_noise', this.current_volume);
 
         // Правка вёрстки уровня громкости
         var jq_childs = this.jq_volume_indicator.children();

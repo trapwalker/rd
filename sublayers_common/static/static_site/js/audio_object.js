@@ -7,7 +7,8 @@ var AudioObject = (function () {
         this.is_playing = false;
         this.time = null;
         this.gainNode = audioManager.get_ctx().createGain();
-        this.gainNode.gain.value = gain == undefined ? gain : 1.0;
+        this.start_relative_gain = gain === undefined ? 1.0 : gain; // Это относительная громкость (относительно переданной сюда)
+        this.gainNode.gain.value = this.start_relative_gain;
         this.ended_callback = null;   // callback на завершение проигрывания
         this.play_loop = false;
 
@@ -114,7 +115,7 @@ var AudioObject = (function () {
 
     // Установка громкости
     AudioObject.prototype.gain = function (value) {
-        value = value === undefined ? 1.0 : value;
+        value = value === undefined ? 1.0 : value * this.start_relative_gain;
         value = value > 1.0 ? 1.0 : value;
         value = value < 0.0 ? 0.0 : value;
         this.gainNode.gain.value = value;
@@ -128,12 +129,13 @@ var AudioObject = (function () {
 
 
 var TagAudioObject = (function () {
-    function TagAudioObject(source, autoplay) {
+    function TagAudioObject(source, autoplay, gain) {
         this.audio = new Audio([source.url]);
         //this.audio = document.getElementById(source.id);
         if (autoplay) {
             this.play();
         }
+        this.start_relative_gain = gain === undefined ? 1.0 : gain; // Это относительная громкость (относительно переданной сюда)
     }
 
     // Воспроизведение
@@ -172,7 +174,7 @@ var TagAudioObject = (function () {
 
     // Установка громкости
     TagAudioObject.prototype.gain = function (value) {
-        value = value === undefined ? 1.0 : value;
+        value = value === undefined ? 1.0 : value * this.start_relative_gain;
         value = value > 1.0 ? 1.0 : value;
         value = value < 0.0 ? 0.0 : value;
         this.audio.volume = value;
