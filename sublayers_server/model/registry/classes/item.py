@@ -110,14 +110,23 @@ class MechanicItem(SlotItem):
     p_fuel_rate = FloatField(default=0, caption=u"Расход топлива (л/с)")
 
 
+class TunerImageView(AbstractDocument):
+    link = StringField(caption=u"Ссылка на картинку")
+    z_index = IntField(default=0, caption=u"Уровень отображения слоя")
+
+
 class TunerImage(AbstractDocument):
     car = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car')
-    top = EmbeddedDocumentField(embedded_document_type=AbstractDocument)  # todo: make document description
+    top = EmbeddedDocumentField(embedded_document_type=TunerImageView)
+    side = EmbeddedDocumentField(embedded_document_type=TunerImageView)
 
 
 class TunerItem(SlotItem):
     pont_points = FloatField(default=0, caption=u"Очки крутости для итемов тюнера", tags='client')
-    images = ListField(base_field=TunerImage, caption=u'Изображения у тюнера', tags='client')
+    images = ListField(
+        caption=u'Изображения у тюнера', tags='client',
+        base_field=EmbeddedDocumentField(embedded_document_type=TunerImage),
+    )
 
 
 class ArmorerItem(SlotItem):
