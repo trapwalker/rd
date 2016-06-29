@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.odm.doc import AbstractDocument
-from sublayers_server.model.registry.odm.fields import IntField, FloatField, ListField
+from sublayers_server.model.registry.odm.fields import IntField, FloatField, ListField, EmbeddedDocumentField
 
 
 class Pair(AbstractDocument):
@@ -14,10 +14,22 @@ class Pair(AbstractDocument):
 
 
 class ExpTable(Root):
-    user_exp_table = ListField(base_field=Pair, caption=u'Таблица опыта пользователя')
-    car_exp_table = ListField(base_field=Pair, caption=u'Таблица опыта машинки')
-    car_exp_price = ListField(base_field=Pair, caption=u'Таблица ценности машинки')
-    car_m_exp = ListField(base_field=Pair, caption=u'Таблица модификатора опыта получаемого на машинке')
+    user_exp_table = ListField(
+        caption=u'Таблица опыта пользователя',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+    car_exp_table = ListField(
+        caption=u'Таблица опыта машинки',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+    car_exp_price = ListField(
+        caption=u'Таблица ценности машинки',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+    car_m_exp = ListField(
+        caption=u'Таблица модификатора опыта получаемого на машинке',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
 
     def by_exp(self, exp):
         """
