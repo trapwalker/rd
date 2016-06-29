@@ -142,40 +142,6 @@
 }
 
 
-/*Работа со вкладкой Авто*/
-
-.location-menu-car-picture {
-    position: relative;
-    float: left;
-    width: 492px;
-    height: 390px;
-    overflow: hidden;
-    border-right: 1px solid #30fc00;
-    box-sizing: border-box;
-}
-
-.location-menu-car-picture .car-info-block-picture-main {
-    top: 80px;
-}
-
-.location-menu-car-table {
-    position: relative;
-    float: left;
-    height: 100%;
-    width: 240px;
-    overflow: hidden;
-}
-
-.location-menu-car-name {
-    position: absolute;
-    top: 50px;
-    width: 100%;
-    text-align: center;
-    font: 11pt Nouveau_IBM;
-    color: #29F200;
-}
-
-
 /* Вкладка Меню */
 .menu-item .journal-main { height: 396px; }
 .menu-item .journal-header { border-width: 0 0 1px 0; }

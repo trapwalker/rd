@@ -913,6 +913,8 @@ var ClientManager = (function () {
             inventoryList.addInventory(inv);
         }
 
+        characterManager.redraw();
+
         locationManager.update();
     };
 
