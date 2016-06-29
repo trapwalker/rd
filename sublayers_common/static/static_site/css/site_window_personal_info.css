@@ -138,8 +138,8 @@
 
     .window-pi-user-car .car-info-block-picture-main {
         transform: scale(0.71);
-        margin-top: -10px;
-        margin-left: -86px;
+        margin-top: 20px;
+        margin-left: -70px;
     }
 
     .window-pi-user-car .car-info-block-picture-main.default-car {
