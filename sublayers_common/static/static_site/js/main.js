@@ -276,8 +276,9 @@ function main() {
             skeleton_logic[name] = $(this).animate({opacity: 1.0}, 500, function () {});
 
             if (skeleton_logic.glitch_anim) skeleton_logic.glitch_anim.finish();
-            skeleton_logic.glitch_anim = $('.content-start-back.glitch').animate({opacity: 0.3}, 500, function () {});
+            skeleton_logic.glitch_anim = $('.content-start-back.glitch').animate({opacity: 0.5}, 500, function () {});
             skeleton_logic.glitch_opacity = 0.3;
+            $('.content-start-back.glitch').addClass('filtered');
 
 
             if (glitchEffectStartPage1080)glitchEffectStartPage1080.stop();
@@ -294,8 +295,11 @@ function main() {
             skeleton_logic.glitch_opacity = 1.0;
             if (skeleton_logic.glitch_anim) skeleton_logic.glitch_anim.finish();
             setTimeout(function() {
-                if (skeleton_logic.glitch_opacity == 1.0) // Значит мы снова зашли на какую-то систему
+                if (skeleton_logic.glitch_opacity == 1.0) { // Значит мы снова зашли на какую-то систему
                     $('.content-start-back.glitch').animate({opacity: 1.0}, 500, function () {});
+                    $('.content-start-back.glitch').removeClass('filtered');
+                }
+
             }, 10);
 
 
