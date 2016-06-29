@@ -75,6 +75,12 @@
     display: none;
 }
 
+.window-news-news-content-block .scroll-block {
+    padding-left: 10px;
+    padding-right: 40px;
+    /*text-align: justify;*/
+}
+
 .window-news-content .window-qg-content-header {
     width: calc(100% - 4px);
     text-overflow: ellipsis; /* Многоточие */
