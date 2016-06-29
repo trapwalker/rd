@@ -54,6 +54,8 @@
         $('#RDSiteNewsRightHeader').text(header_text);
         $('.window-news-log-news-header').removeClass('active');
         $(this).addClass('active');
+
+        audioManager.play('listing');
     });
     $('.window-news-log-news-header').first().click();
 </script>

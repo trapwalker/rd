@@ -155,6 +155,8 @@ function main() {
         if (jq_this.hasClass('up')) d_scroll = -10;
         if (jq_this.hasClass('down')) d_scroll = 10;
         scroll_interval = setInterval(makeScroll, 50);
+
+        audioManager.play('button_screen_press');
     });
     $('.scroll-btn').mouseup(function (event) {
         d_scroll = 0;
@@ -307,16 +309,13 @@ function main() {
             if (glitchEffectStartPage768)glitchEffectStartPage768.start();
         });
 
-
-
-
-
-
     // Клики на всякие кнопки внутри монитора
-    $('.window-reg-up-btn,.window-qg-btn,.reg-btn,.reg1-btn,.reg2-btn,.reg3-btn')
-        .mouseover(function(){audioManager.play('button_screen_hover');});
-        //.click(function(){audioManager.play('button_screen_press');})
-
+    // Hover
+    $('.window-reg-up-btn,.window-qg-btn,.reg-btn,.reg1-btn,.reg2-btn,.reg3-btn,.slide-arrow,' +
+        '.reg2-skill-table-counter-btn, .window-news-log-news-header, .scroll-btn, .window-ratings-header-path')
+        .mouseover(function () {
+            audioManager.play('button_screen_hover');
+        });
 
 }
 
@@ -384,6 +383,11 @@ function GetRatingInfo(rating_name) {
             if (rating_name == 'Traders') { // Если это первый рейтинг загрузился, то кликнуть на него
                 $('.window-ratings-header-path').first().click();
             }
+
+            jq_elem.find('.window-ratings-line').mouseover(function () {
+                audioManager.play('button_screen_hover');
+            });
+
         },
         error: function () {
             jq_elem.empty();

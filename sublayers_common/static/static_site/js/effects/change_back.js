@@ -28,7 +28,7 @@ var ChangeBackFrameEffect = (function(){
     ChangeBackFrameEffect.prototype.redraw = function(time) {
         if (time < this.change_frame_delay + this.last_time) return;
         this.last_time = time;
-        console.log('ChangeBackFrameEffect.prototype.redraw');
+        //console.log('ChangeBackFrameEffect.prototype.redraw');
         var self = this;
 
         var index = this._get_free_index();
