@@ -11,3 +11,6 @@ import zones
 import exptable
 import effects
 import role_class
+import inventory
+import price
+import skills
