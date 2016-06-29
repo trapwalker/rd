@@ -54,8 +54,9 @@
 .car-info-block-body-right-menu {
     width: 100%;
     height: 25px;
-    padding-top: 4px;
-    font: 12pt Nouveau_IBM;
+    padding: 4px 0 0 6px;
+    font: 11pt Nouveau_IBM;
+    color: #31c811;
     border-width: 0 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, #30fc00, transparent);
@@ -65,54 +66,40 @@
 
 .mainCarInfoWindow-body-right-menu-button {
     position: relative;
-    float: left;
-    margin: 0 0 0 18px;
-    text-align: center;
-    color: #135806;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
+    float: left;
+    padding: 0 10px 0 10px;
+    box-sizing: border-box;
 }
-
+.mainCarInfoWindow-body-right-menu-button.active, .mainCarInfoWindow-body-right-menu-button:hover { color: #2ffa00; }
 .mainCarInfoWindow-body-right-menu-button.active:before {
     content: ' ';
     position: absolute;
     width: 0;
     height: 0;
-    left: -7px;
+    left: 1px;
     top: 2px;
     border-top: 5px solid transparent;
-    border-left: 5px solid #00ff00;
+    border-left: 5px solid #2ffa00;
     border-bottom: 5px solid transparent;
 }
-
 .mainCarInfoWindow-body-right-menu-button.active:after {
     content: ' ';
     position: absolute;
-    right: -6px;
+    right: 1px;
     top: 2px;
     width: 0;
     height: 0;
     border-top: 5px solid transparent;
-    border-right: 5px solid #00ff00;
+    border-right: 5px solid #2ffa00;
     border-bottom: 5px solid transparent;
 }
-
-
-.mainCarInfoWindow-body-right-menu-button:hover {
-    background-color: #061108;
-    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
-    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
+.mainCarInfoWindow-body-right-menu-button.active {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00),
+                      linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00);
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
-    color: #30fc00;
-}
-
-.mainCarInfoWindow-body-right-menu-button:active, .mainCarInfoWindow-body-right-menu-button.active {
-    background-color: #061108;
-    background-image: linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806),
-    linear-gradient(45deg, #135806 25%, transparent 25%, transparent 74%, #135806 75%, #135806);
-    background-size: 2px 2px;
-    background-position: 0 0, 1px 1px;
-    color: #30fc00;
 }
 
 .car-info-block-body-right-list {
@@ -121,9 +108,7 @@
     width: 100%;
     height: calc(100% - 25px);
     color: #1e9604;
-    /* padding-top: 15px; */
-    /* padding-left: 10px; */
-    /* padding-right: 10px; */
+    padding: 5px;
     box-sizing: border-box;
     overflow-y: auto;
     cursor: url('/static/img/cursors/main.png'), default;
@@ -131,7 +116,6 @@
 }
 
 .car-info-block-body-right-list.active {display: block;}
-
 
 .car-info-block-body-right-list-text {
     position: relative;
@@ -150,11 +134,10 @@
     text-align: right;
 }
 
-
 .car-info-block-body-right-list-text.even {
     background-color: #000000;
     background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
-    linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+                      linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
 }
@@ -162,7 +145,7 @@
 .car-info-block-body-right-list-text.uneven {
     background-color: #000000;
     background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
-    linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+                      linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
 }

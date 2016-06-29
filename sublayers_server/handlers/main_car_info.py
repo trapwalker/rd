@@ -5,6 +5,12 @@ log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
 
+
+class MenuCarHandler(BaseHandler):
+    def get(self):
+        self.render("menu/car_window.html")
+
+
 class MainCarInfoHandler(BaseHandler):
     def get(self):
         agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)

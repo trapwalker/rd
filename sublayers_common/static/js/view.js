@@ -52,6 +52,11 @@ $(document).ready(function () {
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnCar').onclick = function () {
+        windowTemplateManager.openUniqueWindow('car_info', '/menu_car', null, carManager.redraw);
+        returnFocusToMap();
+    };
+
     document.getElementById('divMainMenuBtnParty').onclick = function () {
         windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
@@ -59,11 +64,7 @@ $(document).ready(function () {
 
 
 
-    document.getElementById('divMainMenuBtnCar').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('car_info', '/main_car_info', null);
-            returnFocusToMap();
-        };
+
 
     document.getElementById('divMainMenuBtnInventory').onclick =
         function () {
