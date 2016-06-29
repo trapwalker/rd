@@ -103,29 +103,11 @@ class Institution(Root):
         pass
 
 
-class Nucoil(Institution):
-    type = StringField(default='nucoil', caption=u"Специальность NPC", tags='client')
-
-
-class Armorer(Institution):
-    type = StringField(default='armorer', caption=u"Специальность NPC", tags='client')
-
-
-class Mechanic(Institution):
-    type = StringField(default='mechanic', caption=u"Специальность NPC", tags='client')
-
-
-class Tuner(Institution):
-    type = StringField(default='tuner', caption=u"Специальность NPC", tags='client')
-
-
 class Trainer(Institution):
-    type = StringField(default='trainer', caption=u"Специальность NPC", tags='client')
     drop_price = IntField(default=10, caption=u"Цена за сброс перков и навыков", tags='client')
 
 
 class Trader(Institution):
-    type = StringField(default='trader', caption=u"Специальность NPC", tags='client')
     inventory_size = IntField(default=10, caption=u"Размер инвентаря")
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceField(caption=u"Прайс-лист")
@@ -140,7 +122,6 @@ class Trader(Institution):
 
 
 class Hangar(Institution):
-    type = StringField(default='hangar', caption=u"Специальность NPC", tags='client')
     car_list = ListField(
         caption=u"Список продаваемых машин", tags='client',
         base_field=UniReferenceField('sublayers_server\model.registry.classes.mobiles.Car'),
@@ -148,7 +129,6 @@ class Hangar(Institution):
 
 
 class Parking(Institution):
-    type = StringField(default='parking', caption=u"Специальность NPC", tags='client')
     cost_for_day_parking = FloatField(default=10, caption=u'Стоимость дня у парковщика', tags='client')
 
     def get_car_price(self, car):
@@ -160,24 +140,3 @@ class Parking(Institution):
             delta = 0
         delta_days = math.floor(delta / (60 * 60 * 24)) + 1
         return delta_days * self.cost_for_day_parking
-
-
-class Mayor(Institution):
-    type = StringField(default='mayor', caption=u"Специальность NPC", tags='client')
-
-
-class Barman(Institution):
-    type = StringField(default='barman', caption=u"Специальность NPC", tags='client')
-
-
-class Girl(Institution):
-    type = StringField(default='girl', caption=u"Специальность NPC", tags='client')
-
-
-class GasStationNPC(Institution):
-    type = StringField(default='npc_gas_station', caption=u"Специальность NPC", tags='client')
-
-
-class NucoilHelpNPC(Institution):
-    type = StringField(default='nucoil_help_npc', caption=u"Специальность NPC", tags='client')
-
