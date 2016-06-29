@@ -149,9 +149,7 @@
         margin-top: -20px;
     }
 
-    .window-qg-content-car-slide-arrow {
-        top: 70px;
-    }
+    .window-qg-content-car-block .slide-arrow {top: 70px;}
 
     .window-qg-content-nickname-input { font-size: 12pt; }
 

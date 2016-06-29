@@ -1,24 +1,14 @@
 var CharacterManager = (function () {
 
     function CharacterManager() {
-        //this.invites = [];
-        //this.jq_main_div = $();
-        //this.party = {
-        //    id: -1,
-        //    name: '',
-        //    members: []
-        //};
-        //
-        //this.field_name_list = ['lvl', 'role_class', 'karma', 'driving', 'shooting', 'masking', 'leading', 'trading', 'engineering'];
-        //this.selected_party_name = '';
-        //this.invite_user_name = '';
-        //this.party_user_name = '';
+        this.jq_main_div = $();
     }
 
     CharacterManager.prototype.redraw = function (jq_main_div) {
         //console.log('SelfInfoManager.prototype.redraw', $(jq_main_div));
         var self = characterManager;
-        self.jq_main_div = $(jq_main_div).first();
+        if (jq_main_div)
+            self.jq_main_div = $(jq_main_div).first();
 
         // Заполняем верхнюю часть окна
         self.jq_main_div.find('.character-window-avatar').first()

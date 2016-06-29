@@ -2,7 +2,7 @@
     position: relative;
     height: 452px;
     width: 734px;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.9);
     color: #31c811;
     font: 11pt Nouveau_IBM;
 }
@@ -79,7 +79,10 @@
     padding: 5px;
     box-sizing: border-box;
 }
-#townMenuLocation .character-window-up-block { border-image: linear-gradient(to right, transparent, #0e4b00, transparent); }
+#townMenuLocation .character-window-up-block {
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+}
 
 .character-window-down-block {
     position: relative;
@@ -161,7 +164,10 @@
     border-image: linear-gradient(to right, #0e4b00, #0e4b00, transparent);
     border-image-slice: 1;
 }
-#townMenuLocation .character-window-bottom-menu { border-image: linear-gradient(to right, transparent, #0e4b00, transparent); }
+#townMenuLocation .character-window-bottom-menu {
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+}
 
 .character-window-bottom-menu-item {
     position: relative;
@@ -184,7 +190,7 @@
     position: absolute;
     width: 0;
     height: 0;
-    left: 0px;
+    left: 2px;
     top: 2px;
     border-top: 5px solid transparent;
     border-left: 5px solid #2ffa00;
@@ -193,7 +199,7 @@
 .character-window-bottom-menu-item.active:after {
     content: ' ';
     position: absolute;
-    right: 3px;
+    right: 2px;
     top: 2px;
     width: 0;
     height: 0;

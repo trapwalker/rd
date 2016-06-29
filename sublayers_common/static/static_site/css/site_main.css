@@ -211,6 +211,12 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     position: relative;
 }
 
+.content-start-back.glitch.filtered {
+    filter: brightness(0.6);
+    -webkit-filter: brightness(0.6);
+}
+
+
 #glitch_test_768 {display: block;}
 #glitch_test_1080 {display: none;}
 

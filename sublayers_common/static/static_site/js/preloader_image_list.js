@@ -189,4 +189,8 @@ function after_preload_load_images() {
         preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_006.png', loaded_back_image);
     }
 
+
+
+    audioManager.gain_all(1.0);
+
 }

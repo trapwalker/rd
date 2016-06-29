@@ -6,6 +6,6 @@ log = logging.getLogger(__name__)
 from sublayers_common.handlers.base import BaseHandler
 
 
-class PartyHandler(BaseHandler):
+class MenuPartyHandler(BaseHandler):
     def get(self):
         self.render("menu/party_window.html")

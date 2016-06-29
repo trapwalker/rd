@@ -143,6 +143,7 @@
             } else {
                 clickRatingsLine(current_elem_in_rating.first());
             }
+            audioManager.play('listing');
         });
 
 //        $('.window-ratings-header-path').first().click();
@@ -167,6 +168,8 @@
             $("#RDSiteRatingUserCar").empty();
             $('#RDSiteRatingUserInfo').append(user_info.user_info_html);
             $('#RDSiteRatingUserCar').append(user_info.user_car_html);
+
+            audioManager.play('listing');
         }
 
         if (rating_users_info_list.hasOwnProperty(user_id) &&
@@ -189,7 +192,8 @@
 
             },
             error: function () {
-                console.log('Error!!!!!')
+                console.log('Error!!!!!');
+                audioManager.play('error_1');
             }
         });
     }

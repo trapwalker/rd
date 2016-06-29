@@ -155,6 +155,8 @@ function main() {
         if (jq_this.hasClass('up')) d_scroll = -10;
         if (jq_this.hasClass('down')) d_scroll = 10;
         scroll_interval = setInterval(makeScroll, 50);
+
+        audioManager.play('button_screen_press');
     });
     $('.scroll-btn').mouseup(function (event) {
         d_scroll = 0;
@@ -276,8 +278,9 @@ function main() {
             skeleton_logic[name] = $(this).animate({opacity: 1.0}, 500, function () {});
 
             if (skeleton_logic.glitch_anim) skeleton_logic.glitch_anim.finish();
-            skeleton_logic.glitch_anim = $('.content-start-back.glitch').animate({opacity: 0.3}, 500, function () {});
+            skeleton_logic.glitch_anim = $('.content-start-back.glitch').animate({opacity: 0.5}, 500, function () {});
             skeleton_logic.glitch_opacity = 0.3;
+            $('.content-start-back.glitch').addClass('filtered');
 
 
             if (glitchEffectStartPage1080)glitchEffectStartPage1080.stop();
@@ -294,8 +297,11 @@ function main() {
             skeleton_logic.glitch_opacity = 1.0;
             if (skeleton_logic.glitch_anim) skeleton_logic.glitch_anim.finish();
             setTimeout(function() {
-                if (skeleton_logic.glitch_opacity == 1.0) // Значит мы снова зашли на какую-то систему
+                if (skeleton_logic.glitch_opacity == 1.0) { // Значит мы снова зашли на какую-то систему
                     $('.content-start-back.glitch').animate({opacity: 1.0}, 500, function () {});
+                    $('.content-start-back.glitch').removeClass('filtered');
+                }
+
             }, 10);
 
 
@@ -303,52 +309,34 @@ function main() {
             if (glitchEffectStartPage768)glitchEffectStartPage768.start();
         });
 
-
-
-
-
-
     // Клики на всякие кнопки внутри монитора
-    $('.window-reg-up-btn,.window-qg-btn,.reg-btn,.reg1-btn,.reg2-btn,.reg3-btn')
-        .mouseover(function(){audioManager.play('button_screen_hover');});
-        //.click(function(){audioManager.play('button_screen_press');})
-
+    // Hover
+    $('.window-reg-up-btn,.window-qg-btn,.reg-btn,.reg1-btn,.reg2-btn,.reg3-btn,.slide-arrow,' +
+        '.reg2-skill-table-counter-btn, .window-news-log-news-header, .scroll-btn, .window-ratings-header-path')
+        .mouseover(function () {
+            audioManager.play('button_screen_hover');
+        });
 
 }
 
 function init_site_sound() {
-    //audioManager.gain_all(0.01);
+    audioManager.gain_all(0.0);
 
-    //audioManager.load('microwave_btn_click', {url: '/static/audio/sound_final1/buttons.wav'});
-    //audioManager.load('microwave_btn_hover', {url: '/static/audio/sound_final1/hover.wav'});
-    //audioManager.load('skeleton_hover', {url: '/static/audio/sound_final1/scaner.wav'});
-    //audioManager.load('button_screen_hover', {url: '/static/audio/sound_final1/button_screen_hover.wav'});
-    //audioManager.load('button_screen_press', {url: '/static/audio/sound_final1/button_screen_press.wav'});
-    //audioManager.load('tumbler', {url: '/static/audio/sound_final1/tumbler.wav'});
-    //audioManager.load('listing', {url: '/static/audio/sound_final1/listing.wav'});
-    //audioManager.load('glitch_noise', {url: '/static/audio/sound_final1/glitch_noise.mp3'});
-    //audioManager.load('error_1', {url: '/static/audio/sound_final1/error.mp3'});
-    //audioManager.load('radio_noise_switch', {url: "/static/audio/sound_final1/radio_static.mp3"}, false);
-    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
-
-    audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'});
-    audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'});
-    audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'});
-    audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'});
-    audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'});
-    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'});
-    audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'});
-    audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'});
-    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'});
-    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, false);
-    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'});
+    audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
+    audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.5);
+    audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'}, null, null, 0.5);
+    audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'}, null, null, 0.65);
+    audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'}, null, null, 1.0);
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
+    audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 1.0);
+    audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.8);
+    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.6);
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
+    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.2);
 
     audioKeyboard = new AudioKeyboard([
         audioManager.get('key_cl_1')
     ]);
-    audioKeyboard.gain = 0.2;
-
-
 }
 
 function GetQuickGameRecords() {
@@ -380,6 +368,11 @@ function GetRatingInfo(rating_name) {
             if (rating_name == 'Traders') { // Если это первый рейтинг загрузился, то кликнуть на него
                 $('.window-ratings-header-path').first().click();
             }
+
+            jq_elem.find('.window-ratings-line').mouseover(function () {
+                audioManager.play('button_screen_hover');
+            });
+
         },
         error: function () {
             jq_elem.empty();

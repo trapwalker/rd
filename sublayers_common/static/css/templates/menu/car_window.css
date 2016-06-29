@@ -1,0 +1,69 @@
+.carWindow-main {
+    position: relative;
+    height: 452px;
+    width: 734px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #31c811;
+    font: 11pt Nouveau_IBM;
+}
+#townMenuLocation .carWindow-main {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+}
+
+.carWindow-header {
+    position: relative;
+    height: 30px;
+    width: 100%;
+}
+
+.car-window-wrap {
+    position: relative;
+    margin: 2px auto;
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
+    width: calc(100% - 4px);
+    height: calc(100% - 30px);
+}
+#townMenuLocation .car-window-wrap {
+    height: 100%;
+    border: none;
+}
+
+.car-window-picture {
+    position: relative;
+    float: left;
+    width: 492px;
+    height: 100%;
+    border-width: 0 1px 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to top, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.car-window-picture .car-info-block-picture-main { top: 120px; }
+#townMenuLocation .car-window-picture .car-info-block-picture-main { top: 110px; }
+
+.car-window-name {
+    position: absolute;
+    top: 90px;
+    width: 100%;
+    text-align: center;
+}
+
+.car-window-table {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: calc(100% - 492px);
+    overflow: hidden;
+}
+.car-window-table .car-info-block-body-right-menu {
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+}

@@ -8,7 +8,8 @@ var AudioManager = (function () {
 
     // Воспроизведение
     AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration) {
-        if (!preloaderImage || preloaderImage.ready_images == false) return;
+        //console.log(name, gain, this.general_gain);
+        //if (!preloaderImage || preloaderImage.ready_images == false) return;
 
         var audio_obj = this.get(name);
         if (! audio_obj) {
@@ -44,12 +45,12 @@ var AudioManager = (function () {
     };
 
     // Загрузка
-    AudioManager.prototype.load = function (name, source, autoplay, class_name) {
+    AudioManager.prototype.load = function (name, source, autoplay, class_name, gain) {
         if (this.get(name)) {
             console.warn('Аудио Объект с таким именем уже был загружен. Замена.');
         }
         class_name = class_name ? class_name : AudioObject;
-        this.audio_objects[name] = new class_name(source, autoplay, this.general_gain);
+        this.audio_objects[name] = new class_name(source, autoplay, gain === undefined ? this.general_gain : gain);
     };
 
     AudioManager.prototype.get = function (name) {
