@@ -336,6 +336,7 @@ class TransactionParkingSelect(TransactionEvent):
 
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+            messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         else:
             # todo: отправить сообщение о том, что недостаточно денег для данного действия
             pass
@@ -376,6 +377,7 @@ class TransactionParkingLeave(TransactionEvent):
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionArmorerApply(TransactionEvent):

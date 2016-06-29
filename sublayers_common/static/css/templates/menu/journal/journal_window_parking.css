@@ -10,39 +10,46 @@
     width: 100%;
     height: 200px;
     overflow: hidden;
-    padding-top: 15px;
+    padding-top: 23px;
     box-sizing: border-box;
 }
-.journal-page-parking-picture .car-info-block-picture-main { margin-left: -17px; }
-#journal_page_parking .journal-page-parking-picture { z-index: 1 }
+.journal-page-parking-picture .car-info-block-picture-main { margin: 0 auto; }
+.journal_page_parking .journal-page-parking-picture { z-index: 1 }
+.journal_page_parking .car-info-block-body-right-menu {
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+}
+.journal_page_parking .car-info-block-info { padding: 0 5px 5px 0; }
 
 .journal-page-parking-info {
     position: relative;
     margin: auto;
-    width: 97%;
+    width: 100%;
     height: calc(100% - 200px);
 }
 
 .journal-parking-menu-city-car-list {
     position: relative;
-    padding-left: 17px;
-    color: #29F200;
-    font: 11pt Nouveau_IBM;
+    padding-left: 20px;
     display: none;
 }
 .journal-parking-menu-city-car-list.active { display: block; }
 
 .journal-parking-menu-city-car {
     position: relative;
+    height: 20px;
+    line-height: 20px;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
-    opacity: 0.6;
 }
-.journal-parking-menu-city-car:hover { opacity: 1; }
-.journal-parking-menu-city-car.active { opacity: 1; }
+.journal-parking-menu-city-car:hover { color: #2ffa00 }
+.journal-parking-menu-city-car.active { color: #2ffa00 }
 
 .journal-page-car-name {
     position: absolute;
-    top: 2px;
+    top: 10px;
     width: 100%;
     text-align: center;
 }

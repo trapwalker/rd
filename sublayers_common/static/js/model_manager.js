@@ -957,7 +957,7 @@ var ClientManager = (function () {
 
     // Журнал (стоянка)
     ClientManager.prototype.JournalParkingInfoMessage = function (event) {
-        //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
+        console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
         journalManager.parking.update(event.cars);
     };
 

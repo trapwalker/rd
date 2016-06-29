@@ -57,11 +57,15 @@ $(document).ready(function () {
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnJournal').onclick = function () {
+        windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
+        returnFocusToMap();
+    };
+
     document.getElementById('divMainMenuBtnParty').onclick = function () {
         windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
     };
-
 
 
 
@@ -72,13 +76,7 @@ $(document).ready(function () {
             returnFocusToMap();
         };
 
-    document.getElementById('divMainMenuBtnJournal').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('map_journal', '/map_journal', null, function() {
-                if (journalManager) journalManager.redraw();
-            });
-            returnFocusToMap();
-        };
+
 
 
 
