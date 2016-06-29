@@ -11,7 +11,6 @@ from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import GasStation, Town
-from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory, InventoryPerksAttribute
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 
@@ -153,20 +152,22 @@ class TransactionGasStation(TransactionEvent):
         self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
+        # todo: Сделать единый механизм проверки консистентности и валидности состояния агента для всех транзакций
         super(TransactionGasStation, self).on_perform()
+        return  # todo: (!) Разблокировать код заправки
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg[self.npc_node_hash]
         if (npc is None) or (npc.type != 'npc_gas_station') or (ex_car is None):
-            return
+            return  # todo: warning
         if agent.current_location is None or npc not in self.agent.current_location.example.get_npc_list():
-            return
+            return  # todo: warning
         if not self.fuel:
             self.fuel = 0
         if ex_car.max_fuel < self.fuel + ex_car.fuel:
-            return
+            return  # todo: warning
 
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
@@ -175,7 +176,7 @@ class TransactionGasStation(TransactionEvent):
                 sum_fuel += item.value_fuel
 
         if sum_fuel > agent.example.balance:
-            return
+            return  # todo: Сообщение о недостатке средств
 
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
