@@ -126,7 +126,8 @@ class AbstractDocument(Document):
     def from_son(cls, dic, _is_partly_loaded=False, _reference_loaded_fields=None):
         klass_name = dic.get('__cls__')
         klass = cls.get_class(klass_name) if klass_name else cls  # tpdp: add warning if class not found
-
+        # todo: Падать при инициализации, игнорировать с предупреждениями в процессе
+        assert klass, 'Registry class {!r} is not found.'.format(klass_name)
         if cls is klass:
             return super(AbstractDocument, cls).from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
         else:
