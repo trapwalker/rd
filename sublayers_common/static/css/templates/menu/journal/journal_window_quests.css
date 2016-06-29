@@ -1,10 +1,9 @@
 .journal-quest-menu-quest {
     position: relative;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
-    opacity: 0.6;
 }
-.journal-quest-menu-quest:hover { opacity: 1; }
-.journal-quest-menu-quest.active { opacity: 1; }
+.journal-quest-menu-quest:hover { color: #2ffa00; }
+.journal-quest-menu-quest.active { color: #2ffa00; }
 
 .journal-quest-info-block {
     position: absolute;

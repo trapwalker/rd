@@ -148,7 +148,7 @@ var LocationPlaceMenu = (function (_super) {
         carManager.redraw(this.jq_main_div);
 
         // Обновление журнала
-        journalManager.redraw();
+        journalManager.redraw(this.jq_main_div);
 
         // Отображение инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').first().click();
