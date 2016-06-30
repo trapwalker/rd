@@ -57,6 +57,11 @@ $(document).ready(function () {
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnInventory').onclick = function () {
+        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
+        returnFocusToMap();
+    };
+
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
         windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
         returnFocusToMap();
@@ -67,17 +72,13 @@ $(document).ready(function () {
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnMain').onclick = function () {
+        window.open('/', '_blank');
+    };
 
-
-
-    document.getElementById('divMainMenuBtnInventory').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
-            returnFocusToMap();
-        };
-
-
-
+    document.getElementById('divMainMenuBtnForum').onclick = function () {
+        window.open('https://vk.com/road_dogs', '_blank');
+    };
 
 
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
@@ -89,9 +90,7 @@ $(document).ready(function () {
     //    };
 
 //    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
-    document.getElementById('divMainMenuBtnMain').onclick = function () {
-        location = '/';
-    };
+
 //    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 
     $('.anti-click-class').click(function(){
