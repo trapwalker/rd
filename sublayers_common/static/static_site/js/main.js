@@ -80,6 +80,9 @@ function main() {
                 glitchEffectStartPage1080.stop();
             if (glitchEffectStartPage768)
                 glitchEffectStartPage768.stop();
+
+            // Запустить канвас-менеджер
+            if (! canvasManager.is_active) canvasManager.is_active = true;
         }
 
         // Скрыть все окна
@@ -178,6 +181,9 @@ function main() {
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.start();
             consoleWReg.focus_interrupt();
+
+            // Остановить канвас-менеджер
+            if (canvasManager.is_active) canvasManager.is_active = false;
         }
     });
 

@@ -54,7 +54,6 @@ var ECanvasChipAnimation = (function () {
 
     ECanvasChipAnimation.prototype.redraw = function (ctx, time) {
         if (! this.start_time) return;
-
         ctx.save();
         var frame = this._get_frame_num(time);
         ctx.drawImage(this.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
