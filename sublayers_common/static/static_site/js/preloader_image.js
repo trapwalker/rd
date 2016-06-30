@@ -14,6 +14,7 @@ var PreloaderImage = (function(){
     function PreloaderImage() {
         this.count_loading = 0;  // Счётчик сколько грузится  (в идеале должен быть  = 0)
         this.count_image = 0;   // Счётчик изображений всего
+        this.count_all = 0; // Сколько изображений пытаются загрузиться
         this.images = {}; // Список всех предзагруженных изображений
         this.ready_images = false;
 
@@ -21,8 +22,8 @@ var PreloaderImage = (function(){
 
         this.time_out_min = null;
         this.time_out_max = null;
-        this.min_delay = 5000;
-        this.max_delay = 30000;
+        this.min_delay = 3000;
+        this.max_delay = 60000;
     }
 
     PreloaderImage.prototype.add = function(img_url) {
@@ -43,8 +44,6 @@ var PreloaderImage = (function(){
 
 
     PreloaderImage.prototype.load_complete = function(img) {
-        var str = 'image ' + this.count_image +' loaded: ' + img.src;
-        //console.log(str);
         this.images[this.count_image] = img;
         this.count_image++;
         this.count_loading--;
@@ -53,14 +52,13 @@ var PreloaderImage = (function(){
             if (this.time_out_max) clearTimeout(this.time_out_max);
             this.all_image_loaded();
         }
-
-        //this.jq_preloader.append('<h5>' + str + '</h5>')
         if (consolePreloader)
-            consolePreloader.add_message('system', str, false);
+            consolePreloader.update_load_data_status();
     };
 
     PreloaderImage.prototype.set_image_on_load = function (img, call_back) {
         this.count_loading++;
+        this.count_all++;
         if (img.complete) {
             call_back(img);
             return;

@@ -427,16 +427,60 @@ var ConsolePreloader = (function (_super) {
             mm_str = mm_str.length == 2 ? mm_str : '0' + mm_str;
             return '[' + hh_str + ':' + mm_str + ']: ';
         };
+        this.jq_load_status = null;
+        this.max_load_data_number = 0;
         textConsoleManager.add(this);
 
+        this.add_message('user', 'Загрузка системы.');
+        this.add_message('system', 'Источник загрузки идентифицирован.');
+        this.add_message('user', 'Дешифровка загрузочного сектора.');
+        this.add_message('system', 'Успешно.');
+        this.add_message('user', 'Локализация сигнала.');
+        this.add_message('system', 'Местоположение определено.');
+        this.add_message('user', 'Фишинг спутников.');
+        this.add_message('system', 'Соединение со спутником установлено.');
+        this.add_message(
+            'system',
+            '\n       ================================================\n' +
+            '       >                                              <\n' +
+            '       >        Нюк Коммандер вер. ' + version + '         <\n' +
+            '       >                                              <\n' +
+            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
+            '       >                                              <\n' +
+            '       ================================================\n'
+        );
+        this.add_message('system', 'Статус сервера: \n' +
+            'Пользователей обнаружено: ' + all_users_registered);
+
+        this.add_message('system', 'Последняя новость:\n' +
+            $('.window-news-news-content-block').children().first().text());
+
+        this.add_message('system', 'Загрузка данных:');
         this.start();
-        this.add_message('system', 'Загрузка...');
-        this.add_message('system', 'Загрузка 1... Загружено');
-        this.add_message('system', 'Загрузка 2... Загружено');
-        this.add_message('system', 'Загрузка 3... Загружено');
-        this.add_message('system', 'Загрузка 4... Загружено');
-        this.add_message('system', 'Загрузка 5... Загружено');
+
     }
+
+    ConsolePreloader.prototype.update_load_data_status = function() {
+        //console.log('ConsolePreloader.prototype.update_load_data_status');
+        if (! this.jq_load_status) return;
+        var prc = preloaderImage.count_image / preloaderImage.count_all;
+        var real_number = Math.floor(this.max_load_data_number * prc);
+        this.jq_load_status.text(real_number);
+    };
+
+    ConsolePreloader.prototype._state_print_final_indicator = function (self) {
+        if (self._messages.length == 0) {
+            console.log('Print load Data');
+            self.target_div.find('.console-new-text').text(self._text);
+            this.max_load_data_number = Math.floor(Math.random() * 2000) + 250;
+            self.target_div.append('</br><span id="preloaderLoadDataStatus">0</span> / ' + this.max_load_data_number);
+            this.jq_load_status = self.target_div.find('#preloaderLoadDataStatus');
+            self.update_load_data_status();
+        }
+        else {
+            _super.prototype._state_print_final_indicator.call(self);
+        }
+    };
 
     return ConsolePreloader;
 })(TextConsole);
