@@ -63,8 +63,16 @@ function main() {
     // Чтобы кнопки залипали!
     $('.btn-page').click(function () {
         // Проигрывание звуков
-        if (! $(this).hasClass('active'))
+        if (! $(this).hasClass('active')) {
             audioManager.play('microwave_btn_click');
+        }
+        else {
+            // Значит произошёл клик по нажатой кнопке - её нужно отжать = клик по логотипу
+            audioManager.play('microwave_btn_click');
+            $('.site-logo').first().click();
+            // todo: звук отжатой кнопки
+            return;
+        }
 
         $('.btn').removeClass('active');
         $(this).addClass('active');
@@ -470,8 +478,11 @@ function GetUserInfo() {
             }
 
             // Переход на следующую страницу
-            if (window.location.hash == '#start')
+            if (window.location.hash == '#start') {
+                // Должны кликнуть для определения какую именно из первых страниц показывать
+                $('#RDbtn_start').removeClass('active'); // Хитрость
                 $('#RDbtn_start').click();
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error('Error GetUserInfo');

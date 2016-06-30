@@ -470,7 +470,6 @@ var ConsolePreloader = (function (_super) {
 
     ConsolePreloader.prototype._state_print_final_indicator = function (self) {
         if (self._messages.length == 0) {
-            console.log('Print load Data');
             self.target_div.find('.console-new-text').text(self._text);
             this.max_load_data_number = Math.floor(Math.random() * 2000) + 250;
             self.target_div.append('</br><span id="preloaderLoadDataStatus">0</span> / ' + this.max_load_data_number);
