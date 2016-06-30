@@ -31,7 +31,15 @@ body {
     font-weight: bold;
     text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
     letter-spacing: 2px;
-    background-color: #030f00;
+    background-color: #030f00; /*#191f2f; #030f00; */
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+    background-position: top center;
+}
+
+body.visible-site {
+    background-image: url('/static/static_site/img/1366_june/768_side_tile.jpg');
+    background-color: #191f2f;
 }
 
 #siteBlock {
@@ -929,6 +937,10 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 }
 
 @media screen and (min-width: 1367px) {
+    body.visible-site {
+        background-image: url('/static/static_site/img/09-06-16/1080_side_tile.jpg');
+    }
+
     #siteBlock {
         background: transparent url(/static/static_site/img/09-06-16/1080_main_bg.jpg) no-repeat center top;
     }
