@@ -260,8 +260,8 @@ var LocationGasStationNPC = (function (_super) {
             if (current_gas < 0) current_gas = 0;
             current_gas += this._get_selected_volume();
             html_text =
-                'Заправить: ' + current_gas.toFixed(0) + ' NC</br>' +
-                'Заправить всё: ' + (user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks).toFixed(0) + 'NC';
+                'Заправить: ' + Math.ceil(current_gas) + ' NC</br>' +
+                'Заправить всё: ' + Math.ceil(user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) + 'NC';
         }
         _super.prototype.set_header_text.call(this, html_text);
     };

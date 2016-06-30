@@ -26,8 +26,8 @@ var LocationPlaceMenu = (function (_super) {
     LocationPlaceMenu.prototype.init_click = function () {
         //console.log('LocationPlaceMenu.prototype.init_click', this.jq_main_div);
         var self = this;
-        this.jq_main_div.find('.menu-header-item.click').click({location: this}, LocationPlaceMenu.menu_buttons_reaction);
-        this.jq_main_div.find('.menu-header-item.click').first().click();
+        this.jq_main_div.find('.menu-header-item').click({location: this}, LocationPlaceMenu.menu_buttons_reaction);
+        this.jq_main_div.find('.menu-header-item').first().click();
 
         // Инициализация кликов на фильтры инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').click({location: this}, LocationPlaceMenu.inv_filters_click);
@@ -40,15 +40,6 @@ var LocationPlaceMenu = (function (_super) {
             self.jq_main_div.find('#' + $(this).data('page_id')).css('display', 'block');
         });
         this.jq_main_div.find('.journal-page-button-block').first().click();
-
-        // Инициализация для вкладки персонажа
-        this.jq_main_div.find('.location-menu-person-bottom-menu-item').click(function () {
-            self.jq_main_div.find('.location-menu-person-bottom-menu-item').removeClass('active');
-            $(this).addClass('active');
-            self.jq_main_div.find('.location-menu-person-page').css('display', 'none');
-            self.jq_main_div.find('.location-menu-person-page.' + $(this).data('page')).first().css('display', 'block');
-        });
-        this.jq_main_div.find('.location-menu-person-bottom-menu-item').first().click();
 
         location.timer_auto_save_about_self = null;
         this.jq_main_div.find('textarea').first().on('change keyup paste', {location: this}, function(event) {
@@ -154,18 +145,10 @@ var LocationPlaceMenu = (function (_super) {
             .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
 
         // Вкладка Автомобиль
-        var jq_car_block_pic = this.jq_main_div.find('.location-menu-car-picture').first();
-        var jq_car_block_table = this.jq_main_div.find('.location-menu-car-table').first();
-        jq_car_block_pic.empty();
-        jq_car_block_table.empty();
-        if (user.example_car && user.templates.hasOwnProperty('html_car_img') && user.templates.hasOwnProperty('html_car_table')){
-            jq_car_block_pic.append(user.templates['html_car_img']);
-            jq_car_block_pic.append('<div class="location-menu-car-name">' + user.example_car.title + '</div>');
-            jq_car_block_table.append(user.templates['html_car_table']);
-        }
+        carManager.redraw(this.jq_main_div);
 
         // Обновление журнала
-        journalManager.redraw();
+        journalManager.redraw(this.jq_main_div);
 
         // Отображение инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').first().click();

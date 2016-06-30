@@ -52,33 +52,33 @@ $(document).ready(function () {
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnCar').onclick = function () {
+        windowTemplateManager.openUniqueWindow('car_info', '/menu_car', null, carManager.redraw);
+        returnFocusToMap();
+    };
+
+    document.getElementById('divMainMenuBtnInventory').onclick = function () {
+        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
+        returnFocusToMap();
+    };
+
+    document.getElementById('divMainMenuBtnJournal').onclick = function () {
+        windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
+        returnFocusToMap();
+    };
+
     document.getElementById('divMainMenuBtnParty').onclick = function () {
         windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnMain').onclick = function () {
+        window.open('/', '_blank');
+    };
 
-
-    document.getElementById('divMainMenuBtnCar').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('car_info', '/main_car_info', null);
-            returnFocusToMap();
-        };
-
-    document.getElementById('divMainMenuBtnInventory').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
-            returnFocusToMap();
-        };
-
-    document.getElementById('divMainMenuBtnJournal').onclick =
-        function () {
-            windowTemplateManager.openUniqueWindow('map_journal', '/map_journal', null, function() {
-                if (journalManager) journalManager.redraw();
-            });
-            returnFocusToMap();
-        };
-
+    document.getElementById('divMainMenuBtnForum').onclick = function () {
+        window.open('https://vk.com/road_dogs', '_blank');
+    };
 
 
 //    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
@@ -90,9 +90,7 @@ $(document).ready(function () {
     //    };
 
 //    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
-    document.getElementById('divMainMenuBtnMain').onclick = function () {
-        location = '/';
-    };
+
 //    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 
     $('.anti-click-class').click(function(){

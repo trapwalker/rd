@@ -44,6 +44,16 @@
    left: -32px;
 }
 
+.journal-view-ammo_side_F, .journal-view-ammo_side_B {
+    width: 200px;
+    height: 100px;
+}
+
+.journal-view-ammo_side_L, .journal-view-ammo_side_R {
+    width: 100px;
+    height: 100px;
+}
+
 .person-info-chat-body-page {
     position: relative;
     height: 146px;

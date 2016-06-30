@@ -28,7 +28,7 @@ var ChangeBackFrameEffect = (function(){
     ChangeBackFrameEffect.prototype.redraw = function(time) {
         if (time < this.change_frame_delay + this.last_time) return;
         this.last_time = time;
-        console.log('ChangeBackFrameEffect.prototype.redraw');
+        //console.log('ChangeBackFrameEffect.prototype.redraw');
         var self = this;
 
         var index = this._get_free_index();
@@ -37,15 +37,41 @@ var ChangeBackFrameEffect = (function(){
 
         this.opacity_list[index].opacity = 1.0;
         this.opacity_list[index].in_animation = true;
-        jq_image.animate({opacity: 1.0}, this.change_frame_delay, function () {
-            if (self.jq_images_list.indexOf(jq_image) != -1)
-                jq_image.animate({opacity: 0.0}, self.change_frame_delay, function () {
-                    if (self.jq_images_list.indexOf(jq_image) != -1) {
+        //jq_image.animate({opacity: 1.0}, this.change_frame_delay, function () {
+        //    if (self.jq_images_list.indexOf(jq_image) != -1)
+        //        jq_image.animate({opacity: 0.0}, self.change_frame_delay, function () {
+        //            if (self.jq_images_list.indexOf(jq_image) != -1) {
+        //                self.opacity_list[index].opacity = 0.0;
+        //                self.opacity_list[index].in_animation = false;
+        //            }
+        //        });
+        //});
+        var animate_step = 20;
+        var iterator = 0;
+        var animate_timer = setInterval(function () {
+            if (self.jq_images_list.indexOf(jq_image) == -1) {
+                clearInterval(animate_timer);
+                return;
+            }
+            iterator++;
+            jq_image.css('opacity', iterator / animate_step);
+            if (iterator == animate_step) {
+                clearInterval(animate_timer);
+                animate_timer = setInterval(function () {
+                    if (self.jq_images_list.indexOf(jq_image) == -1) {
+                        clearInterval(animate_timer);
+                        return;
+                    }
+                    iterator--;
+                    jq_image.css('opacity', iterator / animate_step);
+                    if (iterator == 0) {
+                        clearInterval(animate_timer);
                         self.opacity_list[index].opacity = 0.0;
                         self.opacity_list[index].in_animation = false;
                     }
-                });
-        });
+                }, self.change_frame_delay / animate_step);
+            }
+        }, this.change_frame_delay / animate_step);
 
     };
 

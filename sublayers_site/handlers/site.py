@@ -10,6 +10,7 @@ import yaml
 import tornado
 
 from tornado.options import options
+from sublayers_common.user_profile import User
 
 
 class SiteMainHandler(BaseSiteHandler):
@@ -28,7 +29,11 @@ class SiteMainHandler(BaseSiteHandler):
             news_file.close()
         os.chdir(serv_dir)
 
+        # Узнать количество пользователей (онлайн пока не делаем, так как не хотим делать запрос к серверу)
+        users_count = yield User.objects.count()
+
         # Загружаем информацию о быстрой игре
         quick_game_info = self._get_quick_game()
 
-        self.render('site_main.html', news_list=news_list, quick_game_cars=quick_game_info.get('quick_cars', []))
+        self.render('site_main.html', news_list=news_list, quick_game_cars=quick_game_info.get('quick_cars', []),
+                    all_users_registered=users_count)

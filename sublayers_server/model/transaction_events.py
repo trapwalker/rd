@@ -173,9 +173,10 @@ class TransactionGasStation(TransactionEvent):
         for item in ex_car.inventory:
             if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tags):
                 sum_fuel += item.value_fuel
-
+        sum_fuel = math.ceil(sum_fuel)
         if sum_fuel > agent.example.balance:
             return
+        agent.example.balance -= sum_fuel
 
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
@@ -336,6 +337,7 @@ class TransactionParkingSelect(TransactionEvent):
 
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+            messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         else:
             # todo: отправить сообщение о том, что недостаточно денег для данного действия
             pass
@@ -376,6 +378,7 @@ class TransactionParkingLeave(TransactionEvent):
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionArmorerApply(TransactionEvent):
@@ -588,13 +591,14 @@ class TransactionMechanicRepairApply(TransactionEvent):
             return
         # todo: взять цену за ремонт одного HP откуда-то! Здание, NPC, или из самой машинки
         repair_cost = self.hp * 1
+        repair_cost = math.ceil(repair_cost)
         if agent.example.balance < repair_cost:
             return
         if repair_cost <= 0:
             log.warning('%s Try to repair with cost = 0 NC', agent)
             return
         ex_car.hp = ex_car.hp + self.hp
-        agent.example.balance = agent.example.balance - repair_cost
+        agent.example.balance -= repair_cost
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 

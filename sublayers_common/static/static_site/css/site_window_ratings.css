@@ -153,6 +153,7 @@
     height: 100%;
     overflow: hidden;
     text-align: center;
+    pointer-events: none;
 }
 
 .window-ratings-line-path.rate-number {

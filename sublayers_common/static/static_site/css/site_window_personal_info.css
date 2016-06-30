@@ -56,7 +56,7 @@
 
 .window-pi-user-car .car-info-block-picture-main-site {
     position: relative;
-    top: 0;
+    top: 18px;
     overflow: hidden;
 }
 
@@ -93,6 +93,7 @@
 
 .window-pi-content-block .car-info-name-block {
     top: 20px;
+    z-index: 1000;
 }
 
 .window-pi-content-block .window-pi-user-car {
@@ -138,8 +139,8 @@
 
     .window-pi-user-car .car-info-block-picture-main {
         transform: scale(0.71);
-        margin-top: -10px;
-        margin-left: -86px;
+        margin-top: 20px;
+        margin-left: -70px;
     }
 
     .window-pi-user-car .car-info-block-picture-main.default-car {

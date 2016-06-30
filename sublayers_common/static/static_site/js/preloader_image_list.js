@@ -160,6 +160,14 @@ function init_preload_images() {
 
 
 function after_preload_load_images() {
+    // Показ основного окна и смена цвета боди
+    $('body').addClass('visible-site');
+    $('#siteBlock').css('display', 'block');
+    $('#preloaderBlock').css('display', 'none');
+
+
+
+    // Работа с светящимся беком
     function loaded_back_image(img) {
         var jq_back =  $('.site-main-back').first();
         var jq_back_path = $('<div class="site-main-back-part" style="opacity: 0;"></div>');
@@ -188,5 +196,9 @@ function after_preload_load_images() {
         preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_005.png', loaded_back_image);
         preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_006.png', loaded_back_image);
     }
+
+
+
+    audioManager.gain_all(1.0);
 
 }
