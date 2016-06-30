@@ -40,9 +40,10 @@ from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonIn
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
-from sublayers_server.handlers.main_menu_journal import MainJournalHandler
+
 
 from sublayers_server.handlers.main_menu_character import MenuCharacterHandler
+from sublayers_server.handlers.main_menu_journal import MenuJournalHandler
 from sublayers_server.handlers.party_handler import MenuPartyHandler
 
 from sublayers_server.handlers.map_location import MapLocationHandler
@@ -120,10 +121,10 @@ class Application(BaseApplication):
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
             (r"/api/person_info", PersonInfoHandler),
-            (r"/api/map_journal", MainJournalHandler),
 
             (r"/api/menu_character", MenuCharacterHandler),
             (r"/api/menu_car", MenuCarHandler),
+            (r"/api/menu_journal", MenuJournalHandler),
             (r"/api/menu_party", MenuPartyHandler),
 
 

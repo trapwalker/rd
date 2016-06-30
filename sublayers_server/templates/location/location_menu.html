@@ -4,7 +4,7 @@
         <div class="menu-header-item big click" data-page_id="Car">Автомобиль</div>
         <div class="menu-header-item click" data-page_id="Inventory">Инвентарь</div>
         <div class="menu-header-item click small" data-page_id="Journal">Журнал</div>
-        <div class="menu-header-item click small" data-page_id="Nukeoil">NukeOil</div>
+        <div class="menu-header-item click small" data-page_id="Nukeoil" style="display: none">NukeOil</div>
         <div class="menu-header-item click small" data-page_id="Party">Пати</div>
     </div>
     <div class="menu-center">
@@ -25,9 +25,9 @@
             </div>
         </div>
         <div id="locationMenuItem_Journal" class="menu-item">
-            {% include journal_window.html %}
+            {% include ../menu/journal_window.html %}
         </div>
-        <div id="locationMenuItem_Nukeoil" class="menu-item">
+        <div id="locationMenuItem_Nukeoil" class="menu-item" style="display: none">
             <div class="location-menu-nukeoil-header">
                 <div class="location-menu-nukeoil-button-block active" data-page_id="journal_page_task">Страховка</div>
                 <div class="location-menu-nukeoil-button-block" data-page_id="journal_page_parking">Обращения</div>

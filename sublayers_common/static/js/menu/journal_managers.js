@@ -1,15 +1,27 @@
 var JournalManager = (function () {
 
     function JournalManager() {
-        this.in_location = false;
+        this.jq_main_div = $();
 
         this.parking = new ParkingJournalManager();
         this.quest = new QuestJournalManager();
     }
 
-    JournalManager.prototype.redraw = function() {
-        this.parking.redraw();
-        this.quest.redraw();
+    JournalManager.prototype.redraw = function(jq_main_div) {
+        var self = journalManager;
+        if (jq_main_div)
+            self.jq_main_div = $(jq_main_div).first();
+
+        self.jq_main_div.find('.journal-page-button-block').click(function() {
+            journalManager.jq_main_div.find('.journal-page-button-block').removeClass('active');
+            $(this).addClass('active');
+            journalManager.jq_main_div.find('.journal-page-block').css('display', 'none');
+            journalManager.jq_main_div.find('.' + $(this).data('page_class')).css('display', 'block');
+        });
+        self.jq_main_div.find('.journal-page-button-block')[0].click();
+
+        self.parking.redraw();
+        self.quest.redraw();
     };
 
     return JournalManager;
@@ -47,7 +59,7 @@ var ParkingJournalManager = (function () {
 
         this.clear();
 
-        var jq_parking_main = $('#journal_page_parking');
+        var jq_parking_main = journalManager.jq_main_div.find('.journal_page_parking');
         var jq_town_list = jq_parking_main.find('.journal-page-left').first();
         var jq_page_right = jq_parking_main.find('.journal-page-right').first();
 
@@ -87,7 +99,7 @@ var ParkingJournalManager = (function () {
         // Вешаем клики на названия машинок в городах
         jq_town_list.find('.journal-parking-menu-city-car').click(function () {
             var car_id = $(this).data('car_id');
-            var jq_parking_main = $('#journal_page_parking');
+            var jq_parking_main = journalManager.jq_main_div.find('.journal_page_parking');
 
             jq_parking_main.find('.journal-parking-menu-city-car').removeClass('active');
             $(this).addClass('active');
@@ -125,7 +137,7 @@ var ParkingJournalManager = (function () {
 
     ParkingJournalManager.prototype.clear = function() {
         //console.log('ParkingJournalManager.prototype.clear');
-        var jq_parking_main = $('#journal_page_parking');
+        var jq_parking_main = journalManager.jq_main_div.find('.journal_page_parking');
         var jq_town_list = jq_parking_main.find('.journal-page-left').first();
         var jq_page_right = jq_parking_main.find('.journal-page-right').first();
         jq_town_list.empty();
@@ -212,7 +224,7 @@ var QuestJournalManager = (function () {
         //console.log('QuestJournalManager.prototype.redraw', this.quests);
         this.clear();
 
-        var jq_quest_main = $('#journal_page_task');
+        var jq_quest_main = journalManager.jq_main_div.find('.journal_page_task');
         var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
         var jq_quest_info_list = jq_quest_main.find('.journal-page-right').first();
 
@@ -284,7 +296,7 @@ var QuestJournalManager = (function () {
         // Вешаем клики на отдельные квесты
         jq_quest_list.find('.journal-quest-menu-quest').click(function () {
             var quest_id = $(this).data('quest_id');
-            var jq_quest_page = $('#journal_page_task');
+            var jq_quest_page = journalManager.jq_main_div.find('.journal_page_task');
             jq_quest_page.find('.journal-quest-menu-quest').removeClass('active');
             $(this).addClass('active');
             jq_quest_page.find('.journal-quest-info-block').removeClass('active');
@@ -314,7 +326,7 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.clear = function() {
         //console.log('QuestJournalManager.prototype.clear');
-        var jq_quest_main = $('#journal_page_task');
+        var jq_quest_main = journalManager.jq_main_div.find('.journal_page_task');
         var jq_quest_list = jq_quest_main.find('.journal-page-left').first();
         var jq_quest_info_list = jq_quest_main.find('.journal-page-right').first();
         jq_quest_list.empty();

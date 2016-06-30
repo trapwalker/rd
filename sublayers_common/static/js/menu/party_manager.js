@@ -105,6 +105,8 @@ var PartyManager = (function () {
 
     PartyManager.prototype._set_user_info = function (user_info, jq_target_div) {
         this._clear_user_info(jq_target_div);
+        jq_target_div.find('.party-window-person-photo-wrap').css('display', 'block');
+        jq_target_div.find('.party-window-pers-info').css('display', 'block');
         jq_target_div.find('.party-window-person-photo').attr("src", user_info.avatar);
         jq_target_div.find('.party-page-car-block').append(user_info.html_car_img);
         //this.jq_main_div.find('.chat-interaction-car-photo-name').text(user_data.car_name);
@@ -295,6 +297,8 @@ var PartyManager = (function () {
         jq_target_div.find('.party-window-person-photo').attr('src', '');
         jq_target_div.find('.party-window-pers-info-value').text('');
         jq_target_div.find('.party-page-car-block').empty();
+        jq_target_div.find('.party-window-person-photo-wrap').css('display', 'none');
+        jq_target_div.find('.party-window-pers-info').css('display', 'none');
     };
 
     PartyManager.prototype._clear_invite_user = function () {
