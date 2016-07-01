@@ -44,7 +44,6 @@ $(document).ready(function () {
 
     chat.setActivePage(chat.page_global);
 
-
     document.getElementById('map').focus();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
@@ -79,19 +78,6 @@ $(document).ready(function () {
     document.getElementById('divMainMenuBtnForum').onclick = function () {
         window.open('https://vk.com/road_dogs', '_blank');
     };
-
-
-//    document.getElementById('divMainMenuBtnLog').onclick = returnFocusToMap;
-
-    //document.getElementById('divMainMenuBtnNucoil').onclick =
-    //    function () {
-    //        windowTemplateManager.openUniqueWindow('nucoil', '/main_menu_nucoil', null);
-    //        returnFocusToMap();
-    //    };
-
-//    document.getElementById('divMainMenuBtnOptions').onclick = returnFocusToMap;
-
-//    document.getElementById('divMainMenuBtnForum').onclick = returnFocusToMap;
 
     $('.anti-click-class').click(function(){
         returnFocusToMap();

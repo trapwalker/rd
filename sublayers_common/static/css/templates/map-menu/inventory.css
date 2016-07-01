@@ -1,68 +1,71 @@
 /*Инвентарь*/
     .mainInventoryWindow-main {
         position: relative;
-        width: 660px;
-        height: 422px;
-        background-color: rgba(0, 0, 0, 0.9);
-        color: #ffffff;
-        font: 12pt FreePixel;
         cursor: url('/static/img/cursors/main.png'), default;
+        height: 452px;
+        width: 734px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #31c811;
+        font: 11pt Nouveau_IBM;
     }
 
     .mainCarInfoWindow-body-trunk {
         position: relative;
-        float: left;
-        width: 652px;
-        height: 390px;
-        overflow-y: auto;
-        border: solid 1px #00f150;
-        margin: 0px 3px 3px 3px;
+        margin: 2px auto;
+        border: 1px solid #0e4b00;
+        box-sizing: border-box;
+        width: calc(100% - 4px);
+        height: calc(100% - 30px);
         overflow: hidden;
     }
 
     .mainCarInfoWindow-body-trunk-filter {
         width: 100%;
-        height: 27px;
-        font: 12pt Nouveau_IBM;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 10px 0 10px;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+        border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+        border-image-slice: 1;
+        box-sizing: border-box;
     }
 
     .mainCarInfoWindow-body-trunk-filter-all {
         position: relative;
-        float: left;
-        margin-top: 5px;
-        margin-right: 20px;
-        margin-left: 7px;
-        text-align: center;
-        color: #135806;
         cursor: url('/static/img/cursors/hyper.png'), pointer;
+        float: left;
+        margin-right: 25px;
     }
-
-    .mainCarInfoWindow-body-trunk-filter-all.activateFilter {
-        color: #30fc00;
-    }
-
-    .mainCarInfoWindow-body-trunk-filter-all:hover {
-        color: #30fc00;
-    }
+    .mainCarInfoWindow-body-trunk-filter-all.activateFilter { color: #2ffa00; }
+    .mainCarInfoWindow-body-trunk-filter-all:hover { color: #2ffa00; }
 
     .mainCarInfoWindow-body-trunk-body {
-        border: solid 1px #00f150;
-        margin: 0px 7px 7px 7px;
-        height: 355px;
+        position: relative;
+        width: 100%;
+        height: calc(100% - 30px);
+        padding: 5px 5px 5px 10px;
+        box-sizing: border-box;
     }
 
     .mainCarInfoWindow-body-trunk-body-left {
-        border-right: solid 1px #00f150;
-        width: 156px;
-        height: 340px   ;
-        margin-top: 5px;
+        position: relative;
         float: left;
+        width: 180px;
+        height: 100%;
+        padding: 10px 10px 0 5px;
+        border-width: 0 1px 0 0;
+        border-style: solid;
+        border-image: linear-gradient(to bottom, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+        border-image-slice: 1;
+        box-sizing: border-box;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-picture {
-        border: solid 1px #00f150;
-        margin: 5px;
+        border: solid 1px #0e4b00;
         height: 100px;
+        width: 150px;
+        margin: auto;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-picture-picture {
@@ -74,47 +77,52 @@
     }
 
     .mainCarInfoWindow-body-trunk-body-left-name {
-        color: #30fc00;
+        color: #2ffa00;
         text-align: center;
-        margin: 5px;
-        font: 12pt Nouveau_IBM;
-        height: 16px;
+        margin-top: 5px;
+        font-size: 12pt;
+        height: 20px;
+        line-height: 20px;
     }
 
     .mainCarInfoWindow-body-trunk-body-left-description {
-        box-sizing: border-box;
-        margin: auto;
-        width: 150px;
-        padding: 10px 3px 0px 3px;
-        color: #1e9604;
+        width: 100%;
+        height: 190px;
+        padding-top: 15px;
         text-align: center;
-        height: 145px;
+        box-sizing: border-box;
         overflow-y: auto;
         overflow-x: hidden;
     }
 
-    .mainCarInfoWindow-body-trunk-body-left-activate {
-        color: #30fc00;
-        text-align: center;
-        border: solid 1px #125306;
-        background-color: #0d3707;
-        margin: 35px auto 5px auto;
-        cursor: url('/static/img/cursors/hyper.png'), pointer;
-        font: 12pt Nouveau_IBM;
-        width: 130px;
-        opacity: 0.6;
+    .mainCarInfoWindow-body-trunk-body-left-activate-wrap {
+        position: absolute;
+        left: 0px;
+        bottom: 15px;
+        width: 100%;
+        height: 25px;
     }
 
-    .mainCarInfoWindow-body-trunk-body-left-activate:hover {
-        opacity: 1;
+    .mainCarInfoWindow-body-trunk-body-left-activate {
+        position: relative;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
+        width: 130px;
+        height: 25px;
+        line-height: 25px;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid #0e4b00;
+        background-color: #082801;
+        box-sizing: border-box;
     }
+    .mainCarInfoWindow-body-trunk-body-left-activate:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
 
     .mainCarInfoWindow-body-trunk-body-right {
         position: relative;
-        width: 465px;
-        height: 340px;
-        margin-left: 165px;
-        margin-top: 5px;
+        width: calc(100% - 180px);
+        height: 100%;
+        padding: 10px 0 0 20px;
+        box-sizing: border-box;
         overflow-y: scroll;
     }
 
@@ -122,21 +130,17 @@
         position: relative;
         cursor: url('/static/img/cursors/hyper.png'), pointer;
         box-sizing: border-box;
-        border: 1px solid #054E05;
+        background-color: #082801;
+        border: 1px solid #0e4b00;
         width: 140px;
         height: 100px;
         float: left;
-        margin: 5px 10px 5px 0px;
-        opacity: 0.6;
+        margin: 0 25px 15px 0;
     }
-
-    .mainCarInfoWindow-body-trunk-body-right-item-wrap:hover {
-        opacity: 1;
-    }
-
-    .mainCarInfoWindow-body-trunk-body-right-item-wrap.active {
-        opacity: 1;
-    }
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap:hover { background-color: #0e4b00; border-color: #31c811; color: #2ffa00; }
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap.active { background-color: #0e4b00; border-color: #31c811; color: #2ffa00; }
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap.active .mainCarInfoWindow-body-trunk-body-right-item-name-empty { color: #2ffa00; }
+    .mainCarInfoWindow-body-trunk-body-right-item-wrap.active .mainCarInfoWindow-body-trunk-body-right-item-count-empty { color: #2ffa00; }
 
     .mainCarInfoWindow-body-trunk-body-right-item {
         position: relative;
@@ -156,20 +160,16 @@
         position: absolute;
         box-sizing: border-box;
         padding: 5px 0px 0px 5px;
+        color: #31c811;
         font: 11pt Nouveau_IBM;
-        color: #135806;
     }
 
     .mainCarInfoWindow-body-trunk-body-right-item-picture-empty {
         position: absolute;
-        top: 10px;
-        /*background-color: #000000;*/
-        /*background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),*/
-        /*linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);*/
-        /*background-size: 2px 2px;*/
-        /*background-position: 0 0, 1px 1px;*/
-        height: 78px;
-        width: 138px;
+        top: 25px;
+        right: 5px;
+        height: 70px;
+        width: 130px;
         pointer-events: none;
     }
 
@@ -179,69 +179,72 @@
         padding: 0px 5px 0px 0px;
         top: 58px;
         text-align: right;
-        color: #30fc00;
+        color: #31c811;
+        font: 11pt Nouveau_IBM;
     }
 
 
 /*Взаимодействие с контейнерами*/
     .containerInventoryWindow-main {
         position: relative;
-        width: 660px;
-        height: 448px;
-        background-color: rgba(0, 0, 0, 0.9);
-        color: #27ED0A;
-        font: 12pt FreePixel;
         cursor: url('/static/img/cursors/main.png'), default;
+        height: 452px;
+        width: 734px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #31c811;
+        font: 11pt Nouveau_IBM;
     }
 
-    .containerInventoryWindow-window-wrap{
-        width: 654px;
-        height: 416px;
-        border: 1px solid green;
+    .containerInventoryWindow-window-wrap {
+        position: relative;
+        margin: 2px auto;
+        border: 1px solid #0e4b00;
         box-sizing: border-box;
-        margin: 3px;
+        width: calc(100% - 4px);
+        height: calc(100% - 30px);
+        overflow: hidden;
     }
 
     .containerInventoryWindow-inventory-wrap {
         position: relative;
         float: left;
+        width: 50%;
+        height: 100%;
+        padding: 0 5px 5px 15px;
         box-sizing: border-box;
-        width: 320px;
-        height: 410px;
-        border: 1px solid green;
     }
-
-    .containerInventoryWindow-inventory-wrap-left {
-        margin: 2px 0 2px 3px;
-    }
-
-    .containerInventoryWindow-inventory-wrap-right {
-        margin: 2px 0 2px 6px;
+    .containerInventoryWindow-inventory-wrap.border {
+        border-width: 0 1px 0 0;
+        border-style: solid;
+        border-image: linear-gradient(to bottom, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+        border-image-slice: 1;
     }
 
     .containerInventoryWindow-inventory-header {
         position: relative;
         width: 100%;
         height: 30px;
+        line-height: 30px;
         text-align: center;
-        border-bottom: 1px solid green;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+        border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, transparent);
+        border-image-slice: 1;
         box-sizing: border-box;
-        line-height: 1.6;
-        font-weight: bold;
-        font-size: 13pt;
     }
 
     .containerInventoryWindow-inventory-body {
         position: relative;
-        width: calc(100% - 9px);
-        margin: 0 auto 0 auto;
-        height: 374px;
+        width: 100%;
+        height: calc(100% - 35px);
+        padding-top: 5px;
+        margin-top: 5px;
         overflow-y: auto;
         overflow-x: hidden;
-        margin-top: 2px;
-        padding-left: 5px;
+        box-sizing: border-box;
     }
 
+    .containerInventoryWindow-window-wrap .mainCarInfoWindow-body-trunk-body-right-item-wrap { margin: 0 5px 15px 15px; }
 
 /*Бартер*/
     .barterInventoryWindow-main {
