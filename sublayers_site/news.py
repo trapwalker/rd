@@ -32,7 +32,7 @@ class NewsManager(object):
         self.news_list = news_list
         self.sort_news_by_date()
         # Добавить колл-бек на обновление новостей
-        tornado.ioloop.IOLoop.current().call_later(delay=60, callback=self.refresh_news)
+        tornado.ioloop.IOLoop.current().call_later(delay=600, callback=self.refresh_news)
 
     def sort_news_by_date(self):
         from datetime import datetime
