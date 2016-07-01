@@ -17,17 +17,7 @@ class SiteMainHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def get(self):
         # Подготовка списка новостей
-        news_list = []
-        serv_dir = os.getcwd()
-
-        os.chdir(options.static_path)
-        os.chdir('static_site')
-        os.chdir('news')
-        for news_file_name in filter(lambda x: x.endswith('.yaml'), os.listdir('.')):
-            news_file = open(news_file_name, 'r')
-            news_list.append(yaml.load(news_file))
-            news_file.close()
-        os.chdir(serv_dir)
+        news_list = self.application.news_manager.news_list
 
         # Узнать количество пользователей (онлайн пока не делаем, так как не хотим делать запрос к серверу)
         users_count = yield User.objects.count()
