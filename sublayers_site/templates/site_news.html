@@ -11,7 +11,8 @@
                 <div id="newsHeaderList" class="scroll-block">
                     {% set news_id = 0 %}
                         {% for news in news_list %}
-                        <div class="window-news-log-news-header box-shadow" data-news_id="news_content_{{ news_id }}_block">
+                        <div class="window-news-log-news-header box-shadow {{ news.get('link', '') }}" data-news_id="news_content_{{ news_id }}_block"
+                                data-news_link="{{ news.get('link', '') }}">
                             <div class="window-news-log-news-date">{% raw news['date'] %}</div>
                             <div class="window-news-log-news-header-content">{% raw news['header'] %}</div>
                         </div>
@@ -42,10 +43,11 @@
 </div>
 
 <script>
-    $('.window-news-log-news-header').click(function(event) {
+
+    function viewNewsSilentClickReaction(element) {
         $('.window-news-news-content-block').css('display', 'none');
-        $('#' + $(this).data('news_id')).css('display', 'block');
-        var header_text = $(this).find('.window-news-log-news-header-content').first().text();
+        $('#' + $(element).data('news_id')).css('display', 'block');
+        var header_text = $(element).find('.window-news-log-news-header-content').first().text();
 
         var procent_length = 10 + 2 * header_text.length;
         procent_length = procent_length > 90 ? 90 : procent_length;
@@ -53,9 +55,21 @@
 
         $('#RDSiteNewsRightHeader').text(header_text);
         $('.window-news-log-news-header').removeClass('active');
-        $(this).addClass('active');
+        $(element).addClass('active');
+    }
 
+    function setHashUrlForNews(element) {
+        // прописать в хеш ссылку на новость
+        var url_hash = $(element).data('news_link');
+        if (url_hash && url_hash.length) {
+            window.location.hash = 'news=' + url_hash;
+        }
+    }
+
+    $('.window-news-log-news-header').click(function(event) {
+        viewNewsSilentClickReaction(this);
+        setHashUrlForNews(this);
         audioManager.play('listing');
     });
-    $('.window-news-log-news-header').first().click();
+{#    $('.window-news-log-news-header').first().click();#}
 </script>

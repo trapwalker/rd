@@ -22,7 +22,7 @@ var PreloaderImage = (function(){
 
         this.time_out_min = null;
         this.time_out_max = null;
-        this.min_delay = 3000;
+        this.min_delay = 800;
         this.max_delay = 60000;
     }
 
