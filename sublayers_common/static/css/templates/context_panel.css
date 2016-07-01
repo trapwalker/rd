@@ -1,0 +1,91 @@
+#contextPanelDiv {
+    position: absolute;
+    right: 20px;
+    top: 50px;
+    pointer-events: none;
+}
+
+#cpEnterToLocationIcon { background: transparent url('/static/img/context_panel/map_enter.png') 50% 50% no-repeat; }
+#cpEnterToLocationIcon:hover { background: transparent url('/static/img/context_panel/map_enter_over.png') 50% 50% no-repeat; }
+
+#cpEnterToContainer { background: transparent url('/static/img/context_panel/map_pickup.png') 50% 50% no-repeat; }
+#cpEnterToContainer:hover { background: transparent url('/static/img/context_panel/map_pickup_over.png') 50% 50% no-repeat; }
+
+#cpBarterSendInvite {  background: transparent url('/static/img/context_panel/map_exchange.png') 50% 50% no-repeat; }
+#cpBarterSendInvite:hover { background: transparent url('/static/img/context_panel/map_exchange_over.png') 50% 50% no-repeat; }
+
+#cpBarterInfoInvite { background: transparent url('/static/img/context_panel/map_deal.png') 50% 50% no-repeat; }
+#cpBarterInfoInvite:hover { background: transparent url('/static/img/context_panel/map_deal_over.png') 50% 50% no-repeat; }
+
+.cp_button_icon {
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50px;
+    margin: 0 0 20px 20px;
+    display: none;
+}
+.cp_button_icon.active {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    pointer-events: auto;
+    display: block;
+}
+
+@media screen and (max-width: 1366px) {
+    #contextPanelDiv {
+        transform: scale(0.75);
+        right: 10px;
+        top: 20px;
+    }
+}
+
+
+
+
+
+
+
+
+.contextListWindow-main {
+    position: relative;
+    cursor: url('/static/img/cursors/main.png'), default;
+    height: 200px;
+    width: 200px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #31c811;
+    font: 11pt Nouveau_IBM;
+}
+
+.context-list-wrap {
+    position: relative;
+    margin: 2px auto;
+    width: calc(100% - 4px);
+    height: calc(100% - 30px);
+    padding: 5px;
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.context-list {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.context-list-item {
+    position: relative;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+}
+.context-list-item:hover { color: #2ffa00; }

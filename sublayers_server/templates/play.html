@@ -54,7 +54,6 @@
     <link rel="stylesheet" href="{{ static_url('css/controls/cruise_control.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/controls/zoom_slider.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('css/context_panel.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/car_info.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/npc_transaction_info.css') }}"/>
@@ -88,6 +87,7 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/party_window.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
 
     <script src="{{ static_url('js/third_party/leaflet-src.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
@@ -191,7 +191,7 @@
         <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
     </div>
 
-    <div style="position: absolute; right: 150px; top: 6px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
+    <div style="position: absolute; right: 20px; top: 10px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
     <div id="divMainMenu">
         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Персонаж</div>
         <div id="divMainMenuBtnCar" class="main-menu-btn-up sublayers-clickable">Автомобиль</div>
@@ -222,10 +222,10 @@
     </div>
     <div id="zoomSetDivForZoomSlider"></div>
     <div id="contextPanelDiv">
-        <div id="cpEnterToLocationIcon" class="cp_button_icon"></div>
         <div id="cpEnterToContainer" class="cp_button_icon"></div>
-        <div id="cpBarterSendInvite" class="cp_button_icon"></div>
         <div id="cpBarterInfoInvite" class="cp_button_icon"></div>
+        <div id="cpBarterSendInvite" class="cp_button_icon"></div>
+        <div id="cpEnterToLocationIcon" class="cp_button_icon"></div>
     </div>
     <div id="chatAreaGlass"></div>
     <div id="fireControlArea" class="fire-control-parent"></div>

@@ -167,3 +167,6 @@ class GasStation(MapLocation):
         for location in cls.locations:
             if isinstance(location, GasStation):
                 yield location
+
+    def on_enter(self, agent, time):
+        pass
