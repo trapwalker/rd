@@ -252,7 +252,6 @@ var ClientManager = (function () {
                 obj_marker.updateLabel('Radio Point');
             if (obj.cls == 'POIStash')
                 obj_marker.updateLabel('loot');
-
         }
     };
 
