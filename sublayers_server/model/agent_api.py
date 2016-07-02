@@ -25,9 +25,8 @@ from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, PrivateChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town, GasStation
-from sublayers_server.model.barter import InitBarterEvent, ActivateBarterEvent, LockBarterEvent, UnLockBarterEvent, \
-    CancelBarterEvent, SetMoneyBarterEvent
-from sublayers_server.model.barter import InviteBarterMessage
+from sublayers_server.model.barter import Barter, InitBarterEvent, ActivateBarterEvent, LockBarterEvent, \
+    UnLockBarterEvent, CancelBarterEvent, SetMoneyBarterEvent, InviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 
 # todo: Проверить допустимость значений входных параметров
@@ -717,7 +716,7 @@ class AgentAPI(API):
     @public_method
     def cancel_barter(self, barter_id):
         # log.debug('Agent %s cancel barter_id %s ', self.agent, barter_id)
-        CancelBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+        Barter.cancel(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time())
 
     @public_method
     def table_money_barter(self, barter_id, money):
