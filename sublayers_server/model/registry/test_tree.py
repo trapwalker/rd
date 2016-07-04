@@ -16,7 +16,7 @@ from sublayers_server.test_iolop import io_loop, start
 
 #from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry.tree import Node
-from sublayers_server.model.registry.odm.fields import StringField, IntField, EmbeddedDocumentField, JsonField
+from sublayers_server.model.registry.odm.fields import StringField, IntField, EmbeddedDocumentField, JsonField, ListField
 from sublayers_server.model.registry.uri import URI
 #from sublayers_server.model.registry.ext_types import PositionField
 from motorengine import Document
@@ -28,7 +28,7 @@ class A(Node):
 
 class B(A):
     y = IntField()
-    p = EmbeddedDocumentField(embedded_document_type=A)
+    p = ListField(base_field=EmbeddedDocumentField(embedded_document_type=A))
     d = JsonField()
 
 
@@ -39,7 +39,7 @@ def test_store():
 
     a = A(name='a', x=3)
     yield a.save()
-    b = B(name='b', y=4, parent=a.uri, owner=a, p=a._id, d={3:333})
+    b = B(name='b', y=4, parent=a.uri, owner=a, p=[a._id], d={3:333})
     yield b.load_references()
     yield b.save()
     Node.objects_cache.clear()
