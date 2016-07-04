@@ -161,6 +161,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     -webkit-perspective-origin: 70% 51%;
     -moz-perspective-origin: 70% 51%;
     perspective-origin: 70% 51%;
+    transform-style: preserve-3d;
 }
 
 .content-block .content {

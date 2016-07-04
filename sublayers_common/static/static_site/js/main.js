@@ -15,6 +15,10 @@ var currentSiteSize = 1080;
 var glitchEffectStartPage768 = null;
 var glitchEffectStartPage1080 = null;
 
+var videoPlayer;
+var videoPlayerReadyState = false;
+var lastRadioPlayerVolumeBeforeVideoActive = 0.3;
+
 
 function SetImageOnLoad(img, onLoadHandler) {
     if (img.complete) {
@@ -113,10 +117,19 @@ function main() {
         if (data == 'RDSiteGameInfo') {
             canvasDisplayLine.pause();
             canvasDisplayRippling.pause();
+            if (videoPlayer && videoPlayerReadyState) {
+                videoPlayer.playVideo();
+                lastRadioPlayerVolumeBeforeVideoActive = radioPlayer.current_volume;
+                radioPlayer.set_volume(0.0);
+            }
         }
         else {
             canvasDisplayLine.play();
             canvasDisplayRippling.play();
+            if (videoPlayer && videoPlayerReadyState) {
+                videoPlayer.pauseVideo();
+                radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
+            }
         }
 
         if (data == 'RDSiteWReg3') {
@@ -130,6 +143,9 @@ function main() {
         else {
             if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
         }
+
+
+
 
         // Работа с консолями
         textConsoleManager.start(data);
@@ -163,6 +179,8 @@ function main() {
                 window.location.hash = url_hash.split('_')[1];
             }
         }
+
+
     });
 
     $('.btn').mouseover(function () {
@@ -213,6 +231,12 @@ function main() {
 
             // Остановить канвас-менеджер
             if (canvasManager.is_active) canvasManager.is_active = false;
+
+            // Остановить видео
+            if (videoPlayer && videoPlayerReadyState) {
+                videoPlayer.pauseVideo();
+                radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
+            }
         }
     });
 
@@ -628,5 +652,26 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             }
         }
     });
+}
+
+
+
+/* Youtube Video Player Functions */
+
+function onPlayerReady(event) {
+    //console.log('onPlayerReady');
+    //event.target.setVolume(100);
+    //event.target.playVideo();
+    videoPlayerReadyState = true;
+    if ($('#RDSiteGameInfo').hasClass('active')) {
+        videoPlayer.playVideo();
+        lastRadioPlayerVolumeBeforeVideoActive = radioPlayer.current_volume;
+        radioPlayer.set_volume(0.0);
+    }
+}
+
+function onPlayerError(event) {
+    console.log('onPlayerError');
+    videoPlayerReadyState = false;
 }
 
