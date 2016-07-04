@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.odm.meta import NodeMeta
-from sublayers_server.model.registry.odm.fields import StringField
+from sublayers_server.model.registry.odm.fields import StringField, ListField
 
 from motorengine import Document
 from tornado.concurrent import return_future
@@ -35,27 +35,75 @@ class AbstractDocument(Document):
 
                     load_function(callback=wrapper, *av, **kw)
 
-                # todo: instantiate
-                load_function = self._get_load_function(document, field_name, field.embedded_type)
+                load_function = (
+                    self._bypass_load_function
+                    if isinstance(value, field.embedded_type) else
+                    self._get_load_function(document, field_name, field.embedded_type)
+                )
+
                 results.append([
-                    getter_with_instantiation, #load_function,
+                    getter_with_instantiation, #load_function,  # todo: Убедиться, что не иснтанцируются уже инстанцированные
                     value,
                     document._values,
                     field_name,
                     None
                 ])
 
-    def _get_load_function(self, document, field_name, document_type):
-        value = document._values.get(field_name, None)
-        if not isinstance(value, document_type):
-            return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
+    def find_list_field(self, document, results, field_name, field):
+        from motorengine.fields.reference_field import ReferenceField
+        from motorengine.fields.embedded_document_field import EmbeddedDocumentField
 
-        @return_future
-        def fake_load_function(id, callback, **kwargs):
-            import tornado.ioloop
-            tornado.ioloop.IOLoop.instance().add_callback(callback, id)
+        def find_in_list(lst, results, field):
+            def make_list_filler(filling_list):
+                def filling_function(collection, field_name, value):
+                    filling_list.append(value)
+                return filling_function
 
-        return fake_load_function
+            if isinstance(field._base_field, ReferenceField):
+                load_function = self._get_load_function(document, field_name, field._base_field.reference_type)
+                for value in lst[:]:
+                    results.append([
+                        self._bypass_load_function if isinstance(value, Document) else load_function,
+                        value,
+                        document._values,
+                        field_name,
+                        make_list_filler()
+                    ])
+
+        if self.is_list_field(field):
+            values = document._values.get(field_name)
+            if values:
+                if isinstance(field._base_field, ReferenceField):  # EmbeddedDocumentField
+                    document_type = field._base_field.reference_type  #     if isinstance(field._base_field, ReferenceField) else field._base_field.embedded_type
+                    load_function = self._get_load_function(document, field_name, document_type)
+                    for value in values:
+                        results.append([
+                            load_function,
+                            value,
+                            document._values,
+                            field_name,
+                            self.fill_list_values_collection
+                        ])
+                    document._values[field_name] = []
+                if isinstance(field._base_field, ListField):
+                    document_type = field._base_field.reference_type  # if isinstance(field._base_field, ReferenceField) else field._base_field.embedded_type
+                    #find_in_list
+
+                else:
+                    for value in values:
+                        self.find_references(document=value, results=results)
+
+    @return_future
+    def _bypass_load_function(self,id, callback, **kwargs):
+        import tornado.ioloop
+        tornado.ioloop.IOLoop.instance().add_callback(callback, id)
+
+    # def _get_load_function(self, document, field_name, document_type):
+    #     value = document._values.get(field_name, None)
+    #     if isinstance(value, document_type):
+    #         return self._bypass_load_function
+    #
+    #     return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
 
     def to_cache(self, *av):
         assert self._id
