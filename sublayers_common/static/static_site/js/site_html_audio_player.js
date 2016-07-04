@@ -95,7 +95,7 @@ var RadioPlayer = (function () {
             self.volume_disc_active = true;
             self.volume_disc_start_coord = event.clientY + (self.current_volume * constHtmlSize[currentSiteSize].height_volume_disc);
         });
-        this.jq_volume_disc.mousemove(function() {
+        this.jq_volume_disc.mousemove(function(event) {
             if (self.volume_disc_active) {
                 if (self.power_on) { // Колёсико влияет на звук только когда включено питание
                     var value = self.volume_disc_start_coord - event.clientY;

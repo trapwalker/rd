@@ -366,9 +366,9 @@ class Car(Mobile):
     slot_t2 = SlotField(caption=u't2', doc=u'Слот тюнера заднее крыло', tags='tuner b_fender')
     slot_t3 = SlotField(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner b_glass')
     slot_t4 = SlotField(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner f_bumper')
-    slot_t5 = SlotField(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner f_fender')
+    slot_t5 = SlotField(caption=u't2', doc=u'Слот тюнера переднее крыло', tags='tuner f_fender')
     slot_t6 = SlotField(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_glass')
-    slot_t7 = SlotField(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner roof')
+    slot_t7 = SlotField(caption=u't1', doc=u'Слот тюнера крыша', tags='tuner roof')
     slot_t8 = SlotField(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
     slot_t9 = SlotField(caption=u't1', doc=u'Слот тюнера задний бампер', tags='tuner b_bumper')
 
