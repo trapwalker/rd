@@ -333,7 +333,7 @@ class Car(Mobile):
     slot_t4 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner f_bumper')
     slot_t5 = Slot(caption=u't2', doc=u'Слот тюнера переднее крыло', tags='tuner f_fender')
     slot_t6 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_glass')
-    slot_t7 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner roof')
+    slot_t7 = Slot(caption=u't1', doc=u'Слот тюнера крыша', tags='tuner roof')
     slot_t8 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
     slot_t9 = Slot(caption=u't1', doc=u'Слот тюнера задний бампер', tags='tuner b_bumper')
 
