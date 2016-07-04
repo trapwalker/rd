@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 # from utils import get_uid, serialize
 from sublayers_server.model import messages
-from sublayers_server.model.events import Init, Delete
+from sublayers_server.model.events import Init, Delete, Save
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model.stat_log import StatLogger
 
@@ -56,6 +56,12 @@ class Object(object):
         del self.server.objects[self.uid]
         # log.debug('Finally deletion: %s', self)
 
+    def on_save(self, time):
+        pass
+
+    def save(self, time):
+        Save(obj=self, time=time).post()
+
     def delete(self, time):
         Delete(obj=self, time=time).post()
 
@@ -96,7 +102,7 @@ class PointObject(Object):
         self.server.geo_objects.remove(self)
         super(PointObject, self).on_after_delete(event=event)
 
-    def save(self, time):
+    def on_save(self, time):
         self.example.position = self.position(time)
 
     def as_dict(self, time):

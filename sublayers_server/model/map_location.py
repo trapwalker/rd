@@ -52,10 +52,7 @@ class MapLocation(Observer):
             chat.room.include(agent=agent, time=event.time)
 
     def on_enter(self, agent, time):
-        # Раздеплоить машинку агента
-        if agent.car:
-            agent.car.example.last_location = self.example
-            agent.car.displace(time=time)
+        agent.on_enter_location(location=self, time=time)
 
         if hasattr(self.example, 'buildings'):
             for building in self.example.buildings.values():
@@ -70,9 +67,6 @@ class MapLocation(Observer):
                             log.info('new quest %r', quest)
                             new_quest = quest.instantiate(agents=[agent], npc=head, **dict(quest_uri.params))
                             agent.add_quest(quest=new_quest, time=time)
-
-        # todo: review здесь или внутри if'а выше сделать этот вызов: agent.on_enter_location call
-        agent.on_enter_location(location=self, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
@@ -167,3 +161,6 @@ class GasStation(MapLocation):
         for location in cls.locations:
             if isinstance(location, GasStation):
                 yield location
+
+    def on_enter(self, agent, time):
+        pass

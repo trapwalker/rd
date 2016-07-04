@@ -11,6 +11,8 @@ var CanvasManager = (function(){
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
+        this.is_active = false;
+
         this.obj_list = [];
 
         if (timeManager) timeManager.addTimerEvent(this, 'redraw');
@@ -64,6 +66,7 @@ var CanvasManager = (function(){
     };
 
     CanvasManager.prototype.redraw = function(time) {
+        if (! this.is_active) return;
         this.context.clearRect(0, 0, this.width, this.height);
         for (var i = 0; i < this.obj_list.length; i++)
             this.obj_list[i].obj.redraw(this.context, time);

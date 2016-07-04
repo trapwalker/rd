@@ -26,8 +26,8 @@ var LocationPlaceMenu = (function (_super) {
     LocationPlaceMenu.prototype.init_click = function () {
         //console.log('LocationPlaceMenu.prototype.init_click', this.jq_main_div);
         var self = this;
-        this.jq_main_div.find('.menu-header-item.click').click({location: this}, LocationPlaceMenu.menu_buttons_reaction);
-        this.jq_main_div.find('.menu-header-item.click').first().click();
+        this.jq_main_div.find('.menu-header-item').click({location: this}, LocationPlaceMenu.menu_buttons_reaction);
+        this.jq_main_div.find('.menu-header-item').first().click();
 
         // Инициализация кликов на фильтры инвентаря
         this.jq_main_div.find('.location-inventory-filters-item').click({location: this}, LocationPlaceMenu.inv_filters_click);

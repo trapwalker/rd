@@ -48,7 +48,8 @@ var WInventoryItem = (function (_super) {
             $(event.target).parent().addClass('active');
 
             // настраиваем информационное окно инвентаря
-            var inv_parent =  $(inventoryDiv).parent();
+            //var inv_parent =  $(inventoryDiv).parent();
+            var inv_parent =  $(inventoryDiv).parents('.mainDivWindow');
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
                     'transparent url(' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").text(self.item.example.title);

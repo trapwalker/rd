@@ -341,14 +341,14 @@ class Unit(Observer):
                 ).post()
                 self.upd_observing_range(time)
 
-    def save(self, time):
+    def on_save(self, time):
         # if self.owner:
         #     self.owner.save(time)
 
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
         self.save_inventory(time)
-        super(Unit, self).save(time=time)
+        super(Unit, self).on_save(time=time)
 
     def weapon_list(self):
         for sector in self.fire_sectors:
@@ -482,8 +482,8 @@ class Mobile(Unit):
     def fuel(self, time):
         return self.fuel_state.fuel(t=time)
 
-    def save(self, time):
-        super(Mobile, self).save(time=time)
+    def on_save(self, time):
+        super(Mobile, self).on_save(time=time)
         self.example.fuel = self.fuel(time=time)
 
     def upd_observing_range(self, time):  # todo: возможно это неверно работает! найти высоту или лес и проверить в пати

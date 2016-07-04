@@ -172,6 +172,12 @@ class Delete(Objective):
         self.obj.on_after_delete(event=self)
 
 
+class Save(Objective):
+    def on_perform(self):
+        super(Save, self).on_perform()
+        self.obj.on_save(time=self.time)
+
+
 class SearchZones(Objective):
 
     def on_perform(self):

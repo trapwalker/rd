@@ -15,6 +15,7 @@ from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessa
                                              SetObserverForClient, Die, QuickGameDie)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
+from sublayers_server.model.barter import Barter
 
 from tornado.options import options
 import tornado.gen
@@ -145,10 +146,11 @@ class Agent(Object):
                 return barter
         return None
 
-    def save(self, time):
+    def on_save(self, time):
         self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
         if self.car:
-            self.car.save(time)
+            # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
+            self.car.on_save(time)
             self.example.car = self.car.example
         # elif self.current_location is None:  # todo: wtf ?!
         #     self.example.car = None
@@ -421,7 +423,16 @@ class Agent(Object):
         self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
 
     def on_enter_location(self, time, location):
-        log.debug('%s:: on_enter_location(%s)', self, location)
+        # Отключить все бартеры (делать нужно до раздеплоя машины)
+        # todo: разобраться с time-0.1
+        for barter in self.barters:
+            Barter.cancel(barter_id=barter.id, agent=self, time=time-0.1)
+
+        # Раздеплоить машинку агента
+        if self.car:
+            self.car.example.last_location = location.example
+            self.car.displace(time=time)
+
         self.subscriptions.on_enter_location(agent=self, time=time, location=location)
 
     def on_exit_location(self, time, location):
@@ -442,6 +453,12 @@ class Agent(Object):
         # todo: csll it ##quest
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_die()', self)
+
+        # Отключить все бартеры (делать нужно до раздеплоя машины)
+        # todo: разобраться с time-0.1
+        for barter in self.barters:
+            Barter.cancel(barter_id=barter.id, agent=self, time=time-0.1)
+
         Die(agent=self, time=time).post()
 
     def on_trade_enter(self, contragent, time, is_init):

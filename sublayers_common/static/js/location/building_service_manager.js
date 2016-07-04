@@ -103,8 +103,8 @@ var LocationServiceBuilding = (function (_super) {
         var current_hp = hp - user.example_car.hp;
         if (current_hp < 0) current_hp = 0;
         this.set_header_text(
-            'Ремонт: ' + current_hp.toFixed(0) + ' NC</br>' +
-            'Ремонт всего: ' + (user.example_car.max_hp - user.example_car.hp).toFixed(0) + 'NC'
+            'Ремонт: ' + Math.ceil(current_hp) + ' NC</br>' +
+            'Ремонт всего: ' + Math.ceil(user.example_car.max_hp - user.example_car.hp) + 'NC'
         );
     };
 

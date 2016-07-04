@@ -22,16 +22,25 @@ html {
 body {
     min-height: 100%;
     margin: 0;
-    user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     cursor: url('/static/img/cursors/main.png'), default;
     color: #00ff00;
     font-family: FreePixel;
     font-weight: bold;
     text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
     letter-spacing: 2px;
-    background-color: #030f00;
+    background-color: #030f00; /*#191f2f; #030f00; */
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+    background-position: top center;
+}
+
+body.visible-site {
+    background-image: url('/static/static_site/img/1366_june/768_side_tile.jpg');
+    background-color: #191f2f;
 }
 
 #siteBlock {
@@ -67,6 +76,8 @@ body {
 
 input[type="text"], input[type='email'], input[type='password'] {
     font-family: FreePixel;
+    -moz-appearance: none;
+    -webkit-appearance: none;
     appearance: none;
     box-shadow: none;
     border-radius: 0;
@@ -75,6 +86,7 @@ input[type="text"], input[type='email'], input[type='password'] {
     font-size: 12pt;
     text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
     letter-spacing: 2px;
+    box-sizing: border-box;
 }
 
 input[type="text"]:focus, input[type='email']:focus, input[type='password']:focus {
@@ -88,11 +100,11 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     width: 100%;
     height: 100%;
     background-color: #030f00;
-    color: floralwhite;
-    font-family: FreePixel;
-    font-size: 14pt;
+    color: #00ff00;
+    font-family: FreePixel, sans-serif;
     font-weight: bold;
     text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
+    font-size: 14pt;
     letter-spacing: 2px;
     padding: 100px;
     box-sizing: border-box;
@@ -143,8 +155,11 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     height: 438px;
     top: 150px;
     left: 90px;
-    perspective: 613px;
     -webkit-perspective: 613px;
+    -moz-perspective: 613px;
+    perspective: 613px;
+    -webkit-perspective-origin: 70% 51%;
+    -moz-perspective-origin: 70% 51%;
     perspective-origin: 70% 51%;
 }
 
@@ -154,8 +169,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     height: 100%;
     /*background: rgba(203, 59, 2, 0.55);*/
     background-color: transparent;
+    -webkit-transform: rotateY(-18deg);
+    -moz-transform: rotateY(-18deg);
+    -ms-transform: rotateY(-18deg);
     transform: rotateY(-18deg);
-    Transform-origin: 49%;
+    -webkit-transform-origin: 49%;
+    -moz-transform-origin: 49%;
+    -ms-transform-origin: 49%;
+    transform-origin: 49%;
     box-sizing: border-box;
     padding: 2px;
 
@@ -212,8 +233,8 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 }
 
 .content-start-back.glitch.filtered {
-    filter: brightness(0.6);
     -webkit-filter: brightness(0.6);
+    filter: brightness(0.6);
 }
 
 
@@ -929,6 +950,10 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
 }
 
 @media screen and (min-width: 1367px) {
+    body.visible-site {
+        background-image: url('/static/static_site/img/09-06-16/1080_side_tile.jpg');
+    }
+
     #siteBlock {
         background: transparent url(/static/static_site/img/09-06-16/1080_main_bg.jpg) no-repeat center top;
     }
@@ -955,12 +980,17 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         height: 541px;
         top: 185px;
         left: -20px;
-        perspective: 820px;
         -webkit-perspective: 820px;
+        -moz-perspective: 820px;
+        perspective: 820px;
+        -webkit-perspective-origin: 58% 50%;
+        -moz-perspective-origin: 58% 50%;
         perspective-origin: 58% 50%;
     }
 
     .content-block .content {
+        -webkit-transform: rotateY(-20deg);
+        -ms-transform: rotateY(-20deg);
         transform: rotateY(-20deg);
     }
 

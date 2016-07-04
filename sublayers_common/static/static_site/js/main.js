@@ -63,8 +63,16 @@ function main() {
     // Чтобы кнопки залипали!
     $('.btn-page').click(function () {
         // Проигрывание звуков
-        if (! $(this).hasClass('active'))
+        if (! $(this).hasClass('active')) {
             audioManager.play('microwave_btn_click');
+        }
+        else {
+            // Значит произошёл клик по нажатой кнопке - её нужно отжать = клик по логотипу
+            audioManager.play('microwave_btn_click');
+            $('.site-logo').first().click();
+            // todo: звук отжатой кнопки
+            return;
+        }
 
         $('.btn').removeClass('active');
         $(this).addClass('active');
@@ -80,6 +88,9 @@ function main() {
                 glitchEffectStartPage1080.stop();
             if (glitchEffectStartPage768)
                 glitchEffectStartPage768.stop();
+
+            // Запустить канвас-менеджер
+            if (! canvasManager.is_active) canvasManager.is_active = true;
         }
 
         // Скрыть все окна
@@ -127,9 +138,30 @@ function main() {
         if (canvasNoise) canvasNoise.flashNoise();
 
         // Изменение хеша в адресной строке (хеш возьмётся из data-url_hash самой кнопки
-        var url_hash = $(this).attr('id');
-        if (url_hash && url_hash.length) {
-            window.location.hash = url_hash.split('_')[1];
+        if (data == 'RDSiteNews') {
+            // Если окно новостей, то найти последнюю активную новость
+            var jq_active_news = $('.window-news-log-news-header.active');
+            if (jq_active_news.length) {
+                // Если есть активные новости (нажата хоть одна, хотя и должна быть нажата максимум одна)
+                // прописать в хеш ссылку на новость
+                setTimeout(function () { // Костыль!!!
+                    setHashUrlForNews(jq_active_news.first()[0]);
+                }, 10);
+            }
+            else {
+                // Если нет активных новостей, то выбрать первую новость
+                var jq_news = $('.window-news-log-news-header').first();
+                viewNewsSilentClickReaction(jq_news[0]);
+                setTimeout(function(){
+                    setHashUrlForNews(jq_news[0]);
+                }, 10);
+            }
+        }
+        else {
+            var url_hash = $(this).attr('id');
+            if (url_hash && url_hash.length) {
+                window.location.hash = url_hash.split('_')[1];
+            }
         }
     });
 
@@ -178,6 +210,9 @@ function main() {
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.start();
             consoleWReg.focus_interrupt();
+
+            // Остановить канвас-менеджер
+            if (canvasManager.is_active) canvasManager.is_active = false;
         }
     });
 
@@ -228,8 +263,26 @@ function main() {
     var hash_url = window.location.hash;
     if (hash_url && hash_url.length) {
         hash_url = hash_url.split('#')[1];
-        if (hash_url.length)
-            $('#RDbtn_' + hash_url).click();
+        if (hash_url.length) {
+            if (hash_url.indexOf('news') == 0) {
+                $('#RDbtn_news').click();
+                var news_link = hash_url.split('=')[1];
+                var jq_news = '';
+                if (news_link && news_link.length) {
+                    jq_news = $('.' + news_link).first();
+                }
+                else {
+                    jq_news = $('.window-news-log-news-header').first();
+                }
+                viewNewsSilentClickReaction(jq_news[0]);
+                setTimeout(function () {
+                    setHashUrlForNews(jq_news[0]);
+                }, 10);
+            }
+            else {
+                $('#RDbtn_' + hash_url).click();
+            }
+        }
     }
 
     // Запрос разных рейтингов
@@ -464,8 +517,11 @@ function GetUserInfo() {
             }
 
             // Переход на следующую страницу
-            if (window.location.hash == '#start')
+            if (window.location.hash == '#start') {
+                // Должны кликнуть для определения какую именно из первых страниц показывать
+                $('#RDbtn_start').removeClass('active'); // Хитрость
                 $('#RDbtn_start').click();
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error('Error GetUserInfo');
