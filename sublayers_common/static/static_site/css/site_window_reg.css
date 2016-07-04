@@ -72,6 +72,7 @@
     background-color: #082308;
     font-size: 12pt;
 	cursor: url('/static/img/cursors/text.png'), text;
+    box-sizing: border-box;
 }
 
 .window-reg-up-btn-block {
