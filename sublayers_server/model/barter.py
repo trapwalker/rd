@@ -71,16 +71,12 @@ class UnLockBarterEvent(Event):
 
 
 class CancelBarterEvent(Event):
-    def __init__(self, barter_id, agent, **kw):
+    def __init__(self, barter, agent, **kw):
         super(CancelBarterEvent, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-        self.barter_id = barter_id
+        self.barter = barter
 
     def on_perform(self):
-        super(CancelBarterEvent, self).on_perform()
-        barter = self.agent.get_barter_by_id(barter_id=self.barter_id)
-        if barter is not None:
-            barter.on_cancel(time=self.time)
+        self.barter.on_cancel(time=self.time)
 
 
 class SuccessBarterEvent(Event):
@@ -284,6 +280,12 @@ class Barter(object):
         # Отправить приглашение
         InviteBarterMessage(agent=recipient, time=time, barter=self).post()
 
+    @classmethod
+    def cancel(cls, barter_id, agent, time):
+        barter = agent.get_barter_by_id(barter_id=barter_id)
+        if barter:
+            CancelBarterEvent(barter=barter, agent=agent, time=time).post()
+
     def _change_table(self, inventory, time):
         if (inventory is self.initiator_table) or (inventory is self.recipient_table):
             self.on_unlock(time=time)
@@ -378,7 +380,7 @@ class Barter(object):
         SuccessBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
         # Удалить бартер
-        DoneBarterEvent(time=time + 0.2, barter=self, success=True).post()
+        DoneBarterEvent(time=time, barter=self, success=True).post()
 
     def on_cancel(self, time):
         if self.state == 'unactive':
@@ -394,7 +396,7 @@ class Barter(object):
         CancelBarterMessage(agent=self.recipient, barter=self, time=time).post()
 
         # Удалить бартер
-        DoneBarterEvent(time=time + 0.2, barter=self, success=False).post()
+        DoneBarterEvent(time=time, barter=self, success=False).post()
 
     def as_dict(self):
         pass
