@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.odm.meta import NodeMeta
-from sublayers_server.model.registry.odm.fields import StringField, ListField
+from sublayers_server.model.registry.odm.fields import StringField, ListField, ReferenceField, EmbeddedDocumentField
 
 from motorengine import Document
 from tornado.concurrent import return_future
@@ -17,9 +17,79 @@ class AbstractDocument(Document):
     __classes__ = {}
     __cls__ = StringField()
 
+    def _get_load_function(self, document, field_name, document_type):
+        if isinstance(document, list):
+            return document_type.objects.get
+        else:
+            return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
+
+    @return_future
+    def load_references(self, fields=None, callback=None, alias=None):
+        if callback is None:
+            raise ValueError("Callback can't be None")
+
+        references = self.find_references(document=self, fields=fields)
+        reference_count = len(references)
+
+        if not reference_count:
+            callback({
+                'loaded_reference_count': reference_count,
+                'loaded_values': []
+            })
+            return
+
+        for dereference_function, document_id, values_collection, field_name, fill_values_method in references:
+            dereference_function(
+                document_id,
+                callback=self.handle_load_reference(
+                    callback=callback,
+                    references=references,
+                    reference_count=reference_count,
+                    values_collection=values_collection,
+                    field_name=field_name,
+                    fill_values_method=fill_values_method
+                )
+            )
+
+    def find_references(self, document, fields=None, results=None, this_document_field=None):
+        if results is None:
+            results = []
+
+        if isinstance(document, Document):
+            if fields:
+                fields = [
+                    (field_name, field)
+                    for field_name, field in document._fields.items()
+                    if field_name in fields
+                ]
+            else:
+                fields = [field for field in document._fields.items()]
+
+            for field_name, field in fields:
+                self.find_reference_field(document, results, field_name, field)
+                self.find_list_field(document, results, field_name, field)
+                self.find_embed_field(document, results, field_name, field)
+        elif (
+            document is not None and
+            isinstance(this_document_field, ListField) and
+            isinstance(this_document_field._base_field, (ListField, ReferenceField, EmbeddedDocumentField))
+        ):
+            field = this_document_field._base_field
+            for i, value in enumerate(document):
+                self.find_reference_field(document, results, i, field)
+                self.find_list_field(document, results, i, field)
+                self.find_embed_field(document, results, i, field)
+
+        return results
+
     def find_embed_field(self, document, results, field_name, field):
         if self.is_embedded_field(field):
-            value = document._values.get(field_name, None)
+            value = (
+                document._values.get(field_name, None)
+                if isinstance(document, Document) else
+                document[field_name]
+            )
+
             if isinstance(value, Document):
                 self.find_references(document=value, results=results)
             elif isinstance(value, basestring) or isinstance(value, ObjectId):
@@ -29,7 +99,7 @@ class AbstractDocument(Document):
                         if proto:
                             from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
                             if isinstance(proto, Node):
-                                callback(proto.instantiate())  # todo: проверить можно ли делать такой вызов
+                                callback(proto.instantiate())
                         else:
                             callback(None)
 
@@ -42,68 +112,48 @@ class AbstractDocument(Document):
                 )
 
                 results.append([
-                    getter_with_instantiation, #load_function,  # todo: Убедиться, что не иснтанцируются уже инстанцированные
+                    getter_with_instantiation,
                     value,
-                    document._values,
+                    document._values if isinstance(document, Document) else document,
                     field_name,
-                    None
+                    self.fill_values_collection
+                ])
+
+    def find_reference_field(self, document, results, field_name, field):
+        if self.is_reference_field(field):
+            value = (
+                document._values.get(field_name, None)
+                if isinstance(document, Document) else
+                document[field_name]
+            )
+            load_function = (
+                self._bypass_load_function
+                if isinstance(value, field.reference_type) else
+                self._get_load_function(document, field_name, field.reference_type)
+            )
+            if value is not None:
+                results.append([
+                    load_function,
+                    value,
+                    document._values if isinstance(document, Document) else document,
+                    field_name,
+                    self.fill_values_collection
                 ])
 
     def find_list_field(self, document, results, field_name, field):
-        from motorengine.fields.reference_field import ReferenceField
-        from motorengine.fields.embedded_document_field import EmbeddedDocumentField
-
-        def find_in_list(lst, results, field):
-            def make_list_filler(filling_list):
-                def filling_function(collection, field_name, value):
-                    filling_list.append(value)
-                return filling_function
-
-            if isinstance(field._base_field, ReferenceField):
-                load_function = self._get_load_function(document, field_name, field._base_field.reference_type)
-                for value in lst[:]:
-                    results.append([
-                        self._bypass_load_function if isinstance(value, Document) else load_function,
-                        value,
-                        document._values,
-                        field_name,
-                        make_list_filler()
-                    ])
-
         if self.is_list_field(field):
-            values = document._values.get(field_name)
+            values = (
+                document._values.get(field_name, None)
+                if isinstance(document, Document) else
+                document[field_name]
+            )
             if values:
-                if isinstance(field._base_field, ReferenceField):  # EmbeddedDocumentField
-                    document_type = field._base_field.reference_type  #     if isinstance(field._base_field, ReferenceField) else field._base_field.embedded_type
-                    load_function = self._get_load_function(document, field_name, document_type)
-                    for value in values:
-                        results.append([
-                            load_function,
-                            value,
-                            document._values,
-                            field_name,
-                            self.fill_list_values_collection
-                        ])
-                    document._values[field_name] = []
-                if isinstance(field._base_field, ListField):
-                    document_type = field._base_field.reference_type  # if isinstance(field._base_field, ReferenceField) else field._base_field.embedded_type
-                    #find_in_list
-
-                else:
-                    for value in values:
-                        self.find_references(document=value, results=results)
+                self.find_references(document=values, results=results, this_document_field=field)
 
     @return_future
-    def _bypass_load_function(self,id, callback, **kwargs):
+    def _bypass_load_function(self, id, callback, **kwargs):
         import tornado.ioloop
         tornado.ioloop.IOLoop.instance().add_callback(callback, id)
-
-    # def _get_load_function(self, document, field_name, document_type):
-    #     value = document._values.get(field_name, None)
-    #     if isinstance(value, document_type):
-    #         return self._bypass_load_function
-    #
-    #     return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
 
     def to_cache(self, *av):
         assert self._id

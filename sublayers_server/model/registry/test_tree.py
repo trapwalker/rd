@@ -28,8 +28,12 @@ class A(Node):
 
 class B(A):
     y = IntField()
-    p = ListField(base_field=EmbeddedDocumentField(embedded_document_type=A))
-    d = JsonField()
+    p = ListField(
+        base_field=ListField(
+            base_field=EmbeddedDocumentField(embedded_document_type=A)
+        )
+    )
+    #d = JsonField()
 
 
 @tornado.gen.coroutine
@@ -39,7 +43,7 @@ def test_store():
 
     a = A(name='a', x=3)
     yield a.save()
-    b = B(name='b', y=4, parent=a.uri, owner=a, p=[a._id], d={3:333})
+    b = B(name='b', y=4, parent=a.uri, owner=a, p=[[a._id]],)
     yield b.load_references()
     yield b.save()
     Node.objects_cache.clear()
