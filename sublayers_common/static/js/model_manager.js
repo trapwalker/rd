@@ -246,13 +246,12 @@ var ClientManager = (function () {
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
             if (obj.cls == 'Town') {
                 obj_marker.updateLabel(event.object.town_name);
-                obj.town_name = event.object.town_name;
+                obj.town_name = event.object.example_town.title;
             }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
             if (obj.cls == 'POIStash')
                 obj_marker.updateLabel('loot');
-
         }
     };
 
@@ -824,7 +823,7 @@ var ClientManager = (function () {
     ClientManager.prototype.InviteBarterMessage = function (event) {
         //console.log('ClientManager.prototype.InviteBarterMessage', event);
         if (contextPanel) {
-            contextPanel.activate_barter_manager.add_barter(event.barter_id);
+            contextPanel.activate_barter_manager.add_barter(event.barter_id, event.initiator);
         }
     };
 

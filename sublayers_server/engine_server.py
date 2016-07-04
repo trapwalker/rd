@@ -51,9 +51,8 @@ from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
     # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
 )
-from sublayers_server.handlers.context_panel import (
-    ContextPanelBarterInfoHandler, ContextPanelBarterSendHandler, ContextPanelLocationsHandler,
-)
+from sublayers_server.handlers.context_panel import ContextPanelListHandler
+
 from sublayers_server.handlers.statistics import (
     ServerStatisticsHandler, ServerStatisticsRefreshHandler, ServerStatForSite,
 )
@@ -128,9 +127,9 @@ class Application(BaseApplication):
             (r"/api/menu_party", MenuPartyHandler),
 
 
-            (r"/api/context_panel/locations", ContextPanelLocationsHandler),
-            (r"/api/context_panel/barter_send", ContextPanelBarterSendHandler),
-            (r"/api/context_panel/barter_info", ContextPanelBarterInfoHandler),
+            (r"/api/context_panel/locations", ContextPanelListHandler),
+            (r"/api/context_panel/barter_send", ContextPanelListHandler),
+            (r"/api/context_panel/barter_info", ContextPanelListHandler),
 
             # Site API
             (r"/api/get_car_info", APIGetCarInfoHandler),

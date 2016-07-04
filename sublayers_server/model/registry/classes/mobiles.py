@@ -328,14 +328,14 @@ class Car(Mobile):
     slot_m88 = Slot(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
 
     slot_t1 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner wheels')
-    slot_t2 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner b_fender')
+    slot_t2 = Slot(caption=u't2', doc=u'Слот тюнера заднее крыло', tags='tuner b_fender')
     slot_t3 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner b_glass')
     slot_t4 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner f_bumper')
     slot_t5 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner f_fender')
     slot_t6 = Slot(caption=u't3', doc=u'Слот тюнера спойлер', tags='tuner f_glass')
     slot_t7 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner roof')
     slot_t8 = Slot(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner skirt')
-    slot_t9 = Slot(caption=u't1', doc=u'Слот тюнера передний бампер', tags='tuner b_bumper')
+    slot_t9 = Slot(caption=u't1', doc=u'Слот тюнера задний бампер', tags='tuner b_bumper')
 
     slot_t10 = Slot(caption=u't1', doc=u'Слот тюнера воздухозаборник', tags='tuner airint')
     slot_t11 = Slot(caption=u't1', doc=u'Слот тюнера броня', tags='tuner armor')

@@ -39,6 +39,7 @@ from sublayers_common.base_application import BaseApplication
 
 import sublayers_server.model.registry.classes  #autoregistry classes
 from sublayers_server.model.registry.storage import Registry, Collection
+from sublayers_site.news import NewsManager
 
 
 class Application(BaseApplication):
@@ -53,6 +54,7 @@ class Application(BaseApplication):
         self.reg = None
         self.reg_agents = None
         self.quick_game_cars_examples = []
+        self.news_manager = NewsManager()
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/login", StandardLoginHandler),

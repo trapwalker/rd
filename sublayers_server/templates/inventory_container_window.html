@@ -1,18 +1,17 @@
-{% set window_caption = 'NUKE:\Контейнер>' %}
+{% set window_caption = 'NUKE:\Container>' %}
 
 <div class="containerInventoryWindow-main">
     {% include drag_close_header.html %}
     <div class="containerInventoryWindow-window-wrap">
-        <div id="containerInventoryWindow-id-car-{{ car_id }}-{{ container_id }}" class="containerInventoryWindow-inventory-wrap containerInventoryWindow-inventory-wrap-left">
-            <div class="containerInventoryWindow-inventory-header">Ваш инвентарь:</div>
+        <div id="containerInventoryWindow-id-car-{{ car_id }}-{{ container_id }}" class="containerInventoryWindow-inventory-wrap border">
+            <div class="containerInventoryWindow-inventory-header">Ваш инвентарь</div>
             <div class="containerInventoryWindow-inventory-body inventory-{{ car_id }}"></div>
         </div>
-        <div id="containerInventoryWindow-id-container-{{ container_id }}" class="containerInventoryWindow-inventory-wrap containerInventoryWindow-inventory-wrap-right">
-            <div class="containerInventoryWindow-inventory-header">Контейнер:</div>
+        <div id="containerInventoryWindow-id-container-{{ container_id }}" class="containerInventoryWindow-inventory-wrap">
+            <div class="containerInventoryWindow-inventory-header">Контейнер</div>
             <div class="containerInventoryWindow-inventory-body inventory-{{ container_id }}"></div>
         </div>
     </div>
-
 </div>
 
 <script>

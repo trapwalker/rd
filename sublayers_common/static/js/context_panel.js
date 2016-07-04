@@ -7,7 +7,6 @@
 *   - просмотреть список своих бартеров
 * */
 
-
 // todo: удаление делать так: так как все Observerы - это визуальные объекты, то перехватить метод удаления визуального объекта
 // или в модел_менеджер поставить вызов на удаление своей машинки - это правильнее))
 
@@ -22,8 +21,6 @@ var ContextPanel = (function () {
         this.location_observer.addModelObject(mobj);
         this.invite_barter_observer.addModelObject(mobj);
     };
-
-
 
     return ContextPanel;
 })();
@@ -124,7 +121,7 @@ var EnterToLocationObserver = (function(_super){
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
         if (this.observing_list.length > 0) {
-            this.obs_btn.addClass('cp_button_icon_active');
+            this.obs_btn.addClass('active');
         }
     };
 
@@ -134,45 +131,44 @@ var EnterToLocationObserver = (function(_super){
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
         if (this.observing_list.length <= 0) {
-            this.obs_btn.removeClass('cp_button_icon_active');
+            this.obs_btn.removeClass('active');
         }
     };
 
     EnterToLocationObserver.prototype.open_window = function() {
-        // Если город один, то просто в него войти
-        if (this.observing_list.length == 1) {
-            clientManager.sendEnterToLocation(this.observing_list[0].ID);
-            return;
-        }
-        // Если городов и заправок много, то вызывать окно через сервер и на callback добавить список городов
-        if (this.observing_list.length > 1) {
-            windowTemplateManager.openUniqueWindow('locations_for_enter', '/context_panel/locations', null, function(content_div) {
-                if (contextPanel) contextPanel.location_observer.on_open_window(content_div);
-            });
-        }
+        if (this.observing_list.length <= 0 ) return;
+        if (this.observing_list.length == 1)
+            this.activate_window(this.observing_list[0].ID);
+        else
+            windowTemplateManager.openUniqueWindow('locations_for_enter', '/context_panel/locations', null,
+                contextPanel.location_observer.on_open_window);
     };
 
-    EnterToLocationObserver.prototype.on_open_window = function(window_content_div) {
+    EnterToLocationObserver.prototype.on_open_window = function(jq_window_div) {
         //console.log('EnterToLocationObserver.prototype.on_open_window', window_content_div);
-        var content_div = window_content_div.find('.context_panel_locatios_content').first();
-        if (! content_div) return;
+        var self = contextPanel.location_observer;
+        var jq_content_div = jq_window_div.find('.context-list').first();
+        if (!jq_content_div) return;
 
-        for (var i = 0; i < this.observing_list.length; i++) {
-            var mobj = this.observing_list[i];
+        for (var i = 0; i < self.observing_list.length; i++) {
+            var mobj = self.observing_list[i];
             var m_name = mobj.hasOwnProperty('town_name') ? mobj.town_name : mobj.cls;
-            var m_div = '<div class="context_panel_location_info"' +
-                ' onClick="contextPanel.location_observer.activate_window('+ mobj.ID +');"'+
-                '>' + m_name +'</div>';
-            content_div.append(m_div);
+            jq_content_div.append('<div class="context-list-item" data-id="' + mobj.ID + '">' + m_name +'</div>');
         }
+        jq_content_div.find('.context-list-item').first().css('border', 'none');
+        jq_content_div.find('.context-list-item').click(function() {
+            contextPanel.location_observer.activate_window($(this).data('id'));
+        });
     };
-
 
     EnterToLocationObserver.prototype.activate_window = function(location_id) {
         console.log('EnterToLocationObserver.prototype.activate_window', location_id);
         for (var i = 0; i < this.observing_list.length; i++) {
             var mobj_id = this.observing_list[i].ID;
-            if (mobj_id == location_id) clientManager.sendEnterToLocation(mobj_id);
+            if (mobj_id == location_id) {
+                windowTemplateManager.closeUniqueWindow('locations_for_enter');
+                clientManager.sendEnterToLocation(mobj_id);
+            }
         }
     };
 
@@ -183,7 +179,6 @@ var EnterToLocationObserver = (function(_super){
 var InviteBarterObserver = (function(_super){
     __extends(InviteBarterObserver, _super);
     function InviteBarterObserver() {
-//        console.log('Создание EnterToLocationObserver ======> ', user.userCar);
         _super.call(this, user.userCar, ['Bot'], 50.0);
 
         // Вешаем клик на див с икнонкой
@@ -199,7 +194,7 @@ var InviteBarterObserver = (function(_super){
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
         if (this.observing_list.length > 0) {
-            this.obs_btn.addClass('cp_button_icon_active');
+            this.obs_btn.addClass('active');
         }
     };
 
@@ -209,43 +204,43 @@ var InviteBarterObserver = (function(_super){
 
         // Теперь обновить вёрстку в зависимости от размера списка observing_list
         if (this.observing_list.length <= 0) {
-            this.obs_btn.removeClass('cp_button_icon_active');
+            this.obs_btn.removeClass('active');
         }
     };
 
     InviteBarterObserver.prototype.open_window = function() {
         // Открывать окно в любом случае, так как нужно конкретно видеть кому кидается инвайт
-        if (this.observing_list.length > 0) {
-            windowTemplateManager.openUniqueWindow('cp_send_barter', '/context_panel/barter_send', null, function(content_div) {
-                if (contextPanel) contextPanel.invite_barter_observer.on_open_window(content_div);
-            });
-        }
+        if (this.observing_list.length <= 0) return;
+        if (this.observing_list.length == 1)
+            this.activate_window(this.observing_list[0].owner.login);
+        else
+            windowTemplateManager.openUniqueWindow('cp_send_barter', '/context_panel/barter_send', null, contextPanel.invite_barter_observer.on_open_window);
     };
 
-    InviteBarterObserver.prototype.on_open_window = function(window_content_div) {
-        //console.log('InviteBarterObserver.prototype.on_open_window', window_content_div);
-        var content_div = window_content_div.find('.context_panel_send_barter_content').first();
-        if (! content_div) return;
-
-        for (var i = 0; i < this.observing_list.length; i++) {
-            var mobj = this.observing_list[i];
-            if ((mobj.owner) && (mobj.owner.login)){
-                var login = mobj.owner.login;
-                var m_div = '<div class="context_panel_send_barter_user_info"' +
-                ' onClick="contextPanel.invite_barter_observer.activate_window('+ login +');' +
-                    'windowTemplateManager.closeUniqueWindow(`cp_send_barter`)"'+
-                '>' + login +'</div>';
-                content_div.append(m_div);
-            }
+    InviteBarterObserver.prototype.on_open_window = function(jq_window_div) {
+        //console.log('InviteBarterObserver.prototype.on_open_window', jq_window_div);
+        var self = contextPanel.invite_barter_observer;
+        var jq_content_div = jq_window_div.find('.context-list').first();
+        if (!jq_content_div) return;
+        for (var i = 0; i < self.observing_list.length; i++) {
+            var mobj = self.observing_list[i];
+            if ((mobj.owner) && (mobj.owner.login))
+                jq_content_div.append('<div class="context-list-item" data-login="' + mobj.owner.login + '">' + mobj.owner.login +'</div>');
         }
+        jq_content_div.find('.context-list-item').first().css('border', 'none');
+        jq_content_div.find('.context-list-item').click(function() {
+            contextPanel.invite_barter_observer.activate_window($(this).data('login'));
+        });
     };
 
     InviteBarterObserver.prototype.activate_window = function(recipient_login) {
         //console.log('InviteBarterObserver.prototype.activate_window', recipient_login);
         for (var i = 0; i < this.observing_list.length; i++) {
             var mobj = this.observing_list[i];
-            if ((mobj.owner) && (mobj.owner.login) && (mobj.owner.login == recipient_login))
+            if ((mobj.owner) && (mobj.owner.login) && (mobj.owner.login == recipient_login)) {
+                windowTemplateManager.closeUniqueWindow('cp_send_barter');
                 clientManager.sendInitBarter(recipient_login);
+            }
         }
     };
 
@@ -264,38 +259,55 @@ var CPActivateBarterManager = (function () {
         })
     }
 
-    CPActivateBarterManager.prototype.open_window = function() {
-        if (this.barters.length > 0) {
-            windowTemplateManager.openUniqueWindow('cp_barter_info', '/context_panel/barter_info', null);
-        }
-    };
-
-    CPActivateBarterManager.prototype.add_barter = function(barter_id) {
-        if (this.barters.indexOf(barter_id) >= 0) return;
-        this.barters.push(barter_id.toString());
-
-        if (this.barters.length > 0) {
-            this.obs_btn.addClass('cp_button_icon_active');
-        }
+    CPActivateBarterManager.prototype.add_barter = function(barter_id, sender_name) {
+        for (var i = 0; i < this.barters.length; i++)
+            if (this.barters[i].id == barter_id) return;
+        this.barters.push({ id: barter_id, sender: sender_name });
+        if (this.barters.length > 0)
+            this.obs_btn.addClass('active');
     };
 
     CPActivateBarterManager.prototype.del_barter = function(barter_id) {
-        var index = this.barters.indexOf(barter_id.toString());
+        var index = -1;
+        for (var i = 0; i < this.barters.length; i++)
+            if (this.barters[i].id == barter_id) {
+                index = i;
+                break;
+            }
         if (index < 0) return;
         this.barters.splice(index, 1);
+        if (this.barters.length <= 0)
+            this.obs_btn.removeClass('active');
+    };
 
-        if (this.barters.length <= 0) {
-            this.obs_btn.removeClass('cp_button_icon_active');
+    CPActivateBarterManager.prototype.open_window = function() {
+        if (this.barters.length > 0) {
+            windowTemplateManager.openUniqueWindow('cp_barter_info', '/context_panel/barter_info', null,
+                contextPanel.activate_barter_manager.on_open_window);
         }
+    };
 
+    CPActivateBarterManager.prototype.on_open_window = function(jq_window_div) {
+        //console.log('CPActivateBarterManager.prototype.on_open_window', jq_window_div);
+        var self = contextPanel.activate_barter_manager;
+        var jq_content_div = jq_window_div.find('.context-list').first();
+        if (!jq_content_div) return;
+        for (var i = 0; i < self.barters.length; i++) {
+            var barter = self.barters[i];
+            jq_content_div.append('<div class="context-list-item" data-id="' + barter.id + '">' + user.login + ' < > ' + barter.sender +'</div>');
+        }
+        jq_content_div.find('.context-list-item').first().css('border', 'none');
+        jq_content_div.find('.context-list-item').click(function() {
+            contextPanel.activate_barter_manager.activate_barter($(this).data('id'));
+        });
     };
 
     CPActivateBarterManager.prototype.activate_barter = function(barter_id) {
         //console.log('CPActivateBarterManager.prototype.activate_barter', barter_id);
+        windowTemplateManager.closeUniqueWindow('cp_barter_info');
         this.del_barter(barter_id);
         clientManager.sendActivateBarter(barter_id);
     };
-
 
     return CPActivateBarterManager;
 })();
