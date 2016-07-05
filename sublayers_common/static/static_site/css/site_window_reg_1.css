@@ -108,7 +108,7 @@
 
 /* Медиа Запросы для разрешения 1366 */
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .window-reg1-main {
         font-size: 10pt;
     }

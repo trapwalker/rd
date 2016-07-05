@@ -104,7 +104,7 @@
     background-color: #082801;
 }
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .window-pi-user-info-table {
         padding-left: 8px;
         padding-right: 0px;
