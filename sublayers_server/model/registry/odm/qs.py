@@ -24,9 +24,12 @@ class CachebleQuerySet(QuerySet):
             kwargs['uri'] = id
             id = None
 
-        obj = self.__klass__.search_in_cache(id=id, **kwargs)
+        if id:
+            kwargs['id'] = id
+
+        obj = self.__klass__.search_in_cache(**kwargs)
         if obj is None:
-            super(CachebleQuerySet, self).get(id=id, callback=handler, alias=alias, **kwargs)
+            super(CachebleQuerySet, self).get(callback=handler, alias=alias, **kwargs)
         else:
             obj.load_references(callback=lambda _: None)  # todo: optimize? При взятии из кеша происходит перезагрузка ссылок
             tornado.ioloop.IOLoop.instance().add_callback(callback, obj)
