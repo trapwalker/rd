@@ -222,6 +222,8 @@ class AbstractDocument(Document):
 
     @classmethod
     def from_son(cls, dic, _is_partly_loaded=False, _reference_loaded_fields=None):
+        if isinstance(dic, basestring):
+            return dic  # todo: may be add async loading task to eventloop?
         klass_name = dic.get('__cls__')
         klass = cls.get_class(klass_name) if klass_name else cls  # tpdp: add warning if class not found
         # todo: Падать при инициализации, игнорировать с предупреждениями в процессе
