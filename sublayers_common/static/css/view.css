@@ -257,60 +257,61 @@ input:focus {
 
 /* Вид кнопок для скролбара*/
 ::-webkit-scrollbar-button {
-    height: 10px;
+    height: 9px;
+    width: 9px;
 }
 
 /* Верхняя кнопка */
 ::-webkit-scrollbar-button:vertical:decrement {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/up.png') 50% 50% no-repeat;
 }
 
 ::-webkit-scrollbar-button:vertical:decrement:hover {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_over.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/up_hover.png') 50% 50% no-repeat;
 }
 
-::-webkit-scrollbar-button:vertical:decrement:active {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;
-}
+/*::-webkit-scrollbar-button:vertical:decrement:active {*/
+    /*background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;*/
+/*}*/
 
 /* Нижняя кнопка */
 ::-webkit-scrollbar-button:vertical:increment {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/down.png') 50% 50% no-repeat;
 }
 
 ::-webkit-scrollbar-button:vertical:increment:hover {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_over.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/down_hover.png') 50% 50% no-repeat;
 }
 
-::-webkit-scrollbar-button:vertical:increment:active {
-   background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;
-}
+/*::-webkit-scrollbar-button:vertical:increment:active {*/
+   /*background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;*/
+/*}*/
 
 /* Левая кнопка */
 ::-webkit-scrollbar-button:horizontal:decrement {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/left.png') 50% 50% no-repeat;
 }
 
 ::-webkit-scrollbar-button:horizontal:decrement:hover {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_over.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/left_hover.png') 50% 50% no-repeat;
 }
 
-::-webkit-scrollbar-button:horizontal:decrement:active {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;
-}
+/*::-webkit-scrollbar-button:horizontal:decrement:active {*/
+    /*background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;*/
+/*}*/
 
 /* Правая кнопка */
 ::-webkit-scrollbar-button:horizontal:increment {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/right.png') 50% 50% no-repeat;
 }
 
 ::-webkit-scrollbar-button:horizontal:increment:hover {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_over.png') 50% 50% no-repeat;
+    background: transparent url('/static/img/windows/temp_scroll/right_hover.png') 50% 50% no-repeat;
 }
 
-::-webkit-scrollbar-button:horizontal:increment:active {
-    background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;
-}
+/*::-webkit-scrollbar-button:horizontal:increment:active {*/
+    /*background: transparent url('/static/img/windows/temp_scroll/temp_scroll_btn_pressed.png') 50% 50% no-repeat;*/
+/*}*/
 
 /* Вид каретки скролбара */
 ::-webkit-scrollbar-thumb {
