@@ -29,9 +29,9 @@ class A(Node):
 class B(A):
     y = IntField()
     p = ListField(
-        base_field=ListField(
+        #base_field=ListField(
             base_field=EmbeddedDocumentField(embedded_document_type=A)
-        )
+        #)
     )
     #d = JsonField()
 
@@ -42,16 +42,21 @@ def test_store():
     print((yield A.objects.delete()))
 
     a = A(name='a', x=3)
+    log.debug('id(a)=%s', id(a))
     yield a.save()
-    b = B(name='b', y=4, parent=a.uri, owner=a, p=[[a._id]],)
+    #Node.objects_cache.clear()
+    b = B(name='b', y=4, parent=a.uri, owner=a, p=['reg://registry/a'],)
     yield b.load_references()
+    log.debug('id(b.p[0].parent)=%s', id(b.p[0].parent))
     yield b.save()
-    Node.objects_cache.clear()
+    #Node.objects_cache.clear()
 
     aa = yield Node.objects.get(
-        a._id
-        #id='reg://registry/a',
+        #a._id
+        id='reg://registry/a',
     )
+    log.debug('id(aa)=%s', id(aa))
+
     log.debug('aa[%s]: %s', id(aa), aa)
 
     bb = yield Node.objects.get(
