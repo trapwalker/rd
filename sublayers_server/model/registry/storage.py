@@ -7,6 +7,7 @@ from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.uri import URI
 
 import tornado.ioloop
+import tornado.gen
 from tornado.concurrent import return_future
 from collections import deque
 from uuid import uuid4 as uid_func
@@ -15,6 +16,7 @@ import time
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
+from fnmatch import fnmatch
 
 
 URI_PROTOCOL = 'reg'
@@ -207,11 +209,10 @@ class Collection(AbstractStorage):
 class Registry(AbstractStorage):
     def __init__(self, **kw):
         super(Registry, self).__init__(dispatcher=Node.DISPATCHER, **kw)
+        self._loading_duration = None
+        self._loading_start_time = None
         log.info('Registry loading...')
-        t = time.time()
         self.root = None # Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
-        t = time.time() - t
-        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, t))
 
     def get_local(self, path):
         path = list(path)
@@ -238,14 +239,15 @@ class Registry(AbstractStorage):
         else:
             self.root = node
 
-    def  _load_node(self, path, owner):
+    def _load_node(self, path, owner):
         assert isinstance(path, unicode)
         attrs = {}
         for f in os.listdir(path):
             assert isinstance(f, unicode)
             # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
-            if not f.startswith('_') and os.path.isfile(p):  # todo: filter yaml-files
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
                 with open(p) as attr_file:
                     try:
                         d = yaml.load(attr_file) or {}
@@ -287,19 +289,30 @@ class Registry(AbstractStorage):
 
     @return_future
     def load(self, path, callback=None):
+        # todo: async loading
+        def on_load(*av, **kw):
+            return callback(*av, **kw)
+
+        all_nodes = []
+        self._loading_start_time = time.time()
         root = None
         stack = deque([(path, None)])
         while stack:
             pth, owner = stack.pop()
             node = self._load_node(pth, owner)
             if node:
-                #yield node.save(upsert=True)
+                all_nodes.append(node)
+                node.to_cache()
+                #_node = yield node.save(upsert=True)
                 if owner is None:
                     root = node  # todo: optimize
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
                     if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                         stack.append((next_path, node))
+
+        self._loading_duration = time.time() - self._loading_start_time
+        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, self._loading_duration))
 
         tornado.ioloop.IOLoop.instance().add_callback(callback, root)
 
