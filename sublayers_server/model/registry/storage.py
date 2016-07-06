@@ -296,7 +296,12 @@ class Registry(AbstractStorage):
     def load(self, path, callback=None):
         # todo: async loading
         def on_load(*av, **kw):
-            return callback(*av, **kw)
+            if all_nodes:
+                node = all_nodes.pop()
+                node.load_references(callback=on_load)
+            else:
+                log.info('References loaded DONE')
+                return callback(root)
 
         all_nodes = []
         self._loading_start_time = time.time()
@@ -320,7 +325,9 @@ class Registry(AbstractStorage):
         self._loading_duration = time.time() - self._loading_start_time
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, self._loading_duration))
 
-        tornado.ioloop.IOLoop.instance().add_callback(callback, root)
+        on_load()
+
+        #tornado.ioloop.IOLoop.instance().add_callback(callback, root)
 
     def get_path_tuple(self, node):
         # todo: cache
