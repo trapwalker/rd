@@ -140,7 +140,7 @@ class Town(MapLocation):
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
-        d.update(example_town=self.example.as_client_dict())
+        d.update(example=self.example.as_client_dict())
         return d
 
     @classmethod
@@ -155,12 +155,9 @@ class Town(MapLocation):
             agent.on_enter_npc(npc)
 
 
-class GasStation(MapLocation):
+class GasStation(Town):
     @classmethod
     def get_stations(cls):
         for location in cls.locations:
             if isinstance(location, GasStation):
                 yield location
-
-    def on_enter(self, agent, time):
-        pass

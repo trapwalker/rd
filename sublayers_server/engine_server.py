@@ -46,7 +46,6 @@ from sublayers_server.handlers.main_menu_character import MenuCharacterHandler
 from sublayers_server.handlers.main_menu_journal import MenuJournalHandler
 from sublayers_server.handlers.party_handler import MenuPartyHandler
 
-from sublayers_server.handlers.map_location import MapLocationHandler
 from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
     # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
@@ -112,8 +111,6 @@ class Application(BaseApplication):
             (r"/stat", ServerStatisticsHandler),
             (r"/site_stat", ServerStatForSite),
             (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
-            (r"/api/location", MapLocationHandler),
-
 
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),
