@@ -246,7 +246,7 @@ var ClientManager = (function () {
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
             if (obj.cls == 'Town') {
                 obj_marker.updateLabel(event.object.town_name);
-                obj.town_name = event.object.example_town.title;
+                obj.town_name = event.object.example.title;
             }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
@@ -1244,7 +1244,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
-        //console.log('ClientManager.prototype.sendEnterToLocation');
+        //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
         var mes = {
             call: "enter_to_location",
             rpc_call_id: rpcCallList.getID(),

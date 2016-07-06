@@ -281,6 +281,7 @@ var LocationGasStationNPC = (function (_super) {
     };
 
     LocationGasStationNPC.prototype.set_buttons = function () {
+        //console.log("LocationGasStationNPC.prototype.set_buttons");
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
             locationManager.setBtnState(1, '</br>Заправить', true);

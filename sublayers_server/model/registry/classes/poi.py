@@ -46,10 +46,6 @@ class MapLocation(POIObserver):
     title = TextAttribute(caption=u"Название локации", tags='client')
 
 
-class GasStation(MapLocation):
-    u"""Заправочная станция"""
-
-
 class Building(object):
     def __init__(self, caption, head=None, instances=None, **kw):
         self.caption = caption
@@ -95,6 +91,10 @@ class Town(MapLocation):
             buildings=[dict(key=key, build=self.buildings[key].as_client_dict()) for key in self.buildings.keys()]
         )
         return d
+
+
+class GasStation(Town):
+    u"""Заправочная станция"""
 
 
 class Institution(Root):
