@@ -69,8 +69,8 @@ class RegistryLink(TextAttribute):
         super(RegistryLink, self).__set__(obj, value)
 
 
-class Slot(RegistryLink):
+class SlotField(RegistryLink):
     LOCK_URI = "reg://registry/items/slot_item/slot_lock"
 
     def __init__(self, default=False, **kw):
-        super(Slot, self).__init__(default=default, **kw)
+        super(SlotField, self).__init__(default=default, **kw)

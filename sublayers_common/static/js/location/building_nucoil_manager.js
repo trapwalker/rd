@@ -65,8 +65,9 @@ var LocationNucoilBuilding = (function (_super) {
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);
         }
-
         locationManager.setBtnState(3, '</br>Назад', true);
+        if (locationManager.location_cls == 'GasStation')
+            locationManager.setBtnState(3, '</br>Назад', false);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
@@ -87,6 +88,9 @@ var LocationNucoilBuilding = (function (_super) {
                 return;
             }
         }
+
+        if ((btnIndex == '3') && (locationManager.location_cls == 'GasStation'))
+            return;
 
         _super.prototype.clickBtn.call(this, btnIndex);
     };

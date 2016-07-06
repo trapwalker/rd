@@ -201,7 +201,7 @@
 }
 
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .car-info-block-picture-main-site .car-info-name-block {
         top: 20px;
     }

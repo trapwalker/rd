@@ -136,8 +136,13 @@ var GlitchImageEffect = (function(){
                 var imageData = context.getImageData(0, y, this.ctx_w, spliceHeight);
                 //var imageDataFiltered = Math.random() > 0.4 ? CanvasFilters.grayscale(imageData) : CanvasFilters.threshold(imageData, 100);
                 //var imageDataFiltered = CanvasFilters.shift(imageData);
-                var imageDataFiltered = CanvasFilters.random_filter()(imageData);
-                context.putImageData(imageDataFiltered, 0, y);
+                try {
+                    var imageDataFiltered = CanvasFilters.random_filter()(imageData);
+                    context.putImageData(imageDataFiltered, 0, y);
+                }
+                catch (e) {
+                    console.log('Снова что-то с выбором рандомного фильтра', e);
+                }
             }
 
             context.restore();

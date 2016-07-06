@@ -97,7 +97,7 @@
 .window-news-news-content-block .scroll-btn.up { left: 193px; }
 .window-news-news-content-block .scroll-btn.down { left: 265px; }
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .window-news-content {
         font-size: 10pt;
     }
