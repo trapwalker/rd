@@ -48,9 +48,6 @@ class Node(AbstractDocument):
     def to_cache(self):
         assert self.uri
         super(Node, self).to_cache(self.uri)
-        owner = self.owner
-        if owner:
-            owner._subnodes.add(self)
 
     def __init__(self, storage=None, **kw):
         """
@@ -61,14 +58,14 @@ class Node(AbstractDocument):
         @param bool abstract: Abstract sign of node
         """
         #_id=kw.pop('_id', ObjectId()),
-        super(Node, self).__init__(storage=storage, **kw)
+        super(Node, self).__init__(**kw)
         if self.uri is None:
             self.uri = str(self.make_uri())
 
         self._subnodes = WeakSet()
-        # self.storage = storage
-        # if storage:
-        #     storage.put(self)
+        self.storage = storage
+        if storage:
+            storage.put(self)
 
     def __setattr__(self, name, value):
         if name in ['_subnodes']:

@@ -219,7 +219,12 @@ class Registry(AbstractStorage):
         node = self.root
         while path:
             name = path.pop(0)
-            next_node = node._subnodes.get(name)
+            next_node = None
+            for nn in node._subnodes:
+                if nn.name == name:
+                    next_node = nn
+                    break
+                    
             if next_node is None:
                 raise ObjectNotFound('Node {!r} is not found in the node {!r} by path: {!r}'.format(
                     name, node.name, path))
@@ -229,14 +234,14 @@ class Registry(AbstractStorage):
 
     def put(self, node):
         super(Registry, self).put(node)
-        if not hasattr(node, '_subnodes'):
-            node._subnodes = {}
-
+        node.storage = self
         owner = node.owner
         if owner:
             assert owner.storage is self
-            owner._subnodes[node.name] = node
+            owner._subnodes.add(node)
         else:
+            if self.root:
+                log.warning('Root of storage %r is changed from %r to %r.', self, self.root, node)
             self.root = node
 
     def _load_node(self, path, owner):
@@ -303,6 +308,7 @@ class Registry(AbstractStorage):
             if node:
                 all_nodes.append(node)
                 node.to_cache()
+                self.put(node)
                 #_node = yield node.save(upsert=True)
                 if owner is None:
                     root = node  # todo: optimize
