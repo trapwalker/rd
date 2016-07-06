@@ -1050,11 +1050,14 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         width: 269px;
         height: 250px;
         top: 61px;
-        left: -277px;
+        left: -130px;
         background: transparent url(/static/static_site/img/09-06-16/1080_logo.png) no-repeat 100% 100%;
         background-size: contain;
     }
-
+    /* позиционирование логотипа на большом сайте для разной ширины */
+    @media screen and (min-width: 1430px) { .site-logo {left: -150px;}}
+    @media screen and (min-width: 1550px) { .site-logo {left: -210px;}}
+    @media screen and (min-width: 1700px) { .site-logo {left: -270px;}}
 
     .car-skeleton-path.drivetrain {
         top: 620px;

@@ -34,7 +34,7 @@ function SetImageOnLoad(img, onLoadHandler) {
 // Инициализация всего и вся
 function main() {
     // Начальная установка размера
-    currentSiteSize = $('.content-block').width() > 800 ? '1080' : '768';
+    currentSiteSize = window.matchMedia("screen and (min-width: 1367px) and (min-height: 801px)").matches ? '1080' : '768';
 
     canvasManager = new CanvasManager();
     canvasNoise = new CanvasNoise();
@@ -270,7 +270,7 @@ function main() {
     window.onresize = function () {
         canvasManager.resize_window();
 
-        var new_size = $('.content-block').width() > 800 ? '1080' : '768';
+        var new_size = window.matchMedia("screen and (min-width: 1367px) and (min-height: 801px)").matches ? '1080' : '768';
         var old_size = currentSiteSize;
         if (new_size != currentSiteSize) {
             currentSiteSize = new_size;
