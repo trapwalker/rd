@@ -27,6 +27,7 @@ def test_registry():
     log.debug('Empty registry created')
     yield reg.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     log.debug('### Registry test end')
+    globals().update(**locals())
 
 
 if __name__ == '__main__':
