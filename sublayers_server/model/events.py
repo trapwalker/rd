@@ -22,6 +22,8 @@ def event_deco(func):
         event.post()
         return event
 
+    closure.sync = func
+
     return closure
 
 
