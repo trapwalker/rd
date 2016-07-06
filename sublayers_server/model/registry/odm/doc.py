@@ -156,9 +156,10 @@ class AbstractDocument(Document):
         tornado.ioloop.IOLoop.instance().add_callback(callback, id)
 
     def to_cache(self, *av):
-        assert self._id
         keys = set(av)
-        keys.add(self._id)
+        if self._id:
+            keys.add(self._id)
+        assert keys
         for key in keys:
             self.__class__.objects_cache[key] = self
 
