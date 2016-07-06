@@ -10,7 +10,9 @@ import math
 from sublayers_server.model.registry.storage import Root
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.classes.inventory import InventoryField
-from sublayers_server.model.registry.odm.fields import IntField, FloatField, StringField, ListField, UniReferenceField
+from sublayers_server.model.registry.odm.fields import (
+    IntField, FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField,
+)
 from sublayers_server.model.registry.odm.doc import AbstractDocument
 from sublayers_server.model.registry.classes.price import PriceField
 
@@ -52,9 +54,12 @@ class GasStation(MapLocation):
 class Building(AbstractDocument):
     name = StringField(caption=u'Техническое имя', tags='client')  # todo: identify string constrain
     caption = StringField(caption=u'Название', tags='client')
-    head = UniReferenceField('sublayers_server.model.registry.classes.poi.Institution', tags='client')
+    head = UniReferenceField(
+        reference_document_type='sublayers_server.model.registry.classes.poi.Institution',
+        tags='client',
+    )
     instances = ListField(
-        base_field=UniReferenceField('sublayers_server.model.registry.classes.poi.Institution'),
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.Institution'),
         tags='client',
     )
 
@@ -70,7 +75,7 @@ class Building(AbstractDocument):
 
 class Town(MapLocation):
     buildings = ListField(  # todo: (!) Обойти все упоминания и исправить интерфейс
-        base_field=UniReferenceField(Building),
+        base_field=EmbeddedDocumentField(embedded_document_type=Building),
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.',
         tags='client',
     )
@@ -94,10 +99,10 @@ class Institution(Root):
     photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
     text = StringField(caption=u"Текст приветствия", tags='client')
     type = StringField(caption=u"Специальность NPC", tags='client')
-    quests = ListField(
-        caption=u"Квесты",
-        base_field=UniReferenceField('sublayers_server.model.registry.classes.quests.Quest'),
-    )
+    # quests = ListField(
+    #     caption=u"Квесты",
+    #     base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.quests.Quest'),
+    # )
 
     def as_dict4quest(self):  # todo: устранить
         pass
@@ -124,7 +129,7 @@ class Trader(Institution):
 class Hangar(Institution):
     car_list = ListField(
         caption=u"Список продаваемых машин", tags='client',
-        base_field=UniReferenceField('sublayers_server\model.registry.classes.mobiles.Car'),
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'),
     )
 
 

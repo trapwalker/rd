@@ -24,7 +24,7 @@ class Perk(Root):
     level_req = IntField(default=0, caption=u"Необходимый уровень персонажа", tags='client')
     perks_req = ListField(
         caption=u'Список прокачанных перков',
-        base_field=UniReferenceField('sublayers_server.model.registry.classes.perks.Perk'),
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.perks.Perk'),
     )
     role_class_req = UniReferenceField(
         caption=u"Требование к ролевому классу",

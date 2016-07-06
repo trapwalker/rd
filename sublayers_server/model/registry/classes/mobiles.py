@@ -28,7 +28,10 @@ class Mobile(Root):
     position = PositionField(caption=u"Последние координаты объекта")
 
     # Последняя посещенная локация
-    last_location = UniReferenceField(caption=u'Последняя посещенная локация')
+    last_location = UniReferenceField(
+        caption=u'Последняя посещенная локация',
+        reference_document_type="sublayers_server.model.registry.classes.poi.MapLocation",
+    )
 
     # атрибуты от ObserverObjects
     p_observing_range = FloatField(default=1000, caption=u"Радиус обзора", tags="parameter")

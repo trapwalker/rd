@@ -78,7 +78,10 @@ class SlotLock(SlotItem):
 
 
 class MapWeaponItem(Item):
-    generate_obj = UniReferenceField(caption=u'Ссылка на объект генерации')
+    generate_obj = UniReferenceField(
+        caption=u'Ссылка на объект генерации',
+        reference_document_type="sublayers_server.model.registry.classes.mobiles.Mobile",
+    )
 
 
 class MapWeaponMineItem(MapWeaponItem):
