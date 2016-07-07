@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
 from sublayers_server.model.units import POIContainer
+from sublayers_server.model.barter import Barter
 
 
 class MainInventoryHandler(BaseHandler):
@@ -40,7 +41,8 @@ class BarterInventoryHandler(BaseHandler):
             self.send_error(status_code=404)
             return
         barter_id = long(self.get_argument("barter_id"))
-        barter = agent.get_barter_by_id(barter_id)
+
+        barter = Barter.get_barter(barter_id=barter_id, agent=agent)
         if (barter is None) or ((agent is not barter.initiator) and (agent is not barter.recipient)):
             log.warning('Agent has not access')
             self.send_error(status_code=404)

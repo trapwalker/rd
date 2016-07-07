@@ -386,7 +386,8 @@
 
     .window-ratings-right-path-content-block .person-info-chat-person-string-item {
         font-size: 9pt;
-        line-height: 1.2;
+        line-height: 12px;
+        height: 12px;
     }
 
     .window-ratings-board .scroll-btn.up { left: 100px; }
