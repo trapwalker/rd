@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.storage import Root
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.tileset import Tileset
 from sublayers_server.model.tileid import Tileid
 from sublayers_server.model.messages import ZoneMessage

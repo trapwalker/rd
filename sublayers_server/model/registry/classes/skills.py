@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 import math
 
-from sublayers_server.model.registry.storage import Root
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.odm.doc import AbstractDocument
 from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField,

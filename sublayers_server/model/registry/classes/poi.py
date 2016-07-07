@@ -7,7 +7,7 @@ from datetime import datetime
 import time
 import math
 
-from sublayers_server.model.registry.storage import Root
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.classes.inventory import InventoryField
 from sublayers_server.model.registry.odm.fields import (

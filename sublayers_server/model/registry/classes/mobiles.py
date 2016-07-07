@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.storage import Root
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
 from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry.classes.inventory import InventoryField

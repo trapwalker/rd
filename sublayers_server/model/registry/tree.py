@@ -4,9 +4,16 @@ from __future__ import absolute_import
 import logging
 log = logging.getLogger(__name__)
 
+from tornado.concurrent import return_future
 from motorengine.errors import LoadReferencesRequiredError
 from uuid import uuid1 as get_uuid
 from weakref import WeakSet
+from fnmatch import fnmatch
+from collections import deque
+import time
+import yaml
+import yaml.scanner
+import os
 
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm import AbstractDocument
@@ -16,8 +23,11 @@ from sublayers_server.model.registry.odm.fields import (
 )
 
 
-class StorageUnspecified(Exception):
-    # todo: refactor declaration of exception
+class RegistryError(Exception):
+    pass
+
+
+class RegistryNodeFormatError(RegistryError):
     pass
 
 
@@ -91,7 +101,6 @@ class Node(AbstractDocument):
                 log.warning(
                     'Required value %s of %s is not defined in property owner class %s',
                     name, self, self.__class__,
-            html_hash=self.node_html(),
                 )
 
             if is_reference_field and value is not None and not isinstance(value, field.reference_type):
@@ -130,6 +139,7 @@ class Node(AbstractDocument):
         d = dict(
             id=self.id,
             node_hash=self.node_hash(),
+            html_hash=self.node_html(),
         )
         for name, attr, getter in self.iter_attrs(tags='client'):
             d[name] = getter()
@@ -205,5 +215,72 @@ class Node(AbstractDocument):
     def __hash__(self):
         return hash(self._id)  # todo: test just created objects
 
-    # def dump(self):
-    #     return yaml.dump(self, default_flow_style=False, allow_unicode=True)
+    # todo: rename to "_load_node_from_fs"
+    @classmethod
+    def _load_node(cls, path, owner=None):
+        assert isinstance(path, unicode)
+        attrs = {}
+        for f in os.listdir(path):
+            assert isinstance(f, unicode)
+            # f = f.decode(sys.getfilesystemencoding())
+            p = os.path.join(path, f)
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
+                with open(p) as attr_file:
+                    try:
+                        d = yaml.load(attr_file) or {}
+                    except yaml.scanner.ScannerError as e:
+                        raise RegistryNodeFormatError(e)
+                    attrs.update(d)
+
+        name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
+        abstract = attrs.pop('abstract', True)  # todo: Вынести это умолчание на видное место
+        attrs.update(
+            name=name,
+            owner=owner,
+            abstract=abstract,
+        )
+        node = cls.from_son(attrs)
+        if owner:
+            owner._subnodes.add(node)
+        return node
+
+    @classmethod
+    @return_future
+    def load(cls, path, callback=None):
+        def on_load(*av, **kw):
+            if all_nodes:
+                node = all_nodes.pop()
+                node.load_references(callback=on_load)
+            else:
+                log.info('References loaded DONE')
+                return callback(root)
+
+        all_nodes = []
+        _loading_start_time = time.time()
+        root = None
+        stack = deque([(path, None)])
+        while stack:
+            pth, owner = stack.pop()
+            node = cls._load_node(pth, owner)
+            if node:
+                all_nodes.append(node)
+                node.to_cache()
+                # _node = yield node.save(upsert=True)
+                if owner is None:
+                    root = node  # todo: optimize
+                for f in os.listdir(pth):
+                    next_path = os.path.join(pth, f)
+                    if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
+                        stack.append((next_path, node))
+
+        _loading_duration = time.time() - _loading_start_time
+        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), _loading_duration))
+
+        on_load()
+
+        #tornado.ioloop.IOLoop.instance().add_callback(callback, root)
+
+
+class Root(Node):
+    pass

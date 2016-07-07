@@ -260,14 +260,6 @@ class Registry(AbstractStorage):
                         raise RegistryNodeFormatError(e)
                     attrs.update(d)
 
-        # cls = None
-        # class_name = attrs.pop('__cls__', None)
-        # if class_name:
-        #     cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
-        #     if cls is None:
-        #         raise NodeClassError(
-        #             'Unknown registry class ({}) found into the path: {!r}'.format(class_name, path))
-
         # todo: get parent
         parent = None
         parent_addr = attrs.pop('__parent__', None)

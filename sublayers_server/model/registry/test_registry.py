@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
 from sublayers_server.test_iolop import io_loop, start
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry import storage
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.uri import URI
 
 import yaml
@@ -23,9 +23,7 @@ from pprint import pprint as pp
 @tornado.gen.coroutine
 def test_registry():
     log.debug('### test registry')
-    reg = storage.Registry(name='registry')
-    log.debug('Empty registry created')
-    yield reg.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+    reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     log.debug('### Registry test end')
     globals().update(**locals())
 

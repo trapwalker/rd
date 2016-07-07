@@ -18,7 +18,6 @@ from sublayers_server.test_iolop import io_loop, start
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.odm.fields import StringField, IntField, EmbeddedDocumentField, JsonField, ListField
 from sublayers_server.model.registry.uri import URI
-#from sublayers_server.model.registry.ext_types import PositionField
 from motorengine import Document
 from sublayers_server.model.vectors import Point
 
