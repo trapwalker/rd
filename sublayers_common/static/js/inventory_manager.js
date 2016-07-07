@@ -210,6 +210,7 @@ var Inventory = (function () {
 
         $(inventoryDiv).find('.inventory-' + this.owner_id + '-pos-' + position + '').draggable({
             disabled: true,
+            cursorAt: {left: 70, top: 50},
             helper: 'clone',
             opacity: 0.8,
             revert: true,

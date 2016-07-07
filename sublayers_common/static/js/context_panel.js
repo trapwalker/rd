@@ -206,6 +206,8 @@ var InviteBarterObserver = (function(_super){
         if (this.observing_list.length <= 0) {
             this.obs_btn.removeClass('active');
         }
+
+        clientManager.sendOutBarterRange(mobj.owner.login);
     };
 
     InviteBarterObserver.prototype.open_window = function() {
@@ -305,7 +307,6 @@ var CPActivateBarterManager = (function () {
     CPActivateBarterManager.prototype.activate_barter = function(barter_id) {
         //console.log('CPActivateBarterManager.prototype.activate_barter', barter_id);
         windowTemplateManager.closeUniqueWindow('cp_barter_info');
-        this.del_barter(barter_id);
         clientManager.sendActivateBarter(barter_id);
     };
 

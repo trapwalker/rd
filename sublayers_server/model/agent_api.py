@@ -25,8 +25,7 @@ from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, PrivateChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
 from sublayers_server.model.map_location import Town, GasStation
-from sublayers_server.model.barter import Barter, InitBarterEvent, ActivateBarterEvent, LockBarterEvent, \
-    UnLockBarterEvent, CancelBarterEvent, SetMoneyBarterEvent, InviteBarterMessage
+from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 
 # todo: Проверить допустимость значений входных параметров
@@ -387,7 +386,7 @@ class AgentAPI(API):
         # отправить активные бартеры на клиент
         for barter in self.agent.barters:
             if barter.recipient is self.agent and barter.state == 'unactive':
-                InviteBarterMessage(agent=self.agent, time=time, barter=barter).post()
+                AddInviteBarterMessage(agent=self.agent, time=time, barter=barter).post()
 
     def update_agent_api(self, time=None):
         # todo: review(svp)
@@ -699,30 +698,43 @@ class AgentAPI(API):
                         time=self.agent.server.get_time()).post()
 
     @public_method
+    def out_barter_range(self, recipient_login):
+        recipient = self.agent.server.agents_by_name.get(str(recipient_login), None)
+        if not recipient:
+            return
+        for barter in self.agent.barters:
+            if (recipient is barter.recipient) or (recipient is barter.initiator):
+                barter.cancel(time=self.agent.server.get_time())
+
+    @public_method
     def activate_barter(self, barter_id):
-        # log.debug('Agent %s accept barter_id %s ', self.agent, barter_id)
-        ActivateBarterEvent(barter_id=barter_id, recipient=self.agent, time=self.agent.server.get_time()).post()
+        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+        if barter:
+            barter.activate(recipient=self.agent, time=self.agent.server.get_time())
 
     @public_method
     def lock_barter(self, barter_id):
-        # log.debug('Agent %s lock barter_id %s ', self.agent, barter_id)
-        LockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+        if barter:
+            barter.lock(agent=self.agent, time=self.agent.server.get_time())
 
     @public_method
     def unlock_barter(self, barter_id):
-        # log.debug('Agent %s unlock barter_id %s ', self.agent, barter_id)
-        UnLockBarterEvent(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time()).post()
+        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+        if barter:
+            barter.unlock(time=self.agent.server.get_time())
 
     @public_method
     def cancel_barter(self, barter_id):
-        # log.debug('Agent %s cancel barter_id %s ', self.agent, barter_id)
-        Barter.cancel(barter_id=barter_id, agent=self.agent, time=self.agent.server.get_time())
+        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+        if barter:
+            barter.cancel(time=self.agent.server.get_time())
 
     @public_method
     def table_money_barter(self, barter_id, money):
-        # log.debug('Agent %s, for barter_id %s set money %s', self.agent, barter_id, money)
-        SetMoneyBarterEvent(barter_id=barter_id, agent=self.agent, money=money,
-                            time=self.agent.server.get_time()).post()
+        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+        if barter:
+            barter.set_money(agent=self.agent, time=self.agent.server.get_time())
 
     # RPG
 

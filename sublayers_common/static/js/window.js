@@ -29,6 +29,9 @@ var Window = (function () {
             stopEvent(event);
         });
 
+        this.mainDiv.droppable({ greedy: true });
+
+
         if (this.options.isModal) {
             this.modalDiv = $("<div id=" + this.options.name + "ModalDiv" + " class='modalDivWindow'></div>");
             this.parentDiv.append(this.modalDiv);
@@ -127,7 +130,6 @@ var TemplateWindow = (function (_super) {
 
         if (options) setOptions(options, this.options);
 
-        // Запихиваем чат в отдельное окно
         _super.call(this, {
             parentDiv: this.options.parentDiv
         });
