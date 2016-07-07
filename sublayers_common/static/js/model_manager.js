@@ -820,11 +820,16 @@ var ClientManager = (function () {
 
     // Бартер
 
-    ClientManager.prototype.InviteBarterMessage = function (event) {
+    ClientManager.prototype.AddInviteBarterMessage = function (event) {
         //console.log('ClientManager.prototype.InviteBarterMessage', event);
-        if (contextPanel) {
+        if (contextPanel)
             contextPanel.activate_barter_manager.add_barter(event.barter_id, event.initiator);
-        }
+    };
+
+    ClientManager.prototype.DelInviteBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.InviteBarterMessage', event);
+        if (contextPanel)
+            contextPanel.activate_barter_manager.del_barter(event.barter_id);
     };
 
     ClientManager.prototype.ActivateBarterMessage = function (event) {
@@ -1618,6 +1623,19 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
         var mes = {
             call: "init_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient_login: recipient_login.toString()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendOutBarterRange = function (recipient_login) {
+        //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
+        var mes = {
+            call: "out_barter_range",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 recipient_login: recipient_login.toString()

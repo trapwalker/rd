@@ -15,7 +15,6 @@ from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessa
                                              SetObserverForClient, Die, QuickGameDie)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.model.barter import Barter
 
 from tornado.options import options
 import tornado.gen
@@ -138,13 +137,6 @@ class Agent(Object):
         # todo: реализовать возможность устанавливать в качестве локации координаты? ##realize ##quest
         self._current_location = location
         self.example.current_location = example_location
-
-    def get_barter_by_id(self, barter_id):
-        # todo: refactoring (!!!)
-        for barter in self.barters:
-            if barter.id == barter_id:
-                return barter
-        return None
 
     def on_save(self, time):
         self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
@@ -426,7 +418,7 @@ class Agent(Object):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            Barter.cancel(barter_id=barter.id, agent=self, time=time-0.1)
+            barter.cancel(time=time-0.1)
 
         # Раздеплоить машинку агента
         if self.car:
@@ -457,7 +449,7 @@ class Agent(Object):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            Barter.cancel(barter_id=barter.id, agent=self, time=time-0.1)
+            barter.cancel(time=time-0.1)
 
         Die(agent=self, time=time).post()
 
