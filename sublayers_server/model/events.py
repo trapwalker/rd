@@ -39,7 +39,7 @@ class Event(object):
         cls._unumber_counter += 1
         return cls._unumber_counter
 
-    def __init__(self, server, time, callback_before=None, callback_after=None, comment=None):
+    def __init__(self, server, time, callback_before=None, callback_after=None, comment=None, *av, **kw):
         """
         @param sublayers_server.model.event_machine.Server server: Server for new event
         @param float time: Time of event
@@ -53,9 +53,21 @@ class Event(object):
         self.time = time
         self._unumber = self._gen_unumber()
         self.actual = True
-        self.callback_before = callback_before
-        self.callback_after = callback_after
         self.comment = comment  # todo: Устранить отладочную информацию
+        self.params = av, kw
+        self.callback_before = self._patch_callback(callback_before)
+        self.callback_after = self._patch_callback(callback_after)
+
+    def _patch_callback(self, f):
+        args = f.func_code.co_varnames[:f.func_code.co_argcount]
+        addon = {}
+        if 'time' in args:
+            addon['time'] = self.time
+
+        if 'event' in args:
+            addon['event'] = self
+
+        return partial(f, **addon)
 
     def post(self):
         self.server.post_event(self)  # todo: test to atomic construction
@@ -112,10 +124,10 @@ class Event(object):
         assert self.actual
         log.info('RUN    %s', self)
         if self.callback_before is not None:
-            self.callback_before(event=self)
+            self.callback_before(*self.params[0], **self.params[1])
         self.on_perform()
         if self.callback_after is not None:
-            self.callback_after(event=self)
+            self.callback_after(*self.params[0], **self.params[1])
 
     def on_perform(self):
         stat_log = self.server.stat_log
