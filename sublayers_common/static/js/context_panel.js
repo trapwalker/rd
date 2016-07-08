@@ -207,7 +207,12 @@ var InviteBarterObserver = (function(_super){
             this.obs_btn.removeClass('active');
         }
 
-        clientManager.sendOutBarterRange(mobj.owner.login);
+        if (mobj.owner && mobj.owner.login) {
+            clientManager.sendOutBarterRange(mobj.owner.login);
+        }
+        else {
+            console.warn(mobj, ' Не найдено mobj.owner или mobj.owner.login');
+        }
     };
 
     InviteBarterObserver.prototype.open_window = function() {
