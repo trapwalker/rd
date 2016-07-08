@@ -51,7 +51,7 @@ class Node(AbstractDocument):
         path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self.id_),)
         return URI(
             scheme='reg',
-            storage=self.__class__.__collection__,
+            #storage=self.__class__.__collection__,
             path=path,
         )
 
@@ -59,11 +59,10 @@ class Node(AbstractDocument):
         assert self.uri
         super(Node, self).to_cache(self.uri)
 
-    def __init__(self, storage=None, **kw):
+    def __init__(self, **kw):
         """
         @param str name: Name of node
         @param Node parent: Parent of node
-        @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
         @param Node owner: Owner of node in dhe tree
         @param bool abstract: Abstract sign of node
         """
@@ -73,9 +72,6 @@ class Node(AbstractDocument):
             self.uri = str(self.make_uri())
 
         self._subnodes = WeakSet()
-        self.storage = storage
-        if storage:
-            storage.put(self)
 
     def __setattr__(self, name, value):
         if name in ['_subnodes']:
@@ -159,9 +155,9 @@ class Node(AbstractDocument):
                 getter = lambda: getattr(self, name)
                 yield name, attr, getter
 
-    def instantiate(self, storage=None, name=None, **kw):
+    def instantiate(self, name=None, **kw):
         assert self.abstract
-        inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
+        inst = self.__class__(name=name, parent=self, abstract=False, **kw)
         log.debug('Maked new instance %s', inst.uri)
         return inst
 

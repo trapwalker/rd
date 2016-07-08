@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -239,7 +239,7 @@ class Selector(URI):
 if __name__ == '__main__':
     from pprint import pprint as pp
     try:
-        uri = URI(u'scheme://path/to/the/some/object?x=3&y=4&x=#my anchor')
+        uri = URI(u'scheme:///path/to/the/some/object?x=3&y=4&x=#my anchor')
     except URIFormatError as e:
         print 'fail', e
     else:
