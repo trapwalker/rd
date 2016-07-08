@@ -496,11 +496,11 @@ var ClientManager = (function () {
             // Города и заправки нельзя перестать видеть
             if ((car.cls == 'Town') || (car.cls == 'GasStation')) return;
 
-            // Удалить привязку к владельцу
-            if (car.owner) car.owner.unbindCar(car);
-
             // Удаление машинки (убрать саму машинку из визуалменеджера)
             car.delFromVisualManager();
+
+            // Удалить привязку к владельцу
+            if (car.owner) car.owner.unbindCar(car);
 
             if (car == user.userCar)
                 user.userCar = null;
