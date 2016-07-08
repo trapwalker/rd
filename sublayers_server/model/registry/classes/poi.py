@@ -47,10 +47,6 @@ class MapLocation(POIObserver):
     title = StringField(caption=u"Название локации", tags='client')
 
 
-class GasStation(MapLocation):
-    u"""Заправочная станция"""
-
-
 class Building(AbstractDocument):
     name = StringField(caption=u'Техническое имя', tags='client')  # todo: identify string constrain
     caption = StringField(caption=u'Название', tags='client')
