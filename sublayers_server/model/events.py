@@ -26,19 +26,18 @@ def event_deco(func):
 
     return closure
 
-_unumber_counter = 0
-
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
 
+    _unumber_counter = 0
+
     @classmethod
     def _gen_unumber(cls):
         # todo: thread lock
-        global _unumber_counter
-        _unumber_counter += 1
-        return _unumber_counter
+        Event._unumber_counter += 1
+        return Event._unumber_counter
 
     def __init__(self, server, time, callback_before=None, callback_after=None, comment=None, *av, **kw):
         """
@@ -56,8 +55,8 @@ class Event(object):
         self.actual = True
         self.comment = comment  # todo: Устранить отладочную информацию
         self.params = av, kw
-        self.callback_before = self._patch_callback(callback_before)
-        self.callback_after = self._patch_callback(callback_after)
+        self.callback_before = callback_before and self._patch_callback(callback_before)
+        self.callback_after = callback_after and self._patch_callback(callback_after)
 
     def _patch_callback(self, f):
         args = f.func_code.co_varnames[:f.func_code.co_argcount]
