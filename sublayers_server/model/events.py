@@ -26,18 +26,19 @@ def event_deco(func):
 
     return closure
 
+_unumber_counter = 0
 
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
-    _unumber_counter = 0
 
     @classmethod
     def _gen_unumber(cls):
         # todo: thread lock
-        cls._unumber_counter += 1
-        return cls._unumber_counter
+        global _unumber_counter
+        _unumber_counter += 1
+        return _unumber_counter
 
     def __init__(self, server, time, callback_before=None, callback_after=None, comment=None, *av, **kw):
         """

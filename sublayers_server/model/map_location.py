@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import logging
 log = logging.getLogger(__name__)
@@ -8,7 +9,7 @@ from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, InventoryHideMessage, UserExampleSelfMessage
 )
 from sublayers_server.model.registry.uri import URI
-from sublayers_server.model.events import ActivateLocationChats
+from sublayers_server.model.events import ActivateLocationChats, Event
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 
 
@@ -75,9 +76,11 @@ class MapLocation(Observer):
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
         agent.current_location = self
         self.visitors.append(agent)
-
         # todo: review
-        UserExampleSelfMessage(agent=agent, time=time).post()
+        Event(
+            server=agent.server, time=time,
+            callback_after=lambda event: UserExampleSelfMessage(agent=agent, time=event.time).post()
+        ).post()
 
     def on_re_enter(self, agent, time):
         agent.save(time)  # todo: Уточнить можно ли сохранять здесь
