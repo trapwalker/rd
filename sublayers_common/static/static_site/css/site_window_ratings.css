@@ -310,7 +310,7 @@
 
 /* Медиа Запросы для разрешения 1366 */
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
 
     .window-ratings-main {
         font-size: 12pt;
@@ -386,7 +386,8 @@
 
     .window-ratings-right-path-content-block .person-info-chat-person-string-item {
         font-size: 9pt;
-        line-height: 1.2;
+        line-height: 12px;
+        height: 12px;
     }
 
     .window-ratings-board .scroll-btn.up { left: 100px; }

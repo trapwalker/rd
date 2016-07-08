@@ -138,7 +138,7 @@
 
 
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .site-chip-content {
         top: 85px;
         left: 120px;

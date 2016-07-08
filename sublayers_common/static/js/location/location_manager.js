@@ -7,6 +7,7 @@ var LocationManager = (function () {
             menu_screen: null
         };
 
+        this.location_cls = '';
         this.in_location_flag = false;
 
         // Менеджер посетителей города
@@ -36,7 +37,7 @@ var LocationManager = (function () {
         // todo: Придумать куда это перенести!
         this.locations_canvas_effects = {};
         var lasers_img = new Image();
-        lasers_img.src = '/static/content/locations/towns/all_frames.png';
+        lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
@@ -88,6 +89,8 @@ var LocationManager = (function () {
         //console.log('LocationManager.prototype.onEnter', data);
         this.onExit();
 
+        this.location_cls = data.location.cls;
+
         // Закрыть все окна
         windowTemplateManager.closeAllWindows();
 
@@ -101,10 +104,12 @@ var LocationManager = (function () {
 
         // Создаем окна зданий
         this.screens.location_screen = null;
-        for (var i = 0; i < data.location.example_town.buildings.length; i++) {
-            var building_rec = data.location.example_town.buildings[i];
+        for (var i = 0; i < data.location.example.buildings.length; i++) {
+            var building_rec = data.location.example.buildings[i];
             this.buildings[building_rec.key] = this._getBuildingByType(building_rec, this.jq_town_div);
         }
+        if (this.location_cls == 'GasStation')
+            this.screens.location_screen = this.buildings['nucoil'];
         this.active_screen_name = 'location_screen';
 
         this.setBtnState(1, '', false);

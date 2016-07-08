@@ -90,6 +90,10 @@ class Town(MapLocation):
         return d
 
 
+class GasStation(Town):
+    u"""Заправочная станция"""
+
+
 class Institution(Root):
     title = StringField(caption=u"Имя", tags='client')
     photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл

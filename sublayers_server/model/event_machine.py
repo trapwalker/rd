@@ -57,7 +57,7 @@ class Server(object):
         # todo: QuickGame settings fix it
         self.quick_game_cars_examples = []
         self.quick_game_cars_proto = []
-        self.quick_game_start_pos = Point(12512034.49999, 27170315.5)
+        self.quick_game_start_pos = Point(12517168, 27028861)
 
     def __getstate__(self):
         d = self.__dict__.copy()

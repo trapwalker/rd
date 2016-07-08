@@ -526,16 +526,11 @@ class EnterToLocation(Message):
 
         from sublayers_server.model.map_location import Town, GasStation
         location_html = None
-        if isinstance(location, Town):
+        if isinstance(location, Town) or isinstance(location, GasStation):
             location_html = tornado.template.Loader(
                 root_directory="templates/location",
                 namespace=self.agent.connection.get_template_namespace()
-            ).load("town_new.html").generate(town=location, svg_code=svg_code)
-        elif isinstance(location, GasStation):
-            location_html = tornado.template.Loader(
-                root_directory="templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("gas_station.html").generate(station=location, svg_code=svg_code, agent=agent)
+            ).load("location.html").generate(location=location, svg_code=svg_code)
         else:
             log.warn('Unknown type location: %s', location)
         d.update(

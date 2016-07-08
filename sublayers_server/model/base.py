@@ -115,7 +115,7 @@ class PointObject(Object):
 
     def displace(self, time):  # раздеплоивание объекта с карты
         if self.example is not None:  # todo: в example добавить флаг необходимости сохранения
-            self.save(time)
+            self.save(time=time)
         self.delete(time)
 
 

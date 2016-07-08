@@ -22,20 +22,22 @@ def event_deco(func):
         event.post()
         return event
 
-    return closure
+    closure.sync = func
 
+    return closure
 
 @total_ordering
 class Event(object):
     __str_template__ = '<{self.unactual_mark}{self.classname} #{self.id} [{self.time_str}]>'
     # todo: __slots__
+
     _unumber_counter = 0
 
     @classmethod
     def _gen_unumber(cls):
         # todo: thread lock
-        cls._unumber_counter += 1
-        return cls._unumber_counter
+        Event._unumber_counter += 1
+        return Event._unumber_counter
 
     def __init__(self, server, time, callback_before=None, callback_after=None, comment=None):
         """
@@ -51,9 +53,9 @@ class Event(object):
         self.time = time
         self._unumber = self._gen_unumber()
         self.actual = True
+        self.comment = comment  # todo: Устранить отладочную информацию
         self.callback_before = callback_before
         self.callback_after = callback_after
-        self.comment = comment  # todo: Устранить отладочную информацию
 
     def post(self):
         self.server.post_event(self)  # todo: test to atomic construction

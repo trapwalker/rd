@@ -246,7 +246,7 @@ var ClientManager = (function () {
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
             if (obj.cls == 'Town') {
                 obj_marker.updateLabel(event.object.town_name);
-                obj.town_name = event.object.example_town.title;
+                obj.town_name = event.object.example.title;
             }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
@@ -496,11 +496,11 @@ var ClientManager = (function () {
             // Города и заправки нельзя перестать видеть
             if ((car.cls == 'Town') || (car.cls == 'GasStation')) return;
 
-            // Удалить привязку к владельцу
-            if (car.owner) car.owner.unbindCar(car);
-
             // Удаление машинки (убрать саму машинку из визуалменеджера)
             car.delFromVisualManager();
+
+            // Удалить привязку к владельцу
+            if (car.owner) car.owner.unbindCar(car);
 
             if (car == user.userCar)
                 user.userCar = null;
@@ -820,11 +820,16 @@ var ClientManager = (function () {
 
     // Бартер
 
-    ClientManager.prototype.InviteBarterMessage = function (event) {
+    ClientManager.prototype.AddInviteBarterMessage = function (event) {
         //console.log('ClientManager.prototype.InviteBarterMessage', event);
-        if (contextPanel) {
+        if (contextPanel)
             contextPanel.activate_barter_manager.add_barter(event.barter_id, event.initiator);
-        }
+    };
+
+    ClientManager.prototype.DelInviteBarterMessage = function (event) {
+        //console.log('ClientManager.prototype.InviteBarterMessage', event);
+        if (contextPanel)
+            contextPanel.activate_barter_manager.del_barter(event.barter_id);
     };
 
     ClientManager.prototype.ActivateBarterMessage = function (event) {
@@ -1244,7 +1249,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
-        //console.log('ClientManager.prototype.sendEnterToLocation');
+        //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
         var mes = {
             call: "enter_to_location",
             rpc_call_id: rpcCallList.getID(),
@@ -1618,6 +1623,19 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
         var mes = {
             call: "init_barter",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                recipient_login: recipient_login.toString()
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendOutBarterRange = function (recipient_login) {
+        //console.log('ClientManager.prototype.sendInitBarter', recipient_login);
+        var mes = {
+            call: "out_barter_range",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 recipient_login: recipient_login.toString()

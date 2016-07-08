@@ -42,7 +42,12 @@ var AudioObject = (function () {
             duration = duration === undefined ? this.audio_buffer.duration : duration;
             offset = offset === undefined ? null : offset;
             var t = context.currentTime + (time === undefined ? 0 : time);
-            this.current_source.start(t, offset, duration);
+            if (typeof(this.current_source.start) == 'function') { // Если это нормальный браузер
+                this.current_source.start(t, offset, duration);
+            }
+            else { // Если это сафари
+                this.current_source.noteOn(t);
+            }
         }
         catch (e){
             console.log(e);
@@ -61,7 +66,12 @@ var AudioObject = (function () {
         if (this.current_source) {
             this.play_loop = false;
             try {
-                this.current_source.stop(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
+                if (typeof(this.current_source.stop) == 'function') { // если это нормальный браузер
+                    this.current_source.stop(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
+                }
+                else { // если это safari
+                    this.current_source.noteOff(audioManager.get_ctx().currentTime + (time == undefined ? 0 : time));
+                }
             }
             catch (e){
                 console.log(e);
