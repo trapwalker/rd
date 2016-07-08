@@ -734,7 +734,7 @@ class AgentAPI(API):
     def table_money_barter(self, barter_id, money):
         barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
         if barter:
-            barter.set_money(agent=self.agent, time=self.agent.server.get_time())
+            barter.set_money(agent=self.agent, time=self.agent.server.get_time(), money=money)
 
     # RPG
 

@@ -58,6 +58,10 @@ class ServerAPI(API):
                 agent_exemplar = self.server.reg['/agents/user'].instantiate(
                     storage=self.server.reg_agents, name=str(user._id), login=user.name,
                 )
+                role_class_ex = self.server.reg['/rpg_settings/role_class/chosen_one']
+                agent_exemplar.role_class = role_class_ex
+                self.server.reg_agents.save_node(agent_exemplar)
+
             log.debug('QuickUser agent exemplar: %r', agent_exemplar)
             agent = QuickUser(
                 server=self.server,

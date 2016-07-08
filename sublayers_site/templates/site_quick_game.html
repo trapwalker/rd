@@ -57,7 +57,10 @@
 
     function StartQuickGame() {
         var username = document.getElementById('quick_game_nickname').value;
-        if (username.length < 4) {console.warn('Короткое имя пользователя'); return;}
+        if (username.length < 4) {
+            console.warn('Короткое имя пользователя. Имя будет назначено сервером.');
+            username = 'QuickUser' + username;
+        }
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',

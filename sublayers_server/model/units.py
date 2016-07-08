@@ -306,9 +306,6 @@ class Unit(Observer):
                 self.upd_observing_range(time)
 
     def on_save(self, time):
-        # if self.owner:
-        #     self.owner.save(time)
-
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
         self.save_inventory(time)

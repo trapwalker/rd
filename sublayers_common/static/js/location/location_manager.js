@@ -37,7 +37,7 @@ var LocationManager = (function () {
         // todo: Придумать куда это перенести!
         this.locations_canvas_effects = {};
         var lasers_img = new Image();
-        lasers_img.src = '/static/content/locations/towns/all_frames.png';
+        lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
