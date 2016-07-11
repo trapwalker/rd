@@ -66,10 +66,9 @@ function main() {
     var content_start_back_in_animate = false;
 
     // Чтобы кнопки залипали!
-    $('.btn-page').click(function () {
+    $('.btn-page').click(function (event) {
         // Если кто-то быстро кликает, то игнорить эти клики
         if(content_start_back_in_animate) return;
-
         // Проигрывание звуков
         if (! $(this).hasClass('active')) {
             audioManager.play('microwave_btn_click');
@@ -81,9 +80,9 @@ function main() {
             // todo: звук отжатой кнопки
             return;
         }
-
         $('.btn').removeClass('active');
         $(this).addClass('active');
+        $(event.currentTarget).addClass('active');
 
         // скрыть сетку, машинку и тд
         if (content_start_back_visible) {
@@ -150,9 +149,6 @@ function main() {
             if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
         }
 
-
-
-
         // Работа с консолями
         textConsoleManager.start(data);
 
@@ -185,7 +181,6 @@ function main() {
                 window.location.hash = url_hash.split('_')[1];
             }
         }
-
 
     });
 
@@ -245,6 +240,10 @@ function main() {
                 videoPlayer.pauseVideo();
                 radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
             }
+
+            // Обработать hash_url - снова с этим багом-фичей
+            setTimeout(function() {window.location.hash = '';}, 10);
+
         }
     });
 
@@ -314,7 +313,12 @@ function main() {
                 }, 10);
             }
             else {
-                $('#RDbtn_' + hash_url).click();
+                if (hash_url.indexOf('start') == 0) {
+                    // Не делать ничего, так как сделаем в функции GetUserInfo
+                }
+                else {
+                    $('#RDbtn_' + hash_url).click();
+                }
             }
         }
     }
