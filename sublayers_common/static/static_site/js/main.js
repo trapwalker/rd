@@ -262,6 +262,8 @@ function main() {
         }
     });
 
+    // Вход и регистрация по Enter
+    $('#RDSiteWReg input').on('keydown', windowRegKeyDownEnter);
 
     initConsoles();
 
@@ -654,6 +656,41 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
     });
 }
 
+
+function windowRegKeyDownEnter(event) {
+    if (event.keyCode != 13) return;
+    var jq_target = $(event.currentTarget);
+    var target_id = jq_target.attr('id');
+    // info: Можно упростисть, заранее определив jq_password и func_click, но будет казаться запутанным
+    if (target_id == 'reg_email') {
+        var jq_reg_password = $('#reg_password');
+        // Если пароль вбит, то попробовать зарегистрироваться // todo: и его длина больше 4-х симовлов
+        if (jq_reg_password.val().length >= 1) { // >= 4
+            RegisterBtnClick();
+        }
+        else {
+            jq_reg_password[0].focus();
+        }
+    }
+    if (target_id == 'auth_email') {
+        var jq_auth_password = $('#auth_password');
+        // Если пароль вбит, то попробовать зарегистрироваться // todo: и его длина больше 4-х симовлов
+        if (jq_auth_password.val().length >= 1) { // >= 4
+            AuthorisationBtnClick();
+        }
+        else {
+            jq_auth_password[0].focus();
+        }
+    }
+
+    if (target_id == 'reg_password') {
+        RegisterBtnClick();
+    }
+
+    if (target_id == 'auth_password') {
+        AuthorisationBtnClick();
+    }
+}
 
 
 /* Youtube Video Player Functions */
