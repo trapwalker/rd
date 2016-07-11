@@ -73,6 +73,22 @@ class Node(AbstractDocument):
 
         self._subnodes = WeakSet()
 
+    def __getitem__(self, idx):
+        path = None
+        # todo: test to URI
+        if isinstance(idx, basestring):
+            path = idx.split('/')
+        else:
+            path = idx
+
+        if path:
+            child_name = path[0]
+            for node in self._subnodes:
+                if node.name == child_name:
+                    return node[path[1:]]
+        else:
+            return self
+
     def __setattr__(self, name, value):
         if name in ['_subnodes']:
             return object.__setattr__(self, name, value)
