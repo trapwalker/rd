@@ -63,9 +63,13 @@ function main() {
     );
 
     var content_start_back_visible = true;
+    var content_start_back_in_animate = false;
 
     // Чтобы кнопки залипали!
     $('.btn-page').click(function () {
+        // Если кто-то быстро кликает, то игнорить эти клики
+        if(content_start_back_in_animate) return;
+
         // Проигрывание звуков
         if (! $(this).hasClass('active')) {
             audioManager.play('microwave_btn_click');
@@ -84,9 +88,11 @@ function main() {
         // скрыть сетку, машинку и тд
         if (content_start_back_visible) {
             content_start_back_visible = false;
+            content_start_back_in_animate = true;
             $('.content-start').animate({opacity: 0}, function () {
                 $('.content-start').css({display: 'none'});
                 $('.car-skeleton-path').css({display: 'none'});
+                content_start_back_in_animate = false;
             });
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.stop();
@@ -216,13 +222,15 @@ function main() {
 
     // Вешаем клик на логотип
     $('.site-logo').first().click(function () {
+        if (content_start_back_in_animate) return;
         if (!content_start_back_visible) {
             content_start_back_visible = true;
             $('.switch-page').css({display: 'none'});
             $('.btn').removeClass('active');
             $('.car-skeleton-path').css({display: 'block'});
             $('.content-start').css({display: 'block'});
-            $('.content-start').animate({opacity: 1.0});
+            content_start_back_in_animate = true;
+            $('.content-start').animate({opacity: 1.0}, function() {content_start_back_in_animate = false;});
             if (glitchEffectStartPage768)
                 glitchEffectStartPage768.start();
             if (glitchEffectStartPage1080)
