@@ -684,11 +684,23 @@ function windowRegKeyDownEnter(event) {
     }
 
     if (target_id == 'reg_password') {
-        RegisterBtnClick();
+        var jq_reg_email = $('#reg_email');
+        if (jq_reg_email.val().length >= 3) { // >= 4
+            RegisterBtnClick();
+        }
+        else {
+            jq_reg_email[0].focus();
+        }
     }
 
     if (target_id == 'auth_password') {
-        AuthorisationBtnClick();
+        var jq_auth_email = $('#auth_email');
+        if (jq_auth_email.val().length >= 3) { // >= 4
+            AuthorisationBtnClick();
+        }
+        else {
+            jq_auth_email[0].focus();
+        }
     }
 }
 
