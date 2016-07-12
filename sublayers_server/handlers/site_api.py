@@ -39,7 +39,7 @@ class APIGetCarInfoHandler(BaseHandler):
 class APIGetCarInfoHandler2(BaseHandler):
     def get(self):
         #uri = self.get_argument('uri', None)
-        uri = 'reg://registry/mobiles/cars/middle/sports/delorean_dmc12'  # todo: ##fix
+        uri = 'reg:///registry/mobiles/cars/middle/sports/delorean_dmc12'  # todo: ##fix
         if not uri:
             self.send_error(404)
             return

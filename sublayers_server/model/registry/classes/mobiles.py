@@ -17,7 +17,7 @@ from math import pi
 
 
 class SlotField(EmbeddedDocumentField):
-    LOCK_URI = "reg://registry/items/slot_item/slot_lock"
+    LOCK_URI = "reg:///registry/items/slot_item/slot_lock"
 
     def __init__(self, embedded_document_type='sublayers_server.model.registry.classes.item.SlotItem', *av, **kw):
         super(SlotField, self).__init__(embedded_document_type=embedded_document_type, *av, **kw)

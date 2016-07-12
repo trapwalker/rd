@@ -48,7 +48,7 @@ class Agent(Root):
     # Механизм скилов
     exp_table = UniReferenceField(
         caption=u"Таблица опыта",
-        default='reg://registry/rpg_settings/exptable',
+        default='reg:///registry/rpg_settings/exptable',
         reference_document_type='sublayers_server.model.registry.classes.exptable.ExpTable',
     )
     role_class = UniReferenceField(  # todo: Проверить нужно ли декларировать default
@@ -60,63 +60,63 @@ class Agent(Root):
     # Инфу этих документов нужно разместить в обычных скиллах.
     buy_driving = EmbeddedDocumentField(
         caption=u"Купленные очки навыка вождения",
-        default='reg://registry/rpg_settings/buy_skill/driving',
+        default='reg:///registry/rpg_settings/buy_skill/driving',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
     buy_shooting = EmbeddedDocumentField(
         caption=u"Купленные очки навыка стрельбы",
-        default='reg://registry/rpg_settings/buy_skill/shooting',
+        default='reg:///registry/rpg_settings/buy_skill/shooting',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
     buy_masking = EmbeddedDocumentField(
         caption=u"Купленные очки навыка маскировки",
-        default='reg://registry/rpg_settings/buy_skill/masking',
+        default='reg:///registry/rpg_settings/buy_skill/masking',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
     buy_leading = EmbeddedDocumentField(
         caption=u"Купленные очки навыка лидерства",
-        default='reg://registry/rpg_settings/buy_skill/leading',
+        default='reg:///registry/rpg_settings/buy_skill/leading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
     buy_trading = EmbeddedDocumentField(
         caption=u"Купленные очки навыка торговли",
-        default='reg://registry/rpg_settings/buy_skill/trading',
+        default='reg:///registry/rpg_settings/buy_skill/trading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
     buy_engineering = EmbeddedDocumentField(
         caption=u"Купленные очки навыка инженеринга",
-        default='reg://registry/rpg_settings/buy_skill/engineering',
+        default='reg:///registry/rpg_settings/buy_skill/engineering',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
     )
 
     driving = EmbeddedDocumentField(
         caption=u"Навык вождения", tags='skill',
-        default='reg://registry/rpg_settings/skill/driving',
+        default='reg:///registry/rpg_settings/skill/driving',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
     shooting = EmbeddedDocumentField(
         caption=u"Навык стрельбы", tags='skill',
-        default='reg://registry/rpg_settings/skill/shooting',
+        default='reg:///registry/rpg_settings/skill/shooting',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
     masking = EmbeddedDocumentField(
         caption=u"Навык маскировки", tags='skill',
-        default='reg://registry/rpg_settings/skill/masking',
+        default='reg:///registry/rpg_settings/skill/masking',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
     leading = EmbeddedDocumentField(
         caption=u"Навык лидерства", tags='skill',
-        default='reg://registry/rpg_settings/skill/leading',
+        default='reg:///registry/rpg_settings/skill/leading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
     trading = EmbeddedDocumentField(
         caption=u"Навык торговли", tags='skill',
-        default='reg://registry/rpg_settings/skill/trading',
+        default='reg:///registry/rpg_settings/skill/trading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
     engineering = EmbeddedDocumentField(
         caption=u"Навык инженеринга", tags='skill',
-        default='reg://registry/rpg_settings/skill/engineering',
+        default='reg:///registry/rpg_settings/skill/engineering',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
     )
 

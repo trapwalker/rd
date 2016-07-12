@@ -44,7 +44,7 @@ def test_store():
     log.debug('id(a)=%s', id(a))
     yield a.save()
     #Node.objects_cache.clear()
-    b = B(name='b', y=4, parent=a.uri, owner=a, p=['reg://registry/a'],)
+    b = B(name='b', y=4, parent=a.uri, owner=a, p=['reg:///registry/a'],)
     yield b.load_references()
     log.debug('id(b.p[0].parent)=%s', id(b.p[0].parent))
     yield b.save()
@@ -52,14 +52,14 @@ def test_store():
 
     aa = yield Node.objects.get(
         #a._id
-        id='reg://registry/a',
+        id='reg:///registry/a',
     )
     log.debug('id(aa)=%s', id(aa))
 
     log.debug('aa[%s]: %s', id(aa), aa)
 
     bb = yield Node.objects.get(
-        'reg://registry/a/b',
+        'reg:///registry/a/b',
         #id=b._id,
     )
     log.debug('bb[%s]: %s', id(bb), bb)

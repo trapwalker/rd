@@ -23,7 +23,7 @@ class Skill(Root):
     limit = IntField(default=100, caption=u"Предел прокачки навыка", tags='client')
     mod = UniReferenceField(
         caption=u"Модификатор навыка",
-        default='reg://registry/rpg_settings/class_skill/empty_0', 
+        default='reg:///registry/rpg_settings/class_skill/empty_0', 
         reference_document_type=ClassSkill,
     )
     description = StringField(

@@ -66,8 +66,8 @@ if __name__ == '__main__':
         uid1 = ObjectId()
         print('uid1=', uid1)
         
-        a = B(name='a', doc='aa', uri='reg://reg1/a13', fixtured=True, x=13, id=uid1)
-        b = B(name='b', doc='bb', uri='reg://reg1/b14', fixtured=True, y=14, lnk=a)
+        a = B(name='a', doc='aa', uri='reg:///reg1/a13', fixtured=True, x=13, id=uid1)
+        b = B(name='b', doc='bb', uri='reg:///reg1/b14', fixtured=True, y=14, lnk=a)
 
         aa = yield a.save()
         bb = yield b.save()
