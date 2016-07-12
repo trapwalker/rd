@@ -31,7 +31,6 @@ var Window = (function () {
 
         this.mainDiv.droppable({ greedy: true });
 
-
         if (this.options.isModal) {
             this.modalDiv = $("<div id=" + this.options.name + "ModalDiv" + " class='modalDivWindow'></div>");
             this.parentDiv.append(this.modalDiv);
@@ -73,7 +72,10 @@ var Window = (function () {
 
     // Программный способ закрвания (удаления) окна
     Window.prototype.closeWindow = function () {
+        console.log('Window.prototype.closeWindow');
         // todo: усовершенствовать снятие обработчиков
+        if (this.options.close_call_back)
+            this.options.close_call_back();
         this.mainDiv.find('div').off(); // снять со всемх дивов, так как они скорее всего кнопки
         this.mainDiv.off(); // снять с главного дива - тут снимается draggable
         if (this.options.isModal)
@@ -172,7 +174,7 @@ var WindowTemplateManager = (function () {
                 this.closeUniqueWindow(key);
     };
 
-    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, call_back) {
+    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, open_call_back, close_call_back) {
         //console.log('WindowTemplateManager.prototype.openUniqueWindow');
         var self = this;
         if (this.unique[win_name] != null) this.closeUniqueWindow(win_name);
@@ -185,7 +187,8 @@ var WindowTemplateManager = (function () {
                 if (self.unique[win_name] != 'waiting') return;
                 var temp_window = new TemplateWindow({
                     parentDiv: 'bodydiv',
-                    win_name: win_name
+                    win_name: win_name,
+                    close_call_back: close_call_back
                 });
                 temp_window.mainDiv.append(data);
                 temp_window.showWindow(true);
@@ -200,7 +203,7 @@ var WindowTemplateManager = (function () {
                 self.z_index_list[win_name] = self.count;
                 temp_window.mainDiv.css('z-index', self.count);
 
-                if (call_back) call_back(temp_window.mainDiv);
+                if (open_call_back) open_call_back(temp_window.mainDiv);
             }
         });
     };

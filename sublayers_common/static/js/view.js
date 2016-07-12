@@ -57,7 +57,8 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
-        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null);
+        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null,
+            wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
         returnFocusToMap();
     };
 

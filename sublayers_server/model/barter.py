@@ -322,6 +322,7 @@ class Barter(object):
 
     @event_deco
     def cancel(self, event):
+
         if (self.state != 'active') and (self.state != 'unactive') and (self.state != 'lock'):
             return
 
