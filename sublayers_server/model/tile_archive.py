@@ -43,7 +43,7 @@ def get_tiles_admin(ax, ay):
                     shutil.copyfileobj(file_like, fdest)
 
     os.chdir(serv_dir)
-    os.chdir('static')
+    os.chdir('../sublayers_common/static')
     shutil.make_archive('temp_archive', 'zip', temp_dir)
 
     os.chdir(serv_dir)
