@@ -29,7 +29,7 @@ class Cnt(object):
 
 io_loop = tornado.ioloop.IOLoop.instance()
 db = connect("test3", host="localhost", port=27017, io_loop=io_loop)
-c = Cnt(5)
+c = Cnt(25)
 
 
 def start():

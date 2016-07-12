@@ -29,5 +29,6 @@ def test_registry():
 
 
 if __name__ == '__main__':
+    from collections import Counter
     io_loop.add_callback(test_registry)
     start()
