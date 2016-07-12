@@ -15,6 +15,8 @@ from collections import Counter
 class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
+    _stat = Counter()
+
     __cls__ = StringField()
 
     def _get_load_function(self, document, field_name, document_type):
@@ -25,6 +27,7 @@ class AbstractDocument(Document):
 
     @return_future
     def load_references(self, fields=None, callback=None, alias=None):
+
         if callback is None:
             raise ValueError("Callback can't be None")
 
