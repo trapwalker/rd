@@ -5,20 +5,20 @@
     pointer-events: none;
 }
 
-#cpEnterToLocationIcon { background: transparent url('/static/img/context_panel/map_enter.png') 50% 50% no-repeat; }
-#cpEnterToLocationIcon:hover { background: transparent url('/static/img/context_panel/map_enter_hover.png') 50% 50% no-repeat; }
+#cpEnterToLocationIcon:hover { background: transparent url('/static/img/context_panel/map_enter.png') 50% 50% no-repeat; }
+#cpEnterToLocationIcon { background: transparent url('/static/img/context_panel/map_enter_hover.png') 50% 50% no-repeat; }
 #cpEnterToLocationIcon:active { background: transparent url('/static/img/context_panel/map_enter_press.png') 50% 50% no-repeat; }
 
-#cpEnterToContainer { background: transparent url('/static/img/context_panel/map_pickup.png') 50% 50% no-repeat; }
-#cpEnterToContainer:hover { background: transparent url('/static/img/context_panel/map_pickup_hover.png') 50% 50% no-repeat; }
+#cpEnterToContainer:hover { background: transparent url('/static/img/context_panel/map_pickup.png') 50% 50% no-repeat; }
+#cpEnterToContainer { background: transparent url('/static/img/context_panel/map_pickup_hover.png') 50% 50% no-repeat; }
 #cpEnterToContainer:active { background: transparent url('/static/img/context_panel/map_pickup_press.png') 50% 50% no-repeat; }
 
-#cpBarterSendInvite {  background: transparent url('/static/img/context_panel/map_exchange.png') 50% 50% no-repeat; }
-#cpBarterSendInvite:hover { background: transparent url('/static/img/context_panel/map_exchange_hover.png') 50% 50% no-repeat; }
+#cpBarterSendInvite:hover {  background: transparent url('/static/img/context_panel/map_exchange.png') 50% 50% no-repeat; }
+#cpBarterSendInvite { background: transparent url('/static/img/context_panel/map_exchange_hover.png') 50% 50% no-repeat; }
 #cpBarterSendInvite:active { background: transparent url('/static/img/context_panel/map_exchange_press.png') 50% 50% no-repeat; }
 
-#cpBarterInfoInvite { background: transparent url('/static/img/context_panel/map_deal.png') 50% 50% no-repeat; }
-#cpBarterInfoInvite:hover { background: transparent url('/static/img/context_panel/map_deal_hover.png') 50% 50% no-repeat; }
+#cpBarterInfoInvite:hover { background: transparent url('/static/img/context_panel/map_deal.png') 50% 50% no-repeat; }
+#cpBarterInfoInvite { background: transparent url('/static/img/context_panel/map_deal_hover.png') 50% 50% no-repeat; }
 #cpBarterInfoInvite:active { background: transparent url('/static/img/context_panel/map_deal_press.png') 50% 50% no-repeat; }
 
 .cp_button_icon {
