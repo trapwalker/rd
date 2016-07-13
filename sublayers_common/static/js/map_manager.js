@@ -268,7 +268,7 @@ var MapManager = (function(_super){
                 dragging: false,
                 zoomAnimationThreshold: 8,
                 doubleClickZoom: false
-            }).setView([32.3730296265, -112.87993632], cookieStorage.zoom);
+            }).setView([32.93523932687671, -113.0391401052475], cookieStorage.zoom);
 
         myMap = map;
         this.anim_zoom = map.getZoom();

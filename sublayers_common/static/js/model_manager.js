@@ -206,7 +206,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._contactStaticObject', event);
         if (event.is_first) {
             var uid = event.object.uid;
-            var radius_visible = event.object.r;
+            var p_observing_range = event.object.p_observing_range;
             var obj_marker;
 
             // Проверка: нет ли уже такого объекта.
@@ -234,6 +234,7 @@ var ClientManager = (function () {
 
             obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
+            obj.p_observing_range = p_observing_range;
             if (event.object.hasOwnProperty('sub_class_car')) {
                 obj.sub_class_car = event.object.sub_class_car;
             }
