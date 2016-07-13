@@ -177,7 +177,7 @@ class Node(AbstractDocument):
     def instantiate(self, name=None, **kw):
         assert self.abstract
         inst = self.__class__(name=name, parent=self, abstract=False, **kw)
-        log.debug('Maked new instance %s', inst.uri)
+        # todo: Сделать поиск ссылок в параметрах URI
         return inst
 
     # def __getstate__(self):
