@@ -23,10 +23,6 @@ from sublayers_server.model.registry.odm.fields import (
     UniReferenceField,
 )
 
-if __debug__:
-    from collections import Counter
-    _call_stat = Counter()
-
 
 class RegistryError(Exception):
     pass
@@ -116,8 +112,8 @@ class Node(AbstractDocument):
         ):
             return object.__getattribute__(self, name)
 
-        if __debug__:
-            _call_stat[('Node', name)] += 1
+        # if __debug__:
+        #     _call_stat[('Node', name)] += 1
 
         if name in self._fields:
             field = self._fields[name]

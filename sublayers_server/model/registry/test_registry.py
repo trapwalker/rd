@@ -12,8 +12,9 @@ if __name__ == '__main__':
 
 from sublayers_server.test_iolop import io_loop, start
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.tree import Root, _call_stat
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry.odm.doc import _call_stat
 
 import yaml
 import tornado.gen
@@ -25,7 +26,7 @@ def test_registry():
     log.debug('### test registry')
     reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     log.debug('### Registry test end')
-    pp(sorted(_call_stat.items(), reverse=True))
+    pp(sorted(_call_stat.items(), key=lambda kv: kv[1], reverse=True)[:50], width=200)
     globals().update(**locals())
 
 

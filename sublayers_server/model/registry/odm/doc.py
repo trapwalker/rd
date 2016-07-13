@@ -12,6 +12,10 @@ from tornado.concurrent import return_future
 from bson import ObjectId
 from collections import Counter
 
+if __debug__:
+    _call_stat = Counter()
+
+
 class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
@@ -27,6 +31,7 @@ class AbstractDocument(Document):
 
     @return_future
     def load_references(self, fields=None, callback=None, alias=None):
+        _call_stat[self.parent, self.uri, 'load_references'] += 1
 
         if callback is None:
             raise ValueError("Callback can't be None")
