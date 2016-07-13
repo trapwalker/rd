@@ -158,26 +158,15 @@
     position: relative;
     pointer-events: auto;
     float: left;
-    opacity: 0.5;
-    color: #2afd0a;
-    border: solid lime 0px;
-    border-radius: 3px;
+    color: #31c811;
     margin: 3px;
     padding: 3px 5px 3px 5px;
     font: 11pt MICRADI;
 }
-
-.VMGpageButtonActive {
-    opacity: 1;
-}
-
-.VMGpageButtonActive:before {
-    content: "< ";
-}
-
-.VMGpageButtonActive:after {
-    content: " >";
-}
+.VMGpageButton.active { color: #2ffa00; }
+.VMGpageButton.active:before { content: "< "; }
+.VMGpageButton.active:after { content: " >"; }
+.VMGpageButton:hover { color: #2ffa00; }
 
 .VMGTextOutArea {
     position: relative;

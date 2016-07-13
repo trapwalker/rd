@@ -356,11 +356,11 @@ var ViewMessengerGlass = (function () {
         this.pages.forEach(function (page) {
             if (page == aPage) {
                 aPage.pageArea.addClass('VMGChatOutAreaActive');
-                aPage.pageButton.addClass('VMGpageButtonActive');
+                aPage.pageButton.addClass('active');
             }
             else {
                 page.pageArea.removeClass('VMGChatOutAreaActive');
-                page.pageButton.removeClass('VMGpageButtonActive');
+                page.pageButton.removeClass('active');
             }
         });
         this.activeChat = aPage.chat;
