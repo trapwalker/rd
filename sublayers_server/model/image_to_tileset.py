@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#from PIL import Image, ImageDraw #Подключим необходимые библиотеки.
+from PIL import Image, ImageDraw #Подключим необходимые библиотеки.
 from tileset import Tileset
 from tileid import Tileid
 from tileid2 import Tileid2
@@ -27,17 +27,15 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
         for xx in xrange(x_start, x_finish):
             for yy in xrange(y_start, y_finish):
                 # TODO: поменять format(zoom, yy, xx) на format(zoom, xx, yy)
-                yield (directory + r'/{}/{}/{}.png'.format(zoom, xx, yy), xx, yy)
+                yield (directory + r'/{}/{}/{}.jpg'.format(zoom, xx, yy), xx, yy)
 
     def is_color(pxl):
         # todo: возможно сделать нестрогое сравнение через rgb: r, g, b = pxl
         # print pxl
         #return pxl == color
-        r, g, b, a = pxl
-        return r < 150 and g < 150 and b < 150
-
-
-
+        # r, g, b, a = pxl
+        r, g, b = pxl
+        return r > 150 and g > 150 and b > 150
 
     ts = Tileset()
 
@@ -116,12 +114,12 @@ def MongoDBToTilesets(collection):
 
 
 if __name__ == '__main__':
-    ts = ImageToTileset(directory=r'C:/_tiles_test', zoom=11,
-                        x_start=1173, y_start=652, x_finish=1189, y_finish=666,
+    ts = ImageToTileset(directory=r'd:/tiles/map_zones/road_20160712_teaser', zoom=15,
+                        x_start=6075, y_start=13165, x_finish=6130, y_finish=13221,
                         color=(0, 0, 0))
     #ts = Tileset(open('d:/ts_wood_11'))
     print ts.level
-    ts.save(open('d:/ts_wood_11', 'w'))
+    ts.save(open('d:/tiles/ts_road_15_2', 'w'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
     '''
     from pymongo import Connection
