@@ -448,6 +448,17 @@ var ViewMessengerGlass = (function () {
                 if ($(element).css('display') == 'block')
                     width += $(element).outerWidth(true);
             });
+            var jq_parent = jq_list.parent();
+            var jq_parent_parent = jq_parent.parent();
+            var max_width = jq_parent_parent.innerWidth();
+            if (width < max_width) {
+                jq_parent_parent.find('.VMGGlobalPgCtrlScrlBtn').css('display', 'none');
+                jq_parent.addClass('all-size');
+            }
+            else {
+                jq_parent_parent.find('.VMGGlobalPgCtrlScrlBtn').css('display', 'block');
+                jq_parent.removeClass('all-size');
+            }
             jq_list.width(width);
         }
     };
@@ -483,6 +494,7 @@ var ViewMessengerGlass = (function () {
 
         this.page_global.chatArea.append(chat.chatArea);
         this.page_global.pageControl.append(chat.pageButton);
+
         this._resizePageControl(this.page_global.pageControl);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
