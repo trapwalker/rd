@@ -4,9 +4,9 @@
         cursor: url('/static/img/cursors/hyper.png'), pointer;
     }
 
-    .highlight-buildings {
-        cursor: url('/static/img/cursors/hyper.png'), pointer;
-    }
+    .highlight-buildings { cursor: url('/static/img/cursors/hyper.png'), pointer; }
+
+    .highlight-logo { cursor: url('/static/img/cursors/hyper.png'), pointer; }
 
     #location-content {
         position: absolute;
@@ -290,6 +290,20 @@
             $("#img_house" + index + "_on").css("display", "none");
             $("#path_h" + index).css("opacity", "0.2");
             $("#path_text_h" + index).css("opacity", "0.2");
+        });
+
+        // События для логотипа
+        var jq_logo = $('.highlight-logo');
+        jq_logo.click(function(event){});
+        
+        jq_logo.mouseenter(function(event){
+            $("#img_logo_on").css("display", "block");
+            $("#img_logo_off").css("display", "none");
+        });
+
+        jq_logo.mouseleave(function(event){
+            $("#img_logo_on").css("display", "none");
+            $("#img_logo_off").css("display", "block");
         });
     });
 </script>

@@ -36,6 +36,7 @@
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     text-align: center;
     overflow: hidden;
+	font: 10pt MICRADI;
 }
 
 .menu-header-item.active, .menu-header-item:hover{ color: #2ffa00; }

@@ -290,7 +290,7 @@
 }
 
 .window-ratings-right-path-content-block .car-info-name-block {
-    top: 20px;
+    top: 10px;
 }
 
 /* Информация о машинках */
@@ -359,11 +359,11 @@
     }
 
     .window-ratings-right-path-content-block .window-pi-user-car {
-        top: -30px;
+        height: calc(100% - 92px);
     }
 
     .window-ratings-right-path-content-block .car-info-name-block{
-        top: 30px;
+
     }
 
     .window-ratings-right-path-content-block .car-info-block-picture-main.default-car {
@@ -381,7 +381,7 @@
     }
 
     .window-ratings-right-path-content-block .car-info-name-block {
-        top: 32px;
+        top: 2px;;
     }
 
     .window-ratings-right-path-content-block .person-info-chat-person-string-item {

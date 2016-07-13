@@ -63,9 +63,12 @@ function main() {
     );
 
     var content_start_back_visible = true;
+    var content_start_back_in_animate = false;
 
     // Чтобы кнопки залипали!
-    $('.btn-page').click(function () {
+    $('.btn-page').click(function (event) {
+        // Если кто-то быстро кликает, то игнорить эти клики
+        if(content_start_back_in_animate) return;
         // Проигрывание звуков
         if (! $(this).hasClass('active')) {
             audioManager.play('microwave_btn_click');
@@ -77,16 +80,18 @@ function main() {
             // todo: звук отжатой кнопки
             return;
         }
-
         $('.btn').removeClass('active');
         $(this).addClass('active');
+        $(event.currentTarget).addClass('active');
 
         // скрыть сетку, машинку и тд
         if (content_start_back_visible) {
             content_start_back_visible = false;
+            content_start_back_in_animate = true;
             $('.content-start').animate({opacity: 0}, function () {
                 $('.content-start').css({display: 'none'});
                 $('.car-skeleton-path').css({display: 'none'});
+                content_start_back_in_animate = false;
             });
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.stop();
@@ -144,9 +149,6 @@ function main() {
             if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
         }
 
-
-
-
         // Работа с консолями
         textConsoleManager.start(data);
 
@@ -179,7 +181,6 @@ function main() {
                 window.location.hash = url_hash.split('_')[1];
             }
         }
-
 
     });
 
@@ -216,13 +217,15 @@ function main() {
 
     // Вешаем клик на логотип
     $('.site-logo').first().click(function () {
+        if (content_start_back_in_animate) return;
         if (!content_start_back_visible) {
             content_start_back_visible = true;
             $('.switch-page').css({display: 'none'});
             $('.btn').removeClass('active');
             $('.car-skeleton-path').css({display: 'block'});
             $('.content-start').css({display: 'block'});
-            $('.content-start').animate({opacity: 1.0});
+            content_start_back_in_animate = true;
+            $('.content-start').animate({opacity: 1.0}, function() {content_start_back_in_animate = false;});
             if (glitchEffectStartPage768)
                 glitchEffectStartPage768.start();
             if (glitchEffectStartPage1080)
@@ -237,6 +240,10 @@ function main() {
                 videoPlayer.pauseVideo();
                 radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
             }
+
+            // Обработать hash_url - снова с этим багом-фичей
+            setTimeout(function() {window.location.hash = '';}, 10);
+
         }
     });
 
@@ -262,6 +269,8 @@ function main() {
         }
     });
 
+    // Вход и регистрация по Enter
+    $('#RDSiteWReg input').on('keydown', windowRegKeyDownEnter);
 
     initConsoles();
 
@@ -304,7 +313,12 @@ function main() {
                 }, 10);
             }
             else {
-                $('#RDbtn_' + hash_url).click();
+                if (hash_url.indexOf('start') == 0) {
+                    // Не делать ничего, так как сделаем в функции GetUserInfo
+                }
+                else {
+                    $('#RDbtn_' + hash_url).click();
+                }
             }
         }
     }
@@ -654,6 +668,53 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
     });
 }
 
+
+function windowRegKeyDownEnter(event) {
+    if (event.keyCode != 13) return;
+    var jq_target = $(event.currentTarget);
+    var target_id = jq_target.attr('id');
+    // info: Можно упростисть, заранее определив jq_password и func_click, но будет казаться запутанным
+    if (target_id == 'reg_email') {
+        var jq_reg_password = $('#reg_password');
+        // Если пароль вбит, то попробовать зарегистрироваться // todo: и его длина больше 4-х симовлов
+        if (jq_reg_password.val().length >= 1) { // >= 4
+            RegisterBtnClick();
+        }
+        else {
+            jq_reg_password[0].focus();
+        }
+    }
+    if (target_id == 'auth_email') {
+        var jq_auth_password = $('#auth_password');
+        // Если пароль вбит, то попробовать зарегистрироваться // todo: и его длина больше 4-х симовлов
+        if (jq_auth_password.val().length >= 1) { // >= 4
+            AuthorisationBtnClick();
+        }
+        else {
+            jq_auth_password[0].focus();
+        }
+    }
+
+    if (target_id == 'reg_password') {
+        var jq_reg_email = $('#reg_email');
+        if (jq_reg_email.val().length >= 3) { // >= 4
+            RegisterBtnClick();
+        }
+        else {
+            jq_reg_email[0].focus();
+        }
+    }
+
+    if (target_id == 'auth_password') {
+        var jq_auth_email = $('#auth_email');
+        if (jq_auth_email.val().length >= 3) { // >= 4
+            AuthorisationBtnClick();
+        }
+        else {
+            jq_auth_email[0].focus();
+        }
+    }
+}
 
 
 /* Youtube Video Player Functions */

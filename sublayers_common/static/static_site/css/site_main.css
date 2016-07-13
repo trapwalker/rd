@@ -953,6 +953,28 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 9px;
 }
 
+
+/* For SEO */
+
+.content-block h1, .content-block h2 {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.0;
+}
+
+.btn-block a, .btn-block a:visited, .btn-block a:hover, .btn-block a:link, .btn-block a:active {
+    color: transparent;
+    text-shadow: none;
+}
+
+
+.site-logo-img {
+    position: absolute;
+    opacity: 0.0;
+    pointer-events: none;
+}
+
+
 @media screen and (min-width: 1367px) and (min-height: 801px) {
     body.visible-site {
         background-image: url('/static/static_site/img/09-06-16/1080_side_tile.jpg');
