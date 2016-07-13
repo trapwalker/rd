@@ -136,9 +136,9 @@ if __name__ == '__main__':
     '''
     db_connection = Connection()
     db = db_connection.maindb
-    ts = Tileset(open('d:/ts_road_12'))
+    ts = Tileset(open('d:/tiles/ts_road_15'))
     print TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road')
-    ts = Tileset(open('d:/ts_water_12'))
-    print TilesetToMongoDB(ts, db.tile_sets, '#0000FF', 'water')
-    ts = Tileset(open('d:/ts_wood_12'))
-    print TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood')
+    # ts = Tileset(open('d:/ts_water_12'))
+    # print TilesetToMongoDB(ts, db.tile_sets, '#0000FF', 'water')
+    # ts = Tileset(open('d:/ts_wood_12'))
+    # print TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood')
