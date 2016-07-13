@@ -293,15 +293,21 @@ var WStaticObjectMarker = (function (_super) {
 
     WStaticObjectMarker.prototype.change = function() {
         //console.log('WCarMarker.prototype.change');
-        //return;
         if(this.current_opacity == null) return;
         var new_opacity = mapManager.getZoom() >= 15. ? 0.0 : 1.0;
-
+        // info: можно было просто удалять и добавлять маркеры, но это накладнее
+        
         if (new_opacity != this.current_opacity) {
-            this.marker.setOpacity(new_opacity);
             this.current_opacity = new_opacity;
+            this.marker.setOpacity(new_opacity);
+            if (new_opacity == 0) {
+                this.marker.setLatLng(map.unproject([0, 0], map.getMaxZoom()));
+            }
+            else {
+                var tempPoint = this.car.getCurrentCoord();
+                this.marker.setLatLng(map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom()));
+            }
         }
-
     };
 
     WStaticObjectMarker.prototype.delFromVisualManager = function () {
