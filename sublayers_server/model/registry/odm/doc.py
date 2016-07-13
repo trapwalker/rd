@@ -98,26 +98,26 @@ class AbstractDocument(Document):
                 document[field_name]
             )
 
-            if isinstance(value, Document):
-                self.find_references(document=value, results=results)
-            elif isinstance(value, basestring) or isinstance(value, ObjectId):
-                def getter_with_instantiation(*av, **kw):
+            if isinstance(value, basestring) or isinstance(value, ObjectId):
+                def getter_with_instantiation(identificator, *av, **kw):
+                    from sublayers_server.model.registry.uri import URI 
                     callback = kw.pop('callback')
+                    uri = URI.try_or_default(identificator)
+                    if uri:
+                        identificator = str(uri.replace(params=(), anchor=None))
+
                     def wrapper(proto):
                         if proto:
                             from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
                             if isinstance(proto, Node):
-                                callback(proto.instantiate())
+                                callback(proto.instantiate(by_uri=uri))
                         else:
+                            log.warning("Can't find any registry objects by link: %s", identificator)
                             callback(None)
 
-                    load_function(callback=wrapper, *av, **kw)
+                    load_function(identificator, callback=wrapper, *av, **kw)
 
-                load_function = (
-                    self._bypass_load_function
-                    if isinstance(value, field.embedded_type) else
-                    self._get_load_function(document, field_name, field.embedded_type)
-                )
+                load_function = self._get_load_function(document, field_name, field.embedded_type)
 
                 results.append([
                     getter_with_instantiation,
@@ -126,6 +126,9 @@ class AbstractDocument(Document):
                     field_name,
                     self.fill_values_collection
                 ])
+            elif isinstance(value, Document):
+                self.find_references(document=value, results=results)
+
 
     def find_reference_field(self, document, results, field_name, field):
         if self.is_reference_field(field):
@@ -134,12 +137,12 @@ class AbstractDocument(Document):
                 if isinstance(document, Document) else
                 document[field_name]
             )
-            load_function = (
-                self._bypass_load_function
-                if isinstance(value, field.reference_type) else
-                self._get_load_function(document, field_name, field.reference_type)
-            )
-            if value is not None:
+            if value is not None and not isinstance(value, Document):
+                if isinstance(value, field.reference_type):
+                    load_function = self._bypass_load_function
+                else:
+                    load_function = self._get_load_function(document, field_name, field.reference_type)
+
                 results.append([
                     load_function,
                     value,
@@ -160,8 +163,10 @@ class AbstractDocument(Document):
 
     @return_future
     def _bypass_load_function(self, id, callback, **kwargs):
-        import tornado.ioloop
-        tornado.ioloop.IOLoop.instance().add_callback(callback, id)
+        # import tornado.ioloop2
+        # tornado.ioloop.IOLoop.instance().add_callback(callback, id)
+        log.debug('bypass load: %r', id)
+        callback(id)
 
     def to_cache(self, *av):
         keys = set(av)
