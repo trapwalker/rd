@@ -254,9 +254,6 @@ function main() {
             audioManager.gain_all(GlobalGeneralSiteGain);
             radioPlayer.set_volume(lastRadioVolume, true);
             $(this).removeClass('off');
-
-
-            $('.site-main-block').css('display', 'block');
         }
         else {
             GlobalGeneralSiteGain = audioManager.general_gain;
@@ -264,8 +261,6 @@ function main() {
             audioManager.gain_all(0.0);
             radioPlayer.set_volume(0.0, true);
             $(this).addClass('off');
-
-            $('.site-main-block').css('display', 'none');
         }
     });
 
@@ -332,11 +327,18 @@ function main() {
 
     initRadioPlayer();
 
+    // Включение радио сразу
+    if (hash_url && hash_url.length && hash_url.indexOf('about') == 0) {
+        // Ничего не делать с радио
+    } else { // Включить радио
+        radioPlayer.click_power();
+        radioPlayer.set_volume(0.0);
+    }
 
     var img_start_page_1080 = new Image();
     img_start_page_1080.src = '/static/static_site/img/09-06-16/1080_car.png';
     SetImageOnLoad(img_start_page_1080, function () {
-        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 6000, 1080);
+        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 12000, 1080);
         if (!hash_url.length) {
             glitchEffectStartPage1080.start();
         }
@@ -345,7 +347,7 @@ function main() {
     var img_start_page_768 = new Image();
     img_start_page_768.src = '/static/static_site/img/1366_june/768_car.png';
     SetImageOnLoad(img_start_page_768, function () {
-        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 6000, 768);
+        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 12000, 768);
         if (!hash_url.length) {
             glitchEffectStartPage768.start();
         }
