@@ -269,6 +269,9 @@ class Node(AbstractDocument):
             owner=owner,
             abstract=abstract,
         )
+        if 'parent' not in attrs:
+            attrs.update(parent=owner)
+
         node = cls.from_son(attrs)
         if owner:
             owner._subnodes.add(node)
