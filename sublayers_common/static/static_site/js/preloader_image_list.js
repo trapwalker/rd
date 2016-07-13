@@ -74,8 +74,6 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_001.png');
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_002.png');
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_indicator_mark.png');
-
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_aurora_001.png');
     }
 
     if (currentSiteSize == '768') {
@@ -197,8 +195,7 @@ function after_preload_load_images() {
         preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_006.jpg', loaded_back_image);
     }
 
-
-
     audioManager.gain_all(1.0);
 
+    radioPlayer.set_volume(0.3);
 }
