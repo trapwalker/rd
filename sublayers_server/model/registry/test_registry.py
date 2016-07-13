@@ -26,7 +26,11 @@ def test_registry():
     log.debug('### test registry')
     reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     log.debug('### Registry test end')
-    pp(sorted(_call_stat.items(), key=lambda kv: kv[1], reverse=True)[:50], width=200)
+    print('\n'.join((
+        '{v:6} - {k}'.format(v=v, k=k)
+        for k, v in
+        sorted(_call_stat.items(), key=lambda kv: kv[1], reverse=True)[:50]
+    )))
     globals().update(**locals())
 
 

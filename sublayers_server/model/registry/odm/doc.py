@@ -31,7 +31,7 @@ class AbstractDocument(Document):
 
     @return_future
     def load_references(self, fields=None, callback=None, alias=None):
-        _call_stat[self.parent, self.uri, 'load_references'] += 1
+        _call_stat['load_references', self.uri or self.parent and ('*' + self.parent.uri)] += 1
 
         if callback is None:
             raise ValueError("Callback can't be None")
