@@ -186,8 +186,10 @@ class Node(AbstractDocument):
                 getter = lambda: getattr(self, name)
                 yield name, attr, getter
 
-    def instantiate(self, name=None, **kw):
+    def instantiate(self, name=None, by_uri=None, **kw):
         assert self.abstract
+        if by_uri:
+            kw.update(by_uri.params)
         inst = self.__class__(name=name, parent=self, abstract=False, **kw)
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
