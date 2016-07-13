@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
 from sublayers_server.test_iolop import io_loop, start
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, _call_stat
 from sublayers_server.model.registry.uri import URI
 
 import yaml
@@ -25,6 +25,7 @@ def test_registry():
     log.debug('### test registry')
     reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     log.debug('### Registry test end')
+    pp(sorted(_call_stat.items(), reverse=True))
     globals().update(**locals())
 
 

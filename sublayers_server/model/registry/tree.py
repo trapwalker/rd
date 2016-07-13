@@ -23,6 +23,10 @@ from sublayers_server.model.registry.odm.fields import (
     UniReferenceField,
 )
 
+if __debug__:
+    from collections import Counter
+    _call_stat = Counter()
+
 
 class RegistryError(Exception):
     pass
@@ -111,6 +115,9 @@ class Node(AbstractDocument):
             )
         ):
             return object.__getattribute__(self, name)
+
+        if __debug__:
+            _call_stat[('Node', name)] += 1
 
         if name in self._fields:
             field = self._fields[name]
@@ -273,6 +280,10 @@ class Node(AbstractDocument):
     @return_future
     def load(cls, path, callback=None):
         def on_load(*av, **kw):
+            st = kw.pop('st', None)
+            if st:
+                cls._stat['loaded_reference_count'] += st['loaded_reference_count']
+
             if all_nodes:
                 node = all_nodes.pop()
                 node.load_references(callback=on_load)
