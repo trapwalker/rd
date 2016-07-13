@@ -191,6 +191,7 @@ class Barter(object):
         self.timeout_delay = 60.0
         self.success_event = None
         self.timeout_event = self.cancel(time=time + self.timeout_delay)
+        self.is_cancel = False  # Вызван ли cancel
 
         # Отправить приглашение
         AddInviteBarterMessage(agent=recipient, time=time, barter=self).post()
@@ -296,25 +297,25 @@ class Barter(object):
 
     @event_deco
     def success(self, event):
-        if (self.state != 'active') and (self.state != 'unactive') and (self.state != 'lock'):
+        if self.is_cancel or self.state != 'lock':
             return
+
         if ((self.initiator.example.balance < self.initiator_money) or
             (self.recipient.example.balance < self.recipient_money) or
             (not Barter.can_make_barter(agent1=self.initiator, agent2=self.recipient, time=event.time))):
             self.cancel.sync(self=self, event=event)
             return
 
-        if self.state == 'lock':
-            self.initiator.car.inventory.add_inventory(inventory=self.recipient_table, time=event.time)
-            self.recipient.car.inventory.add_inventory(inventory=self.initiator_table, time=event.time)
+        self.initiator.car.inventory.add_inventory(inventory=self.recipient_table, time=event.time)
+        self.recipient.car.inventory.add_inventory(inventory=self.initiator_table, time=event.time)
 
-            # Обмен деньгами
-            self.initiator.example.balance += self.recipient_money - self.initiator_money
-            self.recipient.example.balance += self.initiator_money - self.recipient_money
+        # Обмен деньгами
+        self.initiator.example.balance += self.recipient_money - self.initiator_money
+        self.recipient.example.balance += self.initiator_money - self.recipient_money
 
-            # Отправить сообщения о закрытии окон
-            SuccessBarterMessage(agent=self.initiator, barter=self, time=event.time).post()
-            SuccessBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
+        # Отправить сообщения о закрытии окон
+        SuccessBarterMessage(agent=self.initiator, barter=self, time=event.time).post()
+        SuccessBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
 
         # Удалить бартер
         self.state = 'success'
@@ -322,9 +323,9 @@ class Barter(object):
 
     @event_deco
     def cancel(self, event):
-
-        if (self.state != 'active') and (self.state != 'unactive') and (self.state != 'lock'):
-            return
+        if self.is_cancel:
+             return
+        self.is_cancel = True
 
         if (self.state == 'active') or (self.state == 'lock'):
             self.initiator.car.inventory.add_inventory(inventory=self.initiator_table, time=event.time)
@@ -335,7 +336,6 @@ class Barter(object):
             CancelBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
 
         # Удалить бартер
-        self.state = 'cancel'
         self.done(time=event.time)
 
     @event_deco

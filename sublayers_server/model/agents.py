@@ -418,7 +418,7 @@ class Agent(Object):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.1)
+            barter.cancel(time=time-0.01)
 
         # Раздеплоить машинку агента
         if self.car:
@@ -449,7 +449,7 @@ class Agent(Object):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.1)
+            barter.cancel(time=time-0.01)
 
         Die(agent=self, time=time).post()
 
