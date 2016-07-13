@@ -217,7 +217,7 @@ var ClientManager = (function () {
                 return;
             };
 
-            // Создание объекта
+            // Установка поворота маркера
             var direction = null;
             switch (event.object.cls) {
                 case 'GasStation':
@@ -240,14 +240,22 @@ var ClientManager = (function () {
             }
 
             // Создание/инициализация виджетов
-            obj_marker = new WCarMarker(obj); // виджет маркера
+            if (obj.cls == 'Town' || obj.cls == 'GasStation') {
+                //obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                obj_marker = new WStaticObjectMarker(obj);
+            }
+            else
+                obj_marker = new WCarMarker(obj); // виджет маркера
+
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
 
             // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
             if (obj.cls == 'Town') {
-                obj_marker.updateLabel(event.object.town_name);
-                obj.town_name = event.object.example.title;
+                obj.title = event.object.example.title;
+            }
+            if (obj.cls == 'GasStation') {
+                obj.title = 'GasStation';
             }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');

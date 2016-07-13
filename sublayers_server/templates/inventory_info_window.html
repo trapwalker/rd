@@ -42,11 +42,11 @@
     });
 
     // Обработка нажатия на крестик (закрытие окна)
-    $('.mainInventoryWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {
-        // Тут именно так, потому как мы отписываемся от инвентаря на сервере
-        if (user.userCar)
-            clientManager.sendHideInventory(user.userCar.ID);
-    });
+{#    $('.mainInventoryWindow-main').find('.windowDragCloseHeader-close').on('click', function (event) {#}
+{#        // Тут именно так, потому как мы отписываемся от инвентаря на сервере#}
+{#        if (user.userCar)#}
+{#            clientManager.sendHideInventory(user.userCar.ID);#}
+{#    });#}
 
     // Запрашиваем инвентарь
     inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())

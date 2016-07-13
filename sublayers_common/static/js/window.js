@@ -72,7 +72,7 @@ var Window = (function () {
 
     // Программный способ закрвания (удаления) окна
     Window.prototype.closeWindow = function () {
-        console.log('Window.prototype.closeWindow');
+        //console.log('Window.prototype.closeWindow');
         // todo: усовершенствовать снятие обработчиков
         if (this.options.close_call_back)
             this.options.close_call_back();

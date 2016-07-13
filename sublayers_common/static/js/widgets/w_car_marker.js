@@ -256,7 +256,6 @@ var WCarMarker = (function (_super) {
         return icon_name;
     };
 
-
     WCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCarMarker.prototype.delFromVisualManager');
         this.car = null;
@@ -266,6 +265,59 @@ var WCarMarker = (function (_super) {
 
     return WCarMarker;
 })(VisualObject);
+
+
+var WStaticObjectMarker = (function (_super) {
+    __extends(WStaticObjectMarker, _super);
+
+    function WStaticObjectMarker(car) {
+        this.current_opacity = null;
+        _super.call(this, car);
+
+        var tempPoint = this.car.getCurrentCoord();
+        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+        this.marker.setLatLng(tempLatLng);
+
+        this.addModelObject(mapManager);
+
+        this.current_opacity = 0.5;
+        this.change();
+    }
+
+    WStaticObjectMarker.prototype.updateLabel = function(new_label) {
+        this.marker.unbindLabel();
+        var title = this.car.title || ('-=' + this.car.cls + '=-');
+        var label_str = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">' + title + '</span>';
+        this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
+    };
+
+    WStaticObjectMarker.prototype.change = function() {
+        //console.log('WCarMarker.prototype.change');
+        if(this.current_opacity == null) return;
+        var new_opacity = mapManager.getZoom() >= 15. ? 0.0 : 1.0;
+        // info: можно было просто удалять и добавлять маркеры, но это накладнее
+        
+        if (new_opacity != this.current_opacity) {
+            this.current_opacity = new_opacity;
+            this.marker.setOpacity(new_opacity);
+            if (new_opacity == 0) {
+                this.marker.setLatLng(map.unproject([0, 0], map.getMaxZoom()));
+            }
+            else {
+                var tempPoint = this.car.getCurrentCoord();
+                this.marker.setLatLng(map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom()));
+            }
+        }
+    };
+
+    WStaticObjectMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCarMarker.prototype.delFromVisualManager');
+        this.delModelObject(mapManager);
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    return WStaticObjectMarker;
+})(WCarMarker);
 
 // todo: внести следующие функции в класс WCarMarker
 
