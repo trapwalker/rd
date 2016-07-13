@@ -48,6 +48,8 @@ class Node(AbstractDocument):
 
     def make_uri(self):
         owner = self.owner
+        if owner is None and self.parent:  # Корневые элементы с предком -- это, скорее всего, субдокументы. URI нет.
+            return
         assert not owner or owner.uri
         path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self.id_),)
         return URI(
