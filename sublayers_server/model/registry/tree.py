@@ -100,7 +100,16 @@ class Node(AbstractDocument):
 
     def __getattribute__(self, name):
         # required for the next test
-        if name in ['_fields', '_subnodes']:
+        if (
+            name in (
+                '_fields', '_subnodes',
+                'is_reference_field', 'find_list_field', 'find_reference_field', 'is_embedded_field', 'is_list_field',
+                'find_embed_field', '_values', '__class__', '_get_load_function', 'fill_values_collection',
+                'handle_load_reference', 'find_references', '_reference_loaded_fields', '_bypass_load_function',
+                'get_global_class_name', 'make_uri',
+                'load_references', 'instantiate', 'to_cache',
+            )
+        ):
             return object.__getattribute__(self, name)
 
         if name in self._fields:
