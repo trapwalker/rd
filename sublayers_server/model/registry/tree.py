@@ -268,8 +268,13 @@ class Node(AbstractDocument):
                 node = all_nodes.pop()
                 node.load_references(callback=on_load)
             else:
-                log.info('References loaded DONE')
-                return callback(root)
+                _loading_duration = time.time() - _loading_start_time
+                log.info('References loaded DONE ({:.0f}s): \n{}'.format(
+                    _loading_duration,
+                    pformat(dict(cls._stat)), indent=2),
+                )
+                callback(root)
+                return
 
         all_nodes = []
         _loading_start_time = time.time()
@@ -292,6 +297,7 @@ class Node(AbstractDocument):
         _loading_duration = time.time() - _loading_start_time
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), _loading_duration))
 
+        _loading_start_time = time.time()
         on_load()
 
         #tornado.ioloop.IOLoop.instance().add_callback(callback, root)
