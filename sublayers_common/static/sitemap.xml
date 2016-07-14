@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+	<loc>http://roaddogs.ru/</loc>
+</url>
+<url>
+	<loc>http://roaddogs.ru/#start</loc>
+</url>
+<url>
+	<loc>http://roaddogs.ru/#quick</loc>
+</url>
+<url>
+	<loc>http://roaddogs.ru/#about</loc>
+</url>
+<url>
+	<loc>http://roaddogs.ru/#news</loc>
+	<changefreq>hourly</changefreq>
+</url>
+<url>
+	<loc>http://roaddogs.ru/#ratings</loc>
+</url>
+</urlset>
