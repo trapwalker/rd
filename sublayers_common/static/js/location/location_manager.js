@@ -38,6 +38,12 @@ var LocationManager = (function () {
         this.locations_canvas_effects = {};
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
+
+        SetImageOnLoad(lasers_img, function (img) {
+                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
+                locationManager.locations_canvas_effects['laser'].start();
+            }
+        );
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
