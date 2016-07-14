@@ -46,6 +46,8 @@ class AbstractDocument(Document):
             return
 
         for dereference_function, document_id, values_collection, field_name, fill_values_method in references:
+            #v = isinstance(document_id, Document) and document_id or self.search_in_cache(id=document_id)
+            # todo: (optimize) Избавиться от асинхронного вызова, когда объект есть в кеше
             dereference_function(
                 document_id,
                 callback=self.handle_load_reference(
