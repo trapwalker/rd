@@ -22,10 +22,11 @@ class AbstractDocument(Document):
     __cls__ = StringField()
 
     def _get_load_function(self, document, field_name, document_type):
-        if isinstance(document, list):
-            return document_type.objects.get
-        else:
-            return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
+        return document_type.objects.get
+        # if isinstance(document, list):
+        #     return document_type.objects.get
+        # else:
+        #     return super(AbstractDocument, self)._get_load_function(document, field_name, document_type)
 
     @return_future
     def load_references(self, fields=None, callback=None, alias=None):
