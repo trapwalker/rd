@@ -187,6 +187,7 @@ var WCanvasStaticObjectMarker = (function (_super) {
 
         this.icon_obj = null;
         this.icon_arrow_obj = null;
+        this.icon_offset = {x: 0, y: 0};
 
         this.updateIcon();
 
@@ -218,15 +219,15 @@ var WCanvasStaticObjectMarker = (function (_super) {
         var car_direction = this.mobj.direction;
         ctx.rotate(car_direction);
         //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
-        ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
+        ctx.drawImage(this.icon_obj.img, this.icon_offset.x, this.icon_offset.y);
 
         // Вывод лейбла
-        var title = this.mobj.hasOwnProperty('title') ? this.mobj.title : ('-=' + this.mobj.cls + '=-');
-        ctx.textAlign = "center";
-        ctx.textBaseline = "center";
-        ctx.font = "8pt MICRADI";
-        ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
-        ctx.fillText(title, 0, -25);
+        //var title = this.mobj.hasOwnProperty('title') ? this.mobj.title : ('-=' + this.mobj.cls + '=-');
+        //ctx.textAlign = "center";
+        //ctx.textBaseline = "center";
+        //ctx.font = "8pt MICRADI";
+        //ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
+        //ctx.fillText(title, 0, -25);
 
         ctx.restore();  // Возврат транслейта
     };
@@ -241,10 +242,19 @@ var WCanvasStaticObjectMarker = (function (_super) {
     WCanvasStaticObjectMarker.prototype.updateIcon = function() {
         var mobj = this.mobj;
         var icon_name = 'car';
-
+        var offset = null;
         switch (mobj.cls) {
             case 'Town':
-                icon_name = 'city';
+                switch (mobj.example.id) {
+                    case 'reg://registry/poi/locations/towns/prior':
+                        icon_name = 'city_prior';
+                        break;
+                    case 'reg://registry/poi/locations/towns/whitehill':
+                        icon_name = 'city_whitehill';
+                        break;
+                    default:
+                        icon_name = 'city';
+                }
                 break;
             case 'GasStation':
                 icon_name = 'station';
@@ -255,6 +265,12 @@ var WCanvasStaticObjectMarker = (function (_super) {
         }
 
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_name, 'canvas_icon');
+        if (mobj.cls == 'Town' || mobj.cls == 'GasStation') {
+            this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[0] + 10}
+        }
+        else {
+            this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[1] >> 1}
+        }
     };
 
 

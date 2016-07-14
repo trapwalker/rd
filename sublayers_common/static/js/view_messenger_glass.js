@@ -380,7 +380,7 @@ var ViewMessengerGlass = (function () {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
             pageControl: $(''),
             chatArea: $('<div id="textAreaGlobal" class="VMGTextOutArea"></div>'),
-            pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Radio</div>'),
+            pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Chat</div>'),
             chat: null
         };
 
