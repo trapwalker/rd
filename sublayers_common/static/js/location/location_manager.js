@@ -571,9 +571,8 @@ var LocationPlaceBuilding = (function (_super) {
     };
 
     LocationPlaceBuilding.prototype.set_panels = function (make) {
-        //console.log('LocationPlaceBuilding.prototype.set_panels');
-        if (!make)
-            if (!locationManager.isActivePlace(this)) return;
+        //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
+        if (!make && !locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec.build}, 'building');
     };

@@ -278,8 +278,12 @@
             $("#path_h" + index).css("opacity", "0.2");
             $("#path_text_h" + index).css("opacity", "0.2");
 
-            locationManager.panel_left.show({}, '');
-            locationManager.panel_right.show({}, '');
+            var building = $(this).data('building');
+            if (locationManager.buildings.hasOwnProperty(building) &&
+                !locationManager.buildings[building].isActivePlace()) {
+                locationManager.panel_left.show({}, '');
+                locationManager.panel_right.show({}, '');
+            }
         });
 
         // События для логотипа
