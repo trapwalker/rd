@@ -118,26 +118,31 @@ class VisibilityManager(object):
         return result
 
     def _get_around_objects_by_z(self, pos, time, z):
+        from sublayers_server.model.units import Bot
+        all_objects = []
         result = []
         tid_nec = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
         if z <= self.z:
             for t_nec in tid_nec.get_around_tiles():
                 for t_orig in t_nec.childs(level=(self.z - z)):
                     if t_orig in self.tiles.keys():
-                        result += self.tiles[t_orig][1]
+                        all_objects += self.tiles[t_orig][1]
+            for obj in all_objects:
+                if isinstance(obj, Bot):
+                    result.append(obj)
         else:
-            all_objects = []
             tid_def = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
             for tid in tid_def.get_around_tiles():
                 if tid in self.tiles.keys():
                     all_objects += self.tiles[tid][1]
             for obj in all_objects:
-                for tid in tid_nec.get_around_tiles():
-                    obj_pos = obj.position(time=time)
-                    tid_obj = Tileid2(long(obj_pos.x), long(obj_pos.y), self.max_z)
-                    if tid_obj.in_tile(tile=tid):
-                        result.append(obj)
-                        break
+                if isinstance(obj, Bot):
+                    for tid in tid_nec.get_around_tiles():
+                        obj_pos = obj.position(time=time)
+                        tid_obj = Tileid2(long(obj_pos.x), long(obj_pos.y), self.max_z)
+                        if tid_obj.in_tile(tile=tid):
+                            result.append(obj)
+                            break
         return result
 
     def get_global_around_objects(self, pos, time, limit=10):
