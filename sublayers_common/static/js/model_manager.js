@@ -234,10 +234,23 @@ var ClientManager = (function () {
 
             obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
+            obj.example = event.object.example;
             obj.p_observing_range = p_observing_range;
             if (event.object.hasOwnProperty('sub_class_car')) {
                 obj.sub_class_car = event.object.sub_class_car;
             }
+
+            // Установка надписи над статическим объектом
+            if (obj.cls == 'Town') {
+                obj.title = event.object.example.title;
+            }
+            if (obj.cls == 'GasStation') {
+                obj.title = 'GasStation';
+            }
+            if (obj.cls == 'RadioPoint')
+                obj_marker.updateLabel('Radio Point');
+            if (obj.cls == 'POIStash')
+                obj_marker.updateLabel('loot');
 
             // Создание/инициализация виджетов
             if (obj.cls == 'Town' || obj.cls == 'GasStation') {
@@ -249,18 +262,6 @@ var ClientManager = (function () {
 
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
-
-            // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
-            if (obj.cls == 'Town') {
-                obj.title = event.object.example.title;
-            }
-            if (obj.cls == 'GasStation') {
-                obj.title = 'GasStation';
-            }
-            if (obj.cls == 'RadioPoint')
-                obj_marker.updateLabel('Radio Point');
-            if (obj.cls == 'POIStash')
-                obj_marker.updateLabel('loot');
         }
     };
 
