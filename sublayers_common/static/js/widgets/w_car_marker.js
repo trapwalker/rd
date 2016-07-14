@@ -19,7 +19,8 @@ var WCarMarker = (function (_super) {
     WCarMarker.prototype._createMarker = function() {
         var car = this.car;
         var marker;
-        marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
+        var marker_options = this._get_marker_options({});
+        marker = L.rotatedMarker([0, 0], marker_options);
         this.marker = marker;
         marker.carID = car.ID;
 
@@ -32,7 +33,6 @@ var WCarMarker = (function (_super) {
         switch (car.cls) {
             case 'Town':
             case 'GasStation':
-                marker.on('click', onClickLocationMarker);
                 marker.obj_id = car.ID;
                 break;
             case 'POILoot':
@@ -65,6 +65,10 @@ var WCarMarker = (function (_super) {
         });
     };
 
+    WCarMarker.prototype._get_marker_options = function(options) {
+        return options.zIndexOffset = 9999;
+    };
+
     WCarMarker.prototype.change = function() {
         //console.log('WCarMarker.prototype.change');
         //return;
@@ -87,26 +91,6 @@ var WCarMarker = (function (_super) {
             else
                 this.marker.update();
         }
-
-        //if (this.car == user.userCar) {
-        //    var polygon_list = [];
-        //    var lat_lng_list = [];
-        //    lat_lng_list.push(map.unproject([tempPoint.x + 200000, tempPoint.y + 200000], map.getMaxZoom()));
-        //    lat_lng_list.push(map.unproject([tempPoint.x + 200000, tempPoint.y - 200000], map.getMaxZoom()));
-        //    lat_lng_list.push(map.unproject([tempPoint.x - 200000, tempPoint.y - 200000], map.getMaxZoom()));
-        //    lat_lng_list.push(map.unproject([tempPoint.x - 200000, tempPoint.y + 200000], map.getMaxZoom()));
-        //    var lat_lng_hole_list1 = [];
-        //    for (var i = 0; i < 72; i++) {
-        //        var pnt = polarPoint(400, gradToRad(i * 5));
-        //        pnt = summVector(pnt, tempPoint);
-        //        lat_lng_hole_list1.push(map.unproject([pnt.x, pnt.y], map.getMaxZoom()));
-        //    }
-        //    polygon_list.push(lat_lng_list, lat_lng_hole_list1);
-        //    if (this.circle)
-        //        this.circle.setLatLngs(polygon_list);
-        //    else
-        //        this.circle = L.polygon(polygon_list, {color: 'black', weight: 0, fillOpacity: 0.5}).addTo(map);
-        //}
     };
 
     WCarMarker.prototype.updateIcon = function() {
@@ -294,6 +278,13 @@ var WStaticObjectMarker = (function (_super) {
         this.change();
     }
 
+    WStaticObjectMarker.prototype._get_marker_options = function(options) {
+        if (this.car.cls == 'Town' || this.car.cls == 'GasStation') {
+            options.clickable = false;
+        }
+        return _super.prototype._get_marker_options.call(this, options);
+    };
+
     WStaticObjectMarker.prototype.updateLabel = function(new_label) {
         if (this.car.cls == 'Town' || this.car.cls == 'GasStation') return;
         this.marker.unbindLabel();
@@ -340,16 +331,16 @@ function getCarInfoFrom(car_id) {
 function onMouseOverForLabels() {
     //if(this._labelNoHide) return false;
     this.setLabelNoHide(true);
-    this.getLabel().setOpacity(0.95);
+    var label =  this.getLabel();
+    if (label)
+        label.setOpacity(0.95);
 }
 
 function onMouseOutForLabels() {
     this.setLabelNoHide(cookieStorage.visibleLabel());
-    this.getLabel().setOpacity(0.4);
-}
-
-function onClickLocationMarker() {
-    clientManager.sendEnterToLocation(this.obj_id)
+    var label =  this.getLabel();
+    if (label)
+        label.setOpacity(0.4);
 }
 
 function onClickUserCarMarker() {
