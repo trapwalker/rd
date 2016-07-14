@@ -338,7 +338,7 @@ function main() {
     var img_start_page_1080 = new Image();
     img_start_page_1080.src = '/static/static_site/img/09-06-16/1080_car.png';
     SetImageOnLoad(img_start_page_1080, function () {
-        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 12000, 1080);
+        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 8000, 1080);
         if (!hash_url.length) {
             glitchEffectStartPage1080.start();
         }
@@ -347,7 +347,7 @@ function main() {
     var img_start_page_768 = new Image();
     img_start_page_768.src = '/static/static_site/img/1366_june/768_car.png';
     SetImageOnLoad(img_start_page_768, function () {
-        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 12000, 768);
+        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 8000, 768);
         if (!hash_url.length) {
             glitchEffectStartPage768.start();
         }
