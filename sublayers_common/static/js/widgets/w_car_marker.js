@@ -295,6 +295,7 @@ var WStaticObjectMarker = (function (_super) {
     }
 
     WStaticObjectMarker.prototype.updateLabel = function(new_label) {
+        if (this.car.cls == 'Town' || this.car.cls == 'GasStation') return;
         this.marker.unbindLabel();
         var title = this.car.title || ('-=' + this.car.cls + '=-');
         var label_str = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">' + title + '</span>';
