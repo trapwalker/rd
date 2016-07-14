@@ -203,8 +203,8 @@ function main() {
     $('.scroll-btn').mousedown(function (event) {
         var jq_this = $(this);
         scroll_block = $('#' + jq_this.data('block_id'));
-        if (jq_this.hasClass('up')) d_scroll = -10;
-        if (jq_this.hasClass('down')) d_scroll = 10;
+        if (jq_this.hasClass('up')) d_scroll = -25;
+        if (jq_this.hasClass('down')) d_scroll = 25;
         scroll_interval = setInterval(makeScroll, 50);
 
         audioManager.play('button_screen_press');
