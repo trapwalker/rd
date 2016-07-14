@@ -144,7 +144,7 @@ var WCarMarker = (function (_super) {
         }
 
         if(car.cls == 'POILoot') {
-            marker.setIcon(iconsLeaflet.getIconByID(3));
+            marker.setIcon(iconsLeaflet.getIcon('icon_killed_V1'));
         }
 
         if(car.cls == 'POIContainer') {
@@ -152,7 +152,16 @@ var WCarMarker = (function (_super) {
         }
 
         if(car.cls == 'Town') {
-            marker.setIcon(iconsLeaflet.getIcon('icon_city'));
+            switch (car.example.id) {
+                case 'reg://registry/poi/locations/towns/prior':
+                    marker.setIcon(iconsLeaflet.getIcon('icon_city_prior'));
+                    break;
+                case 'reg://registry/poi/locations/towns/whitehill':
+                    marker.setIcon(iconsLeaflet.getIcon('icon_city_whitehill'));
+                    break;
+                default:
+                    marker.setIcon(iconsLeaflet.getIcon('icon_city'));
+            }
         }
 
         if(car.cls == 'GasStation') {
@@ -165,6 +174,7 @@ var WCarMarker = (function (_super) {
     };
 
     WCarMarker.prototype.updateLabel = function(new_label) {
+        if (this.car.cls == 'Town' || this.car.cls == 'GasStation') return;
         this.marker.unbindLabel();
         var label_str1 = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">';
         //var label_str1 = '<span>';

@@ -1,49 +1,41 @@
 var TextConsoleEffectManager = (function(){
-    function TextConsoleEffect() {
-        this.all_consoles = {
-            all: []
-        }
+    function TextConsoleEffectManager() {
+        this.consoles = [];
     }
 
-    TextConsoleEffect.prototype.add = function(console) {
-        if (!this.all_consoles.hasOwnProperty(console.page_id))
-            this.all_consoles[console.page_id] = [];
-        if (this.all_consoles[console.page_id].indexOf(console) < 0)
-            this.all_consoles[console.page_id].push(console);
+    TextConsoleEffectManager.prototype.add = function(console) {
+        if (this.consoles.indexOf(console) < 0)
+            this.consoles.push(console);
+        else
+            console.warn('Попытка повторного добавления консоли.', console);
     };
 
-    TextConsoleEffect.prototype.del = function(console) {
-        if (this.all_consoles.hasOwnProperty(console.page_id)) {
-            var index = this.all_consoles[console.page_id].indexOf(console);
-            if (index >= 0)
-                this.all_consoles[console.page_id].splice(index, 1);
-        }
+    TextConsoleEffectManager.prototype.del = function(console) {
+        var index = this.consoles.indexOf(console);
+        if (index >= 0)
+            this.consoles.splice(index, 1);
+        else
+            console.warn('Попытка удаления отсутствующей консоли.', console);
     };
 
-    TextConsoleEffect.prototype.start = function(page_id) {
+    TextConsoleEffectManager.prototype.start = function(page_id) {
         //console.log('TextConsoleEffect.prototype.start', page_id);
 
         // Останавливаем все консоли
         this.stop();
 
-        // Запускаем общие консоли
-        for (var i = 0; i < this.all_consoles['all'].length; i++)
-            this.all_consoles['all'][i].start();
-
-        // Запускаем консоли страницы
-        if (this.all_consoles.hasOwnProperty(page_id))
-            for (var i = 0; i < this.all_consoles[page_id].length; i++)
-                this.all_consoles[page_id][i].start();
+        // Запускаем общие консоли и консоли страницы
+        for (var i = 0; i < this.consoles.length; i++)
+            if ((this.consoles[i].pages.length == 0) || (this.consoles[i].pages.indexOf(page_id) >= 0))
+                this.consoles[i].start();
     };
 
-    TextConsoleEffect.prototype.stop = function() {
-        for (var key in this.all_consoles)
-            if (this.all_consoles.hasOwnProperty(key))
-                for (var i = 0; i < this.all_consoles[key].length; i++)
-                    this.all_consoles[key][i].stop();
+    TextConsoleEffectManager.prototype.stop = function() {
+        for (var i = 0; i < this.consoles.length; i++)
+            this.consoles[i].stop();
     };
 
-    return TextConsoleEffect;
+    return TextConsoleEffectManager;
 })();
 
 var TextConsole = (function(){
@@ -69,6 +61,8 @@ var TextConsole = (function(){
                 placeholder: function() { return ''; }
             }
         };
+
+        this.pages = [];                // список id страниц на активацию которых вызовется start консоли (если список пустой то start на любую страницу)
 
         this.target_div = null;         // див в который осуществлять печать
 
@@ -327,7 +321,7 @@ var ConsoleWReg = (function (_super) {
         this.target_div = $('.reg-main-console');
         this.init();
 
-        this.page_id = 'RDSiteWReg';
+        this.pages = ['RDSiteWReg', 'RDSiteWReg1', 'RDSiteWReg2'];
 
         this._message_info.user.placeholder = function() {
             var data = new Date();
@@ -391,7 +385,7 @@ var ConsoleWPI = (function (_super) {
         _super.call(this);
         this.target_div = $('#RDSitePIConsole');
         this.init();
-        this.page_id = 'RDSitePersonalInfo';
+        this.pages = ['RDSitePersonalInfo'];
         this._message_info.system.placeholder = function() { return '> '  };
         this._message_info.system.after_print_delay = 2.5;
         this._message_info.system.before_print_delay = 2.5;
