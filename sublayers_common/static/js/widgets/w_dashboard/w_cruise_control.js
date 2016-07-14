@@ -391,7 +391,7 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype.setZoneState = function(zoneName, zoneState) {
-//        console.log('WCruiseControl.prototype.setZoneState');
+        //console.log('WCruiseControl.prototype.setZoneState', zoneName, zoneState);
         if (zoneState) {
             this.zones[zoneName].jqselector.css({display: "block"});
             this.zones[zoneName].active = true;
@@ -406,7 +406,7 @@ var WCruiseControl = (function (_super) {
             this.zoneDirtIconDiv.css({display: "none"});
             var limit_str = "";
             for(var key in this.zones)
-                if (key != 'Dirt' && this.zones[key].active)
+                if (key != 'dirt' && this.zones[key].active)
                     limit_str = limit_str + '  ' + this.zones[key].zoneName;
             this.zoneLimitText.text(limit_str);
             this.compactViewLimitTextDiv.text(limit_str);

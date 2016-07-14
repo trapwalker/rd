@@ -188,8 +188,9 @@ var RadioPlayer = (function () {
         }
         else {
             // Загрузка произошла после таймаута.
-            // todo: Что-то предпринять!!!
-            this.click_stop();
+            // todo: Что-то предпринять!!!  - Сейчас это будет значить бесконечные помехи
+            //this.click_stop();
+            return;
         }
 
         //
@@ -206,13 +207,9 @@ var RadioPlayer = (function () {
     RadioPlayer.prototype.load_buffer_timeout = function () {
         //console.log('RadioPlayer.prototype.load_buffer_timeout', event);
         // Если мы здесь, значит радио не успело загрузиться.
-        // todo: Что-то предпринять!
-        audioManager.play('radio_noise', 0, this.current_volume, null, true);
         // Выключить звук помех
-        audioManager.stop('radio_noise_switch');
-
+        //audioManager.stop('radio_noise_switch');
         this.timer_for_buffer = null;
-        this.jq_station_name.text('connection error');
     };
 
     RadioPlayer.prototype.onpause = function() {
@@ -229,7 +226,6 @@ var RadioPlayer = (function () {
             console.warn('Что-то пошло не так! Нет ключа: ', radio_key);
             return;
         }
-        audioManager.stop('radio_noise');
         var new_scr = this.channels[radio_key].link;
         if (this.playing && this.audio.src == new_scr) {
             console.warn('Нет смысла нажимать play для неизменившегося source', radio_key);
@@ -241,7 +237,7 @@ var RadioPlayer = (function () {
         this.audio.play();
 
         if (this.timer_for_buffer) clearInterval(this.timer_for_buffer);
-        this.timer_for_buffer = setTimeout(RadioPlayer.prototype.load_buffer_timeout.bind(this), 15000);
+        this.timer_for_buffer = setTimeout(RadioPlayer.prototype.load_buffer_timeout.bind(this), 60000);
         this.play_started = false;
         this.playing = true;
 
@@ -273,7 +269,6 @@ var RadioPlayer = (function () {
             this.jq_volume_indicator.css('display', 'none');
             this.power_on = false;
             audioManager.stop('radio_noise_switch');
-            audioManager.stop('radio_noise');
         }
         else {
             this.click_play();

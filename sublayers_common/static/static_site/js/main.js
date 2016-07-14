@@ -63,9 +63,12 @@ function main() {
     );
 
     var content_start_back_visible = true;
+    var content_start_back_in_animate = false;
 
     // Чтобы кнопки залипали!
-    $('.btn-page').click(function () {
+    $('.btn-page').click(function (event) {
+        // Если кто-то быстро кликает, то игнорить эти клики
+        if(content_start_back_in_animate) return;
         // Проигрывание звуков
         if (! $(this).hasClass('active')) {
             audioManager.play('microwave_btn_click');
@@ -77,16 +80,18 @@ function main() {
             // todo: звук отжатой кнопки
             return;
         }
-
         $('.btn').removeClass('active');
         $(this).addClass('active');
+        $(event.currentTarget).addClass('active');
 
         // скрыть сетку, машинку и тд
         if (content_start_back_visible) {
             content_start_back_visible = false;
+            content_start_back_in_animate = true;
             $('.content-start').animate({opacity: 0}, function () {
                 $('.content-start').css({display: 'none'});
                 $('.car-skeleton-path').css({display: 'none'});
+                content_start_back_in_animate = false;
             });
             if (glitchEffectStartPage1080)
                 glitchEffectStartPage1080.stop();
@@ -144,9 +149,6 @@ function main() {
             if (eCanvasChipAnimation) eCanvasChipAnimation.finish();
         }
 
-
-
-
         // Работа с консолями
         textConsoleManager.start(data);
 
@@ -180,7 +182,6 @@ function main() {
             }
         }
 
-
     });
 
     $('.btn').mouseover(function () {
@@ -202,8 +203,8 @@ function main() {
     $('.scroll-btn').mousedown(function (event) {
         var jq_this = $(this);
         scroll_block = $('#' + jq_this.data('block_id'));
-        if (jq_this.hasClass('up')) d_scroll = -10;
-        if (jq_this.hasClass('down')) d_scroll = 10;
+        if (jq_this.hasClass('up')) d_scroll = -25;
+        if (jq_this.hasClass('down')) d_scroll = 25;
         scroll_interval = setInterval(makeScroll, 50);
 
         audioManager.play('button_screen_press');
@@ -216,13 +217,15 @@ function main() {
 
     // Вешаем клик на логотип
     $('.site-logo').first().click(function () {
+        if (content_start_back_in_animate) return;
         if (!content_start_back_visible) {
             content_start_back_visible = true;
             $('.switch-page').css({display: 'none'});
             $('.btn').removeClass('active');
             $('.car-skeleton-path').css({display: 'block'});
             $('.content-start').css({display: 'block'});
-            $('.content-start').animate({opacity: 1.0});
+            content_start_back_in_animate = true;
+            $('.content-start').animate({opacity: 1.0}, function() {content_start_back_in_animate = false;});
             if (glitchEffectStartPage768)
                 glitchEffectStartPage768.start();
             if (glitchEffectStartPage1080)
@@ -237,6 +240,10 @@ function main() {
                 videoPlayer.pauseVideo();
                 radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
             }
+
+            // Обработать hash_url - снова с этим багом-фичей
+            setTimeout(function() {window.location.hash = '';}, 10);
+
         }
     });
 
@@ -247,9 +254,6 @@ function main() {
             audioManager.gain_all(GlobalGeneralSiteGain);
             radioPlayer.set_volume(lastRadioVolume, true);
             $(this).removeClass('off');
-
-
-            $('.site-main-block').css('display', 'block');
         }
         else {
             GlobalGeneralSiteGain = audioManager.general_gain;
@@ -257,11 +261,11 @@ function main() {
             audioManager.gain_all(0.0);
             radioPlayer.set_volume(0.0, true);
             $(this).addClass('off');
-
-            $('.site-main-block').css('display', 'none');
         }
     });
 
+    // Вход и регистрация по Enter
+    $('#RDSiteWReg input').on('keydown', windowRegKeyDownEnter);
 
     initConsoles();
 
@@ -304,7 +308,12 @@ function main() {
                 }, 10);
             }
             else {
-                $('#RDbtn_' + hash_url).click();
+                if (hash_url.indexOf('start') == 0) {
+                    // Не делать ничего, так как сделаем в функции GetUserInfo
+                }
+                else {
+                    $('#RDbtn_' + hash_url).click();
+                }
             }
         }
     }
@@ -318,11 +327,18 @@ function main() {
 
     initRadioPlayer();
 
+    // Включение радио сразу
+    if (hash_url && hash_url.length && hash_url.indexOf('about') == 0) {
+        // Ничего не делать с радио
+    } else { // Включить радио
+        radioPlayer.click_power();
+        radioPlayer.set_volume(0.0);
+    }
 
     var img_start_page_1080 = new Image();
     img_start_page_1080.src = '/static/static_site/img/09-06-16/1080_car.png';
     SetImageOnLoad(img_start_page_1080, function () {
-        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 6000, 1080);
+        glitchEffectStartPage1080 = new GlitchImageEffect('glitch_test_1080', img_start_page_1080, 8000, 1080);
         if (!hash_url.length) {
             glitchEffectStartPage1080.start();
         }
@@ -331,7 +347,7 @@ function main() {
     var img_start_page_768 = new Image();
     img_start_page_768.src = '/static/static_site/img/1366_june/768_car.png';
     SetImageOnLoad(img_start_page_768, function () {
-        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 6000, 768);
+        glitchEffectStartPage768 = new GlitchImageEffect('glitch_test_768', img_start_page_768, 8000, 768);
         if (!hash_url.length) {
             glitchEffectStartPage768.start();
         }
@@ -654,6 +670,53 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
     });
 }
 
+
+function windowRegKeyDownEnter(event) {
+    if (event.keyCode != 13) return;
+    var jq_target = $(event.currentTarget);
+    var target_id = jq_target.attr('id');
+    // info: Можно упростисть, заранее определив jq_password и func_click, но будет казаться запутанным
+    if (target_id == 'reg_email') {
+        var jq_reg_password = $('#reg_password');
+        // Если пароль вбит, то попробовать зарегистрироваться // todo: и его длина больше 4-х симовлов
+        if (jq_reg_password.val().length >= 1) { // >= 4
+            RegisterBtnClick();
+        }
+        else {
+            jq_reg_password[0].focus();
+        }
+    }
+    if (target_id == 'auth_email') {
+        var jq_auth_password = $('#auth_password');
+        // Если пароль вбит, то попробовать зарегистрироваться // todo: и его длина больше 4-х симовлов
+        if (jq_auth_password.val().length >= 1) { // >= 4
+            AuthorisationBtnClick();
+        }
+        else {
+            jq_auth_password[0].focus();
+        }
+    }
+
+    if (target_id == 'reg_password') {
+        var jq_reg_email = $('#reg_email');
+        if (jq_reg_email.val().length >= 3) { // >= 4
+            RegisterBtnClick();
+        }
+        else {
+            jq_reg_email[0].focus();
+        }
+    }
+
+    if (target_id == 'auth_password') {
+        var jq_auth_email = $('#auth_email');
+        if (jq_auth_email.val().length >= 3) { // >= 4
+            AuthorisationBtnClick();
+        }
+        else {
+            jq_auth_email[0].focus();
+        }
+    }
+}
 
 
 /* Youtube Video Player Functions */

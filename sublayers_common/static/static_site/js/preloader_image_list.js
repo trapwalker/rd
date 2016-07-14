@@ -74,8 +74,6 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_001.png');
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_disc_over_002.png');
         preloaderImage.add('/static/static_site/img/09-06-16/1080_volume_indicator_mark.png');
-
-        preloaderImage.add('/static/static_site/img/09-06-16/1080_aurora_001.png');
     }
 
     if (currentSiteSize == '768') {
@@ -180,25 +178,24 @@ function after_preload_load_images() {
     }
 
     if (currentSiteSize == '1080') {
-        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_001.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_002.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_003.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_004.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_005.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_006.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_001.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_002.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_003.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_004.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_005.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/09-06-16/1080_aurora_006.jpg', loaded_back_image);
     }
 
     if (currentSiteSize == '768') {
-        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_001.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_002.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_003.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_004.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_005.png', loaded_back_image);
-        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_006.png', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_001.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_002.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_003.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_004.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_005.jpg', loaded_back_image);
+        preloaderImage.add_with_callback('/static/static_site/img/1366_june/768_aurora_006.jpg', loaded_back_image);
     }
-
-
 
     audioManager.gain_all(1.0);
 
+    radioPlayer.set_volume(0.3);
 }

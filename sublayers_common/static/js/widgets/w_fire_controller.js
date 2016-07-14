@@ -116,18 +116,23 @@ var WFireController = (function (_super) {
 
         // Создаем 4 дива под кнопки
         var jq_wrap_list = {
-            1: $('<div id="fireControlQuickBtn1BG"></div>'),
-            2: $('<div id="fireControlQuickBtn2BG"></div>'),
-            3: $('<div id="fireControlQuickBtn3BG"></div>'),
-            4: $('<div id="fireControlQuickBtn4BG"></div>')
-        }
+            1: $('<div id="fireControlQuickBtn1BG" class="fire-control-btn-bg"></div>'),
+            2: $('<div id="fireControlQuickBtn2BG" class="fire-control-btn-bg"></div>'),
+            3: $('<div id="fireControlQuickBtn3BG" class="fire-control-btn-bg"></div>'),
+            4: $('<div id="fireControlQuickBtn4BG" class="fire-control-btn-bg"></div>')
+        };
 
         this.jq_quick_btns = {
             1: $('<div id="fireControlQuickBtn1" class="fire-controll-quick-btn-block" data-index="1"></div>'),
             2: $('<div id="fireControlQuickBtn2" class="fire-controll-quick-btn-block" data-index="2"></div>'),
             3: $('<div id="fireControlQuickBtn3" class="fire-controll-quick-btn-block" data-index="3"></div>'),
             4: $('<div id="fireControlQuickBtn4" class="fire-controll-quick-btn-block" data-index="4"></div>')
-        };      
+        };
+
+        // Области блокирующие пробрасывание на карту
+        this.fCT.append('<div class="fire-control-undroppable-area left"></div>');
+        this.fCT.append('<div class="fire-control-undroppable-area right"></div>');
+        this.fCT.find('.fire-control-undroppable-area').droppable({ greedy: true });
 
         // Добавляем дивы кнопок в верстку и вешаем на них клики с активейтами
         for (var key in this.jq_quick_btns)
@@ -150,6 +155,9 @@ var WFireController = (function (_super) {
                        target.hasClass('fire-controll-quick-btn-block');
             },
             drop: function (event, ui) {
+                // Разрешить таскание только если открыто окно своего инвентаря
+                if (!windowTemplateManager.unique.hasOwnProperty('inventory_info')) return false;
+
                 // Итем прилетел из инвентаря
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
                     if (ui.draggable.data('owner_id') == user.userCar.ID)
@@ -190,6 +198,16 @@ var WFireController = (function (_super) {
             else
                 this.jq_quick_btns[btn.index].css('background-image', 'none');
         }
+    };
+
+    WFireController.prototype.switchOnConsumerPanel = function() {
+        //console.log("WFireController.prototype.switchOnConsumerPanel");
+        wFireController.fCT.find('.fire-control-btn-bg').addClass('active');
+    };
+
+    WFireController.prototype.switchOffConsumerPanel = function() {
+        //console.log("WFireController.prototype.switchOffConsumerPanel");
+        wFireController.fCT.find('.fire-control-btn-bg').removeClass('active');
     };
 
     WFireController.prototype.initRadarCircles = function() {

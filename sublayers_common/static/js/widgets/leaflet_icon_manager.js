@@ -21,9 +21,11 @@ var LeafletIconManager = (function(){
 
         // Создание иконки города
         this.load_new_icon('icon_city', '/static/img/map_icons/map_ico_city.png', [26, 29], this.max_id++);
+        this.load_new_icon('icon_city_whitehill', '/static/img/map_icons/wh_marker.png', [111, 114], this.max_id++, [56, 104]);
+        this.load_new_icon('icon_city_prior', '/static/img/map_icons/prior_marker.png', [111, 114], this.max_id++, [56, 104]);
 
         // Создание иконки заправочной станции
-        this.load_new_icon('icon_station', '/static/img/map_icons/map_ico_fuelstation.png', [26, 29], this.max_id++);
+        this.load_new_icon('icon_station', '/static/img/map_icons/gs_marker.png', [91, 94], this.max_id++, [46, 85]);
 
         // Создание иконки движущейся машинки V 1
         this.load_new_icon('icon_moving_V1', '/static/img/map_icons/map_icon_player_v1_moving.png', [51, 28], this.max_id++);
@@ -40,7 +42,8 @@ var LeafletIconManager = (function(){
         // Создание иконки БЫСТРО движущейся машинки V 2
         this.load_new_icon('icon_moving_fast_V2', '/static/img/map_icons/map_icon_player_v2_moving_fast.png', [51, 28], this.max_id++);
 
-
+        // Создание иконки для машинки в стратегическом режиме
+        this.load_new_icon('icon_strategy_mode_car', '/static/img/map_icons/tact_pers.png', [24, 24], this.max_id++);
 
         // Новые иконки машин
         this.load_new_icon('icon_party_arrow', '/static/img/char_icons/party/arrow.png', [53, 53], this.max_id++);
@@ -322,14 +325,15 @@ var LeafletIconManager = (function(){
         }
     };
 
-    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id){
+    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor){
         var img = new Image();
         this.count_loading_img++;
         img.onload = function() {
             iconsLeaflet.icons[icon_name] = {
                 icon: new L.icon({
                     iconUrl: icon_url,
-                    iconSize: icon_size
+                    iconSize: icon_size,
+                    iconAnchor: iconAnchor
                 }),
                 canvas_icon: {
                     img: img,

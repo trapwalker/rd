@@ -1,0 +1,90 @@
+.pi-building-quest {
+    position: relative;
+    height: 200px;
+}
+
+.pi-building-quest-lines {
+    position: relative;
+    width: 100%;
+    height: 55px;
+}
+
+.pi-building-quest-diagram-block {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+.pi-building-quest-diagram-caption {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.pi-building-quest-diagram {
+    position: relative;
+    margin: 5px auto;
+    width: 316px;
+    height: 56px;
+    background-image: url("/static/img/panel_info/scale relations_softly.png");
+}
+
+.pi-building-quest-diagram-hover {
+    position: relative;
+    height: 56px;
+    width: 0px;
+    background-image: url("/static/img/panel_info/scale relations_bright.png");
+}
+.pi-building-quest-diagram-hover::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(2px) brightness(200%);
+    -webkit-filter: blur(2px) brightness(200%);
+}
+.pi-building-quest-diagram-hover::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(4px) brightness(200%);
+    -webkit-filter: blur(4px) brightness(200%);
+}
+
+.pi-building-quest-scale {
+    position: relative;
+    margin: 5px auto;
+    width: 316px;
+    height: 10px;
+    border-top: 3px solid #2ffa00;
+    box-sizing: border-box;
+}
+
+.pi-building-quest-scale-carriage {
+    position: absolute;
+    width: 3px;
+    height: 8px;
+    background-image: url("/static/img/panel_info/riska.png");
+}
+
+.pi-building-quest-scale-label {
+    position: absolute;
+    top: 5px;
+    width: 40px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+}
+

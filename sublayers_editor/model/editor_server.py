@@ -24,11 +24,12 @@ class EditorServer(object):
         self.tss = {
         #    u'wood': tileset.Tileset(open('d:/ts_scrub_12')),
         #    u'water': tileset.Tileset(open('d:/ts_water_12')),
-        #    u'road': tileset.Tileset(open('d:/ts_road_12')),
+           u'road': tileset.Tileset(open('d:/tiles/ts_road_15')),
         }
 
 
         log.info('EditorServer: Tilesets loaded !')
+        print 'EditorServer: Tilesets loaded !'
 
 
     def addObject(self, position, object_type):

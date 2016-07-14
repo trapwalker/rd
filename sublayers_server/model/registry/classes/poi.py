@@ -62,7 +62,7 @@ class Building(AbstractDocument):
     # todo: Сделать as_dict(tag_filter='clent') вместо as_client_dict прямо в AbstractDocument
     def as_client_dict(self):
         d = dict(
-            captiont=self.caption,
+            caption=self.caption,
             head=self.head and self.head.as_client_dict(),
             instances=[inst.as_client_dict() for inst in self.instances]
         )

@@ -33,17 +33,17 @@ def get_tiles_admin(ax, ay):
         px, py, pz = start_tile.parent_by_lvl(level=zoom).xyz()
         os.mkdir(str(zoom))
         os.chdir(str(zoom))
-        for x in range(px-1, px+2):
+        for x in range(px-2, px+3):
             # создать папки X
             os.mkdir(str(x))
-            for y in range(py-1, py+2):
+            for y in range(py-2, py+3):
                 img_source = http.fetch(request=download_str(zoom, x, y), method="GET").body
                 file_like = cStringIO.StringIO(img_source)
                 with open(os.path.join(os.path.join(os.path.join(temp_dir, str(zoom)), str(x)), '{}.jpg'.format(y)), 'wb') as fdest:
                     shutil.copyfileobj(file_like, fdest)
 
     os.chdir(serv_dir)
-    os.chdir('static')
+    os.chdir('../sublayers_common/static')
     shutil.make_archive('temp_archive', 'zip', temp_dir)
 
     os.chdir(serv_dir)

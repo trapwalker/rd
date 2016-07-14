@@ -242,7 +242,7 @@ class Unit(Observer):
             # todo: возможно это нужно перенести
             self.owner.example.car = None
 
-        # создать труп с инвентарём
+        # todo: Сделать другой эвенет, передавать в него не список итемов, а inventory
         if not self.inventory.is_empty():
             CreatePOILootEvent(
                 server=self.server,

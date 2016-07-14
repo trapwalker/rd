@@ -19,8 +19,9 @@ var EditorSelectArea = (function (_super) {
 
     EditorSelectArea.prototype.mouseUp = function (event) {
         if (this.isStartDraw) {
-            var p1 = myMap.project(latLngRect.getNorthWest(), map_max_zoom);
-            var p2 = myMap.project(latLngRect.getSouthEast(), map_max_zoom);
+            var p1 = myMap.project(this.selectRectBound.getNorthWest(), map_max_zoom);
+            var p2 = myMap.project(this.selectRectBound.getSouthEast(), map_max_zoom);
+            console.log(p1, p2);
             var mes_obj = {
                 min_point: {
                     x: p1.x,

@@ -51,17 +51,18 @@
 .window-pi-user-car {
     position: relative;
     width: 100%;
-    height: calc(100% - 151px);
+    height: calc(100% - 140px);
 }
 
 .window-pi-user-car .car-info-block-picture-main-site {
     position: relative;
-    top: 18px;
     overflow: hidden;
+    height: 100%;
 }
 
 .window-pi-user-car .car-info-block-picture-main {
     margin-left: -35px;
+    top: 22px;
 }
 
 .window-pi-user-car .car-info-block-picture-main.default-car {
@@ -92,12 +93,16 @@
 }
 
 .window-pi-content-block .car-info-name-block {
-    top: 20px;
-    z-index: 1000;
+    top: 3px;
+}
+
+.window-pi-content-block .car-info-block-picture-main {
+    top: 15px;
 }
 
 .window-pi-content-block .window-pi-user-car {
-    top: -5px;
+    top: 0;
+    height: calc(100% - 162px);
 }
 
 .window-pi-content-block .person-info-chat-person-string-item.odd {
@@ -139,8 +144,8 @@
 
     .window-pi-user-car .car-info-block-picture-main {
         transform: scale(0.71);
-        margin-top: 20px;
         margin-left: -70px;
+        top: -6px;
     }
 
     .window-pi-user-car .car-info-block-picture-main.default-car {
@@ -161,9 +166,12 @@
         font-size: 12pt;
     }
 
-    .window-pi-content-block .car-info-name-block {
-        top: 25px;
+    .window-pi-content-block .car-info-block-picture-main {
+        top: 0;
     }
 
-    .window-pi-content-block .window-pi-user-car {top: -15px;}
+    .window-pi-content-block .window-pi-user-car {
+        top: 0;
+        height: calc(100% - 120px);
+    }
 }

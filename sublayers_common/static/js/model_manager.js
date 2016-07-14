@@ -206,7 +206,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._contactStaticObject', event);
         if (event.is_first) {
             var uid = event.object.uid;
-            var radius_visible = event.object.r;
+            var p_observing_range = event.object.p_observing_range;
             var obj_marker;
 
             // Проверка: нет ли уже такого объекта.
@@ -217,7 +217,7 @@ var ClientManager = (function () {
                 return;
             };
 
-            // Создание объекта
+            // Установка поворота маркера
             var direction = null;
             switch (event.object.cls) {
                 case 'GasStation':
@@ -234,24 +234,34 @@ var ClientManager = (function () {
 
             obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
             obj.cls = event.object.cls;
+            obj.example = event.object.example;
+            obj.p_observing_range = p_observing_range;
             if (event.object.hasOwnProperty('sub_class_car')) {
                 obj.sub_class_car = event.object.sub_class_car;
             }
 
-            // Создание/инициализация виджетов
-            obj_marker = new WCarMarker(obj); // виджет маркера
-            if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
-            if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
-
-            // Установка надписи над статическим объектом. чтобы не плодить функции будем обходится IF'ами
+            // Установка надписи над статическим объектом
             if (obj.cls == 'Town') {
-                obj_marker.updateLabel(event.object.town_name);
-                obj.town_name = event.object.example.title;
+                obj.title = event.object.example.title;
+            }
+            if (obj.cls == 'GasStation') {
+                obj.title = 'GasStation';
             }
             if (obj.cls == 'RadioPoint')
                 obj_marker.updateLabel('Radio Point');
             if (obj.cls == 'POIStash')
                 obj_marker.updateLabel('loot');
+
+            // Создание/инициализация виджетов
+            if (obj.cls == 'Town' || obj.cls == 'GasStation') {
+                obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                //obj_marker = new WStaticObjectMarker(obj);
+            }
+            else
+                obj_marker = new WCarMarker(obj); // виджет маркера
+
+            if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
+            if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
         }
     };
 

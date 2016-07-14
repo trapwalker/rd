@@ -1,4 +1,5 @@
 <div id="RDSiteWReg" class="page-wrapper switch-page">
+    <h2>Регистрация/Авторизация</h2>
     <div class="window-header interlacing buttons-and-headers">Nuke Commander v{{ version }}</div>
     <div class="window-reg-main">
         <div class="window-reg-path">
@@ -166,17 +167,20 @@
                             'Введите адрес действительной электронной почты.\n' +
                             'Введите пароль, соответствующий формату ввода системы.\n' +
                             '--------------------------------------------------------------');
+                    document.getElementById('reg_email').focus();
                 }
                 if (data.status == 'fail_exist_email') {
                     consoleWReg.add_message('system',
                             'Ошибка приема данных.\n\n' +
                             'Пользователь с таким email уже зарегистрирован.');
+                    document.getElementById('reg_email').focus();
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg.add_message('user', ' Активация процедуры регистрации.', true);
                 consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_1');
+                document.getElementById('reg_email').focus();
             }
         });
     }
@@ -207,12 +211,14 @@
                             'Проверьте правильность ввода логина и пароля, учитывайте регистр и язык ввода.\n' +
                             '--------------------------------------------------------------');
                     audioManager.play('error_1');
+                    document.getElementById('auth_email').focus();
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg.add_message('user', 'Активация процедуры авторизации.', true);
                 consoleWReg.add_message('system', 'Система не отвечает. Повторите попытку позже.');
                 audioManager.play('error_1');
+                document.getElementById('auth_email').focus();
             }
         });
     }

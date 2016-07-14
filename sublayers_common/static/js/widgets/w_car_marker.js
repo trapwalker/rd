@@ -19,7 +19,8 @@ var WCarMarker = (function (_super) {
     WCarMarker.prototype._createMarker = function() {
         var car = this.car;
         var marker;
-        marker = L.rotatedMarker([0, 0], {zIndexOffset: 9999});
+        var marker_options = this._get_marker_options({});
+        marker = L.rotatedMarker([0, 0], marker_options);
         this.marker = marker;
         marker.carID = car.ID;
 
@@ -32,7 +33,6 @@ var WCarMarker = (function (_super) {
         switch (car.cls) {
             case 'Town':
             case 'GasStation':
-                marker.on('click', onClickLocationMarker);
                 marker.obj_id = car.ID;
                 break;
             case 'POILoot':
@@ -65,6 +65,10 @@ var WCarMarker = (function (_super) {
         });
     };
 
+    WCarMarker.prototype._get_marker_options = function(options) {
+        return options.zIndexOffset = 9999;
+    };
+
     WCarMarker.prototype.change = function() {
         //console.log('WCarMarker.prototype.change');
         //return;
@@ -87,26 +91,6 @@ var WCarMarker = (function (_super) {
             else
                 this.marker.update();
         }
-
-        //if (this.car == user.userCar) {
-        //    var polygon_list = [];
-        //    var lat_lng_list = [];
-        //    lat_lng_list.push(map.unproject([tempPoint.x + 200000, tempPoint.y + 200000], map.getMaxZoom()));
-        //    lat_lng_list.push(map.unproject([tempPoint.x + 200000, tempPoint.y - 200000], map.getMaxZoom()));
-        //    lat_lng_list.push(map.unproject([tempPoint.x - 200000, tempPoint.y - 200000], map.getMaxZoom()));
-        //    lat_lng_list.push(map.unproject([tempPoint.x - 200000, tempPoint.y + 200000], map.getMaxZoom()));
-        //    var lat_lng_hole_list1 = [];
-        //    for (var i = 0; i < 72; i++) {
-        //        var pnt = polarPoint(400, gradToRad(i * 5));
-        //        pnt = summVector(pnt, tempPoint);
-        //        lat_lng_hole_list1.push(map.unproject([pnt.x, pnt.y], map.getMaxZoom()));
-        //    }
-        //    polygon_list.push(lat_lng_list, lat_lng_hole_list1);
-        //    if (this.circle)
-        //        this.circle.setLatLngs(polygon_list);
-        //    else
-        //        this.circle = L.polygon(polygon_list, {color: 'black', weight: 0, fillOpacity: 0.5}).addTo(map);
-        //}
     };
 
     WCarMarker.prototype.updateIcon = function() {
@@ -144,7 +128,7 @@ var WCarMarker = (function (_super) {
         }
 
         if(car.cls == 'POILoot') {
-            marker.setIcon(iconsLeaflet.getIconByID(3));
+            marker.setIcon(iconsLeaflet.getIcon('icon_killed_V1'));
         }
 
         if(car.cls == 'POIContainer') {
@@ -152,7 +136,16 @@ var WCarMarker = (function (_super) {
         }
 
         if(car.cls == 'Town') {
-            marker.setIcon(iconsLeaflet.getIcon('icon_city'));
+            switch (car.example.id) {
+                case 'reg://registry/poi/locations/towns/prior':
+                    marker.setIcon(iconsLeaflet.getIcon('icon_city_prior'));
+                    break;
+                case 'reg://registry/poi/locations/towns/whitehill':
+                    marker.setIcon(iconsLeaflet.getIcon('icon_city_whitehill'));
+                    break;
+                default:
+                    marker.setIcon(iconsLeaflet.getIcon('icon_city'));
+            }
         }
 
         if(car.cls == 'GasStation') {
@@ -165,6 +158,7 @@ var WCarMarker = (function (_super) {
     };
 
     WCarMarker.prototype.updateLabel = function(new_label) {
+        if (this.car.cls == 'Town' || this.car.cls == 'GasStation') return;
         this.marker.unbindLabel();
         var label_str1 = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">';
         //var label_str1 = '<span>';
@@ -256,7 +250,6 @@ var WCarMarker = (function (_super) {
         return icon_name;
     };
 
-
     WCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCarMarker.prototype.delFromVisualManager');
         this.car = null;
@@ -266,6 +259,67 @@ var WCarMarker = (function (_super) {
 
     return WCarMarker;
 })(VisualObject);
+
+
+var WStaticObjectMarker = (function (_super) {
+    __extends(WStaticObjectMarker, _super);
+
+    function WStaticObjectMarker(car) {
+        this.current_opacity = null;
+        _super.call(this, car);
+
+        var tempPoint = this.car.getCurrentCoord();
+        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+        this.marker.setLatLng(tempLatLng);
+
+        this.addModelObject(mapManager);
+
+        this.current_opacity = 0.5;
+        this.change();
+    }
+
+    WStaticObjectMarker.prototype._get_marker_options = function(options) {
+        if (this.car.cls == 'Town' || this.car.cls == 'GasStation') {
+            options.clickable = false;
+        }
+        return _super.prototype._get_marker_options.call(this, options);
+    };
+
+    WStaticObjectMarker.prototype.updateLabel = function(new_label) {
+        if (this.car.cls == 'Town' || this.car.cls == 'GasStation') return;
+        this.marker.unbindLabel();
+        var title = this.car.title || ('-=' + this.car.cls + '=-');
+        var label_str = '<span style="color: #2afd0a; font: 8pt MICRADI; letter-spacing: 1px">' + title + '</span>';
+        this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
+    };
+
+    WStaticObjectMarker.prototype.change = function() {
+        //console.log('WCarMarker.prototype.change');
+        if(this.current_opacity == null) return;
+        var new_opacity = mapManager.getZoom() >= 15. ? 0.0 : 1.0;
+        // info: можно было просто удалять и добавлять маркеры, но это накладнее
+        
+        if (new_opacity != this.current_opacity) {
+            this.current_opacity = new_opacity;
+            this.marker.setOpacity(new_opacity);
+            if (new_opacity == 0) {
+                this.marker.setLatLng(map.unproject([0, 0], map.getMaxZoom()));
+            }
+            else {
+                var tempPoint = this.car.getCurrentCoord();
+                this.marker.setLatLng(map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom()));
+            }
+        }
+    };
+
+    WStaticObjectMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCarMarker.prototype.delFromVisualManager');
+        this.delModelObject(mapManager);
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    return WStaticObjectMarker;
+})(WCarMarker);
 
 // todo: внести следующие функции в класс WCarMarker
 
@@ -277,16 +331,16 @@ function getCarInfoFrom(car_id) {
 function onMouseOverForLabels() {
     //if(this._labelNoHide) return false;
     this.setLabelNoHide(true);
-    this.getLabel().setOpacity(0.95);
+    var label =  this.getLabel();
+    if (label)
+        label.setOpacity(0.95);
 }
 
 function onMouseOutForLabels() {
     this.setLabelNoHide(cookieStorage.visibleLabel());
-    this.getLabel().setOpacity(0.4);
-}
-
-function onClickLocationMarker() {
-    clientManager.sendEnterToLocation(this.obj_id)
+    var label =  this.getLabel();
+    if (label)
+        label.setOpacity(0.4);
 }
 
 function onClickUserCarMarker() {

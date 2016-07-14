@@ -21,7 +21,6 @@ var WCanvasUserCarMarker = (function (_super) {
         this.last_direction_arrow = this.last_direction;
     }
 
-
     WCanvasUserCarMarker.prototype.redraw = function(ctx, time){
         //console.log('WCanvasUserCarMarker.prototype.redraw');
         ctx.save();
@@ -102,15 +101,12 @@ var WCanvasUserCarMarker = (function (_super) {
         ctx.restore();  // Возврат транслейта
     };
 
-
     WCanvasUserCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
         this.car = null;
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
     };
-
-
 
     WCanvasUserCarMarker.prototype.updateIcon = function() {
         var car = this.car;
@@ -178,7 +174,105 @@ var WCanvasUserCarMarker = (function (_super) {
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow', 'canvas_icon');
     };
 
-
     return WCanvasUserCarMarker;
 })(VisualObject);
 
+
+var WCanvasStaticObjectMarker = (function (_super) {
+    __extends(WCanvasStaticObjectMarker, _super);
+
+    function WCanvasStaticObjectMarker(mobj) {
+        _super.call(this, [mobj]);
+        this.mobj = mobj;
+
+        this.icon_obj = null;
+        this.icon_arrow_obj = null;
+        this.icon_offset = {x: 0, y: 0};
+
+        this.updateIcon();
+
+        mapCanvasManager.add_vobj(this, 11);  // todo: Выбрать правильный приоритет
+
+        var time = clock.getCurrentTime();
+
+    }
+
+    WCanvasStaticObjectMarker.prototype.getVisibleState = function () {
+        var zoom = 15. - mapCanvasManager.real_zoom;
+        if (zoom <= 0) return 0;
+        if (zoom > 1.) return 1.;
+        return zoom;
+    };
+
+    WCanvasStaticObjectMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasUserCarMarker.prototype.redraw');
+        var visible_state = this.getVisibleState();
+        if (visible_state == 0) return;
+        ctx.save();
+        if (visible_state != 1.) {
+            ctx.globalAlpha = visible_state;
+        }
+        var car_pos = this.mobj.getCurrentCoord(time);
+        var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+
+        var car_direction = this.mobj.direction;
+        ctx.rotate(car_direction);
+        //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
+        ctx.drawImage(this.icon_obj.img, this.icon_offset.x, this.icon_offset.y);
+
+        // Вывод лейбла
+        //var title = this.mobj.hasOwnProperty('title') ? this.mobj.title : ('-=' + this.mobj.cls + '=-');
+        //ctx.textAlign = "center";
+        //ctx.textBaseline = "center";
+        //ctx.font = "8pt MICRADI";
+        //ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
+        //ctx.fillText(title, 0, -25);
+
+        ctx.restore();  // Возврат транслейта
+    };
+
+    WCanvasStaticObjectMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
+        this.mobj = null;
+        mapCanvasManager.del_vobj(this);
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    WCanvasStaticObjectMarker.prototype.updateIcon = function() {
+        var mobj = this.mobj;
+        var icon_name = 'car';
+        var offset = null;
+        switch (mobj.cls) {
+            case 'Town':
+                switch (mobj.example.id) {
+                    case 'reg://registry/poi/locations/towns/prior':
+                        icon_name = 'city_prior';
+                        break;
+                    case 'reg://registry/poi/locations/towns/whitehill':
+                        icon_name = 'city_whitehill';
+                        break;
+                    default:
+                        icon_name = 'city';
+                }
+                break;
+            case 'GasStation':
+                icon_name = 'station';
+                break;
+            default:
+                console.log('Не найдена иконка. Установлена стандартная. ', mobj);
+                icon_name = 'city';
+        }
+
+        this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_name, 'canvas_icon');
+        if (mobj.cls == 'Town' || mobj.cls == 'GasStation') {
+            this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[0] + 10}
+        }
+        else {
+            this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[1] >> 1}
+        }
+    };
+
+
+    return WCanvasStaticObjectMarker;
+})(VisualObject);

@@ -85,13 +85,17 @@ var DistanceObserver = (function(_super){
         for (var i = 0; i < this._model_objects.length; i++) {
             var mobj = this._model_objects[i];
             if (this.target_obj != mobj) {
-                if (this.observing_radius2 > distancePoints2(t_point, mobj.getCurrentCoord(time))) {
+                if (this._get_compare_distance(mobj, time) > distancePoints2(t_point, mobj.getCurrentCoord(time))) {
                     this._add_to_observing_list(mobj);
                 } else {
                     this._del_from_observing_list(mobj);
                 }
             }
         }
+    };
+
+    DistanceObserver.prototype._get_compare_distance = function(mobj, time) {
+        return this.observing_radius2;
     };
 
     DistanceObserver.prototype.on_add_obj = function(mobj) {};
@@ -114,6 +118,12 @@ var EnterToLocationObserver = (function(_super){
             if (contextPanel) contextPanel.location_observer.open_window();
         })
     }
+
+    EnterToLocationObserver.prototype._get_compare_distance = function(mobj, time) {
+        if (mobj.hasOwnProperty('p_observing_range'))
+            return mobj.p_observing_range * mobj.p_observing_range;
+        return _super.prototype._get_compare_distance.call(this, mobj, time);
+    };
 
     EnterToLocationObserver.prototype.on_add_obj = function(mobj) {
         _super.prototype.on_add_obj.call(this, mobj);

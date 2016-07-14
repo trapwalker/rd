@@ -127,7 +127,7 @@ var myMap;
 // Репозитории я решил выносить сюда
 var repositoryMO;
 // Путь к карте на сервере
-var mapBasePath = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+var mapBasePath = 'http://185.58.206.115/map/{z}/{x}/{y}.jpg';
 
 var message_stream;
 var ws_connector;

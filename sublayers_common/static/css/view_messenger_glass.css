@@ -158,26 +158,15 @@
     position: relative;
     pointer-events: auto;
     float: left;
-    opacity: 0.5;
-    color: #2afd0a;
-    border: solid lime 0px;
-    border-radius: 3px;
+    color: #31c811;
     margin: 3px;
     padding: 3px 5px 3px 5px;
     font: 11pt MICRADI;
 }
-
-.VMGpageButtonActive {
-    opacity: 1;
-}
-
-.VMGpageButtonActive:before {
-    content: "< ";
-}
-
-.VMGpageButtonActive:after {
-    content: " >";
-}
+.VMGpageButton.active { color: #2ffa00; }
+.VMGpageButton.active:before { content: "< "; }
+.VMGpageButton.active:after { content: " >"; }
+.VMGpageButton:hover { color: #2ffa00; }
 
 .VMGTextOutArea {
     position: relative;
@@ -231,6 +220,7 @@
     float: left;
     width: 17px;
     height: 24px;
+    display: none;
 }
 .VMGGlobalPgCtrlScrlBtn.Left { background: transparent url('/static/img/chat/btn_slide_left.png') 50% 50% no-repeat; }
 .VMGGlobalPgCtrlScrlBtn.Left:hover { background: transparent url('/static/img/chat/btn_slide_left_over.png') 50% 50% no-repeat; }
@@ -244,6 +234,7 @@
     width: calc(100% - 34px);
     overflow: hidden;
 }
+.VMGGlobalPgCtrlWrap.all-size { width: 100%; }
 
 .VMGGlobalPageControl {
     position: relative;
@@ -261,6 +252,7 @@
     padding: 3px 5px 3px 5px;
     font: 11pt Nouveau_IBM;
     pointer-events: auto;
+    border-radius: 1px;
     box-sizing: border-box;
 }
 .VMGPartypageButton.active { color: #000000; background-color: #2ffa00; }
