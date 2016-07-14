@@ -564,9 +564,10 @@ var LocationPlaceBuilding = (function (_super) {
         this.active_central_page = page_id;
     };
 
-    LocationPlaceBuilding.prototype.set_panels = function () {
+    LocationPlaceBuilding.prototype.set_panels = function (make) {
         //console.log('LocationPlaceBuilding.prototype.set_panels');
-        if (!locationManager.isActivePlace(this)) return;
+        if (!make)
+            if (!locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec.build}, 'building');
     };
