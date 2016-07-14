@@ -39,25 +39,6 @@
         pointer-events: none;
     }
 
-    .town-panel {
-        position: absolute;
-        top: 50px;
-        width: 400px;
-        height: 300px;
-    }
-
-    .town-panel.left { left: 100px; }
-    .town-panel.right { right: 100px; }
-
-    .panel-info-item {
-        display: none;
-        pointer-events: auto;
-        border-width: 0 0 1px 0;
-        border-style: solid;
-        border-image: linear-gradient(to right, transparent, #30fc00, transparent);
-        border-image-slice: 1;
-    }
-
     .town-btn-area {
         position: absolute;
         top: 0;
@@ -129,10 +110,12 @@
 <div id="town-out-screen-area">
     <div id="townLeftPanel" class="town-panel left">
         {% include panel_info/npc_transaction_info.html %}
+        {% include panel_info/pi_building_quest.html %}
     </div>
     <div id="townRightPanel" class="town-panel right">
         {% include panel_info/car_info.html %}
         {% include panel_info/panel_description.html %}
+        {% include panel_info/pi_building.html %}
     </div>
 </div>
 

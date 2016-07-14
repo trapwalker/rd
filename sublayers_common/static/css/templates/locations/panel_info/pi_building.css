@@ -1,0 +1,10 @@
+.pi-building {
+    position: relative;
+    height: 200px;
+}
+
+.pi-building-lines {
+    position: relative;
+    width: 100%;
+    height: 70px;
+}

@@ -67,7 +67,7 @@ class Building(object):
 
     def as_client_dict(self):
         d = dict(
-            captiont=self.caption,
+            caption=self.caption,
             head=None if self._head is None else self._head.resolve().as_client_dict(),
             instances=[npc.as_client_dict() for npc in self.instances]
         )
