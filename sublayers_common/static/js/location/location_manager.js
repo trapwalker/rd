@@ -317,6 +317,25 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.panel-info-content').first().html(options.text);
     };
 
+    LocationPanelInfo.prototype.show_building = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_building', options);
+        var jq_panel = this.jq_main_div.find('.pi-building').first();
+        jq_panel.find('.location').text(options.build.caption);
+        jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.css('display', 'block');
+    };
+
+    LocationPanelInfo.prototype.show_building_quest = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_building_quest', options);
+        var jq_panel = this.jq_main_div.find('.pi-building-quest').first();
+        var width = Math.floor(316 * (options.respect / 100));
+        jq_panel.find('.respect').first().width(width);
+        jq_panel.find('.pi-building-quest-scale-carriage').first().css({left: (width - 1)});
+        jq_panel.find('.pi-building-quest-scale-label').first().css({left: (width - 20)});
+        jq_panel.find('.pi-building-quest-scale-label').first().text(Math.floor(options.respect));
+        jq_panel.css('display', 'block');
+    };
+
     return LocationPanelInfo;
 })();
 
@@ -510,6 +529,9 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.setBtnState(2, '', false);
             locationManager.setBtnState(3, '</br>Назад', false);
             locationManager.setBtnState(4, '</br>Выход', true);
+
+            locationManager.panel_left.show({}, '');
+            locationManager.panel_right.show({}, '');
         }
     };
 
@@ -540,6 +562,13 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
         //console.log('LocationPlaceBuilding.prototype.centralMenuReaction', page_id);
         this.active_central_page = page_id;
+    };
+
+    LocationPlaceBuilding.prototype.set_panels = function () {
+        //console.log('LocationPlaceBuilding.prototype.set_panels');
+        if (!locationManager.isActivePlace(this)) return;
+        locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+        locationManager.panel_right.show({build: this.building_rec.build}, 'building');
     };
 
     return LocationPlaceBuilding;
