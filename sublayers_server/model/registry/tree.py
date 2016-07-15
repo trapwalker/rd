@@ -11,6 +11,7 @@ from weakref import WeakSet
 from fnmatch import fnmatch
 from collections import deque, Counter
 from pprint import pformat
+from functools import partial
 import time
 import yaml
 import yaml.scanner
@@ -280,11 +281,15 @@ class Node(AbstractDocument):
 
     @classmethod
     @return_future
-    def load(cls, path, callback=None):
+    def load(cls, path, callback=None, mongo_store=True):
+        def on_save(stat, saving_node):
+            saving_node.save(upsert=True, callback=partial(on_load, stat))
+
         def on_load(*av, **kw):
             if all_nodes:
                 node = all_nodes.pop()
-                node.load_references(callback=on_load)
+                f = partial(on_save, saving_node=node) if mongo_store else on_load
+                node.load_references(callback=f)
             else:
                 _loading_duration = time.time() - _loading_start_time
                 log.info('References loaded DONE ({:.0f}s)'.format(_loading_duration,))
@@ -301,7 +306,6 @@ class Node(AbstractDocument):
             if node:
                 all_nodes.append(node)
                 node.to_cache()
-                # _node = yield node.save(upsert=True)
                 if owner is None:
                     root = node  # todo: optimize
                 for f in os.listdir(pth):
