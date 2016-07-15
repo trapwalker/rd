@@ -14,3 +14,4 @@ import role_class
 import inventory
 import price
 import skills
+import world
