@@ -133,9 +133,26 @@ class TunerItem(SlotItem):
 
 
 class ArmorerItem(SlotItem):
+    class ArmorerImages(AbstractDocument):
+        class ArmorerImagesSize(AbstractDocument):
+            armorer_side_F = StringField()
+            armorer_side_B = StringField()
+            armorer_side_R = StringField()
+            armorer_side_L = StringField()
+            armorer_top_F = StringField()
+            armorer_top_B = StringField()
+            armorer_top_R = StringField()
+            armorer_top_L = StringField()
+
+
+        small = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
+        middle = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
+        big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
+
+
     weight_class = IntField(default=0, caption=u"Класс тяжести итема у оружейника", tags='client')
     armorer_images = EmbeddedDocumentField(
-        embedded_document_type=AbstractDocument,
+        embedded_document_type=ArmorerImages,
         caption=u'Картинки оружейника',
         doc=u'Ссылки на картинки у оружейника по масштабам.',
         tags='client',
