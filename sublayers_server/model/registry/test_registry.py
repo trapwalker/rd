@@ -24,7 +24,11 @@ from pprint import pprint as pp
 @tornado.gen.coroutine
 def test_registry():
     log.debug('### test registry')
-    reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+
+    #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+    car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
+    car2 = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
+    
     log.debug('### Registry test end')
     print('\n'.join((
         '{v:6} - {k}'.format(v=v, k=k)
