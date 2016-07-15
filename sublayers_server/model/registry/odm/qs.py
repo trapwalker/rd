@@ -21,6 +21,7 @@ class CachebleQuerySet(QuerySet):
             return callback(doc, **kw)
 
         if URI.try_or_default(id):  # В качестве идентификатора может быть подан URI и тогда поиск будет вестись по нему
+            # todo: (!) clean uri params
             kwargs['uri'] = id
             id = None
 
