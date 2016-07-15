@@ -32,8 +32,11 @@
             </div>
             {% set news_id = 0 %}
             {% for news in news_list %}
-                <div id="news_content_{{ news_id }}_block" class="window-news-news-content-block">
-                    <div id="news_content_{{ news_id }}" class="scroll-block">{% raw news['content'] %}</div>
+                <div id="news_content_{{ news_id }}_block" class="window-news-news-content-block" itemscope="http://schema.org/NewsArticle">
+                    <div style="display: none;" itemprop="name">{% raw news['header'] %}</div>
+                    <div style="display: none;" itemprop="dateModified">{% raw news['date'] %}</div>
+                    <div style="display: none;" itemprop="sameAs">/#news={{ news.get('link', '') }}</div>
+                    <div id="news_content_{{ news_id }}" class="scroll-block" itemprop="description">{% raw news['content'] %}</div>
                     <div class="scroll-btn up" data-block_id="news_content_{{ news_id }}"></div>
                     <div class="scroll-btn down" data-block_id="news_content_{{ news_id }}"></div>
                 </div>
