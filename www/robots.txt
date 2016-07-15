@@ -4,4 +4,4 @@ Disallow: /play
 User-agent: Yandex
 Disallow: /play
 
-Sitemap: roaddogs.ru/static/sitemap.xml
+Sitemap: http://roaddogs.ru/static/sitemap.xml
