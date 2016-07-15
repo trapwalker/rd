@@ -41,3 +41,29 @@ class CachebleQuerySet(QuerySet):
             return callback(doc, **kw)
 
         super(CachebleQuerySet, self).save(document=document, callback=handler, alias=alias, upsert=upsert)
+
+    def indexes_saved_before_save(self, document, callback, alias=None, upsert=False):
+        def handle(*args, **kw):
+            # выбираем первое попавшеся уникальное поле с непустым значением. Если есть _id, то берем его.
+            conditions = []
+            for field_name, field in  [('_id', None)] + self.__klass__._fields.items():
+                if field is None or field.unique:
+                    value = getattr(document, field_name)
+                    if value is not None:
+                        conditions.append({field_name: value})
+
+            self.update_field_on_save_values(document, document._id is not None)
+            doc = document.to_son()
+
+            if conditions:  #document._id is not None:
+                condition = {'$or': conditions} if len(conditions) > 1 else conditions[0]
+                self.coll(alias).update(
+                    condition,  #{'_id': document._id},
+                    doc,
+                    callback=self.handle_update(document, callback),
+                    upsert=upsert,
+                )
+            else:
+                self.coll(alias).insert(doc, callback=self.handle_save(document, callback))
+
+        return handle
