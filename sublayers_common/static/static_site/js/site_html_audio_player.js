@@ -84,6 +84,7 @@ var RadioPlayer = (function () {
             var volume = (y2 - y1) / constHtmlSize[currentSiteSize].height_volume_indicator;
             if (volume > 1.0 || volume < 0.0) return;
             self.set_volume((1.0 - volume).toFixed(2));
+            lastRadioPlayerVolumeBeforeVideoActive = self.current_volume;
         });
 
         this.jq_volume_disc = $('.radio-volume-controller-images').first();
@@ -102,6 +103,7 @@ var RadioPlayer = (function () {
                     if (value > 100) value = 100;
                     if (value < 0) value = 0;
                     self.set_volume((Math.abs(value) / 100.).toFixed(2));
+                    lastRadioPlayerVolumeBeforeVideoActive = self.current_volume;
                 }
                 // Изменение колёсика
                 if (self.jq_volume_disc_item.hasClass('item-2')) {

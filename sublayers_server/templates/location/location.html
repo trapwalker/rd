@@ -262,6 +262,10 @@
             $("#img_house" + index + "_off").css("display", "none");
             $("#path_h" + index).css("opacity", "0.6");
             $("#path_text_h" + index).css("opacity", "0.6");
+
+            var building = $(this).data('building');
+            if (locationManager.buildings.hasOwnProperty(building))
+                locationManager.buildings[building].set_panels(true);
         });
 
         jq_buildings.mouseleave(function(event){
@@ -273,6 +277,13 @@
             $("#img_house" + index + "_on").css("display", "none");
             $("#path_h" + index).css("opacity", "0.2");
             $("#path_text_h" + index).css("opacity", "0.2");
+
+            var building = $(this).data('building');
+            if (locationManager.buildings.hasOwnProperty(building) &&
+                !locationManager.buildings[building].isActivePlace()) {
+                locationManager.panel_left.show({}, '');
+                locationManager.panel_right.show({}, '');
+            }
         });
 
         // События для логотипа

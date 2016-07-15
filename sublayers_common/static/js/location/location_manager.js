@@ -38,6 +38,12 @@ var LocationManager = (function () {
         this.locations_canvas_effects = {};
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
+
+        SetImageOnLoad(lasers_img, function (img) {
+                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
+                locationManager.locations_canvas_effects['laser'].start();
+            }
+        );
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
@@ -564,9 +570,9 @@ var LocationPlaceBuilding = (function (_super) {
         this.active_central_page = page_id;
     };
 
-    LocationPlaceBuilding.prototype.set_panels = function () {
-        //console.log('LocationPlaceBuilding.prototype.set_panels');
-        if (!locationManager.isActivePlace(this)) return;
+    LocationPlaceBuilding.prototype.set_panels = function (make) {
+        //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
+        if (!make && !locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec.build}, 'building');
     };
