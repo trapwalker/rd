@@ -10,7 +10,7 @@ from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem 
 from sublayers_server.model.registry.classes.inventory import InventoryField
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField,
+    IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
 
 from math import pi
@@ -395,7 +395,10 @@ class MobileWeapon(Mobile):
 
 class MapWeaponEffectMine(MobileWeapon):
     # todo: заменить имена эффектов на URI
-    effects = StringField(default=(), caption=u'Список эффектов (URI) накладываемых миной')
+    effects = ListField(
+        caption=u'Эффекты', doc=u'Список эффектов (URI) накладываемых миной',
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.effects.Effect'),
+    )
 
 
 class MapWeaponRocket(MobileWeapon):
