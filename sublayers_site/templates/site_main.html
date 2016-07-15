@@ -76,19 +76,21 @@
         <!-- Здесь будут всякие метаданные-->
         <div itemscope itemtype="http://schema.org/ImageObject">
             <h2 itemprop="name">Road Dogs</h2>
-            <img itemprop="contentUrl" src="/static/static_site/img/1366_june/768_logo.png" alt="Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец">
+            <img itemprop="contentUrl" src="/static/static_site/img/main_logo.png" alt="Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец">
             <span itemprop="description">Road Dogs logo</span>
         </div>
 
         <div itemscope itemtype="http://schema.org/VideoGame">
             <div itemprop="description"><h1>Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец</h1></div>
             <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                Статус программы:  <meta itemprop="price" content="0"/> Бесплатная
-                <span itemprop="price">0</span>
+                Статус программы: <span itemprop="price">0</span> Бесплатная
             </div>
             <link href="http://roaddogs.ru" itemprop="url">
             <p>Play mode: <span itemprop="playMode">MultiPlayer</span></p>
-            <div>gamePlatform:<div itemprop="gamePlatform">Windows | Linux | MacOS</div></div>
+            <div>operatingSystem:<div itemprop="operatingSystem">Windows | Linux | MacOS</div></div>
+            <div>gamePlatform:<div itemprop="operatingSystem">PC</div></div>
+            <div>applicationCategory:<div itemprop="applicationCategory">Game</div></div>
+
             <div>Genre:<span itemprop="genre">MMORPG</span></div>
             <div itemprop="gameLocation">Arizona (AZ)</div>
 
@@ -103,23 +105,23 @@
                 <p itemprop="description">Increases the maximum speed and maneuverability of vehicles.</p>
             </div>
             <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
-                <b itemprop="name">Shooting</b>/<b itemprop="alternateName">Вождение</b>
+                <b itemprop="name">Shooting</b>/<b itemprop="alternateName">Стрельба</b>
                 <p itemprop="description">Increases the DPS by automatic guns and damage by the volley.</p>
             </div>
             <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
-                <b itemprop="name">Hiding</b>/<b itemprop="alternateName">Вождение</b>
+                <b itemprop="name">Hiding</b>/<b itemprop="alternateName">Скрытость</b>
                 <p itemprop="description">Reduces the distance of detection of character by other players and defensive settlement systems.</p>
             </div>
             <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
-                <b itemprop="name">Mechanic</b>/<b itemprop="alternateName">Вождение</b>
+                <b itemprop="name">Mechanic</b>/<b itemprop="alternateName">Механика</b>
                 <p itemprop="description">Reduces the wear rate of transport and increases the efficiency of field repair.</p>
             </div>
             <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
-                <b itemprop="name">Trading</b>/<b itemprop="alternateName">Вождение</b>
+                <b itemprop="name">Trading</b>/<b itemprop="alternateName">Торговля</b>
                 <p itemprop="description">Reduces the price of goods and increases reward for the job.</p>
             </div>
             <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
-                <b itemprop="name">Leadship</b>/<b itemprop="alternateName">Вождение</b>
+                <b itemprop="name">Leadship</b>/<b itemprop="alternateName">Лидерство</b>
                 <p itemprop="description">Specifies the maximum number of players that can join the party character.</p>
             </div>
 
@@ -128,6 +130,77 @@
                 <b itemprop="name">Unique Quests</b>
                 <p itemprop="description">Dozens of quest generators and the possibility to trade a quests between players.</p>
             </div>
+
+            <script type="application/ld+json">
+                {
+                    "@context": "http://schema.org",
+                    "@type": "VideoGame",
+                    "name": "Road Dogs",
+                    "url": "http://roaddogs.ru",
+                    "image": "/static/static_site/img/main_logo.png",
+                    "description": "Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец",
+                    "inLanguage":["Russian","English"],
+                    "author":{
+                          "@type":"Organization",
+                          "name":"Teletower Studios",
+                          "alternateName":"Телетауер Студиос"
+                        },
+                    "genre":["MMORPG"],
+                    "gamePlatform":["PC"],
+                    "gameLocation": "Arizona (AZ)",
+                    "playMode": "MultiPlayer",
+                    "operatingSystem": ["Windows","Linux","MacOS"],
+                    "applicationCategory": "Game",
+                    "sameAs": "http://roaddogs.ru",
+                    "offers":{
+                            "@type":"Offer",
+                            "price":"0"
+                        },
+                    "characterAttribute": [
+                        {
+                            "@type": "Thing",
+                            "name":"Driving",
+                            "alternateName":"Вождение",
+                            "description":"Increases the maximum speed and maneuverability of vehicles."
+                        },
+                        {
+                            "@type": "Thing",
+                            "name":"Shooting",
+                            "alternateName":"Стрельба",
+                            "description":"Increases the DPS by automatic guns and damage by the volley."
+                        },
+                        {
+                            "@type": "Thing",
+                            "name":"Hiding",
+                            "alternateName":"Скрытость",
+                            "description":"Reduces the distance of detection of character by other players and defensive settlement systems."
+                        },
+                        {
+                            "@type": "Thing",
+                            "name":"Mechanic",
+                            "alternateName":"Механика",
+                            "description":"Reduces the wear rate of transport and increases the efficiency of field repair."
+                        },
+                        {
+                            "@type": "Thing",
+                            "name":"Trading",
+                            "alternateName":"Торговля",
+                            "description":"Reduces the price of goods and increases reward for the job."
+                        },
+                        {
+                            "@type": "Thing",
+                            "name":"Leadship",
+                            "alternateName":"Лидерство",
+                            "description":"Specifies the maximum number of players that can join the party character."
+                        }
+                        ],
+                    "quest": [{
+                        "@type": "Thing",
+                        "name":"Unique Quests",
+                        "description":"Dozens of quest generators and the possibility to trade a quests between players."
+                      }]
+                }
+            </script>
 
         </div>
 
