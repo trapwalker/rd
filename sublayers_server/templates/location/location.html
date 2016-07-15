@@ -39,25 +39,6 @@
         pointer-events: none;
     }
 
-    .town-panel {
-        position: absolute;
-        top: 50px;
-        width: 400px;
-        height: 300px;
-    }
-
-    .town-panel.left { left: 100px; }
-    .town-panel.right { right: 100px; }
-
-    .panel-info-item {
-        display: none;
-        pointer-events: auto;
-        border-width: 0 0 1px 0;
-        border-style: solid;
-        border-image: linear-gradient(to right, transparent, #30fc00, transparent);
-        border-image-slice: 1;
-    }
-
     .town-btn-area {
         position: absolute;
         top: 0;
@@ -129,10 +110,12 @@
 <div id="town-out-screen-area">
     <div id="townLeftPanel" class="town-panel left">
         {% include panel_info/npc_transaction_info.html %}
+        {% include panel_info/pi_building_quest.html %}
     </div>
     <div id="townRightPanel" class="town-panel right">
         {% include panel_info/car_info.html %}
         {% include panel_info/panel_description.html %}
+        {% include panel_info/pi_building.html %}
     </div>
 </div>
 
@@ -279,6 +262,10 @@
             $("#img_house" + index + "_off").css("display", "none");
             $("#path_h" + index).css("opacity", "0.6");
             $("#path_text_h" + index).css("opacity", "0.6");
+
+            var building = $(this).data('building');
+            if (locationManager.buildings.hasOwnProperty(building))
+                locationManager.buildings[building].set_panels(true);
         });
 
         jq_buildings.mouseleave(function(event){
@@ -290,6 +277,13 @@
             $("#img_house" + index + "_on").css("display", "none");
             $("#path_h" + index).css("opacity", "0.2");
             $("#path_text_h" + index).css("opacity", "0.2");
+
+            var building = $(this).data('building');
+            if (locationManager.buildings.hasOwnProperty(building) &&
+                !locationManager.buildings[building].isActivePlace()) {
+                locationManager.panel_left.show({}, '');
+                locationManager.panel_right.show({}, '');
+            }
         });
 
         // События для логотипа
