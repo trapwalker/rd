@@ -73,7 +73,70 @@
 </head>
 <body>
     <header style="position: absolute; opacity: 0.0;">
-        <img src="/static/static_site/img/1366_june/768_logo.png" alt="Privater/trader MMORPG Road Dogs">
+        <!-- Здесь будут всякие метаданные-->
+        <div itemscope itemtype="http://schema.org/ImageObject">
+            <h2 itemprop="name">Road Dogs</h2>
+            <img itemprop="contentUrl" src="/static/static_site/img/1366_june/768_logo.png" alt="Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец">
+            <span itemprop="description">Road Dogs logo</span>
+        </div>
+
+        <div itemscope itemtype="http://schema.org/VideoGame">
+            <div itemprop="description"><h1>Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец</h1></div>
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer"> Статус программы:
+                <meta itemprop="price" content="0"/>
+                Бесплатная
+            </div>
+            <link href="http://roaddogs.ru" itemprop="url">
+            <p>Play mode: <span itemprop="playMode">MultiPlayer</span></p>
+            <div>gamePlatform:<div itemprop="gamePlatform">Windows | Linux | MacOS</div></div>
+            <div>Genre:<span itemprop="genre">MMORPG</span></div>
+            <div itemprop="gameLocation">Arizona (AZ)</div>
+
+            <p>Language<span itemprop="inLanguage">Russian</span>/<span itemprop="inLanguage">English</span></p>
+
+            <div itemprop="author" itemscope itemtype="http://schema.org/Organization">
+                Author<span itemprop="name">Teletower Studios</span>/<span itemprop="alternateName">Телетауер Студиос</span>
+            </div>
+
+            <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Driving</b>/<b itemprop="alternateName">Вождение</b>
+                <meta itemprop="alternateName" content="Skill">
+                <p itemprop="description">Increases the maximum speed and maneuverability of vehicles.</p>
+            </div>
+            <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Shooting</b>/<b itemprop="alternateName">Вождение</b>
+                <meta itemprop="alternateName" content="Skill">
+                <p itemprop="description">Increases the DPS by automatic guns and damage by the volley.</p>
+            </div>
+            <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Hiding</b>/<b itemprop="alternateName">Вождение</b>
+                <meta itemprop="alternateName" content="Skill">
+                <p itemprop="description">Reduces the distance of detection of character by other players and defensive settlement systems.</p>
+            </div>
+            <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Mechanic</b>/<b itemprop="alternateName">Вождение</b>
+                <meta itemprop="alternateName" content="Skill">
+                <p itemprop="description">Reduces the wear rate of transport and increases the efficiency of field repair.</p>
+            </div>
+            <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Trading</b>/<b itemprop="alternateName">Вождение</b>
+                <meta itemprop="alternateName" content="Skill">
+                <p itemprop="description">Reduces the price of goods and increases reward for the job.</p>
+            </div>
+            <div itemprop="characterAttribute" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Leadship</b>/<b itemprop="alternateName">Вождение</b>
+                <meta itemprop="alternateName" content="Skill">
+                <p itemprop="description">Specifies the maximum number of players that can join the party character.</p>
+            </div>
+
+
+            <div itemprop="quest" itemscope itemtype="http://schema.org/Thing">
+                <b itemprop="name">Unique Quests</b>
+                <p itemprop="description">Dozens of quest generators and the possibility to trade a quests between players.</p>
+            </div>
+
+        </div>
+
     </header>
     <div id="siteBlock">
         <div class="site-main-back"></div>
@@ -83,7 +146,6 @@
                 <!-- Контент - окна -->
                 <div class="content-block">
                     <div class="content black">
-                        <h1>Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец</h1>
                         <!--Окно регистрации-->
                         {% include 'site_window_reg.html' %}
                         {% include 'site_window_reg_1.html' %}
