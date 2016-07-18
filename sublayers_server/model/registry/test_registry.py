@@ -25,8 +25,16 @@ from pprint import pprint as pp
 def test_registry():
     log.debug('### test registry')
 
-    #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
-    car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
+    # reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+
+    # car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
+    # log.debug('object by parents: %s', id(car.parent.parent.parent))
+    # cars = yield Root.objects.get('reg:///registry/mobiles/cars')
+    # log.debug('cars by uri: %s', id(cars))
+    c = yield Root.objects.get('reg:///registry/a/b/c')
+    log.debug('A by parents of C: %s', id(c.parent.parent))
+    a = yield Root.objects.get('reg:///registry/a')
+    log.debug('A by uri: %s', id(a))
     
     log.debug('### Registry test end')
     print('\n'.join((
