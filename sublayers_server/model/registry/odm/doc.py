@@ -244,9 +244,12 @@ class AbstractDocument(Document):
         # todo: Падать при инициализации, игнорировать с предупреждениями в процессе
         assert klass, 'Registry class {!r} is not found.'.format(klass_name)
         if cls is klass:
-            return super(AbstractDocument, cls).from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
+            doc = super(AbstractDocument, cls).from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
+            log.debug('AbstractDocument.from_son({dic[uri]})'.format(**locals()))
+            doc.to_cache()
         else:
-            return klass.from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
+            doc = klass.from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
+        return doc
 
     def __repr__(self):
         return '{self.__class__.__name__}(\n{params})'.format(

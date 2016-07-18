@@ -14,12 +14,6 @@ from sublayers_server.model.registry.uri import URI
 class CachebleQuerySet(QuerySet):
     @return_future
     def get(self, id=None, callback=None, alias=None, **kwargs):
-        # handler = callback
-        def handler(doc, **kw):
-            if doc is not None:
-                doc.to_cache()
-            return callback(doc, **kw)
-
         if URI.try_or_default(id):  # В качестве идентификатора может быть подан URI и тогда поиск будет вестись по нему
             # todo: (!) clean uri params
             kwargs['uri'] = id
@@ -30,7 +24,7 @@ class CachebleQuerySet(QuerySet):
 
         obj = self.__klass__.search_in_cache(**kwargs)
         if obj is None:
-            super(CachebleQuerySet, self).get(callback=handler, alias=alias, **kwargs)
+            super(CachebleQuerySet, self).get(callback=callback, alias=alias, **kwargs)
         else:
             #obj.load_references(callback=lambda _: None)  # todo: optimize? При взятии из кеша происходит перезагрузка ссылок
             tornado.ioloop.IOLoop.instance().add_callback(callback, obj)
