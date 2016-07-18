@@ -1,7 +1,11 @@
 User-agent: *
 Disallow: /play
+Disallow: /site_api/*
+Disallow: /logout
 
 User-agent: Yandex
 Disallow: /play
+Disallow: /site_api/*
+Disallow: /logout
 
 Sitemap: http://roaddogs.ru/static/sitemap.xml
