@@ -23,6 +23,7 @@ class CachebleQuerySet(QuerySet):
             kwargs['id'] = id
 
         obj = self.__klass__.search_in_cache(**kwargs)
+        log.debug('qs.get({id}, {kwargs}):  # id(obj) from cache = {oid}'.format(oid=None if obj is None else __builtins__['id'](obj), **locals()))
         if obj is None:
             super(CachebleQuerySet, self).get(callback=callback, alias=alias, **kwargs)
         else:

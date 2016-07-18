@@ -37,6 +37,10 @@ class AbstractDocument(Document):
 
         references = self.find_references(document=self, fields=fields)
         reference_count = len(references)
+        log.debug('AbstractDocument({self.uri}).load_references:  # refs: {refs}'.format(
+            self=self,
+            refs=', '.join(['{r[3]}={r[1]}'.format(r=r) for r in references]),
+        ))
 
         if not reference_count:
             callback({
