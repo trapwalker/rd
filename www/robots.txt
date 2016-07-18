@@ -1,11 +1,17 @@
+User-agent: Yandex
+Disallow: /play
+Disallow: /site_api/
+Disallow: /logout
+Disallow: /login
+Disallow: /map/
+Disallow: /static/
+
 User-agent: *
 Disallow: /play
 Disallow: /site_api/*
 Disallow: /logout
-
-User-agent: Yandex
-Disallow: /play
-Disallow: /site_api/*
-Disallow: /logout
+Disallow: /login
+Disallow: /map/
+Disallow: /static/
 
 Sitemap: http://roaddogs.ru/static/sitemap.xml
