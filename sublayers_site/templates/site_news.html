@@ -37,7 +37,7 @@
                     <div style="display: none;" itemprop="dateModified">{% raw news['iso_date_str'] %}</div>
                     <div style="display: none;" itemprop="datePublished">{% raw news['iso_date_str'] %}</div>
                     <div style="display: none;" itemprop="author">Teletower Studios</div>
-                    <div id="news_content_{{ news_id }}" class="scroll-block" itemprop="description"></div>
+                    <div style="display: none;" itemprop="description"></div>
 
                     <div style="display: none;" itemprop="sameAs">/#news={{ news.get('link', '') }}</div>
                     <div id="news_content_{{ news_id }}" class="scroll-block" itemprop="articleBody">{% raw news['content'] %}</div>
