@@ -36,6 +36,7 @@
     height: 25px;
     line-height: 25px;
     text-align: center;
+    bottom: 0px;
 }
 .npc-name {
     padding: 1px 5px;

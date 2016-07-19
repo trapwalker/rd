@@ -798,3 +798,20 @@ class AgentAPI(API):
     @public_method
     def get_strategy_mode_info_objects(self):
         StrategyModeInfoObjectsEvent(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def teleport(self, x, y):
+        if (self.agent.car):
+            self.agent.save(time=self.agent.server.get_time())
+            ex_car = self.agent.car.example
+            self.agent.car.displace(time=self.agent.server.get_time())
+
+            def set_new_position(event):
+                # ex_car.position = Point(12517154, 27028830)
+                ex_car.position = Point(long(x), long(y))
+                self.update_agent_api(time=event.time + 0.1)
+
+            Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
+
+
+
