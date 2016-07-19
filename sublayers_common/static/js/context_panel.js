@@ -116,7 +116,8 @@ var EnterToLocationObserver = (function(_super){
         this.obs_btn = $('#cpEnterToLocationIcon');
         this.obs_btn.click(function() {
             if (contextPanel) contextPanel.location_observer.open_window();
-        })
+        });
+        this.obs_btn.removeClass('active');
     }
 
     EnterToLocationObserver.prototype._get_compare_distance = function(mobj, time) {
@@ -195,7 +196,8 @@ var InviteBarterObserver = (function(_super){
         this.obs_btn = $('#cpBarterSendInvite');
         this.obs_btn.click(function() {
             if (contextPanel) contextPanel.invite_barter_observer.open_window();
-        })
+        });
+        this.obs_btn.removeClass('active');
     }
 
     InviteBarterObserver.prototype.on_add_obj = function(mobj) {
@@ -273,7 +275,8 @@ var CPActivateBarterManager = (function () {
         this.obs_btn = $('#cpBarterInfoInvite');
         this.obs_btn.click(function() {
             if (contextPanel) contextPanel.activate_barter_manager.open_window();
-        })
+        });
+        this.obs_btn.removeClass('active');
     }
 
     CPActivateBarterManager.prototype.add_barter = function(barter_id, sender_name) {

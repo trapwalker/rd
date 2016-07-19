@@ -1858,6 +1858,21 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Teleport
+    ClientManager.prototype.sendTeleportCoord = function(x, y) {
+        console.log('ClientManager.prototype.sendTeleportCoord');
+        var mes = {
+            call: "teleport",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                x: x,
+                y: y
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();
 

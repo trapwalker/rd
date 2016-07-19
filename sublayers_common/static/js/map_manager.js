@@ -7,6 +7,7 @@
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
+var last_right_click_on_map = {x: 12517154, y:27028830};
 
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
@@ -26,6 +27,7 @@ function onMouseDblClick(mouseEventObject) {
 
 function onMouseRightClick(mouseEventObject) {
     var p = map.project(mouseEventObject.latlng, myMap.getMaxZoom());
+    last_right_click_on_map = p;
     chat.addMessageToSys(p);
     console.log(p);
 
@@ -128,13 +130,15 @@ function onKeyDownMap(event) {
             clientManager.sendRocket();
             break;
         case 84: // T // Crazy Click Timer
-            if (crazy_timer){
-                clearInterval(crazy_timer);
-                crazy_timer = null;
-            }
-            else{
-                crazy_timer = setInterval(sendRandGoTo, 100);
-            }
+            //if (crazy_timer){
+            //    clearInterval(crazy_timer);
+            //    crazy_timer = null;
+            //}
+            //else{
+            //    crazy_timer = setInterval(sendRandGoTo, 100);
+            //}
+            clientManager.sendTeleportCoord(last_right_click_on_map.x, last_right_click_on_map.y);
+
             break;
         case 87:  // W
             clientManager.sendFireDischarge('front');
