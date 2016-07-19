@@ -5,6 +5,7 @@ Disallow: /logout
 Disallow: /login
 Disallow: /map/
 Disallow: /static/
+Allow: /static/sitemap.xml
 
 User-agent: *
 Disallow: /play
@@ -13,5 +14,6 @@ Disallow: /logout
 Disallow: /login
 Disallow: /map/
 Disallow: /static/
+Allow: /static/sitemap.xml
 
 Sitemap: http://roaddogs.ru/static/sitemap.xml
