@@ -16,6 +16,38 @@ if __debug__:
     _call_stat = Counter()
 
 
+class Task(object):
+    def __init__(
+        self,
+        document_id,
+        values_collection,
+        field_name,
+        dereference_function=None,
+        on_get=None,
+        load_done_callback=None,
+    ):
+        self.dereference_function = dereference_function
+        self.document_id = document_id
+        self.values_collection = values_collection
+        self.field_name = field_name
+        self.on_get = on_get
+        self.load_done_callback= load_done_callback
+
+    def do(self, value):
+        result = self.on_get and self.on_get(value) or value
+        self.values_collection[self.field_name] = result
+
+    def _load_done_callback(self, value):
+        if self.load_done_callback:
+            self.load_done_callback(value)
+
+
+class TaskList(dict):
+    def add(self, task):
+        assert not isinstance(task.document_id, Document)
+        self.setdefault(task.document_id, []).append(task)
+
+
 class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
@@ -39,7 +71,7 @@ class AbstractDocument(Document):
         reference_count = len(references)
         log.debug('AbstractDocument({self.uri}).load_references:  # refs: {refs}'.format(
             self=self,
-            refs=', '.join(['{r[3]}={r[1]}'.format(r=r) for r in references]),
+            refs=', '.join(['{u}=[{c}]'.format(u=u, c=len(tasks)) for u, tasks in references.items()]),
         ))
 
         if not reference_count:
@@ -49,24 +81,37 @@ class AbstractDocument(Document):
             })
             return
 
-        for dereference_function, document_id, values_collection, field_name, fill_values_method in references:
+        for uri, tasks in references.items():
             #v = isinstance(document_id, Document) and document_id or self.search_in_cache(id=document_id)
             # todo: (optimize) Избавиться от асинхронного вызова, когда объект есть в кеше
-            dereference_function(
-                document_id,
-                callback=self.handle_load_reference(
-                    callback=callback,
+            tasks[0].dereference_function(
+                uri,
+                callback=self.handle_load_tasks(
+                    uri=uri,
+                    tasks=tasks,
                     references=references,
                     reference_count=reference_count,
-                    values_collection=values_collection,
-                    field_name=field_name,
-                    fill_values_method=fill_values_method
+                    callback=callback,
                 )
             )
 
+    def handle_load_tasks(self, uri, tasks, references, reference_count, callback):
+        def handle(value):
+            for task in tasks:
+                task.do(value)
+
+            references.pop(uri)
+            if not references:
+                callback({
+                    'loaded_reference_count': reference_count,
+                    'loaded_values': None,  # todo: Выпилить к чертям
+                })
+
+        return handle
+
     def find_references(self, document, fields=None, results=None, this_document_field=None):
         if results is None:
-            results = []
+            results = TaskList()
 
         if isinstance(document, Document):
             if fields:
@@ -123,14 +168,12 @@ class AbstractDocument(Document):
                     load_function(identificator, callback=wrapper, *av, **kw)
 
                 load_function = self._get_load_function(document, field_name, field.embedded_type)
-
-                results.append([
-                    getter_with_instantiation,
-                    value,
-                    document._values if isinstance(document, Document) else document,
-                    field_name,
-                    self.fill_values_collection
-                ])
+                results.add(Task(
+                    document_id=value,
+                    values_collection=document._values if isinstance(document, Document) else document,
+                    field_name=field_name,
+                    dereference_function=getter_with_instantiation,
+                ))
             elif isinstance(value, Document):
                 self.find_references(document=value, results=results)
 
@@ -148,13 +191,12 @@ class AbstractDocument(Document):
                 else:
                     load_function = self._get_load_function(document, field_name, field.reference_type)
 
-                results.append([
-                    load_function,
-                    value,
-                    document._values if isinstance(document, Document) else document,
-                    field_name,
-                    self.fill_values_collection
-                ])
+                results.add(Task(
+                    document_id=value,
+                    values_collection=document._values if isinstance(document, Document) else document,
+                    field_name=field_name,
+                    dereference_function=load_function,
+                ))
 
     def find_list_field(self, document, results, field_name, field):
         if self.is_list_field(field):
