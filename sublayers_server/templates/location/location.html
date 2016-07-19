@@ -280,7 +280,7 @@
 
             var building = $(this).data('building');
             if (locationManager.buildings.hasOwnProperty(building) &&
-                !locationManager.buildings[building].isActivePlace()) {
+                !locationManager.isActivePlace(locationManager.buildings[building])) {
                 locationManager.panel_left.show({}, '');
                 locationManager.panel_right.show({}, '');
             }
