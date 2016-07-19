@@ -31,6 +31,7 @@
     position: relative;
     float: left;
     width: 50%;
+    height: 16px;
 }
 .panel-info-line.label { text-align: left; }
 .panel-info-line.value { text-align: right; }

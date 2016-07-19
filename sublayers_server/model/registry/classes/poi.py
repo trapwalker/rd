@@ -47,8 +47,9 @@ class MapLocation(POIObserver):
 
 
 class Building(object):
-    def __init__(self, caption, head=None, instances=None, **kw):
+    def __init__(self, caption, title='', head=None, instances=None, **kw):
         self.caption = caption
+        self.title = title
         self._head = head and URI(head)
         self._instances = [URI(inst) for inst in instances or []]
         # todo: checking errors
@@ -68,6 +69,7 @@ class Building(object):
     def as_client_dict(self):
         d = dict(
             caption=self.caption,
+            title=self.title,
             head=None if self._head is None else self._head.resolve().as_client_dict(),
             instances=[npc.as_client_dict() for npc in self.instances]
         )

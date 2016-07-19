@@ -1,0 +1,44 @@
+.pi-location {
+    position: relative;
+    height: 300px;
+}
+
+.pi-location-lines {
+    position: relative;
+    width: 100%;
+    height: 85px;
+}
+
+.pi-location-image {
+    position: relative;
+    width: 390px;
+    height: 130px;
+    margin: 0 auto;
+    background-image: url("/static/img/scale_right_side.png");
+}
+.pi-location-image::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(2px) brightness(200%);
+    -webkit-filter: blur(2px) brightness(200%);
+    opacity: 0.4;
+}
+.pi-location-image::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(4px) brightness(200%);
+    -webkit-filter: blur(4px) brightness(200%);
+    opacity: 0.1;
+}

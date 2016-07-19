@@ -116,6 +116,7 @@
         {% include panel_info/car_info.html %}
         {% include panel_info/panel_description.html %}
         {% include panel_info/pi_building.html %}
+        {% include panel_info/pi_location.html %}
     </div>
 </div>
 
@@ -281,8 +282,8 @@
             var building = $(this).data('building');
             if (locationManager.buildings.hasOwnProperty(building) &&
                 !locationManager.isActivePlace(locationManager.buildings[building])) {
-                locationManager.panel_left.show({}, '');
-                locationManager.panel_right.show({}, '');
+                locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+                locationManager.panel_right.show({}, 'location');
             }
         });
 
