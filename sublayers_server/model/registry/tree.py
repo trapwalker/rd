@@ -196,42 +196,6 @@ class Node(AbstractDocument):
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
 
-    # def __getstate__(self):
-    #     #do_not_store = ('storage', '_subnodes', '_cache', 'owner',)
-    #     #log.debug('%s.__getstate__', self)
-    #     #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
-    #     values = self.values
-    #     d = dict(
-    #         name=self.name,
-    #         abstract=self.abstract,
-    #         parent=self.parent.uri if self.parent.storage else self.parent,
-    #     )
-    #     for name, attr, getter in self.iter_attrs():  # todo: migration is not complete
-    #         if attr.name in values:  # todo: refactor it
-    #             v = getter()
-    #             if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
-    #                 v = v.uri  # todo: (!!!)
-    #             elif isinstance(attr, TagsAttribute):
-    #                 v = str(v)
-    #             d[attr.name] = v
-    #     return d
-
-    # def __setstate__(self, state):
-    #     self._cache = {}
-    #     self._subnodes = {}  # todo: проверить при переподчинении нода
-    #     self._prepared_attrs = set()
-    #     self.name = None
-    #     self.owner = None
-    #     self.values = {}
-    #     self.storage = None
-    #     parent = state.pop('parent')
-    #     if isinstance(parent, URI):
-    #         parent = parent.resolve()
-    #     self.parent = parent
-    #
-    #     for k, v in state.items():
-    #         setattr(self, k, v)
-
     def deep_iter(self, reject_abstract=True):
         queue = [self]
         while queue:
