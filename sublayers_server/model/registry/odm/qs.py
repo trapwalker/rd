@@ -12,6 +12,23 @@ from sublayers_server.model.registry.uri import URI
 
 
 class CachebleQuerySet(QuerySet):
+    def get_cached(self, id=None, default=None, raise_unfounded=True, **kwargs):
+        if URI.try_or_default(id):  # В качестве идентификатора может быть подан URI и тогда поиск будет вестись по нему
+            # todo: (!) clean uri params
+            kwargs['uri'] = id
+            id = None
+
+        if id:
+            kwargs['id'] = id
+
+        result = self.__klass__.search_in_cache(**kwargs)
+        if result is None:
+            if raise_unfounded:
+                raise KeyError('Object like {} in cache not found.'.format(kwargs))
+            return default
+
+        return result
+
     @return_future
     def get(self, id=None, callback=None, alias=None, **kwargs):
         if URI.try_or_default(id):  # В качестве идентификатора может быть подан URI и тогда поиск будет вестись по нему

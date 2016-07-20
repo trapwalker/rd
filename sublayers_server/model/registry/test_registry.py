@@ -39,7 +39,7 @@ def test_registry():
 
     nodes = yield Root.objects.find_all()
     cc = yield Root.objects.get('reg:///registry/a/b/cc')
-        
+    cc2 = Root.objects.get_cached('reg:///registry/a/b/cc')
     log.debug('### Registry test end')
     print('\n'.join((
         '{v:6} - {k}'.format(v=v, k=k)
