@@ -22,6 +22,14 @@ var LocationGirlNPC = (function (_super) {
         this.jq_main_div.find('.girl-center-menu-item').first().click();
     };
 
+    LocationGirlNPC.prototype.apply = function () {
+        this.jq_main_div.find('.girl-drop-item-image').css('display', 'block');
+    };
+
+    LocationGirlNPC.prototype.cancel = function () {
+        this.jq_main_div.find('.girl-drop-item-image').css('display', 'none');
+    };
+
     LocationGirlNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, 'Подтвердить</br>сделку', true);
