@@ -254,8 +254,10 @@ var LocationMechanicNPC = (function (_super) {
                 var itemDiv = $('<div class="mechanic-car-slot-picture"><img src="' + itemImg + '"></div>');
                 itemDiv.data('pos', position);
                 itemDiv.draggable({
-                    helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
-                    cursorAt: { left: 31, top: 16 },
+                    //helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
+                    //cursorAt: { left: 31, top: 16 },
+                    helper: function() { return $('<img width="130" height="70" src="' + item.example.inv_icon_mid + '">') },
+                    cursorAt: { left: 65, top: 35 },
                     revert: true,
                     revertDuration: 0,
                     zIndex: 1,
@@ -280,8 +282,10 @@ var LocationMechanicNPC = (function (_super) {
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
-                    cursorAt: { left: 31, top: 16 },
+                    //helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
+                    //cursorAt: { left: 31, top: 16 },
+                    helper: function() { return $('<img width="130" height="70" src="' + item.example.inv_icon_mid + '">') },
+                    cursorAt: { left: 65, top: 35 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,

@@ -71,6 +71,12 @@ var LocationNucoilBuilding = (function (_super) {
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
+    LocationNucoilBuilding.prototype.set_panels = function (make) {
+        if (!make && !locationManager.isActivePlace(this)) return;
+        locationManager.panel_left.show({}, 'nukeoil');
+        locationManager.panel_right.show({build: this.building_rec.build}, 'building');
+    };
+
     LocationNucoilBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationNucoilBuilding.prototype.clickBtn', btnIndex);
         if (this.active_central_page == 'buildingPageRepair_autoservice') {
