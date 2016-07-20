@@ -285,6 +285,17 @@ class Node(AbstractDocument):
 
         #tornado.ioloop.IOLoop.instance().add_callback(callback, root)
 
+    @return_future
+    def load_references(self, fields=None, callback=None, alias=None):
+        def on_load(*args):
+            owner = self.owner
+            if owner:
+                owner._subnodes.add(self)
+
+            callback(*args)
+
+        log.debug('load_references({self})'.format(self=self))
+        super(Node, self).load_references(fields=fields, callback=on_load, alias=alias)
 
 class Root(Node):
     pass
