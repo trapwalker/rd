@@ -265,7 +265,9 @@ var LocationTunerNPC = (function (_super) {
                 itemDivSide.data('pos', position);
 
                 itemDivTop.draggable({
-                    helper: 'clone',
+                    //helper: 'clone',
+                    helper: function() { return $('<img width="130" height="70" src="' + item.example.inv_icon_mid + '">') },
+                    cursorAt: { left: 65, top: 35 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -285,7 +287,9 @@ var LocationTunerNPC = (function (_super) {
                     drag: LocationPlace.drag_handler
                 });
                 itemDivSide.draggable({
-                    helper: 'clone',
+                    //helper: 'clone',
+                    helper: function() { return $('<img width="130" height="70" src="' + item.example.inv_icon_mid + '">') },
+                    cursorAt: { left: 65, top: 35 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -324,8 +328,10 @@ var LocationTunerNPC = (function (_super) {
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
-                    helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
-                    cursorAt: { left: 31, top: 16 },
+                    //helper: function() { return $('<img width="62" height="33" src="' + item.example.inv_icon_small + '">') },
+                    //cursorAt: { left: 31, top: 16 },
+                    helper: function() { return $('<img width="130" height="70" src="' + item.example.inv_icon_mid + '">') },
+                    cursorAt: { left: 65, top: 35 },
                     opacity: 0.8,
                     revert: true,
                     revertDuration: 0,
@@ -339,12 +345,32 @@ var LocationTunerNPC = (function (_super) {
         }
     };
 
+    //LocationTunerNPC.prototype._compare_tags = function(item, slot) {
+    //    // итем должен обладать всеми тегами слота, чтобы быть туда установленным
+    //    for (var i = 0; i < slot.tags.length; i++)
+    //        if (item.example.tags.indexOf(slot.tags[i]) < 0)
+    //            return false;
+    //    return true;
+    //};
+
     LocationTunerNPC.prototype._compare_tags = function(item, slot) {
+        //console.log('LocationMechanicNPC.prototype._compare_tags', item, slot);
         // итем должен обладать всеми тегами слота, чтобы быть туда установленным
-        for (var i = 0; i < slot.tags.length; i++)
-            if (item.example.tags.indexOf(slot.tags[i]) < 0)
-                return false;
-        return true;
+        if (!item || !slot) return false;
+        if (!item.hasOwnProperty('example') || !item.example) return false;  // Оказывается, example может быть null;
+        if (!item.example.hasOwnProperty('tags')) return false;
+        if (!slot.hasOwnProperty('tags')) return false;
+
+        try {
+            for (var i = 0; i < slot.tags.length; i++)
+                if (item.example.tags.indexOf(slot.tags[i]) < 0)
+                    return false;
+            return true;
+        }
+        catch (e) {
+            console.warn('LocationMechanicNPC.prototype._compare_tags', e, item, slot);
+            return false;
+        }
     };
 
     LocationTunerNPC.prototype.changeItem = function(src, dest) {
