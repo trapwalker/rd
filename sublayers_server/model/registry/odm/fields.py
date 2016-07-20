@@ -25,21 +25,21 @@ class MetaFieldMixin(object):
         return value
 
 
-class BaseField             (MetaFieldMixin, motorengine.fields.BaseField               ): pass
-class StringField           (MetaFieldMixin, motorengine.fields.StringField             ): pass
-class BooleanField          (MetaFieldMixin, motorengine.fields.BooleanField            ): pass
-class DateTimeField         (MetaFieldMixin, motorengine.fields.DateTimeField           ): pass
-class UUIDField             (MetaFieldMixin, motorengine.fields.UUIDField               ): pass
-class ListField             (MetaFieldMixin, motorengine.fields.ListField               ): pass
-class EmbeddedDocumentField (MetaFieldMixin, motorengine.fields.EmbeddedDocumentField   ): pass
-class ReferenceField        (MetaFieldMixin, motorengine.fields.ReferenceField          ): pass
-class URLField              (MetaFieldMixin, motorengine.fields.URLField                ): pass
-class EmailField            (MetaFieldMixin, motorengine.fields.EmailField              ): pass
-class IntField              (MetaFieldMixin, motorengine.fields.IntField                ): pass
-class FloatField            (MetaFieldMixin, motorengine.fields.FloatField              ): pass
-class DecimalField          (MetaFieldMixin, motorengine.fields.DecimalField            ): pass
-class BinaryField           (MetaFieldMixin, motorengine.fields.BinaryField             ): pass
-class JsonField             (MetaFieldMixin, motorengine.fields.JsonField               ): pass
+class BaseField             (MetaFieldMixin, motorengine.fields.BaseField            ): pass
+class StringField           (MetaFieldMixin, motorengine.fields.StringField          ): pass
+class BooleanField          (MetaFieldMixin, motorengine.fields.BooleanField         ): pass
+class DateTimeField         (MetaFieldMixin, motorengine.fields.DateTimeField        ): pass
+class UUIDField             (MetaFieldMixin, motorengine.fields.UUIDField            ): pass
+class ListField             (MetaFieldMixin, motorengine.fields.ListField            ): pass  # base_field
+class EmbeddedDocumentField (MetaFieldMixin, motorengine.fields.EmbeddedDocumentField): pass  # embedded_document_type
+class ReferenceField        (MetaFieldMixin, motorengine.fields.ReferenceField       ): pass  # reference_document_type
+class URLField              (MetaFieldMixin, motorengine.fields.URLField             ): pass
+class EmailField            (MetaFieldMixin, motorengine.fields.EmailField           ): pass
+class IntField              (MetaFieldMixin, motorengine.fields.IntField             ): pass
+class FloatField            (MetaFieldMixin, motorengine.fields.FloatField           ): pass
+class DecimalField          (MetaFieldMixin, motorengine.fields.DecimalField         ): pass
+class BinaryField           (MetaFieldMixin, motorengine.fields.BinaryField          ): pass
+class JsonField             (MetaFieldMixin, motorengine.fields.JsonField            ): pass
 
 
 class UniReferenceField(ReferenceField): # todo: replace to mixed
