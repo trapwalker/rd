@@ -291,7 +291,7 @@ class AbstractDocument(Document):
         assert klass, 'Registry class {!r} is not found.'.format(klass_name)
         if cls is klass:
             doc = super(AbstractDocument, cls).from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
-            log.debug('AbstractDocument.from_son({dic[uri]})'.format(**locals()))
+            log.debug('AbstractDocument.from_son({doc.uri})'.format(**locals()))
             doc.to_cache()
         else:
             doc = klass.from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
