@@ -1,0 +1,44 @@
+.pi-nukeoil {
+    position: relative;
+    height: 250px;
+}
+
+.pi-nukeoil-lines {
+    position: relative;
+    width: 100%;
+    height: 37px;
+}
+
+.pi-nukeoil-insurance-block {
+    position: relative;
+    width: 180px;
+    height: 170px;
+    margin: 5px auto 0 auto;
+}
+.pi-nukeoil-insurance-block.standard { background-image: url("/static/content/locations/institutions/nucoil/standart_small.png"); }
+.pi-nukeoil-insurance-block.premium { background-image: url("/static/content/locations/institutions/nucoil/premium_small.png"); }
+.pi-nukeoil-insurance-block.vip { background-image: url("/static/content/locations/institutions/nucoil/vip_small.png"); }
+.pi-nukeoil-insurance-block::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(2px) brightness(200%);
+    -webkit-filter: blur(2px) brightness(200%);
+}
+.pi-nukeoil-insurance-block::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(4px) brightness(200%);
+    -webkit-filter: blur(4px) brightness(200%);
+}

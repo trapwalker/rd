@@ -334,13 +334,11 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-location').first();
         jq_panel.find('.location').text(locationManager.example.title);
         jq_panel.find('.head').text('Нет');
-        console.log(locationManager.npc);
         for (var key in locationManager.npc)
             if (locationManager.npc.hasOwnProperty(key) && (locationManager.npc[key].npc_rec.type == 'mayor')) {
                 jq_panel.find('.head').text(locationManager.npc[key].npc_rec.title);
                 break;
             }
-
         jq_panel.css('display', 'block');
     };
 
@@ -349,6 +347,12 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-building').first();
         jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.css('display', 'block');
+    };
+
+    LocationPanelInfo.prototype.show_nukeoil = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_nukeoil', options);
+        var jq_panel = this.jq_main_div.find('.pi-nukeoil').first();
         jq_panel.css('display', 'block');
     };
 
