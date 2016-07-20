@@ -32,10 +32,14 @@ def test_registry():
     # cars = yield Root.objects.get('reg:///registry/mobiles/cars')
     # log.debug('cars by uri: %s', id(cars))
     c = yield Root.objects.get('reg:///registry/a/b/c')
+    #cc = yield Root.objects.get('reg:///registry/a/b/cc')
     log.debug('A by parents of C: %s', id(c.parent.parent))
     a = yield Root.objects.get('reg:///registry/a')
     log.debug('A by uri: %s', id(a))
-    
+
+    nodes = yield Root.objects.find_all()
+    cc = yield Root.objects.get('reg:///registry/a/b/cc')
+        
     log.debug('### Registry test end')
     print('\n'.join((
         '{v:6} - {k}'.format(v=v, k=k)

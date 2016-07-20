@@ -9,12 +9,15 @@ from sublayers_server.model.registry.odm.fields import (
 
 
 class A(Root):
-    pass
+    r = UniReferenceField(reference_document_type=Root)
+    ll = ListField(base_field=ListField(base_field=UniReferenceField(reference_document_type=Root)))
+    x = IntField()
 
 
 class B(A):
+    e = EmbeddedDocumentField(embedded_document_type=A)
     pass
-    
+
 
 class C(B):
     pass
