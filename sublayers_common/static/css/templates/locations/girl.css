@@ -69,3 +69,27 @@
 .girlPageInterlude .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_interlude.png'); }
 .girlPageIntersection .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_intersection.png'); }
 .girlPageBi .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_bi.png'); }
+
+.girl-bottom-block {
+    position: relative;
+    padding-top: 20px;
+    width: 620px;
+    height: 209px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.girl-drop-item-image {
+    position: relative;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    float: left;
+    width: 180px;
+    height: 160px;
+    margin: 0 13px;
+    border: 1px solid #0e4b00;
+    background: url('/static/content/locations/institutions/girl/item_placeholder.png');
+    background-color: #082801;
+    box-sizing: border-box;
+    display: none;
+}
+.girl-drop-item-image:hover { background-color: #0e4b00; }
