@@ -11,10 +11,12 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
 from sublayers_server.model.events import LoadWorldEvent
-from sublayers_server.model.registry.storage import Registry, Collection
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
+
+from sublayers_server.model.registry.storage import Collection
+from sublayers_server.model.registry.tree import Root
 
 import os
 import sys
@@ -48,7 +50,8 @@ class Server(object):
         self.start_time = None
         # todo: blocking of init of servers with same uid
 
-        self.reg = Registry(name='registry')
+        self.reg = None  # Registry(name='registry')
+        self.ioloop.add_callback(callback=self.on_load_registry)
         # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
 
         self.zones = []
@@ -60,6 +63,14 @@ class Server(object):
         self.quick_game_cars_examples = []
         self.quick_game_cars_proto = []
         self.quick_game_start_pos = Point(12517168, 27028861)
+
+    def on_load_registry(self):
+        def load_registry_done_callback(all_registry_items):
+            self.reg = Root.objects.get_cached('reg://registry')
+            log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
+
+        #Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
+        Root.objects.find_all(callback=load_registry_done_callback)
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -97,24 +108,24 @@ class Server(object):
         self.init_zones(time=event.time)
 
         # загрузка радиоточек
-        towers_root = self.reg['/poi/radio_towers']
+        towers_root = self.reg['poi/radio_towers']
         for rt_exm in towers_root:
             RadioPoint(time=event.time, example=rt_exm, server=self)
 
         # загрузка городов
-        towns_root = self.reg['/poi/locations/towns']
+        towns_root = self.reg['poi/locations/towns']
         for t_exm in towns_root:
             Town(time=event.time, server=self, example=t_exm)
 
         # загрузка заправочных станций
-        gs_root = self.reg['/poi/locations/gas_stations']
+        gs_root = self.reg['poi/locations/gas_stations']
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
         # Создание экземпляров машинок для быстрой игры
         self.quick_game_cars_proto = []
-        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
-        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
+        self.quick_game_cars_proto.append(self.reg['mobiles/cars/middle/sports/delorean_dmc12'])
+        self.quick_game_cars_proto.append(self.reg['mobiles/cars/heavy/btrs/m113a1'])
         for car_proto in self.quick_game_cars_proto:
             # todo: Здесь не должны инстанцироваться машинки
             car_example = car_proto.instantiate()
